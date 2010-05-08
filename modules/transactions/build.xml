@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="transactions" default="build-module">
+<!-- MAKE SURE THAT THE PROJECT NAME REFLECTS THE MODULE FOLDER NAME!!! -->
+    
+   <!-- import the module template build file with the default properties and targets -->
+   <import file="../../resources/build-module-template.xml"/>
+    
+    
+    <!-- by default, the target jar file is named after the module -->
+    <property name="current.module.jar.file.name" value="${ant.project.name}" />
+    
+    
+    <property name="current.module.osgi.symbolic.name" value="com.atomikos.${current.module.jar.file.name}"/>
+    
+    
+    <path id="classpath">
+           <fileset dir="${lib.dir}">
+               <include name="junit-3.8.1.jar"/>
+               <include name="jndi.jar"/>
+               <include name="jmx.jar"/>
+           </fileset>
+           <path refid="baseclasspath" />
+    </path>
+    
+    <target name="compile-module">
+        
+        <!-- insert build version number into Configuration -->
+        <replaceregexp match="VERSION(\s)*=.*;" replace='VERSION = \"${build.release.number}\";' byline="true" 
+            file="${current.module.sources.dir}/com/atomikos/icatch/system/Configuration.java"/>
+        
+        <echo>Compiling module with DEBUG flag set to: ${debug}</echo>
+        <javac source="1.4" target="1.4" srcdir="${current.module.dir}/src" includes="**/*.java" 
+                destdir="${current.module.classes.dir}" 
+                debug="${debug}">
+            <classpath refid="classpath"/>
+        </javac>
+       
+    </target>
+    <!--
+    <path id="obfuscateclasspath">
+        <path refid="build.utilities.classpath"/>
+        <path refid="classpath"/>
+    </path>
+
+    
+    <target name="obfuscate-module">
+        
+        <xslt style="${global.resource.dir}/retroguard.xsl" 
+              in="${current.module.dir}/resources/javadoc.xml" 
+              out="${current.module.build.dir}/retroguard.rgs" >  
+            
+        </xslt>
+        
+       
+        <java classname="RetroGuard">
+            <classpath refid="obfuscateclasspath"/>
+            <arg value="${jars.dir}/${current.module.jar.file.name}"/>
+            <arg value="${current.module.build.dir}/obfuscated.jar"/>
+            <arg value="${current.module.build.dir}/retroguard.rgs"/>
+            <arg value="${obfuscate.reports.dir}/transactions-retroguard.txt"/>
+        </java>
+        
+        
+        <move file="${current.module.build.dir}/obfuscated.jar" tofile="${jars.dir}/${current.module.jar.file.name}" />
+        
+    </target>
+    -->
+    
+    
+    <target name="javadoc-module">
+        <!-- ignore if not relevant -->
+        <!-- any generated javadoc sources should go into ${javadoc.src.dir} -->
+        
+        <!-- generate list of .java files to include in Javadoc -->
+        <xslt style="${global.resource.dir}/javadoc.xsl" 
+              in="${current.module.dir}/resources/javadoc.xml" 
+              out="${current.module.build.dir}/javadoc_files.txt" >             
+        </xslt>
+         
+        <!-- load the list of files as a property -->
+         <loadfile
+              property="javadoc.files"
+              srcfile="${current.module.build.dir}/javadoc_files.txt"
+              failonerror="true">
+         </loadfile>
+         
+         <!-- copy all files to a separate dir for javadoc -->         
+         <copy todir="${javadoc.src.dir}">        
+             <fileset dir="${current.module.dir}/src" includes="${javadoc.files}"/>
+         </copy>
+    </target>
+    
+    <target name="create-license">
+       <!-- COMMENTED OUT: NO LONGER NEEDED
+        <property file="${release.version.file}"/>
+        <java fork="yes" classname="com.atomikos.vendor.CreateLicense" classpathref="classpath">          
+            <arg value="AtomikosLicenseKey" />
+            <arg value="Transactions"/>
+            <arg value="license"/>
+            <arg value="${release.version}"/>
+            <arg value="developer"/>
+        </java>
+        <jar destfile="${jars.dir}/license.jar">
+            <fileset dir="${current.module.dir}" includes="license.*"/>            
+        </jar>
+        <delete>
+            <fileset dir="${current.module.dir}" includes="license.*" />
+        </delete>
+        -->
+    </target>
+    
+</project>

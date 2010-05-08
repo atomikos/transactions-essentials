@@ -1,0 +1,159 @@
+package com.atomikos.icatch.imp;
+
+import java.util.Stack;
+
+import com.atomikos.icatch.CompositeTerminator;
+import com.atomikos.icatch.CompositeTransaction;
+import com.atomikos.icatch.Extent;
+import com.atomikos.util.UniqueIdMgr;
+
+/**
+ * 
+ * 
+ * 
+ *
+ * 
+ */
+
+public class CompositeTransactionTestJUnit extends 
+TransactionServiceTestCase
+{
+    
+    private UniqueIdMgr tidmgr;
+
+    
+    
+    public CompositeTransactionTestJUnit(String name)
+    {
+        super(name);
+    }
+    
+    protected void setUp() 
+    {
+        super.setUp();
+        String dir = getTemporaryOutputDir() + "/";
+        tidmgr = new UniqueIdMgr ( "TestTIDMgr" , dir );
+    }
+    
+    private CompositeTransaction createCompositeTransaction()
+    {
+ 		String tid = tidmgr.get();
+ 		CoordinatorImp coord = new CoordinatorImp ( tid, 
+ 													true,
+ 													null,
+ 													true);
+ 		return new CompositeTransactionImp ( null, tid, true, coord  );	
+    }
+    
+    public void testCompositeTransactionBase()
+    throws Exception
+    {
+        
+        String tid1 = null, tid2 = null, tid3 = null, tid4 = null,
+	  tid5 = null, tid6 = null, tid7 = null;
+        Stack lineage1 = new Stack();
+        Stack lineage2 = new Stack();
+        Stack lineage3 = new Stack();
+        Stack lineage4 = new Stack();
+
+        tid1 = tidmgr.get();
+        
+        //make tx1 a root
+        TestCompositeTransactionBase tx1 = 
+	  new TestCompositeTransactionBase ( tid1 , lineage1 );
+        
+        tid2 = tidmgr.get();
+
+        //make tx2 a descendant of tx1
+        lineage2.push ( tx1 );
+        TestCompositeTransactionBase tx2 =
+	  new TestCompositeTransactionBase ( tid2 , lineage2 );
+
+        if ( ! tx1.isAncestorOf ( tx2 ) ) 
+	  throw new Exception ("ERROR: isAncestor does not work well");
+        if ( tx2.isAncestorOf ( tx1 ) )
+	  throw new Exception ("ERROR: isAncestor fails if target is " +
+			   "a descendant");
+
+        if ( ! tx2.isDescendantOf ( tx1 ) )
+	  throw new Exception ("ERROR: isDescendant does not work");
+         if ( tx1.isDescendantOf ( tx2 ) )
+	  throw new Exception ("ERROR: isDescendant fails if target is " +
+			   "a descendant");
+         if ( ! tx1.isDescendantOf ( tx1 ) ||
+	    ! tx2.isDescendantOf ( tx2 ) )
+	   throw new Exception ("ERROR: isDescendant is not reflexive");
+         
+         if ( ! tx1.isAncestorOf ( tx1 ) ||
+	    ! tx2.isAncestorOf ( tx2 ) )
+	   throw new Exception ("ERROR: isAncestor is not reflexive");
+
+        if ( ! tx1.isRelatedTransaction ( tx2 ) )
+	  throw new Exception ("ERROR: isRelated does not work");
+
+        if ( ! tx1.isRelatedTransaction ( tx1 ) ||
+	   ! tx2.isRelatedTransaction ( tx2) )
+	  throw new Exception ("ERROR: isRelated is not reflexive");
+
+        if ( ! tx1.isRoot() ) 
+	  throw new Exception ("ERROR: isRoot does not work for root");
+        if ( tx2.isRoot () )
+	  throw new Exception ("ERROR: isRoot does not work for non-root");
+        if ( ! tx1.isSameTransaction ( tx1 ) )
+	  throw new Exception ("ERROR: isSame does not work on same tx");
+        if ( tx2.isSameTransaction ( tx1 ) )
+	  throw new Exception ("ERROR: isSame does not work for diff. txs");
+
+        //
+        //NEXT, TEST WITH A BRANCH IN TX TREE
+        //
+
+        tid3 = tidmgr.get();
+        lineage3.push ( tx1 );
+        TestCompositeTransactionBase tx3 =
+	  new TestCompositeTransactionBase ( tid3 , lineage3 );
+        
+        if ( ! tx3.isRelatedTransaction ( tx2 ) ||
+	   ! tx2.isRelatedTransaction ( tx3 ) )
+	  throw new Exception ("ERROR: isRelated fails for siblings");
+        if ( tx2.isDescendantOf ( tx3 ) ||
+	   tx2.isAncestorOf ( tx3 ) )
+	  throw new Exception ("ERROR: ancestor relationship wrong");
+
+        //
+        //NEXT, TEST DIFF TX WITH SAME UniqueId AS ANOTHER
+        //
+        
+        lineage4.push ( tx1 );
+        TestCompositeTransactionBase tx4 =
+	  new TestCompositeTransactionBase ( tid3, lineage4 );
+        if ( ! tx4.isSameTransaction ( tx3 ) )
+	  throw new Exception ("ERROR: isSameTransaction fails for diff. "+
+			   "txs with SAME TID");
+    }
+
+    public void testCompositeTransactionImp() throws Exception
+    {
+		CompositeTransaction ct = createCompositeTransaction();
+		CompositeTransaction nested = null;
+		
+		if ( !ct.isRoot() )
+			throw new Exception("new tx is not root?");
+		if ( ct.getTid() == null ) 
+			throw new Exception ("new tx has no tid?");
+		if ( ct.getCompositeCoordinator() == null )
+			throw new Exception ("new tx has no coordinator?");
+		if ( ct.getTransactionControl().getExtent() == null )
+			throw new Exception ("new tx has no extent?");
+		if ( ct.getTransactionControl().getTerminator() == null )
+			throw new Exception ("new tx has no terminator?");	
+			
+		
+		
+		CompositeTerminator terminator2 = 
+		  ct.getTransactionControl().getTerminator();
+		terminator2.commit ();
+		
+		Extent extent = ct.getTransactionControl().getExtent(); 
+    }
+}

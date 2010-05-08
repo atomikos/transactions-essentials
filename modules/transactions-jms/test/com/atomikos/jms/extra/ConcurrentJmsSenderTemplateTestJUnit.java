@@ -1,0 +1,101 @@
+package com.atomikos.jms.extra;
+
+import javax.jms.DeliveryMode;
+import javax.jms.Destination;
+
+import com.atomikos.jms.AtomikosConnectionFactoryBean;
+import com.atomikos.jms.TestQueue;
+
+import junit.framework.TestCase;
+
+public class ConcurrentJmsSenderTemplateTestJUnit extends TestCase {
+
+	private ConcurrentJmsSenderTemplate template;
+	
+	protected void setUp() throws Exception {
+		super.setUp();
+		template = new ConcurrentJmsSenderTemplate();
+	}
+	
+	public void testUser()
+	{
+		assertNull ( template.getUser() );
+		String user = "user";
+		template.setUser ( user );
+		assertEquals ( user , template.getUser() );
+	}
+	
+	public void testDestination()
+	{
+		assertNull ( template.getDestination() );
+		Destination destination = new TestQueue();
+		template.setDestination(destination);
+		assertEquals ( destination, template.getDestination() );	
+	}
+	
+	public void testDestinationName()
+	{
+		assertNull ( template.getDestinationName() );
+		String name = "name";
+		template.setDestinationName ( name );
+		assertEquals ( name , template.getDestinationName() );
+	}
+	
+	public void testReplyToDestinationName()
+	{
+		assertNull ( template.getReplyToDestinationName() );
+		String name = "name";
+		template.setReplyToDestinationName ( name );
+		assertEquals ( name , template.getReplyToDestinationName() );
+	}
+	
+	public void testReplyToDestination()
+	{
+		assertNull ( template.getReplyToDestination() );
+		Destination destination = new TestQueue();
+		template.setReplyToDestination(destination);
+		assertEquals ( destination, template.getReplyToDestination() );
+	}
+	
+	public void testDeliveryMode()
+	{
+		assertEquals ( DeliveryMode.PERSISTENT , template.getDeliveryMode() );
+		template.setDeliveryMode ( DeliveryMode.NON_PERSISTENT );
+		assertEquals ( DeliveryMode.NON_PERSISTENT , template.getDeliveryMode() );
+	}
+	
+	public void testPriority()
+	{
+		assertEquals ( 4 , template.getPriority() );
+		template.setPriority(5);
+		assertEquals ( 5 , template.getPriority() );
+	}
+	
+	public void testTimeToLive()
+	{
+		assertEquals ( 0 , template.getTimeToLive() );
+		template.setTimeToLive(3);
+		assertEquals ( 3 , template.getTimeToLive() );
+	}
+	
+	public void testInitWithoutDestinationThrowsMeaningfulException() throws Exception 
+	{
+		template.setAtomikosConnectionFactoryBean(new AtomikosConnectionFactoryBean() );
+		try {
+			template.init();
+		} catch ( IllegalStateException ok ) {
+			assertEquals ( "Property 'destination' or 'destinationName' must be set first!" , ok.getMessage() );
+		}
+	}
+	
+	public void testInitWithoutConnectionFactoryThrowsMeaningfulException() throws Exception 
+	{
+		template.setDestination ( new TestQueue()  );
+		try {
+			template.init();
+		} catch ( IllegalStateException ok ) {
+			assertEquals ( "Property 'atomikosConnectionFactoryBean' must be set first!" , ok.getMessage() );
+		}
+	}
+
+}

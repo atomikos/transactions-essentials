@@ -1,0 +1,6 @@
+version = 3.6.5
+Export-Package: com.atomikos*;version = 3.6.5
+Bundle-Version: ${version}
+Bundle-Description: deprecated transactions jdbc module 
+Bundle-Name: atomikos-transactions-jdbc-deprecated
+Bundle-SymbolicName: com.atomikos.transactions-jdbc-deprecated

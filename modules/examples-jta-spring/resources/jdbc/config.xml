@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+<!-- Use an Atomikos DataSource to access the DB transactionally -->
+<!-- NOTE: this datasource is not XA-capable! See below for XA instead -->
+<bean id="datasource" 
+	class="com.atomikos.jdbc.nonxa.AtomikosNonXADataSourceBean">
+
+	<property name="uniqueResourceName"><value>NONXADBMS</value></property>
+	<property name="user"><value>sa</value></property>
+	<property name="url"><value>jdbc:HypersonicSQL:SpringNonXADB</value></property>
+	<property name="driverClassName"><value>org.hsql.jdbcDriver</value></property>
+	<property name="poolSize"><value>1</value></property>
+	<property name="borrowConnectionTimeout"><value>60</value></property>
+
+</bean>
+<!-- The following shows an alternative XA datasource setup 
+(illustrated with FirstSQL but works with any other XA driver as well)
+-->
+<!-- UNCOMMENT TO USE XA; CALL INIT TO REGISTER FOR RECOVERY AND CLOSE TO SHUTDOWN POOL!
+<bean id="datasource"
+	class="com.atomikos.jdbc.AtomikosDataSourceBean" init-method="init" destroy-method="close">
+	<property name="uniqueResourceName"><value>XADBMS</value></property>
+	<property name="xaDataSourceClassName"><value>COM.FirstSQL.Dbcp.DbcpXADataSource</value></property>
+	<property name="xaProperties">
+		<props>
+			<prop key="user">demo</prop>
+			<prop key="portNumber">8000</prop>
+		</props>
+	</property>
+	<property name="poolSize"><value>1</value></property>
+</bean>
+-->
+
+<!-- Construct Atomikos UserTransactionManager, needed to configure Spring -->
+<bean id="atomikosTransactionManager" class="com.atomikos.icatch.jta.UserTransactionManager" init-method="init" destroy-method="close">
+	<!--  when close is called, should we force transactions to terminate or not? -->
+	<property name="forceShutdown"><value>true</value></property>
+</bean>
+
+<!-- Also use Atomikos UserTransactionImp, needed to configure Spring  --> 
+<bean id="atomikosUserTransaction" class="com.atomikos.icatch.jta.UserTransactionImp">
+    <property name="transactionTimeout"><value>300</value></property>
+</bean>
+
+<!-- Configure the Spring framework to use JTA transactions from Atomikos -->
+<bean id="springTransactionManager" class="org.springframework.transaction.jta.JtaTransactionManager">
+
+	<property name="transactionManager"><ref bean="atomikosTransactionManager"  /></property>
+	<property name="userTransaction"><ref bean="atomikosUserTransaction"  /></property>
+</bean>
+
+<!-- Configure the bank to use our datasource -->
+<bean id="bankTarget" class= "jdbc.Bank">
+	<property name="dataSource"><ref bean="datasource" /></property>
+</bean>
+
+<!-- Configure Spring to insert JTA transaction logic for all methods -->
+<bean id="bank" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+	<property name="transactionManager"><ref bean="springTransactionManager" /></property>
+	<property name="target"><ref bean="bankTarget"  /></property>
+	<property name="transactionAttributes">
+		<props>
+			<prop key="*">PROPAGATION_REQUIRED, -Exception</prop>
+		</props>
+	</property>
+</bean>
+</beans>

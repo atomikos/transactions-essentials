@@ -1,0 +1,89 @@
+package com.atomikos.icatch;
+import java.lang.reflect.Field;
+import java.util.Enumeration;
+import java.util.Vector;
+
+/**
+*
+*
+*A state implementation for a distributed transaction system.
+*/
+
+public class TxState implements java.io.Serializable
+{
+    //force UID for backward log compatibilty
+    static final long serialVersionUID = 648321112075712930L;
+    
+    // public static final TxState INIT = new TxState("INIT");
+    //initialized only
+    public static final TxState ACTIVE = new TxState("ACTIVE");
+    //tx is doing stuff
+    public static final TxState MARKED_ABORT = new TxState("MARKED_ABORT");
+    //for local subtransactions: indicates that the local parent tx should not commit
+    public static final TxState LOCALLY_DONE = new TxState("LOCALLY_DONE");
+    //tx is locally finished (if compensatable: preliminary committed
+    public static final TxState PREPARING = new TxState("PREPARING");
+    //waiting for votes in 2PC prepare phase
+    public static final TxState IN_DOUBT = new TxState("IN_DOUBT");
+    //in-doubt
+    public static final TxState ABORTING = new TxState("ABORTING");
+    //in process of aborting
+    public static final TxState COMMITTING  =  new TxState("COMMITTING");
+    //in process of committing
+    
+    public static final TxState SUSPENDED = new TxState("SUSPENDED");
+    
+  
+    public static final TxState HEUR_COMMITTED = new TxState("HEUR_COMMITTED");
+    public static final TxState HEUR_ABORTED = new TxState("HEUR_ABORTED");
+    public static final TxState HEUR_MIXED = new TxState("HEUR_MIXED");
+    public static final TxState HEUR_HAZARD = new TxState("HEUR_HAZARD");
+
+    public static final TxState TERMINATED = new TxState("TERMINATED");
+    //all done with, can be forgotten about
+    
+    public static Enumeration getStates()
+    {
+        
+        Vector v = new Vector();
+        Class myClass = TxState.class;
+        Field[] fields = myClass.getFields();
+        for ( int i = 0 ; i < fields.length ; i++ ) {
+	  try {
+	      v.addElement(fields[i].get(null));
+	  }
+	  catch (Exception e) {}
+        }//for
+        
+        return v.elements();
+    }
+    
+  
+    
+    private String myName;
+    
+
+    
+    private TxState(String s){
+        myName = s;
+    }
+    public String toString(){
+    	return myName.intern();
+    }
+
+    public boolean equals ( Object o ) 
+    {
+        if ( o == null || !(o instanceof TxState) )
+	  return false;
+        TxState state = (TxState ) o;
+        return state.toString().equals(toString());
+    }
+
+    public int hashCode() 
+    {
+        return toString().hashCode();
+    }
+    
+    
+    
+}

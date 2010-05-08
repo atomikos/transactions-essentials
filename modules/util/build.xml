@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="util" default="build-module">
+<!-- MAKE SURE THAT THE PROJECT NAME REFLECTS THE MODULE FOLDER NAME!!! -->
+    
+    <!-- import the module template build file with the default properties and targets -->
+    <import file="../../resources/build-module-template.xml"/>
+    <!-- by default, the target jar file is named after the module -->
+    <property name="current.module.jar.file.name" value="atomikos-${ant.project.name}" />
+    
+    <property name="current.module.osgi.symbolic.name" value="com.atomikos.util"/>
+  
+    
+    <path id="classpath">
+           <fileset dir="${lib.dir}">
+               <include name="servlet-2.3.jar" />
+               <include name="junit-3.8.1.jar"/>
+               <include name="slf4j-api-1.4.3.jar"/>
+               <include name="slf4j-nop-1.4.3.jar"/>
+           </fileset>
+           <path refid="baseclasspath" />
+     </path>
+    
+    
+</project>

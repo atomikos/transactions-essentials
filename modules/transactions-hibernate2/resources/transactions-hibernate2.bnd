@@ -1,0 +1,6 @@
+version = 3.6.5
+Export-Package: com.atomikos*;version = 3.6.5
+Bundle-Version: ${version}
+Bundle-Description: transactions hibernate2 module 
+Bundle-Name: atomikos-transactions-hibernate2
+Bundle-SymbolicName: com.atomikos.transactions-hibernate2

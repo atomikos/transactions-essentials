@@ -1,0 +1,6 @@
+version = 3.6.5
+Export-Package: com.atomikos*;version = 3.6.5
+Bundle-Version: ${version}
+Bundle-Description: atomikos utils module 
+Bundle-Name: atomikos-utils
+Bundle-SymbolicName: com.atomikos.util

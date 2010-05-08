@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="transactions-hibernate2" default="build-module">
+<!-- MAKE SURE THAT THE PROJECT NAME REFLECTS THE MODULE FOLDER NAME!!! -->
+    
+  
+    <!-- import the module template build file with the default properties and targets -->
+    <import file="../../resources/build-module-template.xml"/>
+    <!-- by default, the target jar file is named after the module -->
+    <property name="current.module.jar.file.name" value="${ant.project.name}" />
+ 
+    <property name="current.module.osgi.symbolic.name" value="com.atomikos.${current.module.jar.file.name}"/>
+    
+    <path id="classpath">
+           <fileset dir="${lib.dir}">
+               <include name="junit-3.8.1.jar"/>
+               <include name="jta.jar" />
+               <include name="hibernate2.jar" />
+           </fileset>
+           <path refid="baseclasspath" />
+    </path>
+   
+     <target name="javadoc-module">
+        <!-- ignore if not relevant -->
+        <!-- any generated javadoc sources should go into ${javadoc.src.dir} -->
+        
+        <!-- generate list of .java files to include in Javadoc -->
+        <xslt style="${global.resource.dir}/javadoc.xsl" 
+              in="${current.module.dir}/resources/javadoc.xml" 
+              out="${current.module.build.dir}/javadoc_files.txt" >             
+        </xslt>
+         
+        <!-- load the list of files as a property -->
+         <loadfile
+              property="javadoc.files"
+              srcfile="${current.module.build.dir}/javadoc_files.txt"
+              failonerror="true">
+         </loadfile>
+         
+         <!-- copy all files to a separate dir for javadoc -->         
+         <copy todir="${javadoc.src.dir}">        
+             <fileset dir="${current.module.dir}/src" includes="${javadoc.files}"/>
+         </copy>
+     </target>
+    
+</project>
