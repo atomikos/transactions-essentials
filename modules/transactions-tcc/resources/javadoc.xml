@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package name="com">
+    <package name="atomikos">
+        <package name="icatch">
+       		<package name="tcc">
+        			<class>UserTccServiceManager</class>
+        		</package>
+        </package>
+    </package>
+</package>

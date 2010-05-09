@@ -1,0 +1,291 @@
+<?xml version="1.0"  encoding="ISO-8859-1"?> 
+<!DOCTYPE Configure PUBLIC "-//Mort Bay Consulting//DTD Configure 1.2//EN" "http://jetty.mortbay.org/configure_1_2.dtd">
+
+<!-- Sample configuration file for using Atomikos Transactions in JettyPlus -->
+<!-- Put this file in the extra/etc folder of your Jetty5.0 installation -->
+
+<!-- =============================================================== -->
+<!-- Configure the JettyPlus Server                                  -->
+<!-- =============================================================== -->
+<Configure class="org.mortbay.jetty.plus.Server">
+
+  <!-- =============================================================== -->
+  <!-- Configure context specific log4j logging                        -->
+  <!-- =============================================================== -->
+  <!-- uncomment to allow each context to configure log4j separately
+  <Call class="org.apache.log4j.LogManager" name="setRepositorySelector">
+    <Arg><New class="org.mortbay.log4j.CRS"/></Arg>
+    <Arg><New class="java.lang.Object"/></Arg>
+  </Call>
+  -->
+
+
+
+  <!-- =============================================================== -->
+  <!-- Add a transaction manager and XA or nonXA datasources to Jetty  -->
+  <!-- =============================================================== -->
+  <Call name="addService">
+    <Arg>
+      <New class="com.atomikos.icatch.jta.jetty.TMService">
+        
+        
+        <!-- uncomment if you are NOT using the Atomikos control panel web application
+        <Set name="initOnStart">true</Set>
+        -->
+
+        <Set name="Name">ATOMIKOS TransactionManager</Set>
+                
+          <!-- 
+                Configure a NonXADataSourceBean with the properties described in the manual.
+                This will also make the datasource available under the JNDI name specified
+                by the property 'uniqueResourceName'.
+                NOTE: register as many beans as you need for your configuration, 
+                or zero if you don't need any.
+                
+                Replace the values for each Set with the values 
+                appropriate for your JDBC driver
+                See the chapter on JDBC configuration for more 
+                details on the meaning of each Set 
+          -->
+         <!--
+         <Call name="registerNonXADataSourceBean">
+            <Arg>
+                
+                <New class="com.atomikos.jdbc.nonxa.NonXADataSourceBean">
+                    <Set name="DriverClassName">org.hsqldb.jdbcDriver</Set>
+                    <Set name="Url">jdbc:hsqldb:extra/etc/tmtest</Set>
+                    <Set name="User">sa</Set>
+                    <Set name="Password"></Set>
+                    <Set name="uniqueResourceName">jdbc/myDB</Set>
+                    <Set name="poolSize">2</Set>
+                    <Set name="connectionTimeout">60</Set>
+                </New>
+            </Arg>
+         </Call>
+         -->
+               <!-- 
+                    Configure a SimpleDataSourceBean with the 
+                    properties described in the manual.
+                    This will also make the datasource available 
+                    under the JNDI name specified by the property 'uniqueResourceName'.
+                    NOTE: register as many beans as you need for your configuration, 
+                    or zero if you don't need any.
+                    
+                    Replace the values for each Set with the values 
+                    appropriate for your JDBC driver
+                    See the chapter on JDBC configuration for more 
+                    details on the meaning of each Set 
+                -->
+
+        <!--
+         <Call name="registerSimpleDataSourceBean">
+            <Arg>
+                <New class="com.atomikos.jdbc.SimpleDataSourceBean">
+                    <Set name="uniqueResourceName">jdbc/database</Set>
+                    <Set name="connectionPoolSize">2</Set>
+                    <Set name="connectionTimeout">60</Set>
+                    <Set name="exclusiveConnectionMode">false</Set>
+                    <Set name="xaDataSourceClassName">COM.FirstSQL.Dbcp.DbcpXADataSource</Set>
+                    <Set name="xaDataSourceProperties">user=demo;portNumber=8000</Set>
+                </New>
+            </Arg>
+         </Call>   
+	 -->
+        </New>
+   </Arg>
+  </Call>  
+  
+  <!-- =============================================================== -->  
+  <!-- Set up a DataSourceService for non-XA types of DataSources      -->
+  <!-- Any number of DataSources can be configured by calling          -->
+  <!-- addDataSource().                                                -->
+  <!-- =============================================================== --> 
+  <Call name="addService">
+    <Arg>
+      <New class="org.mortbay.jetty.plus.DefaultDataSourceService">
+        <Set name="Name">DataSourceService</Set>
+        <!-- Add a javax.sql.DataSource. The implementation class can  -->
+        <!-- be anything. StandardDataSource from XAPool is used here  -->
+        <!-- as an example because it is included with the download.   -->
+        <!-- Note that no support for connection pooling will be       -->
+        <!-- available for connections from this DataSource unless     -->
+        <!-- the DataSource implemenation provides it itself           -->
+         <Call name="addDataSource">
+             <Arg>jdbc/myNonXADataSource</Arg>  
+             <!-- Configure the DataSource impl                        -->
+             <Arg>
+               <New class="org.enhydra.jdbc.standard.StandardDataSource">
+                 <Set name="DriverName">org.hsqldb.jdbcDriver</Set>
+                 <Set name="Url">jdbc:hsqldb:extra/etc/tmtest</Set>
+                 <Set name="User">sa</Set>
+                 <Set name="Password"></Set>
+                <!-- bug work around only for StandardDataSource       -->
+                 <Set name="Logger">
+                   <New class="org.enhydra.jdbc.util.Logger">
+                     <Arg>
+                       <Call class="org.apache.commons.logging.LogFactory" name="getLog">
+                         <Arg>org.enhydra.jdbc.xapool</Arg>
+                       </Call>
+                     </Arg>
+                   </New>
+                 </Set>                 
+               </New>
+             </Arg>
+         </Call>
+         <!-- Set up a connection pool using JDBC2 interfaces.         -->
+         <!-- The DefaultDataSourceService uses XAPool to provide the -->
+         <!-- pooling implementation.                                 -->
+         <!-- If your driver vendor does not support the              -->
+         <!-- javax.sql.ConnectionPoolDataSource interface, use the   -->
+         <!-- StandardConnectionPoolDataSource from XAPool as an      -->
+         <!-- adapter.                                                -->     
+         <Call name="addConnectionPoolDataSource">
+           <Arg>jdbc/myPooledDataSource</Arg>
+           <Arg>                               
+             <New class="org.enhydra.jdbc.standard.StandardConnectionPoolDataSource">
+                 <Set name="DriverName">org.hsqldb.jdbcDriver</Set>
+                 <Set name="Url">jdbc:hsqldb:extra/etc/tmtest</Set>
+                 <Set name="User">sa</Set>
+                 <Set name="Password"></Set>
+                 <!-- workaround for XAPool bug                       -->
+                 <Set name="Logger">
+                   <New class="org.enhydra.jdbc.util.Logger">
+                     <Arg>
+                       <Call class="org.apache.commons.logging.LogFactory" name="getLog">
+                         <Arg>org.enhydra.jdbc.xapool</Arg>
+                       </Call>
+                     </Arg>
+                   </New>
+                 </Set>                              
+             </New>
+           </Arg>
+           <!-- configure the pool                                   -->
+           <Set name="user">sa</Set>   
+           <Set name="password"></Set>
+           <Set name="minSize">1</Set>
+           <Set name="maxSize">5</Set> 
+         </Call>        
+       </New>
+     </Arg>
+   </Call>
+ 
+
+   
+
+
+  <!-- =============================================================== -->
+  <!-- Add a mail service                                              -->
+  <!--  You must replace all XXX values below with values appropriate  -->
+  <!--  for your installation.                                         -->
+  <!-- =============================================================== -->
+  <Call name="addService">
+    <Arg>
+      <New class="org.mortbay.jetty.plus.MailService">
+        <Set name="Name">MailService</Set>
+        <Set name="JNDI">mail/Session</Set>
+	<!-- set up the id of the smtp user                 -->
+        <Set name="User">XXX</Set>
+	<!-- set up the password of the smtp user           -->
+        <Set name="Password">XXX</Set>
+	<!-- set up the hostname/ip addr of the smtp server -->
+        <Put name="mail.smtp.host">XXX</Put>
+	<!-- setup any javax.mail.smtp provider variables   -->
+        <Put name="mail.pop3.user">zzz</Put>
+        <Put name="mail.pop3.host">vvv</Put>
+        <Put name="mail.from">me@me</Put>
+        <Put name="mail.debug">false</Put>
+      </New>
+    </Arg>
+  </Call>
+         
+
+  <!-- =============================================================== -->
+  <!-- Configure the Request Listeners                                 -->
+  <!-- =============================================================== -->
+
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+  <!-- Add and configure a HTTP listener to port 8080                       -->
+  <!-- The default port can be changed using: java -Djetty.port=80     -->
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+  <Call name="addListener">
+    <Arg>
+      <New class="org.mortbay.http.SocketListener">
+        <Set name="Port"><SystemProperty name="jetty.port" default="8080"/></Set>
+        <Set name="MinThreads">10</Set>
+        <Set name="MaxThreads">100</Set>
+        <Set name="MaxIdleTimeMs">30000</Set>
+        <Set name="LowResourcePersistTimeMs">5000</Set>
+      </New>
+    </Arg>
+  </Call>
+
+
+
+
+  <!-- =============================================================== -->
+  <!-- Configure the Contexts                                          -->
+  <!-- =============================================================== -->
+
+
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+  <!-- Add and configure a specific web application                    -->
+  <!-- + Set Unpack WAR files                                          -->
+  <!-- + Set Default Descriptor.  Resource, file or URL                -->
+  <!-- + Set Virtual Hosts. A Null host or empty array means all hosts -->
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+  <Call name="addWebApplication">
+    <Arg>/jettyplus</Arg>
+    <Arg><SystemProperty name="jetty.home"/>/extra/plus/demo/webapps/jettyplus</Arg>
+
+    <Set name="WebXmlEnvEntryOverride">false</Set>
+    
+    <Call name="addEnvEntry">
+      <Arg>my/trivial/name</Arg>
+      <Arg type="Integer">99</Arg>
+    </Call>
+  </Call>
+  -->
+  
+   <!-- 
+        Add the Atomikos Control Panel web application.
+        This application will startup/shutdown the JTA service.
+        NOTE: it is recommended that you unjar the .war file
+        to a folder /webapps/atomikos (in jetty home) for best results.
+    --> 
+   <Call name="addWebApplication">
+    <Arg>/atomikos</Arg>
+    <Arg><SystemProperty name="jetty.home"/>/webapps/atomikos</Arg>
+    
+     
+  </Call>
+  
+  <!-- Add the testJTA application if you want a quick test of JTA
+  <Call name="addWebApplication">
+    <Arg>/testJTA</Arg>
+    <Arg><SystemProperty name="jetty.home"/>/webapps/testJTA</Arg>
+  </Call>
+  -->
+
+
+
+  <!-- =============================================================== -->
+  <!-- Configure the Request Log                                       -->
+  <!-- =============================================================== -->
+  <Set name="RequestLog">
+    <New class="org.mortbay.http.NCSARequestLog">
+      <Arg><SystemProperty name="jetty.home" default="."/>/logs/yyyy_mm_dd.request.log</Arg>
+      <Set name="retainDays">90</Set>
+      <Set name="append">true</Set>
+      <Set name="extended">false</Set>
+      <Set name="buffered">false</Set>
+      <Set name="LogTimeZone">GMT</Set>
+    </New>
+  </Set>
+
+  <!-- =============================================================== -->
+  <!-- Configure the Other Server Options                              -->
+  <!-- =============================================================== -->
+  <Set name="requestsPerGC">2000</Set>
+  <Set name="statsOn">false</Set>
+
+</Configure>

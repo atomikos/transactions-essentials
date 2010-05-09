@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+(c) 2001-2005 Arjuna Technologies Ltd., BEA Systems, Hitachi Ltd., International Business Machines Corporation, IONA Technologies, Microsoft Corporation, Inc. All rights reserved.
+Permission to copy and display the "Web Services Business Activity Framework" Specification (the "Specification", which includes WSDL and schema documents), in any medium without fee or royalty is hereby granted, provided that you include the following on ALL copies of the "Web Services Business Activity Framework" Specification that you make:
+1.  A link or URL to the "Web Services Business Activity Framework" Specification at one of the Authors' websites
+2. The copyright notice as shown in the "Web Services Business Activity Framework" Specification.
+Arjuna, BEA, Hitachi, IBM, IONA and Microsoft (collectively, the "Authors") each agree to grant you a license, under royalty-free and otherwise reasonable, non-discriminatory terms and conditions, to their respective essential patent claims that they deem necessary to implement the "Web Services Business Activity Framework" Specification.
+THE "WEB SERVICES BUSINESS ACTIVITY FRAMEWORK" SPECIFICATION IS PROVIDED "AS IS," AND THE AUTHORS MAKE NO REPRESENTATIONS OR WARRANTIES, EXPRESS OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT, OR TITLE; THAT THE CONTENTS OF THE "WEB SERVICES BUSINESS ACTIVITY FRAMEWORK" SPECIFICATION ARE SUITABLE FOR ANY PURPOSE; NOR THAT THE IMPLEMENTATION OF SUCH CONTENTS WILL NOT INFRINGE ANY THIRD PARTY PATENTS, COPYRIGHTS, TRADEMARKS OR OTHER RIGHTS.
+THE AUTHORS WILL NOT BE LIABLE FOR ANY DIRECT, INDIRECT, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF OR RELATING TO ANY USE OR DISTRIBUTION OF THE "WEB SERVICES BUSINESS ACTIVITY FRAMEWORK" SPECIFICATION.
+The name and trademarks of the Authors may NOT be used in any manner, including advertising or publicity pertaining to the "Web Services Business Activity Framework" Specification or its contents without specific, written prior permission. Title to copyright in the "Web Services Business Activity Framework" Specification will at all times remain with the Authors.
+No other rights are granted by implication, estoppel or otherwise.
+-->
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" 
+    xmlns:wsba="http://schemas.xmlsoap.org/ws/2004/10/wsba" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="http://schemas.xmlsoap.org/ws/2004/10/wsba" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing"
+    xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+    >
+  <wsdl:types>
+    <xs:schema>
+      <xs:import namespace="http://schemas.xmlsoap.org/ws/2004/10/wsba" schemaLocation='wsba.xsd'/>
+      <xs:import
+                namespace='http://schemas.xmlsoap.org/soap/envelope/'
+                 schemaLocation='http://schemas.xmlsoap.org/soap/envelope/'
+                 />
+    </xs:schema>
+  </wsdl:types>
+    
+      <!-- Addressing (header) messages added by Guy Pardon -->
+    <wsdl:message name="EndpointReferenceHeader">
+        <wsdl:part name="parameter" element="wsa:EndpointReference"></wsdl:part>
+    </wsdl:message>
+    
+    <wsdl:message name="ToHeader">
+        <wsdl:part name="parameter" element="wsa:To"></wsdl:part>
+    </wsdl:message>
+    
+    <wsdl:message name="MessageIDHeader">
+        <wsdl:part name="parameter" element="wsa:MessageID"></wsdl:part>
+    </wsdl:message>
+    
+     <wsdl:message name="RelatesToHeader">
+        <wsdl:part name="parameter" element="wsa:RelatesTo"></wsdl:part>
+     </wsdl:message>
+    
+     <wsdl:message name="ActionHeader">
+        <wsdl:part name="parameter" element="wsa:Action"></wsdl:part>
+     </wsdl:message>
+    
+      <wsdl:message name="FromHeader">
+        <wsdl:part name="parameter" element="wsa:From"></wsdl:part>
+      </wsdl:message>
+        
+     <wsdl:message name="ReplyToHeader">
+        <wsdl:part name="parameter" element="wsa:ReplyTo"></wsdl:part>
+     </wsdl:message>
+   
+     <wsdl:message name="FaultToHeader">
+        <wsdl:part name="parameter" element="wsa:FaultTo"></wsdl:part>
+     </wsdl:message>
+     
+    <wsdl:message name="FaultMessage">
+         <wsdl:part name="content" element="soapenv:Fault"></wsdl:part>
+     </wsdl:message>
+    
+  <!-- Messages -->
+  <wsdl:message name="Complete">
+    <wsdl:part name="parameters" element="wsba:Complete"/>
+  </wsdl:message>
+  <wsdl:message name="Completed">
+    <wsdl:part name="parameters" element="wsba:Completed"/>
+  </wsdl:message>
+  <wsdl:message name="Close">
+    <wsdl:part name="parameters" element="wsba:Close"/>
+  </wsdl:message>
+  <wsdl:message name="Closed">
+    <wsdl:part name="parameters" element="wsba:Closed"/>
+  </wsdl:message>
+  <wsdl:message name="Cancel">
+    <wsdl:part name="parameters" element="wsba:Cancel"/>
+  </wsdl:message>
+  <wsdl:message name="Canceled">
+    <wsdl:part name="parameters" element="wsba:Canceled"/>
+  </wsdl:message>
+  <wsdl:message name="Compensate">
+    <wsdl:part name="parameters" element="wsba:Compensate"/>
+  </wsdl:message>
+  <wsdl:message name="Compensated">
+    <wsdl:part name="parameters" element="wsba:Compensated"/>
+  </wsdl:message>
+  <wsdl:message name="Fault">
+    <wsdl:part name="parameters" element="wsba:Fault"/>
+  </wsdl:message>
+  <wsdl:message name="Faulted">
+    <wsdl:part name="parameters" element="wsba:Faulted"/>
+  </wsdl:message>
+  <wsdl:message name="Exit">
+    <wsdl:part name="parameters" element="wsba:Exit"/>
+  </wsdl:message>
+  <wsdl:message name="Exited">
+    <wsdl:part name="parameters" element="wsba:Exited"/>
+  </wsdl:message>
+  <wsdl:message name="GetStatus">
+    <wsdl:part name="parameters" element="wsba:GetStatus"/>
+  </wsdl:message>
+  <wsdl:message name="Status">
+    <wsdl:part name="parameters" element="wsba:Status"/>
+  </wsdl:message>
+    
+  <!-- BusinessAgreement Service -->
+  <!-- COMMENTED OUT BY GUY PARDON: BAD PROTOCOL -->
+  <!-- 
+  <wsdl:portType name="BusinessAgreementWithParticipantCompletionCoordinatorPortType">
+    <wsdl:operation name="CompletedOperation">
+      <wsdl:input message="wsba:Completed"
+         wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wsba/Completed"/>
+    </wsdl:operation>
+    <wsdl:operation name="FaultOperation">
+      <wsdl:input message="wsba:Fault"
+         wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wsba/Fault"/>
+    </wsdl:operation>
+    <wsdl:operation name="CompensatedOperation">
+      <wsdl:input message="wsba:Compensated"
+         wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wsba/Compensated"/>
+    </wsdl:operation>
+    <wsdl:operation name="ClosedOperation">
+      <wsdl:input message="wsba:Closed"
+         wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wsba/Closed"/>
+    </wsdl:operation>
+    <wsdl:operation name="CanceledOperation">
+      <wsdl:input message="wsba:Canceled"
+         wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wsba/Canceled"/>
+    </wsdl:operation>
+    <wsdl:operation name="ExitOperation">
+      <wsdl:input message="wsba:Exit"
+         wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wsba/Exit"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetStatusOperation">
+      <wsdl:input message="wsba:GetStatus"
+         wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wsba/GetStatus"/>
+    </wsdl:operation>
+    <wsdl:operation name="StatusOperation">
+      <wsdl:input message="wsba:Status"
+         wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wsba/Status"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:portType name="BusinessAgreementWithParticipantCompletionParticipantPortType">
+    <wsdl:operation name="CloseOperation">
+      <wsdl:input message="wsba:Close"
+         wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wsba/Close"/>
+    </wsdl:operation>
+    <wsdl:operation name="CancelOperation">
+      <wsdl:input message="wsba:Cancel"
+         wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wsba/Cancel"/>
+    </wsdl:operation>
+    <wsdl:operation name="CompensateOperation">
+      <wsdl:input message="wsba:Compensate"
+         wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wsba/Compensate"/>
+    </wsdl:operation>
+    <wsdl:operation name="FaultedOperation">
+      <wsdl:input message="wsba:Faulted"
+         wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wsba/Faulted"/>
+    </wsdl:operation>
+    <wsdl:operation name="ExitedOperation">
+      <wsdl:input message="wsba:Exited"
+         wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wsba/Exited"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetStatusOperation">
+      <wsdl:input message="wsba:GetStatus"
+         wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wsba/GetStatus"/>
+    </wsdl:operation>
+    <wsdl:operation name="StatusOperation">
+      <wsdl:input message="wsba:Status"
+         wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wsba/Status"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  -->
+    
+  <!-- BusinessAgreementWithComplete Service -->
+  <wsdl:portType name="BusinessAgreementWithCoordinatorCompletionCoordinatorPortType">
+    <wsdl:operation name="CompletedOperation">
+      <wsdl:input message="wsba:Completed"
+         wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wsba/Completed"/>
+    </wsdl:operation>
+    <wsdl:operation name="FaultOperation">
+      <wsdl:input message="wsba:Fault"
+         wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wsba/Fault"/>
+    </wsdl:operation>
+    <wsdl:operation name="CompensatedOperation">
+      <wsdl:input message="wsba:Compensated"
+         wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wsba/Compensated"/>
+    </wsdl:operation>
+    <wsdl:operation name="ClosedOperation">
+      <wsdl:input message="wsba:Closed"
+         wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wsba/Closed"/>
+    </wsdl:operation>
+    <wsdl:operation name="CanceledOperation">
+      <wsdl:input message="wsba:Canceled"
+         wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wsba/Canceled"/>
+    </wsdl:operation>
+    <wsdl:operation name="ExitOperation">
+      <wsdl:input message="wsba:Exit"
+         wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wsba/Exit"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetStatusOperation">
+      <wsdl:input message="wsba:GetStatus"
+         wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wsba/GetStatus"/>
+    </wsdl:operation>
+    <wsdl:operation name="StatusOperation">
+      <wsdl:input message="wsba:Status"
+         wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wsba/Status"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:portType name="BusinessAgreementWithCoordinatorCompletionParticipantPortType">
+    <wsdl:operation name="CompleteOperation">
+      <wsdl:input message="wsba:Complete"
+         wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wsba/Complete"/>
+    </wsdl:operation>
+    <wsdl:operation name="CloseOperation">
+      <wsdl:input message="wsba:Close"
+         wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wsba/Close"/>
+    </wsdl:operation>
+    <wsdl:operation name="CancelOperation">
+      <wsdl:input message="wsba:Cancel"
+         wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wsba/Cancel"/>
+    </wsdl:operation>
+    <wsdl:operation name="CompensateOperation">
+      <wsdl:input message="wsba:Compensate"
+         wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wsba/Compensate"/>
+    </wsdl:operation>
+    <wsdl:operation name="FaultedOperation">
+      <wsdl:input message="wsba:Faulted"
+         wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wsba/Faulted"/>
+    </wsdl:operation>
+    <wsdl:operation name="ExitedOperation">
+      <wsdl:input message="wsba:Exited"
+         wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wsba/Exited"/>
+    </wsdl:operation>
+    <wsdl:operation name="GetStatusOperation">
+      <wsdl:input message="wsba:GetStatus"
+         wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wsba/GetStatus"/>
+    </wsdl:operation>
+    <wsdl:operation name="StatusOperation">
+      <wsdl:input message="wsba:Status"
+         wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wsba/Status"/>
+    </wsdl:operation>
+  </wsdl:portType>
+</wsdl:definitions>

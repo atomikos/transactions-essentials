@@ -1,0 +1,393 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+(c) 2001-2005 Arjuna Technologies Ltd., BEA Systems, Hitachi Ltd., International Business Machines Corporation, IONA Technologies, Microsoft Corporation, Inc. All rights reserved.
+Permission to copy and display the "Web Services Atomic Transaction" Specification (the "Specification", which includes WSDL and schema documents), in any medium without fee or royalty is hereby granted, provided that you include the following on ALL copies of the "Web Services Atomic Transaction" Specification that you make:
+1.  A link or URL to the "Web Services Atomic Transaction" Specification at one of the Authors' websites
+2. The copyright notice as shown in the "Web Services Atomic Transaction" Specification.
+Arjuna, BEA, Hitachi, IBM, IONA and Microsoft (collectively, the "Authors") each agree to grant you a license, under royalty-free and otherwise reasonable, non-discriminatory terms and conditions, to their respective essential patent claims that they deem necessary to implement the "Web Services Atomic Transaction" Specification.
+THE "Web Services Atomic Transaction" SPECIFICATION IS PROVIDED "AS IS," AND THE AUTHORS MAKE NO REPRESENTATIONS OR WARRANTIES, EXPRESS OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT, OR TITLE; THAT THE CONTENTS OF THE "Web Services Atomic Transaction" SPECIFICATION ARE SUITABLE FOR ANY PURPOSE; NOR THAT THE IMPLEMENTATION OF SUCH CONTENTS WILL NOT INFRINGE ANY THIRD PARTY PATENTS, COPYRIGHTS, TRADEMARKS OR OTHER RIGHTS.
+THE AUTHORS WILL NOT BE LIABLE FOR ANY DIRECT, INDIRECT, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF OR RELATING TO ANY USE OR DISTRIBUTION OF THE "Web Services Atomic Transaction" SPECIFICATION.
+The name and trademarks of the Authors may NOT be used in any manner, including advertising or publicity pertaining to the "Web Services Atomic Transaction" Specification or its contents without specific, written prior permission. Title to copyright in the "Web Services Atomic Transaction" Specification will at all times remain with the Authors.
+No other rights are granted by implication, estoppel or otherwise.
+-->
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" 
+    xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:wsat="http://schemas.xmlsoap.org/ws/2004/10/wsat" 
+    xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" targetNamespace="http://schemas.xmlsoap.org/ws/2004/10/wsat"
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+    xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+    
+    <wsdl:types>
+          <xs:schema>
+            <xs:import
+                namespace='http://schemas.xmlsoap.org/ws/2004/10/wsat'
+                schemaLocation='wsat.xsd' />
+             <xs:import
+                namespace='http://schemas.xmlsoap.org/soap/envelope/'
+                 schemaLocation='http://schemas.xmlsoap.org/soap/envelope/'
+                 />
+         
+          </xs:schema>
+        
+    </wsdl:types> 
+    
+    <!-- Addressing (header) messages added by ATOMIKOS -->
+    <wsdl:message name="EndpointReferenceHeader">
+        <wsdl:part name="parameter" element="wsa:EndpointReference"></wsdl:part>
+    </wsdl:message>
+    
+    <wsdl:message name="ToHeader">
+        <wsdl:part name="parameter" element="wsa:To"></wsdl:part>
+    </wsdl:message>
+    
+    <wsdl:message name="MessageIDHeader">
+        <wsdl:part name="parameter" element="wsa:MessageID"></wsdl:part>
+    </wsdl:message>
+    
+     <wsdl:message name="RelatesToHeader">
+        <wsdl:part name="parameter" element="wsa:RelatesTo"></wsdl:part>
+     </wsdl:message>
+    
+     <wsdl:message name="ActionHeader">
+        <wsdl:part name="parameter" element="wsa:Action"></wsdl:part>
+     </wsdl:message>
+    
+      <wsdl:message name="FromHeader">
+        <wsdl:part name="parameter" element="wsa:From"></wsdl:part>
+      </wsdl:message>
+        
+     <wsdl:message name="ReplyToHeader">
+        <wsdl:part name="parameter" element="wsa:ReplyTo"></wsdl:part>
+     </wsdl:message>
+   
+     <wsdl:message name="FaultToHeader">
+        <wsdl:part name="parameter" element="wsa:FaultTo"></wsdl:part>
+     </wsdl:message>
+     
+    <wsdl:message name="FaultMessage">
+         <wsdl:part name="content" element="soapenv:Fault"></wsdl:part>
+     </wsdl:message>
+    
+	<!-- Messages -->
+	<wsdl:message name="Prepare">
+		<wsdl:part name="parameters" element="wsat:Prepare"/>
+	</wsdl:message>
+	<wsdl:message name="Prepared">
+		<wsdl:part name="parameters" element="wsat:Prepared"/>
+	</wsdl:message>
+	<wsdl:message name="Aborted">
+		<wsdl:part name="parameters" element="wsat:Aborted"/>
+	</wsdl:message>
+	<wsdl:message name="ReadOnly">
+		<wsdl:part name="parameters" element="wsat:ReadOnly"/>
+	</wsdl:message>
+	<wsdl:message name="Commit">
+		<wsdl:part name="parameters" element="wsat:Commit"/>
+	</wsdl:message>
+	<wsdl:message name="Rollback">
+		<wsdl:part name="parameters" element="wsat:Rollback"/>
+	</wsdl:message>
+	<wsdl:message name="Committed">
+		<wsdl:part name="parameters" element="wsat:Committed"/>
+	</wsdl:message>
+	<wsdl:message name="Replay">
+		<wsdl:part name="parameters" element="wsat:Replay"/>
+	</wsdl:message>
+	<wsdl:message name="PrepareResponse">
+		<wsdl:part name="parameters" element="wsat:PrepareResponse"/>
+	</wsdl:message>
+	<wsdl:message name="ReplayResponse">
+		<wsdl:part name="parameters" element="wsat:ReplayResponse"/>
+	</wsdl:message>
+	<!-- Mandatory Asynchronous Messaging PortTypes -->
+	<wsdl:portType name="CompletionCoordinatorPortType">
+		<wsdl:operation name="CommitOperation">
+			<wsdl:input message="wsat:Commit"
+			  wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wsat/Commit"/>
+		</wsdl:operation>
+		<wsdl:operation name="RollbackOperation">
+			<wsdl:input message="wsat:Rollback"
+			  wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wsat/Rollback"/>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:portType name="CompletionInitiatorPortType">
+		<wsdl:operation name="CommittedOperation">
+			<wsdl:input message="wsat:Committed"
+			  wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wsat/Committed"/>
+		</wsdl:operation>
+		<wsdl:operation name="AbortedOperation">
+			<wsdl:input message="wsat:Aborted"
+			  wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wsat/Aborted"/>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:portType name="CoordinatorPortType">
+		<wsdl:operation name="PreparedOperation">
+			<wsdl:input message="wsat:Prepared"
+			  wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wsat/Prepared"/>
+		</wsdl:operation>
+		<wsdl:operation name="AbortedOperation">
+			<wsdl:input message="wsat:Aborted"
+			  wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wsat/Aborted"/>
+		</wsdl:operation>
+		<wsdl:operation name="ReadOnlyOperation">
+			<wsdl:input message="wsat:ReadOnly"
+			  wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wsatReadOnly"/>
+		</wsdl:operation>
+		<wsdl:operation name="CommittedOperation">
+			<wsdl:input message="wsat:Committed"
+			  wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wsat/Committed"/>
+		</wsdl:operation>
+		<wsdl:operation name="ReplayOperation">
+			<wsdl:input message="wsat:Replay"
+			  wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wsat/Replay"/>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:portType name="ParticipantPortType">
+		<wsdl:operation name="PrepareOperation">
+			<wsdl:input message="wsat:Prepare"
+			  wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wsat/Prepare"/>
+		</wsdl:operation>
+		<wsdl:operation name="CommitOperation">
+			<wsdl:input message="wsat:Commit"
+			  wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wsat/Commit"/>
+		</wsdl:operation>
+		<wsdl:operation name="RollbackOperation">
+			<wsdl:input message="wsat:Rollback"
+			  wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wsat/Rollback"/>
+		</wsdl:operation>
+	</wsdl:portType>
+	<!-- Optional Syncronous RPC Port Types -->
+	<wsdl:portType name="CompletionPortTypeRPC">
+		<wsdl:operation name="CommitOperation">
+			<wsdl:input message="wsat:Commit"
+			  wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wsat/Commit"/>
+			<wsdl:output message="wsat:Committed"
+			  wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wsat/Committed"/>
+		</wsdl:operation>
+		<wsdl:operation name="RollbackOperation">
+			<wsdl:input message="wsat:Rollback"
+			  wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wsat/Rollback"/>
+			<wsdl:output message="wsat:Aborted"
+			  wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wsat/Aborted"/>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:portType name="ParticipantPortTypeRPC">
+		<wsdl:operation name="PrepareOperation">
+			<wsdl:input message="wsat:Prepare"
+			  wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wsat/Prepare"/>
+			<wsdl:output message="wsat:PrepareResponse"
+			  wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wsat/PrepareResponse"/>
+		</wsdl:operation>
+		<wsdl:operation name="CommitOperation">
+			<wsdl:input message="wsat:Commit"
+			  wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wsat/Commit"/>
+			<wsdl:output message="wsat:Committed"
+			  wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wsat/Committed"/>
+		</wsdl:operation>
+		<wsdl:operation name="RollbackOperation">
+			<wsdl:input message="wsat:Rollback"
+			  wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wsat/Rollback"/>
+			<wsdl:output message="wsat:Aborted"
+			  wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wsat/Aborted"/>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:portType name="CoordinatorPortTypeRPC">
+		<wsdl:operation name="ReplayOperation">
+			<wsdl:input message="wsat:Replay"
+			  wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wsat/Replay"/>
+			<wsdl:output message="wsat:ReplayResponse"
+			  wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wsat/ReplayResponse"/>
+		</wsdl:operation>
+		<wsdl:operation name="AbortedOperation">
+			<wsdl:input message="wsat:Aborted"
+			  wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wsat/Aborted"/>
+		</wsdl:operation>
+		<wsdl:operation name="ReadOnlyOperation">
+			<wsdl:input message="wsat:ReadOnly"
+			  wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wsat/ReadOnly"/>
+		</wsdl:operation>
+	</wsdl:portType>
+    
+        <!-- EVERYTHING BELOW WAS ADDED BY ATOMIKOS -->
+    
+    <wsdl:portType name="FaultPortType">
+        <wsdl:operation name="FaultOperation">
+            <wsdl:input message="wsat:FaultMessage" wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wsat/fault"></wsdl:input>
+        </wsdl:operation>
+    </wsdl:portType>
+    
+     <wsdl:binding name="FaultBinding" type="wsat:FaultPortType">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <wsdl:operation name="FaultOperation">
+            <soap:operation style="document"/>
+            <wsdl:input>
+                <soap:header message="wsat:ActionHeader" part="parameter" use="literal"></soap:header>
+                <soap:header message="wsat:ToHeader" part="parameter" use="literal"></soap:header>
+                <soap:header message="wsat:FromHeader" part="parameter" use="literal"></soap:header>
+                <soap:header message="wsat:RelatesToHeader" part="parameter" use="literal"></soap:header>
+                <soap:body use="literal"/>
+            </wsdl:input>
+        </wsdl:operation>
+    </wsdl:binding>
+    
+    <wsdl:binding name="CompletionCoordinatorBinding" type="wsat:CompletionCoordinatorPortType">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <wsdl:operation name="CommitOperation">
+            <soap:operation style="document"/>
+            <wsdl:input>
+                <soap:header message="wsat:ActionHeader" part="parameter" use="literal"></soap:header>
+                <soap:header message="wsat:ToHeader" part="parameter" use="literal"></soap:header>
+                <soap:header message="wsat:FromHeader" part="parameter" use="literal"></soap:header>
+                <soap:header message="wsat:ReplyToHeader" part="parameter" use="literal"></soap:header>
+                <soap:body use="literal"/>
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="RollbackOperation">
+            <soap:operation style="document"/>
+            <wsdl:input>
+                <soap:header message="wsat:ActionHeader" part="parameter" use="literal"></soap:header>
+                <soap:header message="wsat:ToHeader" part="parameter" use="literal"></soap:header>
+                <soap:header message="wsat:FromHeader" part="parameter" use="literal"></soap:header>
+                <soap:header message="wsat:ReplyToHeader" part="parameter" use="literal"></soap:header>
+                <soap:body use="literal"/>
+            </wsdl:input>
+        </wsdl:operation>
+    </wsdl:binding>
+    
+    <wsdl:binding name="CompletionInitiatorBinding" type="wsat:CompletionInitiatorPortType">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <wsdl:operation name="CommittedOperation">
+            <soap:operation style="document"/>
+            <wsdl:input>
+                <soap:header message="wsat:ActionHeader" part="parameter" use="literal"></soap:header>
+                <soap:header message="wsat:ToHeader" part="parameter" use="literal"></soap:header>
+                <soap:header message="wsat:FromHeader" part="parameter" use="literal"></soap:header>
+                <soap:body use="literal"/>
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="AbortedOperation">
+            <soap:operation style="document"/>
+            <wsdl:input>
+                <soap:header message="wsat:ActionHeader" part="parameter" use="literal"></soap:header>
+                <soap:header message="wsat:ToHeader" part="parameter" use="literal"></soap:header>
+                <soap:header message="wsat:FromHeader" part="parameter" use="literal"></soap:header>
+                <soap:body use="literal"/>
+            </wsdl:input>
+        </wsdl:operation>
+    </wsdl:binding>
+    
+   
+    <wsdl:binding name="ParticipantBinding" type="wsat:ParticipantPortType">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <wsdl:operation name="PrepareOperation">
+            <soap:operation style="document"/>
+            <wsdl:input>
+                <soap:header message="wsat:ActionHeader" part="parameter" use="literal"></soap:header>
+                <soap:header message="wsat:ToHeader" part="parameter" use="literal"></soap:header>
+                <soap:header message="wsat:FromHeader" part="parameter" use="literal"></soap:header>
+                <soap:header message="wsat:ReplyToHeader" part="parameter" use="literal"></soap:header>
+                <soap:body use="literal"/>
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="CommitOperation">
+            <soap:operation style="document"/>
+            <wsdl:input>
+                <soap:header message="wsat:ActionHeader" part="parameter" use="literal"></soap:header>
+                <soap:header message="wsat:ToHeader" part="parameter" use="literal"></soap:header>
+                <soap:header message="wsat:FromHeader" part="parameter" use="literal"></soap:header>
+                <soap:header message="wsat:ReplyToHeader" part="parameter" use="literal"></soap:header>
+                <soap:body use="literal"/>
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="RollbackOperation">
+            <soap:operation style="document"/>
+            <wsdl:input>
+                <soap:header message="wsat:ActionHeader" part="parameter" use="literal"></soap:header>
+                <soap:header message="wsat:ToHeader" part="parameter" use="literal"></soap:header>
+                <soap:header message="wsat:FromHeader" part="parameter" use="literal"></soap:header>
+                <soap:header message="wsat:ReplyToHeader" part="parameter" use="literal"></soap:header>
+                <soap:body use="literal"/>
+            </wsdl:input>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="CoordinatorBinding" type="wsat:CoordinatorPortType">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <wsdl:operation name="PreparedOperation">
+            <soap:operation style="document"/>
+            <wsdl:input>
+                <soap:header message="wsat:ActionHeader" part="parameter" use="literal"></soap:header>
+                <soap:header message="wsat:ToHeader" part="parameter" use="literal"></soap:header>
+                <soap:header message="wsat:FromHeader" part="parameter" use="literal"></soap:header>
+                <soap:header message="wsat:ReplyToHeader" part="parameter" use="literal"></soap:header>
+                <soap:body use="literal"/>
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="CommittedOperation">
+            <soap:operation style="document"/>
+            <wsdl:input>
+                <soap:header message="wsat:ActionHeader" part="parameter" use="literal"></soap:header>
+                <soap:header message="wsat:ToHeader" part="parameter" use="literal"></soap:header>
+                <soap:header message="wsat:FromHeader" part="parameter" use="literal"></soap:header>
+                <soap:body use="literal"/>
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="AbortedOperation">
+            <soap:operation style="document"/>
+            <wsdl:input>
+                <soap:header message="wsat:ActionHeader" part="parameter" use="literal"></soap:header>
+                <soap:header message="wsat:ToHeader" part="parameter" use="literal"></soap:header>
+                <soap:header message="wsat:FromHeader" part="parameter" use="literal"></soap:header>
+                <soap:body use="literal"/>
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="ReadOnlyOperation">
+            <soap:operation style="document"/>
+            <wsdl:input>
+                <soap:header message="wsat:ActionHeader" part="parameter" use="literal"></soap:header>
+                <soap:header message="wsat:ToHeader" part="parameter" use="literal"></soap:header>
+                <soap:header message="wsat:FromHeader" part="parameter" use="literal"></soap:header>
+                <soap:body use="literal"/>
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="ReplayOperation">
+            <soap:operation style="document"/>
+            <wsdl:input>
+                <soap:header message="wsat:ActionHeader" part="parameter" use="literal"></soap:header>
+                <soap:header message="wsat:ToHeader" part="parameter" use="literal"></soap:header>
+                <soap:header message="wsat:FromHeader" part="parameter" use="literal"></soap:header>
+                <soap:header message="wsat:ReplyToHeader" part="parameter" use="literal"></soap:header>
+                <soap:body use="literal"/>
+            </wsdl:input>
+        </wsdl:operation>
+    </wsdl:binding>
+    <!-- Add a service to make sure that tools generate easy stub handling for client -->
+    <wsdl:service name="TransactionService">
+        <wsdl:port name="ParticipantPort" binding="wsat:ParticipantBinding">
+            <!-- Following is fake address to keep the WSDL tools and generators happy -->
+            <soap:address location="http://www.atomikos.com/participant"/>
+        </wsdl:port>
+        <wsdl:port name="CoordinatorPort" binding="wsat:CoordinatorBinding">
+            <!-- Following is fake address to keep the WSDL tools and generators happy -->
+            <soap:address location="http://www.atomikos.com/coordinator"/>
+        </wsdl:port>
+    </wsdl:service>
+    <wsdl:service name="CompletionCoordinatorService">
+            <wsdl:port name="CompletionCoordinatorPort" binding="wsat:CompletionCoordinatorBinding">
+            <!-- Following is fake address to keep the WSDL tools and generators happy -->
+            <soap:address location="http://www.atomikos.com/completion"/>
+            </wsdl:port>
+    </wsdl:service>
+        <wsdl:service name="CompletionInitiatorService">
+            <wsdl:port name="CompletionInitiatorPort" binding="wsat:CompletionInitiatorBinding">
+            <!-- Following is fake address to keep the WSDL tools and generators happy -->
+            <soap:address location="http://www.atomikos.com/initiator"/>
+            </wsdl:port>
+        </wsdl:service>
+     
+    <wsdl:service name="FaultService">
+        <wsdl:port name="FaultPort" binding="wsat:FaultBinding">
+            <!-- Following is fake address to keep the WSDL tools and generators happy -->
+            <soap:address location="http://www.atomikos.com/fault"/>
+        </wsdl:port>
+    </wsdl:service>
+    
+</wsdl:definitions>

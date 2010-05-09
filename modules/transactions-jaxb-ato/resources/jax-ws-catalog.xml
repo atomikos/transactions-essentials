@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Note: no DOCTYPE declaration to avoid remote lookup of the DTD!!! -->
+<!--  
+    Catalog file for redirecting jaxws wsdl and schema lookups to local files
+    
+    Also see:
+    
+	https://jax-ws.dev.java.net/nonav/2.1.5/docs/catalog-support.html
+	https://jax-ws.dev.java.net/nonav/2.1.5/docs/catalog.html
+-->
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog" prefer="system"> 
+    <system systemId="http://www.atomikos.com/schemas/2005/10/transactions/atomikos.wsdl" uri="wsdl/atomikos/v200510/atomikos.wsdl"/> 
+    <system systemId="atomikos-propagation.xsd" uri="wsdl/atomikos/v200510/atomikos-propagation.xsd"/>
+    <system systemId="atomikos-termination.xsd" uri="wsdl/atomikos/v200510/atomikos-termination.xsd"/>
+    <system systemId="atomikos-addressing.xsd" uri="wsdl/atomikos/v200510/atomikos-addressing.xsd"/>
+    <!-- TODO add cached versions of the following 
+    <system systemId="http://schemas.xmlsoap.org/soap/envelope/" uri="envelope.xsd"/> 
+    -->
+</catalog>
