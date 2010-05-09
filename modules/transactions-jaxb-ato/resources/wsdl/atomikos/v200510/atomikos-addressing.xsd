@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://www.atomikos.com/schemas/2005/10/transactions"
+    xmlns:ato="http://www.atomikos.com/schemas/2005/10/transactions"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    elementFormDefault="qualified" version="1.0">
+      <!-- Address type, needed for referencing a participant or a coordinator -->
+    <xs:complexType name="AddressType">
+        <xs:sequence>
+            <!-- EndPoint is missing if the address is incomplete. -->
+            <!-- This can be the case in extent references. -->
+            <xs:element name="EndPoint" type="xs:anyURI" minOccurs="0"/>
+            <xs:element name="Reference" type="xs:anyURI"/>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>

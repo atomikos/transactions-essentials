@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+(c) 2001-2005 Arjuna Technologies Ltd., BEA Systems, International Business Machines Corporation, Hitachi Ltd., IONA Technologies, Microsoft Corporation, Inc. All rights reserved.
+Permission to copy and display the "Web Services Coordination" Specification (the "Specification", which includes WSDL and schema documents), in any medium without fee or royalty is hereby granted, provided that you include the following on ALL copies of the "Web Services Coordination" Specification that you make:
+1.  A link or URL to the "Web Services Coordination" Specification at one of the Authors' websites
+2. The copyright notice as shown in the "Web Services Coordination" Specification.
+Arjuna, BEA, Hitachi, IBM, IONA and Microsoft (collectively, the "Authors") each agree to grant you a license, under royalty-free and otherwise reasonable, non-discriminatory terms and conditions, to their respective essential patent claims that they deem necessary to implement the "Web Services Coordination" Specification.
+THE "WEB SERVICES COORDINATION" SPECIFICATION IS PROVIDED "AS IS," AND THE AUTHORS MAKE NO REPRESENTATIONS OR WARRANTIES, EXPRESS OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT, OR TITLE; THAT THE CONTENTS OF THE "WEB SERVICES COORDINATION" SPECIFICATION ARE SUITABLE FOR ANY PURPOSE; NOR THAT THE IMPLEMENTATION OF SUCH CONTENTS WILL NOT INFRINGE ANY THIRD PARTY PATENTS, COPYRIGHTS, TRADEMARKS OR OTHER RIGHTS.
+THE AUTHORS WILL NOT BE LIABLE FOR ANY DIRECT, INDIRECT, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF OR RELATING TO ANY USE OR DISTRIBUTION OF THE "WEB SERVICES COORDINATION" SPECIFICATION.
+The name and trademarks of the Authors may NOT be used in any manner, including advertising or publicity pertaining to the "Web Services Coordination" Specification or its contents without specific, written prior permission. Title to copyright in the "Web Services Coordination" Specification will at all times remain with the Authors.
+No other rights are granted by implication, estoppel or otherwise.
+-->
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" 
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" 
+    xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+    xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" 
+    xmlns:wscoor="http://schemas.xmlsoap.org/ws/2004/10/wscoor" 
+    xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+    targetNamespace="http://schemas.xmlsoap.org/ws/2004/10/wscoor">
+        <wsdl:types>
+          <xs:schema>
+            <xs:import
+                namespace='http://schemas.xmlsoap.org/ws/2004/10/wscoor'
+                schemaLocation='wscoor.xsd' />
+            <xs:import
+                namespace='http://schemas.xmlsoap.org/soap/envelope/'
+                 schemaLocation='http://schemas.xmlsoap.org/soap/envelope/'
+                 />
+          </xs:schema>
+        </wsdl:types> 
+    
+   
+      <!-- Addressing (header) messages added by Atomikos -->
+    <wsdl:message name="EndpointReferenceHeader">
+        <wsdl:part name="parameter" element="wsa:EndpointReference"></wsdl:part>
+    </wsdl:message>
+    
+    <wsdl:message name="ToHeader">
+        <wsdl:part name="parameter" element="wsa:To"></wsdl:part>
+    </wsdl:message>
+    
+    <wsdl:message name="MessageIDHeader">
+        <wsdl:part name="parameter" element="wsa:MessageID"></wsdl:part>
+    </wsdl:message>
+    
+     <wsdl:message name="RelatesToHeader">
+        <wsdl:part name="parameter" element="wsa:RelatesTo"></wsdl:part>
+     </wsdl:message>
+    
+     <wsdl:message name="ActionHeader">
+        <wsdl:part name="parameter" element="wsa:Action"></wsdl:part>
+     </wsdl:message>
+    
+      <wsdl:message name="FromHeader">
+        <wsdl:part name="parameter" element="wsa:From"></wsdl:part>
+      </wsdl:message>
+        
+     <wsdl:message name="ReplyToHeader">
+        <wsdl:part name="parameter" element="wsa:ReplyTo"></wsdl:part>
+     </wsdl:message>
+   
+     <wsdl:message name="FaultToHeader">
+        <wsdl:part name="parameter" element="wsa:FaultTo"></wsdl:part>
+     </wsdl:message>
+    
+     <wsdl:message name="FaultMessage">
+         <wsdl:part name="content" element="soapenv:Fault"></wsdl:part>
+     </wsdl:message>
+      
+    
+  <!-- Messages -->
+  <wsdl:message name="CreateCoordinationContext">
+    <wsdl:part name="parameters" element="wscoor:CreateCoordinationContext"/>
+  </wsdl:message>
+  <wsdl:message name="CreateCoordinationContextResponse">
+    <wsdl:part name="parameters" element="wscoor:CreateCoordinationContextResponse"/>
+  </wsdl:message>
+  <wsdl:message name="Register">
+    <wsdl:part name="parameters" element="wscoor:Register"/>
+  </wsdl:message>
+  <wsdl:message name="RegisterResponse">
+    <wsdl:part name="parameters" element="wscoor:RegisterResponse"/>
+  </wsdl:message>
+  <!-- Manditory Asyncronous PortTypes -->
+  <wsdl:portType name="ActivationCoordinatorPortType">
+    <wsdl:operation name="CreateCoordinationContextOperation">
+      <wsdl:input message="wscoor:CreateCoordinationContext"
+        wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wscoor/CreateCoordinationContext"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:portType name="ActivationRequesterPortType">
+    <wsdl:operation name="CreateCoordinationContextResponseOperation">
+      <wsdl:input message="wscoor:CreateCoordinationContextResponse"
+        wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wscoor/CreateCoordinationContextResponse"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:portType name="RegistrationCoordinatorPortType">
+    <wsdl:operation name="RegisterOperation">
+      <wsdl:input message="wscoor:Register"
+        wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wscoor/Register"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:portType name="RegistrationRequesterPortType">
+    <wsdl:operation name="RegisterResponseOperation">
+      <wsdl:input message="wscoor:RegisterResponse"
+        wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wscoor/RegisterResponse"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <!-- Optional Syncronous RPC Port Types -->
+  <wsdl:portType name="ActivationPortTypeRPC">
+    <wsdl:operation name="CreateCoordinationContextOperation">
+      <wsdl:input message="wscoor:CreateCoordinationContext"
+        wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wscoor/CreateCoordinationContext"/>
+      <wsdl:output message="wscoor:CreateCoordinationContextResponse"
+        wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wscoor/CreateCoordinationContextResponse"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:portType name="RegistrationPortTypeRPC">
+    <wsdl:operation name="RegisterOperation">
+      <wsdl:input message="wscoor:Register"
+        wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wscoor/Register"/>
+      <wsdl:output message="wscoor:RegisterResponse"
+        wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wscoor/RegisterResponse"/>
+    </wsdl:operation>
+  </wsdl:portType>
+       <!-- EVERYTHING BELOW WAS ADDED BY Atomikos -->
+    
+    <wsdl:portType name="FaultPortType">
+        <wsdl:operation name="FaultOperation">
+            <wsdl:input message="wscoor:FaultMessage" wsa:Action="http://schemas.xmlsoap.org/ws/2004/10/wscoor/fault"></wsdl:input>
+        </wsdl:operation>
+    </wsdl:portType>
+    
+    <wsdl:binding name="FaultBinding" type="wscoor:FaultPortType">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <wsdl:operation name="FaultOperation">
+            <soap:operation style="document"/>
+            <wsdl:input>
+                <soap:header message="wscoor:ActionHeader" part="parameter" use="literal"></soap:header>
+                <soap:header message="wscoor:ToHeader" part="parameter" use="literal"></soap:header>
+                <soap:header message="wscoor:FromHeader" part="parameter" use="literal"></soap:header>
+                <soap:header message="wscoor:RelatesToHeader" part="parameter" use="literal"></soap:header>
+                <soap:body use="literal"/>
+            </wsdl:input>
+        </wsdl:operation>
+    </wsdl:binding>
+    
+    <wsdl:binding name="ActivationRequesterBinding" type="wscoor:ActivationRequesterPortType">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <wsdl:operation name="CreateCoordinationContextResponseOperation">
+            <soap:operation style="document"/>
+            <wsdl:input>
+                <soap:header message="wscoor:ActionHeader" part="parameter" use="literal"></soap:header>
+                <soap:header message="wscoor:ToHeader" part="parameter" use="literal"></soap:header>
+                <soap:header message="wscoor:FromHeader" part="parameter" use="literal"></soap:header>
+                <soap:header message="wscoor:RelatesToHeader" part="parameter" use="literal"></soap:header>
+                <soap:body use="literal"/>
+            </wsdl:input>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="ActivationCoordinatorBinding" type="wscoor:ActivationCoordinatorPortType">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <wsdl:operation name="CreateCoordinationContextOperation">
+            <soap:operation style="document"/>
+            <wsdl:input>
+                <soap:header message="wscoor:ActionHeader" part="parameter" use="literal"></soap:header>
+                <soap:header message="wscoor:ToHeader" part="parameter" use="literal"></soap:header>
+                <soap:header message="wscoor:FromHeader" part="parameter" use="literal"></soap:header>
+                <soap:header message="wscoor:ReplyToHeader" part="parameter" use="literal"></soap:header>
+                <soap:header message="wscoor:MessageIDHeader" part="parameter" use="literal"></soap:header>
+                <soap:body use="literal"/>
+            </wsdl:input>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="RegistrationCoordinatorBinding" type="wscoor:RegistrationCoordinatorPortType">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <wsdl:operation name="RegisterOperation">
+            <soap:operation style="document"/>
+            <wsdl:input>
+                <soap:header message="wscoor:ActionHeader" part="parameter" use="literal"></soap:header>
+                <soap:header message="wscoor:ToHeader" part="parameter" use="literal"></soap:header>
+                <soap:header message="wscoor:FromHeader" part="parameter" use="literal"></soap:header>
+                <soap:header message="wscoor:ReplyToHeader" part="parameter" use="literal"></soap:header>
+                <soap:header message="wscoor:MessageIDHeader" part="parameter" use="literal"></soap:header>
+                <soap:body use="literal"/>
+            </wsdl:input>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="RegistrationRequesterBinding" type="wscoor:RegistrationRequesterPortType">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <wsdl:operation name="RegisterResponseOperation">
+            <soap:operation style="document"/>
+            <wsdl:input>
+                <soap:header message="wscoor:ActionHeader" part="parameter" use="literal"></soap:header>
+                <soap:header message="wscoor:ToHeader" part="parameter" use="literal"></soap:header>
+                <soap:header message="wscoor:FromHeader" part="parameter" use="literal"></soap:header>
+                <soap:header message="wscoor:RelatesToHeader" part="parameter" use="literal"></soap:header>
+                <soap:body use="literal"/>
+            </wsdl:input>
+        </wsdl:operation>
+    </wsdl:binding>
+    <!-- Add a service to make sure that tools generate easy stub handling for client -->
+    
+        <wsdl:service name="FaultService">
+        <wsdl:port name="FaultPort" binding="wscoor:FaultBinding">
+            <!-- Following is fake address to keep the WSDL tools and generators happy -->
+            <soap:address location="http://www.atomikos.com/fault"/>
+        </wsdl:port>
+        
+    </wsdl:service>
+    <wsdl:service name="CoordinationService">
+        <wsdl:port name="RegistrationCoordinatorPort" binding="wscoor:RegistrationCoordinatorBinding">
+            <!-- Following is fake address to keep the WSDL tools and generators happy -->
+            <soap:address location="http://www.atomikos.com/registration/coordinator"/>
+        </wsdl:port>
+        
+    </wsdl:service>
+    
+    <wsdl:service name="ActivationService">
+         <wsdl:port name="ActivationCoordinatorPort" binding="wscoor:ActivationCoordinatorBinding">
+            <!-- Following is fake address to keep the WSDL tools and generators happy -->
+            <soap:address location="http://www.atomikos.com/activation/coordinator"/>
+        </wsdl:port>
+    </wsdl:service>
+    
+    <wsdl:service name="ActivationRequesterService">
+        <wsdl:port name="ActivationRequesterPort" binding="wscoor:ActivationRequesterBinding">
+            <!-- Following is fake address to keep the WSDL tools and generators happy -->
+            <soap:address location="http://www.atomikos.com/activation/requester"/>
+        </wsdl:port>
+       
+    </wsdl:service>  
+    
+        <wsdl:service name="RegistrationRequesterService">
+        <wsdl:port name="RegistrationRequesterPort" binding="wscoor:RegistrationRequesterBinding">
+            <!-- Following is fake address to keep the WSDL tools and generators happy -->
+            <soap:address location="http://www.atomikos.com/registration/requester"/>
+        </wsdl:port>
+        </wsdl:service> 
+            
+        <wsdl:service name="RegistrationCoordinatorService">
+        <wsdl:port name="RegistrationCoordinatorPort" binding="wscoor:RegistrationCoordinatorBinding">
+            <!-- Following is fake address to keep the WSDL tools and generators happy -->
+            <soap:address location="http://www.atomikos.com/registration/coordinator"/>
+        </wsdl:port>
+       
+    </wsdl:service> 
+     
+    
+</wsdl:definitions>

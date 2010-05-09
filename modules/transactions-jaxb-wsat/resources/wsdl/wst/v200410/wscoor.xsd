@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+(c) 2001-2005 Arjuna Technologies, BEA Systems, Hitachi Ltd., International Business Machines Corporation, IONA Technologies, Microsoft Corporation, Inc. All rights reserved.
+Permission to copy and display the "Web Services Coordination" Specification (the "Specification", which includes WSDL and schema documents), in any medium without fee or royalty is hereby granted, provided that you include the following on ALL copies of the "Web Services Coordination" Specification that you make:
+1.  A link or URL to the "Web Services Coordination" Specification at one of the Authors' websites
+2. The copyright notice as shown in the "Web Services Coordination" Specification.
+Arjuna, BEA, Hitachi, IBM, IONA and Microsoft (collectively, the "Authors") each agree to grant you a license, under royalty-free and otherwise reasonable, non-discriminatory terms and conditions, to their respective essential patent claims that they deem necessary to implement the "Web Services Coordination" Specification.
+THE "WEB SERVICES COORDINATION" SPECIFICATION IS PROVIDED "AS IS," AND THE AUTHORS MAKE NO REPRESENTATIONS OR WARRANTIES, EXPRESS OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT, OR TITLE; THAT THE CONTENTS OF THE "WEB SERVICES COORDINATION" SPECIFICATION ARE SUITABLE FOR ANY PURPOSE; NOR THAT THE IMPLEMENTATION OF SUCH CONTENTS WILL NOT INFRINGE ANY THIRD PARTY PATENTS, COPYRIGHTS, TRADEMARKS OR OTHER RIGHTS.
+THE AUTHORS WILL NOT BE LIABLE FOR ANY DIRECT, INDIRECT, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF OR RELATING TO ANY USE OR DISTRIBUTION OF THE "WEB SERVICES COORDINATION" SPECIFICATION.
+The name and trademarks of the Authors may NOT be used in any manner, including advertising or publicity pertaining to the "Web Services Coordination" Specification or its contents without specific, written prior permission. Title to copyright in the "Web Services Coordination" Specification will at all times remain with the Authors.
+No other rights are granted by implication, estoppel or otherwise.
+-->
+<xsd:schema targetNamespace="http://schemas.xmlsoap.org/ws/2004/10/wscoor" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:wscoor="http://schemas.xmlsoap.org/ws/2004/10/wscoor" xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0">
+  <xsd:import namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing" schemaLocation="http://schemas.xmlsoap.org/ws/2004/08/addressing"/>
+  <xsd:element name="Expires">
+    <xsd:complexType>
+      <xsd:simpleContent>
+        <xsd:extension base="xsd:unsignedInt">
+          <xsd:anyAttribute namespace="##other"/>
+        </xsd:extension>
+      </xsd:simpleContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:complexType name="CoordinationContextType">
+    <xsd:sequence>
+      <xsd:element name="Identifier">
+        <xsd:complexType>
+          <xsd:simpleContent>
+            <xsd:extension base="xsd:anyURI">
+              <xsd:anyAttribute namespace="##other"/>
+            </xsd:extension>
+          </xsd:simpleContent>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element ref="wscoor:Expires" minOccurs="0"/>
+      <xsd:element name="CoordinationType" type="xsd:anyURI"/>
+      <xsd:element name="RegistrationService" type="wsa:EndpointReferenceType"/>
+    </xsd:sequence>
+    <xsd:anyAttribute namespace="##other" processContents="lax"/>
+  </xsd:complexType>
+  <xsd:element name="CoordinationContext">
+    <xsd:complexType>
+      <xsd:complexContent>
+        <xsd:extension base="wscoor:CoordinationContextType">
+          <xsd:sequence>
+            <xsd:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+          </xsd:sequence>
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:complexType name="CreateCoordinationContextType">
+    <xsd:sequence>
+      <xsd:element ref="wscoor:Expires" minOccurs="0"/>
+      <xsd:element name="CurrentContext" minOccurs="0">
+        <xsd:complexType>
+          <xsd:complexContent>
+            <xsd:extension base="wscoor:CoordinationContextType">
+              <xsd:sequence>
+                <xsd:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+              </xsd:sequence>
+            </xsd:extension>
+          </xsd:complexContent>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="CoordinationType" type="xsd:anyURI"/>
+      <xsd:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:anyAttribute namespace="##other" processContents="lax"/>
+  </xsd:complexType>
+  <xsd:element name="CreateCoordinationContext" type="wscoor:CreateCoordinationContextType"/>
+  <xsd:complexType name="CreateCoordinationContextResponseType">
+    <xsd:sequence>
+      <xsd:element ref="wscoor:CoordinationContext"/>
+      <xsd:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:anyAttribute namespace="##other" processContents="lax"/>
+  </xsd:complexType>
+  <xsd:element name="CreateCoordinationContextResponse" type="wscoor:CreateCoordinationContextResponseType"/>
+  <xsd:complexType name="RegisterType">
+    <xsd:sequence>
+      <xsd:element name="ProtocolIdentifier" type="xsd:anyURI"/>
+      <xsd:element name="ParticipantProtocolService" type="wsa:EndpointReferenceType"/>
+      <xsd:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:anyAttribute namespace="##other" processContents="lax"/>
+  </xsd:complexType>
+  <xsd:element name="Register" type="wscoor:RegisterType"/>
+  <xsd:complexType name="RegisterResponseType">
+    <xsd:sequence>
+      <xsd:element name="CoordinatorProtocolService" type="wsa:EndpointReferenceType"/>
+      <xsd:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:anyAttribute namespace="##other" processContents="lax"/>
+  </xsd:complexType>
+  <xsd:element name="RegisterResponse" type="wscoor:RegisterResponseType"/>
+  <xsd:simpleType name="ErrorCodes">
+    <xsd:restriction base="xsd:QName">
+      <xsd:enumeration value="wscoor:AlreadyRegistered"/>
+      <xsd:enumeration value="wscoor:ContextRefused"/>
+      <xsd:enumeration value="wscoor:InvalidParameters"/>
+      <xsd:enumeration value="wscoor:InvalidProtocol"/>
+      <xsd:enumeration value="wscoor:InvalidState"/>
+      <xsd:enumeration value="wscoor:NoActivity"/>
+      </xsd:restriction>
+  </xsd:simpleType>
+</xsd:schema>

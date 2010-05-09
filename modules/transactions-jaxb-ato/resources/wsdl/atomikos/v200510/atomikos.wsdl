@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- 
+    This file contains the specification of the transactional messages
+    exchanged as part of the Atomikos Transactions (TM) protocol for 
+    transactions and activities that span different web services.
+    
+    COPYRIGHT (C) 2001-2005, ATOMIKOS. ALL RIGHTS RESERVED.     
+-->
+ 
+<wsdl:definitions targetNamespace="http://www.atomikos.com/schemas/2005/10/transactions" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/"
+ xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+ xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+ xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xmlns:ato="http://www.atomikos.com/schemas/2005/10/transactions">
+   
+    <wsdl:types>
+        <xs:schema>
+            <xs:import namespace="http://www.atomikos.com/schemas/2005/10/transactions" schemaLocation="atomikos-termination.xsd" />
+            <xs:import namespace="http://www.atomikos.com/schemas/2005/10/transactions" schemaLocation="atomikos-propagation.xsd" />
+           
+        </xs:schema>
+    </wsdl:types>
+    
+    <!--      
+        NOTES:     
+        -No Synchronization ports are here because each Atomikos component
+         will have its own TM; only 2PC is co-ordinated via SOAP.   
+        -No registration port for Participants is provided since this is 
+         done intra-VM by SOAP request handlers. This implies that the
+         response of a transactional request should contain the AddressType
+         contents of the Participant to register.
+    -->
+
+    
+ 
+  
+    <!-- 
+        Header to add to outgoing application-level messages at the sender. (Done by Atomikos SOAP handlers.) 
+        This information serves to reconstruct the transaction at the receiver side.
+    -->
+    <wsdl:message name="PropagationHeader">
+        <wsdl:part name="Propagation" element="ato:Propagation"></wsdl:part>
+    </wsdl:message>
+    
+    <!-- 
+        Header to add to returning application-level messages. (Done by Atomikos SOAP handlers.) 
+        This information serves to register the remote work as part of the global transaction.
+    -->
+    <wsdl:message name="ExtentHeader">
+        <wsdl:part name="Extent" element="ato:Extent"></wsdl:part>
+    </wsdl:message>
+    
+    <!-- 
+        Below are Atomikos-specific messages; these are exchanged out-of-band 
+        by the transaction services at sender and receiver side (during commit/rollback processing). 
+    -->
+     
+    
+    
+    <wsdl:message name="PrepareRequestMessage">
+        <wsdl:part name="PrepareRequestContent" element="ato:Prepare"></wsdl:part>
+    </wsdl:message>
+    
+    <wsdl:message name="PrepareResponseMessage">
+        <wsdl:part name="PrepareResponseContent" element="ato:Prepared"></wsdl:part>
+    </wsdl:message>
+    
+    <wsdl:message name="CommitMessage">
+        <wsdl:part name="CommitContent" element="ato:Commit"></wsdl:part>
+    </wsdl:message>
+    
+    <wsdl:message name="StateMessage">
+        <wsdl:part name="StateContent" element="ato:State"></wsdl:part>
+    </wsdl:message>
+    
+    <wsdl:message name="RollbackMessage">
+         <wsdl:part name="RollbackContent" element="ato:Rollback"></wsdl:part>
+    </wsdl:message>
+    
+    <wsdl:message name="ForgetMessage">
+        <wsdl:part name="ForgetContent" element="ato:Forget"></wsdl:part>
+    </wsdl:message>
+        
+    <wsdl:message name="ReplayMessage">
+        <wsdl:part name="ReplayContent" element="ato:Replay"></wsdl:part>
+    </wsdl:message>
+    
+    <wsdl:message name="ErrorMessage">
+        <wsdl:part name="ErrorContent" element="ato:Error"></wsdl:part>
+    </wsdl:message>
+    
+    
+    
+    <wsdl:portType name="ParticipantPortType">
+        <wsdl:operation name="prepare">
+            <wsdl:input message="ato:PrepareRequestMessage"></wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="commit">
+            <wsdl:input message="ato:CommitMessage"></wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="rollback">
+            <wsdl:input message="ato:RollbackMessage"></wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="forget">
+            <wsdl:input message="ato:ForgetMessage"></wsdl:input>
+        </wsdl:operation>
+        
+    </wsdl:portType>
+    
+    <wsdl:portType name="CoordinatorPortType">
+        <wsdl:operation name="prepared">
+            <wsdl:input message="ato:PrepareResponseMessage"></wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="participantStateNotification">
+            <wsdl:input message="ato:StateMessage"></wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="participantErrorNotification">
+            <wsdl:input message="ato:ErrorMessage"></wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="replayCompletion">
+            <wsdl:input message="ato:ReplayMessage"></wsdl:input>
+        </wsdl:operation>
+    </wsdl:portType>
+    
+    <wsdl:binding name="ParticipantBinding" type="ato:ParticipantPortType">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <wsdl:operation name="prepare">
+            
+            <soap:operation style="document"/>
+            <wsdl:input>
+               
+               <soap:body use="literal"/>
+            </wsdl:input>
+        </wsdl:operation>
+        
+        <wsdl:operation name="commit">
+            <soap:operation style="document"/>
+            <wsdl:input>
+               <soap:body use="literal"/>
+            </wsdl:input>
+        </wsdl:operation>
+        
+        <wsdl:operation name="rollback">
+            <soap:operation style="document"/>
+            <wsdl:input>
+               <soap:body use="literal"/>
+            </wsdl:input>
+        </wsdl:operation>
+        
+        <wsdl:operation name="forget">
+            <soap:operation style="document"/>
+            <wsdl:input>
+               <soap:body use="literal"/>
+            </wsdl:input>
+        </wsdl:operation>
+        
+    </wsdl:binding>
+    
+    <wsdl:binding name="CoordinatorBinding" type="ato:CoordinatorPortType">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        
+        <wsdl:operation name="prepared">
+            <soap:operation style="document"/>
+            <wsdl:input>
+               <soap:body use="literal"/>
+            </wsdl:input>
+        </wsdl:operation>
+        
+        <wsdl:operation name="participantStateNotification">
+            <soap:operation style="document"/>
+            <wsdl:input>
+               <soap:body use="literal"/>
+            </wsdl:input>
+        </wsdl:operation>
+        
+        <wsdl:operation name="participantErrorNotification">
+            <soap:operation style="document"/>
+            <wsdl:input>
+               <soap:body use="literal"/>
+            </wsdl:input>
+        </wsdl:operation>
+        
+        <wsdl:operation name="replayCompletion">
+            <soap:operation style="document"/>
+            
+            <wsdl:input>
+               
+               <soap:body use="literal"/>
+            </wsdl:input>
+        </wsdl:operation>
+        
+    </wsdl:binding>
+    
+    <!-- Add a service to make sure that tools generate easy stub handling for client -->
+    <wsdl:service name="TransactionService">
+        <wsdl:port name="ParticipantPort" binding="ato:ParticipantBinding">
+            <!-- Following is fake address to keep the WSDL tools and generators happy -->
+            <soap:address location="http://www.atomikos.com/participant"/>
+        </wsdl:port>
+        <wsdl:port name="CoordinatorPort" binding="ato:CoordinatorBinding">
+            <!-- Following is fake address to keep the WSDL tools and generators happy -->
+            <soap:address location="http://www.atomikos.com/coordinator"/>
+        </wsdl:port>
+    </wsdl:service>
+        
+</wsdl:definitions>

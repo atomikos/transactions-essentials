@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package name="com">
+    <package name="atomikos">
+        <package name="icatch">
+       		<package name="jca">
+        			<class>InboundTransaction</class>
+        			<class>TransactionInflowHelper</class>
+        		</package>
+        		<package name="trmi">
+        			<class>UserTransactionServiceFactory</class>
+        		</package>
+        </package>
+    </package>
+</package>
