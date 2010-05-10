@@ -1,93 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.atomikos</groupId>
-	<artifactId>transactions-essentials-parent</artifactId>
-	<version>3.6.4-SNAPSHOT</version>
-	<packaging>pom</packaging>
-	<url>http://www.atomikos.com/Main/AtomikosCommunity</url>
-	<licenses>
-		<license>
-			<name>The Apache Software License, Version 2.0</name>
-			<url> http://www.atomikos.com/licenses/apache-license-2.0.txt</url>
-			<distribution>repo</distribution>
-		</license>
-	</licenses>
-	<organization>
-		<name>Atomikos</name>
-		<url>http://www.atomikos.com</url>
-	</organization>
-	<description>
-        Atomikos TransactionsEssentials: open source JTA/XA 
-    </description>
-	<scm>
-		<connection>scm:svn:svn://209.85.27.118:9005/transactions-essentials</connection>
-		<url>http://www.atomikos.com</url>
-	</scm>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-	<build>
-		<sourceDirectory>src</sourceDirectory>
-		<testSourceDirectory>test</testSourceDirectory>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>2.3</version>
-				<configuration>
-					<archive>
-						<manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
-					</archive>
-				</configuration>
-			</plugin>
+    <parent>
+        <groupId>com.atomikos</groupId>
+        <artifactId>atomikos-parent</artifactId>
+        <version>3.7.0-SNAPSHOT</version>
+        
+    </parent>
 
-			<plugin>
-				<groupId>org.apache.felix</groupId>
-				<artifactId>maven-bundle-plugin</artifactId>
-				<version>2.0.1</version>
-				<extensions>true</extensions>
-				<executions>
-					<execution>
-						<id>bundle-manifest</id>
-						<phase>process-classes</phase>
-						<goals>
-							<goal>manifest</goal>
+    <groupId>com.atomikos</groupId>
+    <artifactId>ate</artifactId>
+    <version>3.7.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>Atomikos Transactions Essentials  ${project.version}</name>
 
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.6.1</version>
-				<!--
-					<configuration> <show>private</show> <nohelp>true</nohelp>
-					</configuration>
-				-->
-			</plugin>
+    <modules>
+        <module>util</module>
+        <module>transactions-api</module>
+        <module>transactions</module>
+        <module>transactions-jta</module>
+        <module>transactions-jdbc</module>
+        <module>transactions-jms</module>
+        <module>transactions-all</module>
+    </modules>
 
-		</plugins>
-	</build>
-	<modules>
-		<module>util</module>
-		<module>transactions-api</module>
-		<module>transactions</module>
-		<module>transactions-jta</module>
-		<module>transactions-jdbc</module>
-		<module>transactions-jms</module>
-		<module>transactions-jdbc-deprecated</module>
-		<module>transactions-jms-deprecated</module>
-		<module>transactions-hibernate2</module>
-		<module>transactions-hibernate3</module>
-	</modules>
-	<dependencies>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>3.8.2</version>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
 
 </project>

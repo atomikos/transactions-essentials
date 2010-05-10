@@ -5,11 +5,11 @@
  <parent>
 		<groupId>com.atomikos</groupId>
 		<artifactId>transactions-essentials-parent</artifactId>
-		<version>3.6.4-SNAPSHOT</version>
+		<version>3.7.0-SNAPSHOT</version>
 	</parent>
 	<groupId>com.atomikos</groupId>
 	<artifactId>transactions-jdbc</artifactId>
-	<version>3.6.4-SNAPSHOT</version>
+	<version>3.7.0-SNAPSHOT</version>
 	<name>Transactions JDBC</name>
 	<build>
 		<plugins>
@@ -29,42 +29,42 @@
 		<!--<dependency>
 			<groupId>com.atomikos</groupId>
 			<artifactId>atomikos-util</artifactId>
-			<version>3.6.4-SNAPSHOT</version>
+			<version>3.7.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.atomikos</groupId>
 			<artifactId>transactions-api</artifactId>
-			<version>3.6.4-SNAPSHOT</version>
+			<version>3.7.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.atomikos</groupId>
 			<artifactId>transactions</artifactId>
-			<version>3.6.4-SNAPSHOT</version>
+			<version>3.7.0-SNAPSHOT</version>
 		</dependency>
 		-->
 		<dependency>
 			<groupId>com.atomikos</groupId>
 			<artifactId>transactions-jta</artifactId>
-			<version>3.6.4-SNAPSHOT</version>
+			<version>3.7.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.atomikos</groupId>
 			<artifactId>atomikos-util</artifactId>
-			<version>3.6.4-SNAPSHOT</version>
+			<version>3.7.0-SNAPSHOT</version>
 			<classifier>tests</classifier>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.atomikos</groupId>
 			<artifactId>transactions</artifactId>
-			<version>3.6.4-SNAPSHOT</version>
+			<version>3.7.0-SNAPSHOT</version>
 			<classifier>tests</classifier>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.atomikos</groupId>
 			<artifactId>transactions-jta</artifactId>
-			<version>3.6.4-SNAPSHOT</version>
+			<version>3.7.0-SNAPSHOT</version>
 			<classifier>tests</classifier>
 			<scope>test</scope>
 		</dependency>
