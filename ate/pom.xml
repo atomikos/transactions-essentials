@@ -22,7 +22,9 @@
         <module>transactions-jta</module>
         <module>transactions-jdbc</module>
         <module>transactions-jms</module>
+	<!--
         <module>transactions-all</module>
+	-->
     </modules>
 
 
