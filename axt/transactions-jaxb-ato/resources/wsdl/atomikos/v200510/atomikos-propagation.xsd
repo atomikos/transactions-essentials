@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://www.atomikos.com/schemas/2005/10/transactions"
+    xmlns:ato="http://www.atomikos.com/schemas/2005/10/transactions"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    elementFormDefault="qualified" version="1.0" 
+    >
+
+    <xs:include schemaLocation="atomikos-addressing.xsd"></xs:include>
+    
+    <xs:element name="Propagation" type="ato:PropagationType"/>
+    <xs:element name="Extent" type="ato:ExtentType"/>
+    
+       <!-- 
+             The following type specifies the information that is typically
+             transferred as headers in outgoing calls (by the Atomikos SOAP handlers).
+             This information serves to re-construct the transaction at the remote 
+             site.
+        -->
+    <xs:complexType name="PropagationType">
+        <xs:sequence>
+            <xs:element name="Root" type="xs:string"/>
+            <xs:element name="Tid" type="xs:string"/>
+            <xs:element name="Timeout" type="xs:long"/>
+            <xs:element name="Serial" type="xs:boolean"/>
+            <xs:element name="Coordinator" type="ato:AddressType"/>
+            <xs:element name="Properties" type="ato:PropertiesType" minOccurs="0"/>
+        </xs:sequence>
+        <xs:anyAttribute namespace="##other"/>
+    </xs:complexType>
+    <!-- 
+             The following type specifies the information that is typically
+             transferred as headers in returning calls (by the Atomikos SOAP handlers).
+             This information serves to register the remote call as part of two-phase 
+             commit termination at the sender's side.
+        -->
+    <xs:complexType name="ExtentType">
+        <xs:sequence>
+            <!-- One entry for each participant. -->
+            <xs:element name="ExtentInfo" type="ato:ExtentElementType" minOccurs="1" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <!-- The following attribute specifies the parent transaction at the sender. -->
+        <xs:attribute name="tid" use="required"/>
+        <xs:anyAttribute namespace="##other"/>
+    </xs:complexType>
+    <xs:complexType name="ExtentElementType">
+        <xs:sequence>
+            <!-- 
+                The participant's reference. NOTE: if the participant is only there for
+                orphan checking (and hence needs NO registration for 2PC) then the
+                address Endpoint element is empty.
+            -->
+            <xs:element name="Participant" type="ato:AddressType"/>
+            <!-- The count of invocations detected by that participant. -->
+            <xs:element name="Count" type="xs:int"/>
+            <!-- Information to resolve any later heuristic problems. -->
+            <xs:element name="HeuristicInfo" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="PropertiesType">
+    		<xs:sequence>
+    			<xs:element name="Property" type="ato:PropertyType" minOccurs="1" maxOccurs="unbounded"/>
+    		</xs:sequence>
+    </xs:complexType>
+    	
+    <xs:complexType name="PropertyType">
+    		<xs:sequence>
+    			<xs:element name="Name" type="xs:string"/>
+    			<xs:element name="Value" type="xs:string"/>
+    		</xs:sequence>
+    </xs:complexType>
+</xs:schema>

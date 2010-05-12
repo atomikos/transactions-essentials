@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://www.atomikos.com/schemas/2005/10/transactions"
+    xmlns:ato="http://www.atomikos.com/schemas/2005/10/transactions"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    elementFormDefault="qualified" version="1.0">
+    
+    <xs:include schemaLocation="atomikos-addressing.xsd"></xs:include>
+
+    <xs:element name="Prepare" type="ato:PrepareMessageType"/>
+    <xs:element name="Prepared" type="ato:PreparedMessageType"/>
+    <xs:element name="Commit" type="ato:CommitMessageType"/>
+    <xs:element name="State" type="ato:StateMessageType"/>
+    <xs:element name="Rollback" type="ato:TransactionMessageType"/>
+    <xs:element name="Error" type="ato:ErrorMessageType"/>
+    <xs:element name="Replay" type="ato:TransactionMessageType"/>
+    <xs:element name="Forget" type="ato:TransactionMessageType"/>
+ 
+    <!-- Base type of all 2PC transaction messages -->
+    <xs:complexType name="TransactionMessageType">
+        <xs:sequence>
+            <xs:element name="Target" type="ato:AddressType"/>
+            <xs:element name="Sender" type="ato:AddressType"/>
+        </xs:sequence>
+    </xs:complexType>
+  
+    <xs:complexType name="CascadeInfoType">
+        <xs:sequence>
+            <xs:element name="Participant" type="xs:anyURI"/>
+            <xs:element name="InvocationCount" type="xs:integer"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:simpleType name="ErrorCodeType">
+        <xs:restriction base="xs:integer">
+            <!-- Active transaction has been rolled back -->
+            <xs:enumeration value="0"/>
+            <!-- Heuristic hazard error -->
+            <xs:enumeration value="1"/>
+            <!-- Heuristic mixed error -->
+            <xs:enumeration value="2"/>
+            <!-- Heuristic commit error -->
+            <xs:enumeration value="3"/>
+            <!-- Heuristic rollback error -->
+            <xs:enumeration value="4"/>
+            <!-- Unknown error -->
+            <xs:enumeration value="5"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <!-- Information sent by a prepare message -->
+    <xs:complexType name="PrepareMessageType">
+        <xs:complexContent>
+            <xs:extension base="ato:TransactionMessageType">
+                <xs:sequence>
+                    <xs:element name="CascadeInfo" type="ato:CascadeInfoType" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <!-- Information sent by a commit message -->
+    <xs:complexType name="CommitMessageType">
+        <xs:complexContent>
+            <xs:extension base="ato:TransactionMessageType">
+                <xs:attribute name="onePhase" type="xs:boolean" use="required"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <!-- StateMessageType is used for both the participant recovery (replay response) and 
+             for the responses sent to the coordinator upon commit/rollback instructions -->
+    <xs:complexType name="StateMessageType">
+        <xs:complexContent>
+            <xs:extension base="ato:TransactionMessageType">
+                <!-- committed flag attribute is optional: none means no commit/rollback yet -->
+                <xs:attribute name="committed" use="optional" type="xs:boolean"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <!-- Information sent for a variety of error conditions -->
+    <xs:complexType name="ErrorMessageType">
+        <xs:complexContent>
+            <xs:extension base="ato:TransactionMessageType">
+                <!--
+                    <xs:sequence> 
+                        <xs:element name="HeuristicInfo" type="xs:string" minOccurs="0" maxOccurs="unbounded"></xs:element>
+                    </xs:sequence>
+                    -->
+                <xs:attribute name="errorCode" use="required" type="ato:ErrorCodeType"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <!-- Information sent by a prepared confirmation -->
+    <xs:complexType name="PreparedMessageType">
+        <xs:complexContent>
+            <xs:extension base="ato:TransactionMessageType">
+                <xs:attribute name="readOnly" use="required" type="xs:boolean"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+</xs:schema>

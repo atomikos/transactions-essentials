@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package name="com">
+    <package name="atomikos">
+        <package name="icatch">
+       		<package name="ws">
+			<package name="j2ee">
+       			<class>ApplicationClasspathRecoveryListener</class>
+			</package>
+			<class>ApplicationClasspathResource</class>
+			<class>ApplicationClasspathResourceTSListener</class>
+       		</package>
+        </package>
+    </package>
+</package>
