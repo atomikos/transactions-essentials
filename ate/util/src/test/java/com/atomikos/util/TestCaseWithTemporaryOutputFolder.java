@@ -7,7 +7,7 @@ import junit.framework.TestCase;
 public abstract class TestCaseWithTemporaryOutputFolder extends TestCase 
 {
 
-    private static final String DEFAULT_OUTPUT_DIR = "testoutput";
+    private static final String DEFAULT_OUTPUT_DIR = "./target/testoutput";
 	private static int globalcounter = 0;
 
 	private static synchronized int getNextCounterValue() {
