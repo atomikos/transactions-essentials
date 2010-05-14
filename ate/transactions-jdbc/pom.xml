@@ -13,7 +13,7 @@
     <artifactId>transactions-jdbc</artifactId>
     <version>3.7.0-SNAPSHOT</version>
     <name>Transactions JDBC</name>
-    
+
     <build>
         <plugins>
             <plugin>
@@ -71,6 +71,11 @@
             <classifier>tests</classifier>
             <scope>test</scope>
         </dependency>
-
+        <dependency>
+            <groupId>hsqldb</groupId>
+            <artifactId>hsqldb</artifactId>
+            <version>1.6.1</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>
