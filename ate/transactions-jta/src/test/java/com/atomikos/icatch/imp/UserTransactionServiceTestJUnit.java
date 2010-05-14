@@ -95,8 +95,8 @@ public class UserTransactionServiceTestJUnit extends TransactionServiceTestCase
 		File outputDir = new File ( getTemporaryOutputDir() );
 		String consoleFilePath = outputDir + File.separator + consoleFileName;
 		
-		p.setProperty ( AbstractUserTransactionServiceFactory.OUTPUT_DIR_PROPERTY_NAME , outputDir.getName() + File.separator );
-		
+		p.setProperty ( AbstractUserTransactionServiceFactory.OUTPUT_DIR_PROPERTY_NAME , outputDir.getAbsolutePath() + File.separator );
+
 		String logDirName = getTemporaryOutputDir() + File.separator;
 		File logDir = new File ( logDirName );
 		String logBaseName = "logFileTestSetProperties";
