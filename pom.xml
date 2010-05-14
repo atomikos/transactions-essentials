@@ -54,6 +54,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <redirectTestOutputToFile>true</redirectTestOutputToFile>
+                    <argLine>-Xmx1024m</argLine>
                     <includes>
                         <!-- not sure this is very usefull... -->
                         <include>**/*TestJUnit.java</include>
