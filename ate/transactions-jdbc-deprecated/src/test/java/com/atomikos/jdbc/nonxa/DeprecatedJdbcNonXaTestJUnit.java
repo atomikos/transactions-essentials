@@ -56,9 +56,9 @@ public class DeprecatedJdbcNonXaTestJUnit extends TransactionServiceTestCase
 		ds.setUser ( "sa");
 		ds.setPassword ( "");
 		String dir = getTemporaryOutputDir() + "/";
-		String url = "jdbc:HypersonicSQL:" + dir +  "NonXATestDB";
+		String url = "jdbc:hsqldb:" + dir +  "NonXATestDB";
 		ds.setUrl ( url );
-		ds.setDriverClassName ( "org.hsql.jdbcDriver" );
+		ds.setDriverClassName ( "org.hsqldb.jdbcDriver" );
 		
 		//printThreadInfo();
 		
@@ -66,7 +66,7 @@ public class DeprecatedJdbcNonXaTestJUnit extends TransactionServiceTestCase
 
 		testDs.setUniqueResourceName ( "testDS" );
 		testDs.setUrl ( url );
-		testDs.setDriverClassName ( "org.hsql.jdbcDriver" );
+		testDs.setDriverClassName ( "org.hsqldb.jdbcDriver" );
 		testDs.setUser("sa");
 		testDs.setPassword("");
 		testDs.setPoolSize(1);
@@ -366,7 +366,7 @@ public class DeprecatedJdbcNonXaTestJUnit extends TransactionServiceTestCase
 		if ( ! "testName".equals ( bean.getUniqueResourceName())) throw new Exception ( "Bean: jndiName property");
 		
 		String dir = getTemporaryOutputDir() + "/";
-		String url = "jdbc:HypersonicSQL:" + dir +  "NonXATestDB";
+		String url = "jdbc:hsqldb:" + dir +  "NonXATestDB";
 		bean.setUrl ( url );
 		if ( ! url.equals ( bean.getUrl())) throw new Exception ( "Bean: url property");
 		
@@ -376,8 +376,8 @@ public class DeprecatedJdbcNonXaTestJUnit extends TransactionServiceTestCase
 		bean.setPoolSize ( 3);
 		if (  bean.getPoolSize()!= 3 ) throw new Exception ( "Bean: poolSize property");
 		
-		bean.setDriverClassName("org.hsql.jdbcDriver" );
-		if ( !"org.hsql.jdbcDriver".equals (bean.getDriverClassName()))	throw new Exception ( "Bean: driver class name");	
+		bean.setDriverClassName("org.hsqldb.jdbcDriver" );
+		if ( !"org.hsqldb.jdbcDriver".equals (bean.getDriverClassName()))	throw new Exception ( "Bean: driver class name");	
 		
 		bean.setValidatingQuery( "select * from NONXATABLE");
 		if ( ! "select * from NONXATABLE".equals ( bean.getValidatingQuery())) throw new Exception( "Bean: query property");
