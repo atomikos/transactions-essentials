@@ -53,6 +53,7 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
+                    <forkMode>none</forkMode>
 					<includes>
 						<!-- not sure this is very usefull... -->
 						<include>**/*TestJUnit.java</include>
