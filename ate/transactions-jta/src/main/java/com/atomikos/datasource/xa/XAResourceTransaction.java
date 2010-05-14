@@ -430,7 +430,7 @@ public class XAResourceTransaction implements ResourceTransaction,
                 + resource.getName () + "' accessed with Xid '" + xidToHexString (xid_) + "'" ) );
     }
 
-    private static String xidToHexString(Xid xid) {
+     static String xidToHexString(Xid xid) {
     	String gtrid = byteArrayToHexString(xid.getGlobalTransactionId());
     	String bqual = byteArrayToHexString(xid.getBranchQualifier());
     	

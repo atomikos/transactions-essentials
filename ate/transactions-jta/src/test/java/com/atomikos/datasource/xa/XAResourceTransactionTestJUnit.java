@@ -29,29 +29,29 @@ public class XAResourceTransactionTestJUnit extends TestCase
 	public void testXidHexEncoding() throws Exception 
 	{
 		resourceTransaction = new XAResourceTransaction(transactionalResource, compositeTx, "root");
-		//assert equality; NOTE: the pending '1' of the XID hex string depends on the order in which tests are launched!
-		assertEquals("XAResourceTransaction: 746964:746573742D7265736F757263653131", resourceTransaction.toString());
+		String xid = resourceTransaction.xidToHexString ( resourceTransaction.getXid() );
+		assertEquals("XAResourceTransaction: " + xid , resourceTransaction.toString());
 		
 	}
 	
 	public void testHeuristicMessagesIncludeXidInHexFormat() throws Exception
 	{
 		resourceTransaction = new XAResourceTransaction(transactionalResource, compositeTx, "root");
+		String xid = resourceTransaction.xidToHexString ( resourceTransaction.getXid() );
 		assertEquals(1, resourceTransaction.getHeuristicMessages().length);
-		//assert equality; NOTE: the pending '2' of the XID hex string depends on the order in which tests are launched!
-		assertEquals("XA resource 'test-resource1' accessed with Xid '746964:746573742D7265736F757263653132'", resourceTransaction.getHeuristicMessages()[0].toString());
+		assertEquals("XA resource 'test-resource1' accessed with Xid '" + xid + "'", resourceTransaction.getHeuristicMessages()[0].toString());
 	}
 	
 	public void testHeuristicMessagesIncludeExceptionStackTrace() throws Exception
 	{
 		resourceTransaction = new XAResourceTransaction(transactionalResource, compositeTx, "root");
-		resourceTransaction.setXAResource(xaResource);
-		final String reason = "XA resource 'test-resource1': commit for XID '746964:746573742D7265736F757263653133' raised 5: the XA resource has heuristically committed some parts and rolled back other parts";
+		resourceTransaction.setXAResource(xaResource);	
 		resourceTransaction.resume();
 		resourceTransaction.suspend();
 		resourceTransaction.prepare();
 		
-		
+		String xid = resourceTransaction.xidToHexString ( resourceTransaction.getXid() );
+		final String reason = "XA resource 'test-resource1': commit for XID '" + xid + "' raised 5: the XA resource has heuristically committed some parts and rolled back other parts";
 		
 		xaResource.setFailureMode ( TestXAResource.FAIL_COMMIT , new XAException ( XAException.XA_HEURMIX) );
 		try {

@@ -21,7 +21,11 @@
         <module>transactions</module>
         <module>transactions-jta</module>
         <module>transactions-jdbc</module>
+	<module>transactions-jdbc-deprecated</module>
+	<module>transactions-jms-deprecated</module>
         <module>transactions-jms</module>
+	<module>transactions-hibernate2</module>
+	<module>transactions-hibernate3</module>
 	<!--
         <module>transactions-all</module>
 	-->
