@@ -14,48 +14,22 @@
     <name>Transactions JMS Deprecated</name>
 
     <dependencies>
-
+        <dependency>
+            <groupId>com.atomikos</groupId>
+            <artifactId>transactions-jta</artifactId>
+            <version>3.7.0-SNAPSHOT</version>
+        </dependency>
         <!--  requires  HeuristicMessageConsumer-->
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>transactions-jms</artifactId>
             <version>3.7.0-SNAPSHOT</version>
         </dependency>
-        <!--
-          <dependency>
-              <groupId>com.atomikos</groupId>
-              <artifactId>atomikos-util</artifactId>
-              <version>3.7.0-SNAPSHOT</version>
-          </dependency>
-          <dependency>
-              <groupId>com.atomikos</groupId>
-              <artifactId>transactions-api</artifactId>
-              <version>3.7.0-SNAPSHOT</version>
-          </dependency>
-          <dependency>
-              <groupId>com.atomikos</groupId>
-              <artifactId>transactions</artifactId>
-              <version>3.7.0-SNAPSHOT</version>
-          </dependency>
-          <dependency>
-              <groupId>com.atomikos</groupId>
-              <artifactId>transactions-jta</artifactId>
-              <version>3.7.0-SNAPSHOT</version>
-          </dependency>
-          -->
-
-
-        <!--<dependency>
-              <groupId>org.apache.geronimo.specs</groupId>
-              <artifactId>geronimo-jta_1.0.1B_spec</artifactId>
-              <version>1.0.1</version>
-          </dependency>
-          <dependency>
-              <groupId>javax.jms</groupId>
-              <artifactId>jms</artifactId>
-              <version>1.1</version>
-          </dependency>
-      -->
+        <dependency>
+            <groupId>javax.jms</groupId>
+            <artifactId>jms</artifactId>
+            <version>1.1</version>
+        </dependency>
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>atomikos-util</artifactId>

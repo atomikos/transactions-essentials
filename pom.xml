@@ -14,9 +14,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-
     <!--
-         each modules has junit 3.8.1 as dependency under scope "test"
+         each modules has junit 3.8 as dependency under scope "test"
          (non-transitive, not used for compilation but tests)
      -->
     <dependencies>
@@ -27,18 +26,20 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+    
     <!-- see http://maven.apache.org/scm/ -->
-    <!-- scm tag is VERY usefull during the release process  -->
+    <!-- scm tag is VERY useful during the release process  -->
     <scm>
-        <connection>scm:hg:http://v12017.ovh.net:8081</connection>
-        <url>scm:hg:http://v12017.ovh.net:8081</url>
+        <connection>scm:hg:https://atomikos.kilnhg.com/Repo/Repositories/Group/development</connection>
+        <url>scm:hg:https://atomikos.kilnhg.com/Repo/Repositories/Group/development</url>
     </scm>
+    
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <!--  same as "-source 1.4 -target 1.4" for compilation -->
+                <!--  same as "-source 1.5 -target 1.5" for compilation -->
                 <!--
                         see
                         http://maven.apache.org/plugins/maven-compiler-plugin/compile-mojo.html
@@ -56,7 +57,6 @@
                     <redirectTestOutputToFile>true</redirectTestOutputToFile>
                     <argLine>-Xmx1024m</argLine>
                     <includes>
-                        <!-- not sure this is very usefull... -->
                         <include>**/*TestJUnit.java</include>
                     </includes>
                     <!--
@@ -87,10 +87,12 @@
             </plugin>
         </plugins>
     </build>
+
     <!-- "modules" must correspond to file system hierarchy -->
     <modules>
         <module>ate</module>
     </modules>
+    
     <reporting>
         <plugins>
             <!-- obviously cobertura usage must be improved -->

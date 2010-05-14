@@ -28,23 +28,8 @@
             </plugin>
         </plugins>
     </build>
+    
     <dependencies>
-        <!--<dependency>
-              <groupId>com.atomikos</groupId>
-              <artifactId>atomikos-util</artifactId>
-              <version>3.7.0-SNAPSHOT</version>
-          </dependency>
-          <dependency>
-              <groupId>com.atomikos</groupId>
-              <artifactId>transactions-api</artifactId>
-              <version>3.7.0-SNAPSHOT</version>
-          </dependency>
-          <dependency>
-              <groupId>com.atomikos</groupId>
-              <artifactId>transactions</artifactId>
-              <version>3.7.0-SNAPSHOT</version>
-          </dependency>
-          -->
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>transactions-jta</artifactId>
