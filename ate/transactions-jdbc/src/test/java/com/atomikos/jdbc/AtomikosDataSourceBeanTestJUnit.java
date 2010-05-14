@@ -274,7 +274,7 @@ public class AtomikosDataSourceBeanTestJUnit extends TestCase
 		Connection c1 = ds.getConnection();
 		assertEquals(0, ds.poolAvailableSize());
 		
-		Thread.sleep(2000); // reap
+		Thread.sleep(3000); // reap
 		
 		//assertTrue(c1.isClosed());
 		
