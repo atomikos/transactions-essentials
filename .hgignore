@@ -1,6 +1,7 @@
 syntax: glob
 
 target/
+eclipse/
 
 *.iml
 *.ipr
@@ -9,3 +10,4 @@ target/
 .classpath
 .project
 .settings/
+
