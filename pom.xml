@@ -60,9 +60,8 @@
 					<!--
 						this conf is made to ensure that no file wil be created outside
 						the "target" subfolder of the modules
-					-->
-					<!-- If we don't do so, the release process will fail -->
 					<workingDirectory>${project.build.testOutputDirectory}</workingDirectory>
+					-->
 				</configuration>
 			</plugin>
 			<!--
