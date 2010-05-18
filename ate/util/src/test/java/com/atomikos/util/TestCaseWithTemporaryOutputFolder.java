@@ -102,6 +102,10 @@ public abstract class TestCaseWithTemporaryOutputFolder extends TestCase
 	protected String getTemporaryOutputDir() {
 	    return outputDir + "_" + count;
 	}
+	
+	protected String getTemporaryOutputDirAsAbsolutePath() {
+		return new File ( getTemporaryOutputDir() ).getAbsolutePath();
+	}
 
 	private void deleteFiles() {
 	    File outputDir = new File ( getTemporaryOutputDir() );

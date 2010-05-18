@@ -62,7 +62,7 @@ public class JdbcNonXaTestJUnit extends TransactionServiceTestCase
 		ds = new DriverManagerDataSource();
 		ds.setUser ( "sa");
 		ds.setPassword ( "");
-		String dir = getTemporaryOutputDir() + "/";
+		String dir = getTemporaryOutputDirAsAbsolutePath() + "/";
 		String url = "jdbc:hsqldb:" + dir +  "NonXATestDB";
 		ds.setUrl ( url );
 		ds.setDriverClassName ( "org.hsqldb.jdbcDriver" );
@@ -112,8 +112,8 @@ public class JdbcNonXaTestJUnit extends TransactionServiceTestCase
         Properties properties = info.getProperties();        
         properties.setProperty ( 
 				AbstractUserTransactionServiceFactory.TM_UNIQUE_NAME_PROPERTY_NAME , "JdbcTestJUnit" );
-        	properties.setProperty ( AbstractUserTransactionServiceFactory.OUTPUT_DIR_PROPERTY_NAME , getTemporaryOutputDir() );
-        	properties.setProperty ( AbstractUserTransactionServiceFactory.LOG_BASE_DIR_PROPERTY_NAME , getTemporaryOutputDir()
+        	properties.setProperty ( AbstractUserTransactionServiceFactory.OUTPUT_DIR_PROPERTY_NAME , getTemporaryOutputDirAsAbsolutePath() );
+        	properties.setProperty ( AbstractUserTransactionServiceFactory.LOG_BASE_DIR_PROPERTY_NAME , getTemporaryOutputDirAsAbsolutePath()
         	        );
         	properties.setProperty ( AbstractUserTransactionServiceFactory.CONSOLE_LOG_LEVEL_PROPERTY_NAME , "DEBUG" );
         	properties.setProperty ( AbstractUserTransactionServiceFactory.MAX_ACTIVES_PROPERTY_NAME , "25000" );

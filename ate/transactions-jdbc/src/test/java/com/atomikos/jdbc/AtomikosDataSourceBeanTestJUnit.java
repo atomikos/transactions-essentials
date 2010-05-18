@@ -18,25 +18,36 @@ import javax.transaction.UserTransaction;
 import junit.framework.TestCase;
 
 import com.atomikos.datasource.xa.XATransactionalResource;
+import com.atomikos.icatch.config.TSInitInfo;
 import com.atomikos.icatch.config.UserTransactionServiceImp;
+import com.atomikos.icatch.config.imp.AbstractUserTransactionServiceFactory;
+import com.atomikos.icatch.imp.TransactionServiceTestCase;
 import com.atomikos.icatch.system.Configuration;
 import com.atomikos.jdbc.AbstractDataSourceBean;
 import com.atomikos.util.IntraVmObjectFactory;
 import com.atomikos.util.IntraVmObjectRegistry;
 
-public class AtomikosDataSourceBeanTestJUnit extends TestCase 
+public class AtomikosDataSourceBeanTestJUnit extends TransactionServiceTestCase 
 {
+
+	public AtomikosDataSourceBeanTestJUnit(String name) {
+		super(name);
+	}
 
 	private UserTransactionServiceImp uts;
 	private AtomikosDataSourceBean adsb;
 	
-	protected void setUp() throws Exception {
+	protected void setUp() {
 		//start the transaction service
 		uts = new UserTransactionServiceImp();
-		uts.init(uts.createTSInitInfo());
+		TSInitInfo info = uts.createTSInitInfo();
+		Properties p = info.getProperties();
+		p.setProperty ( AbstractUserTransactionServiceFactory.OUTPUT_DIR_PROPERTY_NAME , getTemporaryOutputDirAsAbsolutePath() );
+    	p.setProperty ( AbstractUserTransactionServiceFactory.LOG_BASE_DIR_PROPERTY_NAME , getTemporaryOutputDirAsAbsolutePath());
+		uts.init(info);
 
 		adsb = new AtomikosDataSourceBean();
-		Properties p = new Properties();
+		p = new Properties();
 		p.setProperty ( "lastUser" , "aLastUser" );
 		p.setProperty( "lastPassword", "aLastPassword" );
 		adsb.setXaProperties(p);
