@@ -31,7 +31,7 @@ public class TopicPublisherSessionSimpleTestJUnit extends TestCase
 		session = new TopicPublisherSession();
 		qcfb = new TopicConnectionFactoryBean();
 		qcfb.setXaTopicConnectionFactory(fact);
-		qcfb.setResourceName("TESTQUEUERESOURCE");
+		qcfb.setResourceName(getClass().getSimpleName());
 	}
 	
 	protected void tearDown()

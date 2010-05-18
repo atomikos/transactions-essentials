@@ -1,14 +1,21 @@
 package com.atomikos.jms;
 
+import java.util.Properties;
+
 import javax.jms.ExceptionListener;
 import javax.jms.JMSException;
 import javax.transaction.SystemException;
+
+import com.atomikos.icatch.config.TSInitInfo;
+import com.atomikos.icatch.config.UserTransactionServiceImp;
+import com.atomikos.icatch.config.imp.AbstractUserTransactionServiceFactory;
+import com.atomikos.icatch.imp.TransactionServiceTestCase;
 
 import com.atomikos.datasource.xa.TestXAResource;
 
 import junit.framework.TestCase;
 
-public class QueueReceiverSessionSimpleTestJUnit extends TestCase 
+public class QueueReceiverSessionSimpleTestJUnit extends TransactionServiceTestCase 
 {
 	private static final String USER = "User";
 	private static final String PW = "SECRET";
@@ -16,6 +23,9 @@ public class QueueReceiverSessionSimpleTestJUnit extends TestCase
 	private static final String SELECTOR = "SELECTOR";
 
 	private QueueReceiverSession session;
+	
+	private UserTransactionServiceImp uts;
+	private TSInitInfo info;
 	
 	public QueueReceiverSessionSimpleTestJUnit ( String name ) 
 	{
@@ -25,12 +35,28 @@ public class QueueReceiverSessionSimpleTestJUnit extends TestCase
 	protected void setUp()
 	{
 		session = new QueueReceiverSession();
+		
+		uts =
+            new UserTransactionServiceImp();
+        
+        info = uts.createTSInitInfo();
+        Properties properties = info.getProperties();    
+        properties.setProperty ( 
+				AbstractUserTransactionServiceFactory.TM_UNIQUE_NAME_PROPERTY_NAME , getClass().getName() );
+        properties.setProperty ( AbstractUserTransactionServiceFactory.OUTPUT_DIR_PROPERTY_NAME , getTemporaryOutputDirAsAbsolutePath() );
+        properties.setProperty ( AbstractUserTransactionServiceFactory.LOG_BASE_DIR_PROPERTY_NAME , getTemporaryOutputDirAsAbsolutePath());
+        properties.setProperty ( AbstractUserTransactionServiceFactory.CONSOLE_LOG_LEVEL_PROPERTY_NAME , "DEBUG" );
+        properties.setProperty ( AbstractUserTransactionServiceFactory.MAX_ACTIVES_PROPERTY_NAME , "25000" );
+        uts.init ( info );
 	
 	}
 	
 	protected void tearDown()
 	{
 		session.stopListening();
+		
+		uts.shutdown ( true );
+		super.tearDown();
 	}
 	
 	public void testUser()
@@ -165,7 +191,7 @@ public class QueueReceiverSessionSimpleTestJUnit extends TestCase
 		 TestQueueConnectionFactory fact = new TestQueueConnectionFactory ( xares );         
 		 QueueConnectionFactoryBean qcfb = new QueueConnectionFactoryBean();
 	     qcfb.setXaQueueConnectionFactory ( fact );
-	     qcfb.setResourceName ( "TESTQUEUERESOURCE" );
+	     qcfb.setResourceName ( getClass().getSimpleName() );
 		 session.setQueueConnectionFactoryBean ( qcfb );
 		 TestMessageListener l = new TestMessageListener();
 		 session.setMessageListener ( l );

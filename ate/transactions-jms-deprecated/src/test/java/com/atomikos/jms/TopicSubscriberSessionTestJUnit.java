@@ -58,7 +58,7 @@ extends TransactionServiceTestCase
 		TestTopicConnectionFactory fact = new TestTopicConnectionFactory ( xares );         
         qcfb = new TopicConnectionFactoryBean();
         qcfb.setXaTopicConnectionFactory ( fact );
-        qcfb.setResourceName ( "TESTQUEUERESOURCE" );
+        qcfb.setResourceName ( getClass().getSimpleName() );
 		session.setTopicConnectionFactoryBean ( qcfb );	
 		session.setNotifyListenerOnClose  ( true );
 		listener = new TestMessageListener();

@@ -64,7 +64,7 @@ extends TransactionServiceTestCase {
 		
 		qcfb = new TopicConnectionFactoryBean();
 		qcfb.setXaTopicConnectionFactory(fact);
-		qcfb.setResourceName("TESTQUEUERESOURCE");
+		qcfb.setResourceName(getClass().getSimpleName());
 		session.setDeliveryMode ( DELIVERYMODE );
 		session.setPriority ( PRIORITY );
     		session.setTimeToLive ( TTL );

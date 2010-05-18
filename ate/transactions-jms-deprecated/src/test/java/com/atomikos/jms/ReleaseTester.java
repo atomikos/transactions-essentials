@@ -727,7 +727,7 @@ public class ReleaseTester
 		 fact = new TestQueueConnectionFactory ( xares );         
          QueueConnectionFactoryBean qcfb = new QueueConnectionFactoryBean();
          qcfb.setXaQueueConnectionFactory ( fact );
-         qcfb.setResourceName ( "TESTQUEUERESOURCE" );
+         qcfb.setResourceName ( ReleaseTester.class.getClass().getSimpleName() );
 		 testQueueConnectionFactoryBean();
 		 qcfb = new QueueConnectionFactoryBean();
 		 qcfb.setXaQueueConnectionFactory ( fact );

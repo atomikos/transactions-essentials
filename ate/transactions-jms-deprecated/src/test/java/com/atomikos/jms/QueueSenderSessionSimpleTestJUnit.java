@@ -30,7 +30,7 @@ public class QueueSenderSessionSimpleTestJUnit extends TestCase {
 		session = new QueueSenderSession();
 		qcfb = new QueueConnectionFactoryBean();
 		qcfb.setXaQueueConnectionFactory(fact);
-		qcfb.setResourceName("TESTQUEUERESOURCE");
+		qcfb.setResourceName(getClass().getSimpleName());
 	}
 	
 	protected void tearDown()

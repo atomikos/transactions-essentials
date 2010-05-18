@@ -60,7 +60,7 @@ public class QueueReceiverSessionTestJUnit extends TransactionServiceTestCase
 		TestQueueConnectionFactory fact = new TestQueueConnectionFactory ( xares );         
         qcfb = new QueueConnectionFactoryBean();
         qcfb.setXaQueueConnectionFactory ( fact );
-        qcfb.setResourceName ( "TESTQUEUERESOURCE" );
+        qcfb.setResourceName ( getClass().getSimpleName() );
 		session.setQueueConnectionFactoryBean ( qcfb );	
 		session.setNotifyListenerOnClose  ( true );
 		listener = new TestMessageListener();
