@@ -77,7 +77,7 @@ public class MessageConsumerSessionSimpleTestJUnit extends TransactionServiceTes
 		unsubscribeOnClose = false;
 
 		uts.shutdownForce();
-		//super.tearDown();
+		super.tearDown();
 	}
 	
 	

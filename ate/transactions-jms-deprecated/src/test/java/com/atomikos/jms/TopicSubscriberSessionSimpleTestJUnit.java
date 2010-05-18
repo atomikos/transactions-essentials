@@ -1,13 +1,19 @@
 package com.atomikos.jms;
 
+import java.util.Properties;
+
 import javax.jms.JMSException;
 import javax.transaction.SystemException;
 
 import com.atomikos.datasource.xa.TestXAResource;
+import com.atomikos.icatch.config.TSInitInfo;
+import com.atomikos.icatch.config.UserTransactionServiceImp;
+import com.atomikos.icatch.config.imp.AbstractUserTransactionServiceFactory;
+import com.atomikos.icatch.imp.TransactionServiceTestCase;
 
 import junit.framework.TestCase;
 
-public class TopicSubscriberSessionSimpleTestJUnit extends TestCase 
+public class TopicSubscriberSessionSimpleTestJUnit extends TransactionServiceTestCase 
 {
 	private static final String USER = "User";
 	private static final String PW = "SECRET";
@@ -16,6 +22,10 @@ public class TopicSubscriberSessionSimpleTestJUnit extends TestCase
 
 	private TopicSubscriberSession session;
 	
+	private UserTransactionServiceImp uts;
+	private TSInitInfo info;
+
+	
 	public TopicSubscriberSessionSimpleTestJUnit ( String name ) 
 	{
 		super ( name );
@@ -23,6 +33,19 @@ public class TopicSubscriberSessionSimpleTestJUnit extends TestCase
 	
 	protected void setUp()
 	{
+		uts =
+            new UserTransactionServiceImp();
+        
+        info = uts.createTSInitInfo();
+        Properties properties = info.getProperties();    
+        properties.setProperty ( 
+				AbstractUserTransactionServiceFactory.TM_UNIQUE_NAME_PROPERTY_NAME , getClass().getName() );
+        properties.setProperty ( AbstractUserTransactionServiceFactory.OUTPUT_DIR_PROPERTY_NAME , getTemporaryOutputDirAsAbsolutePath() );
+        properties.setProperty ( AbstractUserTransactionServiceFactory.LOG_BASE_DIR_PROPERTY_NAME , getTemporaryOutputDirAsAbsolutePath());
+        properties.setProperty ( AbstractUserTransactionServiceFactory.CONSOLE_LOG_LEVEL_PROPERTY_NAME , "DEBUG" );
+        properties.setProperty ( AbstractUserTransactionServiceFactory.MAX_ACTIVES_PROPERTY_NAME , "25000" );
+        uts.init ( info );
+        
 		session = new TopicSubscriberSession();
 	
 	}
@@ -30,6 +53,9 @@ public class TopicSubscriberSessionSimpleTestJUnit extends TestCase
 	protected void tearDown()
 	{
 		session.stopListening();
+		
+		uts.shutdownForce();
+		super.tearDown();
 	}
 	
 	public void testUser()
