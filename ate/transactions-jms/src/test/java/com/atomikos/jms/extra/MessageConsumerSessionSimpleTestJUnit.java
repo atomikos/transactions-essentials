@@ -1,11 +1,17 @@
 package com.atomikos.jms.extra;
 
+import java.util.Properties;
+
 import javax.jms.JMSException;
 import javax.transaction.SystemException;
 
 import junit.framework.TestCase;
 
 import com.atomikos.datasource.xa.TestXAResource;
+import com.atomikos.icatch.config.TSInitInfo;
+import com.atomikos.icatch.config.UserTransactionServiceImp;
+import com.atomikos.icatch.config.imp.AbstractUserTransactionServiceFactory;
+import com.atomikos.icatch.imp.TransactionServiceTestCase;
 import com.atomikos.jms.AtomikosConnectionFactoryBean;
 import com.atomikos.jms.TestMessageListener;
 import com.atomikos.jms.TestTopic;
@@ -13,13 +19,16 @@ import com.atomikos.jms.TestTopicConnectionFactory;
 import com.atomikos.jms.TestTopicSession;
 import com.atomikos.jms.TestTopicSubscriber;
 
-public class MessageConsumerSessionSimpleTestJUnit extends TestCase 
+public class MessageConsumerSessionSimpleTestJUnit extends TransactionServiceTestCase 
 {
 	private static final String USER = "User";
 	private static final String PW = "SECRET";
 	private static final int TIMEOUT = 10;
 	private static final String SELECTOR = "SELECTOR";
 	private static boolean unsubscribeOnClose = false;
+	
+	private UserTransactionServiceImp uts;
+	private TSInitInfo info;
 
 	private MessageConsumerSession session;
 	
@@ -28,8 +37,22 @@ public class MessageConsumerSessionSimpleTestJUnit extends TestCase
 		super ( name );
 	}
 	
+	
+	
 	protected void setUp()
 	{
+		uts =
+            new UserTransactionServiceImp();
+        
+        info = uts.createTSInitInfo();
+        Properties properties = info.getProperties();    
+        properties.setProperty ( 
+				AbstractUserTransactionServiceFactory.TM_UNIQUE_NAME_PROPERTY_NAME , getClass().getName() );
+        properties.setProperty ( AbstractUserTransactionServiceFactory.OUTPUT_DIR_PROPERTY_NAME , getTemporaryOutputDirAsAbsolutePath() );
+        properties.setProperty ( AbstractUserTransactionServiceFactory.LOG_BASE_DIR_PROPERTY_NAME , getTemporaryOutputDirAsAbsolutePath());
+        properties.setProperty ( AbstractUserTransactionServiceFactory.CONSOLE_LOG_LEVEL_PROPERTY_NAME , "DEBUG" );
+        properties.setProperty ( AbstractUserTransactionServiceFactory.MAX_ACTIVES_PROPERTY_NAME , "25000" );
+        uts.init ( info );
 		TestTopicSession.reset();
 		
 		session = new MessageConsumerSession (
@@ -52,7 +75,12 @@ public class MessageConsumerSessionSimpleTestJUnit extends TestCase
 	{
 		session.stopListening();
 		unsubscribeOnClose = false;
+
+		uts.shutdownForce();
+		//super.tearDown();
 	}
+	
+	
 	
 	public void testUser()
 	{

@@ -409,7 +409,9 @@ class MessageConsumerSession
 									this.join ( getTransactionTimeout() * 1000 );
 									Configuration.logDebug ( "MessageConsumerSession: waiting done." );
 								}
+								Configuration.logInfo ( "MessageConsumerSession: unsubscribing " + subscriberName + "..." );
 								session.unsubscribe ( subscriberName );
+								Configuration.logDebug ( "MessageConsumerSession: unsubscribed.");
 							} catch ( JMSException e ) {
 								 Configuration.logInfo (
 					                    "MessageConsumerSession: Error unsubscribing on JMS session",
@@ -419,8 +421,10 @@ class MessageConsumerSession
 						}
 						
 					    try {
+					    	Configuration.logInfo ( "MessageConsumerSession: closing JMS session..." );
 					        session.close ();
 					        session = null;
+					        Configuration.logDebug ( "MessageConsumerSession: JMS session closed." );
 					    } catch ( JMSException e ) {
 					        Configuration.logInfo (
 					                "MessageConsumerSession: Error closing JMS session",
@@ -430,8 +434,10 @@ class MessageConsumerSession
 					}
 					if ( connection != null )
 					    try {
+					    	Configuration.logInfo ( "MessageConsumerSession: closing JMS connection..." );
 					        connection.close ();
 					        connection = null;
+					        Configuration.logDebug ( "MessageConsumerSession: JMS connection closed." );
 					    } catch ( JMSException e ) {
 					        Configuration
 					                .logWarning (
@@ -621,7 +627,7 @@ class MessageConsumerSession
 
 	                    }
 
-	                    if ( refresh ) {
+	                    if ( refresh && Thread.currentThread () == current) {
 	                        // close resources here and let the actual refresh be
 	                        // done
 	                        // by the next iteration
