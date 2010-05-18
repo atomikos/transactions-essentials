@@ -377,7 +377,7 @@ public class AtomikosDataSourceBeanTestJUnit extends TransactionServiceTestCase
 	{
 		adsb.setLoginTimeout(3);
 		assertEquals ( 3, adsb.getLoginTimeout() );
-		Writer w = new FileWriter ( "test" );
+		Writer w = new FileWriter ( getTemporaryOutputDirAsAbsolutePath() + "/test" );
 		PrintWriter pw = new PrintWriter(  w ); 
 		adsb.setLogWriter(pw );
 		assertEquals ( pw , adsb.getLogWriter() );
