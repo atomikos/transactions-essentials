@@ -8,7 +8,7 @@
     <version>3.7.0-SNAPSHOT</version>
     <!-- With maven, a parent pom MUST have "pom" for packaging -->
     <packaging>pom</packaging>
-    <name>Transaction Essentials Parent POM</name>
+    <name>TransactionsEssentials Parent POM</name>
     <!--<properties>
          we don't want to depend on platform's default encoding 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
