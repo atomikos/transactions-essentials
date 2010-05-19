@@ -1,0 +1,531 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+                    "http://www.oasis-open.org/docbook/xml/4.3b2/docbookx.dtd">
+<article>
+    
+</article>
+<html>
+<head>
+<title>Atomikos Transactions Whitepaper</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+	
+	<h1>Atomikos Transactions Whitepaper</h1>
+		
+		Author: Dr. Guy Pardon (<a href="mailto:guy@atomikos.com">guy@atomikos.com</a>).<br>
+		Edition 1.1, May 2005.<br>
+		Copyright &copy; 2002-2005, Atomikos. All rights reserved.<br>
+		<a href="http://www.atomikos.com">http://www.atomikos.com</a>
+
+	    <h2><a name="audience">Who Should Read This Paper</a></h2>    
+		Read this paper if you want to learn quickly and at a high level what Atomikos Transactions is, what it can do for you, 
+		and how it does it.
+		    
+		<h2><a name="contents">Contents</a></h2>
+		
+			<ol>
+			  
+				<li><a href="#intro">Transactions: Introduction and Motivation</a>
+				</li>
+			    <li><a href="#j2se">Transactions for J2SE Applications</a>
+			    </li>
+			    <li><a href="#j2ee">Transactions for J2EE</a>
+			    </li>
+			    <li><a href="#spring">Transactions for Spring: J2EE without EJB</a>
+			    </li>
+			    <li><a href="#strategic">Strategic Advantages for You</a>
+			    </li>
+				<li><a href="#references">References</a>
+				</li>
+			</ol>
+
+
+		         
+		   
+		<h2><a name="intro">1. Transactions: Introduction and Motivation</a></h2>
+		    <p class="note">
+		        The word 'Transactions' is probably one of the most widely used terms in business and IT (as you can easily see by typing the word in Google).
+		        Moreover, every discipline tends to have its own interpretation of the same word. As a result, it is easy to misunderstand each other
+		        when talking about 'transactions' without further explanation of what is meant. This section will try to explain what Atomikos means
+		        by a transaction. 
+		    </p>
+		    <p>
+		        To Atomikos a transaction is something that should either execute entirely, or not at all. Half work is not acceptable.
+		        This is what Atomikos Transactions can ensure for you, and if you read through this section then you will also learn to appreciate
+		        the importance of that, in particular for the integrity and quality of your mission-critical business information. Maybe you will even ask yourself how this is done in your business software today, and that is a very
+		        good question: many applications are essentially running without solid guarantees in this respect. Who knows, maybe Atomikos Transactions is
+		        something for your business too... 
+		    </p>
+		    
+		    <!-- 
+		    <p>This section is organized as follows:
+		    </p>
+		  
+		     <ul>
+		         <li><a href="#example">An Example</a></li>
+		         <li><a href="#problem1">Problem 1: Sharing Data Between Components</a></li>
+		         <li><a href="#problem2">Problem 2: Ensuring a Joint Outcome</a></li>
+		         <li><a href="#problem3">Problem 3: Surviving Crashes Correctly</a></li>
+		         <li><a href="#problem4">Problem 4: Accessing different databases and other systems</a></li>
+		         <li><a href="#impact">Business Impact</a></li>
+		         <li><a href="#solution1">The Naive Solution: Extensive Programming</a></li>
+		         <li><a href="#solution2">Another Naive Solution: Human Administrators</a></li>
+		         <li><a href="#solution3">The Smart Solution: Atomikos Transactions</a></li>
+		         <li><a href="#more">What's Next?</a></li>
+		     </ul>
+		     -->
+		    
+		     <h3><a name="example">An Example</a></h3>
+		        The best way to start is by a simple example. 
+		        The figure below shows you the main idea behind most modern information systems (and, consequently, behind most modern businesses): 
+		        the entire information system is not a big and monolithic structure, but rather it is composed
+		        of different, more or less clearly separated and independent components. In some cases, these components can be purchased independently 
+		        and from different vendors. In general, the manufacturer of a component has no idea what other components will be combined with it in the future.
+		        Consequently, there are limits to what an individual component vendor can anticipate. This is an important fact to keep in mind.
+		        <img src="images/TransactionMotivation.gif" width="400"  height="300"/>
+		           
+		        <p>
+		            The biggest value of information systems is of course that they can automate the business. For instance, in the case of order
+		            processing (familiar to almost any business), the information system could do the following things for you (with the help of
+		            one or more components):
+		            <ol>
+		                <li>When an order arrives, it is passed to the Order Component.</li>
+		                <li>The Order Component determines that a shipment should be planned, and asks the Shipment Component to do this.</li>
+		                <li>The Shipment Component fulfills this task and inserts the delivery information (such as customer address and delivery date) in the company database.</li>
+		                <li>The Order Component then asks the Payment Component to issue the payment.</li>
+		                <li>The Payment Component is specialized in inserting the right information in the corporate database. This payment information 
+		                will eventually trigger an invoice to be sent to the customer.</li>
+		            </ol>
+		            
+		         </p>
+		         <p>    
+		            This example only shows one database to keep it simple. Nevertheless, many of the points we are going to make can easily be 
+		            generalized to the case of multiple databases. As a matter of fact, some of the problems we will mention are even worse in 
+		            a multiple database scenario. 
+		        </p>
+		        
+		        <h3><a name="problem1">Problem 1: Sharing Data Between Components</a></h3>
+		    
+		        <p>
+		            Looking at the example, a first and interesting problem arises: what happens when steps 3 and 5 need to access the same data in the 
+		            database? Can this be done, and how? Technical readers who are familiar with databases will probably know that different accesses
+		            to the same data can be blocked by locks in the database. Most modern database systems work that way, and if two components
+		            want to access the same data then the database system will have to be told if this is allowed. This is a first problem that 
+		            can arise: because the components were developed independently and possibly by different vendors, they can't be expected to 
+		            take care of this. Something else will be needed.
+		        </p>
+		    
+		        <h3><a name="problem2">Problem 2: Ensuring a Joint Outcome</a></h3>
+		        <p>
+		            The example also hints at another interesting question: what happens if there is a failure in step 5? For instance,
+		            what if the database crashes? Or what if the customer's credit card is rejected somehow? In those cases, it is 
+		            unlikely that any healthy business would like the shipment to proceed. Consequently it is desirable to cancel
+		            the shipment as well. In other words, most businesses would like an all-or-nothing approach for each order.  
+		            Because the components are independent, it is unrealistic to expect them to handle these cases (they would  have 
+		            to know what other, independent components have failed). Although one could argue that this can be done, it would
+		            make the overall order process much more complex (and therefore equally more expensive and unreliable).
+		        </p>
+
+		        <h3><a name="problem3">Problem 3: Surviving Crashes Correctly</a></h3>
+		        <p>
+		            The third problem has already been hinted at in the previous paragraph: if either the database or the application crashes
+		            (or maybe even both) then we would like the guarantee that the database is kept in a consistent state: a healthy business
+		            would not want to issue payments for lost shipments (billing the customer for nothing), or ship goods without invoicing the
+		            customer (lost revenue).
+		        </p>
+		        <h3><a name="problem4">Problem 4: Accessing different databases and other systems</a></h3>
+		        <p>
+		            Some of the previous problems are even worse when different databases (and even other enterprise information systems) are accessed
+		            during the processing of the order. For instance, imagine that the Shipment Component is not running in the same company, but
+		            as a web service on a different webserver, in an entirely different company. If the order fails (for whatever reason) then any previous
+		            shipment requests have to be canceled as well, and someone or something has to do this. In addition, now there are two parties 
+		            involved: what happens if the shipment request is accepted (by the shipping business) at first, but due to a delay in the payment
+		            processing, the shipping company decides to cancel the pending request?
+		           
+		        </p>
+		    
+		        <h3><a name="impact">Business Impact</a></h3>
+		    
+		        <p>
+		            The business impact of these problems is simple: without a solution, corporate data and information are at risk.
+		            Crashes are always possible, due to different factors such as power failures, bugs, out-of-memory errors, 
+		            webserver overloads, and much, much more.
+		        </p>   
+		    
+		        <p>
+		           Different components or services sharing the same database(s) are already a fact today, and will increasingly become
+		            important as web services become more prevalent. Mutual service-level agreements between networked business processes
+		            will make the risk level unacceptably high for the problems we outlined. A solution is needed. Imagine that 
+		            your shipping partner ships goods for orders that were cancelled, just because there was an unexpected failure in the order
+		            processing. 
+		            For instance, if 1% of orders goes wrong for some reason, and your business processes 10.000 orders per day, then
+		            this could mean that 100 shipments are placed when they shouldn't! 
+		        </p>
+		    
+		        <h3><a name="solution1">A Naive Solution: Extensive Programming</a></h3>
+		        <p>
+		            One way to tackle these problems is the naive solution of handling all possible failures programmatically.
+		            Although possible in theory, in practice it has some severe drawbacks:
+		            <ul>
+		                <li>The development of your information system will be twice as expensive, at the very least:
+		                    for every single action that your system automates, it will have to provide a canceling action.
+		                    This means twice as much work for the programmers, and twice as much for you to pay!
+		                </li>
+		                <li>
+		                    Even if you can afford investing more in development, this approach is very error-prone:
+		                    the developers have to be aware of what can go wrong, and how to correct things. In addition,
+		                    they have to be able to do this for all possible failure combinations. As the system grows,
+		                    this becomes very complex. In programming, complexity means unreliability: the likelihood
+		                    of bugs increases, and the maintainability decreases. Consequently, the risk of 
+		                    data corruption is very high.
+		                </li>
+		                <li>
+		                    This approach doesn't fit the proven trends towards development in terms of component-based systems and service-oriented computing, 
+		                    since 
+		                    it requires components and services to be aware of all other services (to be able to 
+		                    react when things go wrong).
+		                </li>
+		            </ul>
+		            
+		        </p>    
+		   
+		        <h3><a name="solution2">Another Naive Solution: Human Administrators</a></h3>
+		    
+		        <p>
+		            Another way to approach these problems is by letting them happen. When they happen
+		            human administrators are called in to clean up the corrupted business data, and 
+		            restore the situation. This approach is even worse than the previous one:
+		            
+		               <ul>
+		                   <li>It is usually impossible to determine the right corrective action: 
+		                       since the cleanup is done <b>after</b> the problem has happened,
+		                       the necessary context has been lost already. For instance, if a shipment
+		                       was placed inappropriately, then it is hard to find out what shipment and
+		                       how to cancel it. At the very best, it takes up a lot of human resources and
+		                       therefore becomes very expensive.
+		                   </li>
+		                   <li>
+		                       The risk of making a mistake is very high in this case. This means that
+		                       data integrity is severely at risk.
+		                   </li>
+		               </ul>
+		        </p>
+		    
+		        <h3><a name="solution3">The Smart Solution: Atomikos Transactions</a></h3>
+		        <p>
+		            The smart solution is by using a technology like Atomikos Transactions.
+		            It provides completely automated, mathematically sound, standards-based and well-tested tools
+		            for making the order processing reliable. In particular, it automates the 
+		            cancellation of problematic transactions, even in the presence of 
+		            crashes and across networked businesses.
+		        </p>
+		    
+		        <h4>Where's The Magic?</h4>
+		    
+		        <p>
+		            As usual, there is no real magic but rather sophisticated technology.
+		            Information systems like the order processing example can use Atomikos Transactions
+		            to associate a so-called <b>transaction</b> with each incoming order.
+		            This transaction represents all the work that will be done during the processing of the order.
+	                With the co-operation of the database(s) and any other systems involved, this can make sure
+		            that the order is cancelled entirely whenever there is a problem. 
+		        </p>
+		        <h4>Example: Processing The Order</h4>
+		        <img src="images/TransactionSolution.gif" width="400"  height="300" />
+		        <p>
+		            Consider again the example of the order processing system. With a technology like Transactions, for each new order
+		            the system can ask the so-called
+		            <b>Transaction Manager</b> (supplied by Atomikos) to create a new transaction and associate it with the order:
+		            <ul>
+		                <li>When a new order is started, the transaction manager is asked to create a new transaction. The transaction
+		                manager is capable of associating this transaction with the rest of the order processing (even across separate components
+		                and systems). The transaction manager can do this by exploiting low-level system capabilities and industry-level standards
+		                to attach extra information (the transaction's identifier) to all the requests involved.
+		                </li>
+		                <li>
+		                    Before anything is done in a database or another system, the transaction manager is informed of the fact that the
+		                    database (or system) will become part of the work done for this transaction. This is possible thanks to industry-wide
+		                    agreements (standards); most database vendors know they should support these standards. For web services, these standards
+		                    are still being defined by several industry-wide consortia (and Atomikos is taking part in that).
+		                </li>
+		            </ul>
+		        
+		        </p>
+		    
+		        <h4>Example: Successful Completion of the Order</h4>
+		        <img src="images/commit.gif" width="400"  height="300" />
+		        <p>
+		            When an order is completed and there were no errors, the order processing component (the one that started the transaction)
+		            can ask the transaction manager to <b>commit</b>. In transaction manager terminology, this is the word for saving the results
+		            in all parts of the system. The transaction manager will instruct all databases (and other systems) to save the work involved
+		            in the transaction. It can do this because it knows all parts of the system that
+		            participated in the transaction (as explained in the previous section). In distributed systems, commit has to be done 
+		            with a variant called <b>two-phase commit</b> in order to deal with the intricacies of network failures and unilateral 
+		            cancellations in individual parts of the system. The details on two-phase commit are widely documented in literature
+		            and are outside the scope of this paper.
+		        </p>
+		    
+		        <h4>Example: Cancelling a Problematic Order</h4>
+		        <img src="images/rollback.gif" width="400"  height="300" />
+		        <p>
+		            When there is a failure, the transaction manager can be asked to <b>rollback</b> the transaction. This is jargon for cancelling 
+		            all the work in all parts of the system.
+		        </p>
+		    
+		        <h3><a name="more">What's Next?</a></h3>
+		        <p>
+		            This section gave you an idea of the problems involved, and how Atomikos Transactions
+		            can solve them for you. The rest of this paper shows how Transactions can be used
+		            for desktop (J2SE) and enterprise (J2EE) applications on the Java platform.
+		            A web services edition (SOAP) is in development at the time of writing.
+		            The rest of this paper is organized as follows:
+		        <ul>
+		            
+		        <li>
+		            A high-level overview of how Transactions works in J2SE applications.
+		            Read this if you want to learn how we can make java desktop applications
+		            as reliable as any high-end financial services transaction server.
+		        </li>
+		        <li>
+		            A high-level overview of how Transactions works in J2EE applications.
+		            Read this if you want to learn how we can make Java Enterprise applications
+		            (web sites, e-commerce sites, financial systems, ...) highly reliable and
+		            robust.
+		        </li>
+		        <li>
+		            An overview of the strategic advantages you can get by using Transactions.
+		        </li>
+		       
+		        <li>
+		            A section with references if you want to find out more.
+		        </li>
+		        </ul>
+		    
+		<h2><a name="j2se">2. Transactions for J2SE Applications</a></h2>
+		        J2SE is the Java 2, Standard Edition (for desktop applications).
+		        Here we explore how desktop Java applications can be made rock-solid and reliable.
+		        This section is organized as follows:
+		        <!-- 
+		        <ul>
+		            <li><a href="#j2se-architecture">Architectural Overview</a></li>
+		            <li><a href="#j2se-connectors">Connectivity</a></li>
+		            <li><a href="#rmi-iiop">Networked Transactions (RMI-IIOP)</a></li>
+		        </ul>
+		        -->
+		            
+		        <h3><a name="j2se-architecture">Architectural Overview</a></h3>
+		            <img src="images/J2seArchitecture.gif" width="400"  height="300" />
+		            <p>
+		                For regular Java applications, Atomikos provides the transaction manager (called Java Transaction API - JTA - in the Java world) and a set of
+		                flexible connectors for databases and messaging systems. 
+		                If your application creates
+		                a transaction then all subsequent accesses through the supplied connectors will
+		                automatically become subject to the outcome of the transaction. The integration of Transactions
+		                in your application is very straightfoward (in the common case, only one line Atomikos-specific code is necessary).
+		                
+		            </p>
+		            
+		            
+		        <h3><a name="j2se-connectors">Connectivity</a></h3>
+		            <p>
+		                Database vendors supply their JDBC (Java Database Connect) drivers with their products.
+		                These drivers allow Java applications to send SQL to the database, and get the results back.
+		                On top of these drivers, Atomikos provides transactional drivers that your application
+		                should use. Otherwise, the database accesses will not be subject to the transaction manager's control.
+		                It should be noted that the database itself can reside on a totally different machine, as long as the driver can 
+		                reach it by 
+		                a network connection.
+		            </p>
+		             <p>
+		                Messaging systems typically provide a JMS (Java Message Service) driver for their product.
+		                These drivers allow Java applications to post and retrieve messages from systems like MQSeries&#153;.
+		                On top of these drivers, Atomikos provides transactional drivers that your application
+		                should use. Otherwise, the message receipt/send process will not be subject to the transaction manager's control.
+		                 The messaging server itself can be on a totally different machine.
+		            </p>
+		            <p class="note">
+		                You can also integrate Transactions at a lower level (involving more work for your application) 
+		                and avoid using Atomikos connectors. See the Atomikos documentation on how to do that.
+		            </p>
+		            
+		        <h3><a name="rmi-iiop">Networked Transactions (RMI)</a></h3>
+		            <img src="images/J2seRmiArchitecture.gif" width="400"  height="300" />
+		            <p>
+		                Transactions also allows the scope of control to extend over networked Java applications.
+		                Java's RMI (Remote Method Invocation) is supported in all its variants.
+		                In this case, each participant Java application has its own transaction manager.
+		                When a transaction completes, the commit is coordinated between the different 
+		                transaction managers. Each transaction manager takes care of the database accesses
+		                on behalf of its associated application.
+		            </p>
+		            
+		            <p class="note">
+		            The Transactions core product can also be extended to support other communication protocols
+		            besides RMI-IIOP. Contact Atomikos for more information.
+		            </p>
+		        
+		    
+		<h2><a name="j2ee">3. Transactions for J2EE</a></h2>
+		      J2EE (Java 2, Enterprise Edition) is a platform for building and running enterprise-class applications.
+		      In many cases, these applications act as dynamic web sites or online transaction processing
+		      sites. In order to install a J2EE application, you need a <b>J2EE platform or application server</b>.
+		      Many exist on the market, but surprisingly few can support transactions. Beware of false claims
+		      made by many vendors; in particular, ask them if they support JTA, and if so whether they can 
+		      do restart or crash recovery of databases.
+		      Here we explore how enterprise applications or platforms can be made rock-solid and reliable 
+		         by using Atomikos Transactions: even the lowest-end application server can be made
+		         top-class by adding Atomikos Transactions. This gives you some of the guarantees that only
+		         the most expensive vendors can offer, at a significantly lower price. In addition, your
+		         applications can be made to run on a wider range of commercial application servers, by 
+		         adding Transactions whenever needed. Like in the J2SE case, integrating Transactions in 
+		         a J2EE platform is very straightforward: in the optimal case (depending on the application server), 
+		         no integration code needs to be written. In the worst case, one Atomikos-specific line of code
+		         is all you need in the J2EE application or the server.
+		           
+		        <!--    
+		        This section is organized as follows:
+		        <ul>
+		            <li><a href="#j2ee-architecture">Architectural Overview</a></li>
+		            <li><a href="#j2ee-connectors">Connectivity</a></li>
+		            <li><a href="#j2ee-xa-architecture">Non-Atomikos Connectors</a></li>
+		            <li><a href="#j2ee-rmi-iiop">J2EE Networked Transactions (RMI-IIOP)</a></li>
+		            <li><a href="#j2ee-support">Supported Application Servers</a></li>
+		        </ul>
+		       --> 
+		        <h3><a name="j2ee-architecture">Architectural Overview</a></h3>
+		            <img src="images/J2eeArchitecture.gif" width="400"  height="300" /> 
+		            <p>
+		                In the normal case, Atomikos Transactions is added to the server (by installing it as a library 
+		                in the application server's extensions set). It then becomes available to each J2EE application
+		                that is installed on the application server, and these applications can immediately use Transactions.
+		                In addition, our connectors are fully standards-compliant, meaning that they can be installed
+		                on any J2EE application server (since connectors are standard facilities for an application server).
+		                All accesses that are done through Atomikos connectors fall under the control of Transactions.
+		            </p>
+		              
+		        <h3><a name="j2ee-connectors">Connectivity</a></h3>
+		            <p>
+		                By default, the same connectivity is offered as for J2SE applications:
+		                <ul>
+		                     
+		                    <li>Databases: almost any JDBC driver is supported.</li>
+		                    <li>Messaging: JMS queues are supported.</li>
+		                    
+		                </ul>
+		                See the next subsection on how to use non-Atomikos connectors.
+		            </p>
+		        <h3><a name="j2ee-xa-architecture">Non-Atomikos Connectors</a></h3>
+		            <p class="note">If the supplied set of connectors is not sufficient, then 
+		                it is also possible to use third-party connectors instead.</p>
+		            <img src="images/J2eeXaArchitecture.gif" width="400"  height="300" />
+		            <p>
+		                
+		                In that case, these connectors have to perform certain standard-based
+		                interactions with the transaction manager (also known as XA, according to the
+		                Open Group's XA Specification). See the Atomikos documentation
+		                on more information about that. Note that there is nothing specific to Atomikos
+		                in these interactions; they are defined by industry-wide standards.
+		            </p>
+		        
+		        <h3><a name="j2ee-rmi-iiop">J2EE Networked Transactions (RMI-IIOP)</a></h3>
+		            <p class="note">
+		                Transactions can also be used for networked transactions in J2EE server clusters.
+		            </p>
+		            <img src="images/J2eeRmiArchitecture.gif" width="400"  height="300" />
+		            <p>
+		                In this case, more integration effort is necessary: the application server's network
+		                infrastructure will have to be aware of Transactions, in order to propagate the
+		                transaction information to remote servers. Behind the scenes, completion is then
+		                handled between the transaction managers in the servers involved. Each transaction
+		                manager takes care of the connectors in its own application server.
+		            </p>
+		        
+		         <h3><a name="j2ee-support">Supported Application Servers</a></h3>
+		           <p>
+		               Atomikos Transactions has already been integrated with several application servers 
+		               (and these are now supported out-of-the-box).
+		               This subsection includes some examples, please check the Atomikos website
+		               for the most up-to-date list.
+		           </p>
+		               <h4>Web Application Servers</h4>
+		               <ul>
+		                   <li>IBM Websphere Express&#153;</li>
+		                   <li>Apache Tomcat&#153;</li>
+		                   <li>Jetty</li>
+		                   <li>New Atlanta ServletExec&#153;</li>
+		                   <li>Virtually every other Servlet2.3/JSP1.2 compliant Java Web Application Server</li>
+		               </ul>
+		               
+		               <h4>Full Application Servers</h4>
+		                  <ul>
+		                      <li>Transactions has been integrated with third-party application servers such as JBoss&#153;</li>
+		                  </ul>
+		               <p class="note">
+		                   Integration with a full application server is still easy, but requires some (very limited) server-specific
+		                   efforts to be done. Atomikos can do this for you in a minimum of time. 
+		                   If you are a server vendor and want to integrate
+		                   Transactions in your product, please contact Atomikos at info@atomikos.com.
+		               </p>
+		               
+		
+		  <h2><a name="spring">4. Transactions for Spring: J2EE without EJB</a></h2>
+		    <p>
+		        Atomikos Transactions provides easy integration with Spring, allowing you to 
+		        program true enterprise applications without the need for EJB or even
+		        an EJB container. The equivalent of container-managed transactions (CMT) can
+		        easily be obtained with Spring's support for aspect-oriented programming (AOP).
+		     <p>
+		        Included in the Transactions release is also a message-driven
+		        bean facility for out-of-container messaging, with full transactional reliability.
+		            
+		  <h2><a name="strategic">5. Strategic Advantages for You</a></h2>           
+		  <p>
+		      Atomikos Transactions can offer strategic advantages to your business. Whether you are a software vendor,
+		      or a business whose information techology is mission-critical, there are many advantages in using Atomikos Transactions.
+		      <h3>Independent Software Vendors</h3>
+		      <p>
+		          Independent software vendors can use our OEM or reseller formula to rebrand or resell Atomikos Transactions, in order to:
+		          <ul>
+		              <li>Achieve rock-solid reliability instantly.</li>
+		              <li>Cut internal product development and maintenance costs, while gaining premium support and standards compliance.</li>
+		              <li>Achieve compatibility across a wider range of platforms for your J2EE applications.</li>
+		          </ul>
+		      </p>    
+		      
+		     
+		      <h3>Businesses with Mission-Critical IT</h3>
+		      <p>
+		          <ul>
+		              <li>Cut development cost and maintenance in half: avoid programmatic exception handling as much as possible by 
+		              using Atomikos Transactions. At the same time, you get premium reliability instantly.</li>
+		              <li>Leverage past investments by integrating existing systems, and without losing reliability.</li>
+		          </ul>
+		      </p>
+		      
+		          
+		    
+		     
+		            
+		<h2><a name="references">6. References</a></h2>
+
+		<ul>
+		<li>
+		<a href="http://java.sun.com">http://java.sun.com</a> 
+		Sun's Java website with the JTA, JDBC and JMS specifications and extra information.
+		</li>
+		<li>
+		<a href="http://www.atomikos.com">http://www.atomikos.com</a> Atomikos' website; please check regularly
+			for updates and support information.
+		</li>
+		<li>
+		Distributed Transaction Processing: The XA Specification (ISBN 1-872630-24-3). Published by The Open Group (<a href="http://www.opengroup.org">http://www.opengroup.org</a>). 
+		</li>
+		<li>
+		<a href="http://www.springframework.org">http://www.springframework.org</a> 
+		The official site of the Spring framework.
+		</li>
+		</ul>
+
+</body>
+</html>

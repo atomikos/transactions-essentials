@@ -1,0 +1,434 @@
+{
+    CanvasColor = {w = 1; }; 
+    ColumnAlign = 0; 
+    ColumnSpacing = 36; 
+    GraphDocumentVersion = 1; 
+    GraphicsList = (
+        {
+            Class = Group; 
+            Graphics = (
+                {
+                    Bounds = "{{486, 324}, {180, 18}}"; 
+                    Class = ShapedGraphic; 
+                    FitText = Vertical; 
+                    ID = 925; 
+                    Shape = Rectangle; 
+                    Style = {fill = {Draws = NO; }; shadow = {Draws = NO; }; stroke = {Draws = NO; }; }; 
+                    Text = {
+                        Text = "{\\rtf1\\mac\\ansicpg10000\\cocoartf100\n{\\fonttbl\\f0\\fswiss\\fcharset77 Helvetica;}\n{\\colortbl;\\red255\\green255\\blue255;}\n\\pard\\tx560\\tx1120\\tx1680\\tx2240\\tx2800\\tx3360\\tx3920\\tx4480\\tx5040\\tx5600\\tx6160\\tx6720\\qc\n\n\\f0\\fs24 \\cf0 commit/rollback}"; 
+                    }; 
+                }, 
+                {
+                    Class = LineGraphic; 
+                    ID = 926; 
+                    Points = ("{495, 324}", "{630, 324}"); 
+                    Style = {stroke = {HeadArrow = 1; LineType = 1; }; }; 
+                }
+            ); 
+            ID = 924; 
+        }, 
+        {
+            Class = Group; 
+            Graphics = (
+                {
+                    Bounds = "{{486, 270}, {180, 18}}"; 
+                    Class = ShapedGraphic; 
+                    FitText = Vertical; 
+                    ID = 922; 
+                    Shape = Rectangle; 
+                    Style = {fill = {Draws = NO; }; shadow = {Draws = NO; }; stroke = {Draws = NO; }; }; 
+                    Text = {
+                        Text = "{\\rtf1\\mac\\ansicpg10000\\cocoartf100\n{\\fonttbl\\f0\\fswiss\\fcharset77 Helvetica;}\n{\\colortbl;\\red255\\green255\\blue255;}\n\\pard\\tx560\\tx1120\\tx1680\\tx2240\\tx2800\\tx3360\\tx3920\\tx4480\\tx5040\\tx5600\\tx6160\\tx6720\\qc\n\n\\f0\\fs24 \\cf0 createCompositeTransaction}"; 
+                    }; 
+                }, 
+                {
+                    Class = LineGraphic; 
+                    ID = 923; 
+                    Points = ("{495, 270}", "{630, 270}"); 
+                    Style = {stroke = {HeadArrow = 1; LineType = 1; }; }; 
+                }
+            ); 
+            ID = 921; 
+        }, 
+        {
+            Class = Group; 
+            Graphics = (
+                {
+                    Bounds = "{{153, 387}, {90, 18}}"; 
+                    Class = ShapedGraphic; 
+                    FitText = Vertical; 
+                    ID = 917; 
+                    Shape = Rectangle; 
+                    Style = {fill = {Draws = NO; }; shadow = {Draws = NO; }; stroke = {Draws = NO; }; }; 
+                    Text = {
+                        Text = "{\\rtf1\\mac\\ansicpg10000\\cocoartf100\n{\\fonttbl\\f0\\fswiss\\fcharset77 Helvetica;}\n{\\colortbl;\\red255\\green255\\blue255;}\n\\pard\\tx560\\tx1120\\tx1680\\tx2240\\tx2800\\tx3360\\tx3920\\tx4480\\tx5040\\tx5600\\tx6160\\tx6720\\qc\n\n\\f0\\fs24 \\cf0 getAbortCount}"; 
+                    }; 
+                }, 
+                {
+                    Class = LineGraphic; 
+                    ID = 918; 
+                    Points = ("{108, 387}", "{387, 387}"); 
+                    Style = {stroke = {HeadArrow = 1; LineType = 1; }; }; 
+                }, 
+                {
+                    Bounds = "{{152.64, 360}, {72.36, 18}}"; 
+                    Class = ShapedGraphic; 
+                    FitText = Vertical; 
+                    ID = 919; 
+                    Shape = Rectangle; 
+                    Style = {fill = {Draws = NO; }; shadow = {Draws = NO; }; stroke = {Draws = NO; }; }; 
+                    Text = {
+                        Text = "{\\rtf1\\mac\\ansicpg10000\\cocoartf100\n{\\fonttbl\\f0\\fswiss\\fcharset77 Helvetica;}\n{\\colortbl;\\red255\\green255\\blue255;}\n\\pard\\tx560\\tx1120\\tx1680\\tx2240\\tx2800\\tx3360\\tx3920\\tx4480\\tx5040\\tx5600\\tx6160\\tx6720\\qc\n\n\\f0\\fs24 \\cf0 waitForAll}"; 
+                    }; 
+                }, 
+                {
+                    Class = LineGraphic; 
+                    ID = 920; 
+                    Points = ("{108, 360}", "{387, 360}"); 
+                    Style = {stroke = {HeadArrow = 1; LineType = 1; }; }; 
+                }
+            ); 
+            ID = 916; 
+        }, 
+        {
+            Class = Group; 
+            Graphics = (
+                {
+                    Bounds = "{{153, 423}, {81, 18}}"; 
+                    Class = ShapedGraphic; 
+                    FitText = Vertical; 
+                    ID = 914; 
+                    Shape = Rectangle; 
+                    Style = {fill = {Draws = NO; }; shadow = {Draws = NO; }; stroke = {Draws = NO; }; }; 
+                    Text = {
+                        Text = "{\\rtf1\\mac\\ansicpg10000\\cocoartf100\n{\\fonttbl\\f0\\fswiss\\fcharset77 Helvetica;}\n{\\colortbl;\\red255\\green255\\blue255;}\n\\pard\\tx560\\tx1120\\tx1680\\tx2240\\tx2800\\tx3360\\tx3920\\tx4480\\tx5040\\tx5600\\tx6160\\tx6720\\qc\n\n\\f0\\fs24 \\cf0 getException}"; 
+                    }; 
+                }, 
+                {
+                    Class = LineGraphic; 
+                    ID = 915; 
+                    Points = ("{108, 423}", "{495, 423}"); 
+                    Style = {stroke = {HeadArrow = 1; LineType = 1; }; }; 
+                }
+            ); 
+            ID = 913; 
+        }, 
+        {
+            Class = Group; 
+            Graphics = (
+                {
+                    Bounds = "{{342, 279}, {36, 18}}"; 
+                    Class = ShapedGraphic; 
+                    FitText = Vertical; 
+                    ID = 911; 
+                    Shape = Rectangle; 
+                    Style = {fill = {Draws = NO; }; shadow = {Draws = NO; }; stroke = {Draws = NO; }; }; 
+                    Text = {
+                        Text = "{\\rtf1\\mac\\ansicpg10000\\cocoartf100\n{\\fonttbl\\f0\\fswiss\\fcharset77 Helvetica;}\n{\\colortbl;\\red255\\green255\\blue255;}\n\\pard\\tx560\\tx1120\\tx1680\\tx2240\\tx2800\\tx3360\\tx3920\\tx4480\\tx5040\\tx5600\\tx6160\\tx6720\\qc\n\n\\f0\\fs24 \\cf0 exec}"; 
+                    }; 
+                }, 
+                {
+                    Class = LineGraphic; 
+                    ID = 912; 
+                    Points = ("{486, 279}", "{261, 279}"); 
+                    Style = {stroke = {HeadArrow = 1; LineType = 1; }; }; 
+                }
+            ); 
+            ID = 910; 
+        }, 
+        {
+            Class = Group; 
+            Graphics = (
+                {
+                    Bounds = "{{108, 288}, {176, 18}}"; 
+                    Class = ShapedGraphic; 
+                    FitText = YES; 
+                    ID = 908; 
+                    Shape = Rectangle; 
+                    Style = {fill = {Draws = NO; }; shadow = {Draws = NO; }; stroke = {Draws = NO; }; }; 
+                    Text = {
+                        Text = "{\\rtf1\\mac\\ansicpg10000\\cocoartf100\n{\\fonttbl\\f0\\fswiss\\fcharset77 Helvetica;}\n{\\colortbl;\\red255\\green255\\blue255;}\n\\pard\\tx560\\tx1120\\tx1680\\tx2240\\tx2800\\tx3360\\tx3920\\tx4480\\tx5040\\tx5600\\tx6160\\tx6720\\qc\n\n\\f0\\fs24 \\cf0 \\{until no more threads needed\\}}"; 
+                    }; 
+                }, 
+                {
+                    Class = LineGraphic; 
+                    ID = 909; 
+                    Points = ("{171, 162}", "{171, 279}"); 
+                    Style = {stroke = {Pattern = 1; }; }; 
+                }
+            ); 
+            ID = 907; 
+        }, 
+        {
+            Class = Group; 
+            Graphics = (
+                {
+                    Bounds = "{{126, 261}, {35, 18}}"; 
+                    Class = ShapedGraphic; 
+                    FitText = YES; 
+                    ID = 905; 
+                    Shape = Rectangle; 
+                    Style = {fill = {Draws = NO; }; shadow = {Draws = NO; }; stroke = {Draws = NO; }; }; 
+                    Text = {
+                        Text = "{\\rtf1\\mac\\ansicpg10000\\cocoartf100\n{\\fonttbl\\f0\\fswiss\\fcharset77 Helvetica;}\n{\\colortbl;\\red255\\green255\\blue255;}\n\\pard\\tx560\\tx1120\\tx1680\\tx2240\\tx2800\\tx3360\\tx3920\\tx4480\\tx5040\\tx5600\\tx6160\\tx6720\\qc\n\n\\f0\\fs24 \\cf0 start}"; 
+                    }; 
+                }, 
+                {
+                    Class = LineGraphic; 
+                    ID = 906; 
+                    Points = ("{108, 261}", "{486, 261}"); 
+                    Style = {stroke = {HeadArrow = 1; LineType = 1; }; }; 
+                }
+            ); 
+            ID = 904; 
+        }, 
+        {
+            Class = Group; 
+            Graphics = (
+                {
+                    Bounds = "{{117, 216}, {45, 18}}"; 
+                    Class = ShapedGraphic; 
+                    FitText = YES; 
+                    ID = 902; 
+                    Shape = Rectangle; 
+                    Style = {fill = {Draws = NO; }; shadow = {Draws = NO; }; stroke = {Draws = NO; }; }; 
+                    Text = {
+                        Text = "{\\rtf1\\mac\\ansicpg10000\\cocoartf100\n{\\fonttbl\\f0\\fswiss\\fcharset77 Helvetica;}\n{\\colortbl;\\red255\\green255\\blue255;}\n\\pard\\tx560\\tx1120\\tx1680\\tx2240\\tx2800\\tx3360\\tx3920\\tx4480\\tx5040\\tx5600\\tx6160\\tx6720\\qc\n\n\\f0\\fs24 \\cf0 create}"; 
+                    }; 
+                }, 
+                {
+                    Class = LineGraphic; 
+                    ID = 903; 
+                    Points = ("{108, 216}", "{450, 216}"); 
+                    Style = {stroke = {HeadArrow = 1; LineType = 1; }; }; 
+                }
+            ); 
+            ID = 901; 
+        }, 
+        {
+            Class = Group; 
+            Graphics = (
+                {
+                    Bounds = "{{117, 171}, {45, 18}}"; 
+                    Class = ShapedGraphic; 
+                    FitText = YES; 
+                    ID = 899; 
+                    Shape = Rectangle; 
+                    Style = {fill = {Draws = NO; }; shadow = {Draws = NO; }; stroke = {Draws = NO; }; }; 
+                    Text = {
+                        Text = "{\\rtf1\\mac\\ansicpg10000\\cocoartf100\n{\\fonttbl\\f0\\fswiss\\fcharset77 Helvetica;}\n{\\colortbl;\\red255\\green255\\blue255;}\n\\pard\\tx560\\tx1120\\tx1680\\tx2240\\tx2800\\tx3360\\tx3920\\tx4480\\tx5040\\tx5600\\tx6160\\tx6720\\qc\n\n\\f0\\fs24 \\cf0 create}"; 
+                    }; 
+                }, 
+                {
+                    Class = LineGraphic; 
+                    ID = 900; 
+                    Points = ("{108, 171}", "{198, 171}"); 
+                    Style = {stroke = {HeadArrow = 1; LineType = 1; }; }; 
+                }
+            ); 
+            ID = 898; 
+        }, 
+        {
+            Class = Group; 
+            Graphics = (
+                {
+                    Bounds = "{{144, 135}, {45, 18}}"; 
+                    Class = ShapedGraphic; 
+                    FitText = YES; 
+                    ID = 896; 
+                    Shape = Rectangle; 
+                    Style = {fill = {Draws = NO; }; shadow = {Draws = NO; }; stroke = {Draws = NO; }; }; 
+                    Text = {
+                        Text = "{\\rtf1\\mac\\ansicpg10000\\cocoartf100\n{\\fonttbl\\f0\\fswiss\\fcharset77 Helvetica;}\n{\\colortbl;\\red255\\green255\\blue255;}\n\\pard\\tx560\\tx1120\\tx1680\\tx2240\\tx2800\\tx3360\\tx3920\\tx4480\\tx5040\\tx5600\\tx6160\\tx6720\\qc\n\n\\f0\\fs24 \\cf0 create}"; 
+                    }; 
+                }, 
+                {
+                    Class = LineGraphic; 
+                    ID = 897; 
+                    Points = ("{108, 135}", "{333, 135}"); 
+                    Style = {stroke = {HeadArrow = 1; LineType = 1; }; }; 
+                }
+            ); 
+            ID = 895; 
+        }, 
+        {
+            Class = Group; 
+            Graphics = (
+                {
+                    Class = Group; 
+                    Graphics = (
+                        {
+                            Bounds = "{{189, 99}, {165, 18}}"; 
+                            Class = ShapedGraphic; 
+                            FitText = YES; 
+                            ID = 887; 
+                            Shape = Rectangle; 
+                            Style = {fill = {Draws = NO; }; shadow = {Draws = NO; }; stroke = {Draws = NO; }; }; 
+                            Text = {
+                                Text = "{\\rtf1\\mac\\ansicpg10000\\cocoartf100\n{\\fonttbl\\f0\\fswiss\\fcharset77 Helvetica;}\n{\\colortbl;\\red255\\green255\\blue255;}\n\\pard\\tx560\\tx1120\\tx1680\\tx2240\\tx2800\\tx3360\\tx3920\\tx4480\\tx5040\\tx5600\\tx6160\\tx6720\\qc\n\n\\f0\\fs24 \\cf0 createCompositeTransaction}"; 
+                            }; 
+                        }, 
+                        {
+                            Class = LineGraphic; 
+                            ID = 888; 
+                            Points = ("{108, 98}", "{630, 98}"); 
+                            Style = {stroke = {HeadArrow = 1; LineType = 1; }; }; 
+                        }
+                    ); 
+                    ID = 886; 
+                }, 
+                {
+                    Class = Group; 
+                    Graphics = (
+                        {
+                            Bounds = "{{333, 9}, {360, 36}}"; 
+                            Class = ShapedGraphic; 
+                            ID = 890; 
+                            Shape = NoteShape; 
+                            Text = {
+                                Text = "{\\rtf1\\mac\\ansicpg10000\\cocoartf100\n{\\fonttbl\\f0\\fswiss\\fcharset77 Helvetica;}\n{\\colortbl;\\red255\\green255\\blue255;}\n\\pard\\tx560\\tx1120\\tx1680\\tx2240\\tx2800\\tx3360\\tx3920\\tx4480\\tx5040\\tx5600\\tx6160\\tx6720\\qc\n\n\\f0\\fs24 \\cf0 Provided by Atomikos}"; 
+                            }; 
+                        }, 
+                        {
+                            Bounds = "{{333, 126}, {99, 27}}"; 
+                            Class = ShapedGraphic; 
+                            ID = 891; 
+                            Shape = Rectangle; 
+                            Text = {
+                                Text = "{\\rtf1\\mac\\ansicpg10000\\cocoartf100\n{\\fonttbl\\f0\\fswiss\\fcharset77 Helvetica-Bold;}\n{\\colortbl;\\red255\\green255\\blue255;}\n\\pard\\tx560\\tx1120\\tx1680\\tx2240\\tx2800\\tx3360\\tx3920\\tx4480\\tx5040\\tx5600\\tx6160\\tx6720\\qc\n\n\\f0\\b\\fs24 \\cf0 Waiter}"; 
+                            }; 
+                        }, 
+                        {
+                            Bounds = "{{450, 198}, {99, 27}}"; 
+                            Class = ShapedGraphic; 
+                            ID = 892; 
+                            Shape = Rectangle; 
+                            Text = {
+                                Text = "{\\rtf1\\mac\\ansicpg10000\\cocoartf100\n{\\fonttbl\\f0\\fswiss\\fcharset77 Helvetica-Bold;}\n{\\colortbl;\\red255\\green255\\blue255;}\n\\pard\\tx560\\tx1120\\tx1680\\tx2240\\tx2800\\tx3360\\tx3920\\tx4480\\tx5040\\tx5600\\tx6160\\tx6720\\qc\n\n\\f0\\b\\fs24 \\cf0 SubTxThread}"; 
+                            }; 
+                        }, 
+                        {
+                            Bounds = "{{549, 54}, {144, 27}}"; 
+                            Class = ShapedGraphic; 
+                            ID = 893; 
+                            Shape = Rectangle; 
+                            Text = {
+                                Text = "{\\rtf1\\mac\\ansicpg10000\\cocoartf100\n{\\fonttbl\\f0\\fswiss\\fcharset77 Helvetica-Bold;}\n{\\colortbl;\\red255\\green255\\blue255;}\n\\pard\\tx560\\tx1120\\tx1680\\tx2240\\tx2800\\tx3360\\tx3920\\tx4480\\tx5040\\tx5600\\tx6160\\tx6720\\qc\n\n\\f0\\b\\fs24 \\cf0 CompositeTransactionManager}"; 
+                            }; 
+                        }
+                    ); 
+                    ID = 889; 
+                }, 
+                {
+                    Bounds = "{{63, 63}, {99, 27}}"; 
+                    Class = ShapedGraphic; 
+                    ID = 894; 
+                    Shape = Rectangle; 
+                    Text = {
+                        Text = "{\\rtf1\\mac\\ansicpg10000\\cocoartf100\n{\\fonttbl\\f0\\fswiss\\fcharset77 Helvetica-Bold;}\n{\\colortbl;\\red255\\green255\\blue255;}\n\\pard\\tx560\\tx1120\\tx1680\\tx2240\\tx2800\\tx3360\\tx3920\\tx4480\\tx5040\\tx5600\\tx6160\\tx6720\\qc\n\n\\f0\\b\\fs24 \\cf0 Application}"; 
+                    }; 
+                }
+            ); 
+            ID = 885; 
+        }, 
+        {
+            Class = LineGraphic; 
+            ID = 884; 
+            Points = (
+                "{630, 81}", 
+                "{630, 96.822}", 
+                "{630, 212.061}", 
+                "{630, 256.402}", 
+                "{630, 362.172}", 
+                "{630, 391.301}", 
+                "{630, 432}"
+            ); 
+            Style = {stroke = {LineType = 1; }; }; 
+        }, 
+        {
+            Class = LineGraphic; 
+            ID = 883; 
+            Points = (
+                "{495, 225}", 
+                "{495, 258.87}", 
+                "{495, 274.672}", 
+                "{495, 310.269}", 
+                "{495, 330.528}", 
+                "{495, 356.061}", 
+                "{495, 400.402}", 
+                "{495, 506.172}", 
+                "{495, 535.301}", 
+                "{495, 540}"
+            ); 
+            Style = {stroke = {LineType = 1; }; }; 
+        }, 
+        {
+            Class = LineGraphic; 
+            ID = 882; 
+            Points = (
+                "{386, 153}", 
+                "{386, 284.061}", 
+                "{386, 328.402}", 
+                "{386, 434.172}", 
+                "{386, 463.301}", 
+                "{386, 504}"
+            ); 
+            Style = {stroke = {LineType = 1; }; }; 
+        }, 
+        {
+            Class = LineGraphic; 
+            ID = 881; 
+            Points = (
+                "{251, 189}", 
+                "{251, 229}", 
+                "{251, 274.64}", 
+                "{251, 320.061}", 
+                "{251, 364.402}", 
+                "{251, 470.172}", 
+                "{251, 499.301}", 
+                "{251, 540}"
+            ); 
+            Style = {stroke = {LineType = 1; }; }; 
+        }, 
+        {
+            Bounds = "{{198, 162}, {99, 27}}"; 
+            Class = ShapedGraphic; 
+            ID = 880; 
+            Shape = Rectangle; 
+            Text = {
+                Text = "{\\rtf1\\mac\\ansicpg10000\\cocoartf100\n{\\fonttbl\\f0\\fswiss\\fcharset77 Helvetica-Bold;}\n{\\colortbl;\\red255\\green255\\blue255;}\n\\pard\\tx560\\tx1120\\tx1680\\tx2240\\tx2800\\tx3360\\tx3920\\tx4480\\tx5040\\tx5600\\tx6160\\tx6720\\qc\n\n\\f0\\b\\fs24 \\cf0 SubTxCode}"; 
+            }; 
+        }, 
+        {
+            Class = LineGraphic; 
+            ID = 879; 
+            Points = (
+                "{108, 90}", 
+                "{108, 221.061}", 
+                "{108, 265.402}", 
+                "{108, 371.172}", 
+                "{108, 400.301}", 
+                "{108, 441}"
+            ); 
+            Style = {stroke = {LineType = 1; }; }; 
+        }
+    ); 
+    GridInfo = {
+        GridColor = {w = 0.6666667; }; 
+        GridInFront = NO; 
+        GridSpacing = 9; 
+        ShowsGrid = NO; 
+        SnapsToGrid = YES; 
+    }; 
+    HPages = 1; 
+    ImageCounter = 1; 
+    IsPalette = NO; 
+    LayoutInfo = {Orientation = YES; }; 
+    PageBreakColor = {w = 0.6666667; }; 
+    PageBreaks = YES; 
+    PageSetup = <040b7479 70656473 74726561 6d8103e8 84014084 84840b4e 53507269 6e74496e 666f0184 84084e53 4f626a65 63740085 92848484 134e534d 75746162 6c654469 6374696f 6e617279 0084840c 4e534469 6374696f 6e617279 00948401 69159284 8484084e 53537472 696e6701 9484012b 0f4e5350 61676573 50657253 68656574 86928484 84084e53 4e756d62 65720084 84074e53 56616c75 65009484 012a8484 01739d01 86928499 99104e53 4a6f6244 6973706f 73697469 6f6e8692 8499990f 4e535072 696e7453 706f6f6c 4a6f6286 92849999 0e4e5342 6f74746f 6d4d6172 67696e86 92849b9c 84840166 9e248692 8499990b 4e535061 7065724e 616d6586 92849999 00869284 99990f4e 53507269 6e74416c 6c506167 65738692 849b9c84 8401639f 00869284 99990d4e 534a6f62 46656174 75726573 86928496 97008692 8499990d 4e535269 6768744d 61726769 6e869284 9b9ca29e 24869284 9999084e 53436f70 69657386 92849b9c 84840153 a0018692 8499990f 4e535363 616c696e 67466163 746f7286 92849b9c 84840164 a1018692 8499990b 4e534669 72737450 61676586 92849b9c aea00186 92849999 144e5356 65727469 63616c50 6167696e 6174696f 6e869284 9b9c9d9d 00869284 9999124e 53526576 65727365 50616765 4f726465 728692a6 92849999 154e5348 6f72697a 6f6e616c 50616769 6e617469 6f6e8692 849b9c9d 9d008692 84999916 4e53486f 72697a6f 6e74616c 6c794365 6e746572 65648692 849b9ca7 9f018692 8499990c 4e534c65 66744d61 7267696e 8692849b 9ca29e24 86928499 990d4e53 4f726965 6e746174 696f6e86 92849b9c 9d9d0186 92849999 194e5350 72696e74 52657665 7273654f 7269656e 74617469 6f6e8692 a6928499 990a4e53 4c617374 50616765 8692849b 9c849797 827fffff ff869284 99990b4e 53546f70 4d617267 696e8692 849b9ca2 9e248692 84999914 4e535665 72746963 616c6c79 43656e74 65726564 8692ba92 8499990b 4e535061 70657253 697a6586 92849c9c 84840c7b 5f4e5353 697a653d 66667da2 81031881 02648686 86>; 
+    RowAlign = 0; 
+    RowSpacing = 36; 
+    VPages = 1; 
+    WindowInfo = {Frame = "{{91, 66}, {756, 618}}"; Zoom = 1; }; 
+}
