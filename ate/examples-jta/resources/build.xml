@@ -1,0 +1,40 @@
+<project name="atomikos" default="all" basedir=".">
+        <property file="build.properties"/>
+
+        <path id="classpath">
+                <fileset dir="${lib.dir}">
+                    <exclude name="*.TXT"/>
+                </fileset>
+        	    <fileset dir="${dist.dir}"/>
+        			<fileset dir="${j2se.dist.dir}"/>
+                <fileset dir="." >
+                    <include name="*.class"/>
+                </fileset>
+		<fileset dir="${demo.lib.dir}">
+		    <exclude name="*.TXT"/>
+		</fileset>
+        </path>
+
+        <target name="clean">
+        <delete>
+                <fileset dir="." includes="**/*" 
+		excludes="**/*.TXT,**/*.epoch,**/*.xml,**/*.java,**/*.sh,**/*.bat,**/build.*,**/*.properties,**/*.txt"/>
+        </delete>
+        </target>
+
+        <target name="compile" >
+        <echo>Compiling module with DEBUG flag set to: ${debug}</echo>
+        <javac srcdir="." debug="${debug}" 
+                includes="**/*.java"
+        >
+                <classpath refid="classpath"/>
+        </javac>
+        </target>
+	
+	<target name="rmic">
+	<rmic classpathref="classpath" 
+		iiop="true"  base="." includes="**/*ServerImp.class" />
+	</target>
+
+        <target name="all" depends="clean,compile,rmic"/>
+</project>
