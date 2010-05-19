@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.atomikos</groupId>
+    <artifactId>ate-parent</artifactId>
+    <version>3.7.0-SNAPSHOT</version>
+    <!-- With maven, a parent pom MUST have "pom" for packaging -->
+    <packaging>pom</packaging>
+    <name>Transaction Essentials Parent POM</name>
+    <!--<properties>
+         we don't want to depend on platform's default encoding 
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>-->
+
+    <!--
+         each modules has junit 3.8 as dependency under scope "test"
+         (non-transitive, not used for compilation but tests)
+     -->
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>3.8.2</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+    
+     <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <!--  same as "-source 1.5 -target 1.5" for compilation -->
+                <!--
+                        see
+                        http://maven.apache.org/plugins/maven-compiler-plugin/compile-mojo.html
+                    -->
+                <configuration>
+                    <source>1.5</source>
+                    <target>1.5</target>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <redirectTestOutputToFile>true</redirectTestOutputToFile>
+                    <argLine>-Xmx1024m</argLine>
+                    <includes>
+                        <include>**/*TestJUnit.java</include>
+                    </includes>
+                    <!--
+                             this conf is made to ensure that no file wil be created outside
+                             the "target" subfolder of the modules
+                         <workingDirectory>${project.build.testOutputDirectory}</workingDirectory>
+                         -->
+                </configuration>
+            </plugin>
+            <!--
+                   <plugin> <groupId>org.codehaus.mojo</groupId>
+                   <artifactId>cobertura-maven-plugin</artifactId> <configuration>
+                   <formats> <format>html</format> <format>xml</format> </formats>
+                   <aggregate>true</aggregate> <instrumentation> <excludes> <exclude
+                   name="**/*Stub.java" /> <exclude name="**/*Skel.java" /> <exclude
+                   name="**/*Skeleton.java" /> <exclude name="**/*Tie.java" />
+                   </excludes> </instrumentation> </configuration> <executions>
+                   <execution> <goals> <goal>clean</goal> </goals> </execution>
+                   </executions> </plugin>
+               -->
+            <plugin>
+                <groupId>com.atlassian.maven.plugins</groupId>
+                <artifactId>maven-clover2-plugin</artifactId>
+                <version>3.0.1</version>
+                <configuration>
+                    <licenseLocation>H:/devs/clover/clover.license</licenseLocation>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    
+</project>
