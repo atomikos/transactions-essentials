@@ -1,0 +1,4 @@
+Bundle-Activator: com.atomikos.transactions.osgi.AtomikosActivator
+Embed-Transitive: true
+Embed-Dependency :*;scope=compile;type=jar;inline=true
+Import-Package: javax.transaction,com.atomikos.*,*;resolution:=optional,

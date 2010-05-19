@@ -49,6 +49,7 @@
                 <configuration>
                     <redirectTestOutputToFile>true</redirectTestOutputToFile>
                     <argLine>-Xmx1024m</argLine>
+                    <forkMode>always</forkMode>
                     <includes>
                         <include>**/*TestJUnit.java</include>
                     </includes>
