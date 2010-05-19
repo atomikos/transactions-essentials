@@ -15,6 +15,7 @@
     <name>Atomikos Transactions Essentials ${project.version}</name>
 
     <modules>
+     <module>ate-parent</module>
         <module>util</module>
         <module>transactions-api</module>
         <module>transactions</module>
