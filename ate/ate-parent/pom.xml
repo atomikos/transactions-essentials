@@ -62,9 +62,9 @@
 					<aggregate>false</aggregate>
 					<includes>
 						<include>src/**</include>
-						<include>**/test/**</include>
 					</includes>
 					<excludes>
+						<exclude>src/test/**</exclude>
 						<exclude>target/**</exclude>
 						<exclude>.clover/**</exclude>
 					</excludes>
