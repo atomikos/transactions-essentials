@@ -23,7 +23,7 @@
 		</dependency>
 	</dependencies>
 
-	<inceptionYear>2010</inceptionYear>
+	<inceptionYear>2000-2010</inceptionYear>
 	<build>
 		<plugins>
 			<plugin>
@@ -87,13 +87,13 @@
 						<headerDefinition>def2.xml</headerDefinition>
 					</headerDefinitions>-->
 				</configuration>
-				<!--<executions>
+				<executions>
 					<execution>
 						<goals>
 							<goal>check</goal>
 						</goals>
 					</execution>
-				</executions>-->
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
