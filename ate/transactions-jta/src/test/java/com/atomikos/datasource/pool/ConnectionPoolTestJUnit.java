@@ -30,6 +30,9 @@ public class ConnectionPoolTestJUnit extends TransactionServiceTestCase {
 		uts = new UserTransactionServiceImp();
 		TSInitInfo info = uts.createTSInitInfo();
 		info.setProperty ( AbstractUserTransactionServiceFactory.CONSOLE_LOG_LEVEL_PROPERTY_NAME , "DEBUG" );
+		info.setProperty ( AbstractUserTransactionServiceFactory.OUTPUT_DIR_PROPERTY_NAME , getTemporaryOutputDirAsAbsolutePath() );
+    	info.setProperty ( AbstractUserTransactionServiceFactory.LOG_BASE_DIR_PROPERTY_NAME , getTemporaryOutputDirAsAbsolutePath()
+    	        );
 		uts.init ( info );
 		
 		

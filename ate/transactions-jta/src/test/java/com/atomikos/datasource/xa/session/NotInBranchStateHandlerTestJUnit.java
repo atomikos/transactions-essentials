@@ -5,7 +5,9 @@ import com.atomikos.icatch.jta.TransactionManagerImp;
 import com.atomikos.datasource.xa.TestXAResource;
 import com.atomikos.datasource.xa.TestXATransactionalResource;
 import com.atomikos.icatch.CompositeTransaction;
+import com.atomikos.icatch.config.TSInitInfo;
 import com.atomikos.icatch.config.UserTransactionServiceImp;
+import com.atomikos.icatch.config.imp.AbstractUserTransactionServiceFactory;
 import com.atomikos.icatch.imp.TransactionServiceTestCase;
 import com.atomikos.icatch.system.Configuration;
 
@@ -28,7 +30,11 @@ public class NotInBranchStateHandlerTestJUnit extends
 		TestXATransactionalResource res = new TestXATransactionalResource ( xares , getName() );
 		state = new NotInBranchStateHandler ( res , xares );
 		uts = new UserTransactionServiceImp();
-		uts.init(uts.createTSInitInfo());
+		TSInitInfo info = uts.createTSInitInfo();
+	   	info.setProperty ( AbstractUserTransactionServiceFactory.OUTPUT_DIR_PROPERTY_NAME , getTemporaryOutputDirAsAbsolutePath() );
+    	info.setProperty ( AbstractUserTransactionServiceFactory.LOG_BASE_DIR_PROPERTY_NAME , getTemporaryOutputDirAsAbsolutePath()
+    	        );
+    	uts.init ( info );
 		
 	}
 	

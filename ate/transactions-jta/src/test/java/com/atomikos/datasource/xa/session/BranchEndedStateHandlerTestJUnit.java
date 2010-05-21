@@ -4,7 +4,9 @@ import com.atomikos.datasource.xa.TestXAResource;
 import com.atomikos.datasource.xa.TestXATransactionalResource;
 import com.atomikos.datasource.xa.XAResourceTransaction;
 import com.atomikos.icatch.CompositeTransaction;
+import com.atomikos.icatch.config.TSInitInfo;
 import com.atomikos.icatch.config.UserTransactionServiceImp;
+import com.atomikos.icatch.config.imp.AbstractUserTransactionServiceFactory;
 import com.atomikos.icatch.imp.TransactionServiceTestCase;
 import com.atomikos.icatch.jta.TransactionManagerImp;
 import com.atomikos.icatch.system.Configuration;
@@ -27,7 +29,11 @@ public class BranchEndedStateHandlerTestJUnit extends
 		xares = new TestXAResource();
 		TestXATransactionalResource res = new TestXATransactionalResource ( xares , getName() );
 		uts = new UserTransactionServiceImp();
-		uts.init(uts.createTSInitInfo());
+		TSInitInfo info = uts.createTSInitInfo();
+	   	info.setProperty ( AbstractUserTransactionServiceFactory.OUTPUT_DIR_PROPERTY_NAME , getTemporaryOutputDirAsAbsolutePath() );
+    	info.setProperty ( AbstractUserTransactionServiceFactory.LOG_BASE_DIR_PROPERTY_NAME , getTemporaryOutputDirAsAbsolutePath()
+    	        );
+		uts.init(info);		
 		ct = Configuration.getCompositeTransactionManager().createCompositeTransaction ( 1000 );	
 		ct.setProperty ( TransactionManagerImp.JTA_PROPERTY_NAME , "true" );
 		XAResourceTransaction branch = (XAResourceTransaction) res.getResourceTransaction ( ct );

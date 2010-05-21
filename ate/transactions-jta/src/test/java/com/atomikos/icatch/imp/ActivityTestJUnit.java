@@ -63,9 +63,9 @@ public class ActivityTestJUnit extends AbstractJUnitActivityTest
         properties.setProperty ( AbstractUserTransactionServiceFactory.TM_UNIQUE_NAME_PROPERTY_NAME,
                 "ActivityTestTransactionManager" );
         properties.setProperty ( AbstractUserTransactionServiceFactory.OUTPUT_DIR_PROPERTY_NAME,
-                getTemporaryOutputDir () );
+                getTemporaryOutputDirAsAbsolutePath() );
         properties.setProperty ( AbstractUserTransactionServiceFactory.LOG_BASE_DIR_PROPERTY_NAME,
-                getTemporaryOutputDir () );
+                getTemporaryOutputDirAsAbsolutePath() );
         properties.setProperty ( AbstractUserTransactionServiceFactory.CONSOLE_LOG_LEVEL_PROPERTY_NAME,
                 "DEBUG" );
         properties.setProperty ( AbstractUserTransactionServiceFactory.MAX_ACTIVES_PROPERTY_NAME, "25000" );

@@ -49,8 +49,8 @@ public class UserTransactionServiceTestJUnit extends TransactionServiceTestCase
     {
         properties.setProperty ( 
 				AbstractUserTransactionServiceFactory.TM_UNIQUE_NAME_PROPERTY_NAME , "UserTransactionServiceTestTransactionManager" );
-        properties.setProperty ( AbstractUserTransactionServiceFactory.OUTPUT_DIR_PROPERTY_NAME , getTemporaryOutputDir() );
-        properties.setProperty ( AbstractUserTransactionServiceFactory.LOG_BASE_DIR_PROPERTY_NAME , getTemporaryOutputDir() );
+        properties.setProperty ( AbstractUserTransactionServiceFactory.OUTPUT_DIR_PROPERTY_NAME , getTemporaryOutputDirAsAbsolutePath() );
+        properties.setProperty ( AbstractUserTransactionServiceFactory.LOG_BASE_DIR_PROPERTY_NAME , getTemporaryOutputDirAsAbsolutePath() );
         properties.setProperty ( AbstractUserTransactionServiceFactory.MAX_ACTIVES_PROPERTY_NAME , "25000" );
     }
     

@@ -7,6 +7,7 @@ import javax.transaction.UserTransaction;
 
 import com.atomikos.icatch.config.TSInitInfo;
 import com.atomikos.icatch.config.UserTransactionService;
+import com.atomikos.icatch.config.imp.AbstractUserTransactionServiceFactory;
 import com.atomikos.icatch.system.Configuration;
 
 /**
@@ -64,7 +65,10 @@ public class J2eeUserTransactionTestJUnit extends
    			throw new Exception ( "Auto startup for J2eeUserTransaction" );
    		
    		TSInitInfo info = uts.createTSInitInfo();
-   		uts.init ( info );
+	   	info.setProperty ( AbstractUserTransactionServiceFactory.OUTPUT_DIR_PROPERTY_NAME , getTemporaryOutputDirAsAbsolutePath() );
+    	info.setProperty ( AbstractUserTransactionServiceFactory.LOG_BASE_DIR_PROPERTY_NAME , getTemporaryOutputDirAsAbsolutePath()
+    	        );
+    	uts.init ( info );
    		
    		utx.begin();
    		if ( utx.getStatus() == Status.STATUS_NO_TRANSACTION ) 

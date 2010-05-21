@@ -8,6 +8,7 @@ import com.atomikos.icatch.config.TSInitInfo;
 import com.atomikos.icatch.config.TSMetaData;
 import com.atomikos.icatch.config.UserTransactionService;
 import com.atomikos.icatch.config.imp.AbstractUserTransactionService;
+import com.atomikos.icatch.config.imp.AbstractUserTransactionServiceFactory;
 import com.atomikos.icatch.config.imp.TSInitInfoImp;
 import com.atomikos.icatch.imp.TransactionServiceTestCase;
 
@@ -54,7 +55,11 @@ public class Issue10038TestJUnit extends TransactionServiceTestCase {
 		TestRecoverableResource res = new TestRecoverableResource ( "issue 10038" );
 		res.setFailOnClose();
 		uts.registerResource ( res );
-		uts.init ( uts.createTSInitInfo() );
+		TSInitInfo info = uts.createTSInitInfo();
+	   	info.setProperty ( AbstractUserTransactionServiceFactory.OUTPUT_DIR_PROPERTY_NAME , getTemporaryOutputDirAsAbsolutePath() );
+    	info.setProperty ( AbstractUserTransactionServiceFactory.LOG_BASE_DIR_PROPERTY_NAME , getTemporaryOutputDirAsAbsolutePath()
+    	        );
+    	uts.init ( info );
 		//shutdown force shoult not throw any exception
 		uts.shutdown ( true );
 	}

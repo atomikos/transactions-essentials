@@ -39,8 +39,12 @@ public class SessionHandleStateTestJUnit extends TransactionServiceTestCase {
 		handle = new SessionHandleState ( res , xares );
 		uts = new UserTransactionServiceImp();
 		TSInitInfo info = uts.createTSInitInfo();
+
 		info.setProperty ( UserTransactionServiceFactory.SERIAL_JTA_TRANSACTIONS_PROPERTY_NAME , "true");
 		info.setProperty ( UserTransactionServiceFactory.CONSOLE_LOG_LEVEL_PROPERTY_NAME , "INFO" );
+	   	info.setProperty ( AbstractUserTransactionServiceFactory.OUTPUT_DIR_PROPERTY_NAME , getTemporaryOutputDirAsAbsolutePath() );
+    	info.setProperty ( AbstractUserTransactionServiceFactory.LOG_BASE_DIR_PROPERTY_NAME , getTemporaryOutputDirAsAbsolutePath()
+    	        );
 		uts.init(info);
 		Configuration.getCompositeTransactionManager().suspend();
 		ct = Configuration.getCompositeTransactionManager().createCompositeTransaction ( 1000 );	

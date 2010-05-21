@@ -48,7 +48,8 @@
 						<include>**/*TestJUnit.java</include>
 					</includes>
 					<!-- this conf is made to ensure that no file wil be created outside 
-						the "target" subfolder of the modules <workingDirectory>${project.build.testOutputDirectory}</workingDirectory> -->
+						the "target" subfolder of the modules --> 
+					<workingDirectory>${project.build.testOutputDirectory}</workingDirectory>
 				</configuration>
 			</plugin>
 			<plugin>
