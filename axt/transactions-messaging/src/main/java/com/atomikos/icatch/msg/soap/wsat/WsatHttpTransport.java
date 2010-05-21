@@ -1,35 +1,3 @@
-//$Id: WsatHttpTransport.java,v 1.1.1.1 2006/10/02 15:21:15 guy Exp $
-//$Log: WsatHttpTransport.java,v $
-//Revision 1.1.1.1  2006/10/02 15:21:15  guy
-//Import into CVS.
-//
-//Revision 1.1.1.1  2006/04/29 08:55:46  guy
-//Initial import.
-//
-//Revision 1.1.1.1  2006/03/29 13:21:30  guy
-//Imported.
-//
-//Revision 1.1.1.1  2006/03/23 16:25:28  guy
-//Imported.
-//
-//Revision 1.1.1.1  2006/03/22 13:46:54  guy
-//Import.
-//
-//Revision 1.2  2006/03/15 10:31:52  guy
-//Formatted code.
-//
-//Revision 1.1.1.1  2006/03/09 14:59:13  guy
-//Imported 3.0 development into CVS repository.
-//
-//Revision 1.3  2005/11/07 10:57:22  guy
-//Adapted after testing.
-//
-//Revision 1.2  2005/10/21 08:17:37  guy
-//Added method to get registration service address.
-//
-//Revision 1.1  2005/10/10 08:10:56  guy
-//Added WSAT transport.
-//
 package com.atomikos.icatch.msg.soap.wsat;
 
 import com.atomikos.icatch.msg.CommitProtocol;

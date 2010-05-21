@@ -1,11 +1,3 @@
-//
-//  CoordinatorImpTester.java
-//  icatch
-//
-//  Created by guy on Tue Mar 27 2001.
-//  
-//
-
 package com.atomikos.icatch.imp;
 import java.util.Hashtable;
 import java.util.Stack;

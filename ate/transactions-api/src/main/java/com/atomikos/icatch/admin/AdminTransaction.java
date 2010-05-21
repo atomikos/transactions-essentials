@@ -1,39 +1,3 @@
-//$Id: AdminTransaction.java,v 1.1.1.1 2006/08/29 10:01:08 guy Exp $
-//$Log: AdminTransaction.java,v $
-//Revision 1.1.1.1  2006/08/29 10:01:08  guy
-//Import of 3.0 essentials edition.
-//
-//Revision 1.1.1.1  2006/04/29 08:55:40  guy
-//Initial import.
-//
-//Revision 1.1.1.1  2006/03/29 13:21:34  guy
-//Imported.
-//
-//Revision 1.1.1.1  2006/03/23 16:25:29  guy
-//Imported.
-//
-//Revision 1.1.1.1  2006/03/22 13:46:57  guy
-//Import.
-//
-//Revision 1.1.1.1  2006/03/09 14:59:23  guy
-//Imported 3.0 development into CVS repository.
-//
-//Revision 1.5  2005/08/05 15:03:34  guy
-//Merged-in changes/additions of redesign-5-2004 (SOAP development branch).
-//
-//Revision 1.4  2004/10/12 13:03:30  guy
-//Updated docs (changed Guy Pardon to Atomikos in many places).
-//
-//Revision 1.3  2004/08/30 07:16:28  guy
-//Added admin tx state: active.
-//
-//Revision 1.2  2002/02/22 09:02:44  guy
-//Corrected doc comments.
-//
-//Revision 1.1  2002/01/23 11:39:42  guy
-//Added admin package to CVS.
-//
-
 package com.atomikos.icatch.admin;
 import java.io.Serializable;
 

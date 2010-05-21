@@ -1,39 +1,3 @@
-//$Id: BeanWizard.java,v 1.1.1.1 2006/08/29 10:01:14 guy Exp $
-//$Log: BeanWizard.java,v $
-//Revision 1.1.1.1  2006/08/29 10:01:14  guy
-//Import of 3.0 essentials edition.
-//
-//Revision 1.1.1.1  2006/04/29 08:55:50  guy
-//Initial import.
-//
-//Revision 1.1.1.1  2006/03/29 13:21:40  guy
-//Imported.
-//
-//Revision 1.1.1.1  2006/03/23 16:25:37  guy
-//Imported.
-//
-//Revision 1.1.1.1  2006/03/22 13:47:03  guy
-//Import.
-//
-//Revision 1.1.1.1  2006/03/09 14:59:42  guy
-//Imported 3.0 development into CVS repository.
-//
-//Revision 1.2  2004/03/22 15:33:57  guy
-//Merged-in changes from branch redesign-4-2003.
-//
-//Revision 1.1.2.4  2003/08/24 07:02:50  guy
-//Corrected bug: write-only properties had no editor.
-//
-//Revision 1.1.2.3  2003/08/21 20:31:19  guy
-//Redesign stuff
-//
-//Revision 1.1.2.2  2003/05/18 09:41:54  guy
-//Improved support for custom editor per property.
-//
-//Revision 1.1.2.1  2003/05/15 08:04:25  guy
-//Added BeanWizard class and debugged bean package to make wizard work.
-//
-
 package com.atomikos.beans;
 import java.awt.BorderLayout;
 import java.awt.Dimension;

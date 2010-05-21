@@ -1,26 +1,3 @@
-//$Id: AddressingTest.java,v 1.1.1.1 2006/10/02 15:21:13 guy Exp $
-//$Log: AddressingTest.java,v $
-//Revision 1.1.1.1  2006/10/02 15:21:13  guy
-//Import into CVS.
-//
-//Revision 1.1.1.1  2006/04/29 08:55:46  guy
-//Initial import.
-//
-//Revision 1.1.1.1  2006/03/29 13:21:34  guy
-//Imported.
-//
-//Revision 1.1.1.1  2006/03/23 16:25:29  guy
-//Imported.
-//
-//Revision 1.1.1.1  2006/03/22 13:46:56  guy
-//Import.
-//
-//Revision 1.1.1.1  2006/03/09 14:59:20  guy
-//Imported 3.0 development into CVS repository.
-//
-//Revision 1.1  2005/10/18 12:41:02  guy
-//Added addressing logic.
-//
 package com.atomikos.jaxws.wsa;
 
 import java.io.ByteArrayInputStream;

@@ -1,32 +1,3 @@
-//$Id: XATerminatorImp.java,v 1.1.1.1 2006/10/02 15:21:16 guy Exp $
-//$Log: XATerminatorImp.java,v $
-//Revision 1.1.1.1  2006/10/02 15:21:16  guy
-//Import into CVS.
-//
-//Revision 1.1.1.1  2006/04/29 08:55:45  guy
-//Initial import.
-//
-//Revision 1.1.1.1  2006/03/29 13:21:38  guy
-//Imported.
-//
-//Revision 1.1.1.1  2006/03/23 16:25:33  guy
-//Imported.
-//
-//Revision 1.1.1.1  2006/03/22 13:47:01  guy
-//Import.
-//
-//Revision 1.1.1.1  2006/03/09 14:59:31  guy
-//Imported 3.0 development into CVS repository.
-//
-//Revision 1.3  2005/05/16 15:06:29  guy
-//Updated tasks.
-//
-//Revision 1.2  2005/05/09 08:07:03  guy
-//Finished JCA package implementation.
-//
-//Revision 1.1  2005/05/06 11:41:50  guy
-//Completed package for JCA inbound transaction handling.
-//
 package com.atomikos.icatch.jca;
 
 import java.util.HashMap;

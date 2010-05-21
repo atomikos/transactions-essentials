@@ -1,10 +1,3 @@
-//
-//  StateRecoverable.java
-//
-//  Created by guy on Fri Mar 30 2001.
-//  
-//
-
 package com.atomikos.persistence;
 
 import com.atomikos.finitestates.FSMPreEnterEventSource;

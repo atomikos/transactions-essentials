@@ -1,35 +1,3 @@
-//$Id: OutgoingAddressData.java,v 1.1.1.1 2006/10/02 15:21:13 guy Exp $
-//$Log: OutgoingAddressData.java,v $
-//Revision 1.1.1.1  2006/10/02 15:21:13  guy
-//Import into CVS.
-//
-//Revision 1.1.1.1  2006/04/29 08:55:46  guy
-//Initial import.
-//
-//Revision 1.1.1.1  2006/03/29 13:21:31  guy
-//Imported.
-//
-//Revision 1.1.1.1  2006/03/23 16:25:28  guy
-//Imported.
-//
-//Revision 1.1.1.1  2006/03/22 13:46:54  guy
-//Import.
-//
-//Revision 1.2  2006/03/15 10:31:59  guy
-//Formatted code.
-//
-//Revision 1.1.1.1  2006/03/09 14:59:14  guy
-//Imported 3.0 development into CVS repository.
-//
-//Revision 1.3  2005/11/08 16:39:00  guy
-//Added code based on tests.
-//
-//Revision 1.2  2005/10/21 08:18:56  guy
-//Added method addToCall to work with outgoing calls.
-//
-//Revision 1.1  2005/10/18 12:41:01  guy
-//Added addressing logic.
-//
 package com.atomikos.icatch.jaxb.wsa;
 
 import java.io.Serializable;

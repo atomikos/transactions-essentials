@@ -1,36 +1,3 @@
-//$Id: IncomingAddressData.java,v 1.1.1.1 2006/10/02 15:21:13 guy Exp $
-//$Log: IncomingAddressData.java,v $
-//Revision 1.1.1.1  2006/10/02 15:21:13  guy
-//Import into CVS.
-//
-//Revision 1.1.1.1  2006/04/29 08:55:46  guy
-//Initial import.
-//
-//Revision 1.1.1.1  2006/03/29 13:21:31  guy
-//Imported.
-//
-//Revision 1.1.1.1  2006/03/23 16:25:28  guy
-//Imported.
-//
-//Revision 1.1.1.1  2006/03/22 13:46:54  guy
-//Import.
-//
-//Revision 1.2  2006/03/15 10:31:59  guy
-//Formatted code.
-//
-//Revision 1.1.1.1  2006/03/09 14:59:13  guy
-//Imported 3.0 development into CVS repository.
-//
-//Revision 1.3  2005/11/11 10:52:03  guy
-//Added Externalizable to save address headers in XML format
-//(avoids serialization problems in writing PREPARED log entry)
-//
-//Revision 1.2  2005/11/01 09:11:41  guy
-//Corrected with WSAT test feedback.
-//
-//Revision 1.1  2005/10/18 12:41:01  guy
-//Added addressing logic.
-//
 package com.atomikos.icatch.jaxb.wsa;
 
 import java.io.Serializable;

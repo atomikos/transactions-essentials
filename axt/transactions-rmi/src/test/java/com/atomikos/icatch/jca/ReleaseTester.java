@@ -1,29 +1,3 @@
-//$Id: ReleaseTester.java,v 1.1.1.1 2006/10/02 15:21:17 guy Exp $
-//$Log: ReleaseTester.java,v $
-//Revision 1.1.1.1  2006/10/02 15:21:17  guy
-//Import into CVS.
-//
-//Revision 1.1.1.1  2006/04/29 08:55:45  guy
-//Initial import.
-//
-//Revision 1.2  2006/04/11 11:42:57  guy
-//Extracted init properties as constants and replaced all literal references.
-//
-//Revision 1.1.1.1  2006/03/29 13:21:38  guy
-//Imported.
-//
-//Revision 1.1.1.1  2006/03/23 16:25:33  guy
-//Imported.
-//
-//Revision 1.1.1.1  2006/03/22 13:47:01  guy
-//Import.
-//
-//Revision 1.1.1.1  2006/03/09 14:59:33  guy
-//Imported 3.0 development into CVS repository.
-//
-//Revision 1.1  2005/05/09 08:07:23  guy
-//Added tests for JCA package.
-//
 package com.atomikos.icatch.jca;
 
 import java.util.Properties;

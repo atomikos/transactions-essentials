@@ -1,11 +1,3 @@
-//
-//  CoordinatorLogImage.java
-//  icatch
-//
-//  Created by guy on Thu Mar 29 2001.
-//  
-//
-
 package com.atomikos.icatch.imp;
 
 import java.io.IOException;

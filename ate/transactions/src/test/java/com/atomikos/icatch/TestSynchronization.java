@@ -1,11 +1,3 @@
-//
-//  TestSynchronization.java
-//  icatch
-//
-//  Created by guy on Tue Mar 27 2001.
-//  
-//
-
 package com.atomikos.icatch;
 import com.atomikos.icatch.system.Configuration;
 

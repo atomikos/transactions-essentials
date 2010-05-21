@@ -1,6 +1,3 @@
-//$Id: TSInitInfo.java,v 1.1.1.1 2006/08/29 10:01:08 guy Exp $
-//$Log
-
 package com.atomikos.icatch.config;
 
 import java.util.Enumeration;

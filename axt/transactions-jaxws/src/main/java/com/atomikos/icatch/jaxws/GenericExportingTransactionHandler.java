@@ -1,29 +1,3 @@
-//$Id: GenericExportingTransactionHandler.java,v 1.1.1.1 2006/10/02 15:21:12 guy Exp $
-//$Log: GenericExportingTransactionHandler.java,v $
-//Revision 1.1.1.1  2006/10/02 15:21:12  guy
-//Import into CVS.
-//
-//Revision 1.1.1.1  2006/04/29 08:55:45  guy
-//Initial import.
-//
-//Revision 1.1.1.1  2006/03/29 13:21:28  guy
-//Imported.
-//
-//Revision 1.1.1.1  2006/03/23 16:25:28  guy
-//Imported.
-//
-//Revision 1.1.1.1  2006/03/22 13:46:53  guy
-//Import.
-//
-//Revision 1.2  2006/03/15 10:31:42  guy
-//Formatted code.
-//
-//Revision 1.1.1.1  2006/03/09 14:59:10  guy
-//Imported 3.0 development into CVS repository.
-//
-//Revision 1.1  2005/10/21 08:16:13  guy
-//Added generic abstract classes to support other protocols.
-//
 package com.atomikos.icatch.jaxws;
 
 

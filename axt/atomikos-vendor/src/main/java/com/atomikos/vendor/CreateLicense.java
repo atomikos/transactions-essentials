@@ -1,39 +1,3 @@
-//$Id: CreateLicense.java,v 1.1.1.1 2006/10/02 15:21:29 guy Exp $
-//$Log: CreateLicense.java,v $
-//Revision 1.1.1.1  2006/10/02 15:21:29  guy
-//Import into CVS.
-//
-//Revision 1.1.1.1  2006/04/29 08:55:51  guy
-//Initial import.
-//
-//Revision 1.1.1.1  2006/03/29 13:21:41  guy
-//Imported.
-//
-//Revision 1.1.1.1  2006/03/23 16:25:37  guy
-//Imported.
-//
-//Revision 1.1.1.1  2006/03/22 13:47:04  guy
-//Import.
-//
-//Revision 1.1.1.1  2006/03/09 14:59:47  guy
-//Imported 3.0 development into CVS repository.
-//
-//Revision 1.2  2004/03/25 14:20:28  guy
-//Added support for license-limited features
-//
-//Revision 1.1.2.3  2004/03/17 17:48:03  guy
-//Added support for developer license
-//
-//Revision 1.1.2.2  2004/01/29 15:55:32  guy
-//Improved license framework.
-//
-//Revision 1.1.2.1  2003/05/07 09:42:02  guy
-//Re-added files to this module; they seemed to be gone.
-//
-//Revision 1.1.1.1  2002/01/29 13:02:14  guy
-//Vendor-specific tools
-//
-
 package com.atomikos.vendor;
 import java.io.FileOutputStream;
 import java.io.IOException;

@@ -1,5 +1,3 @@
-//YOU NEED FirstSQL IN ORDER TO COMPILE AND RUN THIS!
-
 package simple.xa;
 
 import java.sql.ResultSet;

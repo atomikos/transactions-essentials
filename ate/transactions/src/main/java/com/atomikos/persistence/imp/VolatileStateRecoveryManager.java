@@ -1,35 +1,3 @@
-//$Id: VolatileStateRecoveryManager.java,v 1.2 2006/09/15 08:39:24 guy Exp $
-//$Log: VolatileStateRecoveryManager.java,v $
-//Revision 1.2  2006/09/15 08:39:24  guy
-//Merged-in changes from 3.0.1 release.
-//
-//Revision 1.1.1.1.2.1  2006/09/12 07:31:52  guy
-//FIXED 10041
-//
-//Revision 1.1.1.1  2006/08/29 10:01:06  guy
-//Import of 3.0 essentials edition.
-//
-//Revision 1.1.1.1  2006/04/29 08:55:38  guy
-//Initial import.
-//
-//Revision 1.1.1.1  2006/03/29 13:21:32  guy
-//Imported.
-//
-//Revision 1.1.1.1  2006/03/23 16:25:28  guy
-//Imported.
-//
-//Revision 1.1.1.1  2006/03/22 13:46:55  guy
-//Import.
-//
-//Revision 1.2  2006/03/15 10:32:07  guy
-//Formatted code.
-//
-//Revision 1.1.1.1  2006/03/09 14:59:16  guy
-//Imported 3.0 development into CVS repository.
-//
-//Revision 1.1  2004/10/18 08:48:55  guy
-//Added a VolatileStateRecoveryManager to support disabled recovery.
-//
 package com.atomikos.persistence.imp;
 
 import java.util.HashMap;

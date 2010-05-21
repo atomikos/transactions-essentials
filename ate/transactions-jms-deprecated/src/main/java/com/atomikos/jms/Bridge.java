@@ -1,38 +1,3 @@
-//$Id: Bridge.java,v 1.2 2006/10/30 10:37:09 guy Exp $
-//$Log: Bridge.java,v $
-//Revision 1.2  2006/10/30 10:37:09  guy
-//Merged in changes of 3.1.0 release
-//
-//Revision 1.1.1.1.4.1  2006/10/20 15:09:57  guy
-//Corrected javadoc
-//
-//Revision 1.1.1.1  2006/08/29 10:01:12  guy
-//Import of 3.0 essentials edition.
-//
-//Revision 1.1.1.1  2006/04/29 08:55:38  guy
-//Initial import.
-//
-//Revision 1.1.1.1  2006/03/29 13:21:31  guy
-//Imported.
-//
-//Revision 1.1.1.1  2006/03/23 16:25:28  guy
-//Imported.
-//
-//Revision 1.1.1.1  2006/03/22 13:46:54  guy
-//Import.
-//
-//Revision 1.2  2006/03/15 10:32:04  guy
-//Formatted code.
-//
-//Revision 1.1.1.1  2006/03/09 14:59:15  guy
-//Imported 3.0 development into CVS repository.
-//
-//Revision 1.2  2005/05/11 10:41:24  guy
-//Updated javadoc.
-//
-//Revision 1.1  2005/01/07 17:07:18  guy
-//Added JMS receiver support (lightweigh MDB), and JMS queue bridging.
-//
 package com.atomikos.jms;
 
 import java.io.Serializable;

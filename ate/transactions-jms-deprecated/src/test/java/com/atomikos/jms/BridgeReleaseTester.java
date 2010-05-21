@@ -1,29 +1,3 @@
-//$Id: BridgeReleaseTester.java,v 1.1.1.1 2006/08/29 10:01:14 guy Exp $
-//$Log: BridgeReleaseTester.java,v $
-//Revision 1.1.1.1  2006/08/29 10:01:14  guy
-//Import of 3.0 essentials edition.
-//
-//Revision 1.1.1.1  2006/04/29 08:55:39  guy
-//Initial import.
-//
-//Revision 1.1.1.1  2006/03/29 13:21:34  guy
-//Imported.
-//
-//Revision 1.1.1.1  2006/03/23 16:25:29  guy
-//Imported.
-//
-//Revision 1.1.1.1  2006/03/22 13:46:56  guy
-//Import.
-//
-//Revision 1.1.1.1  2006/03/09 14:59:20  guy
-//Imported 3.0 development into CVS repository.
-//
-//Revision 1.2  2005/04/29 12:07:15  guy
-//Added test for rollback after bridge failure.
-//
-//Revision 1.1  2005/04/29 11:47:06  guy
-//Moved bridge tests to separate class to avoid interference.
-//
 package com.atomikos.jms;
 import java.io.Serializable;
 

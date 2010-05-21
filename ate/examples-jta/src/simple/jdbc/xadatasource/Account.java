@@ -1,5 +1,3 @@
-//YOU NEED FirstSQL TO COMPILE AND RUN THIS!
-
 package simple.jdbc.xadatasource;
 
 import java.sql.Connection;
