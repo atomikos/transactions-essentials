@@ -20,8 +20,9 @@ public class FileLogStreamTestJUnit extends TestCaseWithTemporaryOutputFolder
 	
 	private FileLogStream getLogStream() throws IOException
 	{
-		String dir = getTemporaryOutputDir();
+		String dir = getTemporaryOutputDirAsAbsolutePath();
 		if ( ! dir.endsWith ( "/" ) ) dir = dir + "/";
+		System.err.println ( "Writing to: " + dir );
 		return new FileLogStream ( dir  , "TESTLOG", null );
 	
 	}

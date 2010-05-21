@@ -45,7 +45,7 @@ extends TransactionServiceTestCase
     {
         super.setUp();
         
-        tidmgr = new UniqueIdMgr ( ID_MGR_NAME , getTemporaryOutputDir() + "/" );
+        tidmgr = new UniqueIdMgr ( ID_MGR_NAME , getTemporaryOutputDirAsAbsolutePath() + "/" );
     }
     
     
@@ -376,14 +376,14 @@ extends TransactionServiceTestCase
          TestXATransactionalResource res2 = 
           new TestXATransactionalResource ( xares1 , "TestXAResource1");
          Configuration.addResource ( res2 );
-         FileOutputStream fout = new FileOutputStream ( "./target/XARecoveryTestFile.tmp");
+         FileOutputStream fout = new FileOutputStream ( getTemporaryOutputDirAsAbsolutePath() + "/XARecoveryTestFile.tmp");
         ObjectOutputStream out = new ObjectOutputStream ( fout );
         out.writeObject ( restx1 );
         out.close();
         fout.close();
         
        //read in again
-       FileInputStream fin = new FileInputStream ("./target/XARecoveryTestFile.tmp");
+       FileInputStream fin = new FileInputStream (getTemporaryOutputDirAsAbsolutePath() + "/XARecoveryTestFile.tmp");
        ObjectInputStream in = new ObjectInputStream ( fin );
        restx1 = ( XAResourceTransaction ) in.readObject();
        HeuristicMessage[] msgs = restx1.getHeuristicMessages();

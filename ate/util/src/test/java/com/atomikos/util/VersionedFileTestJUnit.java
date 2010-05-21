@@ -12,7 +12,7 @@ import junit.framework.TestCase;
 public class VersionedFileTestJUnit extends TestCase {
 
 	private static final String SUFFIX = ".dat";
-	private static final String BASEDIR = "./target/";
+	private static final String BASEDIR = "./";
 	
 	private VersionedFile file;
 	

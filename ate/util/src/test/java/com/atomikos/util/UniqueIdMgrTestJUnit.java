@@ -8,7 +8,7 @@ public class UniqueIdMgrTestJUnit extends TestCase {
 	
 	protected void setUp() throws Exception {
 		super.setUp();
-		idmgr = new UniqueIdMgr ( "./target/testserver" );
+		idmgr = new UniqueIdMgr ( "./testserver" );
 	}
 	
 	public void testNoDuplicatesAcrossEpochs()

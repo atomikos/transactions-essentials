@@ -4,36 +4,18 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.atomikos</groupId>
-    <artifactId>atomikos-parent</artifactId>
+    <artifactId>atomikos-all</artifactId>
     <version>3.7.0-SNAPSHOT</version>
     <!-- With maven, a parent pom MUST have "pom" for packaging -->
     <packaging>pom</packaging>
-    <name>Atomikos Parent POM</name>
+    <name>Atomikos All POM</name>
     <properties>
         <!-- we don't want to depend on platform's default encoding -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-    <!--
-         each modules has junit 3.8 as dependency under scope "test"
-         (non-transitive, not used for compilation but tests)
-     -->
-    <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>3.8.2</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
     
-    <!-- see http://maven.apache.org/scm/ -->
-    <!-- scm tag is VERY useful during the release process  -->
-    <scm>
-        <connection>scm:hg:https://atomikos.kilnhg.com/Repo/Repositories/Group/development</connection>
-        <url>scm:hg:https://atomikos.kilnhg.com/Repo/Repositories/Group/development</url>
-    </scm>
-    
+  
     <build>
         <plugins>
             <plugin>

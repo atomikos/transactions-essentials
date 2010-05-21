@@ -9,6 +9,16 @@
 	<!-- With maven, a parent pom MUST have "pom" for packaging -->
 	<packaging>pom</packaging>
 	<name>TransactionsEssentials Parent POM</name>
+    
+    
+    <!-- see http://maven.apache.org/scm/ -->
+    <!-- scm tag is VERY useful during the release process  -->
+    <scm>
+        <connection>scm:hg:https://atomikos.kilnhg.com/Repo/Repositories/Group/development</connection>
+        <url>scm:hg:https://atomikos.kilnhg.com/Repo/Repositories/Group/development</url>
+    </scm>
+    
+    
 	<!--<properties> we don't want to depend on platform's default encoding 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding> </properties> -->
 
