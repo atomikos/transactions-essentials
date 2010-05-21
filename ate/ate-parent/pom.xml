@@ -78,7 +78,7 @@
 					<properties>
 						<year>${project.inceptionYear}</year>
 						<company>Atomikos</company>
-						<email>contact@atomikos.com</email>
+						<email>info@atomikos.com</email>
 					</properties>
 					<encoding>UTF-8</encoding>
 					<!--<headerDefinitions>
