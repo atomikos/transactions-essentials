@@ -1,6 +1,0 @@
-version = 3.6.5
-Export-Package: com.atomikos*;version = 3.6.5
-Bundle-Version: ${version}
-Bundle-Description: transactions jta module 
-Bundle-Name: atomikos-transactions-jta
-Bundle-SymbolicName: com.atomikos.transactions-jta

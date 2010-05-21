@@ -1,7 +1,0 @@
-version = 3.6.5
-Export-Package: com.atomikos*;version = 3.6.5
-Bundle-Version: ${version}
-Bundle-Description: transactions core module 
-Bundle-Name: atomikos-transactions
-Bundle-SymbolicName: com.atomikos.transactions
-Import-Package: com.atomikos.datasource.xa;resolution:=optional,com.atomikos.jdbc.nonxa;resolution:=optional, *;resolution:=optional 
