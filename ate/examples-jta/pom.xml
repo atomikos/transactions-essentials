@@ -3,16 +3,15 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<!--<parent>
-		<groupId>com.atomikos</groupId>
-		<artifactId>ate-parent</artifactId>
-		<version>3.7.0-SNAPSHOT</version>
-		<relativePath>../ate-parent/pom.xml</relativePath>
-	</parent>-->
+        <groupId>com.atomikos</groupId>
+        <artifactId>ate</artifactId>
+        <version>3.7.0-SNAPSHOT</version>
+    </parent>-->
 
 	<groupId>com.atomikos</groupId>
 	<artifactId>examples-jta</artifactId>
 	<version>3.7.0-SNAPSHOT</version>
-	<name>Atomikos Util</name>
+	<name>Examples JTA</name>
 
 <build>
     <plugins>
@@ -33,6 +32,25 @@
               <overWriteIfNewer>true</overWriteIfNewer>
             </configuration>
           </execution>
+        </executions>
+      </plugin>
+      
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.2-beta-5</version>
+        <executions>
+          <execution>
+            <id>copy-dependencies</id>
+            <phase>package</phase>
+            <goals>
+              <goal>assembly</goal>
+            </goals>
+        <configuration>
+          <descriptors>
+            <descriptor>src/main/assembly/distribution.xml</descriptor>
+          </descriptors>
+        </configuration>
+        </execution>
         </executions>
       </plugin>
     </plugins>

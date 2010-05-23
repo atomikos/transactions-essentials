@@ -81,5 +81,7 @@
         <module>transactions-essentials</module>
         <module>transactions-hibernate2</module>
         <module>transactions-hibernate3</module>
+        <module>examples-jta</module>
+        <module>examples-jta-spring</module>
     </modules>
 </project>
