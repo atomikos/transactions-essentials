@@ -59,6 +59,7 @@
 						<headerDefinition>def2.xml</headerDefinition>
 					</headerDefinitions>-->
                 </configuration>
+                
                 <executions>
                     <execution>
                         <goals>
@@ -83,5 +84,6 @@
         <module>transactions-hibernate3</module>
         <module>examples-jta</module>
         <module>examples-jta-spring</module>
+         <module>documentation</module>
     </modules>
 </project>
