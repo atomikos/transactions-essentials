@@ -33,7 +33,7 @@
 				<configuration>
 					<highlightSource>1</highlightSource>
 					<includes>manuals/JTA/JtaGuide.xml,manuals/TransactionsAPI/*.xml</includes>
-					<foCustomization>resources/atomikos-docbook.xsl</foCustomization>
+					<foCustomization>${basedir}/resources/atomikos-docbook.xsl</foCustomization>
 				</configuration>
 			</plugin>
 		</plugins>
