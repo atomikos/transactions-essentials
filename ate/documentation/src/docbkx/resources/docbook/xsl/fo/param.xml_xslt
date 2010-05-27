@@ -1,0 +1,906 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title>FO Parameter Reference</title><meta name="generator" content="DocBook XSL Stylesheets V1.66.1"/></head><body><div class="book" lang="en"><div class="titlepage"><div><div><h1 class="title"><a id="d50e1"/>FO Parameter Reference</h1></div><div><div class="author"><h3 class="author"><span class="firstname">Norman</span> <span class="surname">Walsh</span></h3></div></div><div><p class="releaseinfo">
+$Id: param.xml_xslt,v 1.1.1.1 2006/08/29 10:00:55 guy Exp $
+</p></div><div><p class="copyright">Copyright © 1999, 2000, 2001,  Norman Walsh</p></div></div><hr/></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="preface"><a href="#d50e21">Introduction</a></span></dt><dt><span class="reference"><a href="#d50e68">I. Admonitions</a></span></dt><dd><dl><dt><a href="#admon.graphics">admon.graphics</a> - Use graphics in admonitions?</dt><dt><a href="#admon.graphics.extension">admon.graphics.extension</a> - Extension for admonition graphics</dt><dt><a href="#admon.graphics.path">admon.graphics.path</a> - Path to admonition graphics</dt><dt><a href="#admon.textlabel">admon.textlabel</a> - Use text label in admonitions?</dt><dt><a href="#admonition.title.properties">admonition.title.properties</a> - To set the style for admonitions titles.</dt><dt><a href="#admonition.properties">admonition.properties</a> - To set the style for admonitions.</dt></dl></dd><dt><span class="reference"><a href="#d50e179">II. Callouts</a></span></dt><dd><dl><dt><a href="#callout.defaultcolumn">callout.defaultcolumn</a> - Indicates what column callouts appear in by default</dt><dt><a href="#callout.graphics">callout.graphics</a> - Use graphics for callouts?</dt><dt><a href="#callout.graphics.extension">callout.graphics.extension</a> - Extension for callout graphics</dt><dt><a href="#callout.graphics.number.limit">callout.graphics.number.limit</a> - Number of the largest callout graphic</dt><dt><a href="#callout.graphics.path">callout.graphics.path</a> - Path to callout graphics</dt><dt><a href="#callout.unicode">callout.unicode</a> - Use Unicode characters rather than images for callouts.</dt><dt><a href="#callout.unicode.font">callout.unicode.font</a> - Specify a font for Unicode glyphs</dt><dt><a href="#callout.unicode.number.limit">callout.unicode.number.limit</a> - Number of the largest callout graphic</dt><dt><a href="#callout.unicode.start.character">callout.unicode.start.character</a> - First Unicode character to use, decimal value.</dt><dt><a href="#callouts.extension">callouts.extension</a> - Enable the callout extension</dt></dl></dd><dt><span class="reference"><a href="#d50e403">III. ToC/LoT/Index Generation</a></span></dt><dd><dl><dt><a href="#autotoc.label.separator">autotoc.label.separator</a> - Separator between labels and titles in the ToC</dt><dt><a href="#process.empty.source.toc">process.empty.source.toc</a> - FIXME:</dt><dt><a href="#process.source.toc">process.source.toc</a> - FIXME:</dt><dt><a href="#generate.toc">generate.toc</a> - Control generation of ToCs and LoTs</dt><dt><a href="#generate.index">generate.index</a> - Do you want an index?</dt><dt><a href="#make.index.markup">make.index.markup</a> - Generate XML index markup in the index?</dt><dt><a href="#index.preferred.page.properties">index.preferred.page.properties</a> - Properties used to emphasize page number references for
+significant index terms</dt><dt><a href="#xep.index.item.properties">xep.index.item.properties</a> - Properties associated with XEP index-items</dt><dt><a href="#toc.section.depth">toc.section.depth</a> - How deep should recursive sections appear
+in the TOC?</dt><dt><a href="#toc.indent.width">toc.indent.width</a> - Amount of indentation for TOC entries</dt><dt><a href="#toc.margin.properties">toc.margin.properties</a> - Margin properties used on Tables of Contents</dt><dt><a href="#bridgehead.in.toc">bridgehead.in.toc</a> - Should bridgehead elements appear in the TOC?</dt><dt><a href="#generate.section.toc.level">generate.section.toc.level</a> - Control depth of TOC generation in sections</dt></dl></dd><dt><span class="reference"><a href="#d50e763">IV. Processor Extensions</a></span></dt><dd><dl><dt><a href="#arbortext.extensions">arbortext.extensions</a> - Enable Arbortext extensions?</dt><dt><a href="#axf.extensions">axf.extensions</a> - Enable XSL Formatter extensions?</dt><dt><a href="#fop.extensions">fop.extensions</a> - Enable FOP extensions?</dt><dt><a href="#passivetex.extensions">passivetex.extensions</a> - Enable PassiveTeX extensions?</dt><dt><a href="#tex.math.in.alt">tex.math.in.alt</a> - TeX notation used for equations</dt><dt><a href="#tex.math.delims">tex.math.delims</a> - Should be equations outputed for processing by TeX
+automatically surrounded by math mode delimiters</dt><dt><a href="#xep.extensions">xep.extensions</a> - Enable XEP extensions?</dt></dl></dd><dt><span class="reference"><a href="#d50e944">V. Stylesheet Extensions</a></span></dt><dd><dl><dt><a href="#linenumbering.everyNth">linenumbering.everyNth</a> - Indicate which lines should be numbered</dt><dt><a href="#linenumbering.extension">linenumbering.extension</a> - Enable the line numbering extension</dt><dt><a href="#linenumbering.separator">linenumbering.separator</a> - Specify a separator between line numbers and lines</dt><dt><a href="#linenumbering.width">linenumbering.width</a> - Indicates the width of line numbers</dt><dt><a href="#tablecolumns.extension">tablecolumns.extension</a> - Enable the table columns extension function</dt><dt><a href="#textinsert.extension">textinsert.extension</a> - Enable the textinsert extension element</dt><dt><a href="#use.extensions">use.extensions</a> - Enable extensions</dt></dl></dd><dt><span class="reference"><a href="#d50e1083">VI. Automatic labelling</a></span></dt><dd><dl><dt><a href="#appendix.autolabel">appendix.autolabel</a> - Are Appendixes automatically enumerated?</dt><dt><a href="#chapter.autolabel">chapter.autolabel</a> - Are chapters automatically enumerated?</dt><dt><a href="#part.autolabel">part.autolabel</a> - Are parts and references enumerated?</dt><dt><a href="#preface.autolabel">preface.autolabel</a> - Are prefaces enumerated?</dt><dt><a href="#section.autolabel">section.autolabel</a> - Are sections enumerated?</dt><dt><a href="#section.label.includes.component.label">section.label.includes.component.label</a> - Do section labels include the component label?</dt><dt><a href="#label.from.part">label.from.part</a> - Renumber chapters in each part?</dt></dl></dd><dt><span class="reference"><a href="#d50e1234">VII. XSLT Processing</a></span></dt><dd><dl><dt><a href="#rootid">rootid</a> - Specify the root element to format</dt></dl></dd><dt><span class="reference"><a href="#d50e1261">VIII. Meta/*Info</a></span></dt><dd><dl><dt><a href="#make.single.year.ranges">make.single.year.ranges</a> - Print single-year ranges (e.g., 1998-1999)</dt><dt><a href="#make.year.ranges">make.year.ranges</a> - Collate copyright years into ranges?</dt><dt><a href="#author.othername.in.middle">author.othername.in.middle</a> - Is othername in author a
+middle name?</dt></dl></dd><dt><span class="reference"><a href="#d50e1342">IX. Reference Pages</a></span></dt><dd><dl><dt><a href="#funcsynopsis.decoration">funcsynopsis.decoration</a> - Decorate elements of a FuncSynopsis?</dt><dt><a href="#funcsynopsis.style">funcsynopsis.style</a> - What style of 'FuncSynopsis' should be generated?</dt><dt><a href="#function.parens">function.parens</a> - Generate parens after a function?</dt><dt><a href="#refentry.generate.name">refentry.generate.name</a> - Output NAME header before 'RefName'(s)?</dt><dt><a href="#refentry.generate.title">refentry.generate.title</a> - Output title before 'RefName'(s)?</dt><dt><a href="#refentry.pagebreak">refentry.pagebreak</a> - Start each refentry on a new page</dt><dt><a href="#refentry.title.properties">refentry.title.properties</a> - Title properties for a refentry title</dt><dt><a href="#refentry.xref.manvolnum">refentry.xref.manvolnum</a> - Output manvolnum as part of 
+refentry cross-reference?</dt></dl></dd><dt><span class="reference"><a href="#d50e1552">X. Tables</a></span></dt><dd><dl><dt><a href="#default.table.width">default.table.width</a> - The default width of tables</dt><dt><a href="#nominal.table.width">nominal.table.width</a> - The (absolute) nominal width of tables</dt><dt><a href="#table.cell.padding">table.cell.padding</a> - </dt><dt><a href="#table.frame.border.thickness">table.frame.border.thickness</a> - Specifies the thickness of the frame border</dt><dt><a href="#table.frame.border.style">table.frame.border.style</a> - </dt><dt><a href="#table.frame.border.color">table.frame.border.color</a> - </dt><dt><a href="#table.cell.border.thickness">table.cell.border.thickness</a> - </dt><dt><a href="#table.cell.border.style">table.cell.border.style</a> - </dt><dt><a href="#table.cell.border.color">table.cell.border.color</a> - </dt></dl></dd><dt><span class="reference"><a href="#d50e1713">XI. Linking</a></span></dt><dd><dl><dt><a href="#target.database.document">target.database.document</a> - Name of master database file for resolving
+olinks</dt><dt><a href="#use.local.olink.style">use.local.olink.style</a> - Process olinks using xref style of current
+document</dt><dt><a href="#current.docid">current.docid</a> - targetdoc identifier for the document being
+processed</dt><dt><a href="#olink.doctitle">olink.doctitle</a> - show the document title for external olinks?</dt></dl></dd><dt><span class="reference"><a href="#d50e1835">XII. QAndASet</a></span></dt><dd><dl><dt><a href="#qandadiv.autolabel">qandadiv.autolabel</a> - Are divisions in QAndASets enumerated?</dt><dt><a href="#qanda.inherit.numeration">qanda.inherit.numeration</a> - Does enumeration of QandASet components inherit the numeration of parent elements?</dt><dt><a href="#qanda.defaultlabel">qanda.defaultlabel</a> - Sets the default for defaultlabel on QandASet.</dt></dl></dd><dt><span class="reference"><a href="#d50e1895">XIII. Bibliography</a></span></dt><dd><dl><dt><a href="#biblioentry.item.separator">biblioentry.item.separator</a> - Text to separate bibliography entries</dt><dt><a href="#bibliography.collection">bibliography.collection</a> - Name of the bibliography collection file</dt><dt><a href="#bibliography.numbered">bibliography.numbered</a> - Should bibliography entries be numbered?</dt></dl></dd><dt><span class="reference"><a href="#d50e2013">XIV. Glossary</a></span></dt><dd><dl><dt><a href="#glossterm.auto.link">glossterm.auto.link</a> - Generate links from glossterm to glossentry automaticaly?</dt><dt><a href="#firstterm.only.link">firstterm.only.link</a> - Does automatic glossterm linking only apply to firstterms?</dt><dt><a href="#glossary.collection">glossary.collection</a> - Name of the glossary collection file</dt><dt><a href="#glossterm.separation">glossterm.separation</a> - Separation between glossary terms and descriptions in list mode</dt><dt><a href="#glossterm.width">glossterm.width</a> - Width of glossterm in list presentation mode</dt><dt><a href="#glossary.as.blocks">glossary.as.blocks</a> - Present glossarys using blocks instead of lists?</dt><dt><a href="#glosslist.as.blocks">glosslist.as.blocks</a> - Use blocks for glosslists?</dt><dt><a href="#glossentry.show.acronym">glossentry.show.acronym</a> - Display glossentry acronyms?</dt></dl></dd><dt><span class="reference"><a href="#d50e2380">XV. Miscellaneous</a></span></dt><dd><dl><dt><a href="#formal.procedures">formal.procedures</a> - Selects formal or informal procedures</dt><dt><a href="#formal.title.placement">formal.title.placement</a> - </dt><dt><a href="#runinhead.default.title.end.punct">runinhead.default.title.end.punct</a> - Default punctuation character on a run-in-head</dt><dt><a href="#runinhead.title.end.punct">runinhead.title.end.punct</a> - Characters that count as punctuation on a run-in-head</dt><dt><a href="#show.comments">show.comments</a> - Display comment elements?</dt><dt><a href="#punct.honorific">punct.honorific</a> - Punctuation after an honorific in a personal name.</dt><dt><a href="#segmentedlist.as.table">segmentedlist.as.table</a> - Format segmented lists as tables?</dt><dt><a href="#variablelist.as.blocks">variablelist.as.blocks</a> - Format variablelists lists as blocks?</dt><dt><a href="#blockquote.properties">blockquote.properties</a> - To set the style for block quotations.</dt><dt><a href="#ulink.show">ulink.show</a> - Display URLs after ulinks?</dt><dt><a href="#ulink.footnotes">ulink.footnotes</a> - Generate footnotes for ULinks?</dt><dt><a href="#ulink.footnote.number.format">ulink.footnote.number.format</a> - Identifies the format used for ulink footnote numbers</dt><dt><a href="#ulink.hyphenate">ulink.hyphenate</a> - Allow URLs to be automatically hyphenated</dt><dt><a href="#shade.verbatim">shade.verbatim</a> - Should verbatim environments be shaded?</dt><dt><a href="#shade.verbatim.style">shade.verbatim.style</a> - Properties that specify the style of shaded verbatim listings</dt><dt><a href="#use.svg">use.svg</a> - Allow SVG in the result tree?</dt><dt><a href="#use.role.as.xrefstyle">use.role.as.xrefstyle</a> - Use role attribute for
+xrefstyle on xref?</dt><dt><a href="#menuchoice.separator">menuchoice.separator</a> - </dt><dt><a href="#menuchoice.menu.separator">menuchoice.menu.separator</a> - </dt><dt><a href="#default.float.class">default.float.class</a> - Specifies the default float class</dt><dt><a href="#footnote.number.format">footnote.number.format</a> - Identifies the format used for footnote numbers</dt><dt><a href="#table.footnote.number.format">table.footnote.number.format</a> - Identifies the format used for footnote numbers in tables</dt><dt><a href="#footnote.number.symbols">footnote.number.symbols</a> - </dt><dt><a href="#table.footnote.number.symbols">table.footnote.number.symbols</a> - </dt><dt><a href="#xref.with.number.and.title">xref.with.number.and.title</a> - Use number and title in cross references</dt><dt><a href="#superscript.properties">superscript.properties</a> - Properties associated with superscripts</dt><dt><a href="#subscript.properties">subscript.properties</a> - Properties associated with subscripts</dt></dl></dd><dt><span class="reference"><a href="#d50e3094">XVI. Graphics</a></span></dt><dd><dl><dt><a href="#graphic.default.extension">graphic.default.extension</a> - Default extension for graphic filenames</dt><dt><a href="#default.image.width">default.image.width</a> - The default width of images</dt><dt><a href="#preferred.mediaobject.role">preferred.mediaobject.role</a> - Select which mediaobject to use based on
+this value of an object's role attribute.
+</dt><dt><a href="#use.role.for.mediaobject">use.role.for.mediaobject</a> - Use role attribute 
+value for selecting which of several objects within a mediaobject to use.
+</dt><dt><a href="#ignore.image.scaling">ignore.image.scaling</a> - Tell the stylesheets to ignore the author's image scaling attributes</dt></dl></dd><dt><span class="reference"><a href="#d50e3266">XVII. Pagination and General Styles</a></span></dt><dd><dl><dt><a href="#page.height">page.height</a> - The height of the physical page</dt><dt><a href="#page.height.portrait">page.height.portrait</a> - Specify the physical size of the long edge of the page</dt><dt><a href="#page.margin.bottom">page.margin.bottom</a> - The bottom margin of the page</dt><dt><a href="#page.margin.inner">page.margin.inner</a> - The inner page margin</dt><dt><a href="#page.margin.outer">page.margin.outer</a> - The outer page margin</dt><dt><a href="#page.margin.top">page.margin.top</a> - The top margin of the page</dt><dt><a href="#page.orientation">page.orientation</a> - Select the page orientation</dt><dt><a href="#page.width">page.width</a> - The width of the physical page</dt><dt><a href="#page.width.portrait">page.width.portrait</a> - Specify the physical size of the short edge of the page</dt><dt><a href="#paper.type">paper.type</a> - Select the paper type</dt><dt><a href="#double.sided">double.sided</a> - Is the document to be printed double sided?</dt><dt><a href="#body.margin.bottom">body.margin.bottom</a> - The bottom margin of the body text</dt><dt><a href="#body.margin.top">body.margin.top</a> - To specify the size of the top margin of a page</dt><dt><a href="#alignment">alignment</a> - Specify the default text alignment</dt><dt><a href="#hyphenate">hyphenate</a> - Specify hyphenation behavior</dt><dt><a href="#line-height">line-height</a> - Specify the line-height property</dt><dt><a href="#column.count.back">column.count.back</a> - Number of columns on back matter pages</dt><dt><a href="#column.count.body">column.count.body</a> - Number of columns on body pages</dt><dt><a href="#column.count.front">column.count.front</a> - Number of columns on front matter pages</dt><dt><a href="#column.count.index">column.count.index</a> - Number of columns on index pages</dt><dt><a href="#column.count.lot">column.count.lot</a> - Number of columns on a 'List-of-Titles' page</dt><dt><a href="#column.count.titlepage">column.count.titlepage</a> - Number of columns on a title page</dt><dt><a href="#column.gap.back">column.gap.back</a> - Gap between columns in back matter</dt><dt><a href="#column.gap.body">column.gap.body</a> - Gap between columns in the body</dt><dt><a href="#column.gap.front">column.gap.front</a> - Gap between columns in the front matter</dt><dt><a href="#column.gap.index">column.gap.index</a> - Gap between columns in the index</dt><dt><a href="#column.gap.lot">column.gap.lot</a> - Gap between columns on a 'List-of-Titles' page</dt><dt><a href="#column.gap.titlepage">column.gap.titlepage</a> - Gap between columns on title pages</dt><dt><a href="#region.after.extent">region.after.extent</a> - Specifies the height of the footer.</dt><dt><a href="#region.before.extent">region.before.extent</a> - Specifies the height of the header</dt><dt><a href="#default.units">default.units</a> - Default units for an unqualified dimension</dt><dt><a href="#normal.para.spacing">normal.para.spacing</a> - What space do you want between normal paragraphs</dt><dt><a href="#body.font.master">body.font.master</a> - Specifies the default point size for body text</dt><dt><a href="#body.font.size">body.font.size</a> - Specifies the default font size for body text</dt><dt><a href="#footnote.font.size">footnote.font.size</a> - The font size for footnotes</dt><dt><a href="#title.margin.left">title.margin.left</a> - Adjust the left margin for titles</dt><dt><a href="#draft.mode">draft.mode</a> - Select draft mode</dt><dt><a href="#draft.watermark.image">draft.watermark.image</a> - The URI of the image to be used for draft watermarks</dt><dt><a href="#headers.on.blank.pages">headers.on.blank.pages</a> - Put headers on blank pages?</dt><dt><a href="#footers.on.blank.pages">footers.on.blank.pages</a> - Put footers on blank pages?</dt><dt><a href="#header.rule">header.rule</a> - Rule under headers?</dt><dt><a href="#footer.rule">footer.rule</a> - Rule over footers?</dt><dt><a href="#header.content.properties">header.content.properties</a> - </dt><dt><a href="#footer.content.properties">footer.content.properties</a> - </dt><dt><a href="#marker.section.level">marker.section.level</a> - Control depth of sections shown in running headers or footers</dt></dl></dd><dt><span class="reference"><a href="#d50e4270">XVIII. Font Families</a></span></dt><dd><dl><dt><a href="#body.font.family">body.font.family</a> - The default font family for body text</dt><dt><a href="#dingbat.font.family">dingbat.font.family</a> - The font family for copyright, quotes, and other symbols</dt><dt><a href="#monospace.font.family">monospace.font.family</a> - The default font family for monospace environments</dt><dt><a href="#sans.font.family">sans.font.family</a> - The default sans-serif font family</dt><dt><a href="#title.font.family">title.font.family</a> - The default font family for titles</dt><dt><a href="#symbol.font.family">symbol.font.family</a> - The font families to be searched for symbols outside
+    of the body font</dt></dl></dd><dt><span class="reference"><a href="#d50e4383">XIX. Lists</a></span></dt><dd><dl><dt><a href="#list.block.spacing">list.block.spacing</a> - What spacing do you want before and after lists?</dt><dt><a href="#list.item.spacing">list.item.spacing</a> - What space do you want between list items?</dt><dt><a href="#compact.list.item.spacing">compact.list.item.spacing</a> - What space do you want between list items (when spacing=compact)?</dt><dt><a href="#variablelist.max.termlength">variablelist.max.termlength</a> - Specifies the longest term in variablelists</dt></dl></dd><dt><span class="reference"><a href="#d50e4471">XX. Cross References</a></span></dt><dd><dl><dt><a href="#insert.xref.page.number">insert.xref.page.number</a> - Turns page numbers in xrefs on and off</dt><dt><a href="#xref.properties">xref.properties</a> - Properties associated with cross-reference text</dt><dt><a href="#xref.label-title.separator">xref.label-title.separator</a> - Punctuation or space separating label from title in xref</dt><dt><a href="#xref.label-page.separator">xref.label-page.separator</a> - Punctuation or space separating label from page number in xref</dt><dt><a href="#xref.title-page.separator">xref.title-page.separator</a> - Punctuation or space separating title from page number in xref</dt></dl></dd><dt><span class="reference"><a href="#d50e4634">XXI. Property Sets</a></span></dt><dd><dl><dt><a href="#formal.object.properties">formal.object.properties</a> - Properties associated with a formal object such as a figure, or other component that has a title</dt><dt><a href="#formal.title.properties">formal.title.properties</a> - Style the title element of formal object such as a figure.</dt><dt><a href="#informal.object.properties">informal.object.properties</a> - Properties associated with a formal object such as a figure, or other component that has a title</dt><dt><a href="#monospace.properties">monospace.properties</a> - Properties of monospaced content</dt><dt><a href="#verbatim.properties">verbatim.properties</a> - Properties associated with verbatim text</dt><dt><a href="#monospace.verbatim.properties">monospace.verbatim.properties</a> - What font and size do you want for monospaced content?</dt><dt><a href="#sidebar.properties">sidebar.properties</a> - Attribute set for sidebar properties</dt><dt><a href="#section.title.properties">section.title.properties</a> - Properties for section titles</dt><dt><a href="#section.title.level1.properties">section.title.level1.properties</a> - Properties for level-1 section titles</dt><dt><a href="#section.title.level2.properties">section.title.level2.properties</a> - Properties for level-1 section titles</dt><dt><a href="#section.title.level3.properties">section.title.level3.properties</a> - Properties for level-1 section titles</dt><dt><a href="#section.title.level4.properties">section.title.level4.properties</a> - Properties for level-1 section titles</dt><dt><a href="#section.title.level5.properties">section.title.level5.properties</a> - Properties for level-1 section titles</dt><dt><a href="#section.title.level6.properties">section.title.level6.properties</a> - Properties for level-1 section titles</dt><dt><a href="#section.properties">section.properties</a> - Properties for all section levels</dt><dt><a href="#section.level1.properties">section.level1.properties</a> - Properties for level-1 sections</dt><dt><a href="#section.level2.properties">section.level2.properties</a> - Properties for level-2 sections</dt><dt><a href="#section.level3.properties">section.level3.properties</a> - Properties for level-3 sections</dt><dt><a href="#section.level4.properties">section.level4.properties</a> - Properties for level-4 sections</dt><dt><a href="#section.level5.properties">section.level5.properties</a> - Properties for level-5 sections</dt><dt><a href="#section.level6.properties">section.level6.properties</a> - Properties for level-6 sections</dt><dt><a href="#figure.properties">figure.properties</a> - Properties associated with a figure</dt><dt><a href="#example.properties">example.properties</a> - Properties associated with a example</dt><dt><a href="#equation.properties">equation.properties</a> - Properties associated with a equation</dt><dt><a href="#table.properties">table.properties</a> - Properties associated with a table</dt><dt><a href="#procedure.properties">procedure.properties</a> - Properties associated with a procedure</dt><dt><a href="#root.properties">root.properties</a> - The properties of the fo:root element</dt><dt><a href="#qanda.title.properties">qanda.title.properties</a> - Properties for qanda set titles</dt><dt><a href="#qanda.title.level1.properties">qanda.title.level1.properties</a> - Properties for level-1 qanda set titles</dt><dt><a href="#qanda.title.level2.properties">qanda.title.level2.properties</a> - Properties for level-2 qanda set titles</dt><dt><a href="#qanda.title.level3.properties">qanda.title.level3.properties</a> - Properties for level-3 qanda set titles</dt><dt><a href="#qanda.title.level4.properties">qanda.title.level4.properties</a> - Properties for level-4 qanda set titles</dt><dt><a href="#qanda.title.level5.properties">qanda.title.level5.properties</a> - Properties for level-5 qanda set titles</dt><dt><a href="#qanda.title.level6.properties">qanda.title.level6.properties</a> - Properties for level-6 qanda set titles</dt><dt><a href="#article.appendix.title.properties">article.appendix.title.properties</a> - Properties for appendix titles that appear in an article</dt></dl></dd><dt><span class="reference"><a href="#d50e5347">XXII. Profiling</a></span></dt><dd><dl><dt><a href="#profile.arch">profile.arch</a> - Target profile for arch
+attribute</dt><dt><a href="#profile.condition">profile.condition</a> - Target profile for condition
+attribute</dt><dt><a href="#profile.conformance">profile.conformance</a> - Target profile for conformance
+attribute</dt><dt><a href="#profile.lang">profile.lang</a> - Target profile for lang
+attribute</dt><dt><a href="#profile.os">profile.os</a> - Target profile for os
+attribute</dt><dt><a href="#profile.revision">profile.revision</a> - Target profile for revision
+attribute</dt><dt><a href="#profile.revisionflag">profile.revisionflag</a> - Target profile for revisionflag
+attribute</dt><dt><a href="#profile.role">profile.role</a> - Target profile for role
+attribute</dt><dt><a href="#profile.security">profile.security</a> - Target profile for security
+attribute</dt><dt><a href="#profile.userlevel">profile.userlevel</a> - Target profile for userlevel
+attribute</dt><dt><a href="#profile.vendor">profile.vendor</a> - Target profile for vendor
+attribute</dt><dt><a href="#profile.attribute">profile.attribute</a> - Name of user-specified profiling attribute</dt><dt><a href="#profile.value">profile.value</a> - Target profile for user-specified attribute</dt><dt><a href="#profile.separator">profile.separator</a> - Separator character for compound profile values</dt></dl></dd><dt><span class="reference"><a href="#d50e5928">XXIII. Localization</a></span></dt><dd><dl><dt><a href="#l10n.gentext.language">l10n.gentext.language</a> - Sets the gentext language</dt><dt><a href="#l10n.gentext.default.language">l10n.gentext.default.language</a> - Sets the default language for generated text</dt><dt><a href="#l10n.gentext.use.xref.language">l10n.gentext.use.xref.language</a> - Use the language of target when generating cross-reference text?</dt></dl></dd><dt><span class="reference"><a href="#d50e6023">XXIV. EBNF</a></span></dt><dd><dl><dt><a href="#ebnf.assignment">ebnf.assignment</a> - The EBNF production assignment operator</dt><dt><a href="#ebnf.statement.terminator">ebnf.statement.terminator</a> - Punctuation that ends an EBNF statement.</dt></dl></dd><dt><span class="appendix"><a href="#d50e6093">A. The Stylesheet</a></span></dt></dl></div><div class="list-of-figures"><p><b>List of Figures</b></p><dl><dt>1. <a href="#fig.pagemodel"/></dt></dl></div><div class="preface" lang="en"><div class="titlepage"><div><div><h2 class="title"><a id="d50e21"/>Introduction</h2></div></div></div><p>This is technical reference documentation for the DocBook XSL
+Stylesheets; it documents (some of) the parameters, templates, and
+other elements of the stylesheets.</p><p>This reference describes each of the XSL FO Stylesheet parameters.
+These are the “<span class="quote">easily customizable</span>” parts of the stylesheet.
+If you want to specify an alternate value for one or more of these
+parameters, you can do so in a “<span class="quote">driver</span>” stylesheet.</p><p>For example, if you want to change the <tt class="literal">html.stylesheet</tt>
+to <tt class="filename">reference.css</tt>, you might create a driver
+stylesheet like this:</p><pre class="programlisting">&lt;xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                version='1.0'&gt;
+
+  &lt;xsl:import href="http://docbook.sourceforge.net/release/xsl/current/fo/docbook.xsl"/&gt;
+
+  &lt;xsl:param name="html.stylesheet"&gt;reference.css&lt;/xsl:param&gt;
+
+&lt;/xsl:stylesheet&gt;</pre><p>Naturally, you have to change the
+<tt class="sgmltag-attribute">href</tt> attribute on
+<tt class="literal">&lt;xsl:import&gt;</tt> to point to
+<tt class="filename">docbook.xsl</tt> on your system. (Or
+<tt class="filename">chunk.xsl</tt>, if you're using chunking.)</p><p>This is not intended to be “<span class="quote">user</span>” documentation.
+It is provided for developers writing customization layers for the
+stylesheets, and for anyone who's interested in “<span class="quote">how it
+works</span>”.</p><p>Although I am trying to be thorough, this documentation is known
+to be incomplete. Don't forget to read the source, too :-)</p></div><div class="reference" lang="en"><a id="d50e68"/><div class="titlepage"><div><div><h1 class="title"><a id="d50e68"/>Admonitions</h1></div></div><hr/></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><a href="#admon.graphics">admon.graphics</a> - Use graphics in admonitions?</dt><dt><a href="#admon.graphics.extension">admon.graphics.extension</a> - Extension for admonition graphics</dt><dt><a href="#admon.graphics.path">admon.graphics.path</a> - Path to admonition graphics</dt><dt><a href="#admon.textlabel">admon.textlabel</a> - Use text label in admonitions?</dt><dt><a href="#admonition.title.properties">admonition.title.properties</a> - To set the style for admonitions titles.</dt><dt><a href="#admonition.properties">admonition.properties</a> - To set the style for admonitions.</dt></dl></div><div class="refentry" lang="en"><a id="admon.graphics"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>admon.graphics — Use graphics in admonitions?</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="admon.graphics.frag"/><pre class="programlisting">
+&lt;xsl:param name="admon.graphics" select="0"&gt;&lt;/xsl:param&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e85"/><h2>Description</h2><p>If true (non-zero), admonitions are presented in an alternate style that uses
+a graphic.  Default graphics are provided in the distribution.
+</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="admon.graphics.extension"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>admon.graphics.extension — Extension for admonition graphics</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="admon.graphics.extension.frag"/><pre class="programlisting">&lt;xsl:param name="admon.graphics.extension" select="'.png'"&gt;&lt;/xsl:param&gt;</pre></div><div class="refsect1" lang="en"><a id="d50e104"/><h2>Description</h2><p>Sets the extension to use on admonition graphics.</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="admon.graphics.path"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>admon.graphics.path — Path to admonition graphics</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="admon.graphics.path.frag"/><pre class="programlisting">&lt;xsl:param name="admon.graphics.path"&gt;images/&lt;/xsl:param&gt;</pre></div><div class="refsect1" lang="en"><a id="d50e123"/><h2>Description</h2><p>Sets the path, probably relative to the directory where the HTML
+files are created, to the admonition graphics.
+</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="admon.textlabel"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>admon.textlabel — Use text label in admonitions?</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="admon.textlabel.frag"/><pre class="programlisting">
+&lt;xsl:param name="admon.textlabel" select="1"&gt;&lt;/xsl:param&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e142"/><h2>Description</h2><p>If true (non-zero), admonitions are presented with a generated
+text label such as Note or Warning in the appropriate language.
+If zero, such labels are turned off, but any title child
+of the admonition element are still output.
+The default value is 1.
+</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="admonition.title.properties"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>admonition.title.properties — To set the style for admonitions titles.</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="admonition.title.properties.frag"/><pre class="programlisting">
+&lt;xsl:attribute-set name="admonition.title.properties"&gt;
+  &lt;xsl:attribute name="font-size"&gt;14pt&lt;/xsl:attribute&gt;
+  &lt;xsl:attribute name="font-weight"&gt;bold&lt;/xsl:attribute&gt;
+  &lt;xsl:attribute name="hyphenate"&gt;false&lt;/xsl:attribute&gt;
+  &lt;xsl:attribute name="keep-with-next.within-column"&gt;always&lt;/xsl:attribute&gt;
+&lt;/xsl:attribute-set&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e156"/><h2>Description</h2><p>How do you want admonitions titles styled? </p><p>Set the font-size, weight etc to the style required.</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="admonition.properties"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>admonition.properties — To set the style for admonitions.</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="admonition.properties.frag"/><pre class="programlisting">&lt;xsl:attribute-set name="admonition.properties"&gt;&lt;/xsl:attribute-set&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e172"/><h2>Description</h2><p>How do you want admonitions styled? </p><p>Set the font-size, weight, etc. to the style required</p></div></div></div><div class="reference" lang="en"><a id="d50e179"/><div class="titlepage"><div><div><h1 class="title"><a id="d50e179"/>Callouts</h1></div></div><hr/></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><a href="#callout.defaultcolumn">callout.defaultcolumn</a> - Indicates what column callouts appear in by default</dt><dt><a href="#callout.graphics">callout.graphics</a> - Use graphics for callouts?</dt><dt><a href="#callout.graphics.extension">callout.graphics.extension</a> - Extension for callout graphics</dt><dt><a href="#callout.graphics.number.limit">callout.graphics.number.limit</a> - Number of the largest callout graphic</dt><dt><a href="#callout.graphics.path">callout.graphics.path</a> - Path to callout graphics</dt><dt><a href="#callout.unicode">callout.unicode</a> - Use Unicode characters rather than images for callouts.</dt><dt><a href="#callout.unicode.font">callout.unicode.font</a> - Specify a font for Unicode glyphs</dt><dt><a href="#callout.unicode.number.limit">callout.unicode.number.limit</a> - Number of the largest callout graphic</dt><dt><a href="#callout.unicode.start.character">callout.unicode.start.character</a> - First Unicode character to use, decimal value.</dt><dt><a href="#callouts.extension">callouts.extension</a> - Enable the callout extension</dt></dl></div><div class="refentry" lang="en"><a id="callout.defaultcolumn"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>callout.defaultcolumn — Indicates what column callouts appear in by default</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="callout.defaultcolumn.frag"/><pre class="programlisting">&lt;xsl:param name="callout.defaultcolumn" select="'60'"&gt;&lt;/xsl:param&gt;</pre></div><div class="refsect1" lang="en"><a id="d50e196"/><h2>Description</h2><p>If a callout does not identify a column (for example, if it uses
+the <tt class="literal">linerange</tt> <tt class="sgmltag-attribute">unit</tt>),
+it will appear in the default column.
+</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="callout.graphics"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>callout.graphics — Use graphics for callouts?</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="callout.graphics.frag"/><pre class="programlisting">
+&lt;xsl:param name="callout.graphics" select="'1'"&gt;&lt;/xsl:param&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e221"/><h2>Description</h2><p>If non-zero, callouts are presented with graphics (e.g., reverse-video
+circled numbers instead of "(1)", "(2)", etc.).
+Default graphics are provided in the distribution.
+</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="callout.graphics.extension"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>callout.graphics.extension — Extension for callout graphics</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="callout.graphics.extension.frag"/><pre class="programlisting">&lt;xsl:param name="callout.graphics.extension" select="'.png'"&gt;&lt;/xsl:param&gt;</pre></div><div class="refsect1" lang="en"><a id="d50e240"/><h2>Description</h2><p>Sets the extension to use on callout graphics.</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="callout.graphics.number.limit"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>callout.graphics.number.limit — Number of the largest callout graphic</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="callout.graphics.number.limit.frag"/><pre class="programlisting">&lt;xsl:param name="callout.graphics.number.limit" select="'10'"&gt;&lt;/xsl:param&gt;</pre></div><div class="refsect1" lang="en"><a id="d50e259"/><h2>Description</h2><p>If <i class="parameter"><tt>callout.graphics</tt></i>
+is non-zero, graphics are used to represent
+callout numbers. The value of
+<i class="parameter"><tt>callout.graphics.number.limit</tt></i>
+is
+the largest number for which a graphic exists. If the callout number
+exceeds this limit, the default presentation "(nnn)" will always
+be used.
+</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="callout.graphics.path"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>callout.graphics.path — Path to callout graphics</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="callout.graphics.path.frag"/><pre class="programlisting">
+&lt;xsl:param name="callout.graphics.path" select="'images/callouts/'"&gt;&lt;/xsl:param&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e284"/><h2>Description</h2><p>Sets the path, probably relative to the directory where the HTML
+files are created, to the callout graphics.
+</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="callout.unicode"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>callout.unicode — Use Unicode characters rather than images for callouts.</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="callout.unicode.frag"/><pre class="programlisting">&lt;xsl:param name="callout.unicode" select="0"&gt;&lt;/xsl:param&gt;</pre></div><div class="refsect1" lang="en"><a id="d50e303"/><h2>Description</h2><p>The stylesheets can use either an image of the numbers one to ten, or the single Unicode character which represents the numeral, in white on a black background. Use this to select the Unicode character option.
+</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="callout.unicode.font"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>callout.unicode.font — Specify a font for Unicode glyphs</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="callout.unicode.font.frag"/><pre class="programlisting">&lt;xsl:param name="callout.unicode.font" select="'ZapfDingbats'"&gt;&lt;/xsl:param&gt;</pre></div><div class="refsect1" lang="en"><a id="d50e320"/><h2>Description</h2><p>The name of the font to specify around Unicode callout glyphs.
+If set to the empty string, no font change will occur.
+</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="callout.unicode.number.limit"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>callout.unicode.number.limit — Number of the largest callout graphic</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="callout.unicode.number.limit.frag"/><pre class="programlisting">&lt;xsl:param name="callout.unicode.number.limit" select="'10'"&gt;&lt;/xsl:param&gt;</pre></div><div class="refsect1" lang="en"><a id="d50e339"/><h2>Description</h2><p>If <i class="parameter"><tt>callout.unicode</tt></i>
+is non-zero, unicode characters are used to represent
+callout numbers. The value of
+<i class="parameter"><tt>callout.unicode.number.limit</tt></i>
+is
+the largest number for which a unicode character exists. If the callout number
+exceeds this limit, the default presentation "(nnn)" will always
+be used.
+</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="callout.unicode.start.character"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>callout.unicode.start.character — First Unicode character to use, decimal value.</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="callout.unicode.start.character.frag"/><pre class="programlisting">&lt;xsl:param name="callout.unicode.start.character" select="10102"&gt;&lt;/xsl:param&gt;</pre></div><div class="refsect1" lang="en"><a id="d50e364"/><h2>Description</h2><p>If <i class="parameter"><tt>callout.graphics</tt></i> is zero and <i class="parameter"><tt>callout.unicode</tt></i>
+is non-zero, unicode characters are used to represent
+callout numbers. The value of
+<i class="parameter"><tt>callout.unicode.start.character</tt></i>
+is the decimal unicode value used for callout number one. Currently, 
+only 10102 is supported in the stylesheets for this parameter. 
+</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="callouts.extension"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>callouts.extension — Enable the callout extension</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="callouts.extension.frag"/><pre class="programlisting">&lt;xsl:param name="callouts.extension" select="'1'"&gt;&lt;/xsl:param&gt;</pre></div><div class="refsect1" lang="en"><a id="d50e392"/><h2>Description</h2><p>The callouts extension processes <tt class="sgmltag-element">areaset</tt>
+elements in <tt class="sgmltag-element">ProgramListingCO</tt> and other text-based
+callout elements.
+</p></div></div></div><div class="reference" lang="en"><a id="d50e403"/><div class="titlepage"><div><div><h1 class="title"><a id="d50e403"/>ToC/LoT/Index Generation</h1></div></div><hr/></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><a href="#autotoc.label.separator">autotoc.label.separator</a> - Separator between labels and titles in the ToC</dt><dt><a href="#process.empty.source.toc">process.empty.source.toc</a> - FIXME:</dt><dt><a href="#process.source.toc">process.source.toc</a> - FIXME:</dt><dt><a href="#generate.toc">generate.toc</a> - Control generation of ToCs and LoTs</dt><dt><a href="#generate.index">generate.index</a> - Do you want an index?</dt><dt><a href="#make.index.markup">make.index.markup</a> - Generate XML index markup in the index?</dt><dt><a href="#index.preferred.page.properties">index.preferred.page.properties</a> - Properties used to emphasize page number references for
+significant index terms</dt><dt><a href="#xep.index.item.properties">xep.index.item.properties</a> - Properties associated with XEP index-items</dt><dt><a href="#toc.section.depth">toc.section.depth</a> - How deep should recursive sections appear
+in the TOC?</dt><dt><a href="#toc.indent.width">toc.indent.width</a> - Amount of indentation for TOC entries</dt><dt><a href="#toc.margin.properties">toc.margin.properties</a> - Margin properties used on Tables of Contents</dt><dt><a href="#bridgehead.in.toc">bridgehead.in.toc</a> - Should bridgehead elements appear in the TOC?</dt><dt><a href="#generate.section.toc.level">generate.section.toc.level</a> - Control depth of TOC generation in sections</dt></dl></div><div class="refentry" lang="en"><a id="autotoc.label.separator"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>autotoc.label.separator — Separator between labels and titles in the ToC</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="autotoc.label.separator.frag"/><pre class="programlisting">&lt;xsl:param name="autotoc.label.separator" select="'. '"&gt;&lt;/xsl:param&gt;</pre></div><div class="refsect1" lang="en"><a id="d50e420"/><h2>Description</h2><p>String to use to seperate labels and title in a table of contents.</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="process.empty.source.toc"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>process.empty.source.toc — FIXME:</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="process.empty.source.toc.frag"/><pre class="programlisting">&lt;xsl:param name="process.empty.source.toc" select="0"&gt;&lt;/xsl:param&gt;</pre></div><div class="refsect1" lang="en"><a id="d50e439"/><h2>Description</h2><p>FIXME:
+</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="process.source.toc"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>process.source.toc — FIXME:</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="process.source.toc.frag"/><pre class="programlisting">&lt;xsl:param name="process.source.toc" select="0"&gt;&lt;/xsl:param&gt;</pre></div><div class="refsect1" lang="en"><a id="d50e458"/><h2>Description</h2><p>FIXME:
+</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="generate.toc"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>generate.toc — Control generation of ToCs and LoTs</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="generate.toc.frag"/><pre class="programlisting">
+
+&lt;xsl:param name="generate.toc"&gt;
+/appendix toc,title
+article/appendix  nop
+/article  toc,title
+book      toc,title,figure,table,example,equation
+/chapter  toc,title
+part      toc,title
+/preface  toc,title
+qandadiv  toc
+qandaset  toc
+reference toc,title
+/sect1    toc
+/sect2    toc
+/sect3    toc
+/sect4    toc
+/sect5    toc
+/section  toc
+set       toc,title
+&lt;/xsl:param&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e477"/><h2>Description</h2><p>This parameter has a structured value. It is a table of space-delimited
+path/value pairs. Each path identifies some element in the source document
+using a restricted subset of XPath (only the implicit child axis, no wildcards,
+no predicates). Paths can be either relative or absolute.</p><p>When processing a particular element, the stylesheets consult this table to
+determine if a ToC (or LoT(s)) should be generated.</p><p>For example, consider the entry:</p><pre class="screen">book toc,figure</pre><p>This indicates that whenever a <tt class="sgmltag-element">book</tt> is formatted, a
+Table Of Contents and a List of Figures should be generated. Similarly,</p><pre class="screen">/chapter toc</pre><p>indicates that whenever a document <span class="emphasis"><em>that has a root
+of</em></span> <tt class="sgmltag-element">chapter</tt> is formatted, a Table of
+Contents should be generated. The entry <tt class="literal">chapter</tt> would match
+all chapters, but <tt class="literal">/chapter</tt> matches only <tt class="sgmltag-element">chapter</tt>
+document elements.</p><p>Generally, the longest match wins. So, for example, if you want to distinguish
+articles in books from articles in parts, you could use these two entries:</p><pre class="screen">book/article toc,figure
+part/article toc</pre><p>Note that an article in a part can never match a <tt class="literal">book/article</tt>,
+so if you want nothing to be generated for articles in parts, you can simply leave
+that rule out.</p><p>If you want to leave the rule in, to make it explicit that you're turning
+something off, use the value “<span class="quote">nop</span>”. For example, the following
+entry disables ToCs and LoTs for articles:</p><pre class="screen">article nop</pre><p>Do not simply leave the word “<span class="quote">article</span>” in the file
+without a matching value. That'd be just begging the silly little
+path/value parser to get confused.</p><p>Section ToCs are further controlled by the
+<i class="parameter"><tt>generate.section.toc.level</tt></i> parameter.
+For a given section level to have a ToC, it must have both an entry in 
+<i class="parameter"><tt>generate.toc</tt></i> and be within the range enabled by
+<i class="parameter"><tt>generate.section.toc.level</tt></i>.</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="generate.index"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>generate.index — Do you want an index?</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="generate.index.frag"/><pre class="programlisting">&lt;xsl:param name="generate.index" select="1"&gt;&lt;/xsl:param&gt;</pre></div><div class="refsect1" lang="en"><a id="d50e558"/><h2>Description</h2><p>Specify if an index should be generated. </p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="make.index.markup"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>make.index.markup — Generate XML index markup in the index?</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="make.index.markup.frag"/><pre class="programlisting">
+&lt;xsl:param name="make.index.markup" select="0"&gt;&lt;/xsl:param&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e577"/><h2>Description</h2><p>This parameter enables a very neat trick for getting properly
+merged, collated back-of-the-book indexes. G. Ken Holman suggested
+this trick at Extreme Markup Languages 2002 and I'm indebted to him
+for it.</p><p>Jeni Tennison's excellent code in
+<tt class="filename">autoidx.xsl</tt> does a great job of merging and
+sorting <tt class="sgmltag-element">indexterm</tt>s in the document and building a
+back-of-the-book index. However, there's one thing that it cannot
+reasonably be expected to do: merge page numbers into ranges. (I would
+not have thought that it could collate and suppress duplicate page
+numbers, but in fact it appears to manage that task somehow.)</p><p>Ken's trick is to produce a document in which the index at the
+back of the book is “<span class="quote">displayed</span>” in XML. Because the index
+is generated by the FO processor, all of the page numbers have been resolved.
+It's a bit hard to explain, but what it boils down to is that instead of having
+an index at the back of the book that looks like this:</p><div class="blockquote"><blockquote class="blockquote"><p><b>A. </b>ap1, 1, 2, 3</p></blockquote></div><p>you get one that looks like this:</p><div class="blockquote"><blockquote class="blockquote"><pre class="programlisting">&lt;indexdiv&gt;A&lt;/indexdiv&gt;
+&lt;indexentry&gt;
+&lt;primaryie&gt;ap1&lt;/primaryie&gt;,
+&lt;phrase role="pageno"&gt;1&lt;/phrase&gt;,
+&lt;phrase role="pageno"&gt;2&lt;/phrase&gt;,
+&lt;phrase role="pageno"&gt;3&lt;/phrase&gt;
+&lt;/indexentry&gt;</pre></blockquote></div><p>After building a PDF file with this sort of odd-looking index, you can
+extract the text from the PDF file and the result is a proper index expressed in
+XML.</p><p>Now you have data that's amenable to processing and a simple Perl script
+(such as <tt class="filename">fo/pdf2index</tt>) can
+merge page ranges and generate a proper index.</p><p>Finally, reformat your original document using this literal index instead of
+an automatically generated one and “<span class="quote">bingo</span>”!</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="index.preferred.page.properties"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>index.preferred.page.properties — Properties used to emphasize page number references for
+significant index terms</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="index.preferred.page.properties.frag"/><pre class="programlisting">
+&lt;xsl:attribute-set name="index.preferred.page.properties"&gt;
+  &lt;xsl:attribute name="font-weight"&gt;bold&lt;/xsl:attribute&gt;
+&lt;/xsl:attribute-set&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e627"/><h2>Description</h2><p>Properties used to emphasize page number references for
+significant index terms (<tt class="sgmltag-attribute">significance</tt>=<tt class="sgmltag-attvalue">preffered</tt>). Currently works only with
+XEP.</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="xep.index.item.properties"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>xep.index.item.properties — Properties associated with XEP index-items</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="xep.index.item.properties.frag"/><pre class="programlisting">
+&lt;xsl:attribute-set name="xep.index.item.properties"&gt;
+  &lt;xsl:attribute name="merge-subsequent-page-numbers"&gt;true&lt;/xsl:attribute&gt;
+  &lt;xsl:attribute name="link-back"&gt;true&lt;/xsl:attribute&gt;
+&lt;/xsl:attribute-set&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e647"/><h2>Description</h2><p>Properties associated with XEP index-items. For more info see
+the section "Indexes" in
+<a href="http://xep.xattic.com/xep/doc/spec.html" target="_top">http://xep.xattic.com/xep/doc/spec.html</a>.</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="toc.section.depth"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>toc.section.depth — How deep should recursive <tt class="sgmltag-element">section</tt>s appear
+in the TOC?</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="toc.section.depth.frag"/><pre class="programlisting">&lt;xsl:param name="toc.section.depth"&gt;2&lt;/xsl:param&gt;</pre></div><div class="refsect1" lang="en"><a id="d50e671"/><h2>Description</h2><p>Specifies the depth to which recursive sections should appear in the
+TOC.
+</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="toc.indent.width"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>toc.indent.width — Amount of indentation for TOC entries</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="toc.indent.width.frag"/><pre class="programlisting">
+&lt;xsl:param name="toc.indent.width" select="24"&gt;&lt;/xsl:param&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e690"/><h2>Description</h2><p>Specifies, in points, the distance by which each level of the
+TOC is indented from its parent.</p><p>This value is expressed in points, without
+a unit (in other words, it is a bare number). Using a bare number allows the stylesheet
+to perform calculations that would otherwise have to be performed by the FO processor
+because not all processors support expressions.</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="toc.margin.properties"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>toc.margin.properties — Margin properties used on Tables of Contents</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="toc.margin.properties.frag"/><pre class="programlisting">
+&lt;xsl:attribute-set name="toc.margin.properties"&gt;
+  &lt;xsl:attribute name="space-before.minimum"&gt;0.5em&lt;/xsl:attribute&gt;
+  &lt;xsl:attribute name="space-before.optimum"&gt;1em&lt;/xsl:attribute&gt;
+  &lt;xsl:attribute name="space-before.maximum"&gt;2em&lt;/xsl:attribute&gt;
+  &lt;xsl:attribute name="space-after.minimum"&gt;0.5em&lt;/xsl:attribute&gt;
+  &lt;xsl:attribute name="space-after.optimum"&gt;1em&lt;/xsl:attribute&gt;
+  &lt;xsl:attribute name="space-after.maximum"&gt;2em&lt;/xsl:attribute&gt;
+&lt;/xsl:attribute-set&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e706"/><h2>Description</h2><p>This attribute set is used on Tables of Contents. These attributes are set
+on the wrapper that surrounds the ToC block, not on each individual lines.</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="bridgehead.in.toc"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>bridgehead.in.toc — Should bridgehead elements appear in the TOC?</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="bridgehead.in.toc.frag"/><pre class="programlisting">&lt;xsl:param name="bridgehead.in.toc" select="0"&gt;&lt;/xsl:param&gt;</pre></div><div class="refsect1" lang="en"><a id="d50e725"/><h2>Description</h2><p>If non-zero, bridgeheads appear in the TOC. Note that this option
+is not fully supported and may be removed in a future version of the
+stylesheets.
+</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="generate.section.toc.level"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>generate.section.toc.level — Control depth of TOC generation in sections</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="generate.section.toc.level.frag"/><pre class="programlisting">
+&lt;xsl:param name="generate.section.toc.level" select="0"&gt;&lt;/xsl:param&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e744"/><h2>Description</h2><p>The <i class="parameter"><tt>generate.section.toc.level</tt></i> parameter
+controls the depth of section in which TOCs will be generated. Note
+that this is related to, but not the same as
+<i class="parameter"><tt>toc.section.depth</tt></i>, which controls the depth to
+which TOC entries will be generated in a given TOC.</p><p>If, for example, <i class="parameter"><tt>generate.section.toc.level</tt></i>
+is <tt class="literal">3</tt>, TOCs will be generated in first, second, and third
+level sections, but not in fourth level sections.
+</p></div></div></div><div class="reference" lang="en"><a id="d50e763"/><div class="titlepage"><div><div><h1 class="title"><a id="d50e763"/>Processor Extensions</h1></div></div><hr/></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><a href="#arbortext.extensions">arbortext.extensions</a> - Enable Arbortext extensions?</dt><dt><a href="#axf.extensions">axf.extensions</a> - Enable XSL Formatter extensions?</dt><dt><a href="#fop.extensions">fop.extensions</a> - Enable FOP extensions?</dt><dt><a href="#passivetex.extensions">passivetex.extensions</a> - Enable PassiveTeX extensions?</dt><dt><a href="#tex.math.in.alt">tex.math.in.alt</a> - TeX notation used for equations</dt><dt><a href="#tex.math.delims">tex.math.delims</a> - Should be equations outputed for processing by TeX
+automatically surrounded by math mode delimiters</dt><dt><a href="#xep.extensions">xep.extensions</a> - Enable XEP extensions?</dt></dl></div><div class="refentry" lang="en"><a id="arbortext.extensions"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>arbortext.extensions — Enable Arbortext extensions?</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="arbortext.extensions.frag"/><pre class="programlisting">&lt;xsl:param name="arbortext.extensions" select="0"&gt;&lt;/xsl:param&gt;</pre></div><div class="refsect1" lang="en"><a id="d50e780"/><h2>Description</h2><p>If non-zero,
+<a href="http://www.arbortext.com/" target="_top">Arbortext</a>
+extensions will be used.
+</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="axf.extensions"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>axf.extensions — Enable XSL Formatter extensions?</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="axf.extensions.frag"/><pre class="programlisting">
+&lt;xsl:param name="axf.extensions" select="0"&gt;&lt;/xsl:param&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e802"/><h2>Description</h2><p>If non-zero,
+<a href="http://www.antennahouse.com/" target="_top">XSL Formatter</a>
+extensions will be used. XSL Formatter extensions consists of PDF bookmarks,
+document information and better index processing.</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="fop.extensions"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>fop.extensions — Enable FOP extensions?</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="fop.extensions.frag"/><pre class="programlisting">&lt;xsl:param name="fop.extensions" select="0"&gt;&lt;/xsl:param&gt;</pre></div><div class="refsect1" lang="en"><a id="d50e824"/><h2>Description</h2><p>If non-zero,
+<a href="http://xml.apache.org/fop/" target="_top">FOP</a>
+extensions will be used. At present, this consists of PDF bookmarks.
+</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="passivetex.extensions"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>passivetex.extensions — Enable PassiveTeX extensions?</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="passivetex.extensions.frag"/><pre class="programlisting">&lt;xsl:param name="passivetex.extensions" select="0"&gt;&lt;/xsl:param&gt;</pre></div><div class="refsect1" lang="en"><a id="d50e846"/><h2>Description</h2><p>If non-zero,
+<a href="http://users.ox.ac.uk/~rahtz/passivetex/" target="_top">PassiveTeX</a>
+extensions will be used. At present, this consists of PDF bookmarks
+and sorted index terms.
+</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="tex.math.in.alt"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>tex.math.in.alt — TeX notation used for equations</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="tex.math.in.alt.frag"/><pre class="programlisting">
+&lt;xsl:param name="tex.math.in.alt" select="''"&gt;&lt;/xsl:param&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e868"/><h2>Description</h2><p>If you want type math directly in TeX notation in equations,
+this parameter specifies notation used. Currently are supported two
+values -- <tt class="literal">plain</tt> and <tt class="literal">latex</tt>. Empty
+value means that you are not using TeX math at all.</p><p>Preferred way for including TeX alternative of math is inside of
+<tt class="sgmltag-element">textobject</tt> element. Eg.:</p><pre class="programlisting">&lt;inlineequation&gt;
+&lt;inlinemediaobject&gt;
+&lt;imageobject&gt;
+&lt;imagedata fileref="eq1.gif"/&gt;
+&lt;/imageobject&gt;
+&lt;textobject&gt;&lt;phrase&gt;E=mc squared&lt;/phrase&gt;&lt;/textobject&gt;
+&lt;textobject role="tex"&gt;&lt;phrase&gt;E=mc^2&lt;/phrase&gt;&lt;/textobject&gt;
+&lt;/inlinemediaobject&gt;
+&lt;/inlineequation&gt;</pre><p>If you are using <tt class="sgmltag-element">graphic</tt> element, you can
+store TeX inside <tt class="sgmltag-element">alt</tt> element:</p><pre class="programlisting">&lt;inlineequation&gt;
+&lt;alt role="tex"&gt;a^2+b^2=c^2&lt;/alt&gt;
+&lt;graphic fileref="a2b2c2.gif"/&gt;  
+&lt;/inlineequation&gt;</pre><p>If you want use this feature, you should process your FO with
+PassiveTeX, which only supports TeX math notation. When calling
+stylsheet, don't forget to specify also
+passivetex.extensions=1.</p><p>If you want equations in HTML, just process generated file
+<tt class="filename">tex-math-equations.tex</tt> by TeX or LaTeX. Then run
+dvi2bitmap program on result DVI file. You will get images for
+equations in your document.</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="tex.math.delims"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>tex.math.delims — Should be equations outputed for processing by TeX
+automatically surrounded by math mode delimiters</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="tex.math.delims.frag"/><pre class="programlisting">
+&lt;xsl:param name="tex.math.delims" select="'1'"&gt;&lt;/xsl:param&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e917"/><h2>Description</h2><p>For compatibility with DSSSL based DBTeXMath from Allin Cottrell
+you should set this parameter to 0.</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="xep.extensions"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>xep.extensions — Enable XEP extensions?</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="xep.extensions.frag"/><pre class="programlisting">&lt;xsl:param name="xep.extensions" select="0"&gt;&lt;/xsl:param&gt;</pre></div><div class="refsect1" lang="en"><a id="d50e936"/><h2>Description</h2><p>If non-zero,
+<a href="http://www.renderx.com/" target="_top">XEP</a>
+extensions will be used. XEP extensions consists of PDF bookmarks,
+document information and better index processing.
+</p></div></div></div><div class="reference" lang="en"><a id="d50e944"/><div class="titlepage"><div><div><h1 class="title"><a id="d50e944"/>Stylesheet Extensions</h1></div></div><hr/></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><a href="#linenumbering.everyNth">linenumbering.everyNth</a> - Indicate which lines should be numbered</dt><dt><a href="#linenumbering.extension">linenumbering.extension</a> - Enable the line numbering extension</dt><dt><a href="#linenumbering.separator">linenumbering.separator</a> - Specify a separator between line numbers and lines</dt><dt><a href="#linenumbering.width">linenumbering.width</a> - Indicates the width of line numbers</dt><dt><a href="#tablecolumns.extension">tablecolumns.extension</a> - Enable the table columns extension function</dt><dt><a href="#textinsert.extension">textinsert.extension</a> - Enable the textinsert extension element</dt><dt><a href="#use.extensions">use.extensions</a> - Enable extensions</dt></dl></div><div class="refentry" lang="en"><a id="linenumbering.everyNth"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>linenumbering.everyNth — Indicate which lines should be numbered</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="linenumbering.everyNth.frag"/><pre class="programlisting">&lt;xsl:param name="linenumbering.everyNth" select="'5'"&gt;&lt;/xsl:param&gt;</pre></div><div class="refsect1" lang="en"><a id="d50e961"/><h2>Description</h2><p>If line numbering is enabled, everyNth line will be numbered.
+</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="linenumbering.extension"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>linenumbering.extension — Enable the line numbering extension</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="linenumbering.extension.frag"/><pre class="programlisting">&lt;xsl:param name="linenumbering.extension" select="'1'"&gt;&lt;/xsl:param&gt;</pre></div><div class="refsect1" lang="en"><a id="d50e980"/><h2>Description</h2><p>If true, verbatim environments (elements that have the
+format='linespecific' notation attribute: address, literallayout,
+programlisting, screen, synopsis) that specify line numbering will
+have, surprise, line numbers.
+</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="linenumbering.separator"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>linenumbering.separator — Specify a separator between line numbers and lines</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="linenumbering.separator.frag"/><pre class="programlisting">&lt;xsl:param name="linenumbering.separator" select="' '"&gt;&lt;/xsl:param&gt;</pre></div><div class="refsect1" lang="en"><a id="d50e999"/><h2>Description</h2><p>The separator is inserted between line numbers and lines in
+the verbatim environment.
+</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="linenumbering.width"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>linenumbering.width — Indicates the width of line numbers</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="linenumbering.width.frag"/><pre class="programlisting">&lt;xsl:param name="linenumbering.width" select="'3'"&gt;&lt;/xsl:param&gt;</pre></div><div class="refsect1" lang="en"><a id="d50e1018"/><h2>Description</h2><p>If line numbering is enabled, line numbers will appear right
+justified in a field "width" characters wide.
+</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="tablecolumns.extension"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>tablecolumns.extension — Enable the table columns extension function</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="tablecolumns.extension.frag"/><pre class="programlisting">&lt;xsl:param name="tablecolumns.extension" select="'1'"&gt;&lt;/xsl:param&gt;</pre></div><div class="refsect1" lang="en"><a id="d50e1037"/><h2>Description</h2><p>The table columns extension function adjusts the widths of table
+columns in the HTML result to more accurately reflect the specifications
+in the CALS table.
+</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="textinsert.extension"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>textinsert.extension — Enable the textinsert extension element</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="textinsert.extension.frag"/><pre class="programlisting">&lt;xsl:param name="textinsert.extension" select="'1'"&gt;&lt;/xsl:param&gt;</pre></div><div class="refsect1" lang="en"><a id="d50e1056"/><h2>Description</h2><p>The textinsert extension element inserts the contents of a
+a file into the result tree (as text).
+</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="use.extensions"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>use.extensions — Enable extensions</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="use.extensions.frag"/><pre class="programlisting">&lt;xsl:param name="use.extensions" select="'0'"&gt;&lt;/xsl:param&gt;</pre></div><div class="refsect1" lang="en"><a id="d50e1075"/><h2>Description</h2><p>If non-zero, extensions may be used. Each extension is
+further controlled by its own parameter. But if
+<i class="parameter"><tt>use.extensions</tt></i> is zero, no extensions will
+be used.
+</p></div></div></div><div class="reference" lang="en"><a id="d50e1083"/><div class="titlepage"><div><div><h1 class="title"><a id="d50e1083"/>Automatic labelling</h1></div></div><hr/></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><a href="#appendix.autolabel">appendix.autolabel</a> - Are Appendixes automatically enumerated?</dt><dt><a href="#chapter.autolabel">chapter.autolabel</a> - Are chapters automatically enumerated?</dt><dt><a href="#part.autolabel">part.autolabel</a> - Are parts and references enumerated?</dt><dt><a href="#preface.autolabel">preface.autolabel</a> - Are prefaces enumerated?</dt><dt><a href="#section.autolabel">section.autolabel</a> - Are sections enumerated?</dt><dt><a href="#section.label.includes.component.label">section.label.includes.component.label</a> - Do section labels include the component label?</dt><dt><a href="#label.from.part">label.from.part</a> - Renumber chapters in each part?</dt></dl></div><div class="refentry" lang="en"><a id="appendix.autolabel"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>appendix.autolabel — Are Appendixes automatically enumerated?</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="appendix.autolabel.frag"/><pre class="programlisting">&lt;xsl:param name="appendix.autolabel" select="1"&gt;&lt;/xsl:param&gt;</pre></div><div class="refsect1" lang="en"><a id="d50e1100"/><h2>Description</h2><p>If true (non-zero), unlabeled appendixes will be
+enumerated.
+</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="chapter.autolabel"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>chapter.autolabel — Are chapters automatically enumerated?</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="chapter.autolabel.frag"/><pre class="programlisting">&lt;xsl:param name="chapter.autolabel" select="1"&gt;&lt;/xsl:param&gt;</pre></div><div class="refsect1" lang="en"><a id="d50e1119"/><h2>Description</h2><p>If true (non-zero), unlabeled chapters will be enumerated.
+</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="part.autolabel"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>part.autolabel — Are parts and references enumerated?</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="part.autolabel.frag"/><pre class="programlisting">&lt;xsl:param name="part.autolabel" select="1"&gt;&lt;/xsl:param&gt;</pre></div><div class="refsect1" lang="en"><a id="d50e1138"/><h2>Description</h2><p>If true (non-zero), unlabeled parts and references will be enumerated.
+</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="preface.autolabel"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>preface.autolabel — Are prefaces enumerated?</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="preface.autolabel.frag"/><pre class="programlisting">&lt;xsl:param name="preface.autolabel" select="0"&gt;&lt;/xsl:param&gt;</pre></div><div class="refsect1" lang="en"><a id="d50e1157"/><h2>Description</h2><p>If true (non-zero), unlabeled prefaces will be enumerated.
+</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="section.autolabel"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>section.autolabel — Are sections enumerated?</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="section.autolabel.frag"/><pre class="programlisting">&lt;xsl:param name="section.autolabel" select="0"&gt;&lt;/xsl:param&gt;</pre></div><div class="refsect1" lang="en"><a id="d50e1176"/><h2>Description</h2><p>If true (non-zero), unlabeled sections will be enumerated.
+</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="section.label.includes.component.label"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>section.label.includes.component.label — Do section labels include the component label?</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="section.label.includes.component.label.frag"/><pre class="programlisting">&lt;xsl:param name="section.label.includes.component.label" select="0"&gt;&lt;/xsl:param&gt;</pre></div><div class="refsect1" lang="en"><a id="d50e1195"/><h2>Description</h2><p>If true (non-zero), section labels are prefixed with the label of the
+component that contains them.
+</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="label.from.part"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>label.from.part — Renumber chapters in each part?</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="label.from.part.frag"/><pre class="programlisting">&lt;xsl:param name="label.from.part" select="'0'"&gt;&lt;/xsl:param&gt;</pre></div><div class="refsect1" lang="en"><a id="d50e1214"/><h2>Description</h2><p>If <i class="parameter"><tt>label.from.part</tt></i> is non-zero, components
+(<tt class="sgmltag-element">chapter</tt>s, <tt class="sgmltag-element">appendixe</tt>s, etc.)
+will be numbered from 1 in each <tt class="sgmltag-element">part</tt>. Otherwise,
+they will be numbered monotonically throughout each
+<tt class="sgmltag-element">book</tt>.
+</p></div></div></div><div class="reference" lang="en"><a id="d50e1234"/><div class="titlepage"><div><div><h1 class="title"><a id="d50e1234"/>XSLT Processing</h1></div></div><hr/></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><a href="#rootid">rootid</a> - Specify the root element to format</dt></dl></div><div class="refentry" lang="en"><a id="rootid"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>rootid — Specify the root element to format</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="rootid.frag"/><pre class="programlisting">&lt;xsl:param name="rootid" select="''"&gt;&lt;/xsl:param&gt;</pre></div><div class="refsect1" lang="en"><a id="d50e1251"/><h2>Description</h2><p>If <i class="parameter"><tt>rootid</tt></i> is specified, it must be the
+value of an ID that occurs in the document being formatted. The entire
+document will be loaded and parsed, but formatting will begin at the
+element identified, rather than at the root. For example, this allows
+you to process only chapter 4 of a book.</p><p>Because the entire document is available to the processor, automatic
+numbering, cross references, and other dependencies are correctly
+resolved.</p></div></div></div><div class="reference" lang="en"><a id="d50e1261"/><div class="titlepage"><div><div><h1 class="title"><a id="d50e1261"/>Meta/*Info</h1></div></div><hr/></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><a href="#make.single.year.ranges">make.single.year.ranges</a> - Print single-year ranges (e.g., 1998-1999)</dt><dt><a href="#make.year.ranges">make.year.ranges</a> - Collate copyright years into ranges?</dt><dt><a href="#author.othername.in.middle">author.othername.in.middle</a> - Is othername in author a
+middle name?</dt></dl></div><div class="refentry" lang="en"><a id="make.single.year.ranges"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>make.single.year.ranges — Print single-year ranges (e.g., 1998-1999)</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="make.single.year.ranges.frag"/><pre class="programlisting">&lt;xsl:param name="make.single.year.ranges" select="0"&gt;&lt;/xsl:param&gt;</pre></div><div class="refsect1" lang="en"><a id="d50e1278"/><h2>Description</h2><p>If non-zero, year ranges that span a single year will be printed
+in range notation (1998-1999) instead of discrete notation
+(1998, 1999).</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="make.year.ranges"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>make.year.ranges — Collate copyright years into ranges?</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="make.year.ranges.frag"/><pre class="programlisting">&lt;xsl:param name="make.year.ranges" select="0"&gt;&lt;/xsl:param&gt;</pre></div><div class="refsect1" lang="en"><a id="d50e1297"/><h2>Description</h2><p>If non-zero, copyright years will be collated into ranges.</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="author.othername.in.middle"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>author.othername.in.middle — Is <tt class="sgmltag-element">othername</tt> in <tt class="sgmltag-element">author</tt> a
+middle name?</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="author.othername.in.middle.frag"/><pre class="programlisting">&lt;xsl:param name="author.othername.in.middle" select="1"&gt;&lt;/xsl:param&gt;</pre></div><div class="refsect1" lang="en"><a id="d50e1322"/><h2>Description</h2><p>If true (non-zero), the <tt class="sgmltag-element">othername</tt> of an <tt class="sgmltag-element">author</tt>
+appears between the <tt class="sgmltag-element">firstname</tt> and
+<tt class="sgmltag-element">surname</tt>.  Otherwise, <tt class="sgmltag-element">othername</tt>
+is suppressed.
+</p></div></div></div><div class="reference" lang="en"><a id="d50e1342"/><div class="titlepage"><div><div><h1 class="title"><a id="d50e1342"/>Reference Pages</h1></div></div><hr/></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><a href="#funcsynopsis.decoration">funcsynopsis.decoration</a> - Decorate elements of a FuncSynopsis?</dt><dt><a href="#funcsynopsis.style">funcsynopsis.style</a> - What style of 'FuncSynopsis' should be generated?</dt><dt><a href="#function.parens">function.parens</a> - Generate parens after a function?</dt><dt><a href="#refentry.generate.name">refentry.generate.name</a> - Output NAME header before 'RefName'(s)?</dt><dt><a href="#refentry.generate.title">refentry.generate.title</a> - Output title before 'RefName'(s)?</dt><dt><a href="#refentry.pagebreak">refentry.pagebreak</a> - Start each refentry on a new page</dt><dt><a href="#refentry.title.properties">refentry.title.properties</a> - Title properties for a refentry title</dt><dt><a href="#refentry.xref.manvolnum">refentry.xref.manvolnum</a> - Output manvolnum as part of 
+refentry cross-reference?</dt></dl></div><div class="refentry" lang="en"><a id="funcsynopsis.decoration"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>funcsynopsis.decoration — Decorate elements of a FuncSynopsis?</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="funcsynopsis.decoration.frag"/><pre class="programlisting">&lt;xsl:param name="funcsynopsis.decoration" select="1"&gt;&lt;/xsl:param&gt;</pre></div><div class="refsect1" lang="en"><a id="d50e1359"/><h2>Description</h2><p>If true (non-zero), elements of the FuncSynopsis will be decorated (e.g. bold or
+italic).  The decoration is controlled by functions that can be redefined
+in a customization layer.
+</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="funcsynopsis.style"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>funcsynopsis.style — What style of 'FuncSynopsis' should be generated?</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="funcsynopsis.style.frag"/><pre class="programlisting">&lt;xsl:param name="funcsynopsis.style"&gt;kr&lt;/xsl:param&gt;</pre></div><div class="refsect1" lang="en"><a id="d50e1382"/><h2>Description</h2><p>If <tt class="varname">funcsynopsis.style</tt> is <tt class="literal">ansi</tt>,
+ANSI-style function synopses are generated for a
+<tt class="sgmltag-element">funcsynopsis</tt>, otherwise K&amp;R-style
+function synopses are generated.
+</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="function.parens"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>function.parens — Generate parens after a function?</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="function.parens.frag"/><pre class="programlisting">&lt;xsl:param name="function.parens"&gt;0&lt;/xsl:param&gt;</pre></div><div class="refsect1" lang="en"><a id="d50e1410"/><h2>Description</h2><p>If not 0, the formatting of
+a <tt class="sgmltag-starttag">&lt;function&gt;</tt> element will include
+generated parenthesis.
+</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="refentry.generate.name"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>refentry.generate.name — Output NAME header before 'RefName'(s)?</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="refentry.generate.name.frag"/><pre class="programlisting">&lt;xsl:param name="refentry.generate.name" select="1"&gt;&lt;/xsl:param&gt;</pre></div><div class="refsect1" lang="en"><a id="d50e1432"/><h2>Description</h2><p>If true (non-zero), a "NAME" section title is output before the list
+of 'RefName's. This parameter and
+<i class="parameter"><tt>refentry.generate.title</tt></i> are mutually
+exclusive. This means that if you change this parameter to zero, you
+should set <i class="parameter"><tt>refentry.generate.title</tt></i> to 1 unless
+you want get quite strange output.
+</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="refentry.generate.title"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>refentry.generate.title — Output title before 'RefName'(s)?</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="refentry.generate.title.frag"/><pre class="programlisting">
+&lt;xsl:param name="refentry.generate.title" select="0"&gt;&lt;/xsl:param&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e1457"/><h2>Description</h2><p>If true (non-zero), the reference page title or first name is
+output before the list of 'RefName's. This parameter and
+<i class="parameter"><tt>refentry.generate.name</tt></i> are mutually exclusive.
+This means that if you change this parameter to 1, you
+should set <i class="parameter"><tt>refentry.generate.name</tt></i> to 0 unless
+you want get quite strange output.</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="refentry.pagebreak"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>refentry.pagebreak — Start each refentry on a new page</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="refentry.pagebreak.frag"/><pre class="programlisting">&lt;xsl:param name="refentry.pagebreak" select="1"&gt;&lt;/xsl:param&gt;</pre></div><div class="refsect1" lang="en"><a id="d50e1482"/><h2>Description</h2><p>If non-zero (the default), each <tt class="sgmltag-element">refentry</tt>
+element will start on a new page.  If zero, a page
+break will not be generated.
+</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="refentry.title.properties"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>refentry.title.properties — Title properties for a refentry title</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="refentry.title.properties.frag"/><pre class="programlisting">
+&lt;xsl:attribute-set name="refentry.title.properties"&gt;
+  &lt;xsl:attribute name="font-family"&gt;
+    &lt;xsl:value-of select="$title.font.family"&gt;&lt;/xsl:value-of&gt;
+  &lt;/xsl:attribute&gt;
+  &lt;xsl:attribute name="font-size"&gt;18pt&lt;/xsl:attribute&gt;
+  &lt;xsl:attribute name="font-weight"&gt;bold&lt;/xsl:attribute&gt;
+  &lt;xsl:attribute name="space-after"&gt;1em&lt;/xsl:attribute&gt;
+  &lt;xsl:attribute name="hyphenate"&gt;false&lt;/xsl:attribute&gt;
+  &lt;xsl:attribute name="keep-with-next.within-column"&gt;always&lt;/xsl:attribute&gt;
+  &lt;xsl:attribute name="space-before.minimum"&gt;0.8em&lt;/xsl:attribute&gt;
+  &lt;xsl:attribute name="space-before.optimum"&gt;1.0em&lt;/xsl:attribute&gt;
+  &lt;xsl:attribute name="space-before.maximum"&gt;1.2em&lt;/xsl:attribute&gt;
+  &lt;xsl:attribute name="space-after.optimum"&gt;0.5em&lt;/xsl:attribute&gt;
+  &lt;xsl:attribute name="space-after.minimum"&gt;0.4em&lt;/xsl:attribute&gt;
+  &lt;xsl:attribute name="space-after.maximum"&gt;0.6em&lt;/xsl:attribute&gt;
+&lt;/xsl:attribute-set&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e1504"/><h2>Description</h2><p>Formatting properties applied to refentry titles,
+including refnamediv, refsect1 through 3, and refsection.
+The font size is supplied by the appropriate 
+<i class="parameter"><tt>section.level<i class="replaceable"><tt>X</tt></i>.title.properties</tt></i>
+attribute-set,
+computed from its location in the section hierarchy.
+</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="refentry.xref.manvolnum"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>refentry.xref.manvolnum — Output <tt class="sgmltag-element">manvolnum</tt> as part of 
+<tt class="sgmltag-element">refentry</tt> cross-reference?</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="refentry.xref.manvolnum.frag"/><pre class="programlisting">&lt;xsl:param name="refentry.xref.manvolnum" select="1"&gt;&lt;/xsl:param&gt;</pre></div><div class="refsect1" lang="en"><a id="d50e1535"/><h2>Description</h2><p>if true (non-zero), the <tt class="sgmltag-element">manvolnum</tt> is used when cross-referencing
+<tt class="sgmltag-element">refentry</tt>s, either with <tt class="sgmltag-element">xref</tt>
+or <tt class="sgmltag-element">citerefentry</tt>.
+</p></div></div></div><div class="reference" lang="en"><a id="d50e1552"/><div class="titlepage"><div><div><h1 class="title"><a id="d50e1552"/>Tables</h1></div></div><hr/></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><a href="#default.table.width">default.table.width</a> - The default width of tables</dt><dt><a href="#nominal.table.width">nominal.table.width</a> - The (absolute) nominal width of tables</dt><dt><a href="#table.cell.padding">table.cell.padding</a> - </dt><dt><a href="#table.frame.border.thickness">table.frame.border.thickness</a> - Specifies the thickness of the frame border</dt><dt><a href="#table.frame.border.style">table.frame.border.style</a> - </dt><dt><a href="#table.frame.border.color">table.frame.border.color</a> - </dt><dt><a href="#table.cell.border.thickness">table.cell.border.thickness</a> - </dt><dt><a href="#table.cell.border.style">table.cell.border.style</a> - </dt><dt><a href="#table.cell.border.color">table.cell.border.color</a> - </dt></dl></div><div class="refentry" lang="en"><a id="default.table.width"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>default.table.width — The default width of tables</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="default.table.width.frag"/><pre class="programlisting">&lt;xsl:param name="default.table.width" select="''"&gt;&lt;/xsl:param&gt;</pre></div><div class="refsect1" lang="en"><a id="d50e1569"/><h2>Description</h2><p>If specified, this value will be used for the WIDTH attribute on
+tables that do not specify an alternate width (with the dbhtml processing
+instruction).</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="nominal.table.width"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>nominal.table.width — The (absolute) nominal width of tables</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="nominal.table.width.frag"/><pre class="programlisting">&lt;xsl:param name="nominal.table.width" select="'6in'"&gt;&lt;/xsl:param&gt;</pre></div><div class="refsect1" lang="en"><a id="d50e1588"/><h2>Description</h2><p>In order to convert CALS column widths into HTML column widths, it
+is sometimes necessary to have an absolute table width to use for conversion
+of mixed absolute and relative widths. This value must be an absolute
+length (not a percentag).</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="table.cell.padding"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>table.cell.padding — </p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="table.cell.padding.frag"/><pre class="programlisting">
+&lt;xsl:attribute-set name="table.cell.padding"&gt;
+  &lt;xsl:attribute name="padding-left"&gt;2pt&lt;/xsl:attribute&gt;
+  &lt;xsl:attribute name="padding-right"&gt;2pt&lt;/xsl:attribute&gt;
+  &lt;xsl:attribute name="padding-top"&gt;2pt&lt;/xsl:attribute&gt;
+  &lt;xsl:attribute name="padding-bottom"&gt;2pt&lt;/xsl:attribute&gt;
+&lt;/xsl:attribute-set&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e1605"/><h2>Description</h2><p>FIXME:</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="table.frame.border.thickness"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>table.frame.border.thickness — Specifies the thickness of the frame border</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="table.frame.border.thickness.frag"/><pre class="programlisting">
+&lt;xsl:param name="table.frame.border.thickness" select="'0.5pt'"&gt;&lt;/xsl:param&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e1623"/><h2>Description</h2><p>Specifies the thickness of the border on the table's frame.</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="table.frame.border.style"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>table.frame.border.style — </p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="table.frame.border.style.frag"/><pre class="programlisting">
+&lt;xsl:param name="table.frame.border.style" select="'solid'"&gt;&lt;/xsl:param&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e1640"/><h2>Description</h2><p>FIXME:</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="table.frame.border.color"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>table.frame.border.color — </p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="table.frame.border.color.frag"/><pre class="programlisting">
+
+&lt;xsl:param name="table.frame.border.color" select="'black'"&gt;&lt;/xsl:param&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e1657"/><h2>Description</h2><p>FIXME:</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="table.cell.border.thickness"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>table.cell.border.thickness — </p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="table.cell.border.thickness.frag"/><pre class="programlisting">
+&lt;xsl:param name="table.cell.border.thickness" select="'0.5pt'"&gt;&lt;/xsl:param&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e1674"/><h2>Description</h2><p>FIXME:</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="table.cell.border.style"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>table.cell.border.style — </p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="table.cell.border.style.frag"/><pre class="programlisting">
+&lt;xsl:param name="table.cell.border.style" select="'solid'"&gt;&lt;/xsl:param&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e1691"/><h2>Description</h2><p>FIXME:</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="table.cell.border.color"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>table.cell.border.color — </p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="table.cell.border.color.frag"/><pre class="programlisting">
+
+&lt;xsl:param name="table.cell.border.color" select="'black'"&gt;&lt;/xsl:param&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e1708"/><h2>Description</h2><p>FIXME:</p></div></div></div><div class="reference" lang="en"><a id="d50e1713"/><div class="titlepage"><div><div><h1 class="title"><a id="d50e1713"/>Linking</h1></div></div><hr/></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><a href="#target.database.document">target.database.document</a> - Name of master database file for resolving
+olinks</dt><dt><a href="#use.local.olink.style">use.local.olink.style</a> - Process olinks using xref style of current
+document</dt><dt><a href="#current.docid">current.docid</a> - targetdoc identifier for the document being
+processed</dt><dt><a href="#olink.doctitle">olink.doctitle</a> - show the document title for external olinks?</dt></dl></div><div class="refentry" lang="en"><a id="target.database.document"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>target.database.document — Name of master database file for resolving
+olinks</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="target.database.document.frag"/><pre class="programlisting">
+&lt;xsl:param name="target.database.document" select="''"&gt;&lt;/xsl:param&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e1730"/><h2>Description</h2><p>
+To resolve olinks between documents, the stylesheets use
+a master database document that identifies the  target datafiles for all the documents within the scope
+of the olinks. This parameter value is the URI of 
+the master document to be read during processing to resolve olinks.
+The default value is <tt class="filename">olinkdb.xml</tt>.</p><p>The data structure of the file is defined in the <tt class="filename">targetdatabase.dtd</tt> DTD.  The database file provides the high level elements to record the identifiers, locations, and relationships of documents. The cross reference data for individual documents is generally pulled into the database using system entity references or XIncludes. See also <i class="parameter"><tt>targets.filename</tt></i>.
+
+</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="use.local.olink.style"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>use.local.olink.style — Process olinks using xref style of current
+document</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="use.local.olink.style.frag"/><pre class="programlisting">
+&lt;xsl:param name="use.local.olink.style" select="0"&gt;&lt;/xsl:param&gt; </pre></div><div class="refsect1" lang="en"><a id="d50e1760"/><h2>Description</h2><p>When cross reference data is collected for use by olinks, the data for each potential target includes one field containing a completely assembled cross reference string, as if it were an xref generated in that document. Other fields record the separate title, number, and element name of each target. When an olink is formed to a target from another document, the olink resolves to that preassembled string by default. If the <i class="parameter"><tt>use.local.olink.style</tt></i> parameter is set to non-zero, then instead the cross
+reference string is formed again from the target title, number, and
+element name, using the stylesheet processing the targeting document.
+Then olinks will match the xref style in the targeting document
+rather than in the target document. If  both documents are processed
+with the same stylesheet, then the results will be the same.</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="current.docid"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>current.docid — targetdoc identifier for the document being
+processed</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="current.docid.frag"/><pre class="programlisting">
+&lt;xsl:param name="current.docid" select="''"&gt;&lt;/xsl:param&gt; </pre></div><div class="refsect1" lang="en"><a id="d50e1782"/><h2>Description</h2><p>When olinks between documents are resolved for HTML output, the stylesheet can compute the relative path between the current document and the target document. The stylesheet needs to know the <tt class="literal">targetdoc</tt> identifiers for both documents, as they appear in the <i class="parameter"><tt>target.database.document</tt></i> database file. This parameter passes to the stylesheet
+the targetdoc identifier of the current document, since that
+identifier does not appear in the document itself. </p><p>This parameter can also be used for print output. If an olink's  <tt class="literal">targetdoc</tt>  id differs from the <tt class="literal">current.docid</tt>, then the stylesheet can append the target document's title to the generated olink text. That identifies to the reader that the link is to a different document, not the current document. See also <i class="parameter"><tt>olink.doctitle</tt></i> to enable that feature.</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="olink.doctitle"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>olink.doctitle — show the document title for external olinks?</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="olink.doctitle.frag"/><pre class="programlisting">
+&lt;xsl:param name="olink.doctitle" select="0"&gt;&lt;/xsl:param&gt; </pre></div><div class="refsect1" lang="en"><a id="d50e1818"/><h2>Description</h2><p>When olinks between documents are resolved for print output, the generated text may not make it clear that the reference is to another document. It is possible for the stylesheets to append the other document's title to external olinks. For this to happen, two parameters must be set. The <i class="parameter"><tt>olink.doctitle</tt></i> parameter should be set to nonzero to enable this
+feature. And you should set the <i class="parameter"><tt>current.docid</tt></i> parameter to the document id for the  document currently
+being processed for output.  If an olink's  <tt class="literal">targetdoc</tt>  id differs from the <tt class="literal">current.docid</tt>, then the stylesheet can append the target document's
+title to the generated olink text. </p></div></div></div><div class="reference" lang="en"><a id="d50e1835"/><div class="titlepage"><div><div><h1 class="title"><a id="d50e1835"/>QAndASet</h1></div></div><hr/></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><a href="#qandadiv.autolabel">qandadiv.autolabel</a> - Are divisions in QAndASets enumerated?</dt><dt><a href="#qanda.inherit.numeration">qanda.inherit.numeration</a> - Does enumeration of QandASet components inherit the numeration of parent elements?</dt><dt><a href="#qanda.defaultlabel">qanda.defaultlabel</a> - Sets the default for defaultlabel on QandASet.</dt></dl></div><div class="refentry" lang="en"><a id="qandadiv.autolabel"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>qandadiv.autolabel — Are divisions in QAndASets enumerated?</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="qandadiv.autolabel.frag"/><pre class="programlisting">&lt;xsl:param name="qandadiv.autolabel" select="1"&gt;&lt;/xsl:param&gt;</pre></div><div class="refsect1" lang="en"><a id="d50e1852"/><h2>Description</h2><p>If true (non-zero), unlabeled qandadivs will be enumerated.
+</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="qanda.inherit.numeration"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>qanda.inherit.numeration — Does enumeration of QandASet components inherit the numeration of parent elements?</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="qanda.inherit.numeration.frag"/><pre class="programlisting">&lt;xsl:param name="qanda.inherit.numeration" select="1"&gt;&lt;/xsl:param&gt;</pre></div><div class="refsect1" lang="en"><a id="d50e1871"/><h2>Description</h2><p>If true (non-zero), numbered QandADiv elements and Questions and Answers inherit
+the numeration of the ancestors of the QandASet.
+</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="qanda.defaultlabel"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>qanda.defaultlabel — Sets the default for defaultlabel on QandASet.</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="qanda.defaultlabel.frag"/><pre class="programlisting">&lt;xsl:param name="qanda.defaultlabel"&gt;number&lt;/xsl:param&gt;</pre></div><div class="refsect1" lang="en"><a id="d50e1890"/><h2>Description</h2><p>If no defaultlabel attribute is specified on a QandASet, this
+value is used. It must be one of the legal values for the defaultlabel
+attribute.
+</p></div></div></div><div class="reference" lang="en"><a id="d50e1895"/><div class="titlepage"><div><div><h1 class="title"><a id="d50e1895"/>Bibliography</h1></div></div><hr/></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><a href="#biblioentry.item.separator">biblioentry.item.separator</a> - Text to separate bibliography entries</dt><dt><a href="#bibliography.collection">bibliography.collection</a> - Name of the bibliography collection file</dt><dt><a href="#bibliography.numbered">bibliography.numbered</a> - Should bibliography entries be numbered?</dt></dl></div><div class="refentry" lang="en"><a id="biblioentry.item.separator"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>biblioentry.item.separator — Text to separate bibliography entries</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="biblioentry.item.separator.frag"/><pre class="programlisting">&lt;xsl:param name="biblioentry.item.separator"&gt;. &lt;/xsl:param&gt;</pre></div><div class="refsect1" lang="en"><a id="d50e1912"/><h2>Description</h2><p>Text to separate bibliography entries
+</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="bibliography.collection"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>bibliography.collection — Name of the bibliography collection file</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="bibliography.collection.frag"/><pre class="programlisting">&lt;xsl:param name="bibliography.collection" select="'http://docbook.sourceforge.net/release/bibliography/bibliography.xml'"&gt;&lt;/xsl:param&gt;</pre></div><div class="refsect1" lang="en"><a id="d50e1931"/><h2>Description</h2><p>Maintaining bibliography entries across a set of documents is tedious, time
+consuming, and error prone. It makes much more sense, usually, to store all of
+the bibliography entries in a single place and simply “<span class="quote">extract</span>”
+the ones you need in each document.</p><p>That's the purpose of the
+<i class="parameter"><tt>bibliography.collection</tt></i> parameter. To setup a global
+bibliography “<span class="quote">database</span>”, follow these steps:</p><p>First, create a stand-alone bibliography document that contains all of
+the documents that you wish to reference. Make sure that each bibliography
+entry (whether you use <tt class="sgmltag-element">biblioentry</tt> or <tt class="sgmltag-element">bibliomixed</tt>)
+has an ID.</p><p>My global bibliography, <tt class="filename">~/bibliography.xml</tt> begins
+like this:</p><div class="informalexample"><pre class="programlisting">&lt;!DOCTYPE bibliography
+  PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd"&gt;
+&lt;bibliography&gt;&lt;title&gt;References&lt;/title&gt;
+
+&lt;bibliomixed id="xml-rec"&gt;&lt;abbrev&gt;XML 1.0&lt;/abbrev&gt;Tim Bray,
+Jean Paoli, C. M. Sperberg-McQueen, and Eve Maler, editors.
+&lt;citetitle&gt;&lt;ulink url="http://www.w3.org/TR/REC-xml"&gt;Extensible Markup
+Language (XML) 1.0 Second Edition&lt;/ulink&gt;&lt;/citetitle&gt;.
+World Wide Web Consortium, 2000.
+&lt;/bibliomixed&gt;
+
+&lt;bibliomixed id="xml-names"&gt;&lt;abbrev&gt;Namespaces&lt;/abbrev&gt;Tim Bray,
+Dave Hollander,
+and Andrew Layman, editors.
+&lt;citetitle&gt;&lt;ulink url="http://www.w3.org/TR/REC-xml-names/"&gt;Namespaces in
+XML&lt;/ulink&gt;&lt;/citetitle&gt;.
+World Wide Web Consortium, 1999.
+&lt;/bibliomixed&gt;
+
+&lt;!-- ... --&gt;
+&lt;/bibliography&gt;
+</pre></div><p>When you create a bibliography in your document, simply
+provide <span class="emphasis"><em>empty</em></span> <tt class="sgmltag-element">bibliomixed</tt>
+entries for each document that you wish to cite. Make sure that these
+elements have the same ID as the corresponding “<span class="quote">real</span>”
+entry in your global bibliography.</p><p>For example:</p><div class="informalexample"><pre class="programlisting">&lt;bibliography&gt;&lt;title&gt;Bibliography&lt;/title&gt;
+
+&lt;bibliomixed id="xml-rec"/&gt;
+&lt;bibliomixed id="xml-names"/&gt;
+&lt;bibliomixed id="DKnuth86"&gt;Donald E. Knuth. &lt;citetitle&gt;Computers and
+Typesetting: Volume B, TeX: The Program&lt;/citetitle&gt;. Addison-Wesley,
+1986.  ISBN 0-201-13437-3.
+&lt;/bibliomixed&gt;
+&lt;bibliomixed id="relaxng"/&gt;
+
+&lt;/bibliography&gt;</pre></div><p>Note that it's perfectly acceptable to mix entries from your
+global bibliography with “<span class="quote">normal</span>” entries. You can use
+<tt class="sgmltag-element">xref</tt> or other elements to cross-reference your
+bibliography entries in exactly the same way you do now.</p><p>Finally, when you are ready to format your document, simply set the
+<i class="parameter"><tt>bibliography.collection</tt></i> parameter (in either a
+customization layer or directly through your processor's interface) to
+point to your global bibliography.</p><p>The stylesheets will format the bibliography in your document as if
+all of the entries referenced appeared there literally.</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="bibliography.numbered"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>bibliography.numbered — Should bibliography entries be numbered?</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="bibliography.numbered.frag"/><pre class="programlisting">
+&lt;xsl:param name="bibliography.numbered" select="0"&gt;&lt;/xsl:param&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e2008"/><h2>Description</h2><p>If non-zero bibliography entries will be numbered</p></div></div></div><div class="reference" lang="en"><a id="d50e2013"/><div class="titlepage"><div><div><h1 class="title"><a id="d50e2013"/>Glossary</h1></div></div><hr/></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><a href="#glossterm.auto.link">glossterm.auto.link</a> - Generate links from glossterm to glossentry automaticaly?</dt><dt><a href="#firstterm.only.link">firstterm.only.link</a> - Does automatic glossterm linking only apply to firstterms?</dt><dt><a href="#glossary.collection">glossary.collection</a> - Name of the glossary collection file</dt><dt><a href="#glossterm.separation">glossterm.separation</a> - Separation between glossary terms and descriptions in list mode</dt><dt><a href="#glossterm.width">glossterm.width</a> - Width of glossterm in list presentation mode</dt><dt><a href="#glossary.as.blocks">glossary.as.blocks</a> - Present glossarys using blocks instead of lists?</dt><dt><a href="#glosslist.as.blocks">glosslist.as.blocks</a> - Use blocks for glosslists?</dt><dt><a href="#glossentry.show.acronym">glossentry.show.acronym</a> - Display glossentry acronyms?</dt></dl></div><div class="refentry" lang="en"><a id="glossterm.auto.link"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>glossterm.auto.link — Generate links from glossterm to glossentry automaticaly?</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="glossterm.auto.link.frag"/><pre class="programlisting">
+&lt;xsl:param name="glossterm.auto.link" select="0"&gt;&lt;/xsl:param&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e2030"/><h2>Description</h2><p>If true, a link will be automatically created from glossterm 
+to glossentry for that glossary term. This is usefull when your
+glossterm names are consistent and you don't want to add links
+manually.</p><p>If there is <tt class="sgmltag-attribute">linkend</tt> on
+<tt class="sgmltag-element">glossterm</tt> then is used instead of autogeneration of
+link.</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="firstterm.only.link"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>firstterm.only.link — Does automatic glossterm linking only apply to firstterms?</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="firstterm.only.link.frag"/><pre class="programlisting">
+&lt;xsl:param name="firstterm.only.link" select="0"&gt;&lt;/xsl:param&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e2057"/><h2>Description</h2><p>If true, only <tt class="sgmltag-element">firstterm</tt>s will be automatically linked
+to the glossary. If glossary linking is not enabled, this parameter
+has no effect.</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="glossary.collection"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>glossary.collection — Name of the glossary collection file</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="glossary.collection.frag"/><pre class="programlisting">
+&lt;xsl:param name="glossary.collection" select="''"&gt;&lt;/xsl:param&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e2079"/><h2>Description</h2><p>Glossaries maintained independently across a set of documents
+are likely to become inconsistent unless considerable effort is
+expended to keep them in sync. It makes much more sense, usually, to
+store all of the glossary entries in a single place and simply
+“<span class="quote">extract</span>” the ones you need in each document.</p><p>That's the purpose of the
+<i class="parameter"><tt>glossary.collection</tt></i> parameter. To setup a global
+glossary “<span class="quote">database</span>”, follow these steps:</p><div class="refsect2" lang="en"><a id="d50e2095"/><h3>Setting Up the Glossary Database</h3><p>First, create a stand-alone glossary document that contains all of
+the entries that you wish to reference. Make sure that each glossary
+entry has an ID.</p><p>Here's an example glossary:</p><div class="informalexample"><pre class="programlisting">
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;!DOCTYPE glossary
+  PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd"&gt;
+&lt;glossary&gt;
+&lt;glossaryinfo&gt;
+&lt;editor&gt;&lt;firstname&gt;Eric&lt;/firstname&gt;&lt;surname&gt;Raymond&lt;/surname&gt;&lt;/editor&gt;
+&lt;title&gt;Jargon File 4.2.3 (abridged)&lt;/title&gt;
+&lt;releaseinfo&gt;Just some test data&lt;/releaseinfo&gt;
+&lt;/glossaryinfo&gt;
+
+&lt;glossdiv&gt;&lt;title&gt;0&lt;/title&gt;
+
+&lt;glossentry&gt;
+&lt;glossterm&gt;0&lt;/glossterm&gt;
+&lt;glossdef&gt;
+&lt;para&gt;Numeric zero, as opposed to the letter `O' (the 15th letter of
+the English alphabet). In their unmodified forms they look a lot
+alike, and various kluges invented to make them visually distinct have
+compounded the confusion. If your zero is center-dotted and letter-O
+is not, or if letter-O looks almost rectangular but zero looks more
+like an American football stood on end (or the reverse), you're
+probably looking at a modern character display (though the dotted zero
+seems to have originated as an option on IBM 3270 controllers). If
+your zero is slashed but letter-O is not, you're probably looking at
+an old-style ASCII graphic set descended from the default typewheel on
+the venerable ASR-33 Teletype (Scandinavians, for whom /O is a letter,
+curse this arrangement). (Interestingly, the slashed zero long
+predates computers; Florian Cajori's monumental "A History of
+Mathematical Notations" notes that it was used in the twelfth and
+thirteenth centuries.) If letter-O has a slash across it and the zero
+does not, your display is tuned for a very old convention used at IBM
+and a few other early mainframe makers (Scandinavians curse &lt;emphasis&gt;this&lt;/emphasis&gt;
+arrangement even more, because it means two of their letters collide).
+Some Burroughs/Unisys equipment displays a zero with a &lt;emphasis&gt;reversed&lt;/emphasis&gt;
+slash. Old CDC computers rendered letter O as an unbroken oval and 0
+as an oval broken at upper right and lower left. And yet another
+convention common on early line printers left zero unornamented but
+added a tail or hook to the letter-O so that it resembled an inverted
+Q or cursive capital letter-O (this was endorsed by a draft ANSI
+standard for how to draw ASCII characters, but the final standard
+changed the distinguisher to a tick-mark in the upper-left corner).
+Are we sufficiently confused yet?&lt;/para&gt;
+&lt;/glossdef&gt;
+&lt;/glossentry&gt;
+
+&lt;glossentry&gt;
+&lt;glossterm&gt;1TBS&lt;/glossterm&gt;
+&lt;glossdef&gt;
+&lt;para role="accidence"&gt;
+&lt;phrase role="pronounce"&gt;&lt;/phrase&gt;
+&lt;phrase role="partsofspeach"&gt;n&lt;/phrase&gt;
+&lt;/para&gt;
+&lt;para&gt;The "One True Brace Style"&lt;/para&gt;
+&lt;glossseealso&gt;indent style&lt;/glossseealso&gt;
+&lt;/glossdef&gt;
+&lt;/glossentry&gt;
+
+&lt;!-- ... --&gt;
+
+&lt;/glossdiv&gt;
+
+&lt;!-- ... --&gt;
+
+&lt;/glossary&gt;</pre></div></div><div class="refsect2" lang="en"><a id="d50e2105"/><h3>Marking Up Glossary Terms</h3><p>That takes care of the glossary database, now you have to get the entries
+into your document. Unlike bibliography entries, which can be empty, creating
+“<span class="quote">placeholder</span>” glossary entries would be very tedious. So instead,
+support for <i class="parameter"><tt>glossary.collection</tt></i> relies on implicit linking.</p><p>In your source document, simply use <tt class="sgmltag-element">firstterm</tt> and
+<tt class="sgmltag-element">glossterm</tt> to identify the terms you wish to have included
+in the glossary. The stylesheets assume that you will either set the
+<tt class="sgmltag-attribute">baseform</tt> attribute correctly, or that the
+content of the element exactly matches a term in your glossary.</p><p>If you're using a <i class="parameter"><tt>glossary.collection</tt></i>, don't
+make explicit links on the terms in your document.</p><p>So, in your document, you might write things like this:</p><div class="informalexample"><pre class="programlisting">&lt;para&gt;This is dummy text, without any real meaning.
+The point is simply to reference glossary terms like &lt;glossterm&gt;0&lt;/glossterm&gt;
+and the &lt;firstterm baseform="1TBS"&gt;One True Brace Style (1TBS)&lt;/firstterm&gt;.
+The &lt;glossterm&gt;1TBS&lt;/glossterm&gt;, as you can probably imagine, is a nearly
+religious issue.&lt;/para&gt;</pre></div><p>If you set the <i class="parameter"><tt>firstterm.only.link</tt></i> parameter,
+only the terms marked with <tt class="sgmltag-element">firstterm</tt> will be links.
+Otherwise, all the terms will be linked.</p></div><div class="refsect2" lang="en"><a id="d50e2145"/><h3>Marking Up the Glossary</h3><p>The glossary itself has to be identified for the stylesheets. For lack
+of a better choice, the <tt class="sgmltag-attribute">role</tt> is used.
+To identify the glossary as the target for automatic processing, set
+the role to “<span class="quote"><tt class="literal">auto</tt></span>”. The title of this
+glossary (and any other information from the <tt class="sgmltag-element">glossaryinfo</tt>
+that's rendered by your stylesheet) will be displayed, but the entries will
+come from the database.
+</p><p>Unfortunately, the glossary can't be empty, so you must put in
+at least one <tt class="sgmltag-element">glossentry</tt>. The content of this entry
+is irrelevant, it will not be rendered:</p><div class="informalexample"><pre class="programlisting">&lt;glossary role="auto"&gt;
+&lt;glossentry&gt;
+&lt;glossterm&gt;Irrelevant&lt;/glossterm&gt;
+&lt;glossdef&gt;
+&lt;para&gt;If you can see this, the document was processed incorrectly. Use
+the &lt;parameter&gt;glossary.collection&lt;/parameter&gt; parameter.&lt;/para&gt;
+&lt;/glossdef&gt;
+&lt;/glossentry&gt;
+&lt;/glossary&gt;</pre></div><p>What about glossary divisions? If your glossary database has glossary
+divisions <span class="emphasis"><em>and</em></span> your automatic glossary contains at least
+one <tt class="sgmltag-element">glossdiv</tt>, the automic glossary will have divisions.
+If the <tt class="sgmltag-element">glossdiv</tt> is missing from either location, no divisions
+will be rendered.</p><p>Glossary entries (and divisions, if appropriate) in the glossary will
+occur in precisely the order they occur in your database.</p></div><div class="refsect2" lang="en"><a id="d50e2181"/><h3>Formatting the Document</h3><p>Finally, when you are ready to format your document, simply set the
+<i class="parameter"><tt>glossary.collection</tt></i> parameter (in either a
+customization layer or directly through your processor's interface) to
+point to your global glossary.</p><p>The stylesheets will format the glossary in your document as if
+all of the entries implicilty referenced appeared there literally.</p></div><div class="refsect2" lang="en"><a id="d50e2191"/><h3>Limitations</h3><p>Glossary cross-references <span class="emphasis"><em>within the glossary</em></span> are
+not supported. For example, this <span class="emphasis"><em>will not</em></span> work:</p><div class="informalexample"><pre class="programlisting">&lt;glossentry&gt;
+&lt;glossterm&gt;gloss-1&lt;/glossterm&gt;
+&lt;glossdef&gt;&lt;para&gt;A description that references &lt;glossterm&gt;gloss-2&lt;/glossterm&gt;.&lt;/para&gt;
+&lt;glossseealso&gt;gloss-2&lt;/glossseealso&gt;
+&lt;/glossdef&gt;
+&lt;/glossentry&gt;</pre></div><p>If you put glossary cross-references in your glossary that way,
+you'll get the cryptic error: <tt class="computeroutput">Warning:
+glossary.collection specified, but there are 0 automatic
+glossaries</tt>.</p><p>Instead, you must do two things:</p><div class="orderedlist"><ol type="1"><li><p>Markup your glossary using <tt class="sgmltag-element">glossseealso</tt>:</p><div class="informalexample"><pre class="programlisting">&lt;glossentry&gt;
+&lt;glossterm&gt;gloss-1&lt;/glossterm&gt;
+&lt;glossdef&gt;&lt;para&gt;A description that references &lt;glossterm&gt;gloss-2&lt;/glossterm&gt;.&lt;/para&gt;
+&lt;glossseealso&gt;gloss-2&lt;/glossseealso&gt;
+&lt;/glossdef&gt;
+&lt;/glossentry&gt;</pre></div></li><li><p>Make sure there is at least one <tt class="sgmltag-element">glossterm</tt> reference to
+<i class="glossterm">gloss-2</i> <span class="emphasis"><em>in your document</em></span>. The
+easiest way to do that is probably within a <tt class="sgmltag-element">remark</tt> in your
+automatic glossary:</p><div class="informalexample"><pre class="programlisting">&lt;glossary role="auto"&gt;
+&lt;remark&gt;Make sure there's a reference to &lt;glossterm&gt;gloss-2&lt;/glossterm&gt;.&lt;/remark&gt;
+&lt;glossentry&gt;
+&lt;glossterm&gt;Irrelevant&lt;/glossterm&gt;
+&lt;glossdef&gt;
+&lt;para&gt;If you can see this, the document was processed incorrectly. Use
+the &lt;parameter&gt;glossary.collection&lt;/parameter&gt; parameter.&lt;/para&gt;
+&lt;/glossdef&gt;
+&lt;/glossentry&gt;
+&lt;/glossary&gt;</pre></div></li></ol></div></div></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="glossterm.separation"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>glossterm.separation — Separation between glossary terms and descriptions in list mode</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="glossterm.separation.frag"/><pre class="programlisting">
+&lt;xsl:param name="glossterm.separation" select="'0.25in'"&gt;&lt;/xsl:param&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e2254"/><h2>Description</h2><p>Specifies the separation between glossary terms and descriptions when
+glossarys are presented using lists.</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="glossterm.width"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>glossterm.width — Width of glossterm in list presentation mode</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="glossterm.width.frag"/><pre class="programlisting">
+&lt;xsl:param name="glossterm.width" select="'2in'"&gt;&lt;/xsl:param&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e2273"/><h2>Description</h2><p>This parameter specifies the width reserved for glossary terms when
+a list presentation is used.</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="glossary.as.blocks"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>glossary.as.blocks — Present glossarys using blocks instead of lists?</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="glossary.as.blocks.frag"/><pre class="programlisting">
+&lt;xsl:param name="glossary.as.blocks" select="0"&gt;&lt;/xsl:param&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e2292"/><h2>Description</h2><p>If non-zero, <tt class="sgmltag-element">glossary</tt>s will be formatted as
+blocks.</p><p>If you have long <tt class="sgmltag-element">glossterm</tt>s, proper list
+markup in the FO case may produce unattractive lists. By setting this
+parameter, you can force the stylesheets to produce block markup
+instead of proper lists.</p><p>You can override this setting with a processing instruction as the
+child of <tt class="sgmltag-element">glossary</tt>: <tt class="sgmltag-pi">&lt;?dbfo
+glossary-presentation="blocks"&gt;</tt> or <tt class="sgmltag-pi">&lt;?dbfo
+glossary-presentation="list"&gt;</tt></p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="glosslist.as.blocks"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>glosslist.as.blocks — Use blocks for glosslists?</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="glosslist.as.blocks.frag"/><pre class="programlisting">
+&lt;xsl:param name="glosslist.as.blocks" select="0"&gt;&lt;/xsl:param&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e2329"/><h2>Description</h2><p>See <i class="parameter"><tt>glossary.as.blocks</tt></i>.</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="glossentry.show.acronym"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>glossentry.show.acronym — Display <tt class="sgmltag-element">glossentry</tt> acronyms?</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="glossentry.show.acronym.frag"/><pre class="programlisting">
+&lt;xsl:param name="glossentry.show.acronym" select="'no'"&gt;&lt;/xsl:param&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e2354"/><h2>Description</h2><p>A setting of “<span class="quote">yes</span>” means they should be displayed;
+“<span class="quote">no</span>” means they shouldn't. If “<span class="quote">primary</span>” is used,
+then they are shown as the primary text for the entry.</p><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3><p>This setting controls both <tt class="sgmltag-element">acronym</tt> and
+<tt class="sgmltag-element">abbrev</tt> elements in the <tt class="sgmltag-element">glossentry</tt>.</p></div></div></div></div><div class="reference" lang="en"><a id="d50e2380"/><div class="titlepage"><div><div><h1 class="title"><a id="d50e2380"/>Miscellaneous</h1></div></div><hr/></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><a href="#formal.procedures">formal.procedures</a> - Selects formal or informal procedures</dt><dt><a href="#formal.title.placement">formal.title.placement</a> - </dt><dt><a href="#runinhead.default.title.end.punct">runinhead.default.title.end.punct</a> - Default punctuation character on a run-in-head</dt><dt><a href="#runinhead.title.end.punct">runinhead.title.end.punct</a> - Characters that count as punctuation on a run-in-head</dt><dt><a href="#show.comments">show.comments</a> - Display comment elements?</dt><dt><a href="#punct.honorific">punct.honorific</a> - Punctuation after an honorific in a personal name.</dt><dt><a href="#segmentedlist.as.table">segmentedlist.as.table</a> - Format segmented lists as tables?</dt><dt><a href="#variablelist.as.blocks">variablelist.as.blocks</a> - Format variablelists lists as blocks?</dt><dt><a href="#blockquote.properties">blockquote.properties</a> - To set the style for block quotations.</dt><dt><a href="#ulink.show">ulink.show</a> - Display URLs after ulinks?</dt><dt><a href="#ulink.footnotes">ulink.footnotes</a> - Generate footnotes for ULinks?</dt><dt><a href="#ulink.footnote.number.format">ulink.footnote.number.format</a> - Identifies the format used for ulink footnote numbers</dt><dt><a href="#ulink.hyphenate">ulink.hyphenate</a> - Allow URLs to be automatically hyphenated</dt><dt><a href="#shade.verbatim">shade.verbatim</a> - Should verbatim environments be shaded?</dt><dt><a href="#shade.verbatim.style">shade.verbatim.style</a> - Properties that specify the style of shaded verbatim listings</dt><dt><a href="#use.svg">use.svg</a> - Allow SVG in the result tree?</dt><dt><a href="#use.role.as.xrefstyle">use.role.as.xrefstyle</a> - Use role attribute for
+xrefstyle on xref?</dt><dt><a href="#menuchoice.separator">menuchoice.separator</a> - </dt><dt><a href="#menuchoice.menu.separator">menuchoice.menu.separator</a> - </dt><dt><a href="#default.float.class">default.float.class</a> - Specifies the default float class</dt><dt><a href="#footnote.number.format">footnote.number.format</a> - Identifies the format used for footnote numbers</dt><dt><a href="#table.footnote.number.format">table.footnote.number.format</a> - Identifies the format used for footnote numbers in tables</dt><dt><a href="#footnote.number.symbols">footnote.number.symbols</a> - </dt><dt><a href="#table.footnote.number.symbols">table.footnote.number.symbols</a> - </dt><dt><a href="#xref.with.number.and.title">xref.with.number.and.title</a> - Use number and title in cross references</dt><dt><a href="#superscript.properties">superscript.properties</a> - Properties associated with superscripts</dt><dt><a href="#subscript.properties">subscript.properties</a> - Properties associated with subscripts</dt></dl></div><div class="refentry" lang="en"><a id="formal.procedures"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>formal.procedures — Selects formal or informal procedures</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="formal.procedures.frag"/><pre class="programlisting">
+&lt;xsl:param name="formal.procedures" select="1"&gt;&lt;/xsl:param&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e2397"/><h2>Description</h2><p>Formal procedures are numbered and always have a title.
+</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="formal.title.placement"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>formal.title.placement — </p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="formal.title.placement.frag"/><pre class="programlisting">
+&lt;xsl:param name="formal.title.placement"&gt;
+figure before
+example before
+equation before
+table before
+procedure before
+task before
+&lt;/xsl:param&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e2414"/><h2>Description</h2><p>Specifies where formal object titles should occur. For each formal object
+type (<tt class="sgmltag-element">figure</tt>,
+<tt class="sgmltag-element">example</tt>,
+<tt class="sgmltag-element">equation</tt>,
+<tt class="sgmltag-element">table</tt>, and <tt class="sgmltag-element">procedure</tt>)
+you can specify either the keyword
+“<span class="quote"><tt class="literal">before</tt></span>” or
+“<span class="quote"><tt class="literal">after</tt></span>”.</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="runinhead.default.title.end.punct"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>runinhead.default.title.end.punct — Default punctuation character on a run-in-head</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="runinhead.default.title.end.punct.frag"/><pre class="programlisting">&lt;xsl:param name="runinhead.default.title.end.punct" select="'.'"&gt;&lt;/xsl:param&gt;</pre></div><div class="refsect1" lang="en"><a id="d50e2456"/><h2>Description</h2><p>FIXME:
+</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="runinhead.title.end.punct"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>runinhead.title.end.punct — Characters that count as punctuation on a run-in-head</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="runinhead.title.end.punct.frag"/><pre class="programlisting">&lt;xsl:param name="runinhead.title.end.punct" select="'.!?:'"&gt;&lt;/xsl:param&gt;</pre></div><div class="refsect1" lang="en"><a id="d50e2475"/><h2>Description</h2><p>FIXME:
+</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="show.comments"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>show.comments — Display <tt class="sgmltag-element">comment</tt> elements?</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="show.comments.frag"/><pre class="programlisting">&lt;xsl:param name="show.comments"&gt;1&lt;/xsl:param&gt;</pre></div><div class="refsect1" lang="en"><a id="d50e2497"/><h2>Description</h2><p>If true (non-zero), comments will be displayed, otherwise they are suppressed.
+Comments here refers to the <tt class="sgmltag-element">comment</tt> element,
+which will be renamed <tt class="sgmltag-element">remark</tt> in DocBook V4.0,
+not XML comments (&lt;-- like this --&gt;) which are unavailable.
+</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="punct.honorific"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>punct.honorific — Punctuation after an honorific in a personal name.</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="punct.honorific.frag"/><pre class="programlisting">
+&lt;xsl:param name="punct.honorific" select="'.'"&gt;&lt;/xsl:param&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e2522"/><h2>Description</h2><p>This parameter specifies the punctuation that should be added after an
+honorific in a personal name.</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="segmentedlist.as.table"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>segmentedlist.as.table — Format segmented lists as tables?</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="segmentedlist.as.table.frag"/><pre class="programlisting">
+&lt;xsl:param name="segmentedlist.as.table" select="0"&gt;&lt;/xsl:param&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e2541"/><h2>Description</h2><p>If non-zero, <tt class="sgmltag-element">segmentedlist</tt>s will be formatted as
+tables.</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="variablelist.as.blocks"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>variablelist.as.blocks — Format <tt class="sgmltag-element">variablelist</tt>s lists as blocks?</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="variablelist.as.blocks.frag"/><pre class="programlisting">
+&lt;xsl:param name="variablelist.as.blocks" select="0"&gt;&lt;/xsl:param&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e2566"/><h2>Description</h2><p>If non-zero, <tt class="sgmltag-element">variablelist</tt>s will be formatted as
+blocks.</p><p>If you have long terms, proper list markup in the FO case may produce
+unattractive lists. By setting this parameter, you can force the stylesheets
+to produce block markup instead of proper lists.</p><p>You can override this setting with a processing instruction as the
+child of <tt class="sgmltag-element">variablelist</tt>: <tt class="sgmltag-pi">&lt;?dbfo
+list-presentation="blocks"&gt;</tt> or <tt class="sgmltag-pi">&lt;?dbfo
+list-presentation="list"&gt;</tt></p><pre class="programlisting">  &lt;variablelist&gt;
+        &lt;?dbfo list-presentation="list"?&gt;
+        &lt;varlistentry&gt;
+          &lt;term&gt;list&lt;/term&gt;
+          &lt;listitem&gt;
+                &lt;para&gt;
+                  Formatted as a list even if variablelist.as.blocks is set to 1.
+                &lt;/para&gt;
+          &lt;/listitem&gt;
+        &lt;/varlistentry&gt;
+  &lt;/variablelist&gt;</pre></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="blockquote.properties"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>blockquote.properties — To set the style for block quotations.</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="blockquote.properties.frag"/><pre class="programlisting">
+&lt;xsl:attribute-set name="blockquote.properties"&gt;
+&lt;xsl:attribute name="start-indent"&gt;0.5in&lt;/xsl:attribute&gt;
+&lt;xsl:attribute name="end-indent"&gt;0.5in&lt;/xsl:attribute&gt;
+&lt;xsl:attribute name="space-after.minimum"&gt;0.5em&lt;/xsl:attribute&gt;
+&lt;xsl:attribute name="space-after.optimum"&gt;1em&lt;/xsl:attribute&gt;
+&lt;xsl:attribute name="space-after.maximum"&gt;2em&lt;/xsl:attribute&gt;
+&lt;/xsl:attribute-set&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e2597"/><h2>Description</h2><p>The <i class="parameter"><tt>blockquote.properties</tt></i> attribute set specifies
+the formating properties of block quotations.</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="ulink.show"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>ulink.show — Display URLs after <tt class="sgmltag-element">ulink</tt>s?</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="ulink.show.frag"/><pre class="programlisting">
+&lt;xsl:param name="ulink.show" select="1"&gt;&lt;/xsl:param&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e2622"/><h2>Description</h2><p>If non-zero, the URL of each <tt class="sgmltag-element">ULink</tt> will
+appear after the text of the link. If the text of the link and the URL
+are identical, the URL is suppressed.</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="ulink.footnotes"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>ulink.footnotes — Generate footnotes for <tt class="sgmltag-element">ULink</tt>s?</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="ulink.footnotes.frag"/><pre class="programlisting">
+&lt;xsl:param name="ulink.footnotes" select="0"&gt;&lt;/xsl:param&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e2647"/><h2>Description</h2><p>If non-zero, the URL of each <tt class="sgmltag-element">ULink</tt> will
+appear as a footnote.
+</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="ulink.footnote.number.format"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>ulink.footnote.number.format — Identifies the format used for <tt class="sgmltag-element">ulink</tt> footnote numbers</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="ulink.footnote.number.format.frag"/><pre class="programlisting">
+&lt;xsl:param name="ulink.footnote.number.format" select="'1'"&gt;&lt;/xsl:param&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e2672"/><h2>Description</h2><p>The <i class="parameter"><tt>ulink.footnote.number.format</tt></i> specifies the format
+to use for footnote numeration (1, i, I, a, or A).</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="ulink.hyphenate"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>ulink.hyphenate — Allow URLs to be automatically hyphenated</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="ulink.hyphenate.frag"/><pre class="programlisting">
+&lt;xsl:param name="ulink.hyphenate" select="''"&gt;&lt;/xsl:param&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e2694"/><h2>Description</h2><p>If not empty, the specified character (or more generally, content) is
+added to URLs after every “<span class="quote">/</span>”. If the character specified is a
+Unicode soft hyphen (0x00AD) or Unicode zero-width space (0x200B), some FO
+processors will be able to reasonably hyphenate long URLs.</p><p>As of 28 Jan 2002, discretionary hyphens are more widely and correctly
+supported than zero-width spaces for this purpose.</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="shade.verbatim"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>shade.verbatim — Should verbatim environments be shaded?</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="shade.verbatim.frag"/><pre class="programlisting">&lt;xsl:param name="shade.verbatim" select="0"&gt;&lt;/xsl:param&gt;</pre></div><div class="refsect1" lang="en"><a id="d50e2718"/><h2>Description</h2><p>FIXME:</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="shade.verbatim.style"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>shade.verbatim.style — Properties that specify the style of shaded verbatim listings</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="shade.verbatim.style.frag"/><pre class="programlisting">
+
+&lt;xsl:attribute-set name="shade.verbatim.style"&gt;
+  &lt;xsl:attribute name="background-color"&gt;#E0E0E0&lt;/xsl:attribute&gt;
+&lt;/xsl:attribute-set&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e2736"/><h2>Description</h2><p>FIXME:</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="use.svg"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>use.svg — Allow SVG in the result tree?</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="use.svg.frag"/><pre class="programlisting">
+&lt;xsl:param name="use.svg" select="1"&gt;&lt;/xsl:param&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e2755"/><h2>Description</h2><p>If non-zero, SVG will be considered an acceptable image format. SVG
+is passed through to the result tree, so correct rendering of the resulting
+diagram depends on the formatter (FO processor or web browser) that is used
+to process the output from the stylesheet.</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="use.role.as.xrefstyle"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>use.role.as.xrefstyle — Use <tt class="sgmltag-attribute">role</tt> attribute for
+<tt class="sgmltag-attribute">xrefstyle</tt> on <tt class="sgmltag-element">xref</tt>?</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="use.role.as.xrefstyle.frag"/><pre class="programlisting">
+&lt;xsl:param name="use.role.as.xrefstyle" select="1"&gt;&lt;/xsl:param&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e2783"/><h2>Description</h2><p>If non-zero, the <tt class="sgmltag-attribute">role</tt> attribute on
+<tt class="sgmltag-element">xref</tt> will be used to select the cross reference style.
+The <a href="http://www.oasis-open.org/docbook/" target="_top">DocBook
+Technical Committee</a> recently added an
+<tt class="sgmltag-attribute">xrefstyle</tt> attribute for this purpose.
+If the <tt class="sgmltag-attribute">xrefstyle</tt> attribute
+is present, <tt class="sgmltag-attribute">role</tt> will be ignored, regardless
+of this setting.</p><p>Until an official DocBook release that includes the new
+attribute, this flag allows <tt class="sgmltag-attribute">role</tt>
+to serve that purpose.</p></div><div class="refsect1" lang="en"><a id="d50e2811"/><h2>Example</h2><p>The following small stylesheet shows how to configure the stylesheets to make
+use of the cross reference style:</p><pre class="programlisting">&lt;?xml version="1.0"?&gt;
+&lt;xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                version="1.0"&gt;
+
+&lt;xsl:import href="../xsl/html/docbook.xsl"/&gt;
+
+&lt;xsl:output method="html"/&gt;
+
+&lt;xsl:param name="local.l10n.xml" select="document('')"/&gt;
+&lt;l:i18n xmlns:l="http://docbook.sourceforge.net/xmlns/l10n/1.0"&gt;
+  &lt;l:l10n xmlns:l="http://docbook.sourceforge.net/xmlns/l10n/1.0" language="en"&gt;
+   &lt;l:context name="xref"&gt;
+      &lt;l:template name="chapter" style="title" text="Chapter %n, %t"/&gt;
+      &lt;l:template name="chapter" text="Chapter %n"/&gt;
+    &lt;/l:context&gt;
+  &lt;/l:l10n&gt;
+&lt;/l:i18n&gt;
+
+&lt;/xsl:stylesheet&gt;</pre><p>With this stylesheet, the cross references in the following document:</p><pre class="programlisting">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+                  "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"&gt;
+&lt;book id="book"&gt;&lt;title&gt;Book&lt;/title&gt;
+
+&lt;preface&gt;
+&lt;title&gt;Preface&lt;/title&gt;
+
+&lt;para&gt;Normal: &lt;xref linkend="ch1"/&gt;.&lt;/para&gt;
+&lt;para&gt;Title: &lt;xref xrefstyle="title" linkend="ch1"/&gt;.&lt;/para&gt;
+
+&lt;/preface&gt;
+
+&lt;chapter id="ch1"&gt;
+&lt;title&gt;First Chapter&lt;/title&gt;
+
+&lt;para&gt;Irrelevant.&lt;/para&gt;
+
+&lt;/chapter&gt;
+&lt;/book&gt;</pre><p>will appear as:</p><div class="informalexample"><p>Normal: Chapter 1.</p><p>Title: Chapter 1, <span class="emphasis"><em>First Chapter</em></span>.</p></div></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="menuchoice.separator"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>menuchoice.separator — </p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="menuchoice.separator.frag"/><pre class="programlisting">
+&lt;xsl:param name="menuchoice.separator" select="'+'"&gt;&lt;/xsl:param&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e2844"/><h2>Description</h2><p>Separator used to connect items of a <tt class="sgmltag-element">menuchoice</tt> other
+than <tt class="sgmltag-element">guimenuitem</tt> and <tt class="sgmltag-element">guisubmenu</tt>. The latter
+elements are linked with <i class="parameter"><tt>menuchoice.menu.separator</tt></i>.
+</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="menuchoice.menu.separator"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>menuchoice.menu.separator — </p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="menuchoice.menu.separator.frag"/><pre class="programlisting">
+&lt;xsl:param name="menuchoice.menu.separator" select="'-&gt;'"&gt;&lt;/xsl:param&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e2873"/><h2>Description</h2><p>Separator used to connect items of a <tt class="sgmltag-element">menuchoice</tt> with
+<tt class="sgmltag-element">guimenuitem</tt> or <tt class="sgmltag-element">guisubmenu</tt>. Other elements
+are linked with <i class="parameter"><tt>menuchoice.separator</tt></i>.
+</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="default.float.class"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>default.float.class — Specifies the default float class</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="default.float.class.frag"/><pre class="programlisting">
+&lt;xsl:param name="default.float.class" select="'before'"&gt;&lt;/xsl:param&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e2904"/><h2>Description</h2><p>FIXME:</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="footnote.number.format"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>footnote.number.format — Identifies the format used for footnote numbers</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="footnote.number.format.frag"/><pre class="programlisting">
+&lt;xsl:param name="footnote.number.format" select="'1'"&gt;&lt;/xsl:param&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e2923"/><h2>Description</h2><p>The <i class="parameter"><tt>footnote.number.format</tt></i> specifies the format
+to use for footnote numeration (1, i, I, a, or A).</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="table.footnote.number.format"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>table.footnote.number.format — Identifies the format used for footnote numbers in tables</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="table.footnote.number.format.frag"/><pre class="programlisting">
+&lt;xsl:param name="table.footnote.number.format" select="'a'"&gt;&lt;/xsl:param&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e2945"/><h2>Description</h2><p>The <i class="parameter"><tt>table.footnote.number.format</tt></i> specifies the format
+to use for footnote numeration (1, i, I, a, or A) in tables.</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="footnote.number.symbols"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>footnote.number.symbols — </p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="footnote.number.symbols.frag"/><pre class="programlisting">
+&lt;xsl:param name="footnote.number.symbols" select="''"&gt;&lt;/xsl:param&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e2965"/><h2>Description</h2><p>If <i class="parameter"><tt>footnote.number.symbols</tt></i> is not the empty string,
+footnotes will use the characters it contains as footnote symbols. For example,
+“<span class="quote">*&amp;#x2020;&amp;#x2021;&amp;#x25CA;&amp;#x2720;</span>” will identify
+footnotes with “<span class="quote">*</span>”, “<span class="quote">†</span>”, “<span class="quote">‡</span>”,
+“<span class="quote">◊</span>”, and “<span class="quote">✠</span>”. If there are more footnotes
+than symbols, the stylesheets will fall back to numbered footnotes using
+<i class="parameter"><tt>footnote.number.format</tt></i>.</p><p>The use of symbols for footnotes depends on the ability of your
+processor (or browser) to render the symbols you select. Not all systems are
+capable of displaying the full range of Unicode characters. If the quoted characters
+in the preceding paragraph are not displayed properly, that's a good indicator
+that you may have trouble using those symbols for footnotes.</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="table.footnote.number.symbols"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>table.footnote.number.symbols — </p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="table.footnote.number.symbols.frag"/><pre class="programlisting">
+&lt;xsl:param name="table.footnote.number.symbols" select="''"&gt;&lt;/xsl:param&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e3008"/><h2>Description</h2><p>If <i class="parameter"><tt>table.footnote.number.symbols</tt></i> is not the empty string,
+table footnotes will use the characters it contains as footnote symbols. For example,
+“<span class="quote">*&amp;#x2020;&amp;#x2021;&amp;#x25CA;&amp;#x2720;</span>” will identify
+footnotes with “<span class="quote">*</span>”, “<span class="quote">†</span>”, “<span class="quote">‡</span>”,
+“<span class="quote">◊</span>”, and “<span class="quote">✠</span>”. If there are more footnotes
+than symbols, the stylesheets will fall back to numbered footnotes using
+<i class="parameter"><tt>table.footnote.number.format</tt></i>.</p><p>The use of symbols for footnotes depends on the ability of your
+processor (or browser) to render the symbols you select. Not all systems are
+capable of displaying the full range of Unicode characters. If the quoted characters
+in the preceding paragraph are not displayed properly, that's a good indicator
+that you may have trouble using those symbols for footnotes.</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="xref.with.number.and.title"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>xref.with.number.and.title — Use number and title in cross references</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="xref.with.number.and.title.frag"/><pre class="programlisting">
+&lt;xsl:param name="xref.with.number.and.title" select="1"&gt;&lt;/xsl:param&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e3053"/><h2>Description</h2><p>FIXME:</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="superscript.properties"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>superscript.properties — Properties associated with superscripts</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="superscript.properties.frag"/><pre class="programlisting">
+&lt;xsl:attribute-set name="superscript.properties"&gt;
+  &lt;xsl:attribute name="font-size"&gt;75%&lt;/xsl:attribute&gt;
+&lt;/xsl:attribute-set&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e3071"/><h2>Description</h2><p>Specifies styling properties for superscripts.</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="subscript.properties"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>subscript.properties — Properties associated with subscripts</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="subscript.properties.frag"/><pre class="programlisting">
+&lt;xsl:attribute-set name="subscript.properties"&gt;
+  &lt;xsl:attribute name="font-size"&gt;75%&lt;/xsl:attribute&gt;
+&lt;/xsl:attribute-set&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e3089"/><h2>Description</h2><p>Specifies styling properties for subscripts.</p></div></div></div><div class="reference" lang="en"><a id="d50e3094"/><div class="titlepage"><div><div><h1 class="title"><a id="d50e3094"/>Graphics</h1></div></div><hr/></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><a href="#graphic.default.extension">graphic.default.extension</a> - Default extension for graphic filenames</dt><dt><a href="#default.image.width">default.image.width</a> - The default width of images</dt><dt><a href="#preferred.mediaobject.role">preferred.mediaobject.role</a> - Select which mediaobject to use based on
+this value of an object's role attribute.
+</dt><dt><a href="#use.role.for.mediaobject">use.role.for.mediaobject</a> - Use role attribute 
+value for selecting which of several objects within a mediaobject to use.
+</dt><dt><a href="#ignore.image.scaling">ignore.image.scaling</a> - Tell the stylesheets to ignore the author's image scaling attributes</dt></dl></div><div class="refentry" lang="en"><a id="graphic.default.extension"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>graphic.default.extension — Default extension for graphic filenames</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="graphic.default.extension.frag"/><pre class="programlisting">&lt;xsl:param name="graphic.default.extension"&gt;&lt;/xsl:param&gt;</pre></div><div class="refsect1" lang="en"><a id="d50e3111"/><h2>Description</h2><p>If a <tt class="sgmltag-element">graphic</tt> or <tt class="sgmltag-element">mediaobject</tt>
+includes a reference to a filename that does not include an extension,
+and the <tt class="sgmltag-attribute">format</tt> attribute is
+<span class="emphasis"><em>unspecified</em></span>, the default extension will be used.
+</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="default.image.width"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>default.image.width — The default width of images</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="default.image.width.frag"/><pre class="programlisting">
+&lt;xsl:param name="default.image.width" select="''"&gt;&lt;/xsl:param&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e3142"/><h2>Description</h2><p>If specified, this value will be used for the
+<tt class="sgmltag-attribute">width</tt> attribute on
+images that do not specify any
+<a href="http://docbook.org/tdg/en/html/imagedata.html#viewport.area" target="_top">viewport
+dimensions</a>.</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="preferred.mediaobject.role"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>preferred.mediaobject.role — Select which mediaobject to use based on
+this value of an object's <tt class="sgmltag-attribute">role</tt> attribute.
+</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="preferred.mediaobject.role.frag"/><pre class="programlisting">
+&lt;xsl:param name="preferred.mediaobject.role"&gt;&lt;/xsl:param&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e3168"/><h2>Description</h2><p>A mediaobject may contain several objects such as imageobjects.
+If the parameter <i class="parameter"><tt>use.role.for.mediaobject</tt></i>
+is non-zero, then the <tt class="sgmltag-attribute">role</tt> attribute on
+<tt class="sgmltag-element">imageobject</tt>s and other objects within a <tt class="sgmltag-element">mediaobject</tt> container will be used to select which object will be
+used.  If one of the objects has a role value that matches the
+preferred.mediaobject.role parameter, then it has first
+priority for selection.  If more than one has such a
+role value, the first one is used.
+</p><p>
+See the <i class="parameter"><tt>use.role.for.mediaobject</tt></i> parameter
+for the sequence of selection.</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="use.role.for.mediaobject"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>use.role.for.mediaobject — Use <tt class="sgmltag-attribute">role</tt> attribute 
+value for selecting which of several objects within a mediaobject to use.
+</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="use.role.for.mediaobject.frag"/><pre class="programlisting">
+&lt;xsl:param name="use.role.for.mediaobject" select="1"&gt;&lt;/xsl:param&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e3207"/><h2>Description</h2><p>If non-zero, the <tt class="sgmltag-attribute">role</tt> attribute on
+<tt class="sgmltag-element">imageobject</tt>s or other objects within a <tt class="sgmltag-element">mediaobject</tt> container will be used to select which object will be
+used.
+</p><p>
+The order of selection when then parameter is non-zero is:
+</p><div class="orderedlist"><ol type="1"><li><p>If the stylesheet parameter <i class="parameter"><tt>preferred.mediaobject.role</tt></i> has a value, then the object whose role equals that value is selected.</p></li><li><p>Else if an object's role attribute has a value of
+<tt class="literal">html</tt> for HTML processing or
+<tt class="literal">fo</tt> for FO output, then the first
+of such objects is selected.
+</p></li><li><p>Else the first suitable object is selected.</p></li></ol></div><p>
+If the value of 
+<i class="parameter"><tt>use.role.for.mediaobject</tt></i>
+is zero, then role attributes are not considered
+and the first suitable object
+with or without a role value is used.
+</p></div></div><div class="refentry" lang="en"><div class="refentry.separator"><hr/></div><a id="ignore.image.scaling"/><div class="titlepage"/><div class="refnamediv"><h2>Name</h2><p>ignore.image.scaling — Tell the stylesheets to ignore the author's image scaling attributes</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><a id="ignore.image.scaling.frag"/><pre class="programlisting">
+&lt;xsl:param name="ignore.image.scaling" select="0"&gt;&lt;/xsl:param&gt;
+</pre></div><div class="refsect1" lang="en"><a id="d50e3261"/><h2>Description</h2><p>If non-zero, the scaling attributes on graphics and media objects are
+ignored.</p></div></div></div><div class="reference" lang="en"><a id="d50e3266"/><div class="titlepage"><div><div><h1 class="title"><a id="d50e3266"/>Pagination and General Styles</h1></div></div><hr/></div><div class="partintro" lang="en"><div/><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="d50e3270"/>Understanding XSL FO Margins</h2></div></div></div><p>In order for the parameters in this section to make sense, it is useful to
+consider <a href="#fig.pagemodel">Figure 1, “”</a>.</p><div class="figure"><a id="fig.pagemodel"/><p class="title"><b>Figure 1. </b></p>
