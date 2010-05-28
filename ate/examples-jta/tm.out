@@ -1,0 +1,170 @@
+10-05-29 24:45:18,781 [main] Logfile closed: H:\devs\workspaces\atomikosdeveloppement\development\ate\examples-jta\.\tmlog-1.log
+10-05-29 24:45:18,906 [main] Driver class 'org.apache.derby.jdbc.EmbeddedDataSource' does not seem to be a valid JDBC driver - please check the spelling and verify your JDBC vendor's documentation
+10-05-29 24:46:26,406 [main] Starting read of logfile H:\devs\workspaces\atomikosdeveloppement\development\ate\examples-jta\.\tmlog0.log
+10-05-29 24:46:26,406 [main] Done read of logfile
+10-05-29 24:46:26,406 [main] Logfile closed: H:\devs\workspaces\atomikosdeveloppement\development\ate\examples-jta\.\tmlog0.log
+10-05-29 24:47:51,875 [main] Starting read of logfile H:\devs\workspaces\atomikosdeveloppement\development\ate\examples-jta\.\tmlog1.log
+10-05-29 24:47:51,875 [main] Done read of logfile
+10-05-29 24:47:51,875 [main] Logfile closed: H:\devs\workspaces\atomikosdeveloppement\development\ate\examples-jta\.\tmlog1.log
+10-05-29 24:48:02,031 [Atomikos:0] Rollback of timedout ACTIVE coordinator !
+10-05-29 24:48:33,562 [main] Starting read of logfile H:\devs\workspaces\atomikosdeveloppement\development\ate\examples-jta\.\tmlog2.log
+10-05-29 24:48:33,562 [main] Done read of logfile
+10-05-29 24:48:33,562 [main] Logfile closed: H:\devs\workspaces\atomikosdeveloppement\development\ate\examples-jta\.\tmlog2.log
+10-05-29 24:49:41,703 [main] Starting read of logfile H:\devs\workspaces\atomikosdeveloppement\development\ate\examples-jta\.\tmlog3.log
+10-05-29 24:49:41,703 [main] Done read of logfile
+10-05-29 24:49:41,703 [main] Logfile closed: H:\devs\workspaces\atomikosdeveloppement\development\ate\examples-jta\.\tmlog3.log
+10-05-29 24:49:59,046 [main] Starting read of logfile H:\devs\workspaces\atomikosdeveloppement\development\ate\examples-jta\.\tmlog4.log
+10-05-29 24:49:59,046 [main] Done read of logfile
+10-05-29 24:49:59,046 [main] Logfile closed: H:\devs\workspaces\atomikosdeveloppement\development\ate\examples-jta\.\tmlog4.log
+10-05-29 24:50:09,203 [Atomikos:0] Rollback of timedout ACTIVE coordinator !
+10-05-29 24:50:22,578 [main] Starting read of logfile H:\devs\workspaces\atomikosdeveloppement\development\ate\examples-jta\.\tmlog5.log
+10-05-29 24:50:22,578 [main] Done read of logfile
+10-05-29 24:50:22,578 [main] Logfile closed: H:\devs\workspaces\atomikosdeveloppement\development\ate\examples-jta\.\tmlog5.log
+10-05-29 24:50:32,734 [Atomikos:0] Rollback of timedout ACTIVE coordinator !
+10-05-29 24:52:08,875 [main] Starting read of logfile H:\devs\workspaces\atomikosdeveloppement\development\ate\examples-jta\.\tmlog6.log
+10-05-29 24:52:08,875 [main] Done read of logfile
+10-05-29 24:52:08,875 [main] Logfile closed: H:\devs\workspaces\atomikosdeveloppement\development\ate\examples-jta\.\tmlog6.log
+10-05-29 24:53:13,640 [main] Starting read of logfile H:\devs\workspaces\atomikosdeveloppement\development\ate\examples-jta\.\tmlog7.log
+10-05-29 24:53:13,640 [main] Done read of logfile
+10-05-29 24:53:13,640 [main] Logfile closed: H:\devs\workspaces\atomikosdeveloppement\development\ate\examples-jta\.\tmlog7.log
+10-05-29 24:53:23,796 [Atomikos:0] Rollback of timedout ACTIVE coordinator !
+10-05-29 24:53:59,109 [main] Starting read of logfile H:\devs\workspaces\atomikosdeveloppement\development\ate\examples-jta\.\tmlog8.log
+10-05-29 24:53:59,109 [main] Done read of logfile
+10-05-29 24:53:59,109 [main] Logfile closed: H:\devs\workspaces\atomikosdeveloppement\development\ate\examples-jta\.\tmlog8.log
+10-05-29 24:55:37,359 [main] Starting read of logfile H:\devs\workspaces\atomikosdeveloppement\development\ate\examples-jta\.\tmlog9.log
+10-05-29 24:55:37,406 [main] Local heuristic termination of coordinator 192.168.0.6.tm0000100010 with state COMMITTING
+10-05-29 24:55:37,406 [main] Local heuristic termination of coordinator 192.168.0.6.tm0000100010 with state COMMITTING
+10-05-29 24:55:37,406 [main] Done read of logfile
+10-05-29 24:55:37,406 [main] Logfile closed: H:\devs\workspaces\atomikosdeveloppement\development\ate\examples-jta\.\tmlog9.log
+10-05-29 24:55:41,265 [main] Coordinator not recoverable: 192.168.0.6.tm0000100011
+10-05-29 24:56:34,609 [main] Starting read of logfile H:\devs\workspaces\atomikosdeveloppement\development\ate\examples-jta\.\tmlog10.log
+10-05-29 24:56:34,625 [main] Done read of logfile
+10-05-29 24:56:34,625 [main] Logfile closed: H:\devs\workspaces\atomikosdeveloppement\development\ate\examples-jta\.\tmlog10.log
+10-05-29 24:56:35,265 [main] Coordinator not recoverable: 192.168.0.6.tm0000100012
+10-05-29 24:56:51,390 [main] Starting read of logfile H:\devs\workspaces\atomikosdeveloppement\development\ate\examples-jta\.\tmlog11.log
+10-05-29 24:56:51,453 [main] Local heuristic termination of coordinator 192.168.0.6.tm0000100012 with state COMMITTING
+10-05-29 24:56:51,453 [main] Local heuristic termination of coordinator 192.168.0.6.tm0000100012 with state COMMITTING
+10-05-29 24:56:51,453 [main] Done read of logfile
+10-05-29 24:56:51,453 [main] Logfile closed: H:\devs\workspaces\atomikosdeveloppement\development\ate\examples-jta\.\tmlog11.log
+10-05-29 24:56:51,515 [main] Coordinator not recoverable: 192.168.0.6.tm0000100013
+10-05-29 24:56:51,734 [main] samples/jdbc/ExamplesJdbcPooledDatabase: refreshed XAResource
+10-05-29 24:56:51,750 [main] XAConnectionFactory: failed to create pooled connection - DBMS down or unreachable?
+SQL Exception: Database 'db' not found.
+	at org.apache.derby.impl.jdbc.Util.newEmbedSQLException(Unknown Source)
+	at org.apache.derby.impl.jdbc.Util.newEmbedSQLException(Unknown Source)
+	at org.apache.derby.impl.jdbc.Util.generateCsSQLException(Unknown Source)
+	at org.apache.derby.impl.jdbc.EmbedConnection.newSQLException(Unknown Source)
+	at org.apache.derby.impl.jdbc.EmbedConnection.<init>(Unknown Source)
+	at org.apache.derby.impl.jdbc.EmbedConnection30.<init>(Unknown Source)
+	at org.apache.derby.jdbc.Driver30.getNewEmbedConnection(Unknown Source)
+	at org.apache.derby.jdbc.InternalDriver.connect(Unknown Source)
+	at org.apache.derby.jdbc.EmbeddedDataSource.getConnection(Unknown Source)
+	at org.apache.derby.jdbc.EmbeddedDataSource.getConnection(Unknown Source)
+	at org.apache.derby.jdbc.EmbeddedXADataSource.setupResourceAdapter(Unknown Source)
+	at org.apache.derby.jdbc.EmbeddedXADataSource.getXAConnection(Unknown Source)
+	at com.atomikos.jdbc.AtomikosXAConnectionFactory.createPooledConnection(AtomikosXAConnectionFactory.java:60)
+	at com.atomikos.datasource.pool.ConnectionPool.init(ConnectionPool.java:71)
+	at com.atomikos.datasource.pool.ConnectionPool.<init>(ConnectionPool.java:58)
+	at com.atomikos.jdbc.AbstractDataSourceBean.init(AbstractDataSourceBean.java:269)
+	at com.atomikos.jdbc.AbstractDataSourceBean.getConnection(AbstractDataSourceBean.java:311)
+	at com.atomikos.jdbc.AbstractDataSourceBean.getConnection(AbstractDataSourceBean.java:366)
+	at simple.jdbc.xadatasource.Account.getConnection(Account.java:141)
+	at simple.jdbc.xadatasource.Account.checkTables(Account.java:51)
+	at simple.jdbc.xadatasource.Account.main(Account.java:264)
+10-05-29 24:56:51,750 [main] XAConnectionFactory: failed to create pooled connection - DBMS down or unreachable?
+SQL Exception: Database 'db' not found.
+	at org.apache.derby.impl.jdbc.Util.newEmbedSQLException(Unknown Source)
+	at org.apache.derby.impl.jdbc.Util.newEmbedSQLException(Unknown Source)
+	at org.apache.derby.impl.jdbc.Util.generateCsSQLException(Unknown Source)
+	at org.apache.derby.impl.jdbc.EmbedConnection.newSQLException(Unknown Source)
+	at org.apache.derby.impl.jdbc.EmbedConnection.<init>(Unknown Source)
+	at org.apache.derby.impl.jdbc.EmbedConnection30.<init>(Unknown Source)
+	at org.apache.derby.jdbc.Driver30.getNewEmbedConnection(Unknown Source)
+	at org.apache.derby.jdbc.InternalDriver.connect(Unknown Source)
+	at org.apache.derby.jdbc.EmbeddedDataSource.getConnection(Unknown Source)
+	at org.apache.derby.jdbc.EmbeddedDataSource.getConnection(Unknown Source)
+	at org.apache.derby.jdbc.EmbeddedXADataSource.setupResourceAdapter(Unknown Source)
+	at org.apache.derby.jdbc.EmbeddedXADataSource.getXAConnection(Unknown Source)
+	at com.atomikos.jdbc.AtomikosXAConnectionFactory.createPooledConnection(AtomikosXAConnectionFactory.java:60)
+	at com.atomikos.datasource.pool.ConnectionPool.growPool(ConnectionPool.java:187)
+	at com.atomikos.datasource.pool.ConnectionPool.borrowConnection(ConnectionPool.java:142)
+	at com.atomikos.jdbc.AbstractDataSourceBean.getConnection(AbstractDataSourceBean.java:314)
+	at com.atomikos.jdbc.AbstractDataSourceBean.getConnection(AbstractDataSourceBean.java:366)
+	at simple.jdbc.xadatasource.Account.getConnection(Account.java:141)
+	at simple.jdbc.xadatasource.Account.checkTables(Account.java:51)
+	at simple.jdbc.xadatasource.Account.main(Account.java:264)
+10-05-29 24:56:51,750 [main] Failed to grow the connection pool
+com.atomikos.datasource.pool.CreateConnectionException: XAConnectionFactory: failed to create pooled connection - DBMS down or unreachable?
+	at com.atomikos.jdbc.AtomikosXAConnectionFactory.createPooledConnection(AtomikosXAConnectionFactory.java:65)
+	at com.atomikos.datasource.pool.ConnectionPool.growPool(ConnectionPool.java:187)
+	at com.atomikos.datasource.pool.ConnectionPool.borrowConnection(ConnectionPool.java:142)
+	at com.atomikos.jdbc.AbstractDataSourceBean.getConnection(AbstractDataSourceBean.java:314)
+	at com.atomikos.jdbc.AbstractDataSourceBean.getConnection(AbstractDataSourceBean.java:366)
+	at simple.jdbc.xadatasource.Account.getConnection(Account.java:141)
+	at simple.jdbc.xadatasource.Account.checkTables(Account.java:51)
+	at simple.jdbc.xadatasource.Account.main(Account.java:264)
+Caused by: SQL Exception: Database 'db' not found.
+	at org.apache.derby.impl.jdbc.Util.newEmbedSQLException(Unknown Source)
+	at org.apache.derby.impl.jdbc.Util.newEmbedSQLException(Unknown Source)
+	at org.apache.derby.impl.jdbc.Util.generateCsSQLException(Unknown Source)
+	at org.apache.derby.impl.jdbc.EmbedConnection.newSQLException(Unknown Source)
+	at org.apache.derby.impl.jdbc.EmbedConnection.<init>(Unknown Source)
+	at org.apache.derby.impl.jdbc.EmbedConnection30.<init>(Unknown Source)
+	at org.apache.derby.jdbc.Driver30.getNewEmbedConnection(Unknown Source)
+	at org.apache.derby.jdbc.InternalDriver.connect(Unknown Source)
+	at org.apache.derby.jdbc.EmbeddedDataSource.getConnection(Unknown Source)
+	at org.apache.derby.jdbc.EmbeddedDataSource.getConnection(Unknown Source)
+	at org.apache.derby.jdbc.EmbeddedXADataSource.setupResourceAdapter(Unknown Source)
+	at org.apache.derby.jdbc.EmbeddedXADataSource.getXAConnection(Unknown Source)
+	at com.atomikos.jdbc.AtomikosXAConnectionFactory.createPooledConnection(AtomikosXAConnectionFactory.java:60)
+	... 7 more
+10-05-29 24:57:25,546 [main] Starting read of logfile H:\devs\workspaces\atomikosdeveloppement\development\ate\examples-jta\.\tmlog12.log
+10-05-29 24:57:25,546 [main] Done read of logfile
+10-05-29 24:57:25,546 [main] Logfile closed: H:\devs\workspaces\atomikosdeveloppement\development\ate\examples-jta\.\tmlog12.log
+10-05-29 24:57:25,656 [main] Coordinator not recoverable: 192.168.0.6.tm0000100014
+10-05-29 24:57:29,093 [main] samples/jdbc/ExamplesJdbcPooledDatabase: refreshed XAResource
+10-05-29 24:57:29,109 [main] XAConnectionFactory: failed to create pooled connection - DBMS down or unreachable?
+java.sql.SQLException: Database not available
+	at org.apache.derby.jdbc.EmbeddedXADataSource.setupResourceAdapter(Unknown Source)
+	at org.apache.derby.jdbc.EmbeddedXADataSource.getXAConnection(Unknown Source)
+	at com.atomikos.jdbc.AtomikosXAConnectionFactory.createPooledConnection(AtomikosXAConnectionFactory.java:60)
+	at com.atomikos.datasource.pool.ConnectionPool.init(ConnectionPool.java:71)
+	at com.atomikos.datasource.pool.ConnectionPool.<init>(ConnectionPool.java:58)
+	at com.atomikos.jdbc.AbstractDataSourceBean.init(AbstractDataSourceBean.java:269)
+	at com.atomikos.jdbc.AbstractDataSourceBean.getConnection(AbstractDataSourceBean.java:311)
+	at com.atomikos.jdbc.AbstractDataSourceBean.getConnection(AbstractDataSourceBean.java:366)
+	at simple.jdbc.xadatasource.Account.getConnection(Account.java:141)
+	at simple.jdbc.xadatasource.Account.checkTables(Account.java:51)
+	at simple.jdbc.xadatasource.Account.main(Account.java:264)
+10-05-29 24:57:29,109 [main] XAConnectionFactory: failed to create pooled connection - DBMS down or unreachable?
+java.sql.SQLException: Database not available
+	at org.apache.derby.jdbc.EmbeddedXADataSource.setupResourceAdapter(Unknown Source)
+	at org.apache.derby.jdbc.EmbeddedXADataSource.getXAConnection(Unknown Source)
+	at com.atomikos.jdbc.AtomikosXAConnectionFactory.createPooledConnection(AtomikosXAConnectionFactory.java:60)
+	at com.atomikos.datasource.pool.ConnectionPool.growPool(ConnectionPool.java:187)
+	at com.atomikos.datasource.pool.ConnectionPool.borrowConnection(ConnectionPool.java:142)
+	at com.atomikos.jdbc.AbstractDataSourceBean.getConnection(AbstractDataSourceBean.java:314)
+	at com.atomikos.jdbc.AbstractDataSourceBean.getConnection(AbstractDataSourceBean.java:366)
+	at simple.jdbc.xadatasource.Account.getConnection(Account.java:141)
+	at simple.jdbc.xadatasource.Account.checkTables(Account.java:51)
+	at simple.jdbc.xadatasource.Account.main(Account.java:264)
+10-05-29 24:57:29,109 [main] Failed to grow the connection pool
+com.atomikos.datasource.pool.CreateConnectionException: XAConnectionFactory: failed to create pooled connection - DBMS down or unreachable?
+	at com.atomikos.jdbc.AtomikosXAConnectionFactory.createPooledConnection(AtomikosXAConnectionFactory.java:65)
+	at com.atomikos.datasource.pool.ConnectionPool.growPool(ConnectionPool.java:187)
+	at com.atomikos.datasource.pool.ConnectionPool.borrowConnection(ConnectionPool.java:142)
+	at com.atomikos.jdbc.AbstractDataSourceBean.getConnection(AbstractDataSourceBean.java:314)
+	at com.atomikos.jdbc.AbstractDataSourceBean.getConnection(AbstractDataSourceBean.java:366)
+	at simple.jdbc.xadatasource.Account.getConnection(Account.java:141)
+	at simple.jdbc.xadatasource.Account.checkTables(Account.java:51)
+	at simple.jdbc.xadatasource.Account.main(Account.java:264)
+Caused by: java.sql.SQLException: Database not available
+	at org.apache.derby.jdbc.EmbeddedXADataSource.setupResourceAdapter(Unknown Source)
+	at org.apache.derby.jdbc.EmbeddedXADataSource.getXAConnection(Unknown Source)
+	at com.atomikos.jdbc.AtomikosXAConnectionFactory.createPooledConnection(AtomikosXAConnectionFactory.java:60)
+	... 7 more
+10-05-29 24:57:39,406 [main] Starting read of logfile H:\devs\workspaces\atomikosdeveloppement\development\ate\examples-jta\.\tmlog13.log
+10-05-29 24:57:39,406 [main] Done read of logfile
+10-05-29 24:57:39,406 [main] Logfile closed: H:\devs\workspaces\atomikosdeveloppement\development\ate\examples-jta\.\tmlog13.log
+10-05-29 24:57:39,515 [main] Coordinator not recoverable: 192.168.0.6.tm0000100015
+10-05-29 24:57:40,046 [main] samples/jdbc/ExamplesJdbcPooledDatabase: refreshed XAResource
