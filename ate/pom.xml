@@ -29,7 +29,7 @@
                 <artifactId>maven-license-plugin</artifactId>
                 <configuration>
                     <!--<basedir>${basedir}</basedir>-->
-                    <header>header.txt</header>
+                    <header>${basedir}/header.txt</header>
                     <quiet>false</quiet>
                     <failIfMissing>true</failIfMissing>
                     <aggregate>false</aggregate>
@@ -70,7 +70,6 @@
         </plugins>
     </build>
     <modules>
-	<module>documentation</module>
         <module>util</module>
         <module>transactions-api</module>
         <module>transactions</module>
@@ -84,5 +83,6 @@
         <module>transactions-hibernate3</module>
         <module>examples-jta</module>
         <module>examples-jta-spring</module>
+	<module>documentation</module>
     </modules>
 </project>
