@@ -70,6 +70,7 @@
         </plugins>
     </build>
     <modules>
+	<module>documentation</module>
         <module>util</module>
         <module>transactions-api</module>
         <module>transactions</module>
