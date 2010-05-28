@@ -30,6 +30,52 @@
 
 	<build>
 		<plugins>
+		    <plugin>
+		        <inherited>false</inherited>
+                <groupId>com.mycila.maven-license-plugin</groupId>
+                <artifactId>maven-license-plugin</artifactId>
+                <configuration>
+                    <!--<basedir>${basedir}</basedir>-->
+                    <header>ate/header.txt</header>
+                    <quiet>false</quiet>
+                    <failIfMissing>true</failIfMissing>
+                    <aggregate>false</aggregate>
+                    <includes>
+                        <include>src/**</include>
+                    </includes>
+                    <excludes>
+                        <exclude>src/test/**</exclude>
+                        <exclude>target/**</exclude>
+                        <exclude>.clover/**</exclude>
+                        <exclude>private/**</exclude>
+                        <exclude>axt/**</exclude>
+                    </excludes>
+                    <useDefaultExcludes>true</useDefaultExcludes>
+                    <!--<mapping>
+						<jwc>XML_STYLE</jwc>
+						<application>XML_STYLE</application>
+						<myFileExtension>JAVADOC_STYLE</myFileExtension>
+					</mapping>-->
+                    <useDefaultMapping>true</useDefaultMapping>
+                    <properties>
+                        <year>${project.inceptionYear}</year>
+                        <company>Atomikos</company>
+                        <email>info@atomikos.com</email>
+                    </properties>
+                    <encoding>UTF-8</encoding>
+                    <!--<headerDefinitions>
+						<headerDefinition>def1.xml</headerDefinition>
+						<headerDefinition>def2.xml</headerDefinition>
+					</headerDefinitions>-->
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 			<plugin>
 				<groupId>com.atlassian.maven.plugins</groupId>
 				<artifactId>maven-clover2-plugin</artifactId>

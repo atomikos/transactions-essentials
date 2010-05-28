@@ -20,55 +20,7 @@
         <connection>scm:hg:https://atomikos.kilnhg.com/Repo/Repositories/Group/development</connection>
         <url>scm:hg:https://atomikos.kilnhg.com/Repo/Repositories/Group/development</url>
     </scm>
-   
-    <build>
-        <plugins>
-
-            <plugin>
-                <groupId>com.mycila.maven-license-plugin</groupId>
-                <artifactId>maven-license-plugin</artifactId>
-                <configuration>
-                    <!--<basedir>${basedir}</basedir>-->
-                    <header>${basedir}/header.txt</header>
-                    <quiet>false</quiet>
-                    <failIfMissing>true</failIfMissing>
-                    <aggregate>false</aggregate>
-                    <includes>
-                        <include>src/**</include>
-                    </includes>
-                    <excludes>
-                        <exclude>src/test/**</exclude>
-                        <exclude>target/**</exclude>
-                        <exclude>.clover/**</exclude>
-                    </excludes>
-                    <useDefaultExcludes>true</useDefaultExcludes>
-                    <!--<mapping>
-						<jwc>XML_STYLE</jwc>
-						<application>XML_STYLE</application>
-						<myFileExtension>JAVADOC_STYLE</myFileExtension>
-					</mapping>-->
-                    <useDefaultMapping>true</useDefaultMapping>
-                    <properties>
-                        <year>${project.inceptionYear}</year>
-                        <company>Atomikos</company>
-                        <email>info@atomikos.com</email>
-                    </properties>
-                    <encoding>UTF-8</encoding>
-                    <!--<headerDefinitions>
-						<headerDefinition>def1.xml</headerDefinition>
-						<headerDefinition>def2.xml</headerDefinition>
-					</headerDefinitions>-->
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
+     
     <modules>
         <module>util</module>
         <module>transactions-api</module>
