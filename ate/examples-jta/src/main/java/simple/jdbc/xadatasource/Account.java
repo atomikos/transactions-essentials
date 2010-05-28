@@ -101,8 +101,8 @@ public class Account
               //ds.setXaDataSourceClassName ( "COM.FirstSQL.Dbcp.DbcpXADataSource" );
               ds.setXaDataSourceClassName ( "org.apache.derby.jdbc.EmbeddedXADataSource");
               Properties properties = new Properties();
-              properties.put("databaseName",  "db");
-              //properties.put("databaseName",  "db;create=true");
+              properties.put("databaseName",  "Account");
+             // properties.put("databaseName",  "Account;create=true");
               ds.setXaProperties(properties);
               //REQUIRED: properties to set on the XA datasource class
 //              ds.getXaProperties().setProperty("user", "demo");

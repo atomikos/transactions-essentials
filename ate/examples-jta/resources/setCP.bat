@@ -7,11 +7,15 @@ set JTA_HOME=%cd%
 
 :jtaHomeSet
 set CLASSPATH=""
-for /F "delims==" %%i in ('dir /S/B "%JTA_HOME%\..\target\lib\*.jar"') do (
+for /F "delims==" %%i in ('dir /S/B "%JTA_HOME%\lib\*.jar"') do (
+	call appendToCP.bat "%%i"
+)
+for /F "delims==" %%i in ('dir /S/B "%JTA_HOME%\*.jar"') do (
 	call appendToCP.bat "%%i"
 )
 
-call appendToCP.bat "%JTA_HOME%\..\target\classes"
+
+call appendToCP.bat "%JTA_HOME%"
 call appendToCP.bat "."
 
 echo

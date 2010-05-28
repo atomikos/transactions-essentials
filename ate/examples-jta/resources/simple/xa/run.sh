@@ -1,5 +1,5 @@
 #!/bin/sh
-cd ../../../..
+cd ../../..
 . "./setCP.sh"
 cd -
 echo

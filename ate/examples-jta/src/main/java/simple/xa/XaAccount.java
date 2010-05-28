@@ -152,7 +152,8 @@ public class XaAccount
           tm.begin();
 
                     
-          xaconn = xads.getXAConnection ( user , passwd );
+          //xaconn = xads.getXAConnection ( user , passwd );
+          xaconn = xads.getXAConnection ();
           XAResource xares = xaconn.getXAResource();
                
           

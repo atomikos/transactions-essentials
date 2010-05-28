@@ -41,11 +41,11 @@ public class NonXaAccount
 
       //the full name of the JDBC driver class
       //change if required
-      private static String driverClassName = "org.hsql.jdbcDriver";
+      private static String driverClassName = "org.apache.derby.jdbc.EmbeddedDriver";
 
       //the URL to connect with; this should be a valid DriverManager URL
       //change if needed
-      private static String connectUrl = "jdbc:HypersonicSQL:NonXaAccountDB";
+      private static String connectUrl = "jdbc:derby:NonXaAccountDB";
 
          
      //the data source, set by getDataSource
@@ -80,6 +80,7 @@ public class NonXaAccount
                   s.close();
             }
             catch ( Exception e ) {
+            
                 error = true; 
                 throw e;
             }
@@ -113,8 +114,8 @@ public class NonXaAccount
               //bound in JNDI whenever required for your application.
               ds = new AtomikosNonXADataSourceBean();
               ds.setUniqueResourceName( resourceName );
-              ds.setUser ( user );
-              ds.setPassword ( passwd );
+             // ds.setUser ( user );
+              //ds.setPassword ( passwd );
               ds.setUrl ( connectUrl );
               ds.setDriverClassName ( driverClassName );
               //OPTIONAL pool size

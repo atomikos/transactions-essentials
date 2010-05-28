@@ -1,5 +1,5 @@
 
-pushd ..\..\..\..
+pushd ..\..\..
 call setCP.bat
 echo %CLASSPATH%
 popd
