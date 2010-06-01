@@ -5,7 +5,7 @@
     <bookinfo>
         <mediaobject>
             <imageobject>
-                <imagedata fileref="file:../../resources/images/logo.gif"/> 
+                <imagedata width="100%" fileref="file:../../resources/images/logo.gif"/> 
             </imageobject>
         </mediaobject>
         <title>
@@ -593,7 +593,7 @@
 				</para></caution>
 
 				<graphic
-                    fileref="images/JtaActiv.gif"/>
+                    width="100%" fileref="images/JtaActiv.gif"/>
                 </para>
 				</section>
 
@@ -601,7 +601,7 @@
                 <para>
 				The typical commit scenario is shown below.
 					
-				<graphic fileref="images/JtaCommit.gif" />
+				<graphic width="100%" fileref="images/JtaCommit.gif" />
                 </para>
 				</section>
 			    
@@ -612,7 +612,7 @@
 				prepare. The result is rollback, and an application-level exception (since commit
 				was requested).
 					
-				<graphic fileref="images/JtaRollback.gif"/>
+				<graphic width="100%" fileref="images/JtaRollback.gif"/>
 				
 				</para>
 				</section>
@@ -625,7 +625,7 @@
 				re-establishes contact commit fails with a heuristic error.
 				An application-level heuristic mixed exception is thrown (since the other two 				
                 XAResources did commit, parts have been committed and other parts have not).					
-				<graphic fileref="images/JtaException.gif"/>
+				<graphic width="100%" fileref="images/JtaException.gif"/>
                 </para>
 				</section>
 
@@ -1220,7 +1220,7 @@ com.atomikos.icatch.service=com.atomikos.icatch.standalone.UserTransactionServic
                      The sender's transaction has already committed before the receiver even gets the message with the request.</para></listitem>
                  </orderedlist>
                  
-                 <graphic fileref="images/JmsTransactions.gif"/>
+                 <graphic width="100%" fileref="images/JmsTransactions.gif"/>
              </para>
                  
                     
@@ -1790,7 +1790,7 @@ two-phase commit and for detection of orphan transactions, and it is a crucial p
 exactly-once semantics of the distributed computation. The following picture is
 an illustration of the application-level import/export scenario...</para>
 
-<graphic fileref="images/ImportExport.gif"/>
+<graphic width="100%" fileref="images/ImportExport.gif"/>
 
 <caution><para>NOTE: Although JTS/OTS defines the mechanism of
 exporting/importing a transaction, the mechanism explained here is Atomikos-native. This is necessary
@@ -2024,7 +2024,7 @@ also be terminated. This is best done in a finally-block.</para></caution>
 				parent is a pending active transaction that will be rolled back if it times out.
 				This is illustrated in the picture below.
 
-				<graphic fileref="images/SubTxCommit.gif"/>
+				<graphic width="100%" fileref="images/SubTxCommit.gif"/>
 				
 	            </para>
 				</section>
@@ -2117,7 +2117,7 @@ also be terminated. This is best done in a finally-block.</para></caution>
 				(and to the logs).
 			    </para>
 
-				<graphic fileref="images/HeuristicMessage.gif"/>
+				<graphic width="100%" fileref="images/HeuristicMessage.gif"/>
 
 				<para>The figure above shows the basic interface for the kind of comments we 
 				mentioned. The interface is <emphasis>com.atomikos.icatch.HeuristicMessage</emphasis>
@@ -2136,7 +2136,7 @@ also be terminated. This is best done in a finally-block.</para></caution>
 				interface <emphasis>javax.sql.DataSource</emphasis>, but also the Atomikos interface
 				<emphasis>com.atomikos.jdbc.HeuristicDataSource</emphasis>, shown below.
                 </para>
-				<graphic fileref="images/HeuristicDataSource.gif"/>
+				<graphic width="100%" fileref="images/HeuristicDataSource.gif"/>
 			    <para>
 				Instead of merely getting a connection from an Atomikos DataSource (as done with
 				regular DataSource instances), you can use the getConnection method with 
@@ -2159,7 +2159,7 @@ also be terminated. This is best done in a finally-block.</para></caution>
 				<emphasis>com.atomikos.datasource.xa.jms.HeuristicQueueSender</emphasis>.
                 </para>
 				
-				<graphic fileref="images/HeuristicQueueSender.gif" />
+				<graphic width="100%" fileref="images/HeuristicQueueSender.gif" />
 
                 <para>
 				By performing a cast to this interface upon calling <emphasis>QueueSession.createSender(queue)</emphasis>
@@ -2179,7 +2179,7 @@ also be terminated. This is best done in a finally-block.</para></caution>
 				<emphasis>com.atomikos.datasource.xa.jms.HeuristicMessageConsumer</emphasis>.
                 </para>
               
-				<graphic fileref="images/HeuristicQueueReceiver.gif"/>
+				<graphic width="100%" fileref="images/HeuristicQueueReceiver.gif"/>
 				<para>
 				By performing a cast to this interface upon calling 				
               <emphasis>QueueSession.createReceiver(queue)</emphasis>

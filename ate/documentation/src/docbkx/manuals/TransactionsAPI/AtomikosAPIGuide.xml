@@ -5,7 +5,7 @@
     <bookinfo>
         <mediaobject>
             <imageobject>
-               <imagedata fileref="file:../../resources/images/logo.gif"/>
+               <imagedata width="100%" fileref="file:../../resources/images/logo.gif"/>
             </imageobject>
         </mediaobject>
         <title>
@@ -150,7 +150,7 @@ Unless explicitly state otherwise, all API components are in the package <emphas
 Before any transaction exists, it has to be created or imported. An overview of the
 API is shown in the following picture: 
 
-<graphic fileref="images/ManagerClasses.gif"/>
+<graphic width="100%" fileref="images/ManagerClasses.gif"/>
 
 </para>
     
@@ -340,7 +340,7 @@ This section discusses the component classes that are related to individual
 transactions. Instances of these classes are provided by Atomikos. The big
 picture is shown in the figure below... 
 
-<graphic fileref="images/CompTxClasses.tiff"/>
+<graphic width="100%" fileref="images/CompTxClasses.tiff"/>
     
 </para>
     
@@ -1008,7 +1008,7 @@ exactly-once semantics of the distributed computation. The following picture is
 an illustration of the application-level import/export scenario...
 </para>
 
-<graphic fileref="images/ImportExport.gif"/>
+<graphic width="100%" fileref="images/ImportExport.gif"/>
 
 <caution><para>NOTE: Although JTS/OTS defines the mechanism of
 exporting/importing a transaction, the mechanism explained here is Atomikos-native. This is necessary
@@ -1128,20 +1128,20 @@ When the parent transaction in turn commits, the P1.1.1.1 is again propagated up
 <tbody>
 <row>
 <entry>
-<graphic fileref="images/SubTxCommit.gif"/>
+<graphic width="100%" fileref="images/SubTxCommit.gif"/>
 </entry>
 <entry>
 
-<graphic fileref="images/SubTxCommit2.gif"/>
+<graphic width="100%" fileref="images/SubTxCommit2.gif"/>
 </entry>
 </row>
 <row>
 <entry>
-<graphic fileref="images/SubTxCommit3.gif"/>
+<graphic width="100%" fileref="images/SubTxCommit3.gif"/>
 </entry>
 <entry>
 
-<graphic fileref="images/SubTxCommit4.gif"/>
+<graphic width="100%" fileref="images/SubTxCommit4.gif"/>
 </entry>
 </row>
 </tbody>
@@ -1161,7 +1161,7 @@ If one of the subtransactions is rolled back, then the Participant P1.1.1.1 will
 This is illustrated in the next figure: rollback of CT1.1.1 implies that P1.1.1.1 is also rolled back, and no Participant is propagated to the parent of CT1.1.1. This way, subtransactions can be rolledback without affecting the work of the parent transaction.
 </para>
     
-<graphic fileref="images/SubTxRollback.gif"/>
+<graphic width="100%" fileref="images/SubTxRollback.gif"/>
 
 </section>
 
@@ -1170,7 +1170,7 @@ This is illustrated in the next figure: rollback of CT1.1.1 implies that P1.1.1.
 If you want to implement parts of a transaction that execute in parallel threads (such as remote calls to different resources) then you can use the utility classes <emphasis>SubTxThread</emphasis> and <emphasis>Waiter</emphasis> and supply your own <emphasis>SubTxCode</emphasis> logic for each thread.
 
 The following picture illustrates the interactions between these:
-    <graphic fileref="images/ParallelSubTxs.gif"/>
+    <graphic width="100%" fileref="images/ParallelSubTxs.gif"/>
 
     
 
@@ -1259,7 +1259,7 @@ implement most of them: programming a transactional data source will also
 involve controlling access to data (locks and lock inheritance) because locks
 have a strong impact on the ability to perform rollback (in your implementation
 of the Participant interface). 
-    <graphic fileref="images/Resource.gif"/>
+    <graphic width="100%" fileref="images/Resource.gif"/>
 </para>
 
 <para>
@@ -1343,7 +1343,7 @@ This implementation makes sure that you implement true lock inheritance as it wa
 In order to explain how this technique works, we will use an example shown in the following picture.
 </para>
     
-<graphic fileref="images/Lineage.gif"/>
+<graphic width="100%" fileref="images/Lineage.gif"/>
 
     <para>
 The example involves one root transaction named CT1, and its descendants (subtransactions) which are obviously all related to each other (because they are descendants of the same root and this is the definition of being related).
@@ -1418,7 +1418,7 @@ Example usage: for recovery of Participant instances for XA transactions, becaus
 <para>
 The following picture illustrates the interactions during recovery. 
 
-<graphic fileref="images/Recovery.gif"/>
+<graphic width="100%" fileref="images/Recovery.gif"/>
 
 If you implement your own resource and participant then these implementations should respect this contract:
 </para>
@@ -1527,7 +1527,7 @@ The following picture summarizes the interactions with the transaction service.
 If your application needs custom log administration tools, then it will need to offer its own LogAdministrator implementation. Note that there is a default implementation offered by class <emphasis>com.atomikos.icatch.admin.LocalLogAdministrator</emphasis>. This default implementation will show the AdminTransaction information in a Swing screen on the VM that is running the transaction service.
 </para>
     
-<graphic fileref="images/Administration.gif"/>
+<graphic width="100%" fileref="images/Administration.gif"/>
 
 </section>
 </chapter>
