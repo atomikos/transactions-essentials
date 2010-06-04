@@ -7,7 +7,7 @@
   </formats>
   <fileSets>
     <fileSet>
-     <directory>${project.basedir}/resources</directory>
+     <directory>resources</directory>
       <outputDirectory>/</outputDirectory>
     </fileSet>
     <fileSet>
