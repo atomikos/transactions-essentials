@@ -8,10 +8,10 @@
         <version>3.7.0-SNAPSHOT</version>
     </parent>
     <groupId>com.atomikos</groupId>
-    <artifactId>transactions-essentials</artifactId>
+    <artifactId>transactions-osgi</artifactId>
     <version>3.7.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
-    <name>transactions-essentials ${project.version}</name>
+    <name>Transactions OSGi</name>
     <build>
         <plugins>
             <plugin>
