@@ -1,0 +1,159 @@
+{
+    CanvasColor = {w = 1; }; 
+    ColumnAlign = 0; 
+    ColumnSpacing = 36; 
+    GraphDocumentVersion = 1; 
+    GraphicsList = (
+        {
+            Bounds = "{{206, 264}, {53, 18}}"; 
+            Class = ShapedGraphic; 
+            FitText = YES; 
+            ID = 79; 
+            Shape = Rectangle; 
+            Style = {fill = {Draws = NO; }; shadow = {Draws = NO; }; stroke = {Draws = NO; }; }; 
+            Text = {
+                Text = "{\\rtf1\\mac\\ansicpg10000\\cocoartf100\n{\\fonttbl\\f0\\fswiss\\fcharset77 Helvetica;}\n{\\colortbl;\\red255\\green255\\blue255;}\n\\pard\\tx560\\tx1120\\tx1680\\tx2240\\tx2800\\tx3360\\tx3920\\tx4480\\tx5040\\tx5600\\tx6160\\tx6720\\qc\n\n\\f0\\fs24 \\cf0 rollback}"; 
+            }; 
+        }, 
+        {
+            Bounds = "{{156, 306}, {143, 18}}"; 
+            Class = ShapedGraphic; 
+            FitText = YES; 
+            ID = 78; 
+            Shape = Rectangle; 
+            Style = {fill = {Draws = NO; }; shadow = {Draws = NO; }; stroke = {Draws = NO; }; }; 
+            Text = {
+                Text = "{\\rtf1\\mac\\ansicpg10000\\cocoartf100\n{\\fonttbl\\f0\\fswiss\\fcharset77 Helvetica;}\n{\\colortbl;\\red255\\green255\\blue255;}\n\\pard\\tx560\\tx1120\\tx1680\\tx2240\\tx2800\\tx3360\\tx3920\\tx4480\\tx5040\\tx5600\\tx6160\\tx6720\\qc\n\n\\f0\\fs24 \\cf0 after rollback of CT 1.1.1}"; 
+            }; 
+        }, 
+        {
+            Class = Group; 
+            Graphics = (
+                {
+                    Bounds = "{{269, 55}, {78, 18}}"; 
+                    Class = ShapedGraphic; 
+                    FitText = YES; 
+                    ID = 73; 
+                    Shape = Rectangle; 
+                    Style = {fill = {Draws = NO; }; shadow = {Draws = NO; }; stroke = {Draws = NO; }; }; 
+                    Text = {
+                        Text = "{\\rtf1\\mac\\ansicpg10000\\cocoartf100\n{\\fonttbl\\f0\\fswiss\\fcharset77 Helvetica;}\n{\\colortbl;\\red255\\green255\\blue255;}\n\\pard\\tx560\\tx1120\\tx1680\\tx2240\\tx2800\\tx3360\\tx3920\\tx4480\\tx5040\\tx5600\\tx6160\\tx6720\\qc\n\n\\f0\\fs24 \\cf0 Remote root}"; 
+                    }; 
+                }, 
+                {
+                    Bounds = "{{34, 81}, {83, 18}}"; 
+                    Class = ShapedGraphic; 
+                    FitText = YES; 
+                    ID = 74; 
+                    Shape = Rectangle; 
+                    Style = {fill = {Draws = NO; }; shadow = {Draws = NO; }; stroke = {Draws = NO; }; }; 
+                    Text = {
+                        Text = "{\\rtf1\\mac\\ansicpg10000\\cocoartf100\n{\\fonttbl\\f0\\fswiss\\fcharset77 Helvetica;}\n{\\colortbl;\\red255\\green255\\blue255;}\n\\pard\\tx560\\tx1120\\tx1680\\tx2240\\tx2800\\tx3360\\tx3920\\tx4480\\tx5040\\tx5600\\tx6160\\tx6720\\qc\n\n\\f0\\fs24 \\cf0 VM boundary}"; 
+                    }; 
+                }, 
+                {
+                    Class = Group; 
+                    Graphics = (
+                        {
+                            Class = LineGraphic; 
+                            ID = 76; 
+                            Points = ("{45, 99}", "{387, 99}"); 
+                            Style = {stroke = {LineType = 1; Pattern = 1; }; }; 
+                        }, 
+                        {
+                            Bounds = "{{171, 36}, {81, 36}}"; 
+                            Class = ShapedGraphic; 
+                            ID = 77; 
+                            Shape = Rectangle; 
+                            Text = {
+                                Text = "{\\rtf1\\mac\\ansicpg10000\\cocoartf100\n{\\fonttbl\\f0\\fswiss\\fcharset77 Helvetica-Bold;}\n{\\colortbl;\\red255\\green255\\blue255;}\n\\pard\\tx560\\tx1120\\tx1680\\tx2240\\tx2800\\tx3360\\tx3920\\tx4480\\tx5040\\tx5600\\tx6160\\tx6720\\qc\n\n\\f0\\b\\fs24 \\cf0 CT 1}"; 
+                            }; 
+                        }
+                    ); 
+                    ID = 75; 
+                }
+            ); 
+            ID = 72; 
+        }, 
+        {
+            Class = Group; 
+            Graphics = (
+                {
+                    Class = LineGraphic; 
+                    Head = {ID = 71; }; 
+                    ID = 70; 
+                    Points = ("{171, 279}", "{288, 279}"); 
+                    Style = {stroke = {HeadArrow = 1; LineType = 1; Pattern = 1; }; }; 
+                }, 
+                {
+                    Bounds = "{{288, 261}, {81, 36}}"; 
+                    Class = ShapedGraphic; 
+                    ID = 71; 
+                    Shape = Rectangle; 
+                    Text = {
+                        Text = "{\\rtf1\\mac\\ansicpg10000\\cocoartf100\n{\\fonttbl\\f0\\fswiss\\fcharset77 Helvetica-Bold;}\n{\\colortbl;\\red255\\green255\\blue255;}\n\\pard\\tx560\\tx1120\\tx1680\\tx2240\\tx2800\\tx3360\\tx3920\\tx4480\\tx5040\\tx5600\\tx6160\\tx6720\\qc\n\n\\f0\\b\\fs24 \\cf0 P 1.1.1.1}"; 
+                    }; 
+                }
+            ); 
+            ID = 69; 
+        }, 
+        {
+            Class = Group; 
+            Graphics = (
+                {
+                    Class = LineGraphic; 
+                    Head = {ID = 67; }; 
+                    ID = 66; 
+                    Points = ("{171, 162}", "{288, 162}"); 
+                    Style = {stroke = {HeadArrow = 1; LineType = 1; Pattern = 1; }; }; 
+                    Tail = {ID = 68; }; 
+                }, 
+                {
+                    Bounds = "{{288, 144}, {81, 36}}"; 
+                    Class = ShapedGraphic; 
+                    ID = 67; 
+                    Shape = Rectangle; 
+                    Text = {
+                        Text = "{\\rtf1\\mac\\ansicpg10000\\cocoartf100\n{\\fonttbl\\f0\\fswiss\\fcharset77 Helvetica-Bold;}\n{\\colortbl;\\red255\\green255\\blue255;}\n\\pard\\tx560\\tx1120\\tx1680\\tx2240\\tx2800\\tx3360\\tx3920\\tx4480\\tx5040\\tx5600\\tx6160\\tx6720\\qc\n\n\\f0\\b\\fs24 \\cf0 CC 1.1}"; 
+                    }; 
+                }, 
+                {
+                    Bounds = "{{90, 144}, {81, 36}}"; 
+                    Class = ShapedGraphic; 
+                    ID = 68; 
+                    Shape = Rectangle; 
+                    Text = {
+                        Text = "{\\rtf1\\mac\\ansicpg10000\\cocoartf100\n{\\fonttbl\\f0\\fswiss\\fcharset77 Helvetica-Bold;}\n{\\colortbl;\\red255\\green255\\blue255;}\n\\pard\\tx560\\tx1120\\tx1680\\tx2240\\tx2800\\tx3360\\tx3920\\tx4480\\tx5040\\tx5600\\tx6160\\tx6720\\qc\n\n\\f0\\b\\fs24 \\cf0 CT 1.1}"; 
+                    }; 
+                }
+            ); 
+            ID = 65; 
+        }, 
+        {
+            Class = LineGraphic; 
+            Head = {ID = 68; }; 
+            ID = 64; 
+            Points = ("{198, 72}", "{144, 144}"); 
+            Style = {stroke = {HeadArrow = 1; LineType = 1; }; }; 
+            Tail = {ID = 77; }; 
+        }
+    ); 
+    GridInfo = {
+        GridColor = {w = 0.6666667; }; 
+        GridInFront = NO; 
+        GridSpacing = 9; 
+        ShowsGrid = NO; 
+        SnapsToGrid = YES; 
+    }; 
+    HPages = 1; 
+    ImageCounter = 1; 
+    IsPalette = NO; 
+    LayoutInfo = {Orientation = YES; }; 
+    PageBreakColor = {w = 0.6666667; }; 
+    PageBreaks = YES; 
+    PageSetup = <040b7479 70656473 74726561 6d8103e8 84014084 84840b4e 53507269 6e74496e 666f0184 84084e53 4f626a65 63740085 92848484 134e534d 75746162 6c654469 6374696f 6e617279 0084840c 4e534469 6374696f 6e617279 00948401 69129284 8484084e 53537472 696e6701 9484012b 104e534a 6f624469 73706f73 6974696f 6e869284 99990f4e 53507269 6e745370 6f6f6c4a 6f628692 8499990e 4e53426f 74746f6d 4d617267 696e8692 84848408 4e534e75 6d626572 00848407 4e535661 6c756500 9484012a 84840166 9d248692 8499990b 4e535061 7065724e 616d6586 92849999 064c6574 74657286 92849999 0f4e5350 72696e74 416c6c50 61676573 8692849d 9c848401 739e0086 92849999 0d4e5352 69676874 4d617267 696e8692 849d9c9f 9d248692 84999908 4e53436f 70696573 8692849d 9c848401 539f0186 92849999 0f4e5353 63616c69 6e674661 63746f72 8692849d 9c848401 64a00186 92849999 0b4e5346 69727374 50616765 8692849d 9ca99f01 86928499 99144e53 56657274 6963616c 50616769 6e617469 6f6e8692 849d9ca4 9e008692 84999915 4e53486f 72697a6f 6e616c50 6167696e 6174696f 6e869284 9d9ca49e 00869284 9999164e 53486f72 697a6f6e 74616c6c 7943656e 74657265 64869284 9d9ca49e 01869284 99990c4e 534c6566 744d6172 67696e86 92849d9c 9f9d2486 92849999 0d4e534f 7269656e 74617469 6f6e8692 849d9ca4 9e008692 84999919 4e535072 696e7452 65766572 73654f72 69656e74 6174696f 6e8692a3 92849999 0a4e534c 61737450 61676586 92849d9c 84979782 7fffffff 86928499 990b4e53 546f704d 61726769 6e869284 9d9c9f9d 24869284 9999144e 53566572 74696361 6c6c7943 656e7465 72656486 92b49284 99990b4e 53506170 65725369 7a658692 849e9c84 840c7b5f 4e535369 7a653d66 667da181 02648103 18868686 >; 
+    RowAlign = 0; 
+    RowSpacing = 36; 
+    VPages = 1; 
+    WindowInfo = {Frame = "{{201, 54}, {533, 574}}"; Zoom = 1; }; 
+}

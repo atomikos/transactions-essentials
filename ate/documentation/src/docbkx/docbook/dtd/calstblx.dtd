@@ -1,0 +1,233 @@
+<!-- ...................................................................... -->
+<!-- DocBook CALS Table Model V4.3 ........................................ -->
+<!-- File calstblx.mod .................................................... -->
+
+<!-- Copyright 1992-2002 HaL Computer Systems, Inc.,
+     O'Reilly & Associates, Inc., ArborText, Inc., Fujitsu Software
+     Corporation, Norman Walsh, Sun Microsystems, Inc., and the
+     Organization for the Advancement of Structured Information
+     Standards (OASIS).
+
+     This DTD is based on the CALS Table Model
+     PUBLIC "-//USA-DOD//DTD Table Model 951010//EN"
+
+     $Id: calstblx.dtd,v 1.1.1.1 2006/08/29 10:00:52 guy Exp $
+
+     Permission to use, copy, modify and distribute the DocBook DTD
+     and its accompanying documentation for any purpose and without fee
+     is hereby granted in perpetuity, provided that the above copyright
+     notice and this paragraph appear in all copies.  The copyright
+     holders make no representation about the suitability of the DTD for
+     any purpose.  It is provided "as is" without expressed or implied
+     warranty.
+
+     If you modify the DocBook DTD in any way, except for declaring and
+     referencing additional sets of general entities and declaring
+     additional notations, label your DTD as a variant of DocBook.  See
+     the maintenance documentation for more information.
+
+     Please direct all questions, bug reports, or suggestions for
+     changes to the docbook@lists.oasis-open.org mailing list. For more
+     information, see http://www.oasis-open.org/docbook/.
+-->
+
+<!-- ...................................................................... -->
+
+<!-- This module contains the definitions for the CALS Table Model
+     converted to XML. It has been modified slightly for use in the
+     combined HTML/CALS models supported by DocBook V4.3.
+-->
+
+<!-- These definitions are not directly related to the table model, but are
+     used in the default CALS table model and are usually defined elsewhere
+     (and prior to the inclusion of this table module) in a CALS DTD. -->
+
+<!ENTITY % bodyatt "">
+<!ENTITY % secur "">
+
+<!-- no if zero(s),
+                                yes if any other digits value -->
+
+<!ENTITY % yesorno 'CDATA'>
+<!ENTITY % titles  'title?'>
+
+<!-- default for use in entry content -->
+
+<!ENTITY % paracon '#PCDATA'>
+
+<!--
+The parameter entities as defined below provide the CALS table model
+as published (as part of the Example DTD) in MIL-HDBK-28001.
+
+These following declarations provide the CALS-compliant default definitions
+for these entities.  However, these entities can and should be redefined
+(by giving the appropriate parameter entity declaration(s) prior to the
+reference to this Table Model declaration set entity) to fit the needs
+of the current application.
+-->
+
+<!ENTITY % tbl.table.name       "(table|chart)">
+<!ENTITY % tbl.table-titles.mdl "%titles;,">
+<!ENTITY % tbl.table-main.mdl   "(tgroup+|graphic+)">
+<!ENTITY % tbl.table.mdl        "%tbl.table-titles.mdl; %tbl.table-main.mdl;">
+<!ENTITY % tbl.table.att        '
+    tabstyle    CDATA           #IMPLIED
+    tocentry    %yesorno;       #IMPLIED
+    shortentry  %yesorno;       #IMPLIED
+    orient      (port|land)     #IMPLIED
+    pgwide      %yesorno;       #IMPLIED '>
+<!ENTITY % tbl.tgroup.mdl       "colspec*,spanspec*,thead?,tfoot?,tbody">
+<!ENTITY % tbl.tgroup.att       '
+    tgroupstyle CDATA           #IMPLIED '>
+<!ENTITY % tbl.hdft.mdl         "colspec*,row+">
+<!ENTITY % tbl.row.mdl          "(entry|entrytbl)+">
+<!ENTITY % tbl.entrytbl.mdl     "colspec*,spanspec*,thead?,tbody">
+<!ENTITY % tbl.entry.mdl        "(para|warning|caution|note|legend|%paracon;)*">
+
+<!ENTITY % tbl.frame.attval     "top|bottom|topbot|all|sides|none">
+<!ENTITY % tbl.tbody.mdl        "row+">
+
+<!-- =====  Element and attribute declarations follow. =====  -->
+
+<!--doc:A formal table in a document.
+The Table element identifies a formal table. DocBook uses the CALS table model, which describes tables geometrically using rows, columns, and cells. Tables may include column headers and footers, but there is no provision for row headers.
+Category: Tables-->
+<!ELEMENT table %ho; (%tbl.table.mdl;)>
+
+<!ATTLIST table
+        frame           (%tbl.frame.attval;)                    #IMPLIED
+        colsep          %yesorno;                               #IMPLIED
+        rowsep          %yesorno;                               #IMPLIED
+        %tbl.table.att;
+        %bodyatt;
+        %secur;
+>
+
+<!--doc:A wrapper for the main content of a table, or part of a table.
+A TGroup surrounds a logically complete portion of a table. Most tables consist of a single TGroup, but complex tables with widely varying column specifications may be easier to code using multiple TGroups. The TGroup specifies the number of columns in the table, and contains all of the header, body, and footer rows, along with any additional column or span specifications necessary to express the geometry of the table. Most of the properties of rows, columns, and cells inherit their default characteristics from the enclosing TGroup.
+Category: Tables-->
+<!ELEMENT tgroup %ho; (%tbl.tgroup.mdl;) >
+
+<!ATTLIST tgroup
+        cols            CDATA                                   #REQUIRED
+        %tbl.tgroup.att;
+        colsep          %yesorno;                               #IMPLIED
+        rowsep          %yesorno;                               #IMPLIED
+        align           (left|right|center|justify|char)        #IMPLIED
+        char            CDATA                                   #IMPLIED
+        charoff         CDATA                                   #IMPLIED
+        %secur;
+>
+
+<!--doc:Specifications for a column in a table.
+The attributes of this empty element specify the presentation characteristics of entries in a column of a table. Each ColSpec refers to a single column. Columns are numbered sequentially from left to right in the table. If the ColNum attribute is not specified, the ColSpec is for the next column after the preceding ColSpec or column 1 if it is the first ColSpec.
+Category: Tables-->
+<!ELEMENT colspec %ho; EMPTY >
+
+<!ATTLIST colspec
+        colnum          CDATA                                   #IMPLIED
+        colname         CDATA                                   #IMPLIED
+        colwidth        CDATA                                   #IMPLIED
+        colsep          %yesorno;                               #IMPLIED
+        rowsep          %yesorno;                               #IMPLIED
+        align           (left|right|center|justify|char)        #IMPLIED
+        char            CDATA                                   #IMPLIED
+        charoff         CDATA                                   #IMPLIED
+>
+
+<!--doc:Formatting information for a spanned column in a table.
+A SpanSpec associates a name with a span between two columns in a table. In the body of the table, cells can refer to the span by name. Cells that refer to a span will span horizontally from the first column to the last column, inclusive. Cells can also form spans directly, by naming the start and end columns themselves. The added benefit of a SpanSpec is that it can associate formatting information (such as alignment and table rule specifications) with the span. This information does not need to be repeated then, on each spanning cell.
+Category: Tables-->
+<!ELEMENT spanspec %ho; EMPTY >
+
+<!ATTLIST spanspec
+        namest          CDATA                                   #REQUIRED
+        nameend         CDATA                                   #REQUIRED
+        spanname        CDATA                                   #REQUIRED
+        colsep          %yesorno;                               #IMPLIED
+        rowsep          %yesorno;                               #IMPLIED
+        align           (left|right|center|justify|char)        #IMPLIED
+        char            CDATA                                   #IMPLIED
+        charoff         CDATA                                   #IMPLIED
+>
+
+<!--doc:A table header consisting of one or more rows.
+The THead wrapper identifies the Rows of a table that form the head of the table, as distinct from the body (TBody) and foot (TFoot) rows. Header rows are always rendered at the beginning of the table.
+Category: Tables-->
+<!ELEMENT thead %ho; (%tbl.hdft.mdl;)>
+<!ATTLIST thead
+        valign          (top|middle|bottom)                     #IMPLIED
+        %secur;
+>
+
+<!--doc:A table footer consisting of one or more rows.
+The TFoot wrapper identifies the Rows of a table that form the foot of the table, as distinct from the header (THead) and body (TBody) rows. Footer rows are always rendered at the end of the table, despite their logical placement near the beginning.
+Category: Tables-->
+<!ELEMENT tfoot %ho; (%tbl.hdft.mdl;)>
+<!ATTLIST tfoot
+        valign          (top|middle|bottom)                     #IMPLIED
+        %secur;
+>
+
+<!--doc:A wrapper for the rows of a table or informal table.
+The TBody wrapper identifies the Rows of a table that form the body of the table, as distinct from the header (THead) and footer (TFoot) rows. In most tables, the TBody contains most of the rows.
+Category: Tables-->
+<!ELEMENT tbody %ho; (%tbl.tbody.mdl;)>
+
+<!ATTLIST tbody
+        valign          (top|middle|bottom)                     #IMPLIED
+        %secur;
+>
+
+<!--doc:A Row is a row in a table. It contains all of the cells (Entrys or EntryTbls) that appear in that row.
+Category: Tables-->
+<!ELEMENT row %ho; (%tbl.row.mdl;)>
+
+<!ATTLIST row
+        rowsep          %yesorno;                               #IMPLIED
+        valign          (top|middle|bottom)                     #IMPLIED
+        %secur;
+>
+
+<!--doc:A subtable appearing in place of an Entry in a table.
+The EntryTbl element allows for a single level of nesting within tables. This element is expected to obey the semantics of the CALS Table Model Document Type Definition , as specified by OASIS Technical Memorandum TM 9502:1995 . An entry table may occur in a row instead of an Entry.EntryTbls have most of the elements of a table but may not include themselves, thus limiting nesting to a single level.
+Category: Tables-->
+<!ELEMENT entrytbl %ho; (%tbl.entrytbl.mdl;)>
+
+<!ATTLIST entrytbl
+        cols            CDATA                                   #REQUIRED
+        %tbl.tgroup.att;
+        colname         CDATA                                   #IMPLIED
+        spanname        CDATA                                   #IMPLIED
+        namest          CDATA                                   #IMPLIED
+        nameend         CDATA                                   #IMPLIED
+        colsep          %yesorno;                               #IMPLIED
+        rowsep          %yesorno;                               #IMPLIED
+        align           (left|right|center|justify|char)        #IMPLIED
+        char            CDATA                                   #IMPLIED
+        charoff         CDATA                                   #IMPLIED
+        %secur;
+>
+
+<!--doc:Entry is a cell in a table.Each Entry may specify its starting column. Entries that do not explicitly specify a starting column begin implicitly in the column that is immediately adjacent to the preceding cell. Note that Entries with the MoreRows attribute from preceding rows implicitly occupy cells in the succeeding Rows. Rows are not required to be full. It is legal for some entries to be completely absent (at the beginning, middle, or end of a row).
+Category: Tables-->
+<!ELEMENT entry %ho; (%tbl.entry.mdl;)*>
+
+<!ATTLIST entry
+        colname         CDATA                                   #IMPLIED
+        namest          CDATA                                   #IMPLIED
+        nameend         CDATA                                   #IMPLIED
+        spanname        CDATA                                   #IMPLIED
+        morerows        CDATA                                   #IMPLIED
+        colsep          %yesorno;                               #IMPLIED
+        rowsep          %yesorno;                               #IMPLIED
+        align           (left|right|center|justify|char)        #IMPLIED
+        char            CDATA                                   #IMPLIED
+        charoff         CDATA                                   #IMPLIED
+        rotate          %yesorno;                               #IMPLIED
+        valign          (top|middle|bottom)                     #IMPLIED
+        %secur;
+>
+
+<!-- End of DocBook CALS Table Model V4.3 ................................. -->
+<!-- ...................................................................... -->
