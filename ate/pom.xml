@@ -35,6 +35,6 @@
         <module>transactions-hibernate3</module>
         <module>examples-jta</module>
         <module>examples-jta-spring</module>
-	<module>documentation</module>
+        <module>documentation</module>
     </modules>
 </project>
