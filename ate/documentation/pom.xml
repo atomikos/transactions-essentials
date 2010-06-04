@@ -6,7 +6,7 @@
 	<groupId>com.atomikos</groupId>
 	<artifactId>atomikos-documentation</artifactId>
 	<version>3.7.0-SNAPSHOT</version>
-	<name>documentation</name>
+	<name>Documentation</name>
 	<build>
 		<plugins>
 			<plugin>
