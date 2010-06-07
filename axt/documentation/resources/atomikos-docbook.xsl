@@ -36,4 +36,29 @@
   <xsl:param name="title.margin.left">0pc</xsl:param>
   <xsl:param name="admon.textlabel" select="0"/>
 
+  <xsl:attribute-set name="section.titlepage.recto.style">
+    <xsl:attribute name="keep-together">auto</xsl:attribute>
+    <xsl:attribute name="keep-together.within-column">always</xsl:attribute>
+  </xsl:attribute-set>
+
+  <xsl:attribute-set name="section.titlepage.verso.style">
+    <xsl:attribute name="keep-together">auto</xsl:attribute>
+    <xsl:attribute name="keep-together.within-column">always</xsl:attribute>
+    <xsl:attribute name="keep-with-next">auto</xsl:attribute>
+    <xsl:attribute name="keep-with-next.within-column">always</xsl:attribute>
+  </xsl:attribute-set>
+
+  <xsl:attribute-set name="formal.object.properties">
+    <xsl:attribute name="keep-together.within-column">
+      <xsl:choose>
+	<xsl:when test="self::example and string-length(programlisting) &lt; 1000">always</xsl:when>
+	<xsl:otherwise>auto</xsl:otherwise>
+      </xsl:choose>    
+    </xsl:attribute>
+  </xsl:attribute-set>
+
+  <xsl:attribute-set name="formal.title.properties">
+    <xsl:attribute name="keep-with-next.within-column">always</xsl:attribute>
+  </xsl:attribute-set>
+
 </xsl:stylesheet>
