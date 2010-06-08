@@ -418,7 +418,7 @@
                         An example <productname>TCC</productname> service implementation is shown below (the complete example
                         is included in the demos for the release). <example>
                             <title>Example of a <productname>TCC</productname> payment service</title>
-                            <para>
+                           
                                 <programlisting>
 
 package payment;
@@ -532,7 +532,7 @@ public class PaymentTCCService implements TCCService
 }
                              
                              </programlisting>
-                            </para>
+                            
                         </example>
                     </para>
                     <para> The following state diagram illustrates the relevant TCCService states
@@ -1030,6 +1030,7 @@ public class PaymentTCCService implements TCCService
                     <title>Configuring the ImportingTransactionHandler on the receiving side</title>
                     <para>
                      Adding a handler to the server (receiver) side is done like this in <code>JAX-WS</code>:
+                     </para>
                     <programlisting>
 <![CDATA[                      
 package com.atomikos.demo.jaxws.server;
@@ -1086,7 +1087,8 @@ public class Server {
 
 ]]>                        
                     </programlisting>     
-                        
+                     
+                    <para>
                     This handler class takes care of extracting any transaction context present in the incoming calls, and registers for the 
                     final (global) transaction outcome as controlled by the client. For the complete code, please see
                     the <code>JAX-WS</code> example included in the download.
@@ -1097,6 +1099,7 @@ public class Server {
                     <title>Configuring the ExportingTransactionHandler on the client side</title>
                     <para>
                         Adding a handler to the client (sender) side is done like this in <code>JAX-WS</code>:
+                        </para>
                         <programlisting>
                             <![CDATA[
 import java.util.List;
@@ -1127,6 +1130,7 @@ public class Client {
 }
               ]]>                   
                         </programlisting>
+                    <para>
                         For the complete code, please see the <code>JAX-WS</code> example included in the download.
                     </para>
                 </example>
