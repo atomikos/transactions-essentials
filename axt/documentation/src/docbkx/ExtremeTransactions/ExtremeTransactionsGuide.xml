@@ -1,0 +1,1273 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN" "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd">
+<book>
+    <bookinfo>
+        <mediaobject>
+            <imageobject>
+                <imagedata fileref="file:../../resources/images/logo.gif"/>
+            </imageobject>
+        </mediaobject>
+        <title>
+            <productname>Atomikos</productname>
+            <productname>ExtremeTransactions</productname> Guide</title>
+        <edition>2.0</edition>
+        <date>June 2008</date>
+        <copyright>
+            <year>2008</year>
+            <holder>Atomikos</holder>
+        </copyright>
+    </bookinfo>
+    <chapter>
+        <title>Introduction</title>
+        
+        <para> This guide introduces you to the revolutionary transaction technology incorporated
+            into <productname>ExtremeTransactions</productname>, the commercial version of our
+            <productname>TransactionsEssentials</productname> core. </para>
+        
+        <para> Distributed transactions have always been a debatable topic where the numerous
+            opponents typically used to complain about the poor characteristics of traditional
+            <emphasis>ACID</emphasis> standards in this area (where <emphasis>ACID</emphasis> means Atomic, Consistent, Isolated and Durable - see the Glossary in appendix). 
+        </para>
+        
+            <para>This guide will show you how times have changed:
+                <emphasis>thanks to <productname>Atomikos</productname>, it is now possible to build
+                distributed (and even asynchronous) systems with transactional guarantees without
+                having to resort to the limitations of traditional ACID technologies</emphasis> (although
+        you can still do that if you want). </para>
+        
+        <section>
+            <title>Who Should Read This Guide</title>
+            <para>You should read this guide if you are interested in any of the following: <itemizedlist>
+                    <listitem>
+                        <para> Learning about transactional services and GRIDs and what they can do
+                            for you. </para>
+                    </listitem>
+                    <listitem>
+                        <para> Enabling your web services for
+                            <productname>ExtremeTransactions</productname>. </para>
+                    </listitem>
+                    <listitem>
+                        <para> Making your existing <emphasis>JTA/XA</emphasis> transactions participate in distributed
+                            service transactions. </para>
+                    </listitem>
+                    <listitem>
+                        <para> Programming state-of-the-art, compensation-based services (departing from <emphasis>ACID</emphasis>). </para>
+                    </listitem>
+                    <listitem>
+                        <para> Supporting distributed transactions without the classical XA support (unlike <emphasis>ACID</emphasis>). </para>
+                    </listitem>
+                </itemizedlist>
+            </para>
+           
+        </section>
+        <section>
+            <title>Prerequisite Reading</title>
+            <caution><para>
+                You can read to this guide to grasp the concepts, 
+                but in order to really implement services with <productname>ExtremeTransactions</productname> 
+                you should be familiar with the concepts explained in the guides <emphasis>AtomikosTransactionsEssentialsGuide</emphasis> and
+                <emphasis>AtomikosAPISpecification</emphasis>. If you haven't read those yet, please do so first.
+            </para></caution>
+        </section>
+        
+        <section>
+            <title>System Requirements</title>
+            <para> The following platform is required for
+                <productname>ExtremeTransactions</productname>: <itemizedlist>
+                    <listitem>
+                        <para> Java 1.4 or higher.</para>
+                    </listitem>
+                    <listitem>
+                        <para> At least 128 MB of RAM.</para>
+                    </listitem>
+                </itemizedlist>
+            </para>
+        </section>
+        <section>
+            <title>Installation Instructions</title>
+            <para> Please see the installation instructions in the getting started pages. </para>
+        </section>
+        <section>
+            <title>The Impact of SOA on Transactions</title>
+            <para> A service-oriented architecture requires fundamental changes from the traditional
+                architectural viewpoint: traditional monolithic applications are (by definition)
+                built in standalone mode, meaning that distributed transactions are rarely needed.
+                By contrast, services are meant to be only a part of a composite application. 
+                </para>
+                <para>The result: many service-based applications of the new generation will be distributed by default.
+                    This drastically overturns the traditional architectural requirements in that distributed
+                transactions are now more of a necessity than ever before.
+                <productname>ExtremeTransactions</productname> answers these new needs. </para>
+        </section>
+        <section>
+            <title>Architecture</title>
+            <para> The architecture of <productname>ExtremeTransactions</productname> is shown
+                below, along with its relationship to
+                <productname>TransactionsEssentials</productname>. <figure>
+                    <title>ExtremeTransactions Architecture</title>
+                    <graphic fileref="images/ExtremeTransactionsArchitecture.tiff"/>
+                </figure> The main features offered by
+                <productname>ExtremeTransactions</productname> (as shown on the diagram) are the
+                following: <itemizedlist>
+                    <listitem><emphasis>JTA/XA</emphasis> support: you can start and commit/rollback transactions
+                        according to Sun's JTA API.</listitem>
+                    <listitem><emphasis>JDBC</emphasis> support: connection pooling and <emphasis>JTA/XA</emphasis>-aware datasource implementations.</listitem>
+                    <listitem><emphasis>JMS</emphasis> support: message-driven receivers and senders - even outside the
+                        application server.</listitem>
+                    <listitem><productname>TCC</productname> support: our revolutionary compensation-based transaction model
+                        for loose coupling. With <productname>TCC</productname>, you can focus on the happy path of your
+                        workflow logic, and let us take care of the rest.</listitem>
+                    <listitem>Extending transactions across the network: the scope of rollback and
+                        commit can be extended to other processes, called by <emphasis>RMI</emphasis>, <emphasis>IIOP</emphasis>, <emphasis>SOAP</emphasis> or
+                        almost any other protocol.</listitem>
+                </itemizedlist>
+            </para>
+            
+            <section>
+                <title>Features Inherited from <productname>TransactionsEssentials</productname></title>
+                <para><productname>ExtremeTransactions</productname> is the commercial extension of <productname>TransactionsEssentials</productname> so it
+                    contains all the functionality offered by the latter:
+                    <itemizedlist>
+                        <listitem><emphasis>JTA/XA</emphasis> support for <emphasis>ACID</emphasis> transactions</listitem>
+                        <listitem><emphasis>JDBC</emphasis> support</listitem>
+                        <listitem><emphasis>JMS</emphasis> support</listitem>
+                    </itemizedlist>                    
+                </para>
+            </section>
+            <section>
+                <title><productname>TCC</productname></title>
+                <para>One of the main innovations found in <productname>ExtremeTransactions</productname> is support for the 
+                    <productname>TCC</productname> (Try-Confirm/Cancel) model. As explained later in this guide, <productname>TCC</productname> is a paradigm for the construction 
+                    of transactional services while preserving the capabilities for loose coupling and asynchronous interactions. This way, <productname>ExtremeTransactions</productname>
+                    effectively eliminates the main argument against a transactional SOA: there is no more extended locking of data (required for traditional two-phase commit), 
+                    and the use of local transactions suffices in order to get distributed consistency.
+                </para>
+            </section>
+            <section>
+                <title>Extending Transactions Across the Network</title>
+                <para>
+                    A transaction started in one application (or service, depending on the context) can optionally be extended ("propagated") across the network. 
+                    As a result, rollback or commit of the original transaction will include all the work done in all of the processes to where the 
+                    transaction was propagated. This mechanism works both for classical <emphasis>JTA/XA</emphasis> transactions as well as for networked <productname>TCC</productname> services.
+                </para>
+                <para>
+                    This extension mechanism allows for the construction of transactional composite applications; 
+                    the <productname>TCC</productname> paradigm avoids tight coupling and eliminates traditional locking problems on the data.
+                </para>
+            </section>
+        </section>
+    </chapter>
+    <chapter>
+        <title>Writing Transactional Services with <productname>ExtremeTransactions</productname>
+        </title>
+        <para/>
+        <section>
+            <title>Intra-VM Transactions: XTP/GRID Architecture</title>
+            <para>
+                An intra-VM transactional service <emphasis>GRID</emphasis> is usually based on <emphasis>JMS</emphasis> for receiving messages 
+                from some <emphasis>message bus</emphasis>
+                and then inserting some results into a database via <emphasis>JDBC</emphasis>. <productname>Gartner</productname> has termed this style of 
+                processing <emphasis>XTP (extreme transaction processing)</emphasis>. The usual architecture is shown below.
+                <figure>
+                    <title>XTP GRID architecture with intra-VM transactions</title>
+                    <graphic fileref="images/XTP-grid.tiff"/>
+                </figure>
+                
+            </para>
+            <para>
+                <productname>ExtremeTransactions</productname> guarantees that the messages (requests)
+                are either still on the message bus, or in the database, but nothing in between. In particular, <productname>ExtremeTransactions</productname> avoids 
+                message loss (missing requests) or duplicate delivery.
+            </para>
+            <para>
+                For examples of applications that follow this architecture, 
+                see the <emphasis>JMS</emphasis> examples in the download of <productname>ExtremeTransactions</productname>.
+            </para>
+            <caution><para>
+                It is important to realize that for this architecture, the typical scope of a transaction is the processing of individual (queued) requests. In particular, 
+                the sender of a request has no control over the outcome of its processing. If such control is desired then we recommend our <productname>TCC</productname>
+                approach instead.
+            </para></caution>
+        </section>
+        <section>
+            <title>Inter-VM Transactions: Composite Applications and SOA</title>
+            <para>
+                <emphasis>SOA</emphasis> and the <emphasis>composite application</emphasis> (an application composed of multiple related service calls to different services) 
+                can require something more complex than the previous architecture. 
+                This section outlines the problems encountered, and two solutions offered by <productname>ExtremeTransactions</productname>.
+            </para>
+            <section>
+                <title>The SOA Problem Illustrated</title>
+            <para>SOA applications are different from the previous case: the transaction scope effectively spans multiple services and clients. 
+                For a <emphasis>composite application</emphasis>, this means that
+                a transaction can extend over the entire workflow. An example of such a workflow is shown below.
+                <figure>
+                    <title>Example of a composite application SOA workflow</title>
+                    <graphic fileref="images/happy-path.tiff"/>
+                </figure>
+            </para>
+            <para>
+                So far we have only shown the <emphasis>happy path</emphasis>: as long as no failures or crashes happen, this will work. However, in the realistic case
+                of failures or crashes, the workflow of a composite application becomes a lot more complex: not only do we need to add undo logic in the workflow model,
+                in addition we also need to model the inter-dependencies among undo operations and the right order. Finally, even more complexity comes into play when one 
+                considers the possibility of failures in the undo logic itself and when to retry the undo. 
+            </para>
+            <para>
+                The result is often a composite application that becomes more complex than it should be. Moreover, the reliability goes down a long way due to the increased
+                complexity, decreased testability and worse maintainability. This does not scale. The figure below shows this approach.
+                <figure>
+                    <title>Example of a composite application with error logic</title>
+                    <graphic fileref="images/error-path-with-dependencies.tiff" />
+                </figure>
+            </para>
+            </section>
+            
+            <section>
+                <title>Solution 1: <productname>ExtremeTransactions</productname> JTA Support</title>
+                <para>
+                    One way to solve the problem is by making the whole workflow an extended (distributed) <emphasis>JTA</emphasis> transaction.
+                    While this works from a technical viewpoint, it does not scale outside the enterprise: database locks are maintained
+                    for the entire duration of an extended transaction, and this exposes the services to <emphasis>denial-of-service</emphasis> attacks
+                    and other availability hazards. Consequently, this solution is only fit for intra-enterprise cases where there is a centralized
+                    point of control.
+                </para>
+                <caution><para>
+                    Examples of this approach are shown in the installation folder of <productname>ExtremeTransactions</productname>, under <emphasis>examples/j2se/rmi</emphasis>.
+                </para></caution>
+            </section>
+            <section>
+                <title>Solution 2: <productname>ExtremeTransactions</productname> <productname>TCC</productname> Support</title>
+                <para>
+                    With TCC, the workflow logic of a <emphasis>composite application</emphasis> can be reduced to its <emphasis>happy path</emphasis>.
+                    All other logic is moved to the service implementation: the services are now offering both <emphasis>cancel</emphasis> and <emphasis>confirm</emphasis>
+                    logic as well. This logic is moved out of the workflow (along with all interdependencies), thereby removing all complexity from the workflow itself.
+                    This is shown below...
+                    <figure>
+                        <title>TCC: focus on the happy path</title>
+                        <graphic fileref="images/happy-path-with-tcc.tiff"/>
+                    </figure>
+                </para>
+                <para>
+                    At the expense of some additional (and reusable) logic <emphasis>in each service</emphasis>, the workflow is simplified enormously: there are
+                    no more undo calls to model/program, and no dependencies to take care of. The developers don't have to take into account all possible failure
+                    paths, nor do they have to track where things go wrong and what to do next. All this is handled by <productname>ExtremeTransactions</productname>.
+                    In addition, the failure of undo operations is no longer a worry
+                    of the application developer: all this is handled by <productname>ExtremeTransactions</productname>.
+                </para>
+                <caution><para>
+                    Examples of this approach are shown in the installation folder of <productname>ExtremeTransactions</productname>, under <emphasis>examples/j2se/tcc</emphasis>.
+                </para></caution>
+            </section>
+            
+        </section>
+        <section>
+            <title>The <productname>Atomikos</productname> Try-Confirm-Cancel (<productname>TCC</productname>) API: Distributed
+                Service Transactions Without XA</title>
+            <caution>
+                <para> This API is a revolutionary approach to programming distributed transactional
+                    services (which can be exposed either as web services or as classical <emphasis>RMI</emphasis>/<emphasis>IIOP</emphasis>
+                    services). It combines the best of two worlds: <itemizedlist>
+                        <listitem> The loosely-coupled style of messaging platforms, by supporting
+                            asynchronous and long-duration communication patterns. </listitem>
+                        <listitem> The reliability guarantees of transactions, by offering the
+                            guarantee that a distributed (and possibly asynchronous) task is either
+                            canceled or confirmed in its entirety. </listitem>
+                    </itemizedlist>
+                </para>
+            </caution>
+            <para> Invented by Atomikos, this approach is new in the way that distributed
+                transactions are structured: instead of requiring one long ACID transaction that
+                lasts until commit or rollback, <productname>TCC</productname> splits up a web service transaction into three
+                distinct phases, each optionally involving separate and short-lived ACID
+                transactions: </para>
+            <itemizedlist>
+                <listitem>
+                    <para> The <emphasis>TRY</emphasis> phase: from the viewpoint of a service
+                        provider, this is where the normal transactional service request is
+                        processed in a <emphasis>tentative manner</emphasis> (i.e., subject to later
+                        confirmation or cancelation) and in one short <emphasis>local</emphasis>
+                        ACID transaction (which can even be a non-JTA transaction such as in
+                        <productname>JDBC</productname>). None of the classical distributed and
+                        long-lived locks are required to do this. At the end of this phase, the
+                        business logic reflects a tentative result that will become permanent only
+                        after the next phase (either <emphasis>CONFIRM</emphasis> or
+                        <emphasis>CANCEL</emphasis>). 
+                    </para>
+                </listitem>
+                <listitem>
+                    <para> The <emphasis>CONFIRM</emphasis> phase: if the overall web service
+                        transaction commits, then the <productname>TCC</productname> service implementation receives a
+                        confirmation notification (this corresponds to the
+                        <emphasis>commit</emphasis> in the two-phase commit protocol). The
+                        interesting part is that this confirmation may trigger business-level
+                        processing to update the tentative business state to
+                        <emphasis>confirmed</emphasis> (again, this update can be a purely local
+                        transaction such as in <productname>JDBC</productname>). The <productname>TCC</productname> paradigm
+                        only requires <emphasis>local updates</emphasis> during this phase: any
+                        remote confirmation is done by the protocols in the background. </para>
+                </listitem>
+                <listitem>
+                    <para> The <emphasis>CANCEL</emphasis> phase: if the overall web service
+                        transaction does rollback then the <productname>TCC</productname> service implementation receives a
+                        cancelation notification (this corresponds to the
+                        <emphasis>rollback</emphasis> in the two-phase commit protocol). Like for
+                        confirmation, this notification may trigger business-level processing to
+                        update the tentative business state to <emphasis>canceled</emphasis>. Again,
+                        only local updates are required; any remote cancelation is done by the
+                        protocols in the background. </para>
+                </listitem>
+            </itemizedlist>
+            <example>
+                <title><productname>TCC</productname> example: an airline reservation web service</title>
+                <para>
+                    <figure>
+                        <title><productname>TCC</productname> example: airline reservation service</title>
+                        <graphic fileref="images/TCC.gif"/>
+                    </figure>
+                </para>
+                <para> As an example, consider an airline reservation web service. This service
+                    offers online seat reservations that can be booked in a transactional way. The
+                    <emphasis>TRY</emphasis> phase inserts the reservation into the database. Upon
+                    commit, the <emphasis>CONFIRM</emphasis> phase explicitly updates the
+                    reservation to being valid. Otherwise, in the event of
+                    <emphasis>CANCEL</emphasis>, the reservation is marked to be canceled; because
+                    the business logic is aware that only confirmed reservations should be taken
+                    into account, this achieves transactional consistency in a loosely-coupled way. </para>
+            </example>
+            <section>
+                <title>Programming <productname>TCC</productname> Applications</title>
+                <para> The <productname>TCC</productname> paradigm is ideal for reservation-style (web) services, where
+                    business resources (seats, tickets, ...) have to be reserved for a short or
+                    large period of time until the reservation is confirmed or canceled. You can
+                    view <productname>TCC</productname> as <emphasis>two-phase commit at the business level</emphasis>: the
+                    tentative (prepare), canceled (rollback) and confirmed (commit) states are
+                    visible (and known) by the business logic. Tentative transactions are indeed
+                    accessible in the database(s), and should be ignored by the business if not
+                    relevant. The system offers the guarantee that tentative transactions are
+                    temporary, so resources are always released eventually. Indeed, a <productname>TCC</productname>
+                    transaction is either confirmed (if it succeeds) or canceled (if it fails or
+                    times out). Either way, the corresponding business logic is triggered (CONFIRM
+                    or CANCEL) to release any business-level resources associated with the tentative
+                    state. </para>
+                <note>
+                    <para> The <productname>TCC</productname> API is defined in the package <code>com.atomikos.TCC</code> and
+                        implemented by the package <code>com.atomikos.icatch.TCC</code>. See the
+                        javadoc and the samples contained in the release for more details on the <productname>TCC</productname>
+                        model. </para>
+                </note>
+                <section>
+                    <title>Recommended Pattern for <productname>TCC</productname> Services</title>
+                    <para> The <productname>TCC</productname> paradigm corresponds to two-phase commit at the application
+                        level. This means that the likelyhood of failure during
+                        <emphasis>CANCEL</emphasis> or <emphasis>CONFIRM</emphasis> should be
+                        minimized (since these correspond to failures during the second phase of
+                        two-phase commit). Therefore, we recommend that your <productname>TCC</productname> services be
+                        developed along the following lines: <itemizedlist>
+                            <listitem>
+                                <para>
+                                    <emphasis>TRY</emphasis>: reserve the necessary resources to
+                                    make CONFIRM succeed. For instance, if you are selling something
+                                    then TRY would check and decrement stock availability already,
+                                    so CONFIRM can't run into availability problems. </para>
+                            </listitem>
+                            <listitem>
+                                <para>
+                                    <emphasis>CONFIRM</emphasis>: make the work of TRY permanent,
+                                    i.e. convert the reservation into a purchase (in the case of
+                                    selling). </para>
+                            </listitem>
+                            <listitem>
+                                <para>
+                                    <emphasis>CANCEL</emphasis>: release the reserved resources
+                                    again. In the selling example, this would mean returning the
+                                    reserved items to the available stock. </para>
+                            </listitem>
+                        </itemizedlist>
+                    </para>
+                </section>
+                <section>
+                    <title>Programming the <productname>TCC</productname> Service</title>
+                    <para> <productname>TCC</productname> service implementations should implement the interface
+                        <code>com.atomikos.TCC.TCCService</code>. This interface exposes the
+                        following methods to implement: <itemizedlist>
+                            <listitem>
+                                <para>
+                                    <code>confirm</code>: the logic associated with confirmation.
+                                    Implement this method to confirm the reservations made in the
+                                    <code>try-phase</code>. </para>
+                            </listitem>
+                            <listitem>
+                                <para>
+                                    <code>cancel</code>: the logic associated with cancelation.
+                                    Implement this method to cancel the reservations made in the
+                                    <code>try-phase</code>. </para>
+                            </listitem>
+                            <listitem>
+                                <para>
+                                    <code>recover</code>: callback for recovery; this method is
+                                    called by the transaction service when it recovers <productname>TCC</productname>
+                                    transactions after a crash or restart. Any required system-level
+                                    resources needed for cancel or confirm can be re-acquired in
+                                    this method. </para>
+                            </listitem>
+                        </itemizedlist> In addition to these termination callbacks (required by the
+                        transaction service), it is up to the application itself to implement the
+                        logic for the try-phase. As far as the transaction service is concerned, the
+                        try-phase starts when <code>register</code> is called, and ends when one of
+                        <code>completed</code> or <code>failed</code> is invoked by the application.
+                        An example <productname>TCC</productname> service implementation is shown below (the complete example
+                        is included in the demos for the release). <example>
+                            <title>Example of a <productname>TCC</productname> payment service</title>
+                            <para>
+                                <programlisting>
+
+package payment;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import com.atomikos.icatch.HeurCommitException;
+import com.atomikos.icatch.HeurRollbackException;
+import com.atomikos.TCC.TCCException;
+import com.atomikos.TCC.TCCService;
+import com.atomikos.TCC.TCCServiceManager;
+
+public class PaymentTCCService implements TCCService 
+{
+	private TCCServiceManager TCCmgr;
+	private long timeout;
+	
+	public PaymentTCCService ( TCCServiceManager TCCmgr ,
+			long timeout )
+	{
+		this.TCCmgr = TCCmgr;
+		this.timeout = timeout;
+                                 
+        //IMPORTANT: register with the system for recovery callbacks
+        //to assist with application-level recovery of previous
+        //service invocations
+                                 
+        TCCmgr.registerForRecovery ( this );
+	}
+
+	public void tryPayment ( String cardNo , int amount ) 
+	throws Exception
+	{
+		//start (register) the work for cancel/confirm
+		//and obtain the id to use as reference
+		String id = TCCmgr.register ( this , timeout );
+		
+		
+		try {
+			//perform the work (i.e., the business logic)
+			//the application should use the id to 
+			//identify the work for later confirm/cancel
+			Connection conn = PaymentDbUtils.getConnection();
+			Statement s = conn.createStatement();
+			s.executeUpdate ( "insert into PAYMENTS values ( " +
+			" '" + id + "' , '" + cardNo + "' ," + amount + "," +
+			" 'PENDING' )" );
+			
+			conn.close();
+			//mark the work as completed in the system
+			//to trigger the cancel/confirm callbacks
+			TCCmgr.completed ( id );
+			
+		} catch ( Exception e ) {
+			e.printStackTrace();
+			//on any exception: mark the work as failed
+			//so cancel is the only possible callback
+			TCCmgr.failed ( id );
+		}
+	}
+	
+	
+	public void confirm ( String id ) 
+	throws HeurRollbackException, TCCException 
+	{
+		
+		try {
+			Connection conn = PaymentDbUtils.getConnection();
+			Statement s = conn.createStatement();
+			s.executeUpdate ( 
+"update PAYMENTS set status = 'CONFIRMED' where key = '" + id +"'" );
+			conn.close();		
+		} catch ( SQLException e ) {
+			e.printStackTrace();
+			//optional: throw TCCException to retry confirmation
+			throw new TCCException();
+		}
+
+	}
+
+	public void cancel ( String id ) 
+	throws HeurCommitException, TCCException 
+	{
+		try {
+			Connection conn = PaymentDbUtils.getConnection();
+			Statement s = conn.createStatement();
+			//set status to canceled; alternatively, we could also
+			//choose to delete the payment row instead; this depends
+			//on the business-specific model of cancelation
+			s.executeUpdate ( 
+"update PAYMENTS set status = 'CANCELED' where key = '" + id +"'" );
+			conn.close();		
+		} catch ( SQLException e ) {
+			e.printStackTrace();
+			//optional: throw TCCException to retry cancelation
+			throw new TCCException();
+		}
+
+	}
+
+	public boolean recover ( String id ) 
+	{
+		//check if the id is one of our work identifiers
+        //return true if so
+                                
+		
+	}
+
+}
+                             
+                             </programlisting>
+                            </para>
+                        </example>
+                    </para>
+                    <para> The following state diagram illustrates the relevant TCCService states
+                        and their transitions. <note>
+                            <para> The invocation of <code>cancel</code> or <code>confirm</code> are
+                                guaranteed to happen only after the try-phase is over (i.e., after
+                                the application calls either <code>completed</code> or
+                                <code>failed</code>). </para>
+                        </note>
+                    </para>
+                    <figure>
+                        <title>TCCService State Diagram</title>
+                        <graphic fileref="images/TCCStates.tiff"/>
+                    </figure>
+                    <para> The figure above shows the relevant states for <productname>TCC</productname> instances, and the
+                        possible transitions. For clarity, the transitions initiated by the
+                        transaction system are shown in black arrows, whereas the service-generated
+                        transitions are shown in red. More precisely: the black arrows represent
+                        method calls that the TCCService instance will receive upon the transaction
+                        service's initiative. The relevant states are the following: <itemizedlist>
+                            <listitem>
+                                <para>
+                                    <emphasis>Trying</emphasis>: the <productname>TCC</productname> instance is executing the
+                                    tentative service implementation. This state is entered after
+                                    the application calls <code>register</code> on the
+                                    <code>TCCServiceManager</code>. The transaction service
+                                    guarantees that there will be no interleaving calls of
+                                    <code>cancel</code> or <code>confirm</code>. In this state, the
+                                    application's thread is associated with the activity (this
+                                    allows easy propagation via the JAX-RPC handlers). </para>
+                            </listitem>
+                            <listitem>
+                                <para>
+                                    <emphasis>Suspended</emphasis>: this state is reached when the
+                                    application's thread is no longer associated with the
+                                    transaction (activity). This state is an intermediate state to
+                                    change the thread association of the application. It is up to
+                                    the application to reach this state, by calling
+                                    <code>suspend</code> on the <code>TCCServiceManager</code>. More
+                                    information on this technique will follow later. </para>
+                            </listitem>
+                            <listitem>
+                                <para>
+                                    <emphasis>TryFailed</emphasis>: this state is reached after the
+                                    <emphasis>Trying</emphasis> state fails (indicated by the
+                                    application calling the <code>failed</code> method of the
+                                    <code>TCCServiceManager</code>). In this state, the transaction
+                                    service will later call <code>cancel</code>. </para>
+                            </listitem>
+                            <listitem>
+                                <para>
+                                    <emphasis>Tentative</emphasis>: this state is reached only after
+                                    the <emphasis>Trying</emphasis> phase finishes without errors
+                                    (as indicating by a call to <code>completed</code> on the
+                                    TCCServiceManager). This is the only state in which
+                                    <code>confirm</code> can ever be called, but only if the global
+                                    transaction (activity) commits. In case of global transaction
+                                    rollback, <code>cancel</code> will be called. </para>
+                            </listitem>
+                            <listitem>
+                                <para>
+                                    <emphasis>Confirming</emphasis>: the instance is in this state
+                                    when <code>confirm</code> has been called and is still
+                                    executing. If a <code>TCCException</code> happens then the <productname>TCC</productname>
+                                    instance returns to the <emphasis>Tentative</emphasis> state,
+                                    and <code>confirm</code> will be retried later. </para>
+                            </listitem>
+                            <listitem>
+                                <para>
+                                    <emphasis>Canceling</emphasis>: the instance is in this state
+                                    when <code>cancel</code> has been called and is still executing.
+                                    If a <code>TCCException</code> happens then the <productname>TCC</productname> instance
+                                    returns to the <emphasis>Tentative</emphasis> state, and
+                                    <code>cancel</code> will be retried later. </para>
+                            </listitem>
+                            <listitem>
+                                <para>
+                                    <emphasis>Confirmed</emphasis>: if the confirmation is
+                                    successful (no exceptions) then this state is reached. This
+                                    state is also reached when <code>cancel</code> finds the
+                                    business logic to be heuristically confirmed by intermediate
+                                    database administration interventions. </para>
+                            </listitem>
+                            <listitem>
+                                <para>
+                                    <emphasis>Canceled</emphasis>: if the cancelation is successful
+                                    (no exceptions) then this state is reached. This state is also
+                                    reached when <code>confirm</code> finds the business logic to be
+                                    heuristically canceled by intermediate database administration
+                                    interventions. </para>
+                            </listitem>
+                        </itemizedlist>
+                    </para>
+                    <note>
+                        <para> What about the <code>recover</code> method? Actually, this method is
+                            only called for recovered <productname>TCC</productname> instances, and can only be followed by
+                            either <code>cancel</code> or <code>confirm</code>. The only thing that
+                            <code>recover</code> should do is ensure that <code>cancel</code> and/or
+                            <code>confirm</code> can do their work, be re-acquiring any resources if
+                            needed. Most of the time, this method can be left empty. 
+                            Note that TCC transactions are recoverable as soon as they enter the <emphasis>TRY</emphasis> phase. 
+                            This guarantees that pending work is correctly recovered and terminated after a crash or restart.</para>
+                    </note>
+                </section>
+                <section>
+                    <title>Executing <productname>TCC</productname> Services</title>
+                    <para> The (tentative, try-phase) execution of <productname>TCC</productname> services is started by
+                        calling <code>register</code> on the
+                        <code>com.atomikos.icatch.TCC.UserTCCServiceManager</code>, the default
+                        implementation of <code>com.atomikos.TCC.TCCServiceManager</code>. This
+                        method returns a <code>java.lang.String</code> identifier for the work; this
+                        identifier will be used as an argument for termination. <caution>
+                            <para> The <code>TCCServiceManager</code> class should be initialized
+                                with the appropriate <code>TCCService</code> implementation
+                                (provided by the application) before it can be used. This is done
+                                via an invocation of the <code>registerForRecovery</code> method.
+                                For recovery, it is highly recommended that this initialization be
+                                done as soon as possible after startup of the application. </para>
+                        </caution>
+                    </para>
+                    <para> Once registered, it is up to the application to do any work that is
+                        subject to transactional termination. For convenience, the executing thread
+                        is associated with the activity (transaction). For remote calls, this allows
+                        the activity to be propagated with the built-in JAXRPC handlers. In case the
+                        application wants to switch threads for the activity, the
+                        <code>suspend</code> and <code>resume</code> methods can be used to manage
+                        the thread associations. </para>
+                    <para> As soon as the <emphasis>try-phase</emphasis> is over, the application
+                        should call either <code>completed</code> (if successful) or
+                        <code>failed</code> (if erroneous) with the correlation identifier returned
+                        by <code>register</code>. For root activities, the entire, possibly
+                        distributed activity is then terminated in a consistent manner by the
+                        underlying transaction service. In other words, the system calls either
+                        <code>cancel</code> or <code>confirm</code> on each participating
+                        <code>TCCService</code> implementation in a consistent way. </para>
+                    <example>
+                        <title>Distributed <productname>TCC</productname> Execution</title>
+                        <para>The following illustration shows a sample distributed <productname>TCC</productname> execution
+                            between two transactional services. <figure>
+                                <title>Distributed <productname>TCC</productname> execution between two transactional services</title>
+                                <graphic fileref="images/TCCExecution.tiff"/>
+                            </figure>
+                        </para>
+                        <para> The following steps are displayed: <orderedlist>
+                                <listitem>
+                                    <para> The application in service 1 registers with the
+                                        transaction service. Because there is no pre-existing
+                                        activity yet, a new (root) activity is created for this
+                                        service (not shown). The identifier <emphasis>id</emphasis>
+                                        is returned for this activity. Service 1 can now perform the
+                                        <emphasis>try-phase</emphasis> of its work. </para>
+                                </listitem>
+                                <listitem>
+                                    <para> First, service 1 chooses to update its local database and
+                                        commits. The effects become visible to other, concurrent
+                                        applications but are still subject to two-phase commit
+                                        termination of the <productname>TCC</productname> services. In order to be able to
+                                        correlate the database updates with the activity, service 1
+                                        is likely to use the work identifier <emphasis>id</emphasis>
+                                        as a (primary) key for its database updates. </para>
+                                </listitem>
+                                <listitem>
+                                    <para> As part of its <emphasis>try-phase</emphasis>, service 1
+                                        then chooses to call service 2. The activity is propagated
+                                        by the handlers. If done asynchronously, then service 1 may
+                                        choose to use the work identifier <emphasis>id</emphasis> as
+                                        a correlation identifier for the communication. </para>
+                                </listitem>
+                                <listitem>
+                                    <para> The handlers at service 2 import the activity, and the
+                                        call is forwarded to the application (this is how handlers
+                                        work; the application doesn't have to worry about this). The
+                                        application at service 2 wants to do work that is subject to
+                                        <productname>TCC</productname> termination, so it first registers with the (local)
+                                        transaction service. The application receives an identifier
+                                        <emphasis>id2</emphasis> to refer to the (local part of the)
+                                        work. </para>
+                                </listitem>
+                                <listitem>
+                                    <para> Service 2 can now update its local database to reflect
+                                        the tentative state of its work. It is likely that
+                                        <emphasis>id2</emphasis> be used as a database identifier to
+                                        correlate with later cancelation or confirmation. The
+                                        database updates are committed immediately, in a local
+                                        database transaction. </para>
+                                </listitem>
+                                <listitem>
+                                    <para> Service 2 is satisfied with its work and signals to the
+                                        transaction service that it is ready to confirm when asked
+                                        to. This is done by calling <code>completed</code> with the
+                                        local work identifier <emphasis>id2</emphasis>. </para>
+                                </listitem>
+                                <listitem>
+                                    <para> The result is returned to service 1 (if asynchronous,
+                                        then the correlation identifier <emphasis>id</emphasis> of
+                                        service 1 can be used). </para>
+                                </listitem>
+                                <listitem>
+                                    <para> Service 1 is now also satisfied with its work, and
+                                        terminates its tentative phase by calling
+                                        <code>completed</code> with its own work identifier
+                                        <emphasis>id</emphasis>. Since service 1 is executing as the
+                                        root activity, this will trigger completion by the
+                                        transaction service (shown in the next examples). </para>
+                                </listitem>
+                            </orderedlist>
+                        </para>
+                    </example>
+                    <example>
+                        <title>Distributed <productname>TCC</productname> Prepare</title>
+                        <para> After the root activity is completed in the previous example, the
+                            transaction service will ensure consistent termination with
+                            cancel/confirm at all participant services. <productname>TCC</productname> activities can be
+                            distributed across nodes and can take a long time to complete.
+                            Consequently, parts of the work can time out while waiting for
+                            confirmation. To minimize problems with timeouts, the transaction
+                            service will do a prepare-phase (as in two-phase commit) behind the
+                            scenes. This is a purely technical step without application-level
+                            requirements. <figure>
+                                <title>Distributed <productname>TCC</productname> prepare phase</title>
+                                <graphic fileref="images/TCCPrepare.tiff"/>
+                            </figure>
+                        </para>
+                    </example>
+                    <example>
+                        <title>Distributed <productname>TCC</productname> Confirmation</title>
+                        <para> Assuming that the prepare phase succeeded (no timeouts) then
+                            confirmation will happen as shown next. The system uses the registration
+                            identifiers of the work to call the application-level
+                            <code>confirm</code> implementations. Each service can use its
+                            respective identifier to confirm its changes in the database. This
+                            happens in a separate, local database transaction committed immediately. <figure>
+                                <title>Distributed <productname>TCC</productname> confirmation phase</title>
+                                <graphic fileref="images/TCCConfirmation.tiff"/>
+                            </figure>
+                        </para>
+                        <caution>
+                            <para> Note the local nature of confirmation: because the transaction
+                                service calls the remote parties, each TCCService implementation
+                                only has to confirm its own work locally. Also note that the
+                                    <emphasis>local identifier</emphasis> is used to confirm the
+                                work at each site. </para>
+                        </caution>
+                    </example>
+                    <example>
+                        <title>Distributed <productname>TCC</productname> Cancelation</title>
+                        <para> In case of one or more timeouts during prepare, cancelation will be
+                            done everywhere. This is similar to confirmation except that now
+                            <code>cancel</code> is called at each participating service. <figure>
+                                <title>Distributed <productname>TCC</productname> cancelation phase</title>
+                                <graphic fileref="images/TCCCancel.tiff"/>
+                            </figure>
+                        </para>
+                    </example>
+                    <example>
+                        <title>Distributed <productname>TCC</productname> Failure</title>
+                        <para> A <emphasis>failure</emphasis> is an error in the tentative logic (in
+                            the <emphasis>try-phase</emphasis>). A service should call
+                            <emphasis>failed</emphasis> (with its work identifier) whenever it
+                            encounters an error from which it can't recover. This will make sure
+                            that the transaction service forbids confirmation of (the relevant parts
+                            of) the work and calls cancel instead. This is shown next. <figure>
+                                <title>Distributed <productname>TCC</productname> failure</title>
+                                <graphic fileref="images/TCCFailure.tiff"/>
+                            </figure>
+                        </para>
+                        <para> In this example, service 2 encounters a fatal error and calls
+                            <code>failed</code> to indicate that its part of the work (and any
+                            transactional calls that service 2 may have made) should be canceled. </para>
+                        <para> Note that service 1 is still allowed to try an alternative service
+                            and complete. This means that failed remote calls don't have to lead to
+                            global failure of the entire activity. </para>
+                    </example>
+                </section>
+                <section>
+                    <title><productname>TCC</productname> and Subtransactions</title>
+                    <para> When <code>register</code> is called without an existing transaction
+                        (activity), the system wil create a <emphasis>root</emphasis> activity. On
+                        the other hand, if an activity already exists (for instance, an imported
+                        one) then a <emphasis>subtransaction (or subactivity)</emphasis> will be
+                        created instead. </para>
+                    <para> Calling <code>completed</code> has a different effect for root activities
+                        versus subactivities: <itemizedlist>
+                            <listitem>
+                                <para> For root activities, calling <code>completed</code> will
+                                    trigger the distributed confirmation process and lead to the
+                                    consistent invocation of either <code>confirm</code> or
+                                    <code>cancel</code> for each participating service. </para>
+                            </listitem>
+                            <listitem>
+                                <para> For subactivities (e.g., imported activities),
+                                    <code>completed</code> will merely mark the activity is
+                                    <code>tentative</code>; it is up to the root to trigger the
+                                    final confirmation or cancelation. </para>
+                            </listitem>
+                        </itemizedlist>
+                    </para>
+                </section>
+                <section>
+                    <title>Failures During Confirmation or Cancelation</title>
+                    <para> A well-known problem with compensation-based approaches is what to do
+                        when compensation fails (the same can be said of confirmation). As the <productname>TCC</productname>
+                        state diagram shows, there are two possible ways of failure: <itemizedlist>
+                            <listitem>
+                                <para> A <code>TCCException</code> is thrown. In this case the
+                                    transaction service will retry the <code>cancel</code> (or
+                                    <code>confirm</code>) a number of times. If this eventually
+                                    works then there is no problem. Otherwise, the transaction
+                                    service will eventually give up and make the transaction fail
+                                    with a <emphasis>heuristic hazard</emphasis> error. This means
+                                    that the transaction information stays in the logs and is
+                                    available for manual intervention. One of the patent-pending
+                                    features of <productname>ExtremeTransactions</productname> is
+                                    the detailed application-level information available in this
+                                    case. </para>
+                            </listitem>
+                            <listitem>
+                                <para> A heuristic exception is thrown. This signals that an
+                                    intermediate administrative intervention has already terminated
+                                    the <productname>TCC</productname> process in an incompatible way. This is a fatal error
+                                    condition, because at least part of the global transaction did
+                                    not terminate the way it was supposed to. This again leads to a
+                                    heuristic error for the overall transaction, and the information
+                                    will be available in the logs for manual resolution. </para>
+                            </listitem>
+                        </itemizedlist>
+                    </para>
+                </section>
+            </section>
+            <section>
+                <title>Compatible Protocols</title>
+                <para> <productname>TCC</productname> service implementations are compatible with the following protocols: <itemizedlist>
+                        <listitem>
+                            <para> The <productname>Atomikos</productname> web service transaction
+                                protocol. </para>
+                        </listitem>
+                        <listitem>
+                            <para> The <productname>Atomikos</productname> binary <emphasis>RMI</emphasis>-<emphasis>IIOP</emphasis> protocol. </para>
+                        </listitem>
+                    </itemizedlist> Any transaction imported via one of these protocols will
+                    automatically be available for you <productname>TCC</productname> service (i.e., confirm or cancel of your
+                    <productname>TCC</productname> service will be linked with the two-phase commit of the overall
+                    transaction). </para>
+            </section>
+        </section>
+    </chapter>
+    
+    <chapter>
+        <title>Configuring <productname>ExtremeTransactions</productname> Behaviour</title>
+        <para>
+            The configuration of <productname>ExtremeTransactions</productname> is very similar to <productname>TransactionsEssentials</productname>, with some
+            extra parameters and values to set. This chapter discusses each parameter in turn. These parameters relate to the <emphasis>transactions.properties</emphasis>
+            file in your classpath.
+        </para>
+            <section>
+                <title>Enabling <productname>ExtremeTransactions</productname></title>
+           
+        
+                <para>The parameter <code>com.atomikos.icatch.service</code> must be set to <code>com.atomikos.icatch.trmi.UserTransactionServiceFactory</code> in order
+                to make sure that <productname>ExtremeTransactions</productname> is enabled.
+                </para>
+            </section>
+        
+            <section>
+                <title>RMI-JRMP Configuration</title>
+                <para>
+                If you plan to use <emphasis>RMI-JRMP</emphasis> as the protocol for calling your services, then you should set the following parameters.
+                    <itemizedlist>
+                        <listitem><para>
+                            <code>com.atomikos.icatch.rmi_export_class</code>: set this to value <code>UnicastRemoteObject</code>.
+                        </para></listitem>
+                        
+                        <listitem><para>
+                            <code>java.naming.factory.initial</code>: set this to the JNDI initial context factory of your <emphasis>JNDI</emphasis> service. 
+                            <productname>ExtremeTransactions</productname> needs a <emphasis>JNDI</emphasis> registry to store references to remote transaction
+                            objects it creates and exposes during its operation. The recommended value is <code>com.sun.jndi.rmi.registry.RegistryContextFactory</code> 
+                            (the <emphasis>JNDI</emphasis> included in the Java installation).
+                        </para></listitem>
+                        
+                        <listitem><para>
+                            <code>java.naming.provider.url</code>: set this to the corresponding <emphasis>JNDI</emphasis> provider address.
+                            If you set the recommended factory above, then the URL will most likely be <code>rmi://localhost:1099</code> -
+                            although the port 1099 may be different for your system (depending on your configuration).
+                        </para></listitem>
+                        
+                    </itemizedlist>
+
+                    
+                </para>
+                <caution><para>
+                    The <emphasis>RMI registry</emphasis> needs to be started separately, <emphasis>before</emphasis> you launch your service. Otherwise, startup will fail.
+                    To start it, just type <code>rmiregistry</code> in a command shell.
+                </para></caution>
+
+            </section>
+        
+            <section>
+                <title>RMI-IIOP Configuration</title>
+                <para>
+                If you plan to use <emphasis>RMI-IIOP</emphasis> as the protocol for calling your services, then you should set the following parameters.
+                    <itemizedlist>
+                        <listitem><para>
+                            <code>com.atomikos.icatch.rmi_export_class</code>: set this to value <code>PortableRemoteObject</code>.
+                        </para></listitem>
+                        
+                        <listitem><para>
+                            <code>java.naming.factory.initial</code>: set this to the JNDI initial context factory of your <emphasis>JNDI</emphasis> service. 
+                            <productname>ExtremeTransactions</productname> needs a <emphasis>JNDI</emphasis> registry to store references to remote transaction
+                            objects it creates and exposes during its operation. For <emphasis>IIOP</emphasis>, the recommended value is <code>com.sun.jndi.cosnaming.CNCtxFactory</code> 
+                            (the CORBA <emphasis>JNDI</emphasis> included in the Java installation).
+                        </para></listitem>
+                        
+                        <listitem><para>
+                            <code>java.naming.provider.url</code>: set this to the corresponding <emphasis>JNDI</emphasis> provider address.
+                            If you set the recommended factory for <emphasis>IIOP</emphasis> above, then the URL will most likely be <code>iiop://localhost:1050</code> -
+                            although the port 1050 may be different for your system (depending on your configuration).
+                        </para></listitem>
+                    </itemizedlist>
+                    
+                </para>
+                
+                 <caution><para>
+                    The <emphasis>CORBA naming service</emphasis> (used as <emphasis>JNDI</emphasis> registry in this case) 
+                     needs to be started separately, <emphasis>before</emphasis> you launch your service. Otherwise, startup will fail.
+                     To start it, just type <code>tnameserv -ORBInitialPort 1050</code> in a command shell.
+                 </para></caution>
+                
+            </section>
+        
+            <section>
+                <title>Disabling RMI</title>
+                <para>
+                    If you don't need <emphasis>RMI</emphasis> services (because, for instance, you want to use <emphasis>SOAP</emphasis>) then you can avoid the overhead
+                    of having to start the registries by setting <code>com.atomikos.icatch.rmi_export_class</code> to <code>none</code>.
+                </para>
+            </section>
+        
+            <section>
+                <title>Setting Client Trust Preferences</title>
+                <para>
+                    If you trust client services to control the administrative aspect of your transactions then set 
+                    <code>com.atomikos.icatch.trust_client_tm</code> to <code>true</code>. This will simplify
+                    administration of problematic in-flight transactions at the expense of giving up some control to 
+                    the client (transaction) service.
+                </para>
+                
+                <para>
+                    Another aspect of client trust is whether you want remote (non-service) clients to be able to start and commit transactions.
+                    This can be indicated by setting <code>com.atomikos.icatch.client_demarcation</code> to <code>true</code>.
+                </para>
+            </section>
+        
+        
+            <section>
+                <title>Enabling Web Service Transactions</title>
+                 <para>
+                     Web service transactions can be enabled by doing the following:
+                     <itemizedlist>
+                         <listitem><para>
+                                Set the initialization parameter <code>com.atomikos.icatch.soap_commit_protocols</code> to <code>atomikos</code>.
+                                This will trigger startup and export of the SOAP two-phase commit endpoints in your web service VM.
+                         </para></listitem>
+                         <listitem><para>
+                             Set the initialization paramater <code>com.atomikos.icatch.soap_host_address</code> to the DNS hostname
+                             of the machine where your web service is running. This setting is optional in case the default 
+                             IP address guessed by <productname>ExtremeTransactions</productname> does not work.
+                         </para></listitem>
+                         <listitem><para>
+                             Set the initialization parameter <code>com.atomikos.icatch.soap_port</code> to the port number where you 
+                             want two-phase commit to take place. This is optional and only needed if the default guessed by 
+                             <productname>ExtremeTransactions</productname> does not work.
+                         </para></listitem>
+                         <listitem><para>
+                             On the server (receiving) side: add an instance of 
+                             <code>com.atomikos.icatch.jaxws.atomikos.ImportingTransactionHandler</code>
+                             to the handler chain of the web service. 
+                         </para>                             
+                         </listitem>
+                         <listitem><para>
+                             On the client side, add an instance of 
+                             <code>com.atomikos.icatch.jaxws.atomikos.ExportingTransactionHandler</code>
+                             to the endpoint of the service you are going to call. 
+                         </para></listitem>
+                     </itemizedlist>                  
+                 </para>
+                
+
+                <para>
+                    Web service transactions are supported according to the Atomikos (native) protocol for two-phase commit across web services
+                    (http://www.atomikos.com/schemas/2005/10/transactions/atomikos.wsdl). Transactions can span multiple web service invocations
+                    provided that all nodes are configured as outlined here.
+                </para>
+                
+                <example>
+                    <title>Configuring the ImportingTransactionHandler on the receiving side</title>
+                    <para>
+                     Adding a handler to the server (receiver) side is done like this in <code>JAX-WS</code>:
+                    <programlisting>
+<![CDATA[                      
+package com.atomikos.demo.jaxws.server;
+
+import java.util.List;
+
+import javax.xml.ws.Endpoint;
+import javax.xml.ws.handler.Handler;
+
+import com.atomikos.demo.jaxws.impl.WebShop;
+import com.atomikos.icatch.jta.UserTransactionManager;
+import com.atomikos.icatch.jaxws.atomikos.ImportingTransactionHandler;
+
+public class Server {
+
+	public static void main(String[] args) throws Exception {
+		UserTransactionManager utm = new UserTransactionManager();
+		utm.init();
+
+		Endpoint endpoint = Endpoint.create(new WebShop());
+		List<Handler> chain = endpoint.getBinding().getHandlerChain();
+		
+		//incoming requests are intercepted by an 
+		//Atomikos handler to deal with transaction aspects
+		ImportingTransactionHandler handler = new ImportingTransactionHandler();
+		//depending on the importPreference, 
+		//a new tx may be created for the incoming call
+		//just like in regular JEE
+		handler.setImportPreference("Required");
+		//new transactions time out when? (milliseconds)
+		handler.setNewTransactionTimeout ( 10000 );
+		//should newly created transactions be JTA-like or TCC-like? 
+		handler.setJtaCompatible(true);
+		//when a heuristic timeout happens, commit or rollback?
+		handler.setCommitOnHeuristicTimeout(true);
+		
+		chain.add(handler);
+		
+		endpoint.getBinding().setHandlerChain(chain);
+		endpoint.publish("http://0.0.0.0:8888/shop");
+	    
+		System.out.println("server started");
+		
+		while (true) {
+			Thread.sleep(1000);
+			if (1 == 2)
+				break;
+		}
+		
+		utm.close();
+	}
+
+}
+
+]]>                        
+                    </programlisting>     
+                        
+                    This handler class takes care of extracting any transaction context present in the incoming calls, and registers for the 
+                    final (global) transaction outcome as controlled by the client. For the complete code, please see
+                    the <code>JAX-WS</code> example included in the download.
+                </para>
+                </example>
+                
+                <example>
+                    <title>Configuring the ExportingTransactionHandler on the client side</title>
+                    <para>
+                        Adding a handler to the client (sender) side is done like this in <code>JAX-WS</code>:
+                        <programlisting>
+                            <![CDATA[
+import java.util.List;
+import javax.xml.ws.Binding;
+import javax.xml.ws.BindingProvider;
+import javax.xml.ws.handler.Handler;
+
+import com.atomikos.demo.jaxws.impl.WebShop;
+import com.atomikos.demo.jaxws.impl.WebShopService;
+import com.atomikos.icatch.jaxws.atomikos.ExportingTransactionHandler;
+                            
+
+public class Client {
+
+    public static void main ( String[] args ) throws Exception {
+
+        WebShop shop = new WebShopService().getWebShopPort();       
+        Binding binding = ((BindingProvider)shop).getBinding();
+        List<Handler> handlerList = binding.getHandlerChain();
+        handlerList.add ( new ExportingTransactionHandler() );
+        binding.setHandlerChain ( handlerList );
+            
+        // now, any calls made to the shop will be done in 
+        // the existing transaction context, if any...
+
+    }
+
+}
+              ]]>                   
+                        </programlisting>
+                        For the complete code, please see the <code>JAX-WS</code> example included in the download.
+                    </para>
+                </example>
+                
+                 
+               
+            </section>
+        
+            
+            
+        
+    </chapter>
+    
+    <chapter>
+        <title>Mistaken Alternatives for <productname>ExtremeTransactions</productname>
+        </title>
+        <para> You may wonder if there is really a need for <productname>ExtremeTransactions</productname> in your case.
+            It really depends on what you want, but <emphasis>if you have a service whose effects
+                may time out or need to be canceled on request then you really need this
+            technology</emphasis>. This chapter discusses some perceived alternatives and shows why
+            they are insufficient. </para>
+        <section>
+            <title>Exposing Cancel Operations as a Business Service</title>
+            <para> A technique that is often suggested is exposing the cancel (or confirm)
+                operations as separate business services, to be invoked by a client who wants to
+                cancel (confirm) a previous service invocation. This technique is inappropriate for
+                the following reasons: <itemizedlist>
+                    <listitem>
+                        <para> It requires the client to explicitly construct the right cancelation
+                            call. This may be simple for trivial cases, but if you have complex
+                            workflows then this quickly becomes error-prone and it doesn't scale.
+                            Our approach allows clients to concentrate on the positive logic; all
+                            the rest is transparently offered by the transaction service. This
+                            reduces client complexity by at least 66 percent, without even counting
+                            all the 'transaction management' code that you don't have to write and
+                            maintain yourself. </para>
+                    </listitem>
+                    <listitem>
+                        <para> It implies that the client must persistently track each service's
+                            state: the client must be able to cancel pending services even after
+                            restarts or crashes. Otherwise, the number of 'pending' services will
+                            soon rise exponentially, and so will all related costs. In our approach,
+                            all of this is handled by the transaction service. </para>
+                    </listitem>
+                    <listitem>
+                        <para> It implies that you trust the client(s) to keep your own business
+                            logic consistent. This is inappropriate in a loosely-coupled and
+                            federated services world. </para>
+                    </listitem>
+                    <listitem>
+                        <para> Time-out is difficult to handle, because you don't have the necessary
+                            context (and even if you do then it is hard to deal with interleaving of
+                            timeout and incoming confirmations, leading to many anomalous
+                            transactions with a high administration cost). </para>
+                    </listitem>
+                    <listitem>
+                        <para> Issueing and receiving cancel notifications at the application-level
+                            may be problematic: for some communication means (such as
+                            <productname>JMS</productname>), the order of messages is not
+                            guaranteed. This means that <emphasis>in the do-it-yourself approach
+                                cancel messages may arrive before the request they are meant to
+                            cancel</emphasis>. This means that cancel events are effectively lost.
+                            <productname>ExtremeTransactions</productname> avoid this problem. </para>
+                    </listitem>
+                </itemizedlist> The only case where this technique really works is when you don't
+                care about time-out and consistency. This applies only to businesses where
+                cancelation is 'just another business transaction' (like buying and later selling
+                stock). For businesses based on the 'reservation' concept, this technique is
+                entirely inadequate. </para>
+        </section>
+        <section>
+            <title>Using Reliable Messaging</title>
+            <para> Reliable messaging by itself is a great technology, but not adequate for
+                reservation-based business models. The notion of cancelation is not really
+                compatible with the usual 'fire-and-forget' mechanism offered by these messaging
+                platforms. Moreover, reliable messaging doesn't solve the problem of timed-out
+                (tentative, unconfirmed) business transactions. We see reliable messaging as complementary to <productname>ExtremeTransactions</productname> technology.</para>
+        </section>
+    </chapter>
+    <appendix>
+        <title>Glossary</title>
+     
+           <itemizedlist>
+               <listitem><para><emphasis>ACID</emphasis>: Atomic, Consistent, Isolated and Durable - the classical properties that are enforced on transactions.</para></listitem>
+               <listitem><para><emphasis>CORBA</emphasis>: Common Object Request Broker Architecture - a standard architecture for building distributed systems. Outdated with the advent of Java, SOA and web services (<emphasis>SOAP</emphasis>).</para></listitem>
+               <listitem><para><emphasis>GRID</emphasis>: an architecture for massive scaling, where multiple equivalent instances of a service or application are deployed on a number of independent hardware servers.</para></listitem>
+               <listitem><para><emphasis>IIOP</emphasis>: Internet Inter-Orb Protocol - the communication protocol for RPC in CORBA. Also used in JEE.</para></listitem>
+               <listitem><para><emphasis>JAX-RPC</emphasis>: an outdated API for developing web services in Java.</para></listitem>
+               <listitem><para><emphasis>JAX-WS</emphasis>: the current API for developing web services in Java.</para></listitem>
+               <listitem><para><emphasis>JDBC</emphasis>: Java Database Connectivity - the standardized API for accessing relational databases from within Java programs.</para></listitem>
+               <listitem><para><emphasis>JDK</emphasis>: Java Development Kit - the set of development tools required to build Java applications.</para></listitem>
+               <listitem><para><emphasis>J(2)EE</emphasis>: Java, Enterprise Edition - the Java libraries and extensions (to the JDK) required to support enterprise applications.</para></listitem>
+               <listitem><para><emphasis>JMS</emphasis>: Java Message Service - the standardized API for accessing messaging back-ends from within Java programs.</para></listitem>
+               <listitem><para><emphasis>JTA</emphasis>: Java Transaction API - the standardized API for demarcating ACID transactions from within Java programs.</para></listitem>
+               <listitem><para><emphasis>JRMP</emphasis>: Java Remote Method Protocol - the original protocol used for RMI in Java (later on, IIOP was added as well).</para></listitem>
+               <listitem><para><emphasis>RMI</emphasis>: Remote Method Invocation - a soft of "RPC for distributed objects", one of the core technologies in J(2)EE.</para></listitem>
+               <listitem><para><emphasis>RPC</emphasis>: Remote Procedure Call - a way of calling other processes transparently (by hiding the network from the caller).</para></listitem>
+               <listitem><para><emphasis>SOA</emphasis>: Service-Oriented Architecture - a way of developing software as a set of reusable services (available on the network).</para></listitem>
+               <listitem><para><emphasis>SOAP</emphasis>: Simple Object Access Protocol - a standardized way of encoding RPC-like calls as XML (used for web services).</para> </listitem>
+               <listitem><para><emphasis>TCC</emphasis>: Try-Cancel/Confirm - a new way of providing transactional services, provided by Atomikos.</para></listitem>
+               <listitem><para><emphasis>VM</emphasis>: Virtual Machine - the runtime environment of a Java application.</para></listitem>
+               <listitem><para><emphasis>web services</emphasis>: services accessible on the network via SOAP.</para></listitem>
+               <listitem><para><emphasis>XA</emphasis>: Extended Architecture - a standardized API for co-ordinating ACID transactions across backend systems.</para></listitem>
+               <listitem><para><emphasis>XTP</emphasis>: Extreme Transaction Processing - an architecture for processing high volumes of mission-critical transactions on commodity infrastructure. As explained by numerous <productname>Gartner</productname> reports, J(2)EE application servers are not suited for this; something new is needed like <productname>ExtremeTransactions</productname>.</para></listitem>
+           </itemizedlist>
+            
+        
+    </appendix>
+    <appendix>
+        <title>More Information</title>
+        <itemizedlist>
+            <listitem>
+                <para>
+                    <emphasis>TCC: Try-Confirm/Cancel Transactions for Web Services</emphasis>
+                </para>
+                <para> Available online at http://www.atomikos.org/forums/viewtopic.php?t=97 </para>
+            </listitem>
+            <listitem>
+                <para>
+                    <emphasis>The WS-Transaction Standardization Committee</emphasis>
+                </para>
+                <para> See http://www.oasis-open.org/committees/tc_home.php?wg_abbrev=ws-tx
+                    (information about WS-Coordination, WS-AtomicTransaction and
+                    WS-BusinessActivity) </para>
+            </listitem>
+            <listitem>
+                <para>
+                    <emphasis>JAX-RPC</emphasis>: http://java.sun.com/webservices/jaxrpc </para>
+            </listitem>
+            <listitem><para><emphasis>JAX-WS</emphasis>: https://jax-ws.dev.java.net</para></listitem>
+            <listitem>
+                <para>
+                    <emphasis>JTA</emphasis>: The Java Transaction API specifies the interfaces
+                    towards a transaction manager from within a Java program. More information on
+                    http://java.sun.com/products/jta </para>
+            </listitem>
+            <listitem>
+                <para>
+                    <emphasis>XA Specification</emphasis>: Published by the Open Group
+                    (http://www.opengroup.org), available online via the website. </para>
+            </listitem>
+        </itemizedlist>
+    </appendix>
+</book>

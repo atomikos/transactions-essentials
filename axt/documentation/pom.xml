@@ -32,7 +32,7 @@
 				</dependencies>
 				<configuration>
 					<highlightSource>1</highlightSource>
-					<includes>manuals/JTA/JtaGuide.xml,manuals/TransactionsAPI/*.xml</includes>
+					<includes>manuals/ExtremeTransactions/ExtremeTransactionsGuide.xml,manuals/JTA/JtaGuide.xml,manuals/TransactionsAPI/*.xml</includes>
 					<foCustomization>${basedir}/resources/atomikos-docbook.xsl</foCustomization>
 				</configuration>
 			</plugin>
