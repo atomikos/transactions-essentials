@@ -4,7 +4,7 @@
     <bookinfo>
         <mediaobject>
             <imageobject>
-                <imagedata fileref="file:../../resources/images/logo.gif"/>
+                <imagedata width="100%" fileref="file:../../resources/images/logo.gif"/>
             </imageobject>
         </mediaobject>
         <title>
@@ -105,7 +105,7 @@
                 below, along with its relationship to
                 <productname>TransactionsEssentials</productname>. <figure>
                     <title>ExtremeTransactions Architecture</title>
-                    <graphic fileref="images/ExtremeTransactionsArchitecture.tiff"/>
+                    <graphic width="100%" fileref="images/ExtremeTransactionsArchitecture.tiff"/>
                 </figure> The main features offered by
                 <productname>ExtremeTransactions</productname> (as shown on the diagram) are the
                 following: <itemizedlist>
@@ -170,7 +170,7 @@
                 processing <emphasis>XTP (extreme transaction processing)</emphasis>. The usual architecture is shown below.
                 <figure>
                     <title>XTP GRID architecture with intra-VM transactions</title>
-                    <graphic fileref="images/XTP-grid.tiff"/>
+                    <graphic width="100%" fileref="images/XTP-grid.tiff"/>
                 </figure>
                 
             </para>
@@ -203,7 +203,7 @@
                 a transaction can extend over the entire workflow. An example of such a workflow is shown below.
                 <figure>
                     <title>Example of a composite application SOA workflow</title>
-                    <graphic fileref="images/happy-path.tiff"/>
+                    <graphic width="100%" fileref="images/happy-path.tiff"/>
                 </figure>
             </para>
             <para>
@@ -217,7 +217,7 @@
                 complexity, decreased testability and worse maintainability. This does not scale. The figure below shows this approach.
                 <figure>
                     <title>Example of a composite application with error logic</title>
-                    <graphic fileref="images/error-path-with-dependencies.tiff" />
+                    <graphic width="100%" fileref="images/error-path-with-dependencies.tiff" />
                 </figure>
             </para>
             </section>
@@ -244,7 +244,7 @@
                     This is shown below...
                     <figure>
                         <title>TCC: focus on the happy path</title>
-                        <graphic fileref="images/happy-path-with-tcc.tiff"/>
+                        <graphic width="100%" fileref="images/happy-path-with-tcc.tiff"/>
                     </figure>
                 </para>
                 <para>
@@ -322,7 +322,7 @@
                 <para>
                     <figure>
                         <title><productname>TCC</productname> example: airline reservation service</title>
-                        <graphic fileref="images/TCC.gif"/>
+                        <graphic width="100%" fileref="images/TCC.gif"/>
                     </figure>
                 </para>
                 <para> As an example, consider an airline reservation web service. This service
@@ -545,7 +545,7 @@ public class PaymentTCCService implements TCCService
                     </para>
                     <figure>
                         <title>TCCService State Diagram</title>
-                        <graphic fileref="images/TCCStates.tiff"/>
+                        <graphic width="100%" fileref="images/TCCStates.tiff"/>
                     </figure>
                     <para> The figure above shows the relevant states for <productname>TCC</productname> instances, and the
                         possible transitions. For clarity, the transitions initiated by the
@@ -673,7 +673,7 @@ public class PaymentTCCService implements TCCService
                         <para>The following illustration shows a sample distributed <productname>TCC</productname> execution
                             between two transactional services. <figure>
                                 <title>Distributed <productname>TCC</productname> execution between two transactional services</title>
-                                <graphic fileref="images/TCCExecution.tiff"/>
+                                <graphic width="100%" fileref="images/TCCExecution.tiff"/>
                             </figure>
                         </para>
                         <para> The following steps are displayed: <orderedlist>
@@ -753,7 +753,7 @@ public class PaymentTCCService implements TCCService
                             scenes. This is a purely technical step without application-level
                             requirements. <figure>
                                 <title>Distributed <productname>TCC</productname> prepare phase</title>
-                                <graphic fileref="images/TCCPrepare.tiff"/>
+                                <graphic width="100%" fileref="images/TCCPrepare.tiff"/>
                             </figure>
                         </para>
                     </example>
@@ -766,7 +766,7 @@ public class PaymentTCCService implements TCCService
                             respective identifier to confirm its changes in the database. This
                             happens in a separate, local database transaction committed immediately. <figure>
                                 <title>Distributed <productname>TCC</productname> confirmation phase</title>
-                                <graphic fileref="images/TCCConfirmation.tiff"/>
+                                <graphic width="100%" fileref="images/TCCConfirmation.tiff"/>
                             </figure>
                         </para>
                         <caution>
@@ -783,7 +783,7 @@ public class PaymentTCCService implements TCCService
                             done everywhere. This is similar to confirmation except that now
                             <code>cancel</code> is called at each participating service. <figure>
                                 <title>Distributed <productname>TCC</productname> cancelation phase</title>
-                                <graphic fileref="images/TCCCancel.tiff"/>
+                                <graphic width="100%" fileref="images/TCCCancel.tiff"/>
                             </figure>
                         </para>
                     </example>
@@ -796,7 +796,7 @@ public class PaymentTCCService implements TCCService
                             that the transaction service forbids confirmation of (the relevant parts
                             of) the work and calls cancel instead. This is shown next. <figure>
                                 <title>Distributed <productname>TCC</productname> failure</title>
-                                <graphic fileref="images/TCCFailure.tiff"/>
+                                <graphic width="100%" fileref="images/TCCFailure.tiff"/>
                             </figure>
                         </para>
                         <para> In this example, service 2 encounters a fatal error and calls
