@@ -30,7 +30,7 @@
 
 	<!-- "modules" must correspond to file system hierarchy -->
 	<modules>
-		<module>ate</module>
+		<module>public</module>
 	</modules>
 
 </project>

@@ -1,4 +1,0 @@
-<!ELEMENT section (#PCDATA | title | para)*>
-<!ELEMENT title (#PCDATA)>
-<!ELEMENT para (#PCDATA)>
-<!ELEMENT chapter (#PCDATA | title | para | section)*>
