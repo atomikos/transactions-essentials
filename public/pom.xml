@@ -39,8 +39,8 @@
     <!-- see http://maven.apache.org/scm/ -->
     <!-- scm tag is VERY useful during the release process  -->
     <scm>
-        <connection>scm:hg:https://atomikos.kilnhg.com/Repo/Repositories/Group/development</connection>
-        <url>scm:hg:https://atomikos.kilnhg.com/Repo/Repositories/Group/development</url>
+        <connection>scm:hg:http://atomikos.repositoryhosting.com/hg/atomikos/development</connection>
+        <url>scm:hg:http://atomikos.repositoryhosting.com/hg/atomikos/development</url>
     </scm>
 
 	<build>
@@ -147,11 +147,6 @@
         <module>transactions-osgi</module>
         <module>transactions-hibernate2</module>
         <module>transactions-hibernate3</module>
-        <!-- 
-        <module>examples-jta</module>
-        <module>examples-jta-spring</module>
-        <module>documentation</module>
-        -->
     </modules>
 
 </project>
