@@ -1,33 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>com.atomikos</groupId>
-    <artifactId>ate</artifactId>
-    <version>3.7.0-SNAPSHOT</version>
-    <packaging>pom</packaging>
-    <name>Atomikos Transactions Essentials</name>
-	<inceptionYear>2000-2010</inceptionYear>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.atomikos</groupId>
+		<artifactId>atomikos-parent</artifactId>
+		<version>3.7.0-SNAPSHOT</version>
+	</parent>
+	<groupId>com.atomikos</groupId>
+	<artifactId>ate</artifactId>
+	<version>3.7.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<name>Atomikos Transactions Essentials</name>
+	
+	
+	<modules>
+		<module>util</module>
+		<module>transactions-api</module>
+		<module>transactions</module>
+		<module>transactions-jta</module>
+		<module>transactions-jdbc</module>
+		<module>transactions-jdbc-deprecated</module>
+		<module>transactions-jms-deprecated</module>
+		<module>transactions-jms</module>
+		<module>transactions-osgi</module>
+		<module>transactions-osgi-tests</module>
+		<module>transactions-hibernate2</module>
+		<module>transactions-hibernate3</module>
+	</modules>
+	
+	<!--<inceptionYear>2000-2010</inceptionYear>
 	<properties>
-		<!-- we don't want to depend on platform's default encoding -->
+		 we don't want to depend on platform's default encoding 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
-  <distributionManagement>
-    <repository>
-      <id>internal.release.repo</id>
-      <name>Atomikos Internal Release Repository</name>
-      <url>http://192.168.1.2:8081/nexus/content/repositories/releases</url>
-    </repository>
-    <snapshotRepository>
-      <id>internal.snapshot.repo</id>
-      <name>Atomikos Internal Snapshot Repository</name>
-      <url>http://192.168.1.2:8081/nexus/content/repositories/snapshots</url>
-    </snapshotRepository>
-  </distributionManagement>
+	<distributionManagement>
+		<repository>
+			<id>internal.release.repo</id>
+			<name>Atomikos Internal Release Repository</name>
+			<url>http://192.168.1.2:8081/nexus/content/repositories/releases</url>
+		</repository>
+		<snapshotRepository>
+			<id>internal.snapshot.repo</id>
+			<name>Atomikos Internal Snapshot Repository</name>
+			<url>http://192.168.1.2:8081/nexus/content/repositories/snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>-->
 
 
-	<dependencies>
+	<!--<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -35,80 +57,86 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-jta_1.0.1B_spec</artifactId>
-            <version>1.0</version>
-            <scope>provided</scope>
-        </dependency>
-	</dependencies>
+			<groupId>org.apache.geronimo.specs</groupId>
+			<artifactId>geronimo-jta_1.0.1B_spec</artifactId>
+			<version>1.0</version>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>-->
 
-    <!-- see http://maven.apache.org/scm/ -->
-    <!-- scm tag is VERY useful during the release process  -->
-    <scm>
-        <connection>scm:hg:http://atomikos.repositoryhosting.com/hg/atomikos/development</connection>
-        <url>scm:hg:http://atomikos.repositoryhosting.com/hg/atomikos/development</url>
-    </scm>
+	<!-- see http://maven.apache.org/scm/ -->
+	<!-- scm tag is VERY useful during the release process  -->
+	<!--<scm>
+		<connection>scm:hg:http://atomikos.repositoryhosting.com/hg/atomikos/development</connection>
+		<url>scm:hg:http://atomikos.repositoryhosting.com/hg/atomikos/development</url>
+	</scm>-->
 
 	<build>
 		<plugins>
-		    <plugin>
-		        <inherited>false</inherited>
-                <groupId>com.mycila.maven-license-plugin</groupId>
-                <artifactId>maven-license-plugin</artifactId>
-                <configuration>
-                    <!--<basedir>${basedir}</basedir>-->
-                    <header>header.txt</header>
-                    <quiet>false</quiet>
-                    <failIfMissing>true</failIfMissing>
-                    <aggregate>false</aggregate>
-                    <includes>
-                        <include>src/**</include>
-                    </includes>
-                    <excludes>
-                        <exclude>src/test/**</exclude>
-                        <exclude>target/**</exclude>
-                        <exclude>.clover/**</exclude>
-                        <exclude>private/**</exclude>
-                        <exclude>axt/**</exclude>
-                    </excludes>
-                    <useDefaultExcludes>true</useDefaultExcludes>
-                    <!--<mapping>
-						<jwc>XML_STYLE</jwc>
-						<application>XML_STYLE</application>
-						<myFileExtension>JAVADOC_STYLE</myFileExtension>
-					</mapping>-->
-                    <useDefaultMapping>true</useDefaultMapping>
-                    <properties>
-                        <year>${project.inceptionYear}</year>
-                        <company>Atomikos</company>
-                        <email>info@atomikos.com</email>
-                    </properties>
-                    <encoding>UTF-8</encoding>
-                    <!--<headerDefinitions>
-						<headerDefinition>def1.xml</headerDefinition>
-						<headerDefinition>def2.xml</headerDefinition>
-					</headerDefinitions>-->
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
 			<plugin>
+				<inherited>false</inherited>
+				<groupId>com.mycila.maven-license-plugin</groupId>
+				<artifactId>maven-license-plugin</artifactId>
+				<configuration>
+					<!--<basedir>${basedir}</basedir>-->
+					<header>header.txt</header>
+					<quiet>false</quiet>
+					<failIfMissing>true</failIfMissing>
+					<aggregate>false</aggregate>
+					<includes>
+						<include>src/**</include>
+					</includes>
+					<excludes>
+						<exclude>src/test/**</exclude>
+						<exclude>target/**</exclude>
+						<exclude>.clover/**</exclude>
+						<exclude>private/**</exclude>
+						<exclude>axt/**</exclude>
+					</excludes>
+					<useDefaultExcludes>true</useDefaultExcludes>
+					<!--
+						<mapping> <jwc>XML_STYLE</jwc>
+						<application>XML_STYLE</application>
+						<myFileExtension>JAVADOC_STYLE</myFileExtension> </mapping>
+					-->
+					<useDefaultMapping>true</useDefaultMapping>
+					<properties>
+						<year>${project.inceptionYear}</year>
+						<company>Atomikos</company>
+						<email>info@atomikos.com</email>
+					</properties>
+					<encoding>UTF-8</encoding>
+					<!--
+						<headerDefinitions> <headerDefinition>def1.xml</headerDefinition>
+						<headerDefinition>def2.xml</headerDefinition> </headerDefinitions>
+					-->
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<!--<plugin>
 				<groupId>com.atlassian.maven.plugins</groupId>
 				<artifactId>maven-clover2-plugin</artifactId>
 				<version>3.0.1</version>
-				<!-- <configuration> <licenseLocation>/Users/guy/Downloads/clover.license.txt</licenseLocation>
-					</configuration> -->
+				
+					<configuration>
+					<licenseLocation>/Users/guy/Downloads/clover.license.txt</licenseLocation>
+					</configuration>
+				
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<!-- same as "-source 1.5 -target 1.5" for compilation -->
-				<!-- see http://maven.apache.org/plugins/maven-compiler-plugin/compile-mojo.html -->
+				 same as "-source 1.5 -target 1.5" for compilation 
+				
+					see
+					http://maven.apache.org/plugins/maven-compiler-plugin/compile-mojo.html
+				
 				<configuration>
 					<source>1.5</source>
 					<target>1.5</target>
@@ -124,8 +152,10 @@
 					<includes>
 						<include>**/*TestJUnit.java</include>
 					</includes>
-					<!-- this conf is made to ensure that no file wil be created outside
-						the "target" subfolder of the modules -->
+					
+						this conf is made to ensure that no file wil be created outside
+						the "target" subfolder of the modules
+					
 					<workingDirectory>${project.build.testOutputDirectory}</workingDirectory>
 				</configuration>
 			</plugin>
@@ -136,24 +166,9 @@
 				<configuration>
 					<aggregate>true</aggregate>
 				</configuration>
-			</plugin>
+			</plugin>-->
 		</plugins>
 	</build>
 
-
-    <modules>
-        <module>util</module>
-        <module>transactions-api</module>
-        <module>transactions</module>
-        <module>transactions-jta</module>
-        <module>transactions-jdbc</module>
-        <module>transactions-jdbc-deprecated</module>
-        <module>transactions-jms-deprecated</module>
-        <module>transactions-jms</module>
-        <module>transactions-osgi</module>
-        <module>transactions-osgi-tests</module>
-        <module>transactions-hibernate2</module>
-        <module>transactions-hibernate3</module>
-    </modules>
 
 </project>
