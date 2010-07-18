@@ -36,7 +36,8 @@ import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * @author Pascal Leclercq
- * 
+ * @see http://wiki.ops4j.org/display/paxexam/Pax+Exam for information
+ * on the pax exam test utilities for OSGi. 
  */
 @RunWith(JUnit4TestRunner.class)
 public class ServiceRegistryTestJUnit {
