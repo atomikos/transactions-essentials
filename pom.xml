@@ -13,7 +13,12 @@
 		<!-- we don't want to depend on platform's default encoding -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
-
+		<!-- see http://maven.apache.org/scm/ -->
+	<!-- scm tag is VERY useful during the release process -->
+	<scm>
+		<connection>scm:hg:http://atomikos.repositoryhosting.com/hg/atomikos/development</connection>
+		<url>scm:hg:http://atomikos.repositoryhosting.com/hg/atomikos/development</url>
+	</scm>
 	<distributionManagement>
 		<repository>
 			<id>internal.release.repo</id>
@@ -36,6 +41,40 @@
 				</plugin>
 			</plugins>
 		</pluginManagement>
+		<plugins>
+		<plugin>
+				<groupId>com.atlassian.maven.plugins</groupId>
+				<artifactId>maven-clover2-plugin</artifactId>
+				<version>3.0.1</version>
+				<!-- <configuration> <licenseLocation>/Users/guy/Downloads/clover.license.txt</licenseLocation>
+					</configuration> -->
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<!-- same as "-source 1.5 -target 1.5" for compilation -->
+				<!-- see http://maven.apache.org/plugins/maven-compiler-plugin/compile-mojo.html -->
+				<configuration>
+					<source>1.5</source>
+					<target>1.5</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<redirectTestOutputToFile>true</redirectTestOutputToFile>
+					<argLine>-Xmx512m</argLine>
+					<forkMode>always</forkMode>
+					<includes>
+						<include>**/*TestJUnit.java</include>
+					</includes>
+					<!-- this conf is made to ensure that no file wil be created outside
+						the "target" subfolder of the modules -->
+					<workingDirectory>${project.build.testOutputDirectory}</workingDirectory>
+				</configuration>
+			</plugin>
+		</plugins>
 	</build>
 
 	<!-- "modules" must correspond to file system hierarchy -->
@@ -43,5 +82,19 @@
 		<module>public</module>
 		<module>private</module>
 	</modules>
-
+	
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.2</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-jta_1.0.1B_spec</artifactId>
+            <version>1.0</version>
+            <scope>provided</scope>
+        </dependency>
+	</dependencies>
 </project>
