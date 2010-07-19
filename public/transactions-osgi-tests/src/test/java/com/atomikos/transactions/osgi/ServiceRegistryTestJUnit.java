@@ -42,8 +42,7 @@ public class ServiceRegistryTestJUnit {
 				// mavenBundle().groupId( "org.apache.geronimo.specs"
 				// ).artifactId( "geronimo-jta_1.0.1B_spec" ).version( "1.0" )
 				// ),
-				mavenBundle().groupId("com.atomikos").artifactId(
-						"transactions-osgi").version("3.7.0-SNAPSHOT")
+				mavenBundle().groupId("com.atomikos").artifactId("transactions-osgi").version("3.7.0-SNAPSHOT")
 
 		);
 	}

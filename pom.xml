@@ -43,8 +43,7 @@
                 <groupId>com.atlassian.maven.plugins</groupId>
                 <artifactId>maven-clover2-plugin</artifactId>
                 <version>3.0.1</version>
-                <!-- <configuration> <licenseLocation>/Users/guy/Downloads/clover.license.txt</licenseLocation>
-					</configuration> -->
+                <!-- <configuration> <licenseLocation>/Users/guy/Downloads/clover.license.txt</licenseLocation>-->
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -66,26 +65,30 @@
                     <includes>
                         <include>**/*TestJUnit.java</include>
                     </includes>
-                    <!-- this conf is made to ensure that no file wil be created outside
-						the "target" subfolder of the modules -->
+                    <!-- this conf is made to ensure that no file wil be created outside-->
                     <workingDirectory>${project.build.testOutputDirectory}</workingDirectory>
                 </configuration>
             </plugin>
         </plugins>
     </build>
-    <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>3.8.2</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
+	
+	<dependencies>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.2</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+
+
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-jta_1.0.1B_spec</artifactId>
             <version>1.0</version>
             <scope>provided</scope>
         </dependency>
+
     </dependencies>
     <!-- "modules" must correspond to file system hierarchy -->
     <modules>
