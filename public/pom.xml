@@ -13,7 +13,6 @@
 	<packaging>pom</packaging>
 	<name>Atomikos Transactions Essentials</name>
 	
-	
 	<modules>
 		<module>util</module>
 		<module>transactions-api</module>
@@ -28,21 +27,12 @@
 		<module>transactions-hibernate2</module>
 		<module>transactions-hibernate3</module>
 	</modules>
-	
-  <distributionManagement>
-    <repository>
-      <id>internal.release.repo</id>
-      <name>Atomikos Internal Release Repository</name>
-      <url>http://192.168.1.2:8081/nexus/content/repositories/releases</url>
-    </repository>
-    <snapshotRepository>
-      <id>internal.snapshot.repo</id>
-      <name>Atomikos Internal Snapshot Repository</name>
-      <url>http://192.168.1.2:8081/nexus/content/repositories/snapshots</url>
-    </snapshotRepository>
-  </distributionManagement>
 
-
+	<!--<inceptionYear>2000-2010</inceptionYear>
+	<properties>
+		 we don't want to depend on platform's default encoding 
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
 
 
 	<build>
@@ -95,10 +85,6 @@
 					</execution>
 				</executions>
 			</plugin>
-			
 		</plugins>
 	</build>
-
-
- 
 </project>
