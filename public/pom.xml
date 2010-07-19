@@ -34,6 +34,23 @@
 		 we don't want to depend on platform's default encoding 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
+<<<<<<< local
+=======
+
+  <distributionManagement>
+    <repository>
+      <id>internal.release.repo</id>
+      <name>Atomikos Internal Release Repository</name>
+      <url>http://192.168.1.2:8081/nexus/content/repositories/releases</url>
+    </repository>
+    <snapshotRepository>
+      <id>internal.snapshot.repo</id>
+      <name>Atomikos Internal Snapshot Repository</name>
+      <url>http://192.168.1.2:8081/nexus/content/repositories/snapshots</url>
+    </snapshotRepository>
+  </distributionManagement>
+
+>>>>>>> other
 
 	<distributionManagement>
 		<repository>
@@ -56,6 +73,7 @@
 			<version>3.8.2</version>
 			<scope>test</scope>
 		</dependency>
+<<<<<<< local
 		<dependency>
 			<groupId>org.apache.geronimo.specs</groupId>
 			<artifactId>geronimo-jta_1.0.1B_spec</artifactId>
@@ -63,15 +81,29 @@
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>-->
+=======
+	</dependencies>
+>>>>>>> other
 
+<<<<<<< local
 	<!-- see http://maven.apache.org/scm/ -->
 	<!-- scm tag is VERY useful during the release process  -->
 	<!--<scm>
 		<connection>scm:hg:http://atomikos.repositoryhosting.com/hg/atomikos/development</connection>
 		<url>scm:hg:http://atomikos.repositoryhosting.com/hg/atomikos/development</url>
 	</scm>-->
+=======
+    <!-- see http://maven.apache.org/scm/ -->
+    <!-- scm tag is VERY useful during the release process  -->
+    <scm>
+        <connection>scm:hg:https://atomikos.kilnhg.com/Repo/Repositories/Group/development</connection>
+        <url>scm:hg:https://atomikos.kilnhg.com/Repo/Repositories/Group/development</url>
+    </scm>
+>>>>>>> other
 
 	<build>
+
+
 		<plugins>
 			<plugin>
 				<inherited>false</inherited>
@@ -123,11 +155,16 @@
 				<groupId>com.atlassian.maven.plugins</groupId>
 				<artifactId>maven-clover2-plugin</artifactId>
 				<version>3.0.1</version>
+<<<<<<< local
 				
 					<configuration>
 					<licenseLocation>/Users/guy/Downloads/clover.license.txt</licenseLocation>
 					</configuration>
 				
+=======
+				<!-- <configuration> <licenseLocation>/Users/guy/Downloads/clover.license.txt</licenseLocation>
+					</configuration> -->
+>>>>>>> other
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -152,10 +189,15 @@
 					<includes>
 						<include>**/*TestJUnit.java</include>
 					</includes>
+<<<<<<< local
 					
 						this conf is made to ensure that no file wil be created outside
 						the "target" subfolder of the modules
 					
+=======
+					<!-- this conf is made to ensure that no file wil be created outside
+						the "target" subfolder of the modules -->
+>>>>>>> other
 					<workingDirectory>${project.build.testOutputDirectory}</workingDirectory>
 				</configuration>
 			</plugin>
@@ -170,5 +212,27 @@
 		</plugins>
 	</build>
 
+<<<<<<< local
+=======
+
+    <modules>
+        <module>util</module>
+        <module>transactions-api</module>
+        <module>transactions</module>
+        <module>transactions-jta</module>
+        <module>transactions-jdbc</module>
+        <module>transactions-jdbc-deprecated</module>
+        <module>transactions-jms-deprecated</module>
+        <module>transactions-jms</module>
+        <module>transactions-osgi</module>
+        <module>transactions-hibernate2</module>
+        <module>transactions-hibernate3</module>
+        <!--
+        <module>examples-jta</module>
+        <module>examples-jta-spring</module>
+        <module>documentation</module>
+        -->
+    </modules>
+>>>>>>> other
 
 </project>
