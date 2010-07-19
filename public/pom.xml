@@ -28,11 +28,8 @@
 		<module>transactions-hibernate3</module>
 	</modules>
 
-	<!--<inceptionYear>2000-2010</inceptionYear>
-	<properties>
-		 we don't want to depend on platform's default encoding 
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
+	<inceptionYear>2000-2010</inceptionYear>
+	
 
 
 	<build>
