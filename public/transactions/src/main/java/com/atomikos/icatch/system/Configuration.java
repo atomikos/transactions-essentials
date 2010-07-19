@@ -26,11 +26,15 @@
 
 package com.atomikos.icatch.system;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 import java.util.Vector;
 
 import com.atomikos.datasource.RecoverableResource;
@@ -44,6 +48,7 @@ import com.atomikos.icatch.TSListener;
 import com.atomikos.icatch.TransactionService;
 import com.atomikos.icatch.admin.LogAdministrator;
 import com.atomikos.icatch.admin.LogControl;
+import com.atomikos.util.ClassLoadingHelper;
 import com.atomikos.util.ExceptionHelper;
 
 /**
@@ -57,12 +62,6 @@ import com.atomikos.util.ExceptionHelper;
 public final class Configuration
 {
 
-    /**
-     * The version number of this release. The same version number is used for
-     * all products derived from the same icatch core.
-     */
-
-    public static final String VERSION = "SNAPSHOT";
 
     private static CompositeTransactionManager ctxmgr_ = null;
     // the tm for the virtual machine instance
@@ -97,7 +96,26 @@ public final class Configuration
 
     private static List shutdownHooks_ = new ArrayList();
     
-    private static void purgeResources ()
+    public static String getVersion() {
+    	String ret = "UNKNOWN";
+    	Properties props = new Properties();
+    	URL propertyFileUrl = ClassLoadingHelper.loadResourceFromClasspath ( Configuration.class , "module.properties" );
+    	if ( propertyFileUrl != null ) {
+    		InputStream in;
+			try {
+				in = propertyFileUrl.openStream();
+				props.load ( in );
+	    		in.close();
+			} catch (IOException e) {
+				logWarning ( "Could not determine runtime version" , e );
+			}
+    		String version = props.getProperty ( "product.version" );
+    		if ( version != null ) ret = version;
+    	}
+    	return ret;
+	}
+
+	private static void purgeResources ()
     {
         Enumeration enumm = getResources ();
         while ( enumm.hasMoreElements () ) {

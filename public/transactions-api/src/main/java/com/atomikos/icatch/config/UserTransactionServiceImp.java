@@ -189,11 +189,8 @@ public class UserTransactionServiceImp
     {
     		URL ret = null;
     		
-    		//FIRST: look in application classpath (cf ISSUE 10091)
-    		//note: prefix name with slash to avoid package-scoped lookup
-    		String prefix = "/";
-    		if ( fileName.startsWith ( "/" ) ) prefix = "";
-    		ret = getClass().getResource ( prefix + fileName );  
+    		// FIRST: look in application classpath (cf ISSUE 10091)
+    		ret = ClassLoadingHelper.loadResourceFromClasspath( getClass() , fileName );
     		
     		if ( ret == null ) {
     			//if not found in app classpath: try what we always did:

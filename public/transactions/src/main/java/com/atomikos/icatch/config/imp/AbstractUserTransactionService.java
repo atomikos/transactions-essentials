@@ -60,7 +60,7 @@ public abstract class AbstractUserTransactionService implements
 	 
 	private static void echoProperties ( Properties properties )
     {
-		Configuration.logInfo ( "USING core version: " + Configuration.VERSION );
+		Configuration.logInfo ( "USING core version: " + Configuration.getVersion() );
         if ( properties != null ) {
             Enumeration names = properties.propertyNames ();
             while ( names.hasMoreElements () ) {

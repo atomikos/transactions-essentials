@@ -79,7 +79,7 @@ class UserTransactionServiceImp extends AbstractJtaUserTransactionService
     // the product name as it should be in the license.
 
 
-    private static final String VERSION = Configuration.VERSION;
+    private static final String VERSION = Configuration.getVersion();
     // the current release number to be checked in license
 
     // private StandAloneTransactionManager tm_ = null;

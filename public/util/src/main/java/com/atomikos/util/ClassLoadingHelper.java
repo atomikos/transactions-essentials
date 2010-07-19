@@ -154,4 +154,23 @@ public class ClassLoadingHelper
 		}
 		return clazz;
 	}
+	
+	/**
+	 * Attempts to load a given resource from the classpath.
+	 * 
+	 * @param clazz The class to use as reference re classpath.
+	 * @param resourceName The name of the resource
+	 * @return The URL to the resource, or null if not found.
+	 */
+	public static URL loadResourceFromClasspath ( Class clazz , String resourceName ) 
+	{
+		URL ret = null;
+		// first try from package scope
+		ret = clazz.getResource ( resourceName );  
+		if ( ret == null ) {
+			// not found in package -> try from absolute path
+			ret = clazz.getResource ( "/" + resourceName );
+		}
+		return ret;
+	}
 }
