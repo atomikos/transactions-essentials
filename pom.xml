@@ -66,7 +66,6 @@
                         <include>**/*TestJUnit.java</include>
                     </includes>
                     <!-- this conf is made to ensure that no file wil be created outside-->
-
                     <workingDirectory>${project.build.testOutputDirectory}</workingDirectory>
                 </configuration>
             </plugin>
@@ -74,6 +73,7 @@
     </build>
 	
 	<dependencies>
+
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -81,6 +81,7 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+
 
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-jta_1.0.1B_spec</artifactId>
