@@ -37,15 +37,9 @@ public class AtomikosActivator implements BundleActivator {
 	private ServiceRegistration userTransactionRegistration;
 	private com.atomikos.icatch.jta.UserTransactionImp userTransaction= new com.atomikos.icatch.jta.UserTransactionImp();
 	public void start(BundleContext context) throws Exception {
-		
 		utm.init();
-		utm.setForceShutdown(false);
-		userTransaction.setTransactionTimeout(3000);
 		utmRegistration=	context.registerService(javax.transaction.TransactionManager.class.getName(), utm, null);
 		userTransactionRegistration=	context.registerService(javax.transaction.UserTransaction.class.getName(), userTransaction, null);
-		
-		
-		
 	}
 
 	public void stop(BundleContext context) throws Exception {
