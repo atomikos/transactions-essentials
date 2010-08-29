@@ -9,8 +9,13 @@
 	<groupId>com.atomikos</groupId>
 	<artifactId>transactions-osgi-tests</artifactId>
 	<version>3.7.0-SNAPSHOT</version>
- 	<name>Transactions OSGi Tests</name>
+	<name>Transactions OSGi Tests</name>
 	<dependencies>
+		<dependency>
+			<groupId>com.atomikos</groupId>
+			<artifactId>transactions-osgi</artifactId>
+			<version>3.7.0-SNAPSHOT</version>
+		</dependency>
 		<dependency>
 			<groupId>org.ops4j.pax.exam</groupId>
 			<artifactId>pax-exam</artifactId>
@@ -57,12 +62,10 @@
 		<plugins>
 			<!-- use pax exam maven plugin -->
 
-			<!--
-				Note: settings and dependencies for the final osgi runtime (TESTS)
-				are just used in TestCases that annotated with this: @RunWith(
-				MavenConfiguredJUnit4TestRunner.class ) All other testcases will use
-				their own settings/provisioning inside @Configure Methods.
-			-->
+			<!-- Note: settings and dependencies for the final osgi runtime (TESTS) 
+				are just used in TestCases that annotated with this: @RunWith( MavenConfiguredJUnit4TestRunner.class 
+				) All other testcases will use their own settings/provisioning inside @Configure 
+				Methods. -->
 			<plugin>
 				<groupId>org.ops4j.pax.exam</groupId>
 				<artifactId>maven-paxexam-plugin</artifactId>
@@ -70,8 +73,8 @@
 					<execution>
 						<id>generate-config</id>
 						<goals>
-							<goal>generate-config</goal>
-						</goals>
+              <goal>generate-depends-file</goal>
+            </goals>
 					</execution>
 				</executions>
 				<configuration>
@@ -86,12 +89,8 @@
 
 
 		</plugins>
-		<!--<extensions>
-			<extension>
-				<groupId>org.apache.maven.wagon</groupId>
-				<artifactId>wagon-ssh-external</artifactId>
-				<version>1.0-alpha-6</version>
-			</extension>
-		</extensions>-->
+		<!--<extensions> <extension> <groupId>org.apache.maven.wagon</groupId> 
+			<artifactId>wagon-ssh-external</artifactId> <version>1.0-alpha-6</version> 
+			</extension> </extensions> -->
 	</build>
 </project>
