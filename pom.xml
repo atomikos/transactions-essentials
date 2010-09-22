@@ -25,7 +25,7 @@
 		<snapshotRepository>
 			<id>internal.snapshot.repo</id>
 			<name>Atomikos Internal Snapshot Repository</name>
-			<url>http://atomikos.dyndns.org:8088/nexus/content/repositories/snapshots</url>
+			<url>http://atomikos.dyndns.org:8088/nexus/content/repositories/snapshots/</url>
 		</snapshotRepository>
 	</distributionManagement>
 	<build>
