@@ -1,0 +1,20 @@
+LICENSE CONDITIONS
+
+This source code is licensed under the 
+"Atomikos Source Code Access Agreement" ('the license'),
+available via info@atomikos.com upon request.
+
+By accessing this source code, you confirm that you have read and
+agree to the terms of the license. If you do not agree or have 
+not read the terms of the license then you must delete your copies
+of this source code immediately.
+
+Any commits to the repository are subject to the 
+"Atomikos Contributor Agreement" ('ACA'), also available
+via info@atomikos.com upon request.
+
+By committing to the repository, you confirm that you have read and
+agree to the terms of the ACA. If you do not agree or have not read
+the terms of the ACA then you must not commit. Therefore, the mere
+act of committing to the repository will implicitly reflect your
+acceptance of the ACA. 
