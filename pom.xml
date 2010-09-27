@@ -20,12 +20,12 @@
 		<repository>
 			<id>internal.release.repo</id>
 			<name>Atomikos Internal Release Repository</name>
-			<url>http://192.168.1.2:8081/nexus/content/repositories/releases</url>
+			<url>http://atomikos.dyndns.org:8088/nexus/content/repositories/releases</url>
 		</repository>
 		<snapshotRepository>
 			<id>internal.snapshot.repo</id>
 			<name>Atomikos Internal Snapshot Repository</name>
-			<url>http://192.168.1.2:8081/nexus/content/repositories/snapshots</url>
+			<url>http://atomikos.dyndns.org:8088/nexus/content/repositories/snapshots</url>
 		</snapshotRepository>
 	</distributionManagement>
 	<build>
@@ -111,7 +111,7 @@
 
 				<executions>
 					<execution>
-						<phase>compile</phase>
+						<phase>validate</phase>
 						<goals>
 							<goal>execute</goal>
 						</goals>
