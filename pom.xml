@@ -16,7 +16,7 @@
 		<connection>scm:hg:http://atomikos.repositoryhosting.com/hg/atomikos/development</connection>
 		<url>scm:hg:http://atomikos.repositoryhosting.com/hg/atomikos/development</url>
 	</scm>
-	<!-- test for cloudbees
+	
 	<distributionManagement>
 		<repository>
 			<id>internal.release.repo</id>
@@ -28,7 +28,7 @@
 			<name>Atomikos Internal Snapshot Repository</name>
 			<url>http://atomikos.dyndns.org:8088/nexus/content/repositories/snapshots</url>
 		</snapshotRepository>
-	</distributionManagement>-->
+	</distributionManagement>
 	<build>
 		<pluginManagement>
 			<plugins>
