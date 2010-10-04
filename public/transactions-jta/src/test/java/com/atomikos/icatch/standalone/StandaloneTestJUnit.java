@@ -52,7 +52,9 @@ com.atomikos.icatch.imp.AbstractJUnitReleaseTest
 		  properties.setProperty ( AbstractUserTransactionServiceFactory.OUTPUT_DIR_PROPERTY_NAME , getTemporaryOutputDirAsAbsolutePath() );
 		  properties.setProperty ( AbstractUserTransactionServiceFactory.LOG_BASE_DIR_PROPERTY_NAME , getTemporaryOutputDirAsAbsolutePath() );
 		  properties.setProperty ( AbstractUserTransactionServiceFactory.MAX_ACTIVES_PROPERTY_NAME , "25000" );
-       
+		  // workaround for linux issues (mainly on CloadBees)
+		  properties.setProperty ( AbstractUserTransactionServiceFactory.ENABLE_LOGGING_PROPERTY_NAME , "false" );
+	     //  properties.setProperty(AbstractUserTransactionServiceFactory.CONSOLE_FILE_LIMIT_PROPERTY_NAME, "100");
 		  
 		 info.setProperties ( properties );
         uts.init ( info );
