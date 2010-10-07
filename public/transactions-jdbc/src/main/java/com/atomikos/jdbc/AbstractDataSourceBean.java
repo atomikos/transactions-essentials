@@ -217,9 +217,10 @@ implements HeuristicDataSource, ConnectionPoolProperties, Referenceable, Seriali
 	}
 
 	/**
-	 * Sets the SQL query used to test a connection before returning it. Optional. 
+	 * Sets the SQL query or statement used to validate a connection before returning it. Optional. 
 	 * 
-	 * @param testQuery
+	 * @param testQuery - The SQL query or statement to validate the connection with. Note that 
+	 * although you can specify updates here, these will NOT be part of any JTA transaction!
 	 */
 	public void setTestQuery(String testQuery) {
 		this.testQuery = testQuery;

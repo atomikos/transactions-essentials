@@ -121,8 +121,8 @@ class AtomikosNonXAPooledConnection extends AbstractXPooledConnection
 			Statement stmt = null;
 			try {
 				stmt = connection.createStatement();
-				ResultSet rs = stmt.executeQuery(testQuery);
-				rs.close();
+				//use execute instead of executeQuery - cf case 58830
+				stmt.execute(testQuery);
 				stmt.close();
 			} catch ( SQLException e) {
 				throw new CreateConnectionException ( "Error executing testQuery" ,  e );
