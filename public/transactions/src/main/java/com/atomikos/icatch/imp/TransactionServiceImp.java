@@ -50,6 +50,7 @@ import com.atomikos.icatch.TxState;
 import com.atomikos.icatch.admin.LogControl;
 import com.atomikos.icatch.config.TSInitInfo;
 import com.atomikos.icatch.config.imp.AbstractUserTransactionServiceFactory;
+import com.atomikos.icatch.imp.thread.InterruptedExceptionHelper;
 import com.atomikos.icatch.system.Configuration;
 import com.atomikos.persistence.LogException;
 import com.atomikos.persistence.StateRecoveryManager;
@@ -978,7 +979,7 @@ public class TransactionServiceImp implements TransactionService,
                     
                 } catch ( InterruptedException inter ) {
                 	// cf bug 67457
-        			InterruptedExceptionHelper.handleInterruptedException ( err );
+        			InterruptedExceptionHelper.handleInterruptedException ( inter );
                     errors.push ( inter );
                     throw new SysException ( "Error in shutdown: "
                             + inter.getMessage (), errors );

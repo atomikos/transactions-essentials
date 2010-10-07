@@ -39,6 +39,7 @@ import com.atomikos.icatch.Participant;
 import com.atomikos.icatch.RollbackException;
 import com.atomikos.icatch.SysException;
 import com.atomikos.icatch.TxState;
+import com.atomikos.icatch.imp.thread.InterruptedExceptionHelper;
 
 /**
  * 
@@ -148,7 +149,7 @@ class HeurHazardStateHandler extends CoordinatorStateHandler
 
             } catch ( InterruptedException inter ) {
             	// cf bug 67457
-    			InterruptedExceptionHelper.handleInterruptedException ( err );
+    			InterruptedExceptionHelper.handleInterruptedException ( inter );
                 // return silently;
                 // worst case is some remaining indoubt participants
             }

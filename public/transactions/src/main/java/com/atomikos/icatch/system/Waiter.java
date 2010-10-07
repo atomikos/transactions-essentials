@@ -25,6 +25,8 @@
 
 package com.atomikos.icatch.system;
 
+import com.atomikos.icatch.imp.thread.InterruptedExceptionHelper;
+
 /**
  * 
  * 
@@ -85,7 +87,7 @@ public class Waiter
                 wait ();
         } catch ( InterruptedException e ) {
         	// cf bug 67457
-			InterruptedExceptionHelper.handleInterruptedException ( err );
+			InterruptedExceptionHelper.handleInterruptedException ( e );
         }
     }
 
