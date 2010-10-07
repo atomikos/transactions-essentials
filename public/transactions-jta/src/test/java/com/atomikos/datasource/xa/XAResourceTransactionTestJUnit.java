@@ -5,6 +5,7 @@ import java.util.Stack;
 import javax.transaction.xa.XAException;
 
 import com.atomikos.icatch.HeuristicMessage;
+import com.atomikos.icatch.TxState;
 import com.atomikos.icatch.imp.TestCompositeTransactionBase;
 
 import junit.framework.TestCase;
@@ -24,6 +25,13 @@ public class XAResourceTransactionTestJUnit extends TestCase
 		
 		compositeTx = new TestCompositeTransactionBase("tid", new Stack());
 
+	}
+	
+	private XAResourceTransaction createRecoveredHazardXAResourceTransactionForUnknownResource() {
+		XAResourceTransaction ret = new XAResourceTransaction ( transactionalResource , compositeTx , "root" );
+		ret.setResource ( null );
+		ret.setState ( TxState.HEUR_HAZARD );
+		return ret;
 	}
 	
 	public void testXidHexEncoding() throws Exception 
@@ -69,5 +77,17 @@ public class XAResourceTransactionTestJUnit extends TestCase
 		}
 		assertTrue ( "Heuristic stack trace not in heuristic messages" , found );
 		
+	}
+	
+	public void testRefreshXAResourceForNonRecoverableResourceThrowsMeaningfulException() 
+	{
+		resourceTransaction = createRecoveredHazardXAResourceTransactionForUnknownResource();
+		try {
+			resourceTransaction.testOrRefreshXAResourceFor2PC();
+			fail ( "refresh should not work with null resource?" );
+		} catch ( XAException ok ) {
+			assertEquals ( XAException.XAER_RMFAIL , ok.errorCode );
+			assertEquals ( transactionalResource.getName() + ": resource no longer available - recovery might be at risk!" , ok.getMessage() );
+		}
 	}
 }

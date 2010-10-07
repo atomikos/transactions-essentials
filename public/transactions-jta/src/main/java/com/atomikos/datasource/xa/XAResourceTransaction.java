@@ -182,7 +182,7 @@ public class XAResourceTransaction implements ResourceTransaction,
     XAResourceTransaction ( XATransactionalResource resource ,
             CompositeTransaction transaction , String root )
     {
-        resource_ = resource;
+        setResource ( resource );
         transaction_ = transaction;
         // FOLLOWING COMMENTED OUT:
         // setXAResource is called anyhow, and that is
@@ -205,7 +205,7 @@ public class XAResourceTransaction implements ResourceTransaction,
         xid_ = resource_.createXid ( tid_ );
         // xid_ = resource_.getXidFactory().createXid ( tid_ ,
         // resource.getName() );
-        state_ = TxState.ACTIVE;
+        setState ( TxState.ACTIVE );
         heuristicMessages_ = new Vector ();
         isXaSuspended_ = false;
         enlisted_ = false;
@@ -213,8 +213,18 @@ public class XAResourceTransaction implements ResourceTransaction,
         addHeuristicMessage ( new StringHeuristicMessage ( "XA resource '"
                 + resource.getName () + "' accessed with Xid '" + xidToHexString (xid_) + "'" ) );
     }
+    
+	void setResource ( XATransactionalResource resource ) 
+	{
+		this.resource_ = resource;
+	}
 
-     static String xidToHexString(Xid xid) {
+	void setState ( TxState state ) 
+	{
+		this.state_ = state;
+	}
+
+    static String xidToHexString(Xid xid) {
     	String gtrid = byteArrayToHexString(xid.getGlobalTransactionId());
     	String bqual = byteArrayToHexString(xid.getBranchQualifier());
     	
@@ -234,10 +244,10 @@ public class XAResourceTransaction implements ResourceTransaction,
 	{
 		String errorMsg = interpretErrorCode ( resourcename_ , opCode , xid_ , cause.errorCode );
 		addHeuristicMessage ( new StringHeuristicMessage ( errorMsg ) );
-		state_ = state;
+		setState ( state );
 	}
 
-	protected void testOrRefreshXAResourceFor2PC ()
+	protected void testOrRefreshXAResourceFor2PC () throws XAException
     {
         // check if connection has not timed out
         try {
@@ -253,21 +263,43 @@ public class XAResourceTransaction implements ResourceTransaction,
             }
         } catch ( XAException xa ) {
             // timed out?
-            Configuration.logDebug ( resourcename_
+           Configuration.logDebug ( resourcename_
                     + ": XAResource needs refresh", xa );
-            xaresource_ = resource_.getXAResource ();
+            
+            if ( resource_ == null ) {
+    			// cf bug 67951
+    			// happens on recovery without resource found
+    			throwXAExceptionForUnavailableResource();
+    		} else {
+    			xaresource_ = resource_.getXAResource ();
+    		}
         }
 
     }
 	
-	protected void forceRefreshXAConnection() 
+	protected void forceRefreshXAConnection() throws XAException
 	{
 		Configuration.logDebug ( resourcename_ + ": forcing refresh of XAConnection..." );
+		if ( resource_ == null ) {
+			// cf bug 67951
+			// happens on recovery without resource found
+			throwXAExceptionForUnavailableResource();
+		}
+		
 		try {
 			xaresource_ = resource_.refreshXAConnection();
 		} catch ( ResourceException re ) {
 			Configuration.logWarning ( resourcename_ + ": could not refresh XAConnection" , re );
 		}
+	}
+
+	private void throwXAExceptionForUnavailableResource() throws XAException 
+	{
+		String msg = resourcename_ + ": resource no longer available - recovery might be at risk!";
+		Configuration.logWarning ( msg );
+		XAException err = new XAException ( msg );
+		err.errorCode = XAException.XAER_RMFAIL;
+		throw err;
 	}
 
     protected void printMsg ( String msg , int level )
@@ -413,7 +445,7 @@ public class XAResourceTransaction implements ResourceTransaction,
 	            Configuration.logDebug ( msg, xaerr );
 	            throw new ResourceException ( msg, errors );
 	        }
-	        state_ = TxState.LOCALLY_DONE;
+	        setState ( TxState.LOCALLY_DONE );
         }
     }
 
@@ -451,7 +483,7 @@ public class XAResourceTransaction implements ResourceTransaction,
             throw new ResourceException ( msg ,
                     errors );
         }
-        state_ = TxState.ACTIVE;
+        setState ( TxState.ACTIVE );
         enlisted_ = true;
     }
 
@@ -540,7 +572,7 @@ public class XAResourceTransaction implements ResourceTransaction,
         } catch ( Exception err ) {
             // we don't care here
         }
-        state_ = TxState.TERMINATED;
+        setState ( TxState.TERMINATED );
     }
 
     /**
@@ -583,7 +615,7 @@ public class XAResourceTransaction implements ResourceTransaction,
                 throw new SysException ( msg , errors );
             }
         }
-        state_ = TxState.IN_DOUBT;
+        setState ( TxState.IN_DOUBT );
         if ( ret == XAResource.XA_RDONLY ) {
             printMsg ( "XAResource.prepare ( " + xidToHexString (xid_)
                     + " ) returning XAResource.XA_RDONLY " + "on resource "
@@ -669,7 +701,7 @@ public class XAResourceTransaction implements ResourceTransaction,
                 case XAException.XAER_NOTA:
                 	   //see case 21552
                     printMsg ( "XAResource.rollback: invalid Xid - already rolled back in resource?" , Console.DEBUG );
-                    state_ = TxState.TERMINATED;
+                    setState ( TxState.TERMINATED );
                     //ignore error - corresponds to semantics of rollback!
                     break;
                 default:
@@ -680,7 +712,7 @@ public class XAResourceTransaction implements ResourceTransaction,
                 } // switch
             } // else
         }
-        state_ = TxState.TERMINATED;
+        setState ( TxState.TERMINATED );
         return getHeuristicMessages ();
     }
 
@@ -765,7 +797,7 @@ public class XAResourceTransaction implements ResourceTransaction,
                     if ( ! onePhase ) {
                     	   //see case 21552
                         printMsg ( "XAResource.commit: invalid Xid - transaction already committed in resource?" , Console.WARN );
-                        state_ = TxState.TERMINATED;
+                        setState ( TxState.TERMINATED );
                         break;
                     }
                 default:
@@ -776,7 +808,7 @@ public class XAResourceTransaction implements ResourceTransaction,
                 } // switch
             } // else
         }
-        state_ = TxState.TERMINATED;
+        setState ( TxState.TERMINATED );
         return getHeuristicMessages ();
     }
 
@@ -964,3 +996,4 @@ public class XAResourceTransaction implements ResourceTransaction,
 	}
 
 }
+
