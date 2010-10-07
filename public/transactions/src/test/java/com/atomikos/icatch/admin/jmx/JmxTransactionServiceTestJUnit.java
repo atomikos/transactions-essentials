@@ -16,13 +16,15 @@ import junit.framework.TestCase;
 public class JmxTransactionServiceTestJUnit extends TestCase {
 
 	private JmxTransactionService jmxTransactionService;
+	private TestMBeanServer server;
 	
 	protected void setUp() throws Exception {
 		super.setUp();
 		TestLogControl tl = new TestLogControl();
 		JmxLogAdministrator.getInstance().registerLogControl ( tl );
 		jmxTransactionService = new JmxTransactionService();
-		jmxTransactionService.preRegister( new TestMBeanServer() , null );
+		server = new TestMBeanServer();
+		jmxTransactionService.preRegister ( server , null );
 	}
 	
 	public void testHeuristicsOnly() 
@@ -45,6 +47,14 @@ public class JmxTransactionServiceTestJUnit extends TestCase {
 		jmxTransactionService.setHeuristicsOnly ( true );
 		ObjectName[] names = jmxTransactionService.getTransactions();
 		assertEquals ( "wrong number of heuristic admintxs returned" , 4 , names.length );
+	}
+	
+	public void testDeregistrationUnregisterMBeans() throws Exception
+	{
+		 ObjectName[] names = jmxTransactionService.getTransactions();
+		 assertTrue ( server.isRegistered ( names[0] ));
+		 jmxTransactionService.preDeregister();
+		 assertFalse ( server.isRegistered (names[0]));
 	}
 	
 	private static class TestLogControl 

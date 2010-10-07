@@ -210,8 +210,7 @@ public class JmxTransactionService implements JmxTransactionServiceMBean,
      */
     public void preDeregister () throws Exception
     {
-        // nothing to do
-
+    	unregisterBeans();
     }
 
     /**
