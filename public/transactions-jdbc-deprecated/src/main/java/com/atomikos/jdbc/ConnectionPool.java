@@ -307,11 +307,14 @@ public class ConnectionPool implements Runnable
 				ResultSet rs = stmt.executeQuery ( testQuery_ );
 				rs.close();
 				stmt.close();
-		} catch ( SQLException e ) {
+		} catch ( Exception e ) {
+			//catch any Exception - cf case 22198
 			Configuration.logWarning ( "ConnectionPool: error testing connection" , e );
 			cleanup = true;
 			//rethrow to fail test!
-			throw e;
+			SQLException sqlErr = new SQLException ( e.getMessage() );
+			sqlErr.initCause ( e );
+			throw sqlErr;
 		}
 		finally {
 			try {

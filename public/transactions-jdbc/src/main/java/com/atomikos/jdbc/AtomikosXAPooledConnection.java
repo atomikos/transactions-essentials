@@ -121,7 +121,8 @@ public class AtomikosXAPooledConnection extends AbstractXPooledConnection
 				//use execute instead of executeQuery - cf case 58830
 				stmt.execute(testQuery);
 				stmt.close();
-			} catch ( SQLException e) {
+			} catch ( Exception e) {
+				//catch any Exception - cf case 22198
 				throw new CreateConnectionException ( "Error executing testQuery" ,  e );
 			}
 			Configuration.logDebug ( this + ": connection tested OK" );
