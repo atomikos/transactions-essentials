@@ -118,7 +118,7 @@ public abstract class AbstractJmsSenderTemplate
 			msg.append ( "destination=" ).append( getDestinationName() ).append ( ", " );
 			msg.append ( "replyToDestination=" ).append ( getReplyToDestinationName() );
 			msg.append ( "]" );
-			Configuration.logDebug ( msg.toString() );
+			if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( msg.toString() );
 			inited = true;		
 		}
 	}
@@ -197,14 +197,14 @@ public abstract class AbstractJmsSenderTemplate
 				try {
 					ret = q.getQueueName();
 				} catch ( JMSException e ) {
-					Configuration.logDebug ( this + ": error retrieving queue name" , e );
+					if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": error retrieving queue name" , e );
 				}
 			} else if ( d instanceof Topic ) {
 				Topic t = ( Topic ) d;
 				try {
 					ret = t.getTopicName();
 				} catch ( JMSException e ) {
-					Configuration.logDebug ( this + ": error retrieving topic name" , e );
+					if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": error retrieving topic name" , e );
 				}
 			}
 		}
@@ -295,9 +295,9 @@ public abstract class AbstractJmsSenderTemplate
 	    try {
 	    	conn = getOrReuseConnection();
 	    	session = getOrRefreshSession ( conn );	
-	    	Configuration.logDebug ( "Calling callback..." );
+	    	if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "Calling callback..." );
 	    	callback.doInJmsSession ( session );
-	        Configuration.logDebug ( "Callback done!" );
+	        if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "Callback done!" );
 	        afterUseWithoutErrors ( conn , session );
 	        
 	    } catch ( AtomikosTransactionRequiredJMSException notx ) {

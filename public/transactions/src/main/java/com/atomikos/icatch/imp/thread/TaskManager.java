@@ -54,7 +54,7 @@ public class TaskManager
 	public static synchronized final TaskManager getInstance() 
 	{
 		if ( singleton == null ) {
-			Configuration.logDebug ( "TaskManager: initializing..." );
+			if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "TaskManager: initializing..." );
 			singleton = new TaskManager();
 		}
 		return singleton;
@@ -70,11 +70,11 @@ public class TaskManager
 		ExecutorFactory creator;
 		try {
 			if ( isClassAvailable ( Java15ExecutorFactory.MAIN_CLASS ) ) {
-				Configuration.logInfo ( "THREADS: using JDK thread pooling..." );
+				if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug ( "THREADS: using JDK thread pooling..." );
 				creator = new Java15ExecutorFactory();
 			}
 			else if ( isClassAvailable ( Java14BackportExecutorFactory.MAIN_CLASS ) ) {
-				Configuration.logInfo ( "THREADS: using 1.4 (backport) thread pooling..." );
+				if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug ( "THREADS: using 1.4 (backport) thread pooling..." );
 				creator = new Java14BackportExecutorFactory();
 			}
 			else {
@@ -92,7 +92,7 @@ public class TaskManager
 			Configuration.logWarning("Failed to create system executor; Received message: " + e.getMessage() + "; Failling back to a trivial executor.", e);
 			executor = new TrivialSystemExecutor();
 		}
-		Configuration.logDebug ( "THREADS: using executor " + executor.getClass());
+		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "THREADS: using executor " + executor.getClass());
 	}
 	
 	/**

@@ -230,7 +230,7 @@ public abstract class XATransactionalResource implements TransactionalResource
             }
         } catch ( XAException xa ) {
             // timed out?
-            Configuration.logDebug ( servername_
+            if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( servername_
                     + ": XAResource needs refresh?", xa );
 
         }
@@ -496,7 +496,7 @@ public abstract class XATransactionalResource implements TransactionalResource
 
         // null during testing
         if ( recoveryService != null ) {
-            Configuration.logDebug ( "Installing recovery service on resource "
+            if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "Installing recovery service on resource "
                     + getName () );
             branchIdentifier_ = recoveryService.getName ();
 

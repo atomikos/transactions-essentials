@@ -87,15 +87,15 @@ class AtomikosConnectionProxy extends AbstractConnectionProxy
 		if ( methodName.equals ( "getInvocationHandler" ) ) return this;
 		
 		if (methodName.equals("reap")) {
-			Configuration.logInfo ( this + ": reaping pending connection..." );
+			if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug ( this + ": reaping pending connection..." );
 			reap();
-			Configuration.logDebug ( this + ": reap done!" );
+			if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": reap done!" );
 			return null;
 		}
 		if (methodName.equals("isClosed")) {
-			Configuration.logInfo ( this + ": isClosed()..." );
+			if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug ( this + ": isClosed()..." );
 			Object ret = Boolean.valueOf(closed);
-			Configuration.logDebug ( this + ": isClosed() returning " + ret );
+			if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": isClosed() returning " + ret );
 			return ret;
 		}
 		
@@ -146,7 +146,7 @@ class AtomikosConnectionProxy extends AbstractConnectionProxy
  		}
 		else {
 			try {
-				Configuration.logInfo ( this + ": calling " + methodName + "...");
+				if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug ( this + ": calling " + methodName + "...");
 				ret = method.invoke(delegate, args);
 			
 			} catch (Exception ex) {
@@ -154,7 +154,7 @@ class AtomikosConnectionProxy extends AbstractConnectionProxy
 				JdbcConnectionProxyHelper.convertProxyError ( ex , "Error delegating '" + methodName + "' call" );
 			}
 		}
-        Configuration.logDebug ( this + ": " + methodName + " returning " + ret );
+        if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": " + methodName + " returning " + ret );
         if ( ret instanceof Statement ) {
         	//keep statement for closing upon timeout/close
         	//see bug 29708
@@ -188,7 +188,7 @@ class AtomikosConnectionProxy extends AbstractConnectionProxy
 	private boolean enlist() throws AtomikosSQLException {
 		boolean ret = false;
 		try {
-			Configuration.logDebug( this + ": notifyBeforeUse " + sessionHandleState);
+			if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug( this + ": notifyBeforeUse " + sessionHandleState);
 			CompositeTransaction ct = null;
 			CompositeTransactionManager ctm = getCompositeTransactionManager();
 			if ( ctm != null ) {
@@ -197,7 +197,7 @@ class AtomikosConnectionProxy extends AbstractConnectionProxy
 				sessionHandleState.notifyBeforeUse ( ct , hmsg );
 				if (ct != null && ct.getProperty ( TransactionManagerImp.JTA_PROPERTY_NAME ) != null ) {
 					ret = true;
-					Configuration.logDebug ( this + ": detected transaction " + ct );
+					if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": detected transaction " + ct );
 					ct.registerSynchronization(new JdbcRequeueSynchronization( this , ct ));
 				}
 			} 
@@ -209,11 +209,11 @@ class AtomikosConnectionProxy extends AbstractConnectionProxy
 	}
 
 	private void close() {
-		Configuration.logInfo ( this + ": close()...");
+		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug ( this + ": close()...");
 		forceCloseAllPendingStatements ( false );
 		closed = true;
 		sessionHandleState.notifySessionClosed();
-		Configuration.logDebug ( this + ": closed." );
+		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": closed." );
 	}
 	
 	private boolean isEnlistedInGlobalTransaction() 
@@ -276,7 +276,7 @@ class AtomikosConnectionProxy extends AbstractConnectionProxy
 	                || state.equals ( TxState.HEUR_COMMITTED ) ) {
 
 	            // connection is reusable!
-				Configuration.logDebug(  proxy + ": detected termination of transaction " + compositeTransaction );
+				if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug(  proxy + ": detected termination of transaction " + compositeTransaction );
 				sessionHandleState.notifyTransactionTerminated(compositeTransaction);
 				
 	            afterCompletionDone = true;

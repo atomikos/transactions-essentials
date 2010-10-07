@@ -126,7 +126,7 @@ class ActiveStateHandler extends CoordinatorStateHandler
                         .getLocalSiblingCount () ) {
             // NO COMMIT ALLOWED: ORPHANS!!!!
             try {
-                Configuration.logDebug ( "Orphans detected: "
+                if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "Orphans detected: "
                         + getCoordinator ().getLocalSiblingCount () + " vs "
                         + globalSiblingCount_ + " - forcing rollback." );
                 super.rollback ( getCoordinator().isRecoverableWhileActive().booleanValue() , false );

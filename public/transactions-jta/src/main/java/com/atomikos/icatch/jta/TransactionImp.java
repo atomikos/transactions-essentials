@@ -113,9 +113,9 @@ class TransactionImp implements Transaction
         if ( level == Console.WARN )
             Configuration.logWarning ( msg );
         else if ( level == Console.INFO )
-            Configuration.logInfo ( msg );
+            if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug ( msg );
         else
-            Configuration.logDebug ( msg );
+            if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( msg );
     }
 
     // MM patch: synchronized to allow threaded access

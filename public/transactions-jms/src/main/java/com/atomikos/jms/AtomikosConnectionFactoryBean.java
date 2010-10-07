@@ -316,7 +316,7 @@ Referenceable, Serializable {
 	 */
 	public synchronized void init() throws JMSException
 	{
-		Configuration.logInfo ( this + ": init..." );
+		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug ( this + ": init..." );
 		if (connectionPool != null)
 			return;
 		
@@ -340,7 +340,7 @@ Referenceable, Serializable {
 			//don't log: AtomikosJMSException is logged on creation by the factory methods
 			throwAtomikosJMSException("Cannot initialize AtomikosConnectionFactoryBean", ex);
 		}
-		Configuration.logDebug ( this + ": init done." );
+		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": init done." );
 
 	}
 	
@@ -372,7 +372,7 @@ Referenceable, Serializable {
 		}
 		
 		
-		Configuration.logInfo(
+		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug(
 				this + ": initializing with [" +
 				" xaConnectionFactory=" + xaConnectionFactory + "," +
 				" xaConnectionFactoryClassName=" + xaConnectionFactoryClassName + "," +
@@ -539,7 +539,7 @@ Referenceable, Serializable {
 	 */
 	public synchronized void close() 
 	{
-		Configuration.logInfo ( this + ": close..." );
+		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug ( this + ": close..." );
 		if ( connectionPool != null ) {
 			connectionPool.destroy();
 			connectionPool = null;
@@ -549,7 +549,7 @@ Referenceable, Serializable {
 			IntraVmObjectRegistry.removeResource ( getUniqueResourceName() );
 		} catch ( NameNotFoundException e ) {
 			//ignore but log
-			Configuration.logDebug ( this + ": error removing from JNDI" , e );
+			if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": error removing from JNDI" , e );
 		}
 		
 		RecoverableResource res = Configuration.getResource ( getUniqueResourceName() );
@@ -559,7 +559,7 @@ Referenceable, Serializable {
 			res.close();
 		}
 		
-		Configuration.logDebug ( this + ": close done." );
+		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": close done." );
 	}
 	
 	public String toString() 
@@ -578,7 +578,7 @@ Referenceable, Serializable {
 	 */
 	public javax.jms.Connection createConnection() throws JMSException
 	{
-		Configuration.logInfo ( this + ": createConnection()..." );
+		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug ( this + ": createConnection()..." );
 		Connection ret = null;
 		try {
 			init();
@@ -590,7 +590,7 @@ Referenceable, Serializable {
 		} catch (ConnectionPoolException e) {
 			throwAtomikosJMSException ( "Error borrowing connection", e );
 		}
-		Configuration.logDebug ( this + ": createConnection() returning " + ret );
+		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": createConnection() returning " + ret );
 		return ret;
 	}
 
@@ -611,9 +611,9 @@ Referenceable, Serializable {
 	public Reference getReference() throws NamingException
 	{
 		Reference ret = null;
-		Configuration.logInfo ( this + ": getReference()..." );
+		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug ( this + ": getReference()..." );
 		ret = IntraVmObjectFactory.createReference ( this , getUniqueResourceName() );
-		Configuration.logDebug ( this + ": getReference() returning " + ret );
+		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": getReference() returning " + ret );
 		return ret;
 	}
 

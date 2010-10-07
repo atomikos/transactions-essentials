@@ -304,10 +304,10 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
         	//null on recovery
         	switch ( level ) {
         		case Console.DEBUG: 
-        			Configuration.logDebug ( msg ); 
+        			if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( msg ); 
         			break;
         		case Console.INFO: 
-        			Configuration.logInfo ( msg ); 
+        			if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug ( msg ); 
         			break;
         		default: Configuration.logWarning ( msg );
         	}
@@ -518,7 +518,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 
     void setState ( Object state ) throws IllegalStateException
     {
-        Configuration.logDebug ( "Coordinator " + getCoordinatorId ()
+        if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "Coordinator " + getCoordinatorId ()
                 + " entering state: " + state.toString () );
         fsm_.setState ( state );
         printMsg ( "Coordinator " + getCoordinatorId () + " entered state: "
@@ -1109,15 +1109,15 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
         // System.err.println ( "Stopping timer..." );
     	synchronized ( fsm_ ) {
     		if ( timer_ != null ) {
-    			Configuration.logDebug ( "Coordinator " + getCoordinatorId ()
+    			if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "Coordinator " + getCoordinatorId ()
     					+ " : stopping timer..." );
     			timer_.stop ();
     		}
-    		Configuration.logDebug ( "Coordinator " + getCoordinatorId ()
+    		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "Coordinator " + getCoordinatorId ()
     				+ " : disposing statehandler " + stateHandler_.getState ()
     				+ "..." );
     		stateHandler_.dispose ();
-    		Configuration.logDebug ( "Coordinator " + getCoordinatorId ()
+    		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "Coordinator " + getCoordinatorId ()
     				+ " : disposed." );
     	}
     }

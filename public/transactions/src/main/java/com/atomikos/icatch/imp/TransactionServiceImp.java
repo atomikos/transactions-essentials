@@ -351,7 +351,7 @@ public class TransactionServiceImp implements TransactionService,
             CoordinatorImp coordinator , Stack lineage , boolean serial )
             throws SysException
     {
-    		Configuration.logDebug ( "Creating composite transaction: " + tid );
+    		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "Creating composite transaction: " + tid );
         CompositeTransactionImp ct = new CompositeTransactionImp ( this,
                 lineage, tid, serial, coordinator );
 
@@ -694,7 +694,7 @@ public class TransactionServiceImp implements TransactionService,
 	        if ( initialized_ ) {
 	            listener.init ( false , properties_ );
 	        }
-	        Configuration.logDebug (  "Added TSListener: " + listener ); 
+	        if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug (  "Added TSListener: " + listener ); 
     		}
         
 
@@ -708,7 +708,7 @@ public class TransactionServiceImp implements TransactionService,
     {
 
         listeners_.removeElement ( listener );
-        Configuration.logDebug  ( "Removed TSListener: " + listener );
+        if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug  ( "Removed TSListener: " + listener );
 
     }
 
@@ -908,7 +908,7 @@ public class TransactionServiceImp implements TransactionService,
     {
         Stack errors = new Stack ();
         boolean wasShuttingDown = false;
-        Configuration.logDebug ( "Transaction Service: Entering shutdown ( "
+        if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "Transaction Service: Entering shutdown ( "
                 + force + " )..." );
 
         // FOLLOWING MOVED OUT OF SYNCH BLOCK TO HERE TO AVOID DEADLOCK ON
@@ -964,14 +964,14 @@ public class TransactionServiceImp implements TransactionService,
                     shutdownWaiter_.wait ( maxTimeout_ );
                     //PURGE to avoid issue 10079
                     //use a clone to avoid concurrency interference
-                    Configuration.logDebug ( "Transaction Service: Purging coordinators for shutdown..." );
+                    if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "Transaction Service: Purging coordinators for shutdown..." );
                     Hashtable clone = ( Hashtable ) roottocoordinatormap_.clone();
                     Enumeration coordinatorIds = clone.keys();
                     while ( coordinatorIds.hasMoreElements() ) {
                     		String id = ( String ) coordinatorIds.nextElement();
                     		CoordinatorImp c = ( CoordinatorImp ) clone.get ( id );
                     		if ( TxState.TERMINATED.equals ( c.getState() ) ) {
-                    			Configuration.logDebug ( "Transaction Service: removing terminated coordinator: " + id );
+                    			if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "Transaction Service: removing terminated coordinator: " + id );
                     			roottocoordinatormap_.remove ( id );
                     		}
                     }

@@ -114,7 +114,7 @@ implements TopicConnectionFactory
 	            msg.append ( "resourceName=" ).append(resourceName_).append (", ");
 	            msg.append ( "xaFactoryJndiName=" ).append( xaFactoryJndiName_ );
 	            msg.append ( "]" );
-	            Configuration.logDebug ( msg.toString() );
+	            if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( msg.toString() );
 	            
 	            Configuration.logWarning ( "WARNING: class " + getClass().getName() + " is deprecated!" );
 	        }

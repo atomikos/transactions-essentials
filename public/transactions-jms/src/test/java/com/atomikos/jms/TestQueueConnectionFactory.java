@@ -77,7 +77,7 @@ implements XAQueueConnectionFactory, Serializable
 
         
         incNumberOfConnectionsCreated();
-        Configuration.logDebug ( "TestQueueConnectionFactory: creating new Connection..." );
+        if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "TestQueueConnectionFactory: creating new Connection..." );
 
         if ( errorOnNextCreate_ ) {
         		errorOnNextCreate_ = false;

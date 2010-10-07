@@ -227,7 +227,7 @@ class Java15ExecutorFactory implements ExecutorFactory
 		
 		public void execute(Runnable task) {
 			try {
-				Configuration.logDebug("(1.5) executing task: " + task);
+				if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug("(1.5) executing task: " + task);
 				submit.invoke(target, new Object[] { task });
 			} catch (Exception e) {
 				Configuration.logWarning("Failed to invoke 1.5 concurrent thread pool", e);

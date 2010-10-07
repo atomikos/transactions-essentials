@@ -67,7 +67,7 @@ public abstract class AbstractXPooledConnection implements XPooledConnection {
 		updateLastTimeAcquired();
 		testUnderlyingConnection();
 		currentProxy = doCreateConnectionProxy ( hmsg );
-		Configuration.logDebug ( this + ": returning proxy " + currentProxy );
+		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": returning proxy " + currentProxy );
 		return currentProxy;
 	}
 
@@ -81,19 +81,19 @@ public abstract class AbstractXPooledConnection implements XPooledConnection {
 	}
 
 	public void registerXPooledConnectionEventListener(XPooledConnectionEventListener listener) {
-		Configuration.logDebug ( this + ": registering listener " + listener );
+		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": registering listener " + listener );
 		poolEventListeners.add(listener);
 	}
 
 	public void unregisterXPooledConnectionEventListener(XPooledConnectionEventListener listener) {
-		Configuration.logDebug ( this + ": unregistering listener " + listener );
+		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": unregistering listener " + listener );
 		poolEventListeners.remove(listener);
 	}
 
 	protected void fireOnXPooledConnectionTerminated() {
 		for (int i=0; i<poolEventListeners.size() ;i++) {
 			XPooledConnectionEventListener listener = (XPooledConnectionEventListener) poolEventListeners.get(i);
-			Configuration.logDebug ( this + ": notifying listener: " + listener );
+			if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": notifying listener: " + listener );
 			listener.onXPooledConnectionTerminated(this);
 		}
 		updateLastTimeReleased();
@@ -105,12 +105,12 @@ public abstract class AbstractXPooledConnection implements XPooledConnection {
 	}
 	
 	protected void updateLastTimeReleased() {
-		Configuration.logDebug ( this + ": updating last time released" );
+		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": updating last time released" );
 		lastTimeReleased = System.currentTimeMillis();
 	}
 	
 	protected void updateLastTimeAcquired() {
-		Configuration.logDebug (  this + ": updating last time acquired" );
+		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug (  this + ": updating last time acquired" );
 		lastTimeAcquired = System.currentTimeMillis();
 		
 	}

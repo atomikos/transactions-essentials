@@ -63,7 +63,7 @@ final class ThreadFactory
 	Thread newThread ( Runnable r ) 
 	{
 		String realName = name + ":" + incCount();
-		Configuration.logDebug ( "ThreadFactory: creating new thread: " + realName );
+		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "ThreadFactory: creating new thread: " + realName );
 		Thread thread = new Thread ( group , r , realName );
 		thread.setContextClassLoader( Thread.currentThread().getContextClassLoader() );
 		thread.setDaemon ( true );

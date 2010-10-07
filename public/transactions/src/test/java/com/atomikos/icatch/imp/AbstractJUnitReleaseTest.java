@@ -1210,13 +1210,13 @@ TransactionServiceTestCase
         testSubTx ( child , ct );
         
         //rollback  child, to test if later termination fails as expected
-        Configuration.logDebug ( "ROLLBACK OF CHILD..." );
+        if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "ROLLBACK OF CHILD..." );
         child.rollback();
         if ( ! child.equals ( ctm.getCompositeTransaction() ) ) {
             //ONLY DO THIS IF THREAD IS NOT THAT OF PARENT 
             //DUE TO ROLLBACK!
             try {
-            	   Configuration.logDebug ( "TERMINATION OF CHILD..." );
+            	   if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "TERMINATION OF CHILD..." );
                 extent = itm.terminated ( true );
                 failTest ( "terminated ( true ) works for rolledback import?" );
             }
@@ -1225,7 +1225,7 @@ TransactionServiceTestCase
             }
         }
         try {
-        	Configuration.logDebug ( "COMMIT OF PARENT..." );
+        	if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "COMMIT OF PARENT..." );
         	ct.commit();
         }
         catch ( Exception e ) {

@@ -159,7 +159,7 @@ public abstract class MessageProducerSession
 	    msg.append ( "destination=" ).append( getDestinationName() ).append ( ", " );
 	    msg.append ( "replyToDestination=" ).append ( getReplyToDestinationName() );
 	    msg.append ( "]" );
-	    Configuration.logDebug ( msg.toString() );
+	    if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( msg.toString() );
 	}
 	
 	/**
@@ -253,11 +253,11 @@ public abstract class MessageProducerSession
 	        if ( replyToDestination != null )
 	            message.setJMSReplyTo ( replyToDestination );
 	
-	        Configuration.logInfo ( "Calling send ( " + message + " ,  "
+	        if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug ( "Calling send ( " + message + " ,  "
 	                + deliveryMode + " , " + priority + " , " + timeToLive
 	                + " )..." );
 	        sender.send ( message, deliveryMode, priority, timeToLive );
-	        Configuration.logDebug ( "Send done!" );
+	        if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "Send done!" );
 	
 	    } catch ( JMSException e ) {
 	        closeResources ();

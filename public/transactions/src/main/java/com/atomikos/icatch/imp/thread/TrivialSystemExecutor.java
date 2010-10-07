@@ -40,7 +40,7 @@ public class TrivialSystemExecutor implements InternalSystemExecutor
 	
 	public void execute(Runnable targ)
 	{
-		Configuration.logDebug("(T) executing task: " + targ);
+		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug("(T) executing task: " + targ);
 		Thread newThread = ThreadFactory.getInstance().newThread(targ);
 		newThread.start();
 	}

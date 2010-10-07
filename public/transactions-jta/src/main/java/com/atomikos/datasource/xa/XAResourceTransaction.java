@@ -263,7 +263,7 @@ public class XAResourceTransaction implements ResourceTransaction,
             }
         } catch ( XAException xa ) {
             // timed out?
-           Configuration.logDebug ( resourcename_
+           if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( resourcename_
                     + ": XAResource needs refresh", xa );
             
             if ( resource_ == null ) {
@@ -279,7 +279,7 @@ public class XAResourceTransaction implements ResourceTransaction,
 	
 	protected void forceRefreshXAConnection() throws XAException
 	{
-		Configuration.logDebug ( resourcename_ + ": forcing refresh of XAConnection..." );
+		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( resourcename_ + ": forcing refresh of XAConnection..." );
 		if ( resource_ == null ) {
 			// cf bug 67951
 			// happens on recovery without resource found
@@ -442,7 +442,7 @@ public class XAResourceTransaction implements ResourceTransaction,
 	        } catch ( XAException xaerr ) {
 	            errors.push ( xaerr );
 	            String msg = interpretErrorCode ( resourcename_ , "end" , xid_ , xaerr.errorCode );
-	            Configuration.logDebug ( msg, xaerr );
+	            if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( msg, xaerr );
 	            throw new ResourceException ( msg, errors );
 	        }
 	        setState ( TxState.LOCALLY_DONE );
@@ -606,7 +606,7 @@ public class XAResourceTransaction implements ResourceTransaction,
 
         } catch ( XAException xaerr ) {
         	    String msg = interpretErrorCode ( resourcename_ , "prepare" , xid_ , xaerr.errorCode );
-            Configuration.logDebug ( msg , xaerr );
+            if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( msg , xaerr );
             if ( (XAException.XA_RBBASE <= xaerr.errorCode)
                     && (xaerr.errorCode <= XAException.XA_RBEND) ) {
                 throw new RollbackException ( msg );
@@ -682,7 +682,7 @@ public class XAResourceTransaction implements ResourceTransaction,
             if ( (XAException.XA_RBBASE <= xaerr.errorCode)
                     && (xaerr.errorCode <= XAException.XA_RBEND) ) {
                 // do nothing, corresponds with semantics of rollback
-                Configuration.logDebug ( msg );
+                if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( msg );
             } else {
                 Configuration.logWarning ( msg , xaerr );
                 switch ( xaerr.errorCode ) {
@@ -888,7 +888,7 @@ public class XAResourceTransaction implements ResourceTransaction,
     {
 
 
-    	Configuration.logDebug ( this
+    	if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this
     			+ ": about to switch to XAResource " + xaresource );
     	xaresource_ = xaresource;
 
@@ -900,7 +900,7 @@ public class XAResourceTransaction implements ResourceTransaction,
     		// we don't care
     	}
 
-    	Configuration.logDebug ( "XAResourceTransaction " + getXid ()
+    	if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "XAResourceTransaction " + getXid ()
     			+ ": switched to XAResource " + xaresource );
 
 

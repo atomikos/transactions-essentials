@@ -69,7 +69,7 @@ class AtomikosPooledJmsConnection extends AbstractXPooledConnection implements S
 	}
 
 	public void destroy() {
-		Configuration.logDebug ( this + ": destroying connection..." );
+		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": destroying connection..." );
 		if (xaConnection != null) {
 			try {
 				xaConnection.close();
@@ -116,7 +116,7 @@ class AtomikosPooledJmsConnection extends AbstractXPooledConnection implements S
 		
 		synchronized ( this ) {
 			//a session has terminated -> check reusability of all remaining
-			Configuration.logDebug ( this + ": a session has terminated, is connection now available ? " + isAvailable() );
+			if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": a session has terminated, is connection now available ? " + isAvailable() );
 			if ( isAvailable() ) {
 				if ( currentProxy != null ) {
 					DynamicProxy dproxy = ( DynamicProxy ) currentProxy;

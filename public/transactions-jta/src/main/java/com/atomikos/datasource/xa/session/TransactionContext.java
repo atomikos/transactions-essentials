@@ -54,7 +54,7 @@ class TransactionContext
 	
 	private synchronized void setState ( TransactionContextStateHandler state )
 	{
-		Configuration.logDebug ( this + ": changing to state " + state );
+		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": changing to state " + state );
 		if ( state != null ) this.state = state;
 		
 	}
@@ -94,7 +94,7 @@ class TransactionContext
 	synchronized void sessionClosed() 
 	{
 		TransactionContextStateHandler nextState = state.sessionClosed();
-		Configuration.logDebug ( this + ": changing state to " + nextState );
+		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": changing state to " + nextState );
 		setState ( nextState );
 	}
 	

@@ -270,7 +270,7 @@ class MessageConsumerSession
 	    msg.append ( "exceptionListener=" ).append ( getExceptionListener() ).append ( ", " );
 	    msg.append ( "connectionFactory=" ).append ( getAtomikosConnectionFactoryBean() );
 	    msg.append ( "]" );
-	    Configuration.logDebug ( msg.toString() );
+	    if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( msg.toString() );
 	    
 	}
 	
@@ -289,14 +289,14 @@ class MessageConsumerSession
 				try {
 					ret = q.getQueueName();
 				} catch (JMSException e) {
-					Configuration.logDebug ( "Error retrieving queue name" , e );
+					if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "Error retrieving queue name" , e );
 				}
 			} else if ( destination instanceof Topic ) {
 				Topic t = ( Topic ) destination;
 				try {
 					ret = t.getTopicName();
 				} catch (JMSException e) {
-					Configuration.logDebug ( "Error retrieving topic name" , e );
+					if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "Error retrieving topic name" , e );
 				}
 			}
 		}
@@ -320,7 +320,7 @@ class MessageConsumerSession
 	        //FIXED 10082
 	        current.setDaemon ( daemonThreads );
 	        current.start ();
-	        Configuration.logDebug ( "MessageConsumerSession: started new thread: " + current );
+	        if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "MessageConsumerSession: started new thread: " + current );
 		    }
 		    //if not active: ignore
 	}
@@ -430,39 +430,39 @@ class MessageConsumerSession
 								Configuration.logWarning ( "MessageConsumerSession: unsubscribing " + subscriberName + "...");
 								if ( Thread.currentThread() != this ) {
 									//see case 62452: wait for listener thread to exit so the subscriber is no longer in use
-									Configuration.logInfo ( "MessageConsumerSession: waiting for listener thread to finish..." );
+									if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug ( "MessageConsumerSession: waiting for listener thread to finish..." );
 									this.join ( getTransactionTimeout() * 1000 );
-									Configuration.logDebug ( "MessageConsumerSession: waiting done." );
+									if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "MessageConsumerSession: waiting done." );
 								}
-								Configuration.logInfo ( "MessageConsumerSession: unsubscribing " + subscriberName + "..." );
+								if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug ( "MessageConsumerSession: unsubscribing " + subscriberName + "..." );
 								session.unsubscribe ( subscriberName );
-								Configuration.logDebug ( "MessageConsumerSession: unsubscribed.");
+								if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "MessageConsumerSession: unsubscribed.");
 							} catch ( JMSException e ) {
-								 Configuration.logInfo (
+								 if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug (
 					                    "MessageConsumerSession: Error unsubscribing on JMS session",
 					                    e );
-					            Configuration.logInfo ( "MessageConsumerSession: linked exception is " , e.getLinkedException() );
+					            if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug ( "MessageConsumerSession: linked exception is " , e.getLinkedException() );
 							}
 						}
 						
 					    try {
-					    	Configuration.logInfo ( "MessageConsumerSession: closing JMS session..." );
+					    	if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug ( "MessageConsumerSession: closing JMS session..." );
 					        session.close ();
 					        session = null;
-					        Configuration.logDebug ( "MessageConsumerSession: JMS session closed." );
+					        if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "MessageConsumerSession: JMS session closed." );
 					    } catch ( JMSException e ) {
-					        Configuration.logInfo (
+					        if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug (
 					                "MessageConsumerSession: Error closing JMS session",
 					                e );
-					        Configuration.logInfo ( "MessageConsumerSession: linked exception is " , e.getLinkedException() );
+					        if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug ( "MessageConsumerSession: linked exception is " , e.getLinkedException() );
 					    }
 					}
 					if ( connection != null )
 					    try {
-					    	Configuration.logInfo ( "MessageConsumerSession: closing JMS connection..." );
+					    	if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug ( "MessageConsumerSession: closing JMS connection..." );
 					        connection.close ();
 					        connection = null;
-					        Configuration.logDebug ( "MessageConsumerSession: JMS connection closed." );
+					        if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "MessageConsumerSession: JMS connection closed." );
 					    } catch ( JMSException e ) {
 					        Configuration
 					                .logWarning (
@@ -497,7 +497,7 @@ class MessageConsumerSession
 
 	            while ( Thread.currentThread () == current ) {
 	            	   
-	            	   Configuration.logDebug ( "MessageConsumerSession: JMS listener thread iterating..." );
+	            	   if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "MessageConsumerSession: JMS listener thread iterating..." );
 	                boolean refresh = false;
 	                boolean commit = true;
 	                try {
@@ -540,7 +540,7 @@ class MessageConsumerSession
 	                            commit = false;
 	                        }
 	                    } catch ( Exception e ) {
-	                        Configuration.logInfo (
+	                        if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug (
 	                                "MessageConsumerSession: Error during JMS processing of message "
 	                                        + msg.toString () + " - rolling back.",
 	                                e );
@@ -659,7 +659,7 @@ class MessageConsumerSession
 	                    	try {
 	                    		receiver.close();
 	                    	} catch ( Throwable e ) {
-	                    		Configuration.logDebug ( "MessageConsumerSession: Error closing receiver" , e );
+	                    		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "MessageConsumerSession: Error closing receiver" , e );
 	                    	}
 	                        receiver = null;
 	                        closeJmsResources ( false );

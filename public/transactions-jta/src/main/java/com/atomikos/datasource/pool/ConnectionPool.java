@@ -66,7 +66,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 	
 	private void init() throws ConnectionPoolException
 	{
-		Configuration.logDebug ( this + ": initializing..." );
+		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": initializing..." );
 		for ( int i=0; i < properties.getMinPoolSize() ; i++ ) {
 			try {
 				XPooledConnection xpc = connectionFactory.createPooledConnection();
@@ -74,12 +74,12 @@ public class ConnectionPool implements XPooledConnectionEventListener
 				xpc.registerXPooledConnectionEventListener ( this );
 			} catch ( Exception dbDown ) {
 				//see case 26380
-				Configuration.logDebug ( this + ": could not establish initial connection" , dbDown );
+				if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": could not establish initial connection" , dbDown );
 			}
 		}
 		int maintenanceInterval = properties.getMaintenanceInterval();
 		if ( maintenanceInterval <= 0 ) {
-			Configuration.logDebug ( this + ": using default maintenance interval..." );
+			if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": using default maintenance interval..." );
 			maintenanceInterval = DEFAULT_MAINTENANCE_INTERVAL;
 		}
 	
@@ -102,7 +102,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 			
 			if (xpc.canBeRecycledForCallingThread()) {
 				ret = xpc.createConnectionProxy ( hmsg );
-				Configuration.logDebug( this + ": recycling connection from pool..." );
+				if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug( this + ": recycling connection from pool..." );
 				return ret;
 			}
 		}
@@ -143,9 +143,9 @@ public class ConnectionPool implements XPooledConnectionEventListener
 				growPool();
 			} else {
 				if (totalSize() == properties.getMaxPoolSize())
-					Configuration.logDebug( this +  ": pool reached max size: " + properties.getMaxPoolSize());
+					if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug( this +  ": pool reached max size: " + properties.getMaxPoolSize());
 
-				Configuration.logDebug( this +  ": current size: " + availableSize() + "/" + totalSize());
+				if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug( this +  ": current size: " + availableSize() + "/" + totalSize());
 				remainingTime = waitForConnectionInPoolIfNecessary(remainingTime);
 			}
 			
@@ -159,7 +159,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 				if (xpc.isAvailable()) {
 					try {
 						ret = xpc.createConnectionProxy ( hmsg );
-						Configuration.logDebug( this + ": got connection from pool, new size: " + availableSize() + "/" + totalSize());
+						if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug( this + ": got connection from pool, new size: " + availableSize() + "/" + totalSize());
 					} catch ( CreateConnectionException ex ) {
 						String msg = this +  ": error creating proxy of connection " + xpc;
 						Configuration.logWarning( msg , ex);
@@ -186,7 +186,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 	}
 
 	private synchronized void growPool() throws CreateConnectionException {
-		Configuration.logDebug( this + ": growing pool size to: " + (totalSize() + 1));
+		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug( this + ": growing pool size to: " + (totalSize() + 1));
 		XPooledConnection xpc = connectionFactory.createPooledConnection();
 		connections.add ( xpc );
 		xpc.registerXPooledConnectionEventListener(this);
@@ -196,7 +196,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 		if (connections == null || properties.getMaxIdleTime() <= 0 )
 			return;
 		
-		Configuration.logDebug ( this + ": trying to shrink pool" );
+		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": trying to shrink pool" );
 		List connectionsToRemove = new ArrayList();
 		int maxConnectionsToRemove = totalSize() - properties.getMinPoolSize();
 		if ( maxConnectionsToRemove > 0 ) {
@@ -205,9 +205,9 @@ public class ConnectionPool implements XPooledConnectionEventListener
 				long lastRelease = xpc.getLastTimeReleased();
 				long maxIdle = properties.getMaxIdleTime();
 				long now = System.currentTimeMillis();
-				Configuration.logDebug ( this + ": connection idle for " + (now - lastRelease) + "ms");
+				if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": connection idle for " + (now - lastRelease) + "ms");
 				if ( xpc.isAvailable() &&  ( (now - lastRelease) >= (maxIdle * 1000L) ) && ( connectionsToRemove.size() < maxConnectionsToRemove ) ) {
-					Configuration.logDebug ( this + ": connection idle for more than " + maxIdle + "s, closing it: " + xpc);
+					if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": connection idle for more than " + maxIdle + "s, closing it: " + xpc);
 					
 					xpc.destroy();
 					connectionsToRemove.add(xpc);
@@ -222,7 +222,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 		long maxInUseTime = properties.getReapTimeout();
 		if ( connections == null || maxInUseTime <= 0 ) return;
 		
-		Configuration.logDebug ( this + ": reaping old connections" );		
+		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": reaping old connections" );		
 		
 		Iterator it = connections.iterator();
 		while ( it.hasNext() ) {
@@ -232,7 +232,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 			
 			long now = System.currentTimeMillis();
 			if ( inUse && ( ( now - maxInUseTime * 1000 ) > lastTimeReleased ) ) {
-				Configuration.logDebug ( this + ": connection in use for more than " + maxInUseTime + "s, reaping it: " + xpc );
+				if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": connection in use for more than " + maxInUseTime + "s, reaping it: " + xpc );
 				xpc.reap();
 			}
 		}
@@ -250,7 +250,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 			connections = null;
 			destroyed = true;
 			maintenanceTimer.stop();
-			Configuration.logDebug ( this + ": pool destroyed." );
+			if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": pool destroyed." );
 		}
 	}
 
@@ -265,7 +265,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
         	if ( properties.getBorrowConnectionTimeout() <= 0 ) throw new PoolExhaustedException ( "ConnectionPool: pool is empty and borrowConnectionTimeout is not set" );
             long before = System.currentTimeMillis();
         	try {
-        		Configuration.logDebug ( this + ": about to wait for connection during " + remainingTime + "ms...");
+        		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": about to wait for connection during " + remainingTime + "ms...");
         		
         		this.wait (remainingTime);
         		
@@ -273,9 +273,9 @@ public class ConnectionPool implements XPooledConnectionEventListener
 				// cf bug 67457
 				InterruptedExceptionHelper.handleInterruptedException ( ex );
 				// ignore
-				Configuration.logDebug ( this + ": interrupted during wait" , ex );
+				if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": interrupted during wait" , ex );
 			}
-			Configuration.logDebug ( this + ": done waiting." );
+			if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": done waiting." );
 			long now = System.currentTimeMillis();
             remainingTime -= (now - before);
             if (remainingTime <= 0)
@@ -315,7 +315,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 	}
 
 	public synchronized void onXPooledConnectionTerminated(XPooledConnection connection) {
-		Configuration.logDebug( this +  ": connection " + connection + " became available, notifying potentially waiting threads");
+		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug( this +  ": connection " + connection + " became available, notifying potentially waiting threads");
 		
 		this.notify();
 		

@@ -202,7 +202,7 @@ class UserTransactionServiceImp extends AbstractJtaUserTransactionService
         	slf4jConsole.setLevel ( level );
         	Configuration.addConsole ( slf4jConsole );
         } catch (ClassNotFoundException ex) {
-        	Configuration.logDebug("cannot load SLF4J, skipping this console", ex);
+        	if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug("cannot load SLF4J, skipping this console", ex);
 		}
 
 

@@ -137,7 +137,7 @@ extends MessageConsumerSession
 			try {
 				ret = queue.getQueueName();
 			} catch ( JMSException e ) {
-				Configuration.logDebug ( "QueueReceiverSession: error retrieving queue name" , e );
+				if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "QueueReceiverSession: error retrieving queue name" , e );
 			}
 		}
 		return ret;

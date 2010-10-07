@@ -629,4 +629,37 @@ public final class Configuration
     
     	
     }
+    
+    /**
+     * Tests if DEBUG logging is enabled. Call this before you construct DEBUG strings!
+     * @return
+     */
+    
+	public static boolean isDebugLoggingEnabled() 
+	{
+		// cf case 66587
+		boolean ret = false;
+		Console console = getConsole();
+		if ( console != null ) {
+			ret = console.getLevel() == Console.DEBUG;
+		}
+		return ret;
+	}
+
+	/**
+	 * Tests if INFO logging is enabled. Call this before you construct INFO strings!
+	 * 
+	 * @return
+	 */
+	public static boolean isInfoLoggingEnabled() 
+	{
+		// cf case 66587
+		boolean info = false;
+		boolean debug = isDebugLoggingEnabled();
+		Console console = getConsole();
+		if ( console != null ) {
+			info = console.getLevel() == Console.INFO;
+		}
+		return debug || info;
+	}
 }

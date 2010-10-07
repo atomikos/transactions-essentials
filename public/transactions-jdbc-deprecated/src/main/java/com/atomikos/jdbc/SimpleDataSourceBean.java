@@ -217,7 +217,7 @@ public class SimpleDataSourceBean implements HeuristicDataSource,
         sb.append("testOnBorrow=").append(testOnBorrow_);
         sb.append("]");
         
-        Configuration.logDebug(sb.toString());
+        if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug(sb.toString());
         
         Configuration.logWarning ( "WARNING: class " + getClass().getName() + " is deprecated!" );
         

@@ -252,7 +252,7 @@ implements HeuristicDataSource, ConnectionPoolProperties, Referenceable, Seriali
 
 	public synchronized void init() throws AtomikosSQLException 
 	{
-		Configuration.logInfo ( this + ": init..." );
+		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug ( this + ": init..." );
 		if (connectionPool != null)
 			return;
 		
@@ -278,12 +278,12 @@ implements HeuristicDataSource, ConnectionPoolProperties, Referenceable, Seriali
 			String msg =  "Cannot initialize AtomikosDataSourceBean";
 			AtomikosSQLException.throwAtomikosSQLException ( msg , ex );
 		}
-		Configuration.logDebug ( this + ": init done." );
+		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": init done." );
 	}
 	
 	public void close() 
 	{
-		Configuration.logInfo ( this + ": close..." );
+		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug ( this + ": close..." );
 		if (connectionPool != null) {
 			connectionPool.destroy();
 		}
@@ -293,9 +293,9 @@ implements HeuristicDataSource, ConnectionPoolProperties, Referenceable, Seriali
 			IntraVmObjectRegistry.removeResource ( getUniqueResourceName() );
 		} catch ( NameNotFoundException e ) {
 			//ignore but log
-			Configuration.logDebug ( this + ": Error removing from JNDI" , e );
+			if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": Error removing from JNDI" , e );
 		}
-		Configuration.logDebug ( this + ": close done." );
+		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": close done." );
 	}
 	
 	protected abstract ConnectionFactory doInit() throws Exception;
@@ -306,7 +306,7 @@ implements HeuristicDataSource, ConnectionPoolProperties, Referenceable, Seriali
 
 	public Connection getConnection ( HeuristicMessage msg ) throws SQLException 
 	{
-		Configuration.logInfo ( this + ": getConnection ( " + msg + " )..." );
+		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug ( this + ": getConnection ( " + msg + " )..." );
 		Connection connection = null;
 		
 		init();
@@ -321,7 +321,7 @@ implements HeuristicDataSource, ConnectionPoolProperties, Referenceable, Seriali
 		} catch (ConnectionPoolException e) {
 			throwAtomikosSQLException("Error borrowing connection", e );
 		}
-		Configuration.logDebug ( this + ": returning " + connection );
+		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": returning " + connection );
 		return connection;
 	}
 

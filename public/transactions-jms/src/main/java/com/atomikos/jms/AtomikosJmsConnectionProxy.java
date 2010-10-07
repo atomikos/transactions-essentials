@@ -71,7 +71,7 @@ implements SessionHandleStateChangeListener
  	   }
  	   catch ( Exception e ) {
  		   //ignore: workaround code
- 		   Configuration.logDebug ( "JMS: driver complains while enforcing XA mode - ignore if no later errors:" , e );
+ 		   if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "JMS: driver complains while enforcing XA mode - ignore if no later errors:" , e );
  	   } 
  	   finally {
  		   if ( s != null ) {
@@ -79,7 +79,7 @@ implements SessionHandleStateChangeListener
  				   s.close();
  			   } catch ( JMSException e ) {
  				   //ignore: workaround code
- 				   Configuration.logDebug ( "JMS: driver complains while enforcing XA mode - ignore if no later errors:" , e );
+ 				   if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "JMS: driver complains while enforcing XA mode - ignore if no later errors:" , e );
  			   }
  		   }
  	   }
@@ -139,7 +139,7 @@ implements SessionHandleStateChangeListener
 			}
 			
 			if ( CLOSE_METHOD.equals ( methodName ) ) {
-				Configuration.logDebug( this + ": intercepting call to close" );
+				if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug( this + ": intercepting call to close" );
 				close();
 				return null;
 			} else if ( reaped ) {
@@ -157,7 +157,7 @@ implements SessionHandleStateChangeListener
 				if ( transactedFlag.booleanValue() && !props.getLocalTransactionMode() ) {
 					session = recycleSession();
 					if (session == null) {
-						Configuration.logInfo ( this + ": creating XA-capable session..." );
+						if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug ( this + ": creating XA-capable session..." );
 						forceConnectionIntoXaMode ( delegate );
 						XASession wrapped = null;
 						try {
@@ -170,7 +170,7 @@ implements SessionHandleStateChangeListener
 						addSession ( session );
 					}
 				} else {
-					Configuration.logInfo ( this + ": creating NON-XA session..." );
+					if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug ( this + ": creating NON-XA session..." );
 					CompositeTransaction ct = null;
 					CompositeTransactionManager ctm = Configuration.getCompositeTransactionManager();
 					if ( ctm != null ) ct = ctm.getCompositeTransaction();
@@ -191,14 +191,14 @@ implements SessionHandleStateChangeListener
 					session = ( Session ) AtomikosJmsNonXaSessionProxy.newInstance( wrapped , owner , this );
 					addSession ( session );
 				}
-				Configuration.logDebug ( this + ": returning " + session );
+				if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": returning " + session );
 				return session;
 				
 			} else {		
 			
-					Configuration.logInfo ( this + ": calling " + methodName + " on JMS driver...");
+					if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug ( this + ": calling " + methodName + " on JMS driver...");
 					Object ret = method.invoke(delegate, args);
-					Configuration.logDebug ( this + ": " + methodName + " returning " + ret );
+					if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": " + methodName + " returning " + ret );
 					return ret;
 			
 			}
@@ -232,7 +232,7 @@ implements SessionHandleStateChangeListener
 					//recycle if either inactive in this tx, OR if active (since a new session will be created anyway, and 
 					//concurrent sessions are allowed on the same underlying connection!
 					if ( proxy.isInactiveTransaction(current) || proxy.isInTransaction( current ) ) {
-						Configuration.logInfo ( this + ": recycling session " + proxy );
+						if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug ( this + ": recycling session " + proxy );
 						return session;
 					}
 				}
@@ -242,10 +242,10 @@ implements SessionHandleStateChangeListener
 	}
 
 	private void close() {
-		Configuration.logInfo ( this + ": close()...");
+		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug ( this + ": close()...");
 		
 		closed = true;		
-		Configuration.logDebug ( this + ": closing " + sessions.size() + " session(s)" );
+		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": closing " + sessions.size() + " session(s)" );
 		
 		//close all sessions to make sure the session close notifications are done!
 		synchronized (sessions) {
@@ -260,18 +260,18 @@ implements SessionHandleStateChangeListener
 			}
 		}
 		
-		Configuration.logDebug( this + ": is available ? " + isAvailable() );
+		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug( this + ": is available ? " + isAvailable() );
 		if (isAvailable())
 			owner.onTerminated();
 		
-		Configuration.logDebug ( this + ": closed." );	
+		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": closed." );	
 		//leave destroy to the owning pooled connection - that one knows when any and all 2PCs are done
 	}
 
 
 	//should only be called after ALL sessions are done, i.e. when the connection can be pooled again
 	synchronized void destroy() {
-		Configuration.logDebug ( this + ": closing connection and all " + sessions.size() + " session(s)" );
+		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": closing connection and all " + sessions.size() + " session(s)" );
 
 		//close all sessions to make sure the session close notifications are done!
 		synchronized (sessions) {

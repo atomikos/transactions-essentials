@@ -45,7 +45,7 @@ public class TestTopicConnectionFactory implements XATopicConnectionFactory,
 	    
 	public XATopicConnection createXATopicConnection() throws JMSException {
 		incNumberOfConnectionsCreated();
-        Configuration.logDebug ( "TestQueueConnectionFactory: creating new Connection..." );
+        if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "TestQueueConnectionFactory: creating new Connection..." );
 
         return new TestTopicConnection(xares_);
 	}

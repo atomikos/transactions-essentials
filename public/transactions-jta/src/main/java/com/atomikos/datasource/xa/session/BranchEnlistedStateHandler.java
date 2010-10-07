@@ -83,7 +83,7 @@ class BranchEnlistedStateHandler extends TransactionContextStateHandler
 			//TODO check: what if subtransaction? Possible solution: ignore if serial_jta mode, error otherwise.
 			
 			String msg = "The connection/session object is already enlisted in a (different) transaction.";
-			Configuration.logDebug ( msg );
+			if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( msg );
 			throw new UnexpectedTransactionContextException();
 		}
 		

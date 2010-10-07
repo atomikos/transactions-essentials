@@ -86,7 +86,7 @@ class AtomikosJmsNonXaSessionProxy extends AbstractJmsSessionProxy
 			try {
 				tx = tm.getTransaction();
 			} catch (SystemException e) {
-				Configuration.logDebug ( this + ": Failed to get transaction."  , e );
+				if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": Failed to get transaction."  , e );
 				//ignore
 			}
 			if ( tx != null ) {
@@ -95,7 +95,7 @@ class AtomikosJmsNonXaSessionProxy extends AbstractJmsSessionProxy
 						"To enable JTA, make sure to do all of the following:" + "\n" +
 						"1. Make sure that the AtomikosConnectionFactoryBean is configured with localTransactionMode=false, and" + "\n" +
 						"2. Make sure to call create JMS sessions with the transacted flag set to true.";
-				Configuration.logInfo ( msg );
+				if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug ( msg );
 			}
 		}
 	}
@@ -120,7 +120,7 @@ class AtomikosJmsNonXaSessionProxy extends AbstractJmsSessionProxy
 			}
 
 			if ( CLOSE_METHOD.equals ( methodName ) ) {
-				Configuration.logInfo ( this + ": close...");
+				if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug ( this + ": close...");
 				destroy();
 				return null;
 			}
@@ -128,9 +128,9 @@ class AtomikosJmsNonXaSessionProxy extends AbstractJmsSessionProxy
 			checkForTransactionContextAndLogWarningIfSo();
 
 			try {
-				Configuration.logInfo ( this + ": calling " + methodName + " on vendor session..." );
+				if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug ( this + ": calling " + methodName + " on vendor session..." );
 				Object ret =  method.invoke(delegate, args);
-				Configuration.logDebug ( this + ": " + methodName + " returning " + ret );
+				if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": " + methodName + " returning " + ret );
 				return ret;
 			} catch (Exception ex) {
 				errorsOccurred = true;
@@ -146,7 +146,7 @@ class AtomikosJmsNonXaSessionProxy extends AbstractJmsSessionProxy
 
 	protected void destroy() {
 		try {
-			Configuration.logInfo ( this + ": destroying session...");
+			if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug ( this + ": destroying session...");
 			if ( !closed ) {
 				closed = true;
 				delegate.close(); 

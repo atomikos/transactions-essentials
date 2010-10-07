@@ -100,7 +100,7 @@ public class SessionHandleState
 	 */
 	public synchronized void notifySessionBorrowed()
 	{
-		Configuration.logDebug ( this + ": notifySessionBorrowed" );
+		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": notifySessionBorrowed" );
 		currentContext = new TransactionContext ( resource , xaResource );
 		allContexts.add ( currentContext );
 		closed = false;
@@ -114,7 +114,7 @@ public class SessionHandleState
 	
 	public void notifySessionClosed()
 	{
-		Configuration.logDebug ( this + ": entering notifySessionClosed" );
+		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": entering notifySessionClosed" );
 		boolean notifyOfClosedEvent = false;
 	
 		synchronized ( this ) {
@@ -122,7 +122,7 @@ public class SessionHandleState
 			Iterator it = allContexts.iterator();
 			while ( it.hasNext() ) {
 				TransactionContext b = ( TransactionContext ) it.next();
-				Configuration.logDebug ( this + ": delegeting session close to " + b ) ;
+				if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": delegeting session close to " + b ) ;
 				b.sessionClosed();
 			}
 			closed = true;
@@ -130,7 +130,7 @@ public class SessionHandleState
 		}
 		//do callbacks out of synch!!!
 		if ( notifyOfClosedEvent ) {
-			Configuration.logDebug ( this + ": all contexts terminated, firing TerminatedEvent" );
+			if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": all contexts terminated, firing TerminatedEvent" );
 			fireTerminatedEvent();
 		}
 	}
@@ -165,19 +165,19 @@ public class SessionHandleState
 			}
 			//check enlistment
 			if ( suspended != null ) {
-				Configuration.logInfo ( this + ": resuming suspended XA context for transaction " + ct.getTid() );
+				if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug ( this + ": resuming suspended XA context for transaction " + ct.getTid() );
 				currentContext = suspended;
 				currentContext.transactionResumed();
 			}
 			else {
 				//no suspended branch was found -> try to use the current branch
 				try {
-					Configuration.logDebug ( this + ": checking XA context for transaction " + ct );
+					if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": checking XA context for transaction " + ct );
 					currentContext.checkEnlistBeforeUse ( ct , hmsg );
 				}
 				catch ( UnexpectedTransactionContextException txBoundaryPassed ) {
 					//we are being used in a different context than expected -> suspend!
-					Configuration.logInfo (  this + ": suspending existing XA context and creating a new one for transaction " + ct );
+					if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug (  this + ": suspending existing XA context and creating a new one for transaction " + ct );
 					currentContext.transactionSuspended();
 					currentContext = new TransactionContext ( resource , xaResource );
 					allContexts.add ( currentContext );
@@ -246,7 +246,7 @@ public class SessionHandleState
 		
 		//check termination status CHANGES - only fire event once for safety!
 		if ( notifyOfTerminatedEvent ) {
-			Configuration.logDebug( this + ": all contexts terminated, firing TerminatedEvent for " + this);
+			if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug( this + ": all contexts terminated, firing TerminatedEvent for " + this);
 			fireTerminatedEvent();
 		}
 	}

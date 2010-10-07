@@ -21,13 +21,13 @@ public class TestXPooledConnection implements XPooledConnection {
 		
 		
 		lastTimeAcquired = System.currentTimeMillis();
-		Configuration.logDebug ( this + ": setting lastTimeAcquired to "+ lastTimeAcquired );
+		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": setting lastTimeAcquired to "+ lastTimeAcquired );
 		return new TestReapable ( this );
 	}
 	
     synchronized void release() {
 		lastTimeReleased = System.currentTimeMillis();
-		Configuration.logDebug ( this + ": setting lastTimeReleased to "+ lastTimeReleased );
+		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": setting lastTimeReleased to "+ lastTimeReleased );
 		Iterator it = listeners.iterator();
 		while ( it.hasNext() ) {
 			XPooledConnectionEventListener next = ( XPooledConnectionEventListener ) it.next();

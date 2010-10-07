@@ -234,7 +234,7 @@ class ThreadLocalConnection implements InvocationHandler
             setStale ( true );
             pooledConnection.notifyCloseListeners ();
         } else {
-            Configuration.logDebug ( "ThreadLocalConnection: not reusable yet" );
+            if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "ThreadLocalConnection: not reusable yet" );
         }
 
     }
@@ -256,10 +256,10 @@ class ThreadLocalConnection implements InvocationHandler
         // delegate commit or rollback to the underlying connection
         try {
             if ( commit ) {
-                Configuration.logInfo ( "ThreadLocalConnection: committing on connection...");
+                if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug ( "ThreadLocalConnection: committing on connection...");
                 wrapped.commit ();
             } else {
-            	   Configuration.logInfo ( "ThreadLocalConnection: rolling back on connection...");
+            	   if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug ( "ThreadLocalConnection: rolling back on connection...");
                 wrapped.rollback ();
             }
         } catch ( SQLException e ) {
@@ -284,7 +284,7 @@ class ThreadLocalConnection implements InvocationHandler
             throws Throwable
     {
         if (NON_TRANSACTIONAL_METHOD_NAMES.contains(m.getName())) {
-        	Configuration.logDebug ("Calling non-transactional method '" + m.getName() + "' on ThreadLocal connection, bypassing enlistment");
+        	if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ("Calling non-transactional method '" + m.getName() + "' on ThreadLocal connection, bypassing enlistment");
         	return m.invoke ( wrapped, args );
         }
 
@@ -313,7 +313,7 @@ class ThreadLocalConnection implements InvocationHandler
             // delegate to the underlying JDBC connection
             try {
                 // System.out.println ( "Proxy: calling method" );
-            	   Configuration.logDebug ( "ThreadLocalConnection: delegating method " + m + 
+            	   if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "ThreadLocalConnection: delegating method " + m + 
             			   " to wrapped connection with args: " + args );
                 result = m.invoke ( wrapped, args );
                

@@ -66,7 +66,7 @@ class DefaultJtaConnection implements Connection
  	   }
  	   catch ( Exception e ) {
  		   //ignore: workaround code
- 		   Configuration.logDebug ( "JMS: driver complains while enforcing XA mode - ignore if no later errors:" , e );
+ 		   if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "JMS: driver complains while enforcing XA mode - ignore if no later errors:" , e );
  	   }
 	}
 

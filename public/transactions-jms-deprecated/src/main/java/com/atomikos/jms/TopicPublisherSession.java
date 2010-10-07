@@ -137,7 +137,7 @@ public class TopicPublisherSession extends MessageProducerSession
 			try {
 				ret = t.getTopicName();
 			} catch ( JMSException e ) {
-				Configuration.logDebug ( "TopicPublisherSession: error retrieving topic name" , e );
+				if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "TopicPublisherSession: error retrieving topic name" , e );
 			}
 		}
 		return ret;
@@ -151,7 +151,7 @@ public class TopicPublisherSession extends MessageProducerSession
 			try {
 				ret = t.getTopicName();
 			} catch ( JMSException e ) {
-				Configuration.logDebug ( "TopicPublisherSession: error retrieving topic name" , e );
+				if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "TopicPublisherSession: error retrieving topic name" , e );
 			}
 		}
 		return ret;

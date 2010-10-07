@@ -262,7 +262,7 @@ public abstract class MessageConsumerSession
 	    msg.append ( "exceptionListener=" ).append ( getExceptionListener() ).append ( ", " );
 	    msg.append ( "connectionFactory=" ).append ( getAbstractConnectionFactoryBean() );
 	    msg.append ( "]" );
-	    Configuration.logDebug ( msg.toString() );
+	    if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( msg.toString() );
 	    
 	}
 	
@@ -274,7 +274,7 @@ public abstract class MessageConsumerSession
 	        //FIXED 10082
 	        current.setDaemon ( daemonThreads );
 	        current.start ();
-	        Configuration.logDebug ( "MessageConsumerSession: started new thread: " + current );
+	        if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "MessageConsumerSession: started new thread: " + current );
 		    }
 		    //if not active: ignore
 	}
@@ -355,10 +355,10 @@ public abstract class MessageConsumerSession
 	                    session.close ();
 	                    session = null;
 	                } catch ( JMSException e ) {
-	                    Configuration.logInfo (
+	                    if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug (
 	                            "MessageConsumerSession: Error closing JMS session",
 	                            e );
-	                    Configuration.logInfo ( "MessageConsumerSession: linked exception is " , e.getLinkedException() );
+	                    if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug ( "MessageConsumerSession: linked exception is " , e.getLinkedException() );
 	                }
 	            if ( connection != null )
 	                try {
@@ -369,7 +369,7 @@ public abstract class MessageConsumerSession
 	                            .logInfo (
 	                                    "MessageConsumerSession: Error closing JMS connection",
 	                                    e );
-	                    Configuration.logInfo ( "MessageConsumerSession: linked exception is " , e.getLinkedException() );
+	                    if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug ( "MessageConsumerSession: linked exception is " , e.getLinkedException() );
 	                }
 	        }
 
@@ -394,7 +394,7 @@ public abstract class MessageConsumerSession
 
 	            while ( Thread.currentThread () == current ) {
 	            	   
-	            	   Configuration.logDebug ( "MessageConsumerSession: JMS listener thread iterating..." );
+	            	   if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "MessageConsumerSession: JMS listener thread iterating..." );
 	                boolean refresh = false;
 	                boolean commit = true;
 	                try {
@@ -437,7 +437,7 @@ public abstract class MessageConsumerSession
 	                            commit = false;
 	                        }
 	                    } catch ( Exception e ) {
-	                        Configuration.logInfo (
+	                        if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug (
 	                                "MessageConsumerSession: Error during JMS processing of message "
 	                                        + msg.toString () + " - rolling back.",
 	                                e );

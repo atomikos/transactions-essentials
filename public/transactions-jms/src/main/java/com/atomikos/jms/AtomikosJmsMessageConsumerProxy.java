@@ -50,7 +50,7 @@ class AtomikosJmsMessageConsumerProxy extends ConsumerProducerSupport implements
 	}
 	
 	public Message receive ( String hmsg ) throws JMSException {
-		Configuration.logInfo ( this + ": receive ( " + hmsg + " )..." );
+		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug ( this + ": receive ( " + hmsg + " )..." );
 		Message ret = null;
 		try {
 			enlist ( hmsg );
@@ -58,12 +58,12 @@ class AtomikosJmsMessageConsumerProxy extends ConsumerProducerSupport implements
 		} catch (Exception e) {
 			handleException ( e );
 		}
-		Configuration.logDebug ( this + ": receive returning " + ret );
+		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": receive returning " + ret );
 		return ret;
 	}
 
 	public Message receive ( long timeout , String hmsg ) throws JMSException {
-		Configuration.logInfo ( this + ": receive ( " + timeout + " , " + hmsg + " )..." );
+		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug ( this + ": receive ( " + timeout + " , " + hmsg + " )..." );
 		
 		Message ret = null;
 		try {
@@ -72,12 +72,12 @@ class AtomikosJmsMessageConsumerProxy extends ConsumerProducerSupport implements
 		} catch (Exception e) {
 			handleException ( e );
 		}
-		Configuration.logDebug ( this + ": receive returning " + ret );
+		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": receive returning " + ret );
 		return ret;
 	}
 
 	public Message receiveNoWait ( String hmsg ) throws JMSException {
-		Configuration.logInfo ( this + ": receiveNoWait ( " + hmsg + " )..." );
+		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug ( this + ": receiveNoWait ( " + hmsg + " )..." );
 		
 		Message ret = null;
 		try {
@@ -86,74 +86,74 @@ class AtomikosJmsMessageConsumerProxy extends ConsumerProducerSupport implements
 		} catch (Exception e) {
 			handleException ( e );
 		}
-		Configuration.logDebug ( this + ": receiveNoWait returning " + ret );
+		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": receiveNoWait returning " + ret );
 		return ret;
 	}
 
 	public void close() throws JMSException {
 		//note: delist is done at session level!
-		Configuration.logInfo ( this + ": close..." );
+		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug ( this + ": close..." );
 		try {
 			delegate.close();
 		} catch (Exception e) {
 			handleException ( e );
 		}
-		Configuration.logDebug ( this + ": close done." );	
+		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": close done." );	
 	}
 
 	public MessageListener getMessageListener() throws JMSException {
-		Configuration.logInfo ( this + ": getMessageListener()..." );
+		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug ( this + ": getMessageListener()..." );
 		MessageListener ret = null;
 		try {
 			ret = delegate.getMessageListener();
 		} catch (Exception e) {
 			handleException ( e );
 		}
-		Configuration.logDebug ( this + ": getMessageListener() returning " + ret );
+		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": getMessageListener() returning " + ret );
 		return ret;
 	}
 
 	public String getMessageSelector() throws JMSException {
-		Configuration.logInfo ( this + ": getMessageSelector()..." );
+		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug ( this + ": getMessageSelector()..." );
 		String ret = null;
 		try {
 			ret = delegate.getMessageSelector();
 		} catch (Exception e) {
 			handleException ( e );
 		}
-		Configuration.logDebug ( this + ": getMessageSelector() returning " + ret );
+		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": getMessageSelector() returning " + ret );
 		return ret;
 	}
 
 	public Message receive() throws JMSException {
-		Configuration.logInfo ( this + ": receive()..." );
+		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug ( this + ": receive()..." );
 		Message ret = receive ( null );
-		Configuration.logDebug ( this + ": receive() returning " + ret );
+		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": receive() returning " + ret );
 		return ret;
 	}
 
 	public Message receive ( long timeout ) throws JMSException {
-		Configuration.logInfo ( this + ": receive ( " + timeout + " )..." );
+		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug ( this + ": receive ( " + timeout + " )..." );
 		Message ret =  receive ( timeout , null );
-		Configuration.logDebug ( this + ": receive() returning " + ret );
+		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": receive() returning " + ret );
 		return ret;
 	}
 
 	public Message receiveNoWait() throws JMSException {
-		Configuration.logInfo ( this + ": receiveNoWait()..." );
+		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug ( this + ": receiveNoWait()..." );
 		Message ret = receiveNoWait ( null );
-		Configuration.logDebug ( this + ": receiveNoWait() returning " + ret );
+		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": receiveNoWait() returning " + ret );
 		return ret;
 	}
 
 	public void setMessageListener ( MessageListener listener ) throws JMSException {
-		Configuration.logInfo ( this + ": setMessageListener ( " + listener + " )..." );
+		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug ( this + ": setMessageListener ( " + listener + " )..." );
 		try {
 			delegate.setMessageListener ( listener );
 		}catch (Exception e) {
 			handleException ( e );
 		}
-		Configuration.logDebug ( this + ": setMessageListener done." );
+		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": setMessageListener done." );
 	}
 	
 	public String toString() 

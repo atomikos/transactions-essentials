@@ -43,35 +43,35 @@ class AtomikosJmsTopicSubscriberProxy extends AtomikosJmsMessageConsumerProxy
 	
 	private TopicSubscriber getDelegateTopicSubscriber()
 	{
-		Configuration.logInfo ( this + ": getDelegateTopicSubscriber()..." );
+		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug ( this + ": getDelegateTopicSubscriber()..." );
 		TopicSubscriber ret =  ( TopicSubscriber ) getDelegate();
-		Configuration.logDebug ( this + ": getDelegateTopicSubscriber() returning " + ret );
+		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": getDelegateTopicSubscriber() returning " + ret );
 		return ret;
 	}
 
 	public boolean getNoLocal() throws JMSException 
 	{
-		Configuration.logInfo ( this + ": getNoLocal()..." );
+		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug ( this + ": getNoLocal()..." );
 		boolean ret = false;
 		try {
 			ret = getDelegateTopicSubscriber().getNoLocal();
 		} catch (Exception e) {
 			handleException(e);
 		}
-		Configuration.logDebug ( this + ": getNoLocal() returning " + ret );
+		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": getNoLocal() returning " + ret );
 		return ret;
 	}
 
 	public Topic getTopic() throws JMSException 
 	{
-		Configuration.logInfo ( this + ": getTopic()..." );
+		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug ( this + ": getTopic()..." );
 		Topic ret = null;
 		try {
 			ret = getDelegateTopicSubscriber().getTopic();
 		} catch (Exception e) {
 			handleException ( e );
 		}
-		Configuration.logDebug (  this + ": getTopic() returning " + ret );
+		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug (  this + ": getTopic() returning " + ret );
 		return ret;
 	}
 	
