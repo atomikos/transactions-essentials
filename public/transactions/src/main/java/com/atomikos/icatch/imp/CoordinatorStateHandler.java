@@ -570,6 +570,11 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
             int count = (participants.size () - readOnlyTable_.size ());
             TerminationResult commitresult = new TerminationResult ( count );
 
+            // cf bug 64546: avoid committed_ being null upon recovery!
+            committed_ = new Boolean ( true );
+            // for replaying completion: commit decision was reached
+            // otherwise, replay requests might only see TERMINATED!
+            
             try {
             	coordinator_.setState ( TxState.COMMITTING );
             } catch ( RuntimeException error ) {
@@ -584,9 +589,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
 					throw new HeurMixedException ( e.getHeuristicMessages() );
 				}
         	}
-            committed_ = new Boolean ( true );
-            // for replaying completion: commit decision was reached
-            // otherwise, replay requests might only see TERMINATED!
+      
 
             // start messages
             Enumeration enumm = participants.elements ();
