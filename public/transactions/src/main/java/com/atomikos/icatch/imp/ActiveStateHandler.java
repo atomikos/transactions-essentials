@@ -38,6 +38,7 @@ import com.atomikos.icatch.Participant;
 import com.atomikos.icatch.RollbackException;
 import com.atomikos.icatch.SysException;
 import com.atomikos.icatch.TxState;
+import com.atomikos.icatch.imp.thread.InterruptedExceptionHelper;
 import com.atomikos.icatch.system.Configuration;
 
 /**
@@ -236,6 +237,8 @@ class ActiveStateHandler extends CoordinatorStateHandler
             throw new SysException ( "Error in prepare: "
                     + runerr.getMessage (), errors );
         } catch ( InterruptedException err ) {
+        	// cf bug 67457
+			InterruptedExceptionHelper.handleInterruptedException ( err );
             errors.push ( err );
             throw new SysException ( "Error in prepare: " + err.getMessage (),
                     errors );

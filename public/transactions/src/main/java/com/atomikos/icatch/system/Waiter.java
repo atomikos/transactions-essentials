@@ -84,6 +84,8 @@ public class Waiter
             while ( numActive > 0 )
                 wait ();
         } catch ( InterruptedException e ) {
+        	// cf bug 67457
+			InterruptedExceptionHelper.handleInterruptedException ( err );
         }
     }
 

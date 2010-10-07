@@ -45,6 +45,7 @@ import com.atomikos.icatch.Participant;
 import com.atomikos.icatch.RollbackException;
 import com.atomikos.icatch.SysException;
 import com.atomikos.icatch.TxState;
+import com.atomikos.icatch.imp.thread.InterruptedExceptionHelper;
 import com.atomikos.icatch.system.Configuration;
 
 /**
@@ -692,6 +693,8 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
         }
 
         catch ( InterruptedException intr ) {
+        	// cf bug 67457
+			InterruptedExceptionHelper.handleInterruptedException ( intr );
             errors.push ( intr );
             throw new SysException ( "Error in commit" + intr.getMessage (),
                     errors );
@@ -822,6 +825,8 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
         }
 
         catch ( InterruptedException e ) {
+        	// cf bug 67457
+			InterruptedExceptionHelper.handleInterruptedException ( e );
             errors.push ( e );
             throw new SysException ( "Error in rollback: " + e.getMessage (),
                     errors );
@@ -870,6 +875,8 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
             // System.out.println ( "Coordinator state handler: replies
             // gotten");
         } catch ( InterruptedException inter ) {
+        	// cf bug 67457
+			InterruptedExceptionHelper.handleInterruptedException ( inter );
             // some might be left in heuristic state -- that's OK.
         }
         nextStateHandler = new TerminatedStateHandler ( this );

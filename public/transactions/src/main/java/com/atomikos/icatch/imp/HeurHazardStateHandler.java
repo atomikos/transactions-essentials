@@ -147,6 +147,8 @@ class HeurHazardStateHandler extends CoordinatorStateHandler
 
 
             } catch ( InterruptedException inter ) {
+            	// cf bug 67457
+    			InterruptedExceptionHelper.handleInterruptedException ( err );
                 // return silently;
                 // worst case is some remaining indoubt participants
             }

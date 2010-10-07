@@ -31,6 +31,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.atomikos.icatch.HeuristicMessage;
+import com.atomikos.icatch.imp.thread.InterruptedExceptionHelper;
 import com.atomikos.icatch.imp.thread.TaskManager;
 import com.atomikos.icatch.system.Configuration;
 import com.atomikos.timing.AlarmTimer;
@@ -174,6 +175,8 @@ public class ConnectionPool implements XPooledConnectionEventListener
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
+					// cf bug 67457
+					InterruptedExceptionHelper.handleInterruptedException ( e );
 					// ignore
 				}
 				remainingTime -= 1000;
@@ -267,6 +270,8 @@ public class ConnectionPool implements XPooledConnectionEventListener
         		this.wait (remainingTime);
         		
 			} catch (InterruptedException ex) {
+				// cf bug 67457
+				InterruptedExceptionHelper.handleInterruptedException ( ex );
 				// ignore
 				Configuration.logDebug ( this + ": interrupted during wait" , ex );
 			}

@@ -977,6 +977,8 @@ public class TransactionServiceImp implements TransactionService,
                     //contine the loop: if not empty then wait again
                     
                 } catch ( InterruptedException inter ) {
+                	// cf bug 67457
+        			InterruptedExceptionHelper.handleInterruptedException ( err );
                     errors.push ( inter );
                     throw new SysException ( "Error in shutdown: "
                             + inter.getMessage (), errors );
