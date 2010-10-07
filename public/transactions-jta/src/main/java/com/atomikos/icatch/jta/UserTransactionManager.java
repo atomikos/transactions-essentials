@@ -38,6 +38,7 @@ import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
+import javax.transaction.UserTransaction;
 
 import com.atomikos.icatch.config.TSInitInfo;
 import com.atomikos.icatch.config.UserTransactionService;
@@ -58,7 +59,7 @@ import com.atomikos.util.SerializableObjectFactory;
  * applications, we have the class J2eeTransactionManager instead.</b>
  */
 public class UserTransactionManager implements TransactionManager,
-        Serializable, Referenceable
+        Serializable, Referenceable, UserTransaction
 {
 
     private transient TransactionManagerImp tm;

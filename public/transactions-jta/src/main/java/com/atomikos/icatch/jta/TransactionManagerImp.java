@@ -38,6 +38,7 @@ import javax.transaction.Status;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
+import javax.transaction.UserTransaction;
 
 import com.atomikos.icatch.CompositeTransaction;
 import com.atomikos.icatch.CompositeTransactionManager;
@@ -54,7 +55,7 @@ import com.atomikos.icatch.system.Configuration;
  */
 
 public class TransactionManagerImp implements TransactionManager,
-        SubTxAwareParticipant, Referenceable
+        SubTxAwareParticipant, Referenceable, UserTransaction
 
 {
     /**

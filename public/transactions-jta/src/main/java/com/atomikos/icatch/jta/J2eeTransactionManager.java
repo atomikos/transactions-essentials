@@ -38,6 +38,7 @@ import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
+import javax.transaction.UserTransaction;
 
 import com.atomikos.util.SerializableObjectFactory;
 
@@ -53,7 +54,7 @@ import com.atomikos.util.SerializableObjectFactory;
  */
 public class J2eeTransactionManager 
 implements TransactionManager,
-        Serializable, Referenceable
+        Serializable, Referenceable, UserTransaction
 {
 
     private transient TransactionManagerImp tm;
