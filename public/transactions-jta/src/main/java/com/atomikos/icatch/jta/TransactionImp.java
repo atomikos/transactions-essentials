@@ -64,8 +64,28 @@ import com.atomikos.icatch.system.Configuration;
 
 class TransactionImp implements Transaction
 {
+	
+	static void rethrowAsJtaRollbackException ( String msg , Throwable cause ) throws javax.transaction.RollbackException 
+	{
+		javax.transaction.RollbackException ret = new javax.transaction.RollbackException ( msg );
+		ret.initCause ( cause );
+		throw ret;
+	}
+	
+	static void rethrowAsJtaHeuristicMixedException ( String msg , Throwable cause ) throws javax.transaction.HeuristicMixedException 
+	{
+		javax.transaction.HeuristicMixedException ret = new javax.transaction.HeuristicMixedException ( msg );
+		ret.initCause ( cause );
+		throw ret;
+	}
+	
+	static void rethrowAsJtaHeuristicRollbackException ( String msg , Throwable cause ) throws javax.transaction.HeuristicRollbackException 
+	{
+		javax.transaction.HeuristicRollbackException ret = new javax.transaction.HeuristicRollbackException ( msg );
+		ret.initCause ( cause );
+		throw ret;
+	}
 
-    //
     protected CompositeTransaction ct_;
 
     protected Map xaresToTxMap_;
@@ -215,11 +235,11 @@ class TransactionImp implements Transaction
         try {
             term.commit ();
         } catch ( HeurHazardException hh ) {
-            throw new HeuristicMixedException ( hh.getMessage () );
+            rethrowAsJtaHeuristicMixedException ( hh.getMessage () , hh );
         } catch ( HeurRollbackException hr ) {
-            throw new HeuristicRollbackException ( hr.getMessage () );
+        	rethrowAsJtaHeuristicRollbackException ( hr.getMessage () , hr );
         } catch ( HeurMixedException hm ) {
-            throw new HeuristicMixedException ( hm.getMessage () );
+        	rethrowAsJtaHeuristicMixedException ( hm.getMessage () , hm );
         } catch ( SysException se ) {
         	Configuration.logWarning ( se.getMessage() , se );
             throw new ExtendedSystemException ( se.getMessage (), se
@@ -227,8 +247,7 @@ class TransactionImp implements Transaction
         } catch ( com.atomikos.icatch.RollbackException rb ) {
         	//see case 29708: all statements have been closed
         	String msg = rb.getMessage ();
-            throw new javax.transaction.RollbackException ( msg );
-        }
+        	rethrowAsJtaRollbackException ( msg , rb );        }
     }
 
     /**
@@ -348,8 +367,8 @@ class TransactionImp implements Transaction
             } catch ( XAException xaerr ) {
                 if ( (XAException.XA_RBBASE <= xaerr.errorCode)
                         && (xaerr.errorCode <= XAException.XA_RBEND) )
-                    throw new javax.transaction.RollbackException (
-                            "Transaction was already rolled back inside the back-end resource. Further enlists are useless." );
+                	rethrowAsJtaRollbackException (
+                            "Transaction was already rolled back inside the back-end resource. Further enlists are useless." , xaerr );
 
                 errors.push ( xaerr );
                 throw new ExtendedSystemException ( "Unexpected error during enlist", errors );
@@ -378,8 +397,8 @@ class TransactionImp implements Transaction
                     XAException xaerr = (XAException) nested.peek ();
                     if ( (XAException.XA_RBBASE <= xaerr.errorCode)
                             && (xaerr.errorCode <= XAException.XA_RBEND) )
-                        throw new javax.transaction.RollbackException (
-                                "The transaction was rolled back in the back-end resource. Further enlists are useless." );
+                    	rethrowAsJtaRollbackException (
+                                "The transaction was rolled back in the back-end resource. Further enlists are useless." , re );
                 }
 
                 errors.push ( re );
