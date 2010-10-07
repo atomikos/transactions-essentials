@@ -256,12 +256,15 @@ implements HeuristicDataSource, ConnectionPoolProperties, Referenceable, Seriali
 		if (connectionPool != null)
 			return;
 		
-		if (maxPoolSize < 1)
+		if ( maxPoolSize < 1 )
 			throwAtomikosSQLException ( "Property 'maxPoolSize' must be greater than 0, was: " + maxPoolSize );
-		if (minPoolSize < 0 || minPoolSize > maxPoolSize)
+		if ( minPoolSize < 0 || minPoolSize > maxPoolSize )
 			throwAtomikosSQLException("Property 'minPoolSize' must be at least 0 and at most maxPoolSize, was: " + minPoolSize);
-		if (getUniqueResourceName() == null)
+		if ( getUniqueResourceName() == null )
 			throwAtomikosSQLException("Property 'uniqueResourceName' cannot be null");
+		if ( getTestQuery() == null ) 
+			Configuration.logWarning ( this + ": no testQuery set - the connection pool will not be able to validate the connections!" );
+		
 		
 		try {
 			//initialize JNDI infrastructure for lookup
