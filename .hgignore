@@ -11,3 +11,4 @@ eclipse/
 .project
 .settings/
 
+.DS_Store
