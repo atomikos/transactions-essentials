@@ -1,20 +1,19 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<artifactId>ate</artifactId>
 		<groupId>com.atomikos</groupId>
-		<version>3.7.0-SNAPSHOT</version>
+		<version>3.7.0.M2</version>
 	</parent>
 	<groupId>com.atomikos</groupId>
 	<artifactId>transactions-osgi-tests</artifactId>
-	<version>3.7.0-SNAPSHOT</version>
+	<version>3.7.0.M2</version>
 	<name>Transactions OSGi Tests</name>
 	<dependencies>
 		<dependency>
 			<groupId>com.atomikos</groupId>
 			<artifactId>transactions-osgi</artifactId>
-			<version>3.7.0-SNAPSHOT</version>
+			<version>3.7.0.M2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.ops4j.pax.exam</groupId>

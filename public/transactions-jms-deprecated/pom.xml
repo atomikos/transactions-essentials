@@ -1,27 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.atomikos</groupId>
         <artifactId>ate</artifactId>
-        <version>3.7.0-SNAPSHOT</version>
+        <version>3.7.0.M2</version>
     </parent>
     <groupId>com.atomikos</groupId>
     <artifactId>transactions-jms-deprecated</artifactId>
-    <version>3.7.0-SNAPSHOT</version>
+    <version>3.7.0.M2</version>
     <name>Transactions JMS Deprecated</name>
     <dependencies>
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>transactions-jta</artifactId>
-            <version>3.7.0-SNAPSHOT</version>
+            <version>3.7.0.M2</version>
         </dependency>
         <!--  requires  HeuristicMessageConsumer-->
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>transactions-jms</artifactId>
-            <version>3.7.0-SNAPSHOT</version>
+            <version>3.7.0.M2</version>
         </dependency>
         <!--PLQ : this artifact does not exists in central maven repo
         <dependency>
@@ -38,7 +37,7 @@
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>atomikos-util</artifactId>
-            <version>3.7.0-SNAPSHOT</version>
+            <version>3.7.0.M2</version>
             <classifier>tests</classifier>
             <optional>true</optional>
             <scope>test</scope>
@@ -46,7 +45,7 @@
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>transactions</artifactId>
-            <version>3.7.0-SNAPSHOT</version>
+            <version>3.7.0.M2</version>
             <classifier>tests</classifier>
             <optional>true</optional>
             <scope>test</scope>
@@ -54,7 +53,7 @@
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>transactions-jta</artifactId>
-            <version>3.7.0-SNAPSHOT</version>
+            <version>3.7.0.M2</version>
             <classifier>tests</classifier>
             <optional>true</optional>
             <scope>test</scope>
@@ -62,7 +61,7 @@
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>transactions-jms</artifactId>
-            <version>3.7.0-SNAPSHOT</version>
+            <version>3.7.0.M2</version>
             <classifier>tests</classifier>
             <optional>true</optional>
             <scope>test</scope>
