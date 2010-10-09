@@ -4,11 +4,11 @@
     <parent>
         <groupId>com.atomikos</groupId>
         <artifactId>ate</artifactId>
-        <version>3.7.0.M3</version>
+        <version>3.7.1.M3-SNAPSHOT</version>
     </parent>
     <groupId>com.atomikos</groupId>
     <artifactId>transactions-jdbc</artifactId>
-    <version>3.7.0.M3</version>
+    <version>3.7.1.M3-SNAPSHOT</version>
     <name>Transactions JDBC</name>
     <build>
         <plugins>
@@ -28,12 +28,12 @@
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>transactions-jta</artifactId>
-            <version>3.7.0.M3</version>
+            <version>3.7.1.M3-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>atomikos-util</artifactId>
-            <version>3.7.0.M3</version>
+            <version>3.7.1.M3-SNAPSHOT</version>
             <classifier>tests</classifier>
             <optional>true</optional>
             <scope>test</scope>
@@ -41,7 +41,7 @@
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>transactions</artifactId>
-            <version>3.7.0.M3</version>
+            <version>3.7.1.M3-SNAPSHOT</version>
             <classifier>tests</classifier>
             <optional>true</optional>
             <scope>test</scope>
@@ -49,7 +49,7 @@
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>transactions-jta</artifactId>
-            <version>3.7.0.M3</version>
+            <version>3.7.1.M3-SNAPSHOT</version>
             <classifier>tests</classifier>
             <optional>true</optional>
             <scope>test</scope>
