@@ -4,28 +4,28 @@
     <parent>
         <groupId>com.atomikos</groupId>
         <artifactId>ate</artifactId>
-        <version>3.7.0.M4-SNAPSHOT</version>
+        <version>3.7.0.M4</version>
     </parent>
     <groupId>com.atomikos</groupId>
     <artifactId>transactions-jdbc-deprecated</artifactId>
-    <version>3.7.0.M4-SNAPSHOT</version>
+    <version>3.7.0.M4</version>
     <name>Transactions JDBC Deprecated</name>
     <dependencies>
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>transactions-jta</artifactId>
-            <version>3.7.0.M4-SNAPSHOT</version>
+            <version>3.7.0.M4</version>
         </dependency>
         <!--  requires HeuristicDataSource interface... -->
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>transactions-jdbc</artifactId>
-            <version>3.7.0.M4-SNAPSHOT</version>
+            <version>3.7.0.M4</version>
         </dependency>
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>atomikos-util</artifactId>
-            <version>3.7.0.M4-SNAPSHOT</version>
+            <version>3.7.0.M4</version>
             <classifier>tests</classifier>
             <optional>true</optional>
             <scope>test</scope>
@@ -33,7 +33,7 @@
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>transactions</artifactId>
-            <version>3.7.0.M4-SNAPSHOT</version>
+            <version>3.7.0.M4</version>
             <classifier>tests</classifier>
             <optional>true</optional>
             <scope>test</scope>
@@ -41,7 +41,7 @@
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>transactions-jta</artifactId>
-            <version>3.7.0.M4-SNAPSHOT</version>
+            <version>3.7.0.M4</version>
             <classifier>tests</classifier>
             <optional>true</optional>
             <scope>test</scope>
@@ -49,7 +49,7 @@
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>transactions-jdbc</artifactId>
-            <version>3.7.0.M4-SNAPSHOT</version>
+            <version>3.7.0.M4</version>
             <classifier>tests</classifier>
             <optional>true</optional>
             <scope>test</scope>

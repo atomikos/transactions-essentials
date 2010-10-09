@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.atomikos</groupId>
 	<artifactId>atomikos-parent</artifactId>
-	<version>3.7.0.M4-SNAPSHOT</version>
+	<version>3.7.0.M4</version>
 	<!-- With maven, a parent pom MUST have "pom" for packaging -->
 	<packaging>pom</packaging>
 	<name>Atomikos All POM</name>
