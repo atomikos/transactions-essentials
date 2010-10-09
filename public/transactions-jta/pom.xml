@@ -4,11 +4,11 @@
     <parent>
         <groupId>com.atomikos</groupId>
         <artifactId>ate</artifactId>
-        <version>3.7.0.M3-SNAPSHOT</version>
+        <version>3.7.0.M2-SNAPSHOT</version>
     </parent>
     <groupId>com.atomikos</groupId>
     <artifactId>transactions-jta</artifactId>
-    <version>3.7.0.M3-SNAPSHOT</version>
+    <version>3.7.0.M2-SNAPSHOT</version>
     <name>Transactions JTA</name>
     <build>
         <plugins>
@@ -28,17 +28,17 @@
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>atomikos-util</artifactId>
-            <version>3.7.0.M3-SNAPSHOT</version>
+            <version>3.7.0.M2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>transactions-api</artifactId>
-            <version>3.7.0.M3-SNAPSHOT</version>
+            <version>3.7.0.M2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>transactions</artifactId>
-            <version>3.7.0.M3-SNAPSHOT</version>
+            <version>3.7.0.M2-SNAPSHOT</version>
         </dependency>
         <!--should not be necessary here...-->
         <dependency>
@@ -57,14 +57,14 @@
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>atomikos-util</artifactId>
-            <version>3.7.0.M3-SNAPSHOT</version>
+            <version>3.7.0.M2-SNAPSHOT</version>
             <classifier>tests</classifier>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>transactions</artifactId>
-            <version>3.7.0.M3-SNAPSHOT</version>
+            <version>3.7.0.M2-SNAPSHOT</version>
             <classifier>tests</classifier>
             <optional>true</optional>
             <scope>test</scope>
