@@ -1,19 +1,20 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<artifactId>ate</artifactId>
 		<groupId>com.atomikos</groupId>
-		<version>3.7.0.M5-SNAPSHOT</version>
+		<version>3.7.0.M2-SNAPSHOT</version>
 	</parent>
 	<groupId>com.atomikos</groupId>
 	<artifactId>transactions-osgi-tests</artifactId>
-	<version>3.7.0.M5-SNAPSHOT</version>
+	<version>3.7.0.M2-SNAPSHOT</version>
 	<name>Transactions OSGi Tests</name>
 	<dependencies>
 		<dependency>
 			<groupId>com.atomikos</groupId>
 			<artifactId>transactions-osgi</artifactId>
-			<version>3.7.0.M5-SNAPSHOT</version>
+			<version>3.7.0.M2-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.ops4j.pax.exam</groupId>
@@ -72,8 +73,8 @@
 					<execution>
 						<id>generate-config</id>
 						<goals>
-              <goal>generate-depends-file</goal>
-            </goals>
+							<goal>generate-depends-file</goal>
+						</goals>
 					</execution>
 				</executions>
 				<configuration>
@@ -83,6 +84,12 @@
 						<profiles>log</profiles>
 					</options>
 
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<configuration>
+					<skip>true</skip>
 				</configuration>
 			</plugin>
 
