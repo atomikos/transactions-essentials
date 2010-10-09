@@ -4,11 +4,11 @@
 	<parent>
 		<groupId>com.atomikos</groupId>
 		<artifactId>atomikos-parent</artifactId>
-		<version>3.7.0.M3-SNAPSHOT</version>
+		<version>3.7.0.M3</version>
 	</parent>
 	<groupId>com.atomikos</groupId>
 	<artifactId>ate</artifactId>
-	<version>3.7.0.M3-SNAPSHOT</version>
+	<version>3.7.0.M3</version>
 	<packaging>pom</packaging>
 	<name>Atomikos Transactions Essentials</name>
 
@@ -84,7 +84,7 @@
 				</executions>
 			</plugin>
 			
-			<plugin>
+			<!--<plugin>
 				  <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
                     <version>2.7</version>
@@ -99,7 +99,7 @@
                     </goals>
                     </execution>
                     </executions>
-			</plugin>
+			</plugin>-->
 
 		</plugins>
 	</build>
