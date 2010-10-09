@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.atomikos</groupId>
 	<artifactId>atomikos-parent</artifactId>
-	<version>3.7.0.M3-SNAPSHOT</version>
+	<version>3.7.0.M3</version>
 	<!-- With maven, a parent pom MUST have "pom" for packaging -->
 	<packaging>pom</packaging>
 	<name>Atomikos All POM</name>
@@ -20,12 +20,12 @@
 		<repository>
 			<id>internal.release.repo</id>
 			<name>Atomikos Internal Release Repository</name>
-			<url>file:/home/pascal/workspaceAtomikos2/development/</url>
+			<url>file:/home/pascal/devs/repo/</url>
 		</repository>
 		<snapshotRepository>
 			<id>internal.snapshot.repo</id>
 			<name>Atomikos Internal Snapshot Repository</name>
-			<url>file:/home/pascal/workspaceAtomikos2/development/</url>
+			<url>file:/home/pascal/devs/repo/</url>
 		</snapshotRepository>
 	</distributionManagement>
 	<build>
