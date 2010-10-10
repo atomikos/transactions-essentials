@@ -133,17 +133,9 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<executions>
-					<execution>
-						<phase>install</phase>
-						<goals>
-							<goal>aggregate-jar</goal>
-						</goals>
-						<configuration>
+				<configuration>
 							<subpackages>com.atomikos</subpackages>
 						</configuration>
-					</execution>
-				</executions>
 			</plugin>
 
 			<plugin>
