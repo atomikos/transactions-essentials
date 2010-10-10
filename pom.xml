@@ -21,12 +21,12 @@
 		<repository>
 			<id>internal.release.repo</id>
 			<name>Atomikos Internal Release Repository</name>
-			<url>file:/home/pascal/devs/repo/</url>
+			<url>http://atomikos.dyndns.org:8088/nexus/content/repositories/releases</url>
 		</repository>
 		<snapshotRepository>
 			<id>internal.snapshot.repo</id>
 			<name>Atomikos Internal Snapshot Repository</name>
-			<url>file:/home/pascal/devs/repo/</url>
+			<url>http://atomikos.dyndns.org:8088/nexus/content/repositories/snapshots/</url>
 		</snapshotRepository>
 	</distributionManagement>
 	<build>
