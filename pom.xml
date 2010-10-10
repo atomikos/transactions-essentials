@@ -133,7 +133,6 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-javadoc-plugin</artifactId>
-
 				<executions>
 					<execution>
 						<phase>install</phase>
@@ -143,9 +142,19 @@
 						<configuration>
 							<subpackages>com.atomikos</subpackages>
 						</configuration>
-				</execution>
+					</execution>
 				</executions>
+			</plugin>
 
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.1</version>
+				<configuration>
+					<autoVersionSubmodules>true</autoVersionSubmodules>
+					<preparationGoals>clean javadoc:aggregate-jar install</preparationGoals>
+					<arguments>-DskipTests</arguments>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
