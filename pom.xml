@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.atomikos</groupId>
 	<artifactId>atomikos-parent</artifactId>
-	<version>3.7.0M2</version>
+	<version>3.7.0M2-SNAPSHOT</version>
 	<!-- With maven, a parent pom MUST have "pom" for packaging -->
 	<packaging>pom</packaging>
 	<name>Atomikos All POM</name>
@@ -143,7 +144,7 @@
 				<version>2.1</version>
 				<configuration>
 					<autoVersionSubmodules>true</autoVersionSubmodules>
-					<preparationGoals>clean install javadoc:aggregate-jar </preparationGoals>
+					<preparationGoals>clean javadoc:aggregate-jar install</preparationGoals>
 					<arguments>-DskipTests</arguments>
 				</configuration>
 			</plugin>
