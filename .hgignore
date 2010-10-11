@@ -12,3 +12,4 @@ eclipse/
 .settings/
 
 .DS_Store
+*.bak
