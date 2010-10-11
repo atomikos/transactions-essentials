@@ -4,23 +4,23 @@
     <parent>
         <groupId>com.atomikos</groupId>
         <artifactId>ate</artifactId>
-        <version>3.7.0M2-SNAPSHOT</version>
+        <version>3.7.0M2</version>
     </parent>
     <groupId>com.atomikos</groupId>
     <artifactId>transactions-jms-deprecated</artifactId>
-    <version>3.7.0M2-SNAPSHOT</version>
+    <version>3.7.0M2</version>
     <name>Transactions JMS Deprecated</name>
     <dependencies>
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>transactions-jta</artifactId>
-            <version>3.7.0M2-SNAPSHOT</version>
+            <version>3.7.0M2</version>
         </dependency>
         <!--  requires  HeuristicMessageConsumer-->
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>transactions-jms</artifactId>
-            <version>3.7.0M2-SNAPSHOT</version>
+            <version>3.7.0M2</version>
         </dependency>
         <!--PLQ : this artifact does not exists in central maven repo
         <dependency>
@@ -37,7 +37,7 @@
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>atomikos-util</artifactId>
-            <version>3.7.0M2-SNAPSHOT</version>
+            <version>3.7.0M2</version>
             <classifier>tests</classifier>
             <optional>true</optional>
             <scope>test</scope>
@@ -45,7 +45,7 @@
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>transactions</artifactId>
-            <version>3.7.0M2-SNAPSHOT</version>
+            <version>3.7.0M2</version>
             <classifier>tests</classifier>
             <optional>true</optional>
             <scope>test</scope>
@@ -53,7 +53,7 @@
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>transactions-jta</artifactId>
-            <version>3.7.0M2-SNAPSHOT</version>
+            <version>3.7.0M2</version>
             <classifier>tests</classifier>
             <optional>true</optional>
             <scope>test</scope>
@@ -61,7 +61,7 @@
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>transactions-jms</artifactId>
-            <version>3.7.0M2-SNAPSHOT</version>
+            <version>3.7.0M2</version>
             <classifier>tests</classifier>
             <optional>true</optional>
             <scope>test</scope>
