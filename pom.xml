@@ -145,7 +145,7 @@
 					<autoVersionSubmodules>true</autoVersionSubmodules>
 					<preparationGoals>clean javadoc:aggregate-jar install</preparationGoals>
 					<arguments>-DskipTests</arguments>
-					<tag>ate-axt-${project.version}</tag>
+					<tag>axt-${project.version}</tag>
 				</configuration>
 			</plugin>
 		</plugins>
