@@ -13,3 +13,4 @@ eclipse/
 
 .DS_Store
 *.bak
+*.orig
