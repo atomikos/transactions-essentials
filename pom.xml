@@ -144,7 +144,7 @@
 				<version>2.1</version>
 				<configuration>
 					<autoVersionSubmodules>true</autoVersionSubmodules>
-					<preparationGoals>clean javadoc:aggregate-jar install</preparationGoals>
+					<preparationGoals>clean install javadoc:aggregate-jar</preparationGoals>
 					<arguments>-DskipTests</arguments>
 				</configuration>
 			</plugin>
