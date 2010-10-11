@@ -3,17 +3,17 @@
 	<parent>
 		<artifactId>ate</artifactId>
 		<groupId>com.atomikos</groupId>
-		<version>3.7.0M2</version>
+		<version>3.7.0M3-SNAPSHOT</version>
 	</parent>
 	<groupId>com.atomikos</groupId>
 	<artifactId>transactions-osgi-tests</artifactId>
-	<version>3.7.0M2</version>
+	<version>3.7.0M3-SNAPSHOT</version>
 	<name>Transactions OSGi Tests</name>
 	<dependencies>
 		<dependency>
 			<groupId>com.atomikos</groupId>
 			<artifactId>transactions-osgi</artifactId>
-			<version>3.7.0M2</version>
+			<version>3.7.0M3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.ops4j.pax.exam</groupId>

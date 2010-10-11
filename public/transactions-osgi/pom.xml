@@ -4,11 +4,11 @@
     <parent>
         <groupId>com.atomikos</groupId>
         <artifactId>ate</artifactId>
-        <version>3.7.0M2</version>
+        <version>3.7.0M3-SNAPSHOT</version>
     </parent>
     <groupId>com.atomikos</groupId>
     <artifactId>transactions-osgi</artifactId>
-    <version>3.7.0M2</version>
+    <version>3.7.0M3-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>Transactions OSGi</name>
     <build>
@@ -36,12 +36,12 @@
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>transactions-jdbc</artifactId>
-            <version>3.7.0M2</version>
+            <version>3.7.0M3-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>transactions-jms</artifactId>
-            <version>3.7.0M2</version>
+            <version>3.7.0M3-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
