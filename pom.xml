@@ -143,7 +143,8 @@
 				<version>2.1</version>
 				<configuration>
 					<autoVersionSubmodules>true</autoVersionSubmodules>
-					<preparationGoals>clean javadoc:aggregate-jar install</preparationGoals>
+					<!--<preparationGoals>clean javadoc:aggregate-jar install</preparationGoals>-->
+					<goals>package javadoc:aggregate-jar deploy</goals>
 					<arguments>-DskipTests</arguments>
 					<tag>axt-${project.version}</tag>
 				</configuration>
