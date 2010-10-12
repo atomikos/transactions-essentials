@@ -145,8 +145,8 @@
 					<autoVersionSubmodules>true</autoVersionSubmodules>
 					<!--<preparationGoals>clean javadoc:aggregate-jar install</preparationGoals>-->
 					<goals>package javadoc:aggregate-jar deploy</goals>
-					<arguments>-DskipTests</arguments>
-					<tag>exp-axt-${project.version}</tag>
+					<arguments>-DskipTests -Passemble</arguments>
+					<tag>exp2-axt-${project.version}</tag>
 				</configuration>
 			</plugin>
 		</plugins>
