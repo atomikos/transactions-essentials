@@ -143,10 +143,10 @@
 				<version>2.1</version>
 				<configuration>
 					<autoVersionSubmodules>true</autoVersionSubmodules>
-					<!--<preparationGoals>clean javadoc:aggregate-jar install</preparationGoals>-->
+					<preparationGoals>clean package javadoc:aggregate-jar</preparationGoals>
 					<goals>package javadoc:aggregate-jar deploy</goals>
 					<arguments>-DskipTests -Passemble</arguments>
-					<tag>exp2-axt-${project.version}</tag>
+					<tag>exp3-axt-${project.version}</tag>
 				</configuration>
 			</plugin>
 		</plugins>
