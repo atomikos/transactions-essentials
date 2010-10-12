@@ -146,7 +146,8 @@
 					<preparationGoals>clean package javadoc:aggregate-jar install</preparationGoals>
 					<goals>package javadoc:aggregate-jar deploy</goals>
 					<arguments>-DskipTests -Passemble</arguments>
-					<tag>exp4-axt-${project.version}</tag>
+					<tag>exp5-axt-${project.version}</tag>
+					<useReleaseProfile>false</useReleaseProfile>
 				</configuration>
 			</plugin>
 		</plugins>
