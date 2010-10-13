@@ -148,7 +148,7 @@
 					<arguments>-DskipTests -Passemble</arguments>
 				<!-- Experimental tag name
 				 	<tag>exp5-axt-${project.version}</tag> -->
-					<tag>axt-${project.version}</tag>
+					<tag>axt-${releaseVersion}</tag>
 					<useReleaseProfile>false</useReleaseProfile>
 				</configuration>
 			</plugin>
