@@ -172,7 +172,7 @@
 				 	<tag>exp5-axt-${project.version}</tag> -->
 					<tag>axt-${releaseVersion}</tag>
 					<useReleaseProfile>false</useReleaseProfile>
-					<checkModificationExcludes>.workspace/**/*,.repository/**/*</checkModificationExcludes>
+					<checkModificationExcludeList>.workspace/**/*,.repository/**/*</checkModificationExcludeList>
 				</configuration>
 			</plugin>
 		</plugins>
