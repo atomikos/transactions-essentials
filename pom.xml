@@ -165,14 +165,15 @@
 				<version>2.1</version>
 				<configuration>
 					<autoVersionSubmodules>true</autoVersionSubmodules>
-					<preparationGoals>clean package javadoc:aggregate-jar install</preparationGoals>
+					<!--PLQ  "package" must be invoked before javadoc:aggregate-jar  -->
+					<preparationGoals>clean package javadoc:aggregate-jar verify</preparationGoals>
 					<goals>package javadoc:aggregate-jar deploy</goals>
 					<arguments>-DskipTests -Passemble</arguments>
-				<!-- Experimental tag name
-				 	<tag>exp5-axt-${project.version}</tag> -->
+				<!-- PLQ I'm not sure releaseVersion is properly evaluated during the "tag" phase -->
 					<tag>axt-${releaseVersion}</tag>
 					<useReleaseProfile>false</useReleaseProfile>
-					<checkModificationExcludeList>.workspace/**/*,.repository/**/*</checkModificationExcludeList>
+				<!--PLQ several tries with CloudBees to exlude ".repository" subfolder, without any success so far... -->	
+					<!--<checkModificationExcludeList>.workspace/**/*,.repository/**/*</checkModificationExcludeList>-->
 				</configuration>
 			</plugin>
 		</plugins>
