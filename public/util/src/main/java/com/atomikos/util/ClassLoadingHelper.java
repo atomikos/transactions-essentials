@@ -45,7 +45,7 @@ public class ClassLoadingHelper
 	/**
 	 * Creates a new dynamic proxy instance for the given delegate.
 	 * 
-	 * @param initialClassLoaders The initial class loaders to try.
+	 * @param classLoadersToTry The class loaders to try, in the specified list order.
 	 * @param interfaces The interfaces to add to the returned proxy.
 	 * @param delegate The underlying object that will receive the calls on the proxy.
 	 * @return The proxy.
@@ -54,67 +54,7 @@ public class ClassLoadingHelper
 	 * not be loaded.
 	 */
 	
-	public static Object newProxyInstance ( final List initialClassLoaders ,
-			Class[] interfaces , InvocationHandler delegate )
-	throws IllegalArgumentException
-	{
-		//PLQ not sure It is required
-//		for ( int i = 0 ; i < interfaces.length ; i++ ) {
-//			Class c = ( Class ) interfaces[i];
-//			initialClassLoaders.add ( c.getClassLoader() );
-//		}
-
-		final Object[] loaders = initialClassLoaders.toArray();
-		
-		// cf case 60220: use a class loader that can see ALL classes
-		// including those from other OSGi modules
-		final ClassLoader l = new ClassLoader() {
-			
-			
-			
-			public Class findClass ( String name ) throws ClassNotFoundException 
-			{
-				
-				
-				
-				Class ret = null;
-				if(ret==null){
-				int i = 0;
-				while ( ret == null && i < loaders.length ) {
-					try {
-						ClassLoader loader = ( ClassLoader ) loaders[i];
-						
-						ret = loader.loadClass ( name );
-					} catch ( ClassNotFoundException notFound ) {
-						// ignore: try with the next loader
-					}
-					i++;
-				}
-				}
-				if ( ret == null ) throw new IllegalArgumentException ( "Class not found: " + name );
-
-				return ret;
-			}
-			
-			
-			public URL getResource ( String name ) {
-
-				URL ret = null;				
-				int i = 0;
-				while ( ret == null && i < loaders.length ) {
-					ClassLoader loader = ( ClassLoader ) loaders[i];
-					ret = loader.getResource ( name );
-					i++;
-				}
-				return ret;
-			}
-		};
-
-		initialClassLoaders.add(l);
-		
-		return internalNewProxyInstance(initialClassLoaders,interfaces,delegate);
-	}
-	private static Object internalNewProxyInstance ( 
+	public static Object newProxyInstance ( 
 			List classLoadersToTry , Class[] interfaces , InvocationHandler delegate ) 
 		 	throws IllegalArgumentException
 	{
