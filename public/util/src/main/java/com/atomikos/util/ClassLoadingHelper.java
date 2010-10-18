@@ -58,6 +58,8 @@ public class ClassLoadingHelper
 			List classLoadersToTry , Class[] interfaces , InvocationHandler delegate ) 
 		 	throws IllegalArgumentException
 	{
+		
+		
 		Object ret = null;
 		ClassLoader cl = ( ClassLoader ) classLoadersToTry.get ( 0 );
 		List remainingClassLoaders = classLoadersToTry.subList ( 1, classLoadersToTry.size() );
