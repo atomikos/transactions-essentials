@@ -62,9 +62,10 @@ implements HeuristicDataSource, ConnectionPoolProperties, Referenceable, Seriali
 {
 	
 	static final int DEFAULT_ISOLATION_LEVEL_UNSET = -1;
+	static final int DEFAULT_POOL_SIZE = 1;
 
-	private int minPoolSize = 1;
-	private int maxPoolSize = 1;
+	private int minPoolSize = DEFAULT_POOL_SIZE;
+	private int maxPoolSize = DEFAULT_POOL_SIZE;
 	private int borrowConnectionTimeout = 30;
 	private int reapTimeout = 0;
 	private int maxIdleTime = 60;
@@ -264,7 +265,9 @@ implements HeuristicDataSource, ConnectionPoolProperties, Referenceable, Seriali
 			throwAtomikosSQLException("Property 'uniqueResourceName' cannot be null");
 		if ( getTestQuery() == null ) 
 			Configuration.logWarning ( this + ": no testQuery set - the connection pool will not be able to validate the connections!" );
-		
+		if ( getMinPoolSize() == DEFAULT_POOL_SIZE ) {
+			Configuration.logWarning ( this + ": poolSize equals default - this may cause performance problems!" );
+		}
 		
 		try {
 			//initialize JNDI infrastructure for lookup
