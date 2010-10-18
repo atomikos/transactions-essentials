@@ -176,9 +176,9 @@ implements SessionHandleStateChangeListener
 					if ( ctm != null ) ct = ctm.getCompositeTransaction();
 					if ( ct != null && ct.getProperty ( TransactionManagerImp.JTA_PROPERTY_NAME ) != null ) {
 						if ( transactedFlag.booleanValue() ) 
-							Configuration.logWarning ( this + ": localTransactionMode is enabled on the connection factory - rollback/commit will NOT be part of the global JTA transaction!" );
+							Configuration.logInfo ( this + ": localTransactionMode is enabled on the connection factory - rollback/commit will NOT be part of the global JTA transaction!" );
 						else 
-							Configuration.logWarning ( this + ": you are creating a JMS session in non-transacted mode - the resulting JMS work will NOT be part of the JTA transaction!" );
+							Configuration.logInfo ( this + ": you are creating a JMS session in non-transacted mode - the resulting JMS work will NOT be part of the JTA transaction!" );
 					}
 					Integer ackMode = ( Integer ) args[1];
 					Session wrapped = null;
