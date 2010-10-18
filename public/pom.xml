@@ -40,28 +40,19 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
-				
+		<inherited>false</inherited>
 				<executions>
 					<execution>
 						<id>attach-sources</id>
-						<phase>validate</phase>
+						<phase>verify</phase>
 						<goals>
-							<goal>jar</goal>
+							<goal>jar-no-fork</goal>
 						</goals>
-						<configuration>
-					<!--<includes>
-					<include>com/atomikos/beans/**</include>
-					<include>com/atomikos/datasource/**</include>
-					<include>com/atomikos/diagnostics/**</include>
-					<include>com/atomikos/finitestates/**</include>
-					<include>com/atomikos/datasource/**</include>
-					<include>com/atomikos/datasource/**</include>
-					</includes>-->
-					</configuration>
+						
 					</execution>
-					
+
 				</executions>
-				
+
 			</plugin>
 			<plugin>
 				<inherited>false</inherited>
