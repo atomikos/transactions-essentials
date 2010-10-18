@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>com.atomikos</groupId>
@@ -13,9 +14,9 @@
 	<name>Atomikos Transactions Essentials</name>
 
 	<properties>
-	<inceptionYear>2000-2010</inceptionYear>
+		<inceptionYear>2000-2010</inceptionYear>
 	</properties>
-	
+
 	<modules>
 		<module>util</module>
 		<module>transactions-api</module>
@@ -37,11 +38,37 @@
 
 		<plugins>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+					<!--<includes>
+					<include>com/atomikos/beans/**</include>
+					<include>com/atomikos/datasource/**</include>
+					<include>com/atomikos/diagnostics/**</include>
+					<include>com/atomikos/finitestates/**</include>
+					<include>com/atomikos/datasource/**</include>
+					<include>com/atomikos/datasource/**</include>
+					</includes>-->
+					</configuration>
+					</execution>
+					
+				</executions>
+				
+			</plugin>
+			<plugin>
 				<inherited>false</inherited>
 				<groupId>com.mycila.maven-license-plugin</groupId>
 				<artifactId>maven-license-plugin</artifactId>
 				<configuration>
-					<!--<basedir>${basedir}</basedir>-->
+					<!--<basedir>${basedir}</basedir> -->
 					<header>header.txt</header>
 					<quiet>false</quiet>
 					<failIfMissing>true</failIfMissing>
@@ -57,11 +84,8 @@
 						<exclude>axt/**</exclude>
 					</excludes>
 					<useDefaultExcludes>true</useDefaultExcludes>
-					<!--
-						<mapping> <jwc>XML_STYLE</jwc>
-						<application>XML_STYLE</application>
-						<myFileExtension>JAVADOC_STYLE</myFileExtension> </mapping>
-					-->
+					<!-- <mapping> <jwc>XML_STYLE</jwc> <application>XML_STYLE</application> 
+						<myFileExtension>JAVADOC_STYLE</myFileExtension> </mapping> -->
 					<useDefaultMapping>true</useDefaultMapping>
 					<properties>
 						<year>${project.inceptionYear}</year>
@@ -69,10 +93,8 @@
 						<email>info@atomikos.com</email>
 					</properties>
 					<encoding>UTF-8</encoding>
-					<!--
-						<headerDefinitions> <headerDefinition>def1.xml</headerDefinition>
-						<headerDefinition>def2.xml</headerDefinition> </headerDefinitions>
-					-->
+					<!-- <headerDefinitions> <headerDefinition>def1.xml</headerDefinition> 
+						<headerDefinition>def2.xml</headerDefinition> </headerDefinitions> -->
 
 				</configuration>
 				<executions>
@@ -83,7 +105,7 @@
 					</execution>
 				</executions>
 			</plugin>
-		
+
 
 		</plugins>
 	</build>
