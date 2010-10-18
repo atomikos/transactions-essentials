@@ -14,7 +14,7 @@
 	<scm>
 		<connection>scm:hg:http://atomikos.repositoryhosting.com/hg/atomikos/development</connection>
 		<developerConnection>scm:hg:http://atomikos.repositoryhosting.com/hg/atomikos/development</developerConnection>
-		<url>scm:hg:http://atomikos.repositoryhosting.com/hg/atomikos/development</url>
+		
 	</scm>
 	<distributionManagement>
 		<repository>
