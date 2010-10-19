@@ -170,7 +170,7 @@
 					<goals>package javadoc:aggregate-jar deploy</goals>
 					<arguments>-DskipTests -Passemble</arguments>
 				<!-- PLQ I'm not sure releaseVersion is properly evaluated during the "tag" phase -->
-					<tag>axt-${releaseVersion}</tag>
+					<!--<tag>axt-${releaseVersion}</tag>-->
 					<!--<useReleaseProfile>false</useReleaseProfile>-->
 				<!--PLQ several tries with CloudBees to exlude ".repository" subfolder, without any success so far... -->	
 					<!--<checkModificationExcludeList>.workspace/**/*,.repository/**/*</checkModificationExcludeList>-->
