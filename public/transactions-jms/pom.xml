@@ -4,11 +4,11 @@
     <parent>
         <groupId>com.atomikos</groupId>
         <artifactId>ate</artifactId>
-        <version>3.7.0M3</version>
+        <version>3.7.0M3-SNAPSHOT</version>
     </parent>
     <groupId>com.atomikos</groupId>
     <artifactId>transactions-jms</artifactId>
-    <version>3.7.0M3</version>
+    <version>3.7.0M3-SNAPSHOT</version>
     <name>Transactions JMS</name>
     <build>
         <plugins>
@@ -28,7 +28,7 @@
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>transactions-jta</artifactId>
-            <version>3.7.0M3</version>
+            <version>3.7.0M3-SNAPSHOT</version>
         </dependency>
         <!--PLQ : this artifact does not exists in central maven repo
         <dependency>
@@ -45,7 +45,7 @@
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>atomikos-util</artifactId>
-            <version>3.7.0M3</version>
+            <version>3.7.0M3-SNAPSHOT</version>
             <classifier>tests</classifier>
             <optional>true</optional>
             <scope>test</scope>
@@ -53,7 +53,7 @@
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>transactions</artifactId>
-            <version>3.7.0M3</version>
+            <version>3.7.0M3-SNAPSHOT</version>
             <classifier>tests</classifier>
             <optional>true</optional>
             <scope>test</scope>
@@ -61,7 +61,7 @@
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>transactions-jta</artifactId>
-            <version>3.7.0M3</version>
+            <version>3.7.0M3-SNAPSHOT</version>
             <optional>true</optional>
             <classifier>tests</classifier>
             <scope>test</scope>
