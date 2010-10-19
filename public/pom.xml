@@ -40,7 +40,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
-		<inherited>false</inherited>
+		<inherited>true</inherited>
 				<executions>
 					<execution>
 						<id>attach-sources</id>
