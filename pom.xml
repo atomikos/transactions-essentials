@@ -168,9 +168,7 @@
 					<!--PLQ  "package" must be invoked before javadoc:aggregate-jar  -->
 					<preparationGoals>clean package javadoc:aggregate-jar</preparationGoals>
 					<goals>deploy</goals>
-				    <!-- 
 					<arguments>-DskipTests -Passemble</arguments>
-				    -->
 				<!-- PLQ I'm not sure releaseVersion is properly evaluated during the "tag" phase -->
 					<!--<tag>axt-${releaseVersion}</tag>-->
 					<!--<useReleaseProfile>false</useReleaseProfile>-->
