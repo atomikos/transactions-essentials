@@ -166,8 +166,8 @@
 				<configuration>
 					<autoVersionSubmodules>true</autoVersionSubmodules>
 					<!--PLQ  "package" must be invoked before javadoc:aggregate-jar  -->
-					<preparationGoals>clean package javadoc:aggregate-jar</preparationGoals>
-					<goals>deploy</goals>
+					<preparationGoals>clean package javadoc:aggregate-jar verify</preparationGoals>
+					<goals>package javadoc:aggregate-jar deploy</goals>
 					<arguments>-DskipTests -Passemble</arguments>
 				<!-- PLQ I'm not sure releaseVersion is properly evaluated during the "tag" phase -->
 					<!--<tag>axt-${releaseVersion}</tag>-->
