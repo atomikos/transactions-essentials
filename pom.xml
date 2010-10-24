@@ -84,8 +84,13 @@
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-enforcer-plugin</artifactId>
+					<artifactId>maven-jar-plugin</artifactId>
 					<version>2.3.1</version>
+				</plugin>
+				<plugin>
+					<groupId>com.mycila.maven-license-plugin</groupId>
+					<artifactId>maven-license-plugin</artifactId>
+					<version>1.8.0</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -197,29 +202,9 @@
 		<module>private</module>
 	</modules>
 	<!--TODO prevent tests execution during the build -->
-	<!--<profiles>
-		<profile>
-
-			<id>release-profile</id>
-
-			<activation>
-				<property>
-					<name>performRelease</name>
-					<value>true</value>
-				</property>
-			</activation>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-surefire-plugin</artifactId>
-						<version>2.6</version>
-						<configuration>
-							<skipTests>true</skipTests>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>-->
+	<!--<profiles> <profile> <id>release-profile</id> <activation> <property> 
+		<name>performRelease</name> <value>true</value> </property> </activation> 
+		<build> <plugins> <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-surefire-plugin</artifactId> 
+		<version>2.6</version> <configuration> <skipTests>true</skipTests> </configuration> 
+		</plugin> </plugins> </build> </profile> </profiles> -->
 </project>
