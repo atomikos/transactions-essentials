@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.atomikos</groupId>
 	<artifactId>atomikos-parent</artifactId>
@@ -14,7 +15,7 @@
 	<scm>
 		<connection>scm:hg:http://atomikos.repositoryhosting.com/hg/atomikos/development</connection>
 		<developerConnection>scm:hg:http://atomikos.repositoryhosting.com/hg/atomikos/development</developerConnection>
-		
+
 	</scm>
 	<distributionManagement>
 		<repository>
@@ -76,6 +77,16 @@
 					<artifactId>docbkx-maven-plugin</artifactId>
 					<version>2.0.11</version>
 				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-enforcer-plugin</artifactId>
+					<version>1.0-beta-1</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-release-plugin</artifactId>
+					<version>2.1</version>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 		<plugins>
@@ -108,71 +119,52 @@
 					<workingDirectory>${project.build.testOutputDirectory}</workingDirectory>
 				</configuration>
 			</plugin>
-			<!--
+			<!-- <plugin> <groupId>org.codehaus.groovy.maven</groupId> <artifactId>gmaven-plugin</artifactId> 
+				<executions> <execution> <phase>validate</phase> <goals> <goal>execute</goal> 
+				</goals> <configuration> <source><![CDATA[ def javaVersion=System.getProperty("java.version") 
+				if(!javaVersion.startsWith("1.5")){ fail("Please use JDK 1.5 to build!") 
+				} ]]> </source> </configuration> </execution> </executions> </plugin> -->
 			<plugin>
-				<groupId>org.codehaus.groovy.maven</groupId>
-				<artifactId>gmaven-plugin</artifactId>
-
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
 				<executions>
 					<execution>
-						<phase>validate</phase>
+						<id>enforce-versions</id>
 						<goals>
-							<goal>execute</goal>
+							<goal>enforce</goal>
 						</goals>
 						<configuration>
-							<source><![CDATA[
-                                def javaVersion=System.getProperty("java.version")
-                                if(!javaVersion.startsWith("1.5")){
-                                    fail("Please use JDK 1.5 to build!")
-                                }
-                                ]]>
-							</source>
+							<failFast>true</failFast>
+							<rules>
+								<requireJavaVersion>
+									<version>[1.5,1.6)</version>
+								</requireJavaVersion>
+							</rules>
 						</configuration>
 					</execution>
 				</executions>
 			</plugin>
-			-->
-	<plugin>
-		<groupId>org.apache.maven.plugins</groupId>
-		<artifactId>maven-enforcer-plugin</artifactId>
-		<executions>
-			<execution>
-				<id>enforce-versions</id>
-				<goals>
-					<goal>enforce</goal>
-				</goals>
-				<configuration>
-					<failFast>true</failFast>
-					<rules>
-						<requireJavaVersion>
-							<version>[1.5,1.6)</version>
-						</requireJavaVersion>
-					</rules>
-				</configuration>
-			</execution>
-		</executions>
-	</plugin>
 			<plugin>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<configuration>
-							<subpackages>com.atomikos</subpackages>
-						</configuration>
+					<subpackages>com.atomikos</subpackages>
+				</configuration>
 			</plugin>
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-release-plugin</artifactId>
-				<version>2.1</version>
 				<configuration>
 					<autoVersionSubmodules>true</autoVersionSubmodules>
-					<!--PLQ  "package" must be invoked before javadoc:aggregate-jar  -->
+					<!--PLQ "package" must be invoked before javadoc:aggregate-jar -->
 					<preparationGoals>clean package javadoc:aggregate-jar install</preparationGoals>
 					<goals>deploy</goals>
 					<arguments>-DskipTests -Passemble</arguments>
 					<tag>${releaseVersion}</tag>
-					<!--<useReleaseProfile>false</useReleaseProfile>-->
-				<!--PLQ several tries with CloudBees to exlude ".repository" subfolder, without any success so far... -->	
-					<!--<checkModificationExcludeList>.workspace/**/*,.repository/**/*</checkModificationExcludeList>-->
+					<!--<useReleaseProfile>false</useReleaseProfile> -->
+					<!--PLQ several tries with CloudBees to exlude ".repository" subfolder, 
+						without any success so far... -->
+					<!--<checkModificationExcludeList>.workspace/**/*,.repository/**/*</checkModificationExcludeList> -->
 				</configuration>
 			</plugin>
 		</plugins>
@@ -200,7 +192,7 @@
 		<module>private</module>
 	</modules>
 	<!--TODO prevent tests execution during the build -->
-	<profiles>
+	<!--<profiles>
 		<profile>
 
 			<id>release-profile</id>
@@ -224,5 +216,5 @@
 				</plugins>
 			</build>
 		</profile>
-	</profiles>
+	</profiles>-->
 </project>
