@@ -171,7 +171,7 @@ public class AtomikosNonXADataSourceBean extends AbstractDataSourceBean
 	protected ConnectionFactory doInit() throws Exception 
 	{
 		AtomikosNonXAConnectionFactory ret = null;
-		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug(
+		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo(
 				this + ": initializing with [" +
 				" uniqueResourceName=" + getUniqueResourceName() + "," +
 				" maxPoolSize=" + getMaxPoolSize() + "," +
@@ -196,7 +196,7 @@ public class AtomikosNonXADataSourceBean extends AbstractDataSourceBean
 
 	public synchronized Connection getConnection ( HeuristicMessage hmsg ) throws SQLException
 	{
-		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug ( this + ": getConnection ( " + hmsg + " )..." );
+		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": getConnection ( " + hmsg + " )..." );
 		
 		init();
 		

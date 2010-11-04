@@ -253,7 +253,7 @@ implements HeuristicDataSource, ConnectionPoolProperties, Referenceable, Seriali
 
 	public synchronized void init() throws AtomikosSQLException 
 	{
-		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug ( this + ": init..." );
+		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": init..." );
 		if (connectionPool != null)
 			return;
 		
@@ -289,7 +289,7 @@ implements HeuristicDataSource, ConnectionPoolProperties, Referenceable, Seriali
 	
 	public void close() 
 	{
-		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug ( this + ": close..." );
+		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": close..." );
 		if (connectionPool != null) {
 			connectionPool.destroy();
 		}
@@ -312,7 +312,7 @@ implements HeuristicDataSource, ConnectionPoolProperties, Referenceable, Seriali
 
 	public Connection getConnection ( HeuristicMessage msg ) throws SQLException 
 	{
-		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug ( this + ": getConnection ( " + msg + " )..." );
+		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": getConnection ( " + msg + " )..." );
 		Connection connection = null;
 		
 		init();

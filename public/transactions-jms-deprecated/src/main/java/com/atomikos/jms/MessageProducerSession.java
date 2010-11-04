@@ -253,7 +253,7 @@ public abstract class MessageProducerSession
 	        if ( replyToDestination != null )
 	            message.setJMSReplyTo ( replyToDestination );
 	
-	        if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug ( "Calling send ( " + message + " ,  "
+	        if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( "Calling send ( " + message + " ,  "
 	                + deliveryMode + " , " + priority + " , " + timeToLive
 	                + " )..." );
 	        sender.send ( message, deliveryMode, priority, timeToLive );

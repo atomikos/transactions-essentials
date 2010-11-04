@@ -157,7 +157,7 @@ implements SessionHandleStateChangeListener
 				if ( transactedFlag.booleanValue() && !props.getLocalTransactionMode() ) {
 					session = recycleSession();
 					if (session == null) {
-						if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug ( this + ": creating XA-capable session..." );
+						if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": creating XA-capable session..." );
 						forceConnectionIntoXaMode ( delegate );
 						XASession wrapped = null;
 						try {
@@ -170,7 +170,7 @@ implements SessionHandleStateChangeListener
 						addSession ( session );
 					}
 				} else {
-					if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug ( this + ": creating NON-XA session..." );
+					if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": creating NON-XA session..." );
 					CompositeTransaction ct = null;
 					CompositeTransactionManager ctm = Configuration.getCompositeTransactionManager();
 					if ( ctm != null ) ct = ctm.getCompositeTransaction();
@@ -196,7 +196,7 @@ implements SessionHandleStateChangeListener
 				
 			} else {		
 			
-					if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug ( this + ": calling " + methodName + " on JMS driver...");
+					if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": calling " + methodName + " on JMS driver...");
 					Object ret = method.invoke(delegate, args);
 					if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": " + methodName + " returning " + ret );
 					return ret;
@@ -232,7 +232,7 @@ implements SessionHandleStateChangeListener
 					//recycle if either inactive in this tx, OR if active (since a new session will be created anyway, and 
 					//concurrent sessions are allowed on the same underlying connection!
 					if ( proxy.isInactiveTransaction(current) || proxy.isInTransaction( current ) ) {
-						if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug ( this + ": recycling session " + proxy );
+						if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": recycling session " + proxy );
 						return session;
 					}
 				}
@@ -242,7 +242,7 @@ implements SessionHandleStateChangeListener
 	}
 
 	private void close() {
-		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug ( this + ": close()...");
+		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": close()...");
 		
 		closed = true;		
 		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": closing " + sessions.size() + " session(s)" );

@@ -152,7 +152,7 @@ extends AbstractDataSourceBean
 		}
 		
 		
-		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logDebug(
+		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo(
 				this + ": initializing with [" +
 				" xaDataSourceClassName=" + xaDataSourceClassName + "," +
 				" uniqueResourceName=" + getUniqueResourceName() + "," +
