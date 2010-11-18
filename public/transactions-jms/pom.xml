@@ -10,7 +10,7 @@
     <artifactId>transactions-jms</artifactId>
     <version>3.7.0M5-SNAPSHOT</version>
     <name>Transactions JMS</name>
-    <build>
+    <!--<build>
         <plugins>
             <plugin>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -23,7 +23,7 @@
                 </executions>
             </plugin>
         </plugins>
-    </build>
+    </build>-->
     <dependencies>
         <dependency>
             <groupId>com.atomikos</groupId>
@@ -42,30 +42,30 @@
             <version>1.1</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>atomikos-util</artifactId>
             <version>3.7.0M5-SNAPSHOT</version>
             <classifier>tests</classifier>
             <optional>true</optional>
             <scope>test</scope>
-        </dependency>
-        <dependency>
+        </dependency>-->
+        <!--<dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>transactions</artifactId>
             <version>3.7.0M5-SNAPSHOT</version>
             <classifier>tests</classifier>
             <optional>true</optional>
             <scope>test</scope>
-        </dependency>
-        <dependency>
+        </dependency>-->
+        <!--<dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>transactions-jta</artifactId>
             <version>3.7.0M5-SNAPSHOT</version>
             <optional>true</optional>
             <classifier>tests</classifier>
             <scope>test</scope>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
