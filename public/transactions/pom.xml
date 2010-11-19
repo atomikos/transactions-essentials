@@ -17,18 +17,6 @@
 				<filtering>true</filtering>
 			</resource>
 		</resources>
-		<plugins>
-			<plugin>
-				<artifactId>maven-jar-plugin</artifactId>
-				<executions>
-					<execution>
-						<goals>
-							<goal>test-jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
 	</build>
 	<dependencies>
 		<dependency>
@@ -41,12 +29,12 @@
 			<artifactId>transactions-api</artifactId>
 			<version>3.7.0M5-SNAPSHOT</version>
 		</dependency>
-		<dependency>
+		<!--<dependency>
 			<groupId>com.atomikos</groupId>
 			<artifactId>atomikos-util</artifactId>
 			<version>3.7.0M5-SNAPSHOT</version>
 			<classifier>tests</classifier>
 			<scope>test</scope>
-		</dependency>
+		</dependency>-->
 	</dependencies>
 </project>

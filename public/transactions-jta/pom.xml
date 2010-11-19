@@ -54,20 +54,6 @@
             <version>2.0.0</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>com.atomikos</groupId>
-            <artifactId>atomikos-util</artifactId>
-            <version>3.7.0M5-SNAPSHOT</version>
-            <classifier>tests</classifier>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.atomikos</groupId>
-            <artifactId>transactions</artifactId>
-            <version>3.7.0M5-SNAPSHOT</version>
-            <classifier>tests</classifier>
-            <optional>true</optional>
-            <scope>test</scope>
-        </dependency>
+        
     </dependencies>
 </project>
