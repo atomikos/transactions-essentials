@@ -26,7 +26,7 @@
 		<module>transactions-jms-deprecated</module>
 		<module>transactions-jms</module>
 		<module>transactions-osgi</module>
-		<module>transactions-osgi-tests</module>
+		<!--<module>transactions-osgi-tests</module>-->
 		<module>transactions-hibernate2</module>
 		<module>transactions-hibernate3</module>
 	</modules>

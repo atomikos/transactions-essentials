@@ -212,9 +212,26 @@
 		<module>private</module>
 	</modules>
 	<!--TODO prevent tests execution during the build -->
-	<!--<profiles> <profile> <id>release-profile</id> <activation> <property> 
-		<name>performRelease</name> <value>true</value> </property> </activation> 
-		<build> <plugins> <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-surefire-plugin</artifactId> 
-		<version>2.6</version> <configuration> <skipTests>true</skipTests> </configuration> 
-		</plugin> </plugins> </build> </profile> </profiles> -->
+	<profiles>
+		<profile>
+			<id>sonatype</id>
+
+			<modules>
+				<module>public</module>
+
+			</modules>
+<distributionManagement>
+		<!--<snapshotRepository>
+			<id>sonatype-nexus-snapshots</id>
+			<name>Sonatype Nexus Snapshots</name>
+			<url>${sonatypeOssDistMgmtSnapshotsUrl}</url>
+		</snapshotRepository>-->
+		<repository>
+			<id>sonatype-nexus-staging</id>
+			<name>Nexus Release Repository</name>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+	</distributionManagement>
+		</profile>
+	</profiles>
 </project>
