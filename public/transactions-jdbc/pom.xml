@@ -30,35 +30,12 @@
             <artifactId>transactions-jta</artifactId>
             <version>3.7.0M5-SNAPSHOT</version>
         </dependency>
-        <!--<dependency>
-            <groupId>com.atomikos</groupId>
-            <artifactId>atomikos-util</artifactId>
-            <version>3.7.0M5-SNAPSHOT</version>
-            <classifier>tests</classifier>
-            <optional>true</optional>
-            <scope>test</scope>
-        </dependency>-->
-        <!--<dependency>
-            <groupId>com.atomikos</groupId>
-            <artifactId>transactions</artifactId>
-            <version>3.7.0M5-SNAPSHOT</version>
-            <classifier>tests</classifier>
-            <optional>true</optional>
-            <scope>test</scope>
-        </dependency>-->
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>transactions-jta</artifactId>
             <version>3.7.0M5-SNAPSHOT</version>
             <classifier>tests</classifier>
-            <optional>true</optional>
             <scope>test</scope>
         </dependency>
-        <!--<dependency>
-            <groupId>hsqldb</groupId>
-            <artifactId>hsqldb</artifactId>
-            <version>1.6.1</version>
-            <scope>test</scope>
-        </dependency>-->
     </dependencies>
 </project>

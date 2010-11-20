@@ -139,11 +139,6 @@
 					<workingDirectory>${project.build.testOutputDirectory}</workingDirectory>
 				</configuration>
 			</plugin>
-			<!-- <plugin> <groupId>org.codehaus.groovy.maven</groupId> <artifactId>gmaven-plugin</artifactId> 
-				<executions> <execution> <phase>validate</phase> <goals> <goal>execute</goal> 
-				</goals> <configuration> <source><![CDATA[ def javaVersion=System.getProperty("java.version") 
-				if(!javaVersion.startsWith("1.5")){ fail("Please use JDK 1.5 to build!") 
-				} ]]> </source> </configuration> </execution> </executions> </plugin> -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-enforcer-plugin</artifactId>
@@ -220,18 +215,15 @@
 				<module>public</module>
 
 			</modules>
-<distributionManagement>
-		<!--<snapshotRepository>
-			<id>sonatype-nexus-snapshots</id>
-			<name>Sonatype Nexus Snapshots</name>
-			<url>${sonatypeOssDistMgmtSnapshotsUrl}</url>
-		</snapshotRepository>-->
-		<repository>
-			<id>sonatype-nexus-staging</id>
-			<name>Nexus Release Repository</name>
-			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-		</repository>
-	</distributionManagement>
+			<distributionManagement>
+				<!--<snapshotRepository> <id>sonatype-nexus-snapshots</id> <name>Sonatype 
+					Nexus Snapshots</name> <url>${sonatypeOssDistMgmtSnapshotsUrl}</url> </snapshotRepository> -->
+				<repository>
+					<id>sonatype-nexus-staging</id>
+					<name>Nexus Release Repository</name>
+					<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+				</repository>
+			</distributionManagement>
 		</profile>
 	</profiles>
 </project>
