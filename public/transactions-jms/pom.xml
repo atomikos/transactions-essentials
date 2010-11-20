@@ -10,7 +10,7 @@
     <artifactId>transactions-jms</artifactId>
     <version>3.7.0M5-SNAPSHOT</version>
     <name>Transactions JMS</name>
-    <!--<build>
+    <build>
         <plugins>
             <plugin>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -23,7 +23,7 @@
                 </executions>
             </plugin>
         </plugins>
-    </build>-->
+    </build>
     <dependencies>
         <dependency>
             <groupId>com.atomikos</groupId>
