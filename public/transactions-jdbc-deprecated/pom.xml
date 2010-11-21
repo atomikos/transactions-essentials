@@ -1,64 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>com.atomikos</groupId>
-        <artifactId>ate</artifactId>
-        <version>3.7.0M5-SNAPSHOT</version>
-    </parent>
-    <groupId>com.atomikos</groupId>
-    <artifactId>transactions-jdbc-deprecated</artifactId>
-    <version>3.7.0M5-SNAPSHOT</version>
-    <name>Transactions JDBC Deprecated</name>
-    <dependencies>
-        <!--<dependency>
-            <groupId>com.atomikos</groupId>
-            <artifactId>transactions-jta</artifactId>
-            <version>3.7.0M5-SNAPSHOT</version>
-        </dependency>-->
-        <!--  requires HeuristicDataSource interface... -->
-        <dependency>
-            <groupId>com.atomikos</groupId>
-            <artifactId>transactions-jdbc</artifactId>
-            <version>3.7.0M5-SNAPSHOT</version>
-        </dependency>
-        <!--<dependency>
-            <groupId>com.atomikos</groupId>
-            <artifactId>atomikos-util</artifactId>
-            <version>3.7.0M5-SNAPSHOT</version>
-            <classifier>tests</classifier>
-            <optional>true</optional>
-            <scope>test</scope>
-        </dependency>-->
-        <!--<dependency>
-            <groupId>com.atomikos</groupId>
-            <artifactId>transactions</artifactId>
-            <version>3.7.0M5-SNAPSHOT</version>
-            <classifier>tests</classifier>
-            <optional>true</optional>
-            <scope>test</scope>
-        </dependency>-->
-        <!--<dependency>
-            <groupId>com.atomikos</groupId>
-            <artifactId>transactions-jta</artifactId>
-            <version>3.7.0M5-SNAPSHOT</version>
-            <classifier>tests</classifier>
-            <optional>true</optional>
-            <scope>test</scope>
-        </dependency>-->
-        <!--<dependency>
-            <groupId>com.atomikos</groupId>
-            <artifactId>transactions-jdbc</artifactId>
-            <version>3.7.0M5-SNAPSHOT</version>
-            <classifier>tests</classifier>
-            <optional>true</optional>
-            <scope>test</scope>
-        </dependency>-->
-        <!--<dependency>
-            <groupId>hsqldb</groupId>
-            <artifactId>hsqldb</artifactId>
-            <version>1.6.1</version>
-            <scope>test</scope>
-        </dependency>-->
-    </dependencies>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.atomikos</groupId>
+		<artifactId>ate</artifactId>
+		<version>3.7.0M5-SNAPSHOT</version>
+	</parent>
+	<groupId>com.atomikos</groupId>
+	<artifactId>transactions-jdbc-deprecated</artifactId>
+	<version>3.7.0M5-SNAPSHOT</version>
+	<name>Transactions JDBC Deprecated</name>
+	<dependencies>
+
+		<!-- requires HeuristicDataSource interface... -->
+		<dependency>
+			<groupId>com.atomikos</groupId>
+			<artifactId>transactions-jdbc</artifactId>
+			<version>3.7.0M5-SNAPSHOT</version>
+		</dependency>
+
+	</dependencies>
 </project>
