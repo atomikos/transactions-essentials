@@ -11,20 +11,6 @@
 	<artifactId>atomikos-util</artifactId>
 	<version>3.7.0M5-SNAPSHOT</version>
 	<name>Atomikos Util</name>
-	<!--<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-jar-plugin</artifactId>
-				<executions>
-					<execution>
-						<goals>
-							<goal>test-jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>-->
 	<dependencies>
 		<dependency>
 			<groupId>javax.servlet</groupId>

@@ -3,12 +3,12 @@ package com.atomikos.icatch.jta.hibernate3;
 import java.sql.Connection;
 import java.util.Properties;
 
+import junit.framework.TestCase;
+
 import org.hibernate.HibernateException;
 
 import com.atomikos.beans.PropertyException;
-import com.atomikos.jdbc.TestXADataSource;
-
-import junit.framework.TestCase;
+import com.atomikos.icatch.jta.hibernate3.mock.TestXADataSource;
 
 public class ConnectionProviderTestJUnit extends TestCase {
 

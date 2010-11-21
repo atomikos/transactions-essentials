@@ -11,7 +11,7 @@
     <version>3.7.0M5-SNAPSHOT</version>
     <name>Transactions API</name>
     
-    <!-- PLQ : should we really have dependency on atomikos-util ???-->
+   
     <dependencies>
         <dependency>
             <groupId>com.atomikos</groupId>
