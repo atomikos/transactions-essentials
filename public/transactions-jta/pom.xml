@@ -25,16 +25,16 @@
         </plugins>
     </build>
     <dependencies>
-        <dependency>
+        <!--<dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>atomikos-util</artifactId>
             <version>3.7.0M5-SNAPSHOT</version>
-        </dependency>
-        <dependency>
+        </dependency>-->
+        <!--<dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>transactions-api</artifactId>
             <version>3.7.0M5-SNAPSHOT</version>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>transactions</artifactId>

@@ -17,7 +17,7 @@
 				<filtering>true</filtering>
 			</resource>
 		</resources>
-		<plugins>
+		<!--<plugins>
 			<plugin>
 				<artifactId>maven-jar-plugin</artifactId>
 				<executions>
@@ -28,14 +28,14 @@
 					</execution>
 				</executions>
 			</plugin>
-		</plugins>
+		</plugins>-->
 	</build>
 	<dependencies>
-		<dependency>
+		<!--<dependency>
 			<groupId>com.atomikos</groupId>
 			<artifactId>atomikos-util</artifactId>
 			<version>3.7.0M5-SNAPSHOT</version>
-		</dependency>
+		</dependency>-->
 		<dependency>
 			<groupId>com.atomikos</groupId>
 			<artifactId>transactions-api</artifactId>
