@@ -4,23 +4,23 @@
     <parent>
         <groupId>com.atomikos</groupId>
         <artifactId>ate</artifactId>
-        <version>3.7.0M5-SNAPSHOT</version>
+        <version>3.7.0M5</version>
     </parent>
     <groupId>com.atomikos</groupId>
     <artifactId>transactions-jms-deprecated</artifactId>
-    <version>3.7.0M5-SNAPSHOT</version>
+    <version>3.7.0M5</version>
     <name>Transactions JMS Deprecated</name>
     <dependencies>
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>transactions-jta</artifactId>
-            <version>3.7.0M5-SNAPSHOT</version>
+            <version>3.7.0M5</version>
         </dependency>
         <!--  requires  HeuristicMessageConsumer-->
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>transactions-jms</artifactId>
-            <version>3.7.0M5-SNAPSHOT</version>
+            <version>3.7.0M5</version>
         </dependency>
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
