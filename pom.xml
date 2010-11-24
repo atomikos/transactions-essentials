@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.atomikos</groupId>
 	<artifactId>atomikos-parent</artifactId>
@@ -8,6 +9,14 @@
 	<packaging>pom</packaging>
 	<name>Atomikos All POM</name>
 	<url>http://www.atomikos.com/</url>
+	<description>Reliability through Atomicity: manage your distributed transactions and protect your mission critical data</description>
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
 	<properties>
 		<!-- we don't want to depend on platform's default encoding -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -15,20 +24,9 @@
 	<scm>
 		<connection>scm:hg:http://atomikos.repositoryhosting.com/hg/atomikos/development</connection>
 		<developerConnection>scm:hg:http://atomikos.repositoryhosting.com/hg/atomikos/development</developerConnection>
-
+		<url>http://www.atomikos.com/</url>
 	</scm>
-	<distributionManagement>
-		<repository>
-			<id>internal.release.repo</id>
-			<name>Atomikos Internal Release Repository</name>
-			<url>http://atomikos.dyndns.org:8088/nexus/content/repositories/releases</url>
-		</repository>
-		<snapshotRepository>
-			<id>internal.snapshot.repo</id>
-			<name>Atomikos Internal Snapshot Repository</name>
-			<url>http://atomikos.dyndns.org:8088/nexus/content/repositories/snapshots/</url>
-		</snapshotRepository>
-	</distributionManagement>
+	<!---->
 	<build>
 		<pluginManagement>
 			<plugins>
@@ -209,12 +207,61 @@
 	<!--TODO prevent tests execution during the build -->
 	<profiles>
 		<profile>
-			<id>sonatype</id>
+			<id>all</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<distributionManagement>
+				<repository>
+					<id>internal.release.repo</id>
+					<name>Atomikos Internal Release Repository</name>
+					<url>http://atomikos.dyndns.org:8088/nexus/content/repositories/releases</url>
+				</repository>
+				<snapshotRepository>
+					<id>internal.snapshot.repo</id>
+					<name>Atomikos Internal Snapshot Repository</name>
+					<url>http://atomikos.dyndns.org:8088/nexus/content/repositories/snapshots/</url>
+				</snapshotRepository>
+			</distributionManagement>
+			<modules>
+				<module>public</module>
+				<module>private</module>
+			</modules>
+		</profile>
+		<profile>
+			<id>opensource</id>
 			<build>
 				<plugins>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-source-plugin</artifactId>
+						<version>2.1.2</version>
+						<executions>
+							<execution>
+								<id>attach-sources</id>
+								<goals>
+									<goal>jar-no-fork</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<version>2.7</version>
+						<executions>
+							<execution>
+								<id>attach-javadocs</id>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-gpg-plugin</artifactId>
+						<version>1.1</version>
 						<executions>
 							<execution>
 								<id>sign-artifacts</id>
@@ -226,6 +273,7 @@
 						</executions>
 					</plugin>
 				</plugins>
+
 			</build>
 			<modules>
 				<module>public</module>
@@ -241,4 +289,5 @@
 			</distributionManagement>
 		</profile>
 	</profiles>
+
 </project>
