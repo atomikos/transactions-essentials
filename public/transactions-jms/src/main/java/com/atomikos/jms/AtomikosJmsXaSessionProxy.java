@@ -127,8 +127,14 @@ class AtomikosJmsXaSessionProxy extends AbstractJmsSessionProxy implements Sessi
 				if ( state.isTerminated() ) {
 					//only destroy if there is no pending 2PC - otherwise this is done
 					//in the registered synchronization
-					destroy();
+					destroy ( true );
+				} else {
+					//close this handle but keep vendor session open for 2PC
+					//see case 71079
+					destroy ( false );
 				}
+				//see case 71079: return here to avoid delegating to vendor session
+				return null;
 			}
 			
 			if (PRODUCER_CONSUMER_METHODS.contains(methodName)) {
@@ -191,16 +197,17 @@ class AtomikosJmsXaSessionProxy extends AbstractJmsSessionProxy implements Sessi
 	
 
 
-	protected void destroy() {
-		try {
-			if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": destroying JMS session " + this );
-			if ( !closed ) {
-				closed = true;
-				delegate.close(); 
+	protected void destroy ( boolean closeXaSession ) {
+			if ( closeXaSession ) {
+				//see case 71079: don't close vendor session if transaction is not done yet
+				if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": closing underlying vendor session " + this );
+				try {
+					delegate.close(); 
+				} catch  ( JMSException e ) {
+					Configuration.logWarning ( this + ": could not close underlying vendor session" , e );
+				}
 			}
-		} catch  ( JMSException e ) {
-			Configuration.logWarning ( this + ": could not close JMS session" , e );
-		}
+			closed = true;
 	}
 
 
@@ -232,7 +239,7 @@ class AtomikosJmsXaSessionProxy extends AbstractJmsSessionProxy implements Sessi
 	}
 
 	public void onTerminated() {
-		destroy();
+		destroy ( true );
 	}
 	
 
