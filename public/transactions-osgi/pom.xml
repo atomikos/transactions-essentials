@@ -28,7 +28,7 @@
 				<executions>
 					<execution>
 						<id>bundle-manifest</id>
-						<phase>process-classes</phase>
+						<phase>prepare-package</phase>
 						<goals>
 							<goal>bundle</goal>
 						</goals>
