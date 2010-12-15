@@ -28,7 +28,7 @@
 				<executions>
 					<execution>
 						<id>bundle-manifest</id>
-						<phase>prepare-package</phase>
+						<phase>compile</phase>
 						<goals>
 							<goal>bundle</goal>
 						</goals>
