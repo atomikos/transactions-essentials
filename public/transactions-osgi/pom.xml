@@ -33,9 +33,10 @@
 							<goal>bundle</goal>
 						</goals>
 						<configuration>
+						<unpackBundle>true</unpackBundle>
 							<instructions>
-								<Include-Resource>
-									com/atomikos/transactions/osgi/AtomikosActivator.class=target/classes/com/atomikos/transactions/osgi/AtomikosActivator.class </Include-Resource>
+								<!--<Include-Resource>
+									com/atomikos/transactions/osgi/AtomikosActivator.class=target/classes/com/atomikos/transactions/osgi/AtomikosActivator.class </Include-Resource>-->
 								<_include>-osgi.bnd</_include>
 							</instructions>
 						</configuration>
