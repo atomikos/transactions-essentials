@@ -85,15 +85,15 @@ public class TxState implements java.io.Serializable
     
   
     
-    private String myName;
+    private final String myName;
     
 
     
     private TxState(String s){
-        myName = s;
+        myName = s.intern();
     }
     public String toString(){
-    	return myName.intern();
+    	return myName;
     }
 
     public boolean equals ( Object o ) 
@@ -106,7 +106,7 @@ public class TxState implements java.io.Serializable
 
     public int hashCode() 
     {
-        return toString().hashCode();
+        return myName.hashCode();
     }
     
     
