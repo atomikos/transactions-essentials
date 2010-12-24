@@ -26,6 +26,7 @@
 package com.atomikos.datasource.xa;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 import javax.transaction.xa.Xid;
 
@@ -127,17 +128,23 @@ public class XID implements Serializable, Xid
 
     public boolean equals ( Object obj )
     {
-        if ( obj == null || !(obj instanceof Xid) )
-            return false;
+    	if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
         Xid xid = (Xid) obj;
 
-        String id1 = new String ( xid.getGlobalTransactionId () ).intern ();
-        String id2 = new String ( xid.getBranchQualifier () ).intern ();
-        String id3 = new String ( getGlobalTransactionId () ).intern ();
-        String id4 = new String ( getBranchQualifier () ).intern ();
+//        String id1 = new String ( xid.getGlobalTransactionId () ).intern ();
+//        String id2 = new String ( xid.getBranchQualifier () ).intern ();
+//        String id3 = new String ( getGlobalTransactionId () ).intern ();
+//        String id4 = new String ( getBranchQualifier () ).intern ();
+//      return (id1.intern ().equals ( id3.intern () ) && id2.intern ().equals (
+//      id4.intern () ));        
+        //PLQ : this should be faster...
+        return Arrays.equals(xid.getGlobalTransactionId (),getGlobalTransactionId ()) && Arrays.equals(xid.getBranchQualifier (), getBranchQualifier ());
 
-        return (id1.intern ().equals ( id3.intern () ) && id2.intern ().equals (
-                id4.intern () ));
     }
 
     public String toString ()
