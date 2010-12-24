@@ -43,7 +43,7 @@ public class ReadOnlyParticipant implements Participant {
 	StringHeuristicMessage[] msgs;
 	
 	//keep coordinator ID for equality
-	private String coordinatorId;
+	private final String coordinatorId;
 	
 	public ReadOnlyParticipant ( CoordinatorImp coordinator ) 
 	{
@@ -97,20 +97,33 @@ public class ReadOnlyParticipant implements Participant {
 	}
 	
 	
-	public boolean equals ( Object o ) {
-		boolean ret = false;
-		if ( o instanceof ReadOnlyParticipant && coordinatorId != null ) {
-			ReadOnlyParticipant other = ( ReadOnlyParticipant ) o;
-			ret = coordinatorId.equals ( other.coordinatorId );
-		}
-		return ret;
+	
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((coordinatorId == null) ? 0 : coordinatorId.hashCode());
+		return result;
+	}
+
+	
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ReadOnlyParticipant other = (ReadOnlyParticipant) obj;
+		if (coordinatorId == null) {
+			if (other.coordinatorId != null)
+				return false;
+		} else if (!coordinatorId.equals(other.coordinatorId))
+			return false;
+		return true;
 	}
 	
-	public int hashCode()
-	{
-		int ret = 1;
-		if ( coordinatorId != null ) ret = coordinatorId.hashCode();
-		return ret;
-	}
+
+	
+	
 
 }
