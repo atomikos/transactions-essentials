@@ -44,10 +44,13 @@ public class ReadOnlyParticipant implements Participant {
 	
 	//keep coordinator ID for equality
 	private final String coordinatorId;
-	
+	private final int hashCode;
 	public ReadOnlyParticipant ( CoordinatorImp coordinator ) 
 	{
 		this.coordinatorId = coordinator.getCoordinatorId();
+		int ret = 1;
+		if ( coordinatorId != null ) ret = coordinatorId.hashCode();
+		hashCode= ret;
 		msgs = new StringHeuristicMessage[1];
 		msgs[0] = new StringHeuristicMessage ( "ReadOnlyParticipant" );
 	}
@@ -98,31 +101,21 @@ public class ReadOnlyParticipant implements Participant {
 	
 	
 	
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((coordinatorId == null) ? 0 : coordinatorId.hashCode());
-		return result;
-	}
-
-	
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		ReadOnlyParticipant other = (ReadOnlyParticipant) obj;
-		if (coordinatorId == null) {
-			if (other.coordinatorId != null)
-				return false;
-		} else if (!coordinatorId.equals(other.coordinatorId))
-			return false;
-		return true;
+	public boolean equals ( Object o ) {
+		boolean ret = false;
+		if ( o instanceof ReadOnlyParticipant && coordinatorId != null ) {
+			ReadOnlyParticipant other = ( ReadOnlyParticipant ) o;
+			ret = coordinatorId.equals ( other.coordinatorId );
+		}
+		return ret;
 	}
 	
-
+	public int hashCode()
+	{
+		int ret = 1;
+		if ( coordinatorId != null ) ret = coordinatorId.hashCode();
+		return ret;
+	}
 	
 	
 
