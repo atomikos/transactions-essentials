@@ -157,7 +157,17 @@ public class XAResourceTransaction implements ResourceTransaction,
 
     private transient Xid xid_;
 
-    private transient XATransactionalResource resource_;
+    private transient String xidToHexString;
+	private transient String toString;
+    
+    private void setXid_(Xid xid_) {
+		this.xid_ = xid_;
+		
+		xidToHexString=	xidToHexString(xid_).intern();
+		toString = "XAResourceTransaction: "+xidToHexString;
+	}
+
+	private transient XATransactionalResource resource_;
 
     private transient XAResource xaresource_;
 
@@ -202,7 +212,7 @@ public class XAResourceTransaction implements ResourceTransaction,
         tid_ = transaction.getTid ();
         root_ = root;
         resourcename_ = resource.getName ();
-        xid_ = resource_.createXid ( tid_ );
+        setXid_( resource_.createXid ( tid_ ));
         // xid_ = resource_.getXidFactory().createXid ( tid_ ,
         // resource.getName() );
         setState ( TxState.ACTIVE );
@@ -211,7 +221,7 @@ public class XAResourceTransaction implements ResourceTransaction,
         enlisted_ = false;
         // add default heuristic message
         addHeuristicMessage ( new StringHeuristicMessage ( "XA resource '"
-                + resource.getName () + "' accessed with Xid '" + xidToHexString (xid_) + "'" ) );
+                + resource.getName () + "' accessed with Xid '" + xidToHexString  + "'" ) );
     }
     
 	void setResource ( XATransactionalResource resource ) 
@@ -224,7 +234,7 @@ public class XAResourceTransaction implements ResourceTransaction,
 		this.state_ = state;
 	}
 
-    static String xidToHexString(Xid xid) {
+   static String xidToHexString(Xid xid) {
     	String gtrid = byteArrayToHexString(xid.getGlobalTransactionId());
     	String bqual = byteArrayToHexString(xid.getBranchQualifier());
     	
@@ -346,7 +356,7 @@ public class XAResourceTransaction implements ResourceTransaction,
             ClassNotFoundException
     {
 
-        xid_ = (Xid) in.readObject ();
+        setXid_((Xid) in.readObject ());
         tid_ = (String) in.readObject ();
         root_ = (String) in.readObject ();
         state_ = (TxState) in.readObject ();
@@ -433,7 +443,7 @@ public class XAResourceTransaction implements ResourceTransaction,
         //This is required for some hibernate connection release strategies.
         if ( state_.equals( ( TxState.ACTIVE ) ) ) {
 	        try {
-	        	printMsg ( "XAResource.end ( " + xidToHexString (xid_)
+	        	printMsg ( "XAResource.end ( " + xidToHexString
 	                    + " , XAResource.TMSUCCESS ) on resource "
 	                    + resourcename_ + " represented by XAResource instance "
 	                    + xaresource_, Console.INFO );
@@ -469,7 +479,7 @@ public class XAResourceTransaction implements ResourceTransaction,
                     + state_ );
 
         try {
-        	printMsg ( "XAResource.start ( " + xidToHexString (xid_) + " , " + logFlag
+        	printMsg ( "XAResource.start ( " + xidToHexString  + " , " + logFlag
                     + " ) on resource " + resourcename_
                     + " represented by XAResource instance " + xaresource_,
                     Console.INFO );
@@ -617,13 +627,13 @@ public class XAResourceTransaction implements ResourceTransaction,
         }
         setState ( TxState.IN_DOUBT );
         if ( ret == XAResource.XA_RDONLY ) {
-            printMsg ( "XAResource.prepare ( " + xidToHexString (xid_)
+            printMsg ( "XAResource.prepare ( " + xidToHexString 
                     + " ) returning XAResource.XA_RDONLY " + "on resource "
                     + resourcename_ + " represented by XAResource instance "
                     + xaresource_, Console.INFO );
             return Participant.READ_ONLY;
         } else {
-            printMsg ( "XAResource.prepare ( " + xidToHexString (xid_) + " ) returning OK "
+            printMsg ( "XAResource.prepare ( " + xidToHexString  + " ) returning OK "
                     + "on resource " + resourcename_
                     + " represented by XAResource instance " + xaresource_,
                     Console.INFO );
@@ -666,7 +676,7 @@ public class XAResourceTransaction implements ResourceTransaction,
             // refresh xaresource for MQSeries: seems to close XAResource after
             // suspend???
             testOrRefreshXAResourceFor2PC ();
-            printMsg ( "XAResource.rollback ( " + xidToHexString (xid_) + " ) "
+            printMsg ( "XAResource.rollback ( " + xidToHexString  + " ) "
                     + "on resource " + resourcename_
                     + " represented by XAResource instance " + xaresource_,
                     Console.INFO );
@@ -760,7 +770,7 @@ public class XAResourceTransaction implements ResourceTransaction,
             // refresh xaresource for MQSeries: seems to close XAResource after
             // suspend???
             testOrRefreshXAResourceFor2PC ();
-            printMsg ( "XAResource.commit ( " + xidToHexString (xid_) + " , " + onePhase
+            printMsg ( "XAResource.commit ( " + xidToHexString + " , " + onePhase
                     + " ) on resource " + resourcename_
                     + " represented by XAResource instance " + xaresource_,
                     Console.INFO );
@@ -843,12 +853,12 @@ public class XAResourceTransaction implements ResourceTransaction,
 
     public int hashCode ()
     {
-        return toString ().hashCode ();
+        return xidToHexString.hashCode();
     }
 
     public String toString ()
     {
-        return "XAResourceTransaction: " + xidToHexString (xid_);
+        return toString;
     }
 
     /**
@@ -917,7 +927,7 @@ public class XAResourceTransaction implements ResourceTransaction,
     	// our suspends (triggered by transaction suspend)
     	if ( !isXaSuspended_ ) {
     		try {
-    			printMsg ( "XAResource.suspend ( " + xidToHexString (xid_)
+    			printMsg ( "XAResource.suspend ( " + xidToHexString 
     					+ " , XAResource.TMSUSPEND ) on resource "
     					+ resourcename_ + " represented by XAResource instance "
     					+ xaresource_, Console.INFO );
@@ -940,7 +950,7 @@ public class XAResourceTransaction implements ResourceTransaction,
     public void xaResume () throws XAException
     {
         try {
-        		printMsg ( "XAResource.start ( " + xidToHexString (xid_)
+        		printMsg ( "XAResource.start ( " + xidToHexString
                     + " , XAResource.TMRESUME ) on resource "
                     + resourcename_ + " represented by XAResource instance "
                     + xaresource_, Console.INFO );
