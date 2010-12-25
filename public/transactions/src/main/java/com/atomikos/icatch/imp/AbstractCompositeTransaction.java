@@ -277,7 +277,7 @@ public abstract class AbstractCompositeTransaction implements CompositeTransacti
 			return true;
 		if (obj == null)
 			return false;
-		if (getClass() != obj.getClass())
+		if (!(obj instanceof AbstractCompositeTransaction) )
 			return false;
 		AbstractCompositeTransaction other = (AbstractCompositeTransaction) obj;
 		if (tid_ == null) {
