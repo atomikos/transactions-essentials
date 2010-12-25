@@ -250,26 +250,7 @@ public abstract class AbstractCompositeTransaction implements CompositeTransacti
         // OK if same invocation or if sibling, but serial mode.
     }
 
-    public boolean equals ( Object o )
-    {
-        if ( !(o instanceof CompositeTransaction) )
-            return false;
-        CompositeTransaction ct = (CompositeTransaction) o;
-        return ct.getTid ().intern ().equals ( getTid ().intern () );
-    }
-    
-    public int hashCode() 
-    {
-    	int ret = 0;
-    	
-    	if ( getTid() == null ) {
-    		ret = super.hashCode();
-    	} else {
-    		ret = getTid().hashCode();
-    	}
-    	
-    	return ret;
-    }
+  
 
     // ***************************************************************
     //
@@ -277,7 +258,37 @@ public abstract class AbstractCompositeTransaction implements CompositeTransacti
     //
     // ***************************************************************
 
-    /**
+    
+    public int hashCode() 
+    {
+    	int ret = 0;
+    	
+    	if ( tid_ == null ) {
+    		ret = super.hashCode();
+    	} else {
+    		ret = getTid().hashCode();
+    	}
+    	
+    	return ret;
+    }
+	
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		AbstractCompositeTransaction other = (AbstractCompositeTransaction) obj;
+		if (tid_ == null) {
+			if (other.tid_ != null)
+				return false;
+		} else if (!tid_.equals(other.tid_))
+			return false;
+		return true;
+	}
+
+	/**
      * @see CompositeTransaction.
      */
 
