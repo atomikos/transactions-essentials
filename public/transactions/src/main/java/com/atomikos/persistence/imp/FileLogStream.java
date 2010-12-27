@@ -233,7 +233,7 @@ public class FileLogStream implements LogStream
 
     }
 
-    public synchronized void flushObject ( Object o ) throws LogException
+    public synchronized void flushObject ( Object o, boolean shouldSync ) throws LogException
     {
         if ( ooutput_ == null )
             throw new LogException ( "Not Initialized or already closed" );
@@ -241,7 +241,7 @@ public class FileLogStream implements LogStream
             ooutput_.writeObject ( o );
             output_.flush ();
             ooutput_.flush ();
-            output_.getFD ().sync ();
+            if (shouldSync) output_.getFD ().sync ();
         } catch ( IOException e ) {
             Stack errors = new Stack ();
             throw new LogException ( e.getMessage (), errors );

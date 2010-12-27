@@ -40,17 +40,20 @@ import com.atomikos.icatch.SysException;
 
 public class ReadOnlyParticipant implements Participant {
 
+	/**
+	 * 
+	 */
+	//force set UID for backward log compatibility
+	private static final long serialVersionUID = -2141189205744565090L;
+
 	StringHeuristicMessage[] msgs;
 	
 	//keep coordinator ID for equality
 	private final String coordinatorId;
-	private final int hashCode;
+
 	public ReadOnlyParticipant ( CoordinatorImp coordinator ) 
 	{
 		this.coordinatorId = coordinator.getCoordinatorId();
-		int ret = 1;
-		if ( coordinatorId != null ) ret = coordinatorId.hashCode();
-		hashCode= ret;
 		msgs = new StringHeuristicMessage[1];
 		msgs[0] = new StringHeuristicMessage ( "ReadOnlyParticipant" );
 	}

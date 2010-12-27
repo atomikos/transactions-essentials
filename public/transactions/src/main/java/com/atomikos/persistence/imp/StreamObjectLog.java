@@ -218,11 +218,11 @@ public class StreamObjectLog implements ObjectLog
             return;
 
         SystemLogImage simg = new SystemLogImage ( rec, false );
-        flush ( simg );
+        flush ( simg , true );
 
     }
 
-    protected synchronized void flush ( SystemLogImage img )
+    protected synchronized void flush ( SystemLogImage img , boolean shouldSync )
             throws LogException
     {
         Stack errors = new Stack ();
@@ -237,7 +237,7 @@ public class StreamObjectLog implements ObjectLog
         try {
 
             try {
-                logstream_.flushObject ( img );
+                logstream_.flushObject ( img , shouldSync );
                 writeCheckpoint ();
                 // fout_.flush();
             } catch ( LogException ioerr ) {
@@ -318,7 +318,7 @@ public class StreamObjectLog implements ObjectLog
         }
         Recoverable bogus = previous.getRecoverable ();
         SystemLogImage simg = new SystemLogImage ( bogus, true );
-        flush ( simg );
+        flush ( simg , false );
     }
 
     /**

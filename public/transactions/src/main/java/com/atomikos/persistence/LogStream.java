@@ -81,12 +81,11 @@ public interface LogStream
      * Flush (force) an object to the stream. If this method returns then the
      * object is guaranteed to be persisted.
      * 
-     * @param o
-     *            The object to flush.
+     *           
      * @throws LogException
      *             On failure.
      */
-    public void flushObject ( Object o ) throws LogException;
+    public void flushObject ( Object objectToFlush , boolean shouldSync ) throws LogException;
 
     /**
      * For proper termination: a close method.
