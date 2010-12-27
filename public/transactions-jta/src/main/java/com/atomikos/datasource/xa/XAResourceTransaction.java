@@ -29,6 +29,7 @@ import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import java.io.OptionalDataException;
 import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.Stack;
@@ -363,11 +364,17 @@ public class XAResourceTransaction implements ResourceTransaction,
 
         heuristicMessages_ = (Vector) in.readObject ();
         resourcename_ = (String) in.readObject ();
-        boolean xaresSerializable = in.readBoolean();
-        if ( xaresSerializable ) {
-            // cf case 59238
-            xaresource_ = ( XAResource ) in.readObject();
-        }
+        
+        try {
+			Boolean xaresSerializable = (Boolean) in.readObject();
+			if (xaresSerializable !=null && xaresSerializable ) {
+			    // cf case 59238
+			    xaresource_ = ( XAResource ) in.readObject();
+			} 
+		} catch (OptionalDataException e) {
+			// happens if boolean is missing - like in older logfiles
+			Configuration.logDebug ("Ignoring missing field" , e );
+		}
 
     }
 
