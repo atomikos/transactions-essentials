@@ -57,7 +57,11 @@ import com.atomikos.icatch.system.Configuration;
 class AtomikosNonXAParticipant implements Participant, Serializable
 {
     
-    private boolean readOnly;
+	
+
+	private static final long serialVersionUID = -771461092384746954L;
+
+	private boolean readOnly;
 
     private ArrayList heuristicMessages;
 
