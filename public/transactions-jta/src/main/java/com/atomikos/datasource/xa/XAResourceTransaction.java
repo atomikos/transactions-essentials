@@ -243,7 +243,7 @@ public class XAResourceTransaction implements ResourceTransaction,
 	}
 
 	private static String byteArrayToHexString(byte[] byteArray) {
-		StringBuffer sb = new StringBuffer();
+		StringBuffer sb = new StringBuffer(byteArray.length);
     	for (int i = 0; i < byteArray.length; i++) {
     		String hexByte = Integer.toHexString(byteArray[i]);
 			sb.append(hexByte);
@@ -346,10 +346,10 @@ public class XAResourceTransaction implements ResourceTransaction,
         out.writeObject ( resourcename_ );
         if ( xaresource_ instanceof Serializable ) {
             // cf case 59238
-            out.writeBoolean ( true );
+            out.writeObject ( Boolean.TRUE );
             out.writeObject ( xaresource_ );
         } else {
-            out.writeBoolean ( false );
+            out.writeObject ( Boolean.FALSE );
         }
     }
 
