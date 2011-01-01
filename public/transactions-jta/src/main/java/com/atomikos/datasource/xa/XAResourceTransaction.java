@@ -835,6 +835,8 @@ public class XAResourceTransaction implements ResourceTransaction,
 
     public boolean equals ( Object o )
     {
+    	if(this==o)
+    		return true;
         // NOTE: basing equals on the xid means that if two
         // different instances for the same xid exist then these
         // will be considered the same, and a second will
