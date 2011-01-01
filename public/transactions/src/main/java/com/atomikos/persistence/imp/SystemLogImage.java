@@ -63,10 +63,11 @@ class SystemLogImage implements Recoverable, Externalizable
         forgettable_ = forgettable;
     }
 
+    private static final String END_OF_LOG_ENTRY = "END_OF_LOG_ENTRY";
     public Object getId ()
     {
         if ( recoverable_ == null ) // terminating entry
-            return new String ( "END_OF_LOG_ENTRY" );
+            return END_OF_LOG_ENTRY;
         else
             return recoverable_.getId ();
     }
