@@ -56,11 +56,13 @@ class AtomikosConnectionProxy extends AbstractConnectionProxy
 	private final static List CLOSE_METHODS = Arrays.asList(new String[] {"close"});
 	private final static List XA_INCOMPATIBLE_METHODS = Arrays.asList(new String[] {"commit", "rollback", "setSavepoint", "releaseSavepoint"});
 	
-	private Connection delegate;
+	private final Connection delegate;
 	private SessionHandleState sessionHandleState;
 	private boolean closed = false;
 	private boolean reaped = false;
 	private HeuristicMessage hmsg;
+	
+	private String toString;
 	
 	private AtomikosConnectionProxy ( Connection c, SessionHandleState sessionHandleState , HeuristicMessage hmsg ) 
 	{
@@ -72,9 +74,12 @@ class AtomikosConnectionProxy extends AbstractConnectionProxy
 	
 	public String toString() 
 	{
-		StringBuffer ret = new StringBuffer();
-		ret.append ( "atomikos connection proxy for " + delegate );
-		return ret.toString();
+		if(toString==null){
+			StringBuffer ret = new StringBuffer();
+			ret.append ( "atomikos connection proxy for " + delegate );
+			toString= ret.toString();	
+		}
+		return toString;
 	}
 
 	//no longer synchronized: see case 22101
@@ -88,6 +93,8 @@ class AtomikosConnectionProxy extends AbstractConnectionProxy
 		
 		if (methodName.equals("reap")) {
 			if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": reaping pending connection..." );
+			
+			//Configuration.logDebug("{} : reaping pending connection..", this);
 			reap();
 			if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": reap done!" );
 			return null;
