@@ -164,7 +164,7 @@ public class XAResourceTransaction implements ResourceTransaction,
     private void setXid_(Xid xid_) {
 		this.xid_ = xid_;
 		
-		xidToHexString=	xidToHexString(xid_).intern();
+		xidToHexString=	xidToHexString(xid_);
 		toString = "XAResourceTransaction: "+xidToHexString;
 	}
 
