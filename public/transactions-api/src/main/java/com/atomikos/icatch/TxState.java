@@ -89,8 +89,8 @@ public class TxState implements java.io.Serializable
     
 
     
-    private TxState(String s){
-        myName = s.intern();
+    private TxState(final String s){
+        myName = s;
     }
     public String toString(){
     	return myName;
@@ -103,17 +103,18 @@ public class TxState implements java.io.Serializable
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (obj == null)
-			return false;
+//		if (obj == null)
+//			return false;
 		if (getClass() != obj.getClass())
 			return false;
 		TxState other = (TxState) obj;
-		if (myName == null) {
-			if (other.myName != null)
-				return false;
-		} else if (!myName.equals(other.myName))
-			return false;
-		return true;
+		return myName.equals(other.myName);
+//		if (myName == null) {
+//			if (other.myName != null)
+//				return false;
+//		} else if (!myName.equals(other.myName))
+//			return false;
+//		return true;
 	}
     
     
