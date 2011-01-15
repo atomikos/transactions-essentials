@@ -54,7 +54,12 @@ public abstract class AbstractCompositeTransaction implements CompositeTransacti
         java.io.Serializable
 {
 
-    private static void fail () throws UnsupportedOperationException
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 3522422565305065464L;
+
+	private static void fail () throws UnsupportedOperationException
     {
         throw new UnsupportedOperationException (
                 "This functionality is not available for this instance" );
