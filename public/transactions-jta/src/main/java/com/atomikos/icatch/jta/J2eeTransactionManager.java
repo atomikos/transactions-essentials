@@ -56,8 +56,9 @@ public class J2eeTransactionManager
 implements TransactionManager,
         Serializable, Referenceable, UserTransaction
 {
-
-    private transient TransactionManagerImp tm;
+	private static final long serialVersionUID = 8584376600562353607L;
+	
+	private transient TransactionManagerImp tm;
 
     private void checkSetup () throws SystemException
     {

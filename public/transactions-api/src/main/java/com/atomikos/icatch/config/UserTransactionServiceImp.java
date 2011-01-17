@@ -70,9 +70,6 @@ public class UserTransactionServiceImp
         implements java.io.Serializable , UserTransactionService
 {
 
-    /**
-	 * 
-	 */
 	private static final long serialVersionUID = -3374591336514451887L;
 
 	/**

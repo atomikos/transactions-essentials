@@ -35,7 +35,10 @@ package com.atomikos.beans;
 public class ReadOnlyException 
 extends Exception
 {
-    public ReadOnlyException () 
+ 
+	private static final long serialVersionUID = 246767479746061509L;
+
+	public ReadOnlyException () 
     {
         super(); 
     }

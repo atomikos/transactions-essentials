@@ -58,7 +58,9 @@ public class TransactionManagerImp implements TransactionManager,
         SubTxAwareParticipant, Referenceable, UserTransaction
 
 {
-    /**
+	private static final long serialVersionUID = -3048879409985542685L;
+
+	/**
      * Transaction property name to indicate that the transaction is a 
      * JTA transaction. If this property is set to an arbitrary non-null
      * value then a JTA transaction is assumed by this class.

@@ -50,7 +50,10 @@ import com.atomikos.util.SerializableObjectFactory;
 public class J2eeUserTransaction implements UserTransaction, Serializable,
         Referenceable
 {
-    private transient TransactionManager txmgr_;
+ 
+	private static final long serialVersionUID = -7656447860674832182L;
+
+	private transient TransactionManager txmgr_;
 
     public J2eeUserTransaction ()
     {

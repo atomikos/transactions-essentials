@@ -38,11 +38,7 @@ import javax.transaction.xa.Xid;
 
 public class XID implements Serializable, Xid
 {
-	
-	
-    /**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 4796496938014754464L;
 
 	private String meAsString_;

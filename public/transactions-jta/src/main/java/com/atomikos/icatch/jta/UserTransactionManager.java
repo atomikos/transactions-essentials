@@ -61,8 +61,9 @@ import com.atomikos.util.SerializableObjectFactory;
 public class UserTransactionManager implements TransactionManager,
         Serializable, Referenceable, UserTransaction
 {
+	private static final long serialVersionUID = -655789038710288096L;
 
-    private transient TransactionManagerImp tm;
+	private transient TransactionManagerImp tm;
     
     private UserTransactionService uts;
 
