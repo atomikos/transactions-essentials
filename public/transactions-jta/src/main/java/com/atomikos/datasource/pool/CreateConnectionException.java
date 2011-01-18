@@ -34,6 +34,7 @@ package com.atomikos.datasource.pool;
 public class CreateConnectionException extends ConnectionPoolException 
 {
 
+	private static final long serialVersionUID = 1858243647893576738L;
 	public CreateConnectionException ( String reason , Exception cause ) 
 	{
 		super ( reason , cause );

@@ -44,7 +44,10 @@ import com.atomikos.icatch.SysException;
 
 public class ExtentImp implements Extent
 {
-    private Hashtable participants_ = null;
+    
+	private static final long serialVersionUID = -1010453448007350422L;
+	
+	private Hashtable participants_ = null;
     private boolean queried_ = false;
     // protected Participant participant_ = null;
 
