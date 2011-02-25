@@ -85,6 +85,7 @@ implements MessageConsumerSessionProperties
 	private String subscriberName;
 	private boolean noLocal;
 	private boolean unsubscribeOnClose;
+	private String clientID;
 	
 	public MessageDrivenContainer()
 	{
@@ -97,6 +98,15 @@ implements MessageConsumerSessionProperties
 	private MessageConsumerSession createSession() 
 	{
 		return new MessageConsumerSession ( this );
+	}
+	
+	/**
+	 * Sets the clientID for durable subscriptions. Optional.
+	 * 
+	 * @param clientID
+	 */
+	public void setClientID ( String clientID ) {
+		this.clientID = clientID;
 	}
 	
 	/**
@@ -400,6 +410,7 @@ implements MessageConsumerSessionProperties
 	        //set subscriber name with suffix to ensure unique names
 	        if ( getSubscriberName() != null ) s.setSubscriberName ( getSubscriberName() + "-" + i );
 	        s.setNoLocal ( getNoLocal() );
+	        s.setClientID(clientID);
 	        try {
 	            s.startListening ();
 	            // System.out.println ( "MessageDrivenContainer: started

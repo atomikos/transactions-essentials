@@ -72,6 +72,7 @@ class MessageConsumerSession
 	//for durable subscribers only
 	private boolean noLocal;
 	private String subscriberName;
+	private String clientID;
 
 	protected MessageConsumerSession ( MessageConsumerSessionProperties properties )
 	{
@@ -392,9 +393,12 @@ class MessageConsumerSession
 	            } else {
 	                connection = factory.createConnection ();
 	            }
-	            connection.start ();
-	            session = connection.createSession ( true, 0 );
 	            
+	            if (clientID != null ) connection.setClientID(clientID);
+	            
+	            connection.start ();
+	            
+	            session = connection.createSession ( true, 0 );
 	            if ( getDestination() == null ) {
 	            	Destination d = DestinationHelper.findDestination ( getDestinationName() , session );
 	            	setDestination ( d );
@@ -705,5 +709,9 @@ class MessageConsumerSession
 	public void setExceptionListener ( ExceptionListener exceptionListener ) 
 	{
 		this.exceptionListener = exceptionListener;
+	}
+
+	public void setClientID(String clientID) {
+		this.clientID = clientID;
 	}
 }
