@@ -394,6 +394,7 @@ class MessageConsumerSession
 	                connection = factory.createConnection ();
 	            }
 	            if (clientID != null ) {
+	            	//see http://activemq.apache.org/virtual-destinations.html
 	            	String connectionClientID = connection.getClientID();
 	            	if ( connectionClientID == null ) connection.setClientID(clientID);
 	            	else Configuration.logWarning ( "Reusing connection with preset clientID: " + connectionClientID );	            	
