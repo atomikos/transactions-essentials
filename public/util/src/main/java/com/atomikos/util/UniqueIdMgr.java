@@ -31,7 +31,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.Date;
 
 
@@ -42,11 +41,15 @@ import java.util.Date;
  *
  */
 
-public class UniqueIdMgr implements Serializable 
+public class UniqueIdMgr 
 {
     private static long MAX_PER_EPOCH = 32000;
     //max no of txs with same epoch part in xid.
     //constructs a unique TID for a particular server
+    
+	private final static int MAX_LENGTH_OF_NUMERIC_SUFFIX = 16;
+
+    
     String server_; //name of server
     long epoch_;//needed to ensure uniqueness
     long lastcounter_;
@@ -146,7 +149,7 @@ public class UniqueIdMgr implements Serializable
      *@exception IOException If reading or writing fails.
      */
      
-    protected long readEpoch (  ) throws IOException
+    protected long readEpoch() throws IOException
     {   
         long ret = 0;
              
@@ -230,11 +233,21 @@ public class UniqueIdMgr implements Serializable
         	}
         }
         
-        return prefix_ + server_ + suffix_ + 
-        		getCountWithLeadingZeroes ( lastcounter_ )  + getCountWithLeadingZeroes ( epoch_ );
+        return getCommonPartOfId() + getCountWithLeadingZeroes ( lastcounter_ )  + getCountWithLeadingZeroes ( epoch_ );
     }
     
-  
+    private String getCommonPartOfId() {
+    	StringBuffer ret = new StringBuffer(64);
+		ret.append(prefix_).append(server_).append(suffix_);
+		return ret.toString();
+    }
+
+	public int getMaxIdLengthInBytes() {
+		// see case 73086
+		return getCommonPartOfId().getBytes().length + MAX_LENGTH_OF_NUMERIC_SUFFIX;
+	}
+    
+   
 }
 
 

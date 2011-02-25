@@ -27,12 +27,15 @@ package com.atomikos.icatch.standalone;
 
 import java.util.Properties;
 
+import com.atomikos.datasource.xa.XID;
 import com.atomikos.diagnostics.Console;
 import com.atomikos.icatch.Extent;
 import com.atomikos.icatch.RollbackException;
 import com.atomikos.icatch.SysException;
+import com.atomikos.icatch.config.imp.AbstractUserTransactionServiceFactory;
 import com.atomikos.icatch.imp.BaseTransactionManager;
 import com.atomikos.icatch.imp.TransactionServiceImp;
+import com.atomikos.icatch.system.Configuration;
 import com.atomikos.persistence.StateRecoveryManager;
 import com.atomikos.util.UniqueIdMgr;
 
@@ -77,6 +80,12 @@ class StandAloneTransactionManager extends BaseTransactionManager
         UniqueIdMgr idmgr = null;
 
         idmgr = new UniqueIdMgr ( tmName, outputDirPath );
+        if ( idmgr.getMaxIdLengthInBytes() > XID.MAXGTRIDSIZE ) {
+        	// see case 73086
+        	String msg = "Value too long :" + tmName;
+        	Configuration.logWarning ( msg );
+        	throw new SysException(msg);
+        }
         service_ = new TransactionServiceImp ( tmName, srecmgr, idmgr, console,
                 maxTimeout, maxActives , single_threaded_2pc );
     }
