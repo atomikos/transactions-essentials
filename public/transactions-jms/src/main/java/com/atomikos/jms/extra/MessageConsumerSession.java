@@ -393,8 +393,11 @@ class MessageConsumerSession
 	            } else {
 	                connection = factory.createConnection ();
 	            }
-	            
-	            if (clientID != null ) connection.setClientID(clientID);
+	            if (clientID != null ) {
+	            	String connectionClientID = connection.getClientID();
+	            	if ( connectionClientID == null ) connection.setClientID(clientID);
+	            	else Configuration.logWarning ( "Reusing connection with preset clientID: " + connectionClientID );	            	
+	            }
 	            
 	            connection.start ();
 	            
