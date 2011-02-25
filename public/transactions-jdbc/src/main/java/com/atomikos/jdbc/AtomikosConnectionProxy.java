@@ -289,7 +289,8 @@ class AtomikosConnectionProxy extends AbstractConnectionProxy
 				
 	            afterCompletionDone = true;
 	            
-
+	            // see case 73007
+	            forceCloseAllPendingStatements ( true );
 	        }
 			
         	
