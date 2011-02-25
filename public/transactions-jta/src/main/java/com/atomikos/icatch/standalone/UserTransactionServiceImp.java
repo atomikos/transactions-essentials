@@ -520,7 +520,7 @@ class UserTransactionServiceImp extends AbstractJtaUserTransactionService
         ret.setProperty ( AbstractUserTransactionServiceFactory.CONSOLE_FILE_COUNT_PROPERTY_NAME, "1" );
 
 
-        ret.setProperty ( AbstractUserTransactionServiceFactory.THREADED_2PC_PROPERTY_NAME , "true" );
+        ret.setProperty ( AbstractUserTransactionServiceFactory.THREADED_2PC_PROPERTY_NAME , "false" );
         ret.setProperty ( AbstractUserTransactionServiceFactory.REGISTER_SHUTDOWN_HOOK_PROPERTY_NAME , "false" );
         return ret;
     }
