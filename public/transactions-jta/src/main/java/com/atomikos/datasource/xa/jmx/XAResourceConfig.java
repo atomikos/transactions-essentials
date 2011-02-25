@@ -41,8 +41,9 @@ import javax.management.ObjectName;
  */
 public class XAResourceConfig implements Serializable
 {
+	private static final long serialVersionUID = -2778887014312506596L;
 
-    private boolean acceptAllXAResources;
+	private boolean acceptAllXAResources;
 
     private ObjectName name;
 

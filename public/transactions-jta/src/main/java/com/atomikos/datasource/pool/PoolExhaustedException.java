@@ -32,6 +32,8 @@ package com.atomikos.datasource.pool;
 public class PoolExhaustedException extends ConnectionPoolException {
 
 
+	private static final long serialVersionUID = 7266245068986719051L;
+
 	public PoolExhaustedException ( String reason ) {
 		super ( reason );
 	}

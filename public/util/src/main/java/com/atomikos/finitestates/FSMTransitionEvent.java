@@ -33,6 +33,9 @@ import java.util.EventObject;
 *Events signalling a transition of a FSM.
 */
 public class FSMTransitionEvent extends EventObject{
+	
+	private static final long serialVersionUID = 7629493293234798149L;
+	
 	protected Object from,to;
 
 	public FSMTransitionEvent(Object source,Object fromState,Object toState){

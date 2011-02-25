@@ -45,7 +45,12 @@ public class CompositeTransactionAdaptor extends AbstractCompositeTransaction
         implements CompositeCoordinator
 {
 
-    private RecoveryCoordinator adaptor_;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 6361601412982044104L;
+
+	private RecoveryCoordinator adaptor_;
     // the adaptor to use for replay requests
 
     private String root_;

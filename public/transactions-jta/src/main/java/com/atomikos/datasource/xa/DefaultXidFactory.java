@@ -25,7 +25,6 @@
 
 package com.atomikos.datasource.xa;
 
-import javax.transaction.xa.Xid;
 
 /**
  * 
@@ -36,6 +35,11 @@ import javax.transaction.xa.Xid;
 public class DefaultXidFactory extends AbstractXidFactory implements
         java.io.Serializable
 {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8667085263366123575L;
 
 
 }

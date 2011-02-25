@@ -14,3 +14,6 @@ eclipse/
 .DS_Store
 *.bak
 *.orig
+
+syntax: regexp
+^private/stress-test-jms2jdbc/transformer/src/test/java/com/atomikos/demo/PrintUIDs\.java$

@@ -68,7 +68,9 @@ public class SimpleDataSourceBean implements HeuristicDataSource,
         ConnectionPoolDataSource, Serializable, Referenceable
 {
 
-    private transient JtaDataSourceImp ds_;
+	private static final long serialVersionUID = 6413560960979946477L;
+
+	private transient JtaDataSourceImp ds_;
     // the data source to delegate to
 
     private transient XADataSource xads_;

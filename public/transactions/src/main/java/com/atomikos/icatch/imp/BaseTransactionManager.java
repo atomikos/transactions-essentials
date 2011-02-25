@@ -50,7 +50,11 @@ public class BaseTransactionManager implements CompositeTransactionManager,
         SubTxAwareParticipant
 {
 
-    private Hashtable threadtotxmap_ = null;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -552994279460833505L;
+	private Hashtable threadtotxmap_ = null;
     // maps threads to composite transactions
 
     private Hashtable txtothreadmap_ = null;

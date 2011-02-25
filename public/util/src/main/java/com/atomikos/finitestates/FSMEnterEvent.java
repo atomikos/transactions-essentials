@@ -33,6 +33,10 @@ import java.util.EventObject;
 *Events signalling the transition of the FSM to a new state.
 */
 public class FSMEnterEvent extends EventObject{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7910459829127232977L;
 	protected Object newState;
 	
 	public FSMEnterEvent(Object source, Object state){

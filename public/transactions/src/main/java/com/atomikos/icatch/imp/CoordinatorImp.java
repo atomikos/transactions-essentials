@@ -26,9 +26,7 @@
 package com.atomikos.icatch.imp;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Vector;
 
 import com.atomikos.diagnostics.Console;
@@ -521,8 +519,8 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
         if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "Coordinator " + getCoordinatorId ()
                 + " entering state: " + state.toString () );
         fsm_.setState ( state );
-        printMsg ( "Coordinator " + getCoordinatorId () + " entered state: "
-                + state.toString (), Console.DEBUG );
+ //       printMsg ( "Coordinator " + getCoordinatorId () + " entered state: "
+ //               + state.toString (), Console.DEBUG );
         // System.out.println ( "Coordinator state set to " + state.toString()
         // );
 
@@ -731,8 +729,10 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 
     public boolean recover () throws SysException
     {
-        printMsg ( "starting recover() for coordinator: " + getCoordinatorId (),
-                Console.DEBUG );
+    	
+    	 if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug (  "starting recover() for coordinator: " + getCoordinatorId () );
+     //   printMsg ( "starting recover() for coordinator: " + getCoordinatorId (),
+     //           Console.DEBUG );
         boolean allOK = true;      
         
         // return false only if NOT allOK and indoubt
@@ -746,8 +746,10 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 				boolean recoveredParticipant = false;
 				try {
 					recoveredParticipant = next.recover();
-					printMsg("coordinator: " + getCoordinatorId()
-							+ "recovered participant: " + next, Console.DEBUG);
+					 if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug (  "coordinator: " + getCoordinatorId()
+								+ "recovered participant: " + next );
+		//			printMsg("coordinator: " + getCoordinatorId()
+		//					+ "recovered participant: " + next, Console.DEBUG);
 				} catch (Exception e) {
 					// happens if XA connection could not be gotten
 					// or other problems
@@ -770,8 +772,10 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
         // ONLY NOW start threads and so on
         startThreads ( DEFAULT_TIMEOUT, console_ );
 
-        printMsg ( "recover() done for coordinator: " + getCoordinatorId (),
-                Console.DEBUG );
+        
+        if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug (   "recover() done for coordinator: " + getCoordinatorId () );
+      //  printMsg ( "recover() done for coordinator: " + getCoordinatorId (),
+      //          Console.DEBUG );
 
         return ret;
     }
@@ -827,11 +831,17 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
         synchronized ( fsm_ ) {
         	ret = stateHandler_.prepare ();
         	if ( ret == Participant.READ_ONLY ) {
-        		printMsg ( "prepare() of Coordinator  " + getCoordinatorId ()
-        				+ " returning READONLY", Console.DEBUG );
+        		
+        		 if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug (  "prepare() of Coordinator  " + getCoordinatorId ()
+         				+ " returning READONLY" );
+        	//	printMsg ( "prepare() of Coordinator  " + getCoordinatorId ()
+        	//			+ " returning READONLY", Console.DEBUG );
         	} else {
-        		printMsg ( "prepare() of Coordinator  " + getCoordinatorId ()
-        				+ " returning YES vote", Console.DEBUG );
+        		
+        		 if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "prepare() of Coordinator  " + getCoordinatorId ()
+         				+ " returning YES vote");
+ //       		printMsg ( "prepare() of Coordinator  " + getCoordinatorId ()
+ //       				+ " returning YES vote", Console.DEBUG );
         	}
         }
         return ret;

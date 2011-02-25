@@ -37,8 +37,10 @@ import java.util.Stack;
  
 public class SysException extends RuntimeException
 {
-  
-     /**
+ 
+	private static final long serialVersionUID = -9183281406145817016L;
+
+	/**
       *Print all stack traces, including those for nested errors.
       *Utility function for debugging purposes.
       *This method prints all errors and their stack traces

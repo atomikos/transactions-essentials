@@ -70,7 +70,9 @@ public class UserTransactionServiceImp
         implements java.io.Serializable , UserTransactionService
 {
 
-    /**
+	private static final long serialVersionUID = -3374591336514451887L;
+
+	/**
      * Constant denoting the system property name that suggest NOT to use
      * any configuration file for the transaction service's properties.
      * If this a system property with this name is set to an arbitrary value
