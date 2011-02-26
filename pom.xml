@@ -20,6 +20,33 @@
 		<!-- we don't want to depend on platform's default encoding -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
+	<developers> 
+		<developer> 
+			<id>guypardon</id> 
+			<name>Guy Pardon</name> 
+			<email>guy@atomikos.com</email> 
+		</developer> 
+		<developer> 
+			<id>ludovicorban</id> 
+			<name>Ludovic Orban</name> 
+			<email>ludovic@atomikos.com</email> 
+		</developer> 
+		<developer> 
+			<id>pascalleclercq</id> 
+			<name>Pascal Leclercq</name> 
+			<email>pascal.leclercq@gmail.com</email> 
+		</developer> 
+		<developer> 
+			<id>dandiephouse</id> 
+			<name>Dan Diephouse</name> 
+			<email>dan@envoisolutions.com</email> 
+		</developer> 
+		<developer> 
+			<id>paulbrown</id> 
+			<name>Paul Brown</name> 
+			<email>prb@mult.ifario.us</email> 
+		</developer> 
+	</developers> 
 	<scm>
 		<connection>scm:hg:http://atomikos.repositoryhosting.com/hg/atomikos/development</connection>
 		<developerConnection>scm:hg:http://atomikos.repositoryhosting.com/hg/atomikos/development</developerConnection>
@@ -198,15 +225,12 @@
 		</dependency>
 
 	</dependencies>
-	<!-- "modules" must correspond to file system hierarchy -->
-	<modules>
-		<module>public</module>
-		<module>private</module>
-	</modules>
+	
+	
 	<!--TODO prevent tests execution during the build -->
 	<profiles>
 		<profile>
-			<id>all</id>
+			<id>default</id>
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
@@ -222,6 +246,7 @@
 					<url>http://atomikos.dyndns.org:8088/nexus/content/repositories/snapshots/</url>
 				</snapshotRepository>
 			</distributionManagement>
+			<!-- "modules" must correspond to file system hierarchy -->
 			<modules>
 				<module>public</module>
 				<module>private</module>
