@@ -21,8 +21,8 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<scm>
-		<connection>scm:hg:http://atomikos.repositoryhosting.com/hg/atomikos/development</connection>
-		<developerConnection>scm:hg:http://atomikos.repositoryhosting.com/hg/atomikos/development</developerConnection>
+		<connection>scm:hg:http://atomikos.repositoryhosting.com/hg/atomikos/stable-3-7-x</connection>
+		<developerConnection>scm:hg:http://atomikos.repositoryhosting.com/hg/atomikos/stable-3-7-x</developerConnection>
 		<url>http://www.atomikos.com/</url>
 	</scm>
 	
