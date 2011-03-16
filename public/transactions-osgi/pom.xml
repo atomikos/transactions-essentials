@@ -4,11 +4,11 @@
 	<parent>
 		<groupId>com.atomikos</groupId>
 		<artifactId>ate</artifactId>
-		<version>3.7.1-SNAPSHOT</version>
+		<version>3.7.1-test-ignore</version>
 	</parent>
 	<groupId>com.atomikos</groupId>
 	<artifactId>transactions-osgi</artifactId>
-	<version>3.7.1-SNAPSHOT</version>
+	<version>3.7.1-test-ignore</version>
 
 	<name>Transactions OSGi</name>
 	<build>
@@ -51,12 +51,12 @@
 		<dependency>
 			<groupId>com.atomikos</groupId>
 			<artifactId>transactions-jdbc</artifactId>
-			<version>3.7.1-SNAPSHOT</version>
+			<version>3.7.1-test-ignore</version>
 		</dependency>
 		<dependency>
 			<groupId>com.atomikos</groupId>
 			<artifactId>transactions-jms</artifactId>
-			<version>3.7.1-SNAPSHOT</version>
+			<version>3.7.1-test-ignore</version>
 		</dependency>
 		<dependency>
 			<groupId>org.osgi</groupId>
