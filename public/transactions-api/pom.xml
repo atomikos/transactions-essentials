@@ -4,11 +4,11 @@
     <parent>
         <groupId>com.atomikos</groupId>
         <artifactId>ate</artifactId>
-        <version>3.7.1-test-ignore</version>
+        <version>3.7.1-SNAPSHOT</version>
     </parent>
     <groupId>com.atomikos</groupId>
     <artifactId>transactions-api</artifactId>
-    <version>3.7.1-test-ignore</version>
+    <version>3.7.1-SNAPSHOT</version>
     <name>Transactions API</name>
     
    
@@ -16,7 +16,7 @@
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>atomikos-util</artifactId>
-            <version>3.7.1-test-ignore</version>
+            <version>3.7.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>

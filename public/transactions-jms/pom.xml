@@ -4,17 +4,17 @@
     <parent>
         <groupId>com.atomikos</groupId>
         <artifactId>ate</artifactId>
-        <version>3.7.1-test-ignore</version>
+        <version>3.7.1-SNAPSHOT</version>
     </parent>
     <groupId>com.atomikos</groupId>
     <artifactId>transactions-jms</artifactId>
-    <version>3.7.1-test-ignore</version>
+    <version>3.7.1-SNAPSHOT</version>
     <name>Transactions JMS</name>
     <dependencies>
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>transactions-jta</artifactId>
-            <version>3.7.1-test-ignore</version>
+            <version>3.7.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
