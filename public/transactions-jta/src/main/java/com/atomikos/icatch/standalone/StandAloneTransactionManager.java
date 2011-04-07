@@ -32,7 +32,6 @@ import com.atomikos.diagnostics.Console;
 import com.atomikos.icatch.Extent;
 import com.atomikos.icatch.RollbackException;
 import com.atomikos.icatch.SysException;
-import com.atomikos.icatch.config.imp.AbstractUserTransactionServiceFactory;
 import com.atomikos.icatch.imp.BaseTransactionManager;
 import com.atomikos.icatch.imp.TransactionServiceImp;
 import com.atomikos.icatch.system.Configuration;
