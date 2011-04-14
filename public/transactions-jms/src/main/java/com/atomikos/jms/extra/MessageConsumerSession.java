@@ -675,6 +675,17 @@ class MessageConsumerSession
 	                }
 
 	            }
+	            
+                // thread is going to die, close the receiver here.
+	            if(receiver != null) {
+	              try {
+                    receiver.close();
+                  } catch ( Throwable e ) {
+                    Configuration.logDebug ( "MessageConsumerSession: Error closing receiver" , e );
+                  }
+                  receiver = null;
+	            }
+	            
 	            Configuration
 	                    .logInfo ( "MessageConsumerSession: JMS listener thread exiting." );
 	            if ( listener != null && current == null && notifyListenerOnClose ) {
