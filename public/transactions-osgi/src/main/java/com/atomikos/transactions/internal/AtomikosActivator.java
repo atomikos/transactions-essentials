@@ -23,12 +23,13 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  */
 
-package com.atomikos.transactions.osgi;
+package com.atomikos.transactions.internal;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 
 import com.atomikos.icatch.jta.UserTransactionManager;
+import com.atomikos.icatch.system.Configuration;
 
 
 public class AtomikosActivator implements BundleActivator {
@@ -37,9 +38,16 @@ public class AtomikosActivator implements BundleActivator {
 	private ServiceRegistration userTransactionRegistration;
 	private com.atomikos.icatch.jta.UserTransactionImp userTransaction= new com.atomikos.icatch.jta.UserTransactionImp();
 	public void start(BundleContext context) throws Exception {
+		try{
+			
+		
 		utm.init();
 		utmRegistration=	context.registerService(javax.transaction.TransactionManager.class.getName(), utm, null);
 		userTransactionRegistration=	context.registerService(javax.transaction.UserTransaction.class.getName(), userTransaction, null);
+		} catch (Exception e){
+			e.printStackTrace();
+			Configuration.getConsole().print(e.getMessage());
+		}
 	}
 
 	public void stop(BundleContext context) throws Exception {
