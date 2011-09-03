@@ -1,6 +1,6 @@
 Bundle-Activator: com.atomikos.transactions.internal.AtomikosActivator
 Embed-Transitive: true
 Embed-Dependency: *;groupId=com.atomikos;inline=true
-Import-Package: javax.transaction,javax.transaction.xa,org.osgi.framework,org.apache.derby.iapi.jdbc;resolution:=optional,*;resolution:=optional
-Export-Package: com.atomikos.jdbc,com.atomikos.jdbc.nonxa,com.atomikos.datasource.xa
-
+Import-Package: javax.transaction,javax.transaction.xa,org.osgi.framework,javax.management,javax.naming.*,*;resolution:=optional
+Export-Package: com.atomikos.jdbc,com.atomikos.jdbc.nonxa,com.atomikos.datasource.xa,com.atomikos.icatch.jta
+DynamicImport-Package: *
