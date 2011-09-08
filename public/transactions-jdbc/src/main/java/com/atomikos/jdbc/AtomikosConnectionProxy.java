@@ -31,6 +31,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -244,12 +245,19 @@ class AtomikosConnectionProxy extends AbstractConnectionProxy
         interfaces.add ( DynamicProxy.class );
         Class[] interfaceClasses = ( Class[] ) interfaces.toArray ( new Class[0] );
         
+		Set minimumSetOfInterfaces = new HashSet();
+		minimumSetOfInterfaces.add ( Reapable.class );
+		minimumSetOfInterfaces.add ( DynamicProxy.class );
+		minimumSetOfInterfaces.add ( java.sql.Connection.class );
+        Class[] minimumSetOfInterfaceClasses = ( Class[] ) minimumSetOfInterfaces.toArray( new Class[0] );
+		
         List classLoaders = new ArrayList();
 		classLoaders.add ( Thread.currentThread().getContextClassLoader() );
 		classLoaders.add ( c.getClass().getClassLoader() );
 		classLoaders.add ( AtomikosConnectionProxy.class.getClassLoader() );
 		
-		ret = ( Reapable ) ClassLoadingHelper.newProxyInstance ( classLoaders , interfaceClasses , proxy );
+		
+		ret = ( Reapable ) ClassLoadingHelper.newProxyInstance ( classLoaders , minimumSetOfInterfaceClasses , interfaceClasses , proxy );
         
         return ret;
     }

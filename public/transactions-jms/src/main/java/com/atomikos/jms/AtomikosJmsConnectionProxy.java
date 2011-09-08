@@ -27,6 +27,7 @@ package com.atomikos.jms;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -291,21 +292,27 @@ implements SessionHandleStateChangeListener
 	
 	public static Reapable newInstance ( XAConnection c, XATransactionalResource jmsTransactionalResource , SessionHandleStateChangeListener owner , ConnectionPoolProperties props ) 
 	{
-		
+		 Reapable ret = null;
+		 
         AtomikosJmsConnectionProxy proxy = new AtomikosJmsConnectionProxy ( c , jmsTransactionalResource , owner , props );
         Set interfaces = PropertyUtils.getAllImplementedInterfaces ( c.getClass() );
         interfaces.add ( Reapable.class );
         //see case 24532
         interfaces.add ( DynamicProxy.class );
         Class[] interfaceClasses = ( Class[] ) interfaces.toArray ( new Class[0] );
-        Reapable ret = null;
+        
+        Set minimumSetOfInterfaces = new HashSet();
+		minimumSetOfInterfaces.add ( Reapable.class );
+		minimumSetOfInterfaces.add ( DynamicProxy.class );
+		minimumSetOfInterfaces.add ( javax.jms.Connection.class );
+        Class[] minimumSetOfInterfaceClasses = ( Class[] ) minimumSetOfInterfaces.toArray( new Class[0] );
         
         List classLoaders = new ArrayList();
 		classLoaders.add ( Thread.currentThread().getContextClassLoader() );
 		classLoaders.add ( c.getClass().getClassLoader() );
 		classLoaders.add ( AtomikosJmsConnectionProxy.class.getClassLoader() );
         
-		ret = ( Reapable ) ClassLoadingHelper.newProxyInstance ( classLoaders , interfaceClasses , proxy );
+		ret = ( Reapable ) ClassLoadingHelper.newProxyInstance ( classLoaders , minimumSetOfInterfaceClasses , interfaceClasses , proxy );
         
         return ret;
     }

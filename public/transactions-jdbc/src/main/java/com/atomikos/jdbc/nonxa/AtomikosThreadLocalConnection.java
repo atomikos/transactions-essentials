@@ -31,6 +31,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -116,12 +117,19 @@ implements JtaAwareNonXaConnection
 		interfaces.add ( DynamicProxy.class );
 		Class[] interfaceClasses = ( Class[] ) interfaces.toArray ( new Class[0] );
 		
+		Set minimumSetOfInterfaces = new HashSet();
+		minimumSetOfInterfaces.add ( Reapable.class );
+		minimumSetOfInterfaces.add ( DynamicProxy.class );
+		minimumSetOfInterfaces.add ( java.sql.Connection.class );
+        Class[] minimumSetOfInterfaceClasses = ( Class[] ) minimumSetOfInterfaces.toArray( new Class[0] );
+		
+		
 		List classLoaders = new ArrayList();
 		classLoaders.add ( Thread.currentThread().getContextClassLoader() );
 		classLoaders.add ( obj.getClass().getClassLoader() );
 		classLoaders.add ( AtomikosThreadLocalConnection.class.getClassLoader() );
 		
-		ret = ClassLoadingHelper.newProxyInstance ( classLoaders , interfaceClasses , new AtomikosThreadLocalConnection ( pooledConnection ) );
+		ret = ClassLoadingHelper.newProxyInstance ( classLoaders , minimumSetOfInterfaceClasses , interfaceClasses , new AtomikosThreadLocalConnection ( pooledConnection ) );
 		
 		DynamicProxy dproxy = (DynamicProxy) ret;
 		AtomikosThreadLocalConnection c = (AtomikosThreadLocalConnection) dproxy.getInvocationHandler();

@@ -28,6 +28,7 @@ package com.atomikos.jms;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -39,6 +40,7 @@ import javax.jms.TopicSubscriber;
 import javax.jms.XASession;
 
 import com.atomikos.beans.PropertyUtils;
+import com.atomikos.datasource.pool.Reapable;
 import com.atomikos.datasource.xa.XATransactionalResource;
 import com.atomikos.datasource.xa.session.SessionHandleState;
 import com.atomikos.datasource.xa.session.SessionHandleStateChangeListener;
@@ -62,12 +64,19 @@ class AtomikosJmsXaSessionProxy extends AbstractJmsSessionProxy implements Sessi
         interfaces.add ( DynamicProxy.class );
         Class[] interfaceClasses = ( Class[] ) interfaces.toArray ( new Class[0] );
         
+        Set minimumSetOfInterfaces = new HashSet();
+		minimumSetOfInterfaces.add ( Reapable.class );
+		minimumSetOfInterfaces.add ( DynamicProxy.class );
+		minimumSetOfInterfaces.add ( javax.jms.Session.class );
+        Class[] minimumSetOfInterfaceClasses = ( Class[] ) minimumSetOfInterfaces.toArray( new Class[0] );
+        
+        
         List classLoaders = new ArrayList();
 		classLoaders.add ( Thread.currentThread().getContextClassLoader() );
 		classLoaders.add ( s.getClass().getClassLoader() );
 		classLoaders.add ( AtomikosJmsXaSessionProxy.class.getClassLoader() );
 		
-		return ( Session ) ClassLoadingHelper.newProxyInstance ( classLoaders , interfaceClasses , proxy );
+		return ( Session ) ClassLoadingHelper.newProxyInstance ( classLoaders , minimumSetOfInterfaceClasses , interfaceClasses , proxy );
     }
 
 

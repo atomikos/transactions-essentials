@@ -54,7 +54,7 @@ public class ClassLoadingHelper
 	 * not be loaded.
 	 */
 	
-	public static Object newProxyInstance ( 
+	private static Object newProxyInstance ( 
 			List classLoadersToTry , Class[] interfaces , InvocationHandler delegate ) 
 		 	throws IllegalArgumentException
 	{
@@ -78,6 +78,35 @@ public class ClassLoadingHelper
 		
 		return ret;
 	}
+	
+	/**
+	 * Creates a new dynamic proxy instance for the given delegate.
+	 * 
+	 * @param classLoadersToTry The class loaders to try, in the specified list order.
+	 * @param minimumSetOfInterfaces The minimum set of interfaces required, if not all interface classes were found.
+	 * @param interfaces The interfaces to add to the returned proxy.
+	 * @param delegate The underlying object that will receive the calls on the proxy.
+	 * @return The proxy.
+	 * 
+	 * @exception IllegalArgumentException If any of the interfaces involved could 
+	 * not be loaded.
+	 */
+	
+	public static Object newProxyInstance ( List classLoadersToTry , Class[] minimumSetOfInterfaces , Class[] interfaces , InvocationHandler delegate ) 
+ 	throws IllegalArgumentException
+ 	{
+		Object ret = null;
+		try {
+			ret = newProxyInstance(classLoadersToTry, interfaces, delegate);
+		} catch ( IllegalArgumentException someClassNotFound ) {
+			//try again with minimum set of interfaces that need to be implemented
+			//todo replace System.err with logging once the logging has been improved
+			someClassNotFound.printStackTrace();
+			System.err.println ( "WARNING: could not create Atomikos proxy with all requested interfaces - trying again with minimum set of interfaces" );
+			ret = newProxyInstance ( classLoadersToTry , minimumSetOfInterfaces , delegate );
+		}
+		return ret;
+ 	}
 
 	/**
 	 * Loads a class with the given name.
