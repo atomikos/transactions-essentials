@@ -1,4 +1,6 @@
-Bundle-Activator: com.atomikos.transactions.osgi.AtomikosActivator
+Bundle-Activator: com.atomikos.transactions.internal.AtomikosActivator
 Embed-Transitive: true
-Embed-Dependency :*;scope=compile;type=jar;inline=true
-Import-Package: javax.transaction,com.atomikos.*,*;resolution:=optional,
+Embed-Dependency: *;groupId=com.atomikos;inline=true
+Import-Package: javax.transaction,javax.transaction.xa,org.osgi.framework,javax.management,javax.naming.*,*;resolution:=optional
+Export-Package: com.atomikos.jdbc.*,com.atomikos.jms.*,com.atomikos.datasource.xa,com.atomikos.icatch.jta
+DynamicImport-Package: *

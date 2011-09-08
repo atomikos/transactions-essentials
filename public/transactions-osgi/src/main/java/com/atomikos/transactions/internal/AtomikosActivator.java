@@ -23,29 +23,51 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  */
 
-package com.atomikos.transactions.osgi;
+package com.atomikos.transactions.internal;
+
+import javax.transaction.TransactionManager;
+import javax.transaction.UserTransaction;
+
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 
+import com.atomikos.diagnostics.Console;
 import com.atomikos.icatch.jta.UserTransactionManager;
+import com.atomikos.icatch.system.Configuration;
 
-
+/**
+ * @author pascalleclercq
+ * When transactions-osgi bundle starts It register theses Impl in the service registry.
+ */
 public class AtomikosActivator implements BundleActivator {
 	private UserTransactionManager utm = new UserTransactionManager();
 	private ServiceRegistration utmRegistration;
 	private ServiceRegistration userTransactionRegistration;
-	private com.atomikos.icatch.jta.UserTransactionImp userTransaction= new com.atomikos.icatch.jta.UserTransactionImp();
+	private com.atomikos.icatch.jta.UserTransactionImp userTransaction = new com.atomikos.icatch.jta.UserTransactionImp();
+
 	public void start(BundleContext context) throws Exception {
-		utm.init();
-		utmRegistration=	context.registerService(javax.transaction.TransactionManager.class.getName(), utm, null);
-		userTransactionRegistration=	context.registerService(javax.transaction.UserTransaction.class.getName(), userTransaction, null);
+		try {
+			
+			utm.init();
+			
+			utmRegistration = context.registerService(TransactionManager.class.getName(), utm, null);
+			
+			userTransactionRegistration = context.registerService(UserTransaction.class.getName(), userTransaction, null);
+		} catch (Exception e) {
+			Configuration.getConsole().print(e.getMessage(), Console.WARN);
+		}
 	}
 
 	public void stop(BundleContext context) throws Exception {
-		utm.close();
-		utmRegistration.unregister();
-		userTransactionRegistration.unregister();
+		try {
+			utm.close();
+			utmRegistration.unregister();
+			userTransactionRegistration.unregister();
+		} catch (Exception e) {
+			Configuration.getConsole().print(e.getMessage(), Console.WARN);
+		}
+
 	}
 
 }

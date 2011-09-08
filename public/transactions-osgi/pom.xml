@@ -6,10 +6,7 @@
 		<artifactId>ate</artifactId>
 		<version>3.8.0-SNAPSHOT</version>
 	</parent>
-	<groupId>com.atomikos</groupId>
 	<artifactId>transactions-osgi</artifactId>
-	<version>3.8.0-SNAPSHOT</version>
-
 	<name>Transactions OSGi</name>
 	<build>
 		<plugins>
@@ -35,8 +32,6 @@
 						<configuration>
 						<unpackBundle>true</unpackBundle>
 							<instructions>
-								<!--<Include-Resource>
-									com/atomikos/transactions/osgi/AtomikosActivator.class=target/classes/com/atomikos/transactions/osgi/AtomikosActivator.class </Include-Resource>-->
 								<_include>-osgi.bnd</_include>
 							</instructions>
 						</configuration>
