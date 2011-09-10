@@ -27,3 +27,7 @@ syntax: regexp
 ^private/examples/examples-osgi/felix-cache$
 syntax: regexp
 \.epoch$
+syntax: regexp
+
+syntax: regexp
+^private/integration-tests/transactions-osgi-tests/runner$
