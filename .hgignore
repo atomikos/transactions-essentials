@@ -19,3 +19,11 @@ syntax: regexp
 ^private/stress-test-jms2jdbc/transformer/src/test/java/com/atomikos/demo/PrintUIDs\.java$
 syntax: regexp
 ^private/integration-tests/transactions-osgi-tests/platform-equinox-3\.7\.xml$
+syntax: regexp
+\.out$
+syntax: regexp
+^private/examples/examples-osgi/db$
+syntax: regexp
+^private/examples/examples-osgi/felix-cache$
+syntax: regexp
+\.epoch$
