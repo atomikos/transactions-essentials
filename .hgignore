@@ -31,3 +31,7 @@ syntax: regexp
 
 syntax: regexp
 ^private/integration-tests/transactions-osgi-tests/runner$
+syntax: regexp
+^private/examples/simplest-examples-osgi/db$
+syntax: regexp
+^private/examples/simplest-examples-osgi/felix-cache$
