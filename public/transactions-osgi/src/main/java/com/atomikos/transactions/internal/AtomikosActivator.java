@@ -25,6 +25,9 @@
 
 package com.atomikos.transactions.internal;
 
+import java.util.Dictionary;
+import java.util.Hashtable;
+
 import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
 
@@ -33,27 +36,33 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 
 import com.atomikos.diagnostics.Console;
+import com.atomikos.icatch.jta.UserTransactionImp;
 import com.atomikos.icatch.jta.UserTransactionManager;
 import com.atomikos.icatch.system.Configuration;
 
 /**
- * @author pascalleclercq
- * When transactions-osgi bundle starts It register theses Impl in the service registry.
+ * @author pascalleclercq When transactions-osgi bundle starts It register theses Impl in the service registry.
  */
 public class AtomikosActivator implements BundleActivator {
-	private UserTransactionManager utm = new UserTransactionManager();
+	private UserTransactionManager utm;
 	private ServiceRegistration utmRegistration;
 	private ServiceRegistration userTransactionRegistration;
-	private com.atomikos.icatch.jta.UserTransactionImp userTransaction = new com.atomikos.icatch.jta.UserTransactionImp();
+	private UserTransactionImp userTransaction;
 
 	public void start(BundleContext context) throws Exception {
 		try {
-			
+			// TransactionManager
+			utm = new UserTransactionManager();
+			// TODO: need to check the possible values for "osgi.jndi.service.name"
 			utm.init();
-			
-			utmRegistration = context.registerService(TransactionManager.class.getName(), utm, null);
-			
-			userTransactionRegistration = context.registerService(UserTransaction.class.getName(), userTransaction, null);
+			Dictionary<String, String> tmProps = new Hashtable<String, String>();
+			tmProps.put("osgi.jndi.service.name", "AtomikosV3");
+			utmRegistration = context.registerService(TransactionManager.class.getName(), utm, tmProps);
+			// UserTransaction
+			userTransaction = new UserTransactionImp();
+			Dictionary<String, String> utmProps = new Hashtable<String, String>();
+			utmProps.put("osgi.jndi.service.name", "AtomikosV3");
+			userTransactionRegistration = context.registerService(UserTransaction.class.getName(), userTransaction, utmProps);
 		} catch (Exception e) {
 			Configuration.getConsole().print(e.getMessage(), Console.WARN);
 		}
@@ -61,9 +70,19 @@ public class AtomikosActivator implements BundleActivator {
 
 	public void stop(BundleContext context) throws Exception {
 		try {
-			utm.close();
-			utmRegistration.unregister();
-			userTransactionRegistration.unregister();
+			if (utmRegistration != null) {
+				utmRegistration.unregister();
+				utmRegistration = null;
+			}
+			
+			if (utm != null) {
+				utm.close();
+			}
+			if (userTransactionRegistration != null) {
+				userTransactionRegistration.unregister();
+				userTransactionRegistration = null;
+			}
+
 		} catch (Exception e) {
 			Configuration.getConsole().print(e.getMessage(), Console.WARN);
 		}
