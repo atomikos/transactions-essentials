@@ -65,35 +65,5 @@ public interface TransactionalResource extends RecoverableResource
         throws IllegalStateException, ResourceException;
 
 
-//    
-//    /**
-//     *Gets the state recovery manager for this resource, if any.
-//     *Only resources that support compensation will have a 
-//     *state recovery manager. This method allows external inspection
-//     *of the compensatable tx states.
-//     *
-//     *@return StateRecoveryManager The state recovery manager, or null if none.
-//     *For regular XA based resources, this is likely to return null.
-//     */
-//     
-//    public StateRecoveryManager getRecoveryManager()
-//        throws ResourceException;
-// 
-//    /**
-//     *Close the resource manager for shutdown.
-//     *This notifies the resource manager that it is no longer needed.
-//     */
-//
-//    public void close() throws ResourceException;
-    
- 
-    
- 
-    ///**
-//     *Test if a resource is the same as another one.
-//     */
-//
-//    public boolean isSameRM(TransactionalResource res) 
-//        throws ResourceException;
 
 }

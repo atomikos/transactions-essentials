@@ -33,7 +33,7 @@ import com.atomikos.icatch.HeuristicMessage;
  *Serves as a handle  towards the transaction management module.
  */
  
-public interface ResourceTransaction //extends Participant
+public interface ResourceTransaction 
 {
    
     
@@ -46,28 +46,7 @@ public interface ResourceTransaction //extends Participant
      */
 
     public java.lang.String getTid();
-    
- 
-  
-
-
-    /**
-     *Get the resource for this transaction.
-     *
-     *@return TransactionalResource The resource on whose behalf this tx is.
-     */
-
-    //public TransactionalResource getResource();
-
-    /**
-     *Add a compensation context for this resourcetx.
-     *
-     *@param context The compensation context.
-     *@exception IllegalStateException If no longer active.
-     */
-
-    public void addCompensationContext(java.util.Dictionary context)
-        throws IllegalStateException;
+   
 
     /**
      *Add heuristic resolution information.
@@ -87,14 +66,6 @@ public interface ResourceTransaction //extends Participant
 
     public HeuristicMessage[] getHeuristicMessages();
 
-    
-    /**
-     *Get the compensation information.
-     *
-     *@return java.util.Dictionary The compensation info, or null if none.
-     */
-
-    public java.util.Dictionary getCompensationContext();
 
     /**
      *Suspend the resourcetransaction, so that underlying resources can
