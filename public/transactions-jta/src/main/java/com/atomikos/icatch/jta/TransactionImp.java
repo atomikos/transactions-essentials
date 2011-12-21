@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2011 Atomikos <info@atomikos.com>
  *
  * This code ("Atomikos TransactionsEssentials"), by itself,
  * is being distributed under the
@@ -31,8 +31,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Stack;
 
-import javax.transaction.HeuristicMixedException;
-import javax.transaction.HeuristicRollbackException;
 import javax.transaction.Status;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
@@ -46,13 +44,11 @@ import com.atomikos.datasource.xa.TemporaryXATransactionalResource;
 import com.atomikos.datasource.xa.XAResourceTransaction;
 import com.atomikos.datasource.xa.XATransactionalResource;
 import com.atomikos.diagnostics.Console;
-import com.atomikos.icatch.CompositeTerminator;
 import com.atomikos.icatch.CompositeTransaction;
 import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeurMixedException;
 import com.atomikos.icatch.HeurRollbackException;
 import com.atomikos.icatch.SysException;
-import com.atomikos.icatch.TransactionControl;
 import com.atomikos.icatch.TxState;
 import com.atomikos.icatch.system.Configuration;
 
@@ -106,8 +102,6 @@ class TransactionImp implements Transaction
 
     TransactionImp ( CompositeTransaction ct , boolean autoRegistration )
     {
-        // System.err.println ( "TransactionImp: autoRegistration = " +
-        // autoRegistration );
         ct_ = ct;
         autoRegistration_ = autoRegistration;
         xaresToTxMap_ = new HashMap ();
@@ -203,23 +197,7 @@ class TransactionImp implements Transaction
             return Status.STATUS_UNKNOWN;
     }
     
-    private CompositeTerminator getTerminator() 
-    {
-    	TransactionControl control =  ct_.getTransactionControl ();
-        if ( control == null ) {
-        	String msg = "No TransactionControl object found?";
-        	Configuration.logWarning ( msg );
-        	throw new SecurityException ( msg );
-        }
-            
-        CompositeTerminator term = control.getTerminator ();
-        if ( term == null ) {
-        	String msg = "No TransactionTerminator object found?";
-        	Configuration.logWarning ( msg );
-        	throw new SecurityException ( msg );
-        }
-        return term;
-    }
+   
 
     /**
      * @see javax.transaction.Transaction.
@@ -231,9 +209,9 @@ class TransactionImp implements Transaction
             javax.transaction.SystemException, java.lang.SecurityException
     {
 
-        CompositeTerminator term = getTerminator();
+       
         try {
-            term.commit ();
+            ct_.commit ();
         } catch ( HeurHazardException hh ) {
             rethrowAsJtaHeuristicMixedException ( hh.getMessage () , hh );
         } catch ( HeurRollbackException hr ) {
@@ -257,9 +235,9 @@ class TransactionImp implements Transaction
     public void rollback () throws IllegalStateException, SystemException
     {
 
-    	CompositeTerminator term = getTerminator();
+    	
         try {
-            term.rollback ();
+            ct_.rollback ();
         } catch ( SysException se ) {
         	Configuration.logWarning ( se.getMessage() , se );
             throw new ExtendedSystemException ( se.getMessage (), se
@@ -275,8 +253,7 @@ class TransactionImp implements Transaction
     public void setRollbackOnly () throws IllegalStateException,
             SystemException
     {
-        // rollback();
-        ct_.getTransactionControl ().setRollbackOnly ();
+        ct_.setRollbackOnly ();
     }
 
     /**
@@ -297,52 +274,6 @@ class TransactionImp implements Transaction
         	Configuration.logWarning ( msg );
             throw new javax.transaction.RollbackException ( msg );
         }
-
-        Enumeration enumm = Configuration.getResources ();
-
-        while ( enumm.hasMoreElements () ) {
-            RecoverableResource rres = (RecoverableResource) enumm
-                    .nextElement ();
-            if ( rres instanceof XATransactionalResource ) {
-                xatxres = (XATransactionalResource) rres;
-
-                if ( xatxres.usesXAResource ( xares ) )
-                    res = xatxres;
-
-            }
-
-        }
-
-        printMsg ( "enlistResource ( " + xares + " ) with transaction "
-                + toString (), Console.INFO );
-
-        if ( res == null ) {
-
-            if ( autoRegistration_ ) {
-
-                synchronized ( Configuration.class ) {
-                	// synchronized to avoid case 61740
-                	               	
-					// ADDED with new recovery: unknown resources can be tolerated
-					// by adding a new TemporaryXATransactionalResource
-                	res = new TemporaryXATransactionalResource(xares);
-                	
-                	// cf case 61740: check for concurrent additions before this synch block was entered
-                	if ( Configuration.getResource ( res.getName() ) == null ) {
-                		printMsg("constructing new temporary resource "
-							+ "for unknown XAResource: " + xares, Console.DEBUG);
-                		Configuration.addResource ( res );
-                	}
-				}
-
-            } else {
-            	String msg = "There is no registered resource that can recover the given XAResource instance. " + "\n" +
-                "Either enable automatic resource registration, or register a corresponding resource.";
-            	Configuration.logWarning ( msg );
-                throw new javax.transaction.SystemException ( msg );
-            }
-        }
-
         
         // if this xares was suspended then it will still be in the map
         XAResourceTransaction active = findXAResourceTransaction ( xares );
@@ -375,6 +306,18 @@ class TransactionImp implements Transaction
             }
 
         } else {
+        	
+            res = findRecoverableResourceForXaResource(xares);
+
+            printMsg ( "enlistResource ( " + xares + " ) with transaction "
+                    + toString (), Console.INFO );
+
+            if ( res == null ) {
+                	String msg = "There is no registered resource that can recover the given XAResource instance. " + "\n" +
+                    "Either enable automatic resource registration, or register a corresponding resource.";
+                	Configuration.logWarning ( msg );
+                    throw new javax.transaction.SystemException ( msg );            
+            }
 
             try {
                 restx = (XAResourceTransaction) res
@@ -404,7 +347,6 @@ class TransactionImp implements Transaction
                 errors.push ( re );
                 throw new ExtendedSystemException ( "Unexpected error during enlist", errors );
             } catch ( RuntimeException e ) {
-                // e.printStackTrace();
                 throw e;
             }
 
@@ -413,6 +355,44 @@ class TransactionImp implements Transaction
 
         return true;
     }
+
+	private TransactionalResource findRecoverableResourceForXaResource(
+			XAResource xares ) {
+		TransactionalResource ret = null;
+		XATransactionalResource xatxres;
+		Enumeration enumm = Configuration.getResources ();
+
+        while ( enumm.hasMoreElements () ) {
+            RecoverableResource rres = (RecoverableResource) enumm
+                    .nextElement ();
+            if ( rres instanceof XATransactionalResource ) {
+                xatxres = (XATransactionalResource) rres;
+
+                if ( xatxres.usesXAResource ( xares ) )
+                    ret = xatxres;
+
+            }
+
+        }
+        
+        if ( ret == null && autoRegistration_ ) {
+
+            synchronized ( Configuration.class ) {
+            	// synchronized to avoid case 61740
+            	
+            	ret = new TemporaryXATransactionalResource(xares);
+            	// cf case 61740: check for concurrent additions before this synch block was entered
+            	if ( Configuration.getResource ( ret.getName() ) == null ) {
+            		printMsg("constructing new temporary resource "
+						+ "for unknown XAResource: " + xares, Console.DEBUG);
+            		Configuration.addResource ( ret );
+            	}
+			}
+
+        }
+        
+		return ret;
+	}
 
     /**
      * @see javax.transaction.Transaction.
@@ -424,32 +404,10 @@ class TransactionImp implements Transaction
     {
         Stack errors = new Stack ();
 
-        TransactionalResource res = null;
-        Enumeration enumm = Configuration.getResources ();
-        while ( enumm.hasMoreElements () ) {
-            RecoverableResource rres = (RecoverableResource) enumm
-                    .nextElement ();
-            if ( rres instanceof XATransactionalResource ) {
-                XATransactionalResource xatxres = (XATransactionalResource) rres;
-                if ( xatxres.usesXAResource ( xares ) )
-                    res = xatxres;
-            }
-
-        }
-
         printMsg ( "delistResource ( " + xares + " ) with transaction "
                 + toString (), Console.INFO );
-
-        if ( res == null ) {
-        	String msg =  "There is no registered resource that can recover the given XAResource instance. " + "\n" +
-    		"Either enable automatic resource registration, or register a corresponding resource.";
-        	Configuration.logWarning ( msg );
-            throw new javax.transaction.SystemException ( msg );
-        }
-
-    
+        
         XAResourceTransaction active = findXAResourceTransaction ( xares );
-
         // NOTE: the lookup MUST have succeeded since the delist must be
         // done by the same XAResource INSTANCE as the enlist before,
         // and lookup also uses instance comparison.
@@ -468,13 +426,9 @@ class TransactionImp implements Transaction
                 throw new ExtendedSystemException ( "Error in delisting the given XAResource", errors );
             }
             removeXAResourceTransaction ( xares );
-
-            // NOTE: if failure, then make sure no rollback can happen
-            if ( flag == XAResource.TMFAIL )
-                setRollbackOnly ();
+            if ( flag == XAResource.TMFAIL ) setRollbackOnly ();
+            
         } else if ( flag == XAResource.TMSUSPEND ) {
-            // call suspend on active xaresource.
-
             try {
                 active.xaSuspend ();
             } catch ( XAException xaerr ) {
