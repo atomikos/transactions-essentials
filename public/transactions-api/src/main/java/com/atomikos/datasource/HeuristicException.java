@@ -28,24 +28,17 @@ import com.atomikos.icatch.HeuristicMessage;
 
 public class HeuristicException extends ResourceException
 {
-    protected HeuristicMessage[] myMsgs=null;
 
-    
+	private static final long serialVersionUID = 1L;
+	
+	protected HeuristicMessage[] myMsgs=null;
 
-    /**
-     *Constructor.
-     *
-     */
     public HeuristicException(String msg)
     {
         super(msg);
     }
     
-    /**
-     *Constructor.
-     *@param msgs an array of heuristic messages,
-     *or null if none.
-     */
+    
     public HeuristicException(HeuristicMessage[] msgs)
     {
         super("Heuristic Exception");
@@ -53,7 +46,6 @@ public class HeuristicException extends ResourceException
     }
     
     /**
-     *Get any heuristic messages.
      *
      *@return HeuristicMessage[] A list of messages, or null if none.
      */
