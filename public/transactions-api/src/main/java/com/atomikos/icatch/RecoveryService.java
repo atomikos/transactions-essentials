@@ -26,18 +26,13 @@
 package com.atomikos.icatch;
 
 /**
- * 
- * 
- * 
- * 
- *
  * A handle to the TM that resources can use to recover.
  */
 
 public interface RecoveryService
 {
 	/**
-	 * Ask the TM to recover.
+	 * Asks the TM to recover.
 	 * Resources should call this method whenever 
 	 * recovery is needed. The earliest time at which
 	 * resources can call this method is when
@@ -54,12 +49,9 @@ public interface RecoveryService
 	public void recover();
 	
 	/**
-	 * Get the transaction service's unique name.
-	 * Resources can use this name to determine what resource 
+	 * @return String The unique name of the TM. Resources can use this name to determine what resource 
 	 * transactions need to be considered for recovery by this
 	 * transaction service.
-	 * 
-	 * @return String The name of the TM.
 	 */
 	
 	public String getName();

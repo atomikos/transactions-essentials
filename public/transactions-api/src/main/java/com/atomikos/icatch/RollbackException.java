@@ -26,14 +26,14 @@
 package com.atomikos.icatch;
 
 /**
- *
- *
- *An exception indicating that a tx has been rolled back.
+ * An exception indicating that a transaction has already been rolled back.
  */
  
  public class RollbackException extends Exception
  {
-    public RollbackException ( String msg ) 
+	private static final long serialVersionUID = 1L;
+
+	public RollbackException ( String msg ) 
     {
       super (msg);	
     }	

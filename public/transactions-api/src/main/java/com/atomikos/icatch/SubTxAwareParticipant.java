@@ -28,27 +28,27 @@ package com.atomikos.icatch;
 /**
  *
  *
- *A participant that wants to be notified of local termination of a node in a 
- *nested transaction tree. 
+ * A participant that wants to be notified of local termination of a node in a 
+ * nested transaction tree. 
  */
 
 public interface SubTxAwareParticipant 
 extends java.io.Serializable
 {
     /**
-     *Notification of termination.
+     * Notification of termination.
      *
-     *@param tx The composite transaction that has terminated
-     *locally at its node.
+     * @param transaction The composite transaction that has terminated
+     * locally at its node.
      */
 
-    public void committed ( CompositeTransaction tx );
+    public void committed ( CompositeTransaction transaction );
     
     /**
-     *Notification that some tx has been rolledback.
+     * Notification that some transaction has been rolledback.
      *
-     *@param parent The tx that has rolled back at its node.
+     * @param parent The transaction that has rolled back at its node.
      */
 
-    public void rolledback ( CompositeTransaction tx );
+    public void rolledback ( CompositeTransaction transaction );
 }

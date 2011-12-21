@@ -27,12 +27,12 @@ package com.atomikos.icatch;
 
 /**
  *
- *A control for a transaction.
- *This groups the methods that are only available to 
- *priviledged ( usually meaning local ) application code.
+ * A control for a transaction.
+ * This groups the methods that are only available to 
+ * priviledged ( usually meaning local ) application code.
  *
- *@deprecated As from release 3.0, the methods of this interface have been 
- *moved to the basic CompositeTransaction interface.
+ * @deprecated As from release 3.0, the methods of this interface have been 
+ * moved to the basic CompositeTransaction interface.
  *
  */
 
