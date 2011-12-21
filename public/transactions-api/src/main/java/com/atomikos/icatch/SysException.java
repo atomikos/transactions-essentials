@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Stack;
 
 /**
- * An exception for system errors with nested information.
+ * An exception for unexpected system errors with nested information.
  */
 
 
