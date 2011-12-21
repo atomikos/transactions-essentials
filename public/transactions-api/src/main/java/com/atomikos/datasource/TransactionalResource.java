@@ -28,40 +28,24 @@ package com.atomikos.datasource;
 import com.atomikos.icatch.CompositeTransaction;
 
 /**
- *
- *
- *A Transactional Resource is the abstraction of a data source that
- *supports transactions and recovery.
+ * Represents the abstraction of a data source that
+ * supports transactions and recovery.
  */
 
 public interface TransactionalResource extends RecoverableResource
 {
     /**
-     *Get or create a ResourceTransaction. This instructs the resource
-     *to internally start a context for a new transaction.
-     *If the resource decides to return a new instance, it should
-     *also make sure that before returning, the new resource 
-     *transaction is registered as a participant for the current
-     *composite transaction.
+     * Gets or creates a ResourceTransaction. This instructs the resource
+     * to internally start a context for a new transaction.
+     * If the resource decides to return a new instance, it should
+     * also make sure that before returning, the new resource 
+     * transaction is registered as a participant for the supplied
+     * composite transaction.
      *
-     *
-     *@param ct The composite transaction for whom this is done.
-     *This serves as a handle for the resource to determine isolation 
-     *properties, coordinator reference and so on.
-     *For instance, XA implementations can use the isSameTransaction() 
-     *function to determine if an existing XID should be used to 
-     *start the internal XAResource before passing it on as a
-     *ResourceTransaction (wrapped) instance.
-     *
-     *@return ResourceTransaction a handle to the new context.
-     *
-     *@exception IllegalStateException If the given transaction is no longer
-     *active.
-     *@exception ResourceException On failure.
      */
 
     public ResourceTransaction 
-        getResourceTransaction ( CompositeTransaction ct ) 
+        getResourceTransaction ( CompositeTransaction compositeTransaction ) 
         throws IllegalStateException, ResourceException;
 
 
