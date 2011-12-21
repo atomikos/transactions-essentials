@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2011 Atomikos <info@atomikos.com>
  *
  * This code ("Atomikos TransactionsEssentials"), by itself,
  * is being distributed under the
@@ -27,28 +27,24 @@ package com.atomikos.icatch;
 
 
 /**
+ * A handle to terminate the composite transaction.
  *
- *
- *A handle to terminate the composite transaction.
- *Must ALWAYS be used to handle termination throughout the system,
- *also for subtransactions!
- *
- *
+ * @deprecated This functionality is now available directly via the CompositeTransaction.
  */
 
 public interface CompositeTerminator 
 {
     /**
-     *Commit the composite transaction.
+     * Commit the composite transaction.
      *
-     *@exception HeurRollbackException On heuristic rollback.
-     *@exception HeurMixedException On heuristic mixed outcome.
-     *@exception SysException For unexpected failures.
-     *@exception SecurityException If calling thread does not have 
-     *right to commit.
-     *@exception HeurHazardException In case of heuristic hazard.
-     *@exception RollbackException If the transaction was rolled back
-     *before prepare.
+     * @exception HeurRollbackException On heuristic rollback.
+     * @exception HeurMixedException On heuristic mixed outcome.
+     * @exception SysException For unexpected failures.
+     * @exception SecurityException If calling thread does not have 
+     * right to commit.
+     * @exception HeurHazardException In case of heuristic hazard.
+     * @exception RollbackException If the transaction was rolled back
+     * before prepare.
      */
 
     public void commit() 
@@ -61,9 +57,9 @@ public interface CompositeTerminator
 
 
     /**
-     *Rollback the current transaction.
-     *@exception IllegalStateException If prepared or inactive.
-     *@exception SysException If unexpected error.
+     * Rollback the current transaction.
+     * @exception IllegalStateException If prepared or inactive.
+     * @exception SysException If unexpected error.
      */
 
     public void rollback()
