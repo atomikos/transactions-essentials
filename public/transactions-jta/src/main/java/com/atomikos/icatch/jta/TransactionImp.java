@@ -391,7 +391,7 @@ class TransactionImp implements Transaction
                 restx.resume ();
             } catch ( ResourceException re ) {
                 // re.printStackTrace();
-                Stack nested = re.getDetails ();
+                Stack nested = re.getErrors ();
                 if ( !nested.empty ()
                         && (nested.peek () instanceof XAException) ) {
                     XAException xaerr = (XAException) nested.peek ();

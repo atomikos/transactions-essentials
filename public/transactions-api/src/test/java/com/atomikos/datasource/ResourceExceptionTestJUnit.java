@@ -17,13 +17,13 @@ public class ResourceExceptionTestJUnit extends TestCase
 		java.util.Stack details = new java.util.Stack();
 		exception = new ResourceException ( msg , details );
 		assertEquals ( msg , exception.getMessage() );
-		assertEquals ( details , exception.getDetails() );
+		assertEquals ( details , exception.getErrors() );
 	}
 	
 	public void testConstructorDetails() {
 		java.util.Stack details = new java.util.Stack();
 		exception = new ResourceException ( details );
-		assertEquals ( details , exception.getDetails() );
+		assertEquals ( details , exception.getErrors() );
 		
 	}
 }
