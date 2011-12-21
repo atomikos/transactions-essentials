@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2011 Atomikos <info@atomikos.com>
  *
  * This code ("Atomikos TransactionsEssentials"), by itself,
  * is being distributed under the
@@ -26,32 +26,21 @@
 package com.atomikos.icatch;
 
 /**
- *
- *
- *An interface for the communication layer, for notifying TM of 
- *incoming transactional request.
- *
- *<b>
- *WARNING: this interface and its mechanisms are subject to several patents and
- *pending patents held by Atomikos. Regardless the license
- *under which this interface is distributed, third-party use is 
- *NOT allowed without the prior and explicit 
- *written approval of Atomikos.
- *</b>
+ * Represents a handle to import a transaction from an incoming request, 
+ * so that the work in this VM becomes part of the request's commit or rollback.
  */
  
  public interface ImportingTransactionManager
  {
     /**
-     *Notify TM of incoming request with given propagation.
-     *Makes the TM start a tx and associate it with calling 
-     *thread.
+     * Imports the transaction propagation obtained from an incoming request.
      *
-     *@param propagation The ancestor information.
-     *@param orphancheck True iff orphans are to be checked.
-     *@param heur_commit True iff heuristic means commit.
+     * @param propagation The ancestor information.
+     * @param orphancheck True if orphans are to be checked.
+     * @param heur_commit True if heuristic means commit.
      *
-     *@return CompositeTransaction The local tx instance.
+     * @return CompositeTransaction The locally created transaction instance that takes part in the global commit/rollback.
+     * This instance will also be mapped to the calling thread.
      */
      
     public CompositeTransaction 
@@ -62,21 +51,23 @@ package com.atomikos.icatch;
   
                           
     /**
-     *Termination callback for current tx. 
-     *Called by comm layer right before
-     *a remote call returns. 
-     *@param commit True iff the invocation had no errors.
-     *Implies that the local subtx is committed.
+     * Signals that the incoming request is done processing, in order to
+     * terminate the transaction context for the calling thread.
+     * 
+     * @param commit True if the invocation had no errors: commit the local transaction
+     * but make its final outcome subject to the request's commit/rollback.
      *
-     *@return Extent The extent to return to remote client.
-     *@exception SysException Unexpected error.
-     *@exception RollbackException If the transaction has timed out.
+     * @return Extent The extent to return to remote client.
+     * 
+     * 
+     * @exception RollbackException If no transaction exists, e.g. if it has been rolled back already.
+     * 
+     * @exception SysException
+     * 
      */
      
     public Extent terminated( boolean commit ) 
     throws SysException, RollbackException;
-   // , HeurRollbackException,
-//    HeurMixedException, HeurHazardException;
 
     
  
