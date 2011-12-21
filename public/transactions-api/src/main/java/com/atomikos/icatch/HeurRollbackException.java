@@ -24,29 +24,18 @@
  */
 
 
-//
-//Revision 1.1  2001/02/21 19:51:23  pardon
-//Redesign!
-//
 
 package com.atomikos.icatch;
 
 
 /**
- *
- *
- *A heuristic extension supporting messages.
+ * An exception signaling that the transaction's work has been rolled back heuristically.
  */
 
 public class HeurRollbackException extends Exception
 {
     protected HeuristicMessage[] msgs_=null;
 
-    /**
-     *Constructor.
-     *@param msgs an array of heuristic messages,
-     *or null if none.
-     */
     public HeurRollbackException(HeuristicMessage[] msgs)
     {
         super("Heuristic Exception");
@@ -54,9 +43,7 @@ public class HeurRollbackException extends Exception
     }
     
     /**
-     *Get any heuristic messages.
-     *
-     *@return HeuristicMessage[] A list of messages, or null if none.
+     * @return HeuristicMessage[] The list of messages describing the work, or null if none.
      */
     public HeuristicMessage[] getHeuristicMessages(){
         return msgs_;

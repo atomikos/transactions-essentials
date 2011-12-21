@@ -25,21 +25,18 @@
 
 package com.atomikos.icatch;
 import java.io.Serializable;
+
 /**
  *
  *
- *A message to help resolving heuristic problem cases.
- *Instances can be given to the resource, which will keep
- *them and return them as part of a heuristic exception.
+ * An application-level message to help resolving heuristic problem cases.
  *
  */
 
 public interface HeuristicMessage extends Serializable
 {
     /**
-     *Get the description of the heuristically terminated
-     *work.
-     *@return String the description in string format.
+     * @return String A description of the application-level work.
      */
     public String toString();
 

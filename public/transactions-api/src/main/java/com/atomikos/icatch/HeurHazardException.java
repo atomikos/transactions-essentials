@@ -27,23 +27,17 @@ package com.atomikos.icatch;
 
 
 /**
- *
- *
- *A heuristic hazard exception propagates to the root
- *as indication of cases where 2PC commit or abort was not
- *acknowledge by all participants.
- *Heuristic information about the identity and nature of the
- *lost participants can be included.
+ * Exception signaling that two-phase commit was not acknowledged
+ * by some participants.
  */
 
 public class HeurHazardException extends Exception
 {
-    protected HeuristicMessage[] msgs_=null;
+	
+	private static final long serialVersionUID = 1L;
+	
+	protected HeuristicMessage[] msgs_=null;
 
-    /**
-     *Constructor.
-     *@param msgs An array of heuristic messages, or null if none.
-     */
 
     public HeurHazardException(HeuristicMessage[] msgs)
     {
@@ -52,9 +46,7 @@ public class HeurHazardException extends Exception
     }
 
     /**
-     *Get the heuristic messages.
-     *
-     *@return HeuristicMessage[] An array, possibly null.
+     * @return HeuristicMessage[] The messages, or null if none given.
      */
 
     public HeuristicMessage[] getHeuristicMessages()
