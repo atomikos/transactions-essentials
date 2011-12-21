@@ -34,7 +34,6 @@ import com.atomikos.icatch.admin.LogAdministrator;
 
 /**
  * 
- * 
  * Initializer information for the UserTransactionService. Instances can be
  * passed to a UserTransactionService during initialization.
  * 

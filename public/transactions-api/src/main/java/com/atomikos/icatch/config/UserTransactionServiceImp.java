@@ -51,9 +51,6 @@ import com.atomikos.icatch.admin.LogAdministrator;
 import com.atomikos.util.ClassLoadingHelper;
 
 /**
- *
- * 
- *
  * This is the main class for creating a UserTransactionService instance.
  * This class is the client's main entry point into the transaction engine.
  *

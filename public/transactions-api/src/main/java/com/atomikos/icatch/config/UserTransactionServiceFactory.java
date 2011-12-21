@@ -28,13 +28,10 @@ package com.atomikos.icatch.config;
 import java.util.Properties;
 
 /**
- *
- *
- *
- *A factory for UserTransactionService instances.
- *Each product will typically have its own implementation.
- *A system property can be used to indicate which one to use.
- *Implementations should have a public no-arg constructor!
+ * A factory for UserTransactionService instances.
+ * Each API implementation will typically have its own implementation.
+ * A system property can be used to indicate which one to use.
+ * Implementations should have a public no-arg constructor!
  */
 
 public interface UserTransactionServiceFactory

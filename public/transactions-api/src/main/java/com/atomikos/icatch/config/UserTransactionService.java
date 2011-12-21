@@ -40,9 +40,8 @@ import com.atomikos.icatch.admin.LogAdministrator;
 
  /**
   *
-  *
-  *The user's (client program) view of the transaction manager's configuration, 
-  *with all the information the client program needs.
+  * The user's (client program) view of the transaction manager's configuration, 
+  * with all the information the client program needs.
   *
   */
 
@@ -80,26 +79,26 @@ public interface UserTransactionService
      public UserTransaction getUserTransaction();
       
       /**
-       *Get the ImportingTransactionManager instance.
+       * Gets the ImportingTransactionManager instance.
        *
-       *@return ImportingTransactionManager The instance.
+       * @return ImportingTransactionManager The instance.
        */
        
      public ImportingTransactionManager getImportingTransactionManager();
      
       /**
-       *Get the ExportingTransactionManager instance
+       * Gets the ExportingTransactionManager instance
        *
-       *@return ExportingTransactionManager The instance.
+       * @return ExportingTransactionManager The instance.
        */
        
      public ExportingTransactionManager getExportingTransactionManager();
      
       
        /**
-        *Get the meta data for the transaction service.
-        *@return TSMetaData The meta data.
-        *@deprecated 
+        * Gets the meta data for the transaction service.
+        * @return TSMetaData The meta data.
+        * @deprecated 
         */
         
      public TSMetaData getTSMetaData();
@@ -113,30 +112,30 @@ public interface UserTransactionService
      public TSInitInfo createTSInitInfo();
 
 	/**
-	     *Shuts down the TM.
-	     *It is <b>highly recommended</b> that this method be called 
-	     *<b>before the VM exits</b>, in order to ensure proper log closing.
-	     *After this method completes, all resources will have been removed 
-	     *from the configuration, as well as all logadministrators.
-	     *To re-initialize, everything should be registered again.
+	     * Shuts down the core.
+	     * It is <b>highly recommended</b> that this method be called 
+	     * <b>before the VM exits</b>, in order to ensure proper log closing.
+	     * After this method completes, all resources will have been removed 
+	     * from the configuration, as well as all logadministrators.
+	     * To re-initialize, everything should be registered again.
 	     *
-	     *@param force If true, then shutdown will succeed even if
-	     *some transactions are still active. If false, then the calling thread
-	     *will block until any active transactions are terminated. A heuristic
-	     *transaction is also considered to be active.
+	     * @param force If true, then shutdown will succeed even if
+	     * some transactions are still active. If false, then the calling thread
+	     * will block until any active transactions are terminated. A heuristic
+	     * transaction is also considered to be active.
 	     */
 	     
 	   public void shutdown ( boolean force ) 
 	   throws IllegalStateException;
 
 	/**
-	 * Register a new resource for recovery.
+	 * Registers a new resource for recovery.
 	 * 
-	 * @param res The resource to be added.
+	 * @param resource The resource to be added.
 	 * 
 	 */
 	
-	public void registerResource ( RecoverableResource res );
+	public void registerResource ( RecoverableResource resource );
 	
 	/**
 	 * Removes the given resource. This method should be 
@@ -149,14 +148,14 @@ public interface UserTransactionService
 	
 	public void removeResource ( RecoverableResource res );
 
-	/**
-		 *Register a LogAdministrator instance for administration.
-		 *This allows inspection of active transactions and manual
-		 *intervention.
-		 *Care should be taken if multiple instances are registered:
-		 *the responsibility of taking conflicting manual decisions is
-		 *entirely with the user!
-		 *@param admin The instance.
+		/**
+		 * Registers a LogAdministrator instance for administration.
+		 * This allows inspection of active transactions and manual
+		 * intervention.
+		 * Care should be taken if multiple instances are registered:
+		 * the responsibility of taking conflicting manual decisions is
+		 * entirely with the user!
+		 * @param admin The instance.
 		 */
 	      
 	  public void registerLogAdministrator ( LogAdministrator admin );
@@ -166,6 +165,7 @@ public interface UserTransactionService
 	   * the instance is not found.
 	   * @param admin
 	   */
+	  
 	  public void removeLogAdministrator ( LogAdministrator admin );
 	  
 	  /**
@@ -197,26 +197,26 @@ public interface UserTransactionService
 	   public void init ( Properties properties ) throws SysException;
 
 	/**
-	  *Get the resources registered.
-	  *@return Enumeration The resources, or empty if none.
+	  * Gets the resources registered.
+	  * @return Enumeration The resources, or empty if none.
 	  *
 	  */
 	
 	public Enumeration getResources();
 
 	/**
-	  *Get the log administrators.
-	  *@return Enumeration The registered administrators.
+	  * Gets the log administrators.
+	  * @return Enumeration The registered administrators.
 	  *
 	  */
 	
 	public Enumeration getLogAdministrators();
 
 	/**
-	     *Get the composite transaction manager for the config.
+	     *Gets the composite transaction manager for the config.
 	     *
-	     *@return CompositeTransactionManager The composite
-	     *transaction manager.
+	     * @return CompositeTransactionManager The composite
+	     * transaction manager.
 	     */
 	     
 	   public CompositeTransactionManager 
