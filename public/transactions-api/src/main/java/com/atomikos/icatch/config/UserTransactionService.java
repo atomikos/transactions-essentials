@@ -48,35 +48,6 @@ import com.atomikos.icatch.admin.LogAdministrator;
 public interface UserTransactionService
 {
     
- 
-     
-      /**
-       *Get the JTA transaction manager handle for the  config.
-       *
-       *@deprecated Use the UserTransactionManager and
-       *J2eeTransactionManager classes instead.
-       *
-       *@return TransactionManager The JTA transaction manager.
-       */
-       
-     public TransactionManager getTransactionManager();
-     
-      /**
-       *Get the JTA user transaction, for client-demarcated 
-       *transactions.
-       *
-       *@deprecated Use the classes in 
-       *package <b>com.atomikos.icatch.jta</b> instead.
-       *
-       *@return UserTransaction The JTA user transaction.
-       *<b>IMPORTANT</b>: the returned instance can be
-       *bound in JNDI. In addition, <b>remote</b> clients 
-       *can use this instance <b>only if</b> the configuration
-       *parameters allow remote client transaction demarcation!
-       *
-       */
-       
-     public UserTransaction getUserTransaction();
       
       /**
        * Gets the ImportingTransactionManager instance.
@@ -95,14 +66,7 @@ public interface UserTransactionService
      public ExportingTransactionManager getExportingTransactionManager();
      
       
-       /**
-        * Gets the meta data for the transaction service.
-        * @return TSMetaData The meta data.
-        * @deprecated 
-        */
-        
-     public TSMetaData getTSMetaData();
-
+      
      /**
       * Create a TSInitInfo for this transaction service.
       * @return  TSInitInfo The init info instance.

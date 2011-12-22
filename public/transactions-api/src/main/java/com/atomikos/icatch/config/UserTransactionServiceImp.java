@@ -427,26 +427,7 @@ public class UserTransactionServiceImp
     }
 
 
-    /**
-     *@see UserTransactionService
-     */
-
-    public TransactionManager getTransactionManager ()
-    {
-        checkInit ();
-        return delegate_.getTransactionManager ();
-
-    }
-
-    /**
-     *@see UserTransactionService
-     */
-
-    public UserTransaction getUserTransaction ()
-    {
-        checkInit ();
-        return delegate_.getUserTransaction ();
-    }
+   
 
     /**
      *@see UserTransactionService
@@ -469,15 +450,6 @@ public class UserTransactionServiceImp
     }
 
 
-    /**
-     *@see UserTransactionService
-     */
-
-    public TSMetaData getTSMetaData ()
-    {
-        checkInit ();
-        return delegate_.getTSMetaData ();
-    }
 
     /**
      * @see com.atomikos.icatch.UserTransactionService#registerResource(com.atomikos.datasource.RecoverableResource)

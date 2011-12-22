@@ -52,10 +52,8 @@ import com.atomikos.icatch.system.Configuration;
 /**
  * 
  * 
- * An implementation of a (remote) client's user transaction. When
- * client-demarcated transactions are enabled, this is the kind of
- * UserTransaction you get by calling getUserTransaction() on the
- * UserTransactionService. Client applications can use the result to control
+ * An implementation of a (remote) client's user transaction. 
+ * Client applications can use the result to control
  * transaction demarcation, and even pass their instance to other VMs so that
  * those can share the same transaction context. The server-side applications
  * can use the toString() method to obtain the transaction identifier of the
