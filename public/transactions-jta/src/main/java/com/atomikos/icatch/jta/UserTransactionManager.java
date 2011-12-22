@@ -58,7 +58,7 @@ public class UserTransactionManager implements TransactionManager,
 
 	private transient TransactionManagerImp tm;
     
-    private UserTransactionService uts;
+    private UserTransactionServiceImp uts;
 
 	private boolean forceShutdown;
 	
@@ -88,8 +88,7 @@ public class UserTransactionManager implements TransactionManager,
 
 	private void startupTransactionService() {
 		uts = new UserTransactionServiceImp ();
-		TSInitInfo info = uts.createTSInitInfo ();
-		uts.init ( info );
+		uts.init();
 		tm = (TransactionManagerImp) TransactionManagerImp
 		        .getTransactionManager ();
 	}

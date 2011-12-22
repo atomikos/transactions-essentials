@@ -270,7 +270,16 @@ public class UserTransactionServiceImp
                               System.getProperty ( "com.atomikos.icatch.service" ));
           }
           
-          //resolve referenced values with ant-like ${...} syntax
+          substitutePlaceHolderValues(p);
+
+          return p;
+
+
+    }
+
+
+	private void substitutePlaceHolderValues(Properties p) {
+		//resolve referenced values with ant-like ${...} syntax
           java.util.Enumeration allProps= p.propertyNames();
           while ( allProps.hasMoreElements() ) {
               String key = ( String ) allProps.nextElement();
@@ -280,11 +289,7 @@ public class UserTransactionServiceImp
                 p.setProperty ( key, value );
               }
           }
-
-          return p;
-
-
-    }
+	}
     
 
 
@@ -326,7 +331,7 @@ public class UserTransactionServiceImp
     	
     	properties_ = findProperties();
     		
-    		//override defaults in file with specified properties   		
+    	//override defaults in file with specified properties   		
         properties_.putAll ( properties );
     }
 
