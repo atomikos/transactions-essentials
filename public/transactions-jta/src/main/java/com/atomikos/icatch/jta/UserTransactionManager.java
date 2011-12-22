@@ -46,17 +46,10 @@ import com.atomikos.icatch.config.UserTransactionServiceImp;
 import com.atomikos.util.SerializableObjectFactory;
 
 /**
- * 
- * 
- * 
- * 
- * 
- * A straightforward, zero-setup implementation of a transaction manager. J2SE
- * applications can use an instance of this class to get a handle to the
+ * A straightforward, zero-setup implementation of a transaction manager. 
+ * Applications can use an instance of this class to get a handle to the
  * transaction manager, and automatically startup or recover the transaction
- * service on first use. <b>J2EE applications should NOT use this class in order
- * to avoid the concurrent use of different transaction services. For J2EE
- * applications, we have the class J2eeTransactionManager instead.</b>
+ * service on first use. 
  */
 public class UserTransactionManager implements TransactionManager,
         Serializable, Referenceable, UserTransaction
@@ -76,27 +69,38 @@ public class UserTransactionManager implements TransactionManager,
     private void checkSetup () throws SystemException
     {
     	if ( closed ) throw new SystemException ( "This UserTransactionManager instance was closed already. Call init() to reuse if desired." );
-    		
-        synchronized ( TransactionManagerImp.class ) {
-
-            tm = (TransactionManagerImp) TransactionManagerImp
-                    .getTransactionManager ();
-            if ( tm == null ) {
-                // not initialized -> startup TM
-                // System.out.println ( "STARTING UP TM!!!!!!");
-            	   if ( getStartupTransactionService() ) {
-	                uts = new UserTransactionServiceImp ();
-	                TSInitInfo info = uts.createTSInitInfo ();
-	                uts.init ( info );
-	                tm = (TransactionManagerImp) TransactionManagerImp
-	                        .getTransactionManager ();
-            	   }
-            	   else {
-            		   throw new SystemException ( "Transaction service not running" );
-            	   }
-            }
-        }
+    	
+    	if ( tm == null ) { // case 75549: avoid synch overhead if already initialized
+    		synchronized ( TransactionManagerImp.class ) {
+    			tm = (TransactionManagerImp) TransactionManagerImp
+    			.getTransactionManager ();
+    			if ( tm == null ) {
+    				if ( getStartupTransactionService() ) {
+    					startupTransactionService();
+    				}
+    				else {
+    					throw new SystemException ( "Transaction service not running" );
+    				}
+    			}
+    		}
+    	}
     }
+
+	private void startupTransactionService() {
+		uts = new UserTransactionServiceImp ();
+		TSInitInfo info = uts.createTSInitInfo ();
+		uts.init ( info );
+		tm = (TransactionManagerImp) TransactionManagerImp
+		        .getTransactionManager ();
+	}
+	
+
+	private void shutdownTransactionService() {
+		if ( uts != null ) { // null if we did not start core here
+			uts.shutdown ( forceShutdown );
+			uts = null;
+		}
+	}
     
     public UserTransactionManager()
     {
@@ -107,7 +111,8 @@ public class UserTransactionManager implements TransactionManager,
     
     /**
      * Sets whether the transaction service should be 
-     * started if not already running. 
+     * started if not already running. Optional, defaults to true.
+     * 
      * @param startup
      */
     public void setStartupTransactionService ( boolean startup )
@@ -263,11 +268,9 @@ public class UserTransactionManager implements TransactionManager,
      */
     public void close()
     {
-    		if ( uts != null ) {
-    			uts.shutdown ( forceShutdown );
-    			uts = null;
-    		}
+    		shutdownTransactionService();
     		closed = true;
     }
+
 
 }
