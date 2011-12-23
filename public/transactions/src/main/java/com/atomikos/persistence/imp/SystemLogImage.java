@@ -41,8 +41,6 @@ import com.atomikos.persistence.Recoverable;
 
 class SystemLogImage implements Recoverable, Externalizable
 {
-    // TODO TEST: changed from Serializable to Externalizable!!!
-
     // Force-set the serial version ID to make sure that log
     // data can be read.
     static final long serialVersionUID = 4153546869295179306L;

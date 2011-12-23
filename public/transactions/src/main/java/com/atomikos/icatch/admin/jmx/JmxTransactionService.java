@@ -39,11 +39,6 @@ import com.atomikos.icatch.admin.LogControl;
 import com.atomikos.icatch.system.Configuration;
 
 /**
- * 
- * 
- * 
- * 
- * 
  * An MBean implementation for JMX-based transaction administration. If you use
  * this class, then you will also need to register a JmxLogAdministrator with
  * the UserTransactionService. An instance of this class can be registered in a
@@ -60,11 +55,11 @@ public class JmxTransactionService implements JmxTransactionServiceMBean,
     // the server, to register TransactionMBean instances
 
     private ObjectName[] beans;
+    // cache the last set of beans, needed to unregister
+    // them eventually
     
     private boolean heuristicsOnly;
 
-    // cache the last set of beans, needed to unregister
-    // them eventually
 
     /**
      * Creates a new instance.

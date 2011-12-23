@@ -28,8 +28,6 @@ package com.atomikos.persistence;
 import java.util.Vector;
 
 /**
- * 
- * 
  * A state recovery manager is responsible for reconstructing StateRecoverable
  * instances based on the history.
  */

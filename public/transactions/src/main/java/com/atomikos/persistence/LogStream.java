@@ -29,8 +29,6 @@ import java.util.Enumeration;
 import java.util.Vector;
 
 /**
- * 
- * 
  * The LogStream interface is an abstract definition of a stream that
  * encapsulates a physical log. In contrast to a regular input or output stream,
  * a log stream has both input and output facilities to the same underlying log.

@@ -48,10 +48,6 @@ public class StreamObjectLog implements ObjectLog
     protected LogStream logstream_;
     protected Hashtable logTable_;
 
-    // FOLLOWING REMOVED: flush has been added to LogStream
-    // protected ObjectOutputStream out_ = null;
-
-    // for debugging
     protected long size_;
     private boolean initialized_ = false;
     protected boolean panic_ = false;
@@ -64,7 +60,6 @@ public class StreamObjectLog implements ObjectLog
     // how many flushes since last checkpoint?
 
     private long maxCount_;
-
     // how many is max count until next checkpoint?
 
     private StreamObjectLog ()
@@ -151,9 +146,7 @@ public class StreamObjectLog implements ObjectLog
                             // duplicate deletes are possible because a
                             // terminator entry may be written more than once
 
-                            logTable_.remove ( entry.getId () ); // drop all
-                                                                    // for this
-                                                                    // tid
+                            logTable_.remove ( entry.getId () ); 
 
                             size_--;
 
@@ -243,8 +236,6 @@ public class StreamObjectLog implements ObjectLog
             } catch ( LogException ioerr ) {
                 ioerr.printStackTrace ();
                 errors.push ( ioerr );
-                // System.err.println ( ioerr.getMessage() );
-                // ioerr.printStackTrace();
                 // make sure that logfile remains in consistent state by
                 // checkpointing
                 try {
@@ -263,13 +254,11 @@ public class StreamObjectLog implements ObjectLog
                     // to avoid that logTable_ keeps growing!
                     logTable_.remove ( img.getId () );
                     size_--;
-                    // System.err.println ( "Log size - 1 " );
                 }
 
             } else {
                 if ( !logTable_.containsKey ( img.getId () ) ) {
                     size_++;
-                    // System.err.println ( "Log size + 1 " );
                 }
                 logTable_.put ( img.getId (), img );
 
@@ -312,8 +301,6 @@ public class StreamObjectLog implements ObjectLog
         SystemLogImage previous = (SystemLogImage) logTable_.get ( id );
         if ( previous == null ) {
             // all actives are in table -> if not there: already deleted
-            // System.out.println ( "StreamObjectLog.delete(): object not found"
-            // );
             return;
         }
         Recoverable bogus = previous.getRecoverable ();

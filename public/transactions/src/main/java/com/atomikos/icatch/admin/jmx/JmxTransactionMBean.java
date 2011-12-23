@@ -26,11 +26,6 @@
 package com.atomikos.icatch.admin.jmx;
 
 /**
- * 
- * 
- * 
- * 
- * 
  * An MBean interface for administration of pending transactions.
  */
 
@@ -38,7 +33,7 @@ public interface JmxTransactionMBean
 {
 
     /**
-     * Get the transaction identifier.
+     * Gets the transaction identifier.
      * 
      * @return String The unique id.
      */
@@ -46,7 +41,7 @@ public interface JmxTransactionMBean
     public String getTid ();
 
     /**
-     * Get the transaction's state.
+     * Gets the transaction's state.
      * 
      * @return String The state, represented as by its name
      */
@@ -54,7 +49,7 @@ public interface JmxTransactionMBean
     public String getState ();
 
     /**
-     * Get the high-level heuristic comments. This is what remote clients will
+     * Gets the high-level heuristic comments. This is what remote clients will
      * see as well.
      * 
      * @return HeuristicMessage The comments giving a summary of the tasks done
@@ -64,7 +59,7 @@ public interface JmxTransactionMBean
     public String[] getTags ();
 
     /**
-     * Get the HeuristicMessage detailed info for this transaction.
+     * Gets the HeuristicMessage detailed info for this transaction.
      * 
      * @return HeuristicMessage[] The detailed heuristic messages. These show
      *         the comments for EACH individual resource that was part of the

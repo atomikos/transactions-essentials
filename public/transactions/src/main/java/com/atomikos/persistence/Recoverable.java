@@ -28,8 +28,6 @@ package com.atomikos.persistence;
 import com.atomikos.util.Identifiable;
 
 /**
- * 
- * 
  * Recoverable interface: supports images for object reconstruction.
  * 
  */

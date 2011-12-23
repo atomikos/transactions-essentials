@@ -30,8 +30,6 @@ import java.io.Externalizable;
 import com.atomikos.util.Identifiable;
 
 /**
- * 
- * 
  * An ObjectImage is a loggable state that can be managed by an ObjectLog.
  * 
  */

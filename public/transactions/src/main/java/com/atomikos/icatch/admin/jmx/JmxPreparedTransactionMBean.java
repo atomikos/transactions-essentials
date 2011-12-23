@@ -32,11 +32,6 @@ import com.atomikos.icatch.HeurRollbackException;
 import com.atomikos.icatch.SysException;
 
 /**
- * 
- * 
- * 
- * 
- * 
  * An MBean interface with specific methods for prepared transactions.
  */
 
@@ -44,7 +39,7 @@ public interface JmxPreparedTransactionMBean extends JmxTransactionMBean
 {
 
     /**
-     * Force commit of the transaction.
+     * Forces commit of the transaction.
      * 
      */
 
@@ -52,7 +47,7 @@ public interface JmxPreparedTransactionMBean extends JmxTransactionMBean
             HeurHazardException, HeurMixedException, SysException;
 
     /**
-     * Force rollback of the transaction.
+     * Forces rollback of the transaction.
      * 
      */
 

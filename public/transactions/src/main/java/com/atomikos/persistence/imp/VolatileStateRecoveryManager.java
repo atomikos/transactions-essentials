@@ -38,26 +38,17 @@ import com.atomikos.persistence.StateRecoverable;
 import com.atomikos.persistence.StateRecoveryManager;
 
 /**
- * 
- * 
- * 
  * A volatile recovery manager (one that doesn't support persistent logging and
  * hence doesn't allow recovery after a crash or restart).
  * 
- * 
  */
 
-// @todo TEST if this works for the JTA release test!
 public class VolatileStateRecoveryManager implements StateRecoveryManager,
         FSMPreEnterListener
 {
     private Map idToElementMap;
 
-    /**
-     * Construct a new instance.
-     * 
-     */
-
+ 
     public VolatileStateRecoveryManager ()
     {
         idToElementMap = new HashMap ();

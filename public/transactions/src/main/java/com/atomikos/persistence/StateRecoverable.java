@@ -28,8 +28,6 @@ package com.atomikos.persistence;
 import com.atomikos.finitestates.FSMPreEnterEventSource;
 
 /**
- * 
- * 
  * A type of stateful objects whose state is guaranteed to be recoverable. The
  * logging is done based on PreEnter events. The guarantee offered is the
  * following: IF a recoverable state is reached by the instance, then its image

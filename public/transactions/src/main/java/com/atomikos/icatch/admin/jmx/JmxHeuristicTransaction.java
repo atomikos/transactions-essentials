@@ -31,9 +31,6 @@ import com.atomikos.icatch.admin.AdminTransaction;
  * 
  * An MBean wrapper for a heuristic AdminTransaction.
  * 
- * 
- * 
- * 
  */
 
 public class JmxHeuristicTransaction extends JmxTransaction implements

@@ -33,11 +33,6 @@ import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.admin.AdminTransaction;
 
 /**
- * 
- * 
- * 
- * 
- * 
  * The base class for MBean administration of transactions.
  */
 
@@ -51,7 +46,7 @@ public abstract class JmxTransaction implements JmxTransactionMBean,
     private ObjectName name;
 
     /**
-     * Convert the given int state.
+     * Converts the given int state.
      * 
      * @param state
      *            The given int state.

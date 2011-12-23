@@ -33,11 +33,6 @@ import com.atomikos.icatch.SysException;
 import com.atomikos.icatch.admin.AdminTransaction;
 
 /**
- * 
- * 
- * 
- * 
- * 
  * An MBean wrapper for a prepared AdminTransaction.
  */
 

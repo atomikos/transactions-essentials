@@ -28,8 +28,6 @@ package com.atomikos.icatch.system;
 import com.atomikos.icatch.imp.thread.InterruptedExceptionHelper;
 
 /**
- * 
- * 
  * A class for synchronizing on subtransaction threads. You need this
  * functionality because a subtransaction thread has to finish before the
  * creator transaction is done. A new waiter instance can be used to create <a

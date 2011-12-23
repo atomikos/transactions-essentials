@@ -37,9 +37,7 @@ import com.atomikos.persistence.StateRecoverable;
 import com.atomikos.persistence.StateRecoveryManager;
 
 /**
- * 
- * 
- * A standard implementation of a state recovery manager.
+ * Default implementation of a state recovery manager.
  */
 
 public class StateRecoveryManagerImp implements StateRecoveryManager,
@@ -47,7 +45,6 @@ public class StateRecoveryManagerImp implements StateRecoveryManager,
 {
 
     protected ObjectLog objectlog_;
-
     // for delegation of storage tasks
 
     /**

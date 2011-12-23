@@ -28,18 +28,13 @@ package com.atomikos.icatch.admin.jmx;
 import javax.management.ObjectName;
 
 /**
- * 
- * 
- * 
- * 
- * 
  * An MBean interface for the administration of the transaction service.
  */
 
 public interface JmxTransactionServiceMBean
 {
     /**
-     * Get the pending transactions from the Transaction Service.
+     * Gets the pending transactions from the Transaction Service.
      * 
      * @return ObjectName[] An array of all MBean object names (one MBean is
      *         created for each transaction).

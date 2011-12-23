@@ -28,15 +28,14 @@ package com.atomikos.persistence;
 import java.util.Vector;
 
 /**
- * 
- * manager, being some entity that allows the following.
+ * Interface defining the functionality for logging objects to persistent storage.
  * 
  */
 
 public interface ObjectLog
 {
     /**
-     * Flush to permanent memory.
+     * Flushes to permanent memory.
      * 
      * @param recoverable
      *            Recoverable instance. NOTE: if the instance has the same
@@ -51,7 +50,7 @@ public interface ObjectLog
     public void flush ( Recoverable recoverable ) throws LogException;
 
     /**
-     * Initialize the object log. To be called as the first method.
+     * Initializes the object log. To be called as the first method.
      * 
      * @exception LogException
      *                If error occurs.
@@ -60,7 +59,7 @@ public interface ObjectLog
     public void init () throws LogException;
 
     /**
-     * Recover all non-deleted object images flushed so far.
+     * Recovers all non-deleted object images flushed so far.
      * 
      * @return Vector A list of Recoverable instances, reconstructed from their
      *         images.
@@ -68,8 +67,8 @@ public interface ObjectLog
 
     public Vector recover () throws LogException;
 
-    /*
-     * Recover the instance with given ID.
+    /**
+     * Recovers the instance with given ID.
      * 
      * @param id The id to recover. @return Recoverable The recovered logimage,
      * null if not found. @exception LogException On failure.
@@ -78,7 +77,7 @@ public interface ObjectLog
     public Recoverable recover ( Object id ) throws LogException;
 
     /**
-     * Delete the given object from the log.
+     * Deletes the given object from the log.
      * 
      * @param id
      *            The object UID.

@@ -29,11 +29,6 @@ import com.atomikos.icatch.admin.LogAdministrator;
 import com.atomikos.icatch.admin.LogControl;
 
 /**
- * 
- * 
- * 
- * 
- * 
  * A JMX LogAdministrator, implemented as a Singleton. The instance can be
  * registered in the TSInitInfo for the JMX management to work. <b>In addition,
  * you should register a in instance of the JmxTransactionService MBean in your
@@ -53,10 +48,6 @@ class JmxLogAdministrator implements LogAdministrator
 
     private LogControl logControl;
 
-    /**
-     * 
-     */
-
     protected JmxLogAdministrator ()
     {
         super ();
@@ -73,7 +64,7 @@ class JmxLogAdministrator implements LogAdministrator
     }
 
     /**
-     * Get the LogControl.
+     * Gets the LogControl.
      * 
      * @return LogControl, or null if unregistered.
      */

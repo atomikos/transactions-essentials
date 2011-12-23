@@ -25,9 +25,6 @@
 
 package com.atomikos.persistence;
 
-/**
- * 
- */
 
 public class LogException extends Exception
 {

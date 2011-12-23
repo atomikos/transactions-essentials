@@ -33,8 +33,6 @@ import com.atomikos.icatch.SubTxCode;
 import com.atomikos.icatch.SysException;
 
 /**
- * 
- * 
  * A thread class for subtransaction threads. A SubTxThread is a thread whose
  * code is automatically executed in a subtransaction of the calling thread's
  * transaction. Creation, start and end of the subtransaction is done by the

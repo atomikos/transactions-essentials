@@ -26,11 +26,6 @@
 package com.atomikos.icatch.admin.jmx;
 
 /**
- * 
- * 
- * 
- * 
- * 
  * An MBean for heuristic pending transactions.
  */
 
@@ -38,7 +33,7 @@ public interface JmxHeuristicTransactionMBean extends JmxTransactionMBean
 {
 
     /**
-     * Test if the transaction's 2PC outcome was commit. Needed especially for
+     * Tests if the transaction's 2PC outcome was commit. Needed especially for
      * the heuristic states, if the desired outcome (instead of the actual
      * state) needs to be retrieved. For instance, if the state is
      * STATE_HEUR_HAZARD then extra information is needed for determining if the
@@ -52,7 +47,7 @@ public interface JmxHeuristicTransactionMBean extends JmxTransactionMBean
     public boolean getCommitted ();
 
     /**
-     * Force the system to forget about the transaction.
+     * Forces the system to forget about the transaction.
      */
 
     public void forceForget ();
