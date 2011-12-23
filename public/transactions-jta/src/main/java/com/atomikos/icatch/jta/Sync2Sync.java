@@ -41,13 +41,11 @@ class Sync2Sync implements com.atomikos.icatch.Synchronization
     protected javax.transaction.Synchronization sync_;
 
     private Boolean committed_;
-
     // null for readonly, True for commit, False for abort
 
     Sync2Sync ( javax.transaction.Synchronization sync )
     {
         sync_ = sync;
-
     }
 
     public void beforeCompletion ()
@@ -61,7 +59,6 @@ class Sync2Sync implements com.atomikos.icatch.Synchronization
     {
         if ( state.equals ( TxState.TERMINATED ) ) {
             if ( committed_ == null ) {
-
                 // happens on readonly vote -> outcome not known!
                 sync_.afterCompletion ( Status.STATUS_UNKNOWN );
                 Configuration
@@ -83,10 +80,8 @@ class Sync2Sync implements com.atomikos.icatch.Synchronization
                                     + sync_.toString () );
                 }
             }
-        } else if ( state.equals ( TxState.COMMITTING ) )
-            committed_ = new Boolean ( true );
-        else if ( state.equals ( TxState.ABORTING ) )
-            committed_ = new Boolean ( false );
+        } else if ( state.equals ( TxState.COMMITTING ) ) committed_ = new Boolean ( true );
+          else if ( state.equals ( TxState.ABORTING ) ) committed_ = new Boolean ( false );
 
     }
 }

@@ -31,8 +31,6 @@ import java.util.Stack;
 import javax.transaction.SystemException;
 
 /**
- * 
- * 
  * A better system exception, containing nested errors in a stack.
  */
 

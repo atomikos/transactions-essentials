@@ -36,8 +36,6 @@ import com.atomikos.icatch.StringHeuristicMessage;
 import com.atomikos.icatch.SysException;
 
 /**
- * 
- * 
  * A participant to add in case setRollbackOnly is called. This participant will
  * never allow commit.
  */
@@ -45,7 +43,6 @@ import com.atomikos.icatch.SysException;
 class RollbackOnlyParticipant implements Participant
 {
     private StringHeuristicMessage msg_;
-
     // the message to return in exception
 
     RollbackOnlyParticipant ( StringHeuristicMessage msg )

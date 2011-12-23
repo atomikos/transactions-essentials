@@ -93,7 +93,6 @@ public final class RemoteClientUserTransaction implements UserTransaction,
     private String providerUrl_;
 
     private boolean imported_;
-
     // if true: no commit/rollback allowed
     // this is the case for instances that are
     // passed on between remote clients
@@ -134,16 +133,6 @@ public final class RemoteClientUserTransaction implements UserTransaction,
         timeout_ = DEFAULT_TIMEOUT;
         imported_ = false;
     }
-
-    // /**
-    // *For use by JNDI factory
-    // */
-    //       
-    // RemoteClientUserTransaction ( String url )
-    // {
-    // this();
-    // name_ = url;
-    // }
 
     private String getNotFoundMessage ()
     {
