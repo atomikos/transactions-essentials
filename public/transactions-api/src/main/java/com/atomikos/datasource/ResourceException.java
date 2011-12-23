@@ -28,7 +28,6 @@ package com.atomikos.datasource;
 import java.util.Stack;
 
 /**
-*
 * Exception on the level of the resource manager. 
 * Contains more detailed info of actual underlying exception.
 */
