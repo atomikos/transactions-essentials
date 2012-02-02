@@ -33,5 +33,13 @@ class Slf4jLogger implements Logger {
 		slf4j.debug(message,error);
 		
 	}
+
+	public boolean isDebugEnabled() {
+		return slf4j.isDebugEnabled();
+	}
+
+	public boolean isInfoEnabled() {
+		return slf4j.isInfoEnabled();
+	}
 	
 }

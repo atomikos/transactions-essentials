@@ -56,4 +56,21 @@ public abstract class AbstractLoggerFactoryTest extends TestCase {
 	}
 
 	protected abstract void assertLoggedAsWarningWithException();
+	
+	public void testIsDebugEnabled() {
+		assertFalse(logger.isDebugEnabled());
+		configureLoggingFrameworkWithDebug();
+		assertTrue(logger.isDebugEnabled());
+	}
+	
+	public void testIsInfoEnabled() {
+		assertFalse(logger.isInfoEnabled());
+		configureLoggingFrameworkWithInfo();
+		assertTrue(logger.isInfoEnabled());
+	}
+
+	protected abstract void configureLoggingFrameworkWithInfo();
+	
+
+	protected abstract void configureLoggingFrameworkWithDebug();
 }

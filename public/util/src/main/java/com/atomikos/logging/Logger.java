@@ -14,4 +14,8 @@ public interface Logger {
 
 	void logDebug(String message, Throwable error);
 
+	boolean isDebugEnabled();
+
+	boolean isInfoEnabled();
+
 }
