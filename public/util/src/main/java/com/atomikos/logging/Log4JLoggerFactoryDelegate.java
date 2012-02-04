@@ -7,4 +7,9 @@ public class Log4JLoggerFactoryDelegate implements LoggerFactoryDelegate {
 		return new Log4JLogger(clazz);
 	}
 
+	@Override
+	public String toString() {
+
+		return "Log4j";
+	}
 }

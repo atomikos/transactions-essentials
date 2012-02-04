@@ -7,4 +7,9 @@ public class JULLoggerFactoryDelegate implements LoggerFactoryDelegate {
 		return new JULLogger(clazz);
 	}
 
+	@Override
+	public String toString() {
+
+		return "Java Util Logging";
+	}
 }

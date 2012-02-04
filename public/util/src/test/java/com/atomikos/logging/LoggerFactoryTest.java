@@ -1,0 +1,13 @@
+package com.atomikos.logging;
+
+import junit.framework.TestCase;
+
+public class LoggerFactoryTest extends TestCase {
+
+	public void testCreateLogger() {
+		System.out.println(LoggerFactory.loggerFactoryDelegate);
+
+		assertEquals(com.atomikos.logging.Slf4JLoggerFactoryDelegate.class, LoggerFactory.loggerFactoryDelegate.getClass());
+	}
+
+}
