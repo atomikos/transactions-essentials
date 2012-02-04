@@ -30,8 +30,7 @@ public class JULLoggerFactoryTestJUnit extends AbstractLoggerFactoryTest {
 		ArgumentCaptor<LogRecord> arg = ArgumentCaptor.forClass(LogRecord.class);
 		Mockito.verify(handler).publish(arg.capture());
 		LogRecord logRecord = arg.getValue();
-		assertEquals(MESSAGE, logRecord.getMessage());
-		assertEquals(Level.FINE, logRecord.getLevel());
+		assertLogRecord(logRecord,Level.FINE,false);
 	}
 
 
@@ -42,9 +41,7 @@ public class JULLoggerFactoryTestJUnit extends AbstractLoggerFactoryTest {
 		Mockito.verify(handler).publish(arg.capture());
 		LogRecord logRecord = arg.getValue();
 
-		assertEquals(MESSAGE, logRecord.getMessage());
-		assertEquals(Level.FINE, logRecord.getLevel());
-		assertNotNull(logRecord.getThrown());
+		assertLogRecord(logRecord,Level.FINE,true);
 	}
 
 	@Override
@@ -52,8 +49,7 @@ public class JULLoggerFactoryTestJUnit extends AbstractLoggerFactoryTest {
 		ArgumentCaptor<LogRecord> arg = ArgumentCaptor.forClass(LogRecord.class);
 		Mockito.verify(handler).publish(arg.capture());
 		LogRecord logRecord = arg.getValue();
-		assertEquals(MESSAGE, logRecord.getMessage());
-		assertEquals(Level.INFO, logRecord.getLevel());
+		assertLogRecord(logRecord,Level.INFO,false);
 	}
 
 	@Override
@@ -61,9 +57,7 @@ public class JULLoggerFactoryTestJUnit extends AbstractLoggerFactoryTest {
 		ArgumentCaptor<LogRecord> arg = ArgumentCaptor.forClass(LogRecord.class);
 		Mockito.verify(handler).publish(arg.capture());
 		LogRecord logRecord = arg.getValue();
-		assertEquals(MESSAGE, logRecord.getMessage());
-		assertEquals(Level.INFO, logRecord.getLevel());
-		assertNotNull(logRecord.getThrown());
+		assertLogRecord(logRecord,Level.INFO,true);
 	}
 
 	@Override
@@ -71,8 +65,7 @@ public class JULLoggerFactoryTestJUnit extends AbstractLoggerFactoryTest {
 		ArgumentCaptor<LogRecord> arg = ArgumentCaptor.forClass(LogRecord.class);
 		Mockito.verify(handler).publish(arg.capture());
 		LogRecord logRecord = arg.getValue();
-		assertEquals(MESSAGE, logRecord.getMessage());
-		assertEquals(Level.WARNING, logRecord.getLevel());
+		assertLogRecord(logRecord,Level.WARNING,false);
 	}
 
 	@Override
@@ -80,9 +73,18 @@ public class JULLoggerFactoryTestJUnit extends AbstractLoggerFactoryTest {
 		ArgumentCaptor<LogRecord> arg = ArgumentCaptor.forClass(LogRecord.class);
 		Mockito.verify(handler).publish(arg.capture());
 		LogRecord logRecord = arg.getValue();
+		assertLogRecord(logRecord,Level.WARNING,true);
+
+	}
+
+	private void assertLogRecord(LogRecord logRecord, Level expectedLevel,boolean withThrowable) {
 		assertEquals(MESSAGE, logRecord.getMessage());
-		assertEquals(Level.WARNING, logRecord.getLevel());
-		assertNotNull(logRecord.getThrown());
+		assertEquals(expectedLevel, logRecord.getLevel());
+		if(withThrowable){
+			assertNotNull(logRecord.getThrown());
+		} else {
+			assertNull(logRecord.getThrown());
+		}
 	}
 
 	public void testIsInfoEnabled() {

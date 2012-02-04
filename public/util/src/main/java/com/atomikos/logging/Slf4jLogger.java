@@ -1,10 +1,10 @@
 package com.atomikos.logging;
 
 class Slf4jLogger implements Logger {
-	
+
 	private final org.slf4j.Logger slf4j;
-	
-	public Slf4jLogger(Class clazz) {
+
+	public Slf4jLogger(Class<?> clazz) {
 		slf4j = org.slf4j.LoggerFactory.getLogger(clazz);
 	}
 
@@ -22,7 +22,7 @@ class Slf4jLogger implements Logger {
 
 	public void logWarning(String message, Throwable error) {
 		slf4j.warn(message,error);
-		
+
 	}
 
 	public void logInfo(String message, Throwable error) {
@@ -31,7 +31,7 @@ class Slf4jLogger implements Logger {
 
 	public void logDebug(String message, Throwable error) {
 		slf4j.debug(message,error);
-		
+
 	}
 
 	public boolean isDebugEnabled() {
@@ -41,5 +41,5 @@ class Slf4jLogger implements Logger {
 	public boolean isInfoEnabled() {
 		return slf4j.isInfoEnabled();
 	}
-	
+
 }
