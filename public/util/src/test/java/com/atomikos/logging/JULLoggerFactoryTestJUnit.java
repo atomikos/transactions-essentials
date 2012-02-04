@@ -17,17 +17,13 @@ public class JULLoggerFactoryTestJUnit extends AbstractLoggerFactoryTest {
 		LoggerFactory.setLoggerFactoryDelegate(new JULLoggerFactoryDelegate());
 		logger = LoggerFactory.createLogger(getClass());
 		getUnderlyingLogger().addHandler(handler);
+		getUnderlyingLogger().setLevel(Level.INFO);
 	}
 
 	public void testAssertSlf4jLoggerCreated() {
 		assertTrue(logger instanceof JULLogger);
 	}
 
-	public void testLogDebug() {
-		//need to configure logger to "fine" if we want to trigger a "publish" on the handler
-		getUnderlyingLogger().setLevel(Level.FINE);
-		super.testLogDebug();
-	}
 
 	@Override
 	protected void assertLoggedAsDebug() {
@@ -38,11 +34,7 @@ public class JULLoggerFactoryTestJUnit extends AbstractLoggerFactoryTest {
 		assertEquals(Level.FINE, logRecord.getLevel());
 	}
 
-	public void testLogDebugWithException() {
-		//need to configure logger to "fine" if we want to trigger a "publish" on the handler
-		getUnderlyingLogger().setLevel(Level.FINE);
-		super.testLogDebugWithException();
-	}
+
 
 	@Override
 	protected void assertLoggedAsDebugWithException() {
@@ -105,7 +97,7 @@ public class JULLoggerFactoryTestJUnit extends AbstractLoggerFactoryTest {
 
 	@Override
 	protected void configureLoggingFrameworkWithDebug() {
-		getUnderlyingLogger().setLevel(Level.FINEST);
+		getUnderlyingLogger().setLevel(Level.FINE);
 	}
 
 	private java.util.logging.Logger getUnderlyingLogger() {

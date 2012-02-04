@@ -5,24 +5,26 @@ import junit.framework.TestCase;
 public abstract class AbstractLoggerFactoryTest extends TestCase {
 
 	protected static final String MESSAGE = "warning";
-	
+
 	protected static final Throwable ERROR = new Exception();
-	
+
 	protected Logger logger;
-	
+
 
 	public void testLogDebug() {
+		configureLoggingFrameworkWithDebug();
 		logger.logDebug(MESSAGE);
 		assertLoggedAsDebug();
 	}
-	
+
 	protected abstract void assertLoggedAsDebug();
 
 	public void testLogDebugWithException() {
+		configureLoggingFrameworkWithDebug();
 		logger.logDebug(MESSAGE,ERROR);
 		assertLoggedAsDebugWithException();
 	}
-	
+
 	protected abstract void assertLoggedAsDebugWithException();
 
 	public void testLoggerCreated() {
@@ -56,13 +58,13 @@ public abstract class AbstractLoggerFactoryTest extends TestCase {
 	}
 
 	protected abstract void assertLoggedAsWarningWithException();
-	
+
 	public void testIsDebugEnabled() {
 		assertFalse(logger.isDebugEnabled());
 		configureLoggingFrameworkWithDebug();
 		assertTrue(logger.isDebugEnabled());
 	}
-	
+
 	public void testIsInfoEnabled() {
 		assertFalse(logger.isInfoEnabled());
 		configureLoggingFrameworkWithInfo();
@@ -70,7 +72,7 @@ public abstract class AbstractLoggerFactoryTest extends TestCase {
 	}
 
 	protected abstract void configureLoggingFrameworkWithInfo();
-	
+
 
 	protected abstract void configureLoggingFrameworkWithDebug();
 }
