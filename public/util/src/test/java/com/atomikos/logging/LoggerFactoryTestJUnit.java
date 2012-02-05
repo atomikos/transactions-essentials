@@ -2,7 +2,7 @@ package com.atomikos.logging;
 
 import junit.framework.TestCase;
 
-public class LoggerFactoryTest extends TestCase {
+public class LoggerFactoryTestJUnit extends TestCase {
 
 	public void testCreateLogger() {
 		System.out.println(LoggerFactory.loggerFactoryDelegate);
