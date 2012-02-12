@@ -48,12 +48,12 @@ import com.atomikos.icatch.system.Configuration;
 import com.atomikos.util.IOHelper;
 
 /**
- * 
- * 
+ *
+ *
  * The user's (client program) view of the transaction manager's configuration,
  * a compact facade with all the information the client program needs. This base
  * class should be overridden for each module (CORBA, trmi,...).
- * 
+ *
  */
 
 public abstract class AbstractUserTransactionService implements
@@ -62,26 +62,26 @@ public abstract class AbstractUserTransactionService implements
 	/**
 	 * Logger for this class
 	 */
-	private static final Logger logger = LoggerFactory.createLogger(AbstractUserTransactionService.class);
+	private static final Logger LOGGER = LoggerFactory.createLogger(AbstractUserTransactionService.class);
 
-	 
+
 	private static void echoProperties ( Properties properties )
     {
-		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( "USING core version: " + Configuration.getVersion() );
+		if ( LOGGER.isInfoEnabled() ) Configuration.logInfo ( "USING core version: " + Configuration.getVersion() );
         if ( properties != null ) {
             Enumeration names = properties.propertyNames ();
             while ( names.hasMoreElements () ) {
                 String name = (String) names.nextElement ();
                 String value = properties.getProperty ( name );
                 //log as INFO - see case 24689
-                if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( "USING " + name + " = " + value );
+                if ( LOGGER.isInfoEnabled() ) Configuration.logInfo ( "USING " + name + " = " + value );
             }
         }
     }
 
     /**
      * Utility method to get and trim properties.
-     * 
+     *
      * @param name
      *            The name of the property to get.
      * @param p
@@ -102,7 +102,7 @@ public abstract class AbstractUserTransactionService implements
 
     /**
      * Utility method to get a default TM name.
-     * 
+     *
      * @return A default TM name based on the local IP.
      */
     protected static String getDefaultName ()
@@ -121,7 +121,7 @@ public abstract class AbstractUserTransactionService implements
 
     /**
      * Utility method to get the local host address.
-     * 
+     *
      * @return
      */
     protected static String getHostAddress ()
@@ -138,7 +138,7 @@ public abstract class AbstractUserTransactionService implements
 
     /**
      * Utility method to find or create a given folder
-     * 
+     *
      * @param path
      *            The folder path.
      * @return String The resulting file path, or a default if the given path is
@@ -196,10 +196,10 @@ public abstract class AbstractUserTransactionService implements
     public void shutdown ( boolean force ) throws IllegalStateException
     {
         boolean errors = false;
-        
+
         //remove shutdown hooks to avoid case 21519
         Configuration.removeShutdownHooks();
-        
+
         // Ask the Configuration for all current resources, since
         // newly added ones are not known at init.
         Enumeration resources = Configuration.getResources ();
@@ -211,25 +211,25 @@ public abstract class AbstractUserTransactionService implements
             try {
                 res.close ();
             } catch ( ResourceException re ) {
-            	   
+
          	   //Issue 10038:
          	   //Ignore errors in force mode: force is most likely
          	   //during VM exit; in that case interleaving of shutdown hooks
          	   //means that resource connectors may have closed already
-         	   //by the time the TM hook runs. We don't want useless 
+         	   //by the time the TM hook runs. We don't want useless
          	   //reports in that case.
          	   //NOTE: any invalid states will be detected during the next
          	   //(re)init so they can be ignored here (if force mode)
-            	
+
                 if ( !force ) {
-                	   //log to System.err because console file 
+                	   //log to System.err because console file
              	   //is closed already!!!
-             	   String msg = "WARNING: error closing resource: " + 
+             	   String msg = "WARNING: error closing resource: " +
              	   			re.getMessage ();
                 	   System.err.println ( msg );
                 	   re.printStackTrace();
                 }
-            	  
+
                 errors = true;
             }
 
@@ -255,7 +255,7 @@ public abstract class AbstractUserTransactionService implements
         	   //Ignore errors in force mode: force is most likely
         	   //during VM exit; in that case interleaving of shutdown hooks
         	   //means that resource connectors may have closed already
-        	   //by the time the TM hook runs. We don't want useless 
+        	   //by the time the TM hook runs. We don't want useless
         	   //exceptions in that case.
         	   //NOTE: any invalid states will be detected during the next
         	   //(re)init so they can be ignored here
@@ -295,7 +295,7 @@ public abstract class AbstractUserTransactionService implements
         String hookAsString = getTrimmedProperty ( AbstractUserTransactionServiceFactory.REGISTER_SHUTDOWN_HOOK_PROPERTY_NAME , info.getProperties() );
         boolean register = false;
         if ( hookAsString != null ) register = "true".equals ( hookAsString.toLowerCase() );
- 
+
         // ADDED IN 2.0 for automatic initialization: shutdown hook needed
         if ( register ) Configuration.addShutdownHook ( new ShutdownHook ( this ) );
 
@@ -349,27 +349,27 @@ public abstract class AbstractUserTransactionService implements
     {
         return Configuration.getLogAdministrators ();
     }
-    
-	public void removeResource ( RecoverableResource res ) 
+
+	public void removeResource ( RecoverableResource res )
 	{
 		if ( res == null ) throw new IllegalArgumentException ( "Null not allowed" );
 		Configuration.removeResource ( res.getName() );
-		
+
 	}
 
-	public void removeLogAdministrator ( LogAdministrator admin ) 
+	public void removeLogAdministrator ( LogAdministrator admin )
 	{
 		if ( admin == null ) throw new IllegalArgumentException ( "Null not allowed" );
 		Configuration.removeLogAdministrator ( admin );
 	}
 
-	public void registerTSListener ( TSListener listener ) 
+	public void registerTSListener ( TSListener listener )
 	{
 		if ( listener == null ) throw new IllegalArgumentException ( "Null not allowed");
 		Configuration.addTSListener ( listener );
 	}
 
-	public void removeTSListener ( TSListener listener ) 
+	public void removeTSListener ( TSListener listener )
 	{
 		if ( listener == null ) throw new IllegalArgumentException ( "Null not allowed");
 		Configuration.removeTSListener ( listener );

@@ -90,7 +90,7 @@ public class JdbcConnectionProxyHelper {
 			return;
 
 		try {
-			if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( "setting isolation level to " + defaultIsolationLevel);
+			if ( LOGGER.isInfoEnabled() ) Configuration.logInfo ( "setting isolation level to " + defaultIsolationLevel);
 			connection.setTransactionIsolation ( defaultIsolationLevel );
 		}
 		catch (SQLException ex) {

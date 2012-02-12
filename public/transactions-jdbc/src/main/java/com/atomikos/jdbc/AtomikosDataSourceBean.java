@@ -49,25 +49,25 @@ import com.atomikos.util.ClassLoadingHelper;
  * All SQL done over connections (gotten from this class) will participate in JTA transactions.
  */
 
-public class AtomikosDataSourceBean 
+public class AtomikosDataSourceBean
 extends AbstractDataSourceBean
 {
 	/**
 	 * Logger for this class
 	 */
-	private static final Logger logger = LoggerFactory.createLogger(AtomikosDataSourceBean.class);
-	
-	
+	private static final Logger LOGGER = LoggerFactory.createLogger(AtomikosDataSourceBean.class);
+
+
 	private static final long serialVersionUID = 1L;
-	
+
 	private Properties xaProperties = null;
 	private String xaDataSourceClassName;
 	private transient XADataSource xaDataSource;
-	public AtomikosDataSourceBean() 
+	public AtomikosDataSourceBean()
 	{
 		this.xaProperties = new Properties();
 	}
-	
+
 	protected String printXaProperties()
 	{
 		StringBuffer ret = new StringBuffer();
@@ -86,12 +86,12 @@ extends AbstractDataSourceBean
 		}
 		return ret.toString();
 	}
-	
+
 	/**
 	 * Gets the properties used to
-	 * configure the XADataSource.  
+	 * configure the XADataSource.
 	 */
-	
+
 	public Properties getXaProperties()
 	{
 		return xaProperties;
@@ -100,12 +100,12 @@ extends AbstractDataSourceBean
 	/**
 	 * Sets the properties (name,value pairs) used to
 	 * configure the XADataSource. Required, unless you call setXaDataSource directly.
-	 * 
-	 * @param xaProperties 
-	 * 
+	 *
+	 * @param xaProperties
+	 *
 	 *
 	 */
-	public void setXaProperties ( Properties xaProperties ) 
+	public void setXaProperties ( Properties xaProperties )
 	{
 		this.xaProperties = xaProperties;
 	}
@@ -113,32 +113,32 @@ extends AbstractDataSourceBean
 	/**
 	 * Get the XADataSource class name.
 	 */
-	public String getXaDataSourceClassName() 
+	public String getXaDataSourceClassName()
 	{
 		return xaDataSourceClassName;
 	}
 
 	/**
-	 * Sets the fully qualified underlying XADataSource class name. Required, unless you 
+	 * Sets the fully qualified underlying XADataSource class name. Required, unless you
 	 * call setXaDataSource directly.
-	 * 
+	 *
 	 * @param xaDataSourceClassName
 	 */
-	public void setXaDataSourceClassName ( String xaDataSourceClassName ) 
+	public void setXaDataSourceClassName ( String xaDataSourceClassName )
 	{
 		this.xaDataSourceClassName = xaDataSourceClassName;
 	}
-	
+
 	/**
 	 * Gets the configured XADataSource (if any).
 	 * @return The instance, or null if none.
 	 */
-	
+
 	public XADataSource getXaDataSource()
 	{
 		return xaDataSource;
 	}
-	
+
 	/**
 	 * Sets the XADataSource directly - instead of providing the xaDataSourceClassName and xaProperties.
 	 * @param xaDataSource
@@ -147,9 +147,9 @@ extends AbstractDataSourceBean
 	{
 		this.xaDataSource = xaDataSource;
 	}
-	
-	
-	protected com.atomikos.datasource.pool.ConnectionFactory doInit() throws Exception 
+
+
+	protected com.atomikos.datasource.pool.ConnectionFactory doInit() throws Exception
 	{
 		if (xaDataSource == null)
 		{
@@ -158,9 +158,9 @@ extends AbstractDataSourceBean
 			if (xaProperties == null)
 				throwAtomikosSQLException("Property 'xaProperties' cannot be null");
 		}
-		
-		
-		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo(
+
+
+		if ( LOGGER.isInfoEnabled() ) Configuration.logInfo(
 				this + ": initializing with [" +
 				" xaDataSourceClassName=" + xaDataSourceClassName + "," +
 				" uniqueResourceName=" + getUniqueResourceName() + "," +
@@ -171,12 +171,12 @@ extends AbstractDataSourceBean
 				" reapTimeout=" + getReapTimeout() + "," +
 				" maintenanceInterval=" + getMaintenanceInterval() + "," +
 				" testQuery=" + getTestQuery() + "," +
-				" xaProperties=" + printXaProperties() + 
+				" xaProperties=" + printXaProperties() +
 				" loginTimeout=" + getLoginTimeout() +
 				"]"
 				);
-		
-		
+
+
 			if (xaDataSource == null)
 			{
 				Class xadsClass = null;
@@ -185,13 +185,13 @@ extends AbstractDataSourceBean
 				} catch ( ClassNotFoundException nf ) {
 					AtomikosSQLException.throwAtomikosSQLException ( "The class '" + getXaDataSourceClassName() +
 							"' specified by property 'xaDataSourceClassName' could not be found in the classpath. Please make sure the spelling is correct, and that the required jar(s) are in the classpath." , nf );
-					 
+
 				}
 				Object driver =  xadsClass.newInstance();
 				if ( ! ( driver instanceof XADataSource ) ) {
 					AtomikosSQLException.throwAtomikosSQLException (
 							 "The class '" + getXaDataSourceClassName() +
-								"' specified by property 'xaDataSourceClassName' does not implement the required interface javax.jdbc.XADataSource. Please make sure the spelling is correct, and check your JDBC driver vendor's documentation." 
+								"' specified by property 'xaDataSourceClassName' does not implement the required interface javax.jdbc.XADataSource. Please make sure the spelling is correct, and check your JDBC driver vendor's documentation."
 					);
 				}
 				xaDataSource = (XADataSource) driver;
@@ -199,15 +199,15 @@ extends AbstractDataSourceBean
 				xaDataSource.setLogWriter ( getLogWriter() );
 				PropertyUtils.setProperties(xaDataSource, xaProperties );
 			}
-			
+
 			JdbcTransactionalResource tr = new JdbcTransactionalResource(getUniqueResourceName() , xaDataSource);
 			com.atomikos.datasource.pool.ConnectionFactory cf = new com.atomikos.jdbc.AtomikosXAConnectionFactory(xaDataSource, tr, this);
 			Configuration.addResource ( tr );
-			
+
 			return cf;
 	}
-	
-	protected void doClose() 
+
+	protected void doClose()
 	{
 		RecoverableResource res = Configuration.getResource ( getUniqueResourceName() );
 		if ( res != null ) {
@@ -215,9 +215,9 @@ extends AbstractDataSourceBean
 			//fix for case 26005
 			res.close();
 		}
-	}	
+	}
 
-	public String toString() 
+	public String toString()
 	{
 		String ret = "AtomikosDataSoureBean";
 		String name = getUniqueResourceName();

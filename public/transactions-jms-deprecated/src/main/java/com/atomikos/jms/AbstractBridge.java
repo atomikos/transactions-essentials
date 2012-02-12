@@ -44,19 +44,19 @@ import com.atomikos.icatch.SysException;
 import com.atomikos.icatch.system.Configuration;
 
 /**
- * 
- * 
- * 
+ *
+ *
+ *
  * An abstract superclass for transactional destination bridging between a receiver
  * and a sender destination. The destination is set explicitly as a
  * MessageProducerSessionFactory, whereas the source is set implicitly by setting a
  * bridge instance as the MessageListener to a Queue(Topic)ReceiverSession or
  * Queue(Topic)ReceiverSessionPool.
- * 
+ *
  * Subclasses should implement the bridgeMessage method to convert the JMS
  * message format from the source session to the destination.
- * 
- * 
+ *
+ *
  */
 
 // TODO document which sendersession properties are overridden by those from the
@@ -66,7 +66,7 @@ public abstract class AbstractBridge implements MessageListener
 	/**
 	 * Logger for this class
 	 */
-	private static final Logger logger = LoggerFactory.createLogger(AbstractBridge.class);
+	private static final Logger LOGGER = LoggerFactory.createLogger(AbstractBridge.class);
 
     private MessageProducerSessionFactory destinationFactory;
     private ThreadLocal destinationMap;
@@ -90,7 +90,7 @@ public abstract class AbstractBridge implements MessageListener
     /**
      * Set the destination session factory; this is a sender session factory
      * that connects to the destination in the destination domain.
-     * 
+     *
      * @param destinationFactory
      */
     public void setDestinationSessionFactory (
@@ -98,13 +98,13 @@ public abstract class AbstractBridge implements MessageListener
     {
         this.destinationFactory = destinationFactory;
     }
-    
+
 
 
     /**
      * Create a new text message. Subclasses can use this method to create a
      * text message for the destination.
-     * 
+     *
      * @return
      * @throws JMSException
      */
@@ -119,7 +119,7 @@ public abstract class AbstractBridge implements MessageListener
     /**
      * Create a new bytes message. Subclasses can use this method to create a
      * bytes message for the destination.
-     * 
+     *
      * @return
      * @throws JMSException
      */
@@ -134,7 +134,7 @@ public abstract class AbstractBridge implements MessageListener
     /**
      * Create a new stream message. Subclasses can use this method to create a
      * stream message for the destination.
-     * 
+     *
      * @return
      * @throws JMSException
      */
@@ -148,7 +148,7 @@ public abstract class AbstractBridge implements MessageListener
     /**
      * Create a new object message. Subclasses can use this method to create an
      * object message for the destination.
-     * 
+     *
      * @return
      * @throws JMSException
      */
@@ -162,7 +162,7 @@ public abstract class AbstractBridge implements MessageListener
     /**
      * Create a new map message. Subclasses can use this method to create a map
      * message for the destination.
-     * 
+     *
      * @return
      * @throws JMSException
      */
@@ -178,7 +178,7 @@ public abstract class AbstractBridge implements MessageListener
      * Utility method to copy the headers from one message to another.
      * Subclasses can use this method to easily copy the message headers and
      * properties for bridged messages.
-     * 
+     *
      * @param fromMessage
      *            The incoming message
      * @param toMessage
@@ -225,7 +225,7 @@ public abstract class AbstractBridge implements MessageListener
      * Transform a message into another message. Subclasses should override this
      * method to change the argument message format into the returned message
      * format.
-     * 
+     *
      * @param message
      *            The message as it comes from the source session (and queue).
      * @return Message The corresponding message to be put on the destination
@@ -248,7 +248,7 @@ public abstract class AbstractBridge implements MessageListener
             // System.out.println ( "Bridge.onMessage called!");
             if ( message == null ) {
                 // shutdown notification
-                if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( "Stopping JMS Bridge" );
+                if ( LOGGER.isInfoEnabled() ) Configuration.logInfo ( "Stopping JMS Bridge" );
                 // System.out.println ( "Stopping JMS bridge");
                 getDestination ().stop ();
             } else {
@@ -264,8 +264,8 @@ public abstract class AbstractBridge implements MessageListener
             }
         } catch ( JMSException e ) {
             // e.printStackTrace();
-            if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( "Bridge: error during message processing", e );
-            if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( "Bridge: linked exception is " + e.getLinkedException() );
+            if ( LOGGER.isInfoEnabled() ) Configuration.logInfo ( "Bridge: error during message processing", e );
+            if ( LOGGER.isInfoEnabled() ) Configuration.logInfo ( "Bridge: linked exception is " + e.getLinkedException() );
             Stack errors = new Stack ();
             errors.push ( e );
             // throw runtime to rollback

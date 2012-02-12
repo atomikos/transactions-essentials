@@ -323,7 +323,7 @@ Referenceable, Serializable {
 	 */
 	public synchronized void init() throws JMSException
 	{
-		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": init..." );
+		if ( LOGGER.isInfoEnabled() ) Configuration.logInfo ( this + ": init..." );
 		if (connectionPool != null)
 			return;
 
@@ -379,7 +379,7 @@ Referenceable, Serializable {
 		}
 
 
-		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo(
+		if ( LOGGER.isInfoEnabled() ) Configuration.logInfo(
 				this + ": initializing with [" +
 				" xaConnectionFactory=" + xaConnectionFactory + "," +
 				" xaConnectionFactoryClassName=" + xaConnectionFactoryClassName + "," +
@@ -546,7 +546,7 @@ Referenceable, Serializable {
 	 */
 	public synchronized void close()
 	{
-		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": close..." );
+		if ( LOGGER.isInfoEnabled() ) Configuration.logInfo ( this + ": close..." );
 		if ( connectionPool != null ) {
 			connectionPool.destroy();
 			connectionPool = null;
@@ -585,7 +585,7 @@ Referenceable, Serializable {
 	 */
 	public javax.jms.Connection createConnection() throws JMSException
 	{
-		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": createConnection()..." );
+		if ( LOGGER.isInfoEnabled() ) Configuration.logInfo ( this + ": createConnection()..." );
 		Connection ret = null;
 		try {
 			init();
@@ -618,7 +618,7 @@ Referenceable, Serializable {
 	public Reference getReference() throws NamingException
 	{
 		Reference ret = null;
-		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": getReference()..." );
+		if ( LOGGER.isInfoEnabled() ) Configuration.logInfo ( this + ": getReference()..." );
 		ret = IntraVmObjectFactory.createReference ( this , getUniqueResourceName() );
 		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": getReference() returning " + ret );
 		return ret;

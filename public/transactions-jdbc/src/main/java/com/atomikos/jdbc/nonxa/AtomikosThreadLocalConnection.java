@@ -164,7 +164,7 @@ implements JtaAwareNonXaConnection
     {
 
         try {
-        	if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": resetting autoCommit to " + originalAutoCommitState );
+        	if ( LOGGER.isInfoEnabled() ) Configuration.logInfo ( this + ": resetting autoCommit to " + originalAutoCommitState );
         	//see case 24567
             wrapped.setAutoCommit ( originalAutoCommitState );
         }catch ( Exception ex ){
@@ -251,7 +251,7 @@ implements JtaAwareNonXaConnection
 		if ( methodName.equals ( "getInvocationHandler" ) ) return this;
 
 		if (methodName.equals("reap")) {
-			if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": reap()..." );
+			if ( LOGGER.isInfoEnabled() ) Configuration.logInfo ( this + ": reap()..." );
 			reap();
 			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": reap done." );
 			return null;
@@ -263,7 +263,7 @@ implements JtaAwareNonXaConnection
 			return m.invoke( this , args);
 		}
 		else if (methodName.equals("isClosed")) {
-			if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": isClosed()..." );
+			if ( LOGGER.isInfoEnabled() ) Configuration.logInfo ( this + ": isClosed()..." );
 			Object ret = Boolean.valueOf ( isStale() );
 			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": isClosed() returning " + ret );
 			return ret;
@@ -282,7 +282,7 @@ implements JtaAwareNonXaConnection
 	        	AtomikosSQLException.throwAtomikosSQLException("Cannot call 'setAutoCommit(true)' while a global transaction is running");
 	        }
 	        if (methodName.equals("getAutoCommit")) {
-	        	if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": getAutoCommit()..." );
+	        	if ( LOGGER.isInfoEnabled() ) Configuration.logInfo ( this + ": getAutoCommit()..." );
 	        	Object ret = Boolean.FALSE;
 	        	if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": getAutoCommit() returning false." );
 	        	return ret;
@@ -310,14 +310,14 @@ implements JtaAwareNonXaConnection
 
         // check for delistment
         if (CLOSE_METHODS.contains(methodName)) {
-        	if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": close..." );
+        	if ( LOGGER.isInfoEnabled() ) Configuration.logInfo ( this + ": close..." );
 			decUseCount();
 			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": close done." );
 			return null;
 		}
 		else {
 			try {
-				if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": calling " + methodName + " on vendor connection..." );
+				if ( LOGGER.isInfoEnabled() ) Configuration.logInfo ( this + ": calling " + methodName + " on vendor connection..." );
 				ret =  m.invoke ( wrapped , args);
 
 			} catch (Exception ex) {
@@ -400,15 +400,15 @@ implements JtaAwareNonXaConnection
 		// delegate commit or rollback to the underlying connection
         try {
             if ( commit ) {
-                if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": committing on connection...");
+                if ( LOGGER.isInfoEnabled() ) Configuration.logInfo ( this + ": committing on connection...");
                 wrapped.commit ();
 
             } else {
             	// see case 84252
             	forceCloseAllPendingStatements ( false );
- 				if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": transaction aborting - " +
+ 				if ( LOGGER.isInfoEnabled() ) Configuration.logInfo ( this + ": transaction aborting - " +
  						"pessimistically closing all pending statements to avoid autoCommit after timeout" );
-            	if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": rolling back on connection...");
+            	if ( LOGGER.isInfoEnabled() ) Configuration.logInfo ( this + ": rolling back on connection...");
                 wrapped.rollback ();
 
             }
