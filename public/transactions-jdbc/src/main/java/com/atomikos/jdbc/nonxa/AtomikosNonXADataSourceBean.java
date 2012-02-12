@@ -218,7 +218,7 @@ public class AtomikosNonXADataSourceBean extends AbstractDataSourceBean
 
         previous.incUseCount();
         previous.addHeuristicMessage ( hmsg );
-        if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": returning " + proxy );
+        if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": returning " + proxy );
 		return proxy;
 	}
 

@@ -329,7 +329,7 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
         } catch ( IllegalStateException alreadyTerminated ) {
             //happens in rollback after timeout - see case 27857
         	//ignore but log
-        	if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( "Error during setRollbackOnly" , alreadyTerminated );
+        	if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Error during setRollbackOnly" , alreadyTerminated );
         }
         synchronized ( this ) {
         	ct_.localSetTransactionStateHandler ( new TxRollbackOnlyStateHandler ( ct_,

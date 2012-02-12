@@ -62,7 +62,7 @@ public class TaskManager
 	public static synchronized final TaskManager getInstance()
 	{
 		if ( singleton == null ) {
-			if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( "TaskManager: initializing..." );
+			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "TaskManager: initializing..." );
 			singleton = new TaskManager();
 		}
 		return singleton;
@@ -100,7 +100,7 @@ public class TaskManager
 			Configuration.logWarning("Failed to create system executor; Received message: " + e.getMessage() + "; Failling back to a trivial executor.", e);
 			executor = new TrivialSystemExecutor();
 		}
-		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( "THREADS: using executor " + executor.getClass());
+		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "THREADS: using executor " + executor.getClass());
 	}
 
 	/**

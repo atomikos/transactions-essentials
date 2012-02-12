@@ -161,7 +161,7 @@ extends MessageProducerSession
 			try {
 				ret = q.getQueueName();
 			} catch ( JMSException e ) {
-				if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( "QueueSenderSession: error retrieving queue name" , e );
+				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "QueueSenderSession: error retrieving queue name" , e );
 			}
 		}
 		return ret;
@@ -175,7 +175,7 @@ extends MessageProducerSession
 			try {
 				ret = q.getQueueName();
 			} catch ( JMSException e ) {
-				if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( "QueueSenderSession: error retrieving queue name" , e );
+				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "QueueSenderSession: error retrieving queue name" , e );
 			}
 		}
 		return ret;

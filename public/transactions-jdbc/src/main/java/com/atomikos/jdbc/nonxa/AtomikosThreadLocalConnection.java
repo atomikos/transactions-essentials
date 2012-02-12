@@ -253,7 +253,7 @@ implements JtaAwareNonXaConnection
 		if (methodName.equals("reap")) {
 			if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": reap()..." );
 			reap();
-			if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": reap done." );
+			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": reap done." );
 			return null;
 		}
 		else if ( methodName.equals ("isNoLongerInUse") ) {
@@ -265,7 +265,7 @@ implements JtaAwareNonXaConnection
 		else if (methodName.equals("isClosed")) {
 			if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": isClosed()..." );
 			Object ret = Boolean.valueOf ( isStale() );
-			if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": isClosed() returning " + ret );
+			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": isClosed() returning " + ret );
 			return ret;
 		}
         // detect illegal use after connection was resubmitted to the pool
@@ -284,7 +284,7 @@ implements JtaAwareNonXaConnection
 	        if (methodName.equals("getAutoCommit")) {
 	        	if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": getAutoCommit()..." );
 	        	Object ret = Boolean.FALSE;
-	        	if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": getAutoCommit() returning false." );
+	        	if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": getAutoCommit() returning false." );
 	        	return ret;
 	        }
 
@@ -312,7 +312,7 @@ implements JtaAwareNonXaConnection
         if (CLOSE_METHODS.contains(methodName)) {
         	if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": close..." );
 			decUseCount();
-			if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": close done." );
+			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": close done." );
 			return null;
 		}
 		else {
@@ -325,7 +325,7 @@ implements JtaAwareNonXaConnection
 				JdbcConnectionProxyHelper.convertProxyError ( ex , "Error delegating '" + methodName + "' call" );
 			}
 		}
-        if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": " + methodName + " returning " + ret );
+        if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": " + methodName + " returning " + ret );
         if ( ret instanceof Statement ) {
         	Statement s = ( Statement ) ret;
         	addStatement ( s );
@@ -378,7 +378,7 @@ implements JtaAwareNonXaConnection
             setStale();
             pooledConnection.fireOnXPooledConnectionTerminated();
         } else {
-            if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( "ThreadLocalConnection: not reusable yet" );
+            if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "ThreadLocalConnection: not reusable yet" );
         }
 
     }

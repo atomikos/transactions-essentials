@@ -269,7 +269,7 @@ public abstract class MessageConsumerSession
 	    msg.append ( "exceptionListener=" ).append ( getExceptionListener() ).append ( ", " );
 	    msg.append ( "connectionFactory=" ).append ( getAbstractConnectionFactoryBean() );
 	    msg.append ( "]" );
-	    if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( msg.toString() );
+	    if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( msg.toString() );
 
 	}
 
@@ -281,7 +281,7 @@ public abstract class MessageConsumerSession
 	        //FIXED 10082
 	        current.setDaemon ( daemonThreads );
 	        current.start ();
-	        if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( "MessageConsumerSession: started new thread: " + current );
+	        if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "MessageConsumerSession: started new thread: " + current );
 		    }
 		    //if not active: ignore
 	}
@@ -401,7 +401,7 @@ public abstract class MessageConsumerSession
 
 	            while ( Thread.currentThread () == current ) {
 
-	            	   if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( "MessageConsumerSession: JMS listener thread iterating..." );
+	            	   if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "MessageConsumerSession: JMS listener thread iterating..." );
 	                boolean refresh = false;
 	                boolean commit = true;
 	                try {

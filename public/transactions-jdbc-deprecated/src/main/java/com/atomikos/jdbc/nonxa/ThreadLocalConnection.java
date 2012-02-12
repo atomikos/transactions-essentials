@@ -241,7 +241,7 @@ class ThreadLocalConnection implements InvocationHandler
             setStale ( true );
             pooledConnection.notifyCloseListeners ();
         } else {
-            if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( "ThreadLocalConnection: not reusable yet" );
+            if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "ThreadLocalConnection: not reusable yet" );
         }
 
     }
@@ -291,7 +291,7 @@ class ThreadLocalConnection implements InvocationHandler
             throws Throwable
     {
         if (NON_TRANSACTIONAL_METHOD_NAMES.contains(m.getName())) {
-        	if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ("Calling non-transactional method '" + m.getName() + "' on ThreadLocal connection, bypassing enlistment");
+        	if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ("Calling non-transactional method '" + m.getName() + "' on ThreadLocal connection, bypassing enlistment");
         	return m.invoke ( wrapped, args );
         }
 
@@ -320,7 +320,7 @@ class ThreadLocalConnection implements InvocationHandler
             // delegate to the underlying JDBC connection
             try {
                 // System.out.println ( "Proxy: calling method" );
-            	   if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( "ThreadLocalConnection: delegating method " + m +
+            	   if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "ThreadLocalConnection: delegating method " + m +
             			   " to wrapped connection with args: " + args );
                 result = m.invoke ( wrapped, args );
 

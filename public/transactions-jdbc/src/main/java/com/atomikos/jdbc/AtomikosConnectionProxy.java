@@ -104,13 +104,13 @@ class AtomikosConnectionProxy extends AbstractConnectionProxy
 
 			//Configuration.logDebug("{} : reaping pending connection..", this);
 			reap();
-			if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": reap done!" );
+			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": reap done!" );
 			return null;
 		}
 		if (methodName.equals("isClosed")) {
 			if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": isClosed()..." );
 			Object ret = Boolean.valueOf(closed);
-			if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": isClosed() returning " + ret );
+			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": isClosed() returning " + ret );
 			return ret;
 		}
 
@@ -169,7 +169,7 @@ class AtomikosConnectionProxy extends AbstractConnectionProxy
 				JdbcConnectionProxyHelper.convertProxyError ( ex , "Error delegating '" + methodName + "' call" );
 			}
 		}
-        if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": " + methodName + " returning " + ret );
+        if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": " + methodName + " returning " + ret );
         if ( ret instanceof Statement ) {
         	//keep statement for closing upon timeout/close
         	//see bug 29708
@@ -212,7 +212,7 @@ class AtomikosConnectionProxy extends AbstractConnectionProxy
 				sessionHandleState.notifyBeforeUse ( ct , hmsg );
 				if (ct != null && ct.getProperty ( TransactionManagerImp.JTA_PROPERTY_NAME ) != null ) {
 					ret = true;
-					if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": detected transaction " + ct );
+					if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": detected transaction " + ct );
 					if ( ct.getState().equals(TxState.ACTIVE) ) ct.registerSynchronization(new JdbcRequeueSynchronization( this , ct ));
 					else AtomikosSQLException.throwAtomikosSQLException("The transaction has timed out - try increasing the timeout if needed");
 				}
@@ -229,7 +229,7 @@ class AtomikosConnectionProxy extends AbstractConnectionProxy
 		forceCloseAllPendingStatements ( false );
 		closed = true;
 		sessionHandleState.notifySessionClosed();
-		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": closed." );
+		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": closed." );
 	}
 
 	private boolean isEnlistedInGlobalTransaction()

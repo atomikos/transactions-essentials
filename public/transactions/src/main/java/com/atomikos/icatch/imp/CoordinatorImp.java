@@ -309,7 +309,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
         	//null on recovery
         	switch ( level ) {
         		case Console.DEBUG:
-        			if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( msg );
+        			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( msg );
         			break;
         		case Console.INFO:
         			if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( msg );
@@ -523,7 +523,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 
     void setState ( Object state ) throws IllegalStateException
     {
-        if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( "Coordinator " + getCoordinatorId ()
+        if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Coordinator " + getCoordinatorId ()
                 + " entering state: " + state.toString () );
         fsm_.setState ( state );
  //       printMsg ( "Coordinator " + getCoordinatorId () + " entered state: "
@@ -737,7 +737,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     public boolean recover () throws SysException
     {
 
-    	 if ( LOGGER.isDebugEnabled() ) Configuration.logDebug (  "starting recover() for coordinator: " + getCoordinatorId () );
+    	 if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug (  "starting recover() for coordinator: " + getCoordinatorId () );
      //   printMsg ( "starting recover() for coordinator: " + getCoordinatorId (),
      //           Console.DEBUG );
         boolean allOK = true;
@@ -753,7 +753,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 				boolean recoveredParticipant = false;
 				try {
 					recoveredParticipant = next.recover();
-					 if ( LOGGER.isDebugEnabled() ) Configuration.logDebug (  "coordinator: " + getCoordinatorId()
+					 if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug (  "coordinator: " + getCoordinatorId()
 								+ "recovered participant: " + next );
 		//			printMsg("coordinator: " + getCoordinatorId()
 		//					+ "recovered participant: " + next, Console.DEBUG);
@@ -780,7 +780,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
         startThreads ( DEFAULT_TIMEOUT, console_ );
 
 
-        if ( LOGGER.isDebugEnabled() ) Configuration.logDebug (   "recover() done for coordinator: " + getCoordinatorId () );
+        if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug (   "recover() done for coordinator: " + getCoordinatorId () );
       //  printMsg ( "recover() done for coordinator: " + getCoordinatorId (),
       //          Console.DEBUG );
 
@@ -839,13 +839,13 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
         	ret = stateHandler_.prepare ();
         	if ( ret == Participant.READ_ONLY ) {
 
-        		 if ( LOGGER.isDebugEnabled() ) Configuration.logDebug (  "prepare() of Coordinator  " + getCoordinatorId ()
+        		 if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug (  "prepare() of Coordinator  " + getCoordinatorId ()
          				+ " returning READONLY" );
         	//	printMsg ( "prepare() of Coordinator  " + getCoordinatorId ()
         	//			+ " returning READONLY", Console.DEBUG );
         	} else {
 
-        		 if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( "prepare() of Coordinator  " + getCoordinatorId ()
+        		 if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "prepare() of Coordinator  " + getCoordinatorId ()
          				+ " returning YES vote");
  //       		printMsg ( "prepare() of Coordinator  " + getCoordinatorId ()
  //       				+ " returning YES vote", Console.DEBUG );
@@ -1126,15 +1126,15 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
         // System.err.println ( "Stopping timer..." );
     	synchronized ( fsm_ ) {
     		if ( timer_ != null ) {
-    			if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( "Coordinator " + getCoordinatorId ()
+    			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Coordinator " + getCoordinatorId ()
     					+ " : stopping timer..." );
     			timer_.stop ();
     		}
-    		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( "Coordinator " + getCoordinatorId ()
+    		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Coordinator " + getCoordinatorId ()
     				+ " : disposing statehandler " + stateHandler_.getState ()
     				+ "..." );
     		stateHandler_.dispose ();
-    		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( "Coordinator " + getCoordinatorId ()
+    		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Coordinator " + getCoordinatorId ()
     				+ " : disposed." );
     	}
     }

@@ -135,7 +135,7 @@ public class TopicSubscriberSession extends MessageConsumerSession
 			try {
 				ret = topic.getTopicName();
 			} catch ( JMSException e ) {
-				if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( "TopicSubscriberSession: error retrieving topic name" , e );
+				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "TopicSubscriberSession: error retrieving topic name" , e );
 			}
 		}
 		return ret;

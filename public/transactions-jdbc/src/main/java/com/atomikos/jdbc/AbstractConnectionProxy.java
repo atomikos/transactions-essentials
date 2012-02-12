@@ -42,22 +42,22 @@ import com.atomikos.util.DynamicProxy;
  *
  */
 
-public abstract class AbstractConnectionProxy 
+public abstract class AbstractConnectionProxy
 implements InvocationHandler
 {
 	/**
 	 * Logger for this class
 	 */
-	private static final Logger logger = LoggerFactory.createLogger(AbstractConnectionProxy.class);
-	
+	private static final Logger LOGGER = LoggerFactory.createLogger(AbstractConnectionProxy.class);
+
 	private List statements = new ArrayList();
 
 	protected synchronized void addStatement ( Statement s )
 	{
 		statements.add ( s );
 	}
-	
-	protected synchronized void forceCloseAllPendingStatements ( boolean warn ) 
+
+	protected synchronized void forceCloseAllPendingStatements ( boolean warn )
 	{
 		Iterator it = statements.iterator();
 		while ( it.hasNext() ) {
@@ -65,7 +65,7 @@ implements InvocationHandler
 			try {
 				String msg = "Forcing close of pending statement: " + s;
 				if ( warn ) Configuration.logWarning ( msg );
-				else Configuration.logDebug ( msg );
+				else LOGGER.logDebug ( msg );
 				s.close();
 			} catch ( Exception e ) {
 				//ignore but log

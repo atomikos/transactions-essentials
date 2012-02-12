@@ -163,7 +163,7 @@ class DefaultJtaSession implements Session
 
 	public void close() throws JMSException
 	{
-	    if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( "Closing JMS session..." );
+	    if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Closing JMS session..." );
 	    session_.close ();
 	    if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( "Closed JMS session" );
 	}

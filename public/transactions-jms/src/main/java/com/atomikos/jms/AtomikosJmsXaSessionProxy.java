@@ -190,7 +190,7 @@ class AtomikosJmsXaSessionProxy extends AbstractJmsSessionProxy implements Sessi
 					}
 					producerConsumerProxy = new AtomikosJmsTopicSubscriberProxy ( vendorSubscriber , state );
 				}
-				if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": " + methodName + " returning " + producerConsumerProxy );
+				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": " + methodName + " returning " + producerConsumerProxy );
 				return producerConsumerProxy;
 
 			}
@@ -198,7 +198,7 @@ class AtomikosJmsXaSessionProxy extends AbstractJmsSessionProxy implements Sessi
 			try {
 				if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": calling " + methodName + " on JMS driver session..." );
 				Object ret = method.invoke(delegate, args);
-				if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": " + methodName + " returning " + ret );
+				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": " + methodName + " returning " + ret );
 				return ret;
 			}  catch (Exception ex) {
 				String msg =  "Error delegating call to " + methodName + " on JMS driver";
@@ -217,7 +217,7 @@ class AtomikosJmsXaSessionProxy extends AbstractJmsSessionProxy implements Sessi
 	protected void destroy ( boolean closeXaSession ) {
 			if ( closeXaSession ) {
 				//see case 71079: don't close vendor session if transaction is not done yet
-				if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": closing underlying vendor session " + this );
+				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": closing underlying vendor session " + this );
 				try {
 					delegate.close();
 				} catch  ( JMSException e ) {

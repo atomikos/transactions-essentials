@@ -117,7 +117,7 @@ abstract class ConsumerProducerSupport
 	}
 
 	private void registerSynchronization ( CompositeTransaction ct ) throws AtomikosJMSException {
-		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": detected transaction " + ct );
+		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": detected transaction " + ct );
 		ct.registerSynchronization ( new JmsRequeueSynchronization( ct ) );
 	}
 

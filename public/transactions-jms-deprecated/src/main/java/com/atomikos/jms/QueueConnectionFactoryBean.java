@@ -158,7 +158,7 @@ implements QueueConnectionFactory,
             msg.append ( "resourceName=" ).append(resourceName_).append (", ");
             msg.append ( "xaFactoryJndiName=" ).append( xaFactoryJndiName_ );
             msg.append ( "]" );
-            if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( msg.toString() );
+            if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( msg.toString() );
 
             Configuration.logWarning ( "WARNING: class " + getClass().getName() + " is deprecated!" );
         }

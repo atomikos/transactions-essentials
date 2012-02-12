@@ -166,7 +166,7 @@ public abstract class MessageProducerSession
 	    msg.append ( "destination=" ).append( getDestinationName() ).append ( ", " );
 	    msg.append ( "replyToDestination=" ).append ( getReplyToDestinationName() );
 	    msg.append ( "]" );
-	    if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( msg.toString() );
+	    if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( msg.toString() );
 	}
 
 	/**
@@ -264,7 +264,7 @@ public abstract class MessageProducerSession
 	                + deliveryMode + " , " + priority + " , " + timeToLive
 	                + " )..." );
 	        sender.send ( message, deliveryMode, priority, timeToLive );
-	        if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( "Send done!" );
+	        if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Send done!" );
 
 	    } catch ( JMSException e ) {
 	        closeResources ();

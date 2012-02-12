@@ -130,7 +130,7 @@ class ConnectionProxy implements InvocationHandler
             throws Throwable
     {
         if (NON_TRANSACTIONAL_METHOD_NAMES.contains(m.getName())) {
-        	if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ("Calling non-transactional method '" + m.getName() + "' on connection proxy, bypassing enlistment");
+        	if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ("Calling non-transactional method '" + m.getName() + "' on connection proxy, bypassing enlistment");
         	return m.invoke ( wrapped_, args );
         }
 
@@ -179,7 +179,7 @@ class ConnectionProxy implements InvocationHandler
         }
 
         try {
-            if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( "JDBC ConnectionProxy: delegating "
+            if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "JDBC ConnectionProxy: delegating "
                     + m.getName () + " to connection " + wrapped_.toString () );
 //            if ("close".equals(m.getName())) {
 //
@@ -188,7 +188,7 @@ class ConnectionProxy implements InvocationHandler
         } catch ( InvocationTargetException i ) {
             pc_.setInvalidated ();
             pc_.close ();
-            if ( LOGGER.isDebugEnabled() ) Configuration.logDebug (
+            if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug (
                     "Exception in pooled connection - closing it", i );
             AtomikosSQLException.throwAtomikosSQLException ( i.getMessage() , i );
         } catch ( Exception e ) {

@@ -86,7 +86,7 @@ public class AtomikosXAPooledConnection extends AbstractXPooledConnection
 
 	public void destroy()
 	{
-		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": destroying connection..." );
+		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": destroying connection..." );
 		if (connection != null) {
 			try {
 					connection.close();
@@ -112,7 +112,7 @@ public class AtomikosXAPooledConnection extends AbstractXPooledConnection
 
 	protected Reapable doCreateConnectionProxy ( HeuristicMessage hmsg ) throws CreateConnectionException
 	{
-		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": creating connection proxy..." );
+		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": creating connection proxy..." );
 		JdbcConnectionProxyHelper.setIsolationLevel ( connection , getDefaultIsolationLevel() );
 		return AtomikosConnectionProxy.newInstance ( connection , sessionHandleState , hmsg );
 	}
@@ -121,7 +121,7 @@ public class AtomikosXAPooledConnection extends AbstractXPooledConnection
 		if ( isErroneous() ) throw new CreateConnectionException ( this + ": connection is erroneous" );
 		String testQuery = getTestQuery();
 		if (testQuery != null) {
-			if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": testing connection with query [" + testQuery + "]" );
+			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": testing connection with query [" + testQuery + "]" );
 			Statement stmt = null;
 			try {
 				stmt = connection.createStatement();
@@ -132,10 +132,10 @@ public class AtomikosXAPooledConnection extends AbstractXPooledConnection
 				//catch any Exception - cf case 22198
 				throw new CreateConnectionException ( "Error executing testQuery" ,  e );
 			}
-			if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": connection tested OK" );
+			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": connection tested OK" );
 		}
 		else {
-			if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": no test query, skipping test" );
+			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": no test query, skipping test" );
 		}
 	}
 

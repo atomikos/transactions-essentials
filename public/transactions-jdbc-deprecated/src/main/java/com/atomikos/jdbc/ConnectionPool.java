@@ -177,7 +177,7 @@ public class ConnectionPool implements Runnable
 	        }
         }
 
-        if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( "JDBC ConnectionPool: using connection: "
+        if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "JDBC ConnectionPool: using connection: "
                 + retVal );
         return retVal;
     }
@@ -201,13 +201,13 @@ public class ConnectionPool implements Runnable
     public synchronized void putBack ( XPooledConnection conn )
     {
         if ( !conn.getInvalidated () && getSize () < maxSize_ ) {
-            if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( "Putting connection back in pool: "
+            if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Putting connection back in pool: "
                     + conn.toString () );
             putInPool ( conn );
         } else {
 
             try {
-                if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( "Pool: closing connection: "
+                if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Pool: closing connection: "
                         + conn.toString () );
                 conn.close ();
                 // closes underlying connection
@@ -254,7 +254,7 @@ public class ConnectionPool implements Runnable
                     try {
                         if ( !pc.getInvalidated () ) {
                         	   test ( pc , true );
-                        	   if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( "ConnectionPool: connection is fine, keeping it in pool: " + pc);
+                        	   if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "ConnectionPool: connection is fine, keeping it in pool: " + pc);
                             // here we are if connection still OK
                             putInPool ( pc );
 
@@ -305,11 +305,11 @@ public class ConnectionPool implements Runnable
     		try {
 				connection = pc.getConnection();
 				if ( testQuery_ == null || "".equals ( testQuery_ ) ) {
-					if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( "ConnectionPool: no query to test connection, trying getMetaData(): " + connection );
+					if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "ConnectionPool: no query to test connection, trying getMetaData(): " + connection );
 					connection.getMetaData();
 					return;
 				}
-				if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( "ConnectionPool: trying query '" + testQuery_ + "' on connection " + connection );
+				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "ConnectionPool: trying query '" + testQuery_ + "' on connection " + connection );
 				Statement stmt = connection.createStatement();
 				ResultSet rs = stmt.executeQuery ( testQuery_ );
 				rs.close();

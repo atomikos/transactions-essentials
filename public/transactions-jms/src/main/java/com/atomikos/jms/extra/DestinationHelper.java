@@ -63,13 +63,13 @@ class DestinationHelper
 		try {
 			destination = session.createQueue  ( destinationName );
 		} catch ( Exception failed ) {
-			if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( "Failed to find queue with name: " + destinationName , failed );
+			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Failed to find queue with name: " + destinationName , failed );
 		}
 		if ( destination == null ) {
 			try {
 				destination = session.createTopic  ( destinationName );
 			} catch ( Exception failed ) {
-				if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( "Failed to find topic with name: " + destinationName , failed );
+				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Failed to find topic with name: " + destinationName , failed );
 			}
 		}
 		if ( destination == null ) {
