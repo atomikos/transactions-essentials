@@ -323,7 +323,7 @@ Referenceable, Serializable {
 	 */
 	public synchronized void init() throws JMSException
 	{
-		if ( LOGGER.isInfoEnabled() ) Configuration.logInfo ( this + ": init..." );
+		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": init..." );
 		if (connectionPool != null)
 			return;
 
@@ -546,7 +546,7 @@ Referenceable, Serializable {
 	 */
 	public synchronized void close()
 	{
-		if ( LOGGER.isInfoEnabled() ) Configuration.logInfo ( this + ": close..." );
+		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": close..." );
 		if ( connectionPool != null ) {
 			connectionPool.destroy();
 			connectionPool = null;
@@ -585,7 +585,7 @@ Referenceable, Serializable {
 	 */
 	public javax.jms.Connection createConnection() throws JMSException
 	{
-		if ( LOGGER.isInfoEnabled() ) Configuration.logInfo ( this + ": createConnection()..." );
+		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": createConnection()..." );
 		Connection ret = null;
 		try {
 			init();
@@ -607,7 +607,7 @@ Referenceable, Serializable {
 
 	public javax.jms.Connection createConnection ( String user, String password ) throws JMSException
 	{
-		Configuration.logWarning ( this + ": createConnection ( user , password ) ignores authentication - returning default connection" );
+		LOGGER.logWarning ( this + ": createConnection ( user , password ) ignores authentication - returning default connection" );
 		return createConnection();
 	}
 
@@ -618,7 +618,7 @@ Referenceable, Serializable {
 	public Reference getReference() throws NamingException
 	{
 		Reference ret = null;
-		if ( LOGGER.isInfoEnabled() ) Configuration.logInfo ( this + ": getReference()..." );
+		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": getReference()..." );
 		ret = IntraVmObjectFactory.createReference ( this , getUniqueResourceName() );
 		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": getReference() returning " + ret );
 		return ret;

@@ -39,8 +39,8 @@ import com.atomikos.icatch.system.Configuration;
 /**
  * This is a <b>long-lived</b> JMS sender session, representing a
  * self-refreshing JMS session that can be used to send JMS messages in a
- * transacted way (a JTA transaction context is required). 
- * 
+ * transacted way (a JTA transaction context is required).
+ *
  * The client code does not have to worry about refreshing or
  * closing JMS objects explicitly: this is all handled in this class. All the
  * client needs to do is indicate when it wants to start or stop using the
@@ -52,7 +52,7 @@ import com.atomikos.icatch.system.Configuration;
  * <b>Important: if you change any properties AFTER sending on the session, then
  * you will need to explicitly stop and restart the session to have the changes
  * take effect!</b>
- * 
+ *
  *
  */
 
@@ -62,35 +62,35 @@ public class ConcurrentJmsSenderTemplate extends AbstractJmsSenderTemplate
 	/**
 	 * Logger for this class
 	 */
-	private static final Logger logger = LoggerFactory.createLogger(ConcurrentJmsSenderTemplate.class);
+	private static final Logger LOGGER = LoggerFactory.createLogger(ConcurrentJmsSenderTemplate.class);
 
 	public ConcurrentJmsSenderTemplate()
 	{
 		 super();
 	}
-	
-	
-	
-	protected Session getOrRefreshSession ( Connection c ) throws JMSException 
+
+
+
+	protected Session getOrRefreshSession ( Connection c ) throws JMSException
 	{
-		
+
 		Session ret = null;
 		ret = c.createSession ( true , 0 );
 		return ret;
 	}
-	
 
-	
-	public String toString() 
+
+
+	public String toString()
 	{
 		return "AbstractJmsSenderTemplate";
 	}
 
 
-	protected void afterUseWithoutErrors ( Session session ) throws JMSException 
+	protected void afterUseWithoutErrors ( Session session ) throws JMSException
 	{
 		//close session
-		session.close();	
+		session.close();
 	}
 
 
@@ -99,26 +99,26 @@ public class ConcurrentJmsSenderTemplate extends AbstractJmsSenderTemplate
 			throws JMSException {
 		//close anyway - let pooling do its work!
 		afterUseWithoutErrors ( c , s );
-		
+
 	}
 
 
 
 	protected void afterUseWithoutErrors ( Connection c , Session s)
 			throws JMSException {
-		
+
 		try {
 			if ( s != null ) s.close();
 		} catch ( JMSException warn ) {
-			Configuration.logWarning ( this + ": error closing session" , warn);
+			LOGGER.logWarning ( this + ": error closing session" , warn);
 		}
-		
+
 		try {
 			if ( c != null ) c.close();
 		} catch ( JMSException warn ) {
-			Configuration.logWarning ( this + ": error closing connection" , warn);
+			LOGGER.logWarning ( this + ": error closing connection" , warn);
 		}
-		
+
 	}
 
 
@@ -131,7 +131,7 @@ public class ConcurrentJmsSenderTemplate extends AbstractJmsSenderTemplate
 
 
 
-	
-	
+
+
 
 }

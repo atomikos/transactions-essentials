@@ -152,12 +152,12 @@ class ActiveStateHandler extends CoordinatorStateHandler
         	} catch ( RuntimeException error ) {
         		//See case 23334
         		String msg = "Error in preparing: " + error.getMessage() + " - rolling back instead";
-        		Configuration.logWarning ( msg , error );
+        		LOGGER.logWarning ( msg , error );
         		try {
 					super.rollback ( getCoordinator().isRecoverableWhileActive().booleanValue() , false );
 					throw new RollbackException ( msg );
         		} catch ( HeurCommitException e ) {
-					Configuration.logWarning ( "Illegal heuristic commit during rollback before prepare:" + e );
+					LOGGER.logWarning ( "Illegal heuristic commit during rollback before prepare:" + e );
 					throw new HeurMixedException ( e.getHeuristicMessages() );
 				}
         	}

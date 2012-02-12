@@ -313,7 +313,7 @@ public abstract class AbstractJmsSenderTemplate
 			"Please correct your code to do one of the following: " + "\n" +
 			"1. start a JTA transaction before sending any message, or" + "\n" +
 			"2. increase the maxPoolSize of the AtomikosConnectionFactoryBean to avoid transaction timeout while waiting for a connection.";
-	    	Configuration.logWarning ( msg );
+	    	LOGGER.logWarning ( msg );
 	    	AtomikosTransactionRequiredJMSException.throwAtomikosTransactionRequiredJMSException ( msg );
 
 	    } catch ( JMSException e ) {
@@ -458,7 +458,7 @@ public abstract class AbstractJmsSenderTemplate
 			Session s = getOrRefreshSession(c);
 			destroy(c, s);
 		} catch (JMSException e) {
-			Configuration.logWarning ( this + ": error closing" , e );
+			LOGGER.logWarning ( this + ": error closing" , e );
 		}
 		connectionFactoryBean.close();
 	}

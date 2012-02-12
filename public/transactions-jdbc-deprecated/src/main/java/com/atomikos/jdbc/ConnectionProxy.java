@@ -193,7 +193,7 @@ class ConnectionProxy implements InvocationHandler
             AtomikosSQLException.throwAtomikosSQLException ( i.getMessage() , i );
         } catch ( Exception e ) {
             String msg = "Exception in pooled connection: unexpected error - closing it";
-            Configuration.logWarning ( msg, e );
+            LOGGER.logWarning ( msg, e );
             pc_.setInvalidated ();
             pc_.close ();
             AtomikosSQLException.throwAtomikosSQLException ( e.getMessage() , e );

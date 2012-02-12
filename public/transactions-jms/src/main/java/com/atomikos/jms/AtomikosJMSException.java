@@ -35,39 +35,39 @@ import com.atomikos.icatch.system.Configuration;
 
  /**
   * An extension of the standard JMSException with custom
-  * logic for error reporting. 
+  * logic for error reporting.
   */
 
 public class AtomikosJMSException extends JMSException {
 	/**
 	 * Logger for this class
 	 */
-	private static final Logger logger = LoggerFactory.createLogger(AtomikosJMSException.class);
-	
+	private static final Logger LOGGER = LoggerFactory.createLogger(AtomikosJMSException.class);
+
 
 	private static final long serialVersionUID = 1L;
-	
-	
-	
+
+
+
 	/**
 	 * Logs and throws and AtomikosJMSException.
 	 * @param msg The message to use.
-	 * @param cause The cause. 
+	 * @param cause The cause.
 	 * @throws AtomikosJMSException
 	 */
-	public static void throwAtomikosJMSException ( String msg , Throwable cause ) throws AtomikosJMSException 
+	public static void throwAtomikosJMSException ( String msg , Throwable cause ) throws AtomikosJMSException
 	{
-		Configuration.logWarning ( msg , cause );
+		LOGGER.logWarning ( msg , cause );
 		throw new AtomikosJMSException ( msg , cause );
 	}
-	
+
 	/**
 	 * Logs and throws an AtomikosJMSException.
 	 * @param msg The message to use.
 	 * @throws AtomikosJMSException
 	 */
-	
-	public static void throwAtomikosJMSException ( String msg ) throws AtomikosJMSException 
+
+	public static void throwAtomikosJMSException ( String msg ) throws AtomikosJMSException
 	{
 		throwAtomikosJMSException ( msg , null );
 	}
@@ -79,7 +79,7 @@ public class AtomikosJMSException extends JMSException {
 	AtomikosJMSException(String reason, Throwable t) {
 		super(reason);
 		initCause(t);
-		if ( t instanceof Exception ) 
+		if ( t instanceof Exception )
 			setLinkedException ( (Exception) t );
 	}
 

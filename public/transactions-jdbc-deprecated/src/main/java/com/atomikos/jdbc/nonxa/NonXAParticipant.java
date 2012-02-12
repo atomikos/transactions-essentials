@@ -44,17 +44,17 @@ import com.atomikos.icatch.SysException;
 import com.atomikos.icatch.system.Configuration;
 
 /**
- * 
- * 
- * 
+ *
+ *
+ *
  * A participant for non-XA interactions. Instances are NOT recoverable in the
  * sense that commit/rollback will fail after prepare. This is an implicit
  * limitation of non-XA transactions and we want this to be made explicit in the
  * transaction logs.
- * 
- * 
- * 
- * 
+ *
+ *
+ *
+ *
  */
 
 class NonXAParticipant implements Participant, Serializable
@@ -62,7 +62,7 @@ class NonXAParticipant implements Participant, Serializable
 	/**
 	 * Logger for this class
 	 */
-	private static final Logger logger = LoggerFactory.createLogger(NonXAParticipant.class);
+	private static final Logger LOGGER = LoggerFactory.createLogger(NonXAParticipant.class);
 
     private boolean recovered;
     // true iff recovered
@@ -115,7 +115,7 @@ class NonXAParticipant implements Participant, Serializable
 
     /*
      * $
-     * 
+     *
      * @see com.atomikos.icatch.Participant#prepare()
      */
     public int prepare () throws RollbackException, HeurHazardException,
@@ -139,7 +139,7 @@ class NonXAParticipant implements Participant, Serializable
         try {
             connection.transactionTerminated ( true );
         } catch ( Exception e ) {
-            Configuration.logWarning ( "Error in non-XA commit", e );
+            LOGGER.logWarning ( "Error in non-XA commit", e );
             throw new HeurHazardException ( getHeuristicMessages () );
         }
 
@@ -158,7 +158,7 @@ class NonXAParticipant implements Participant, Serializable
             try {
                 connection.transactionTerminated ( false );
             } catch ( Exception e ) {
-                Configuration.logWarning ( "Error in non-XA rollback", e );
+                LOGGER.logWarning ( "Error in non-XA rollback", e );
                 throw new HeurHazardException ( getHeuristicMessages () );
             }
         }

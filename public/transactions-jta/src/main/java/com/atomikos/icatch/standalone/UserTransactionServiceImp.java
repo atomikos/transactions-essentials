@@ -277,7 +277,7 @@ class UserTransactionServiceImp extends AbstractJtaUserTransactionService
 
         defaultTimeout = (int) defaultTimeoutInMillis/1000;
         if ( defaultTimeout <= 0 ) {
-        	Configuration.logWarning ( "WARNING: " + AbstractUserTransactionServiceFactory.DEFAULT_JTA_TIMEOUT_PROPERTY_NAME + " should be more than 1000 milliseconds - resetting to 10000 milliseconds instead..." );
+        	LOGGER.logWarning ( "WARNING: " + AbstractUserTransactionServiceFactory.DEFAULT_JTA_TIMEOUT_PROPERTY_NAME + " should be more than 1000 milliseconds - resetting to 10000 milliseconds instead..." );
         	defaultTimeout = 10;
         }
 

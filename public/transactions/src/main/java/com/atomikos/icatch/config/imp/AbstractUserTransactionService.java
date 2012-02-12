@@ -67,14 +67,14 @@ public abstract class AbstractUserTransactionService implements
 
 	private static void echoProperties ( Properties properties )
     {
-		if ( LOGGER.isInfoEnabled() ) Configuration.logInfo ( "USING core version: " + Configuration.getVersion() );
+		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( "USING core version: " + Configuration.getVersion() );
         if ( properties != null ) {
             Enumeration names = properties.propertyNames ();
             while ( names.hasMoreElements () ) {
                 String name = (String) names.nextElement ();
                 String value = properties.getProperty ( name );
                 //log as INFO - see case 24689
-                if ( LOGGER.isInfoEnabled() ) Configuration.logInfo ( "USING " + name + " = " + value );
+                if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( "USING " + name + " = " + value );
             }
         }
     }

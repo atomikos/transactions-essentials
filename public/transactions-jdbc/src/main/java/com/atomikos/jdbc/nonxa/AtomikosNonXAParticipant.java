@@ -44,17 +44,17 @@ import com.atomikos.icatch.SysException;
 import com.atomikos.icatch.system.Configuration;
 
 /**
- * 
- * 
- * 
+ *
+ *
+ *
  * A participant for non-XA interactions. Instances are NOT recoverable in the
  * sense that commit/rollback will fail after prepare. This is an implicit
  * limitation of non-XA transactions and we want this to be made explicit in the
  * transaction logs.
- * 
- * 
- * 
- * 
+ *
+ *
+ *
+ *
  */
 
 class AtomikosNonXAParticipant implements Participant, Serializable
@@ -62,9 +62,9 @@ class AtomikosNonXAParticipant implements Participant, Serializable
 	/**
 	 * Logger for this class
 	 */
-	private static final Logger logger = LoggerFactory.createLogger(AtomikosNonXAParticipant.class);
-    
-	
+	private static final Logger LOGGER = LoggerFactory.createLogger(AtomikosNonXAParticipant.class);
+
+
 
 	private static final long serialVersionUID = -771461092384746954L;
 
@@ -80,7 +80,7 @@ class AtomikosNonXAParticipant implements Participant, Serializable
     {
         heuristicMessages = new ArrayList ();
         this.connection = connection;
-        heuristicMessages.add ( new StringHeuristicMessage ( "Non-XA resource '" + name + 
+        heuristicMessages.add ( new StringHeuristicMessage ( "Non-XA resource '" + name +
                 "': warning: this resource does not support two-phase commit" ) );
     }
 
@@ -115,8 +115,8 @@ class AtomikosNonXAParticipant implements Participant, Serializable
     }
 
     /*
-     * 
-     * 
+     *
+     *
      * @see com.atomikos.icatch.Participant#prepare()
      */
     public int prepare () throws RollbackException, HeurHazardException,
@@ -143,19 +143,19 @@ class AtomikosNonXAParticipant implements Participant, Serializable
         	 try {
                  connection.transactionTerminated ( true );
              } catch ( Exception e ) {
-                 Configuration.logWarning ( "Error in non-XA commit", e );
+                 LOGGER.logWarning ( "Error in non-XA commit", e );
                  //see case 30752: don't throw HAZARD because retries are probably useless
                  //and the connection won't be reused by the pool but destroyed instead
                  throw new HeurMixedException ( getHeuristicMessages () );
              }
         }
-        
-       
+
+
 
         return getHeuristicMessages ();
     }
 
-    private boolean isRecovered() 
+    private boolean isRecovered()
     {
 		return connection == null;
 	}
@@ -172,7 +172,7 @@ class AtomikosNonXAParticipant implements Participant, Serializable
             try {
                 connection.transactionTerminated ( false );
             } catch ( Exception e ) {
-                Configuration.logWarning ( "Error in non-XA rollback", e );
+                LOGGER.logWarning ( "Error in non-XA rollback", e );
                 //see case 30752: don't throw HAZARD because retries are probably useless
                 //and the connection won't be reused by the pool but destroyed instead
                 throw new HeurMixedException ( getHeuristicMessages () );
@@ -213,7 +213,7 @@ class AtomikosNonXAParticipant implements Participant, Serializable
         heuristicMessages.add ( msg );
     }
 
-	public void setReadOnly ( boolean readOnly ) 
+	public void setReadOnly ( boolean readOnly )
 	{
 		this.readOnly = readOnly;
 	}

@@ -248,7 +248,7 @@ public abstract class AbstractBridge implements MessageListener
             // System.out.println ( "Bridge.onMessage called!");
             if ( message == null ) {
                 // shutdown notification
-                if ( LOGGER.isInfoEnabled() ) Configuration.logInfo ( "Stopping JMS Bridge" );
+                if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( "Stopping JMS Bridge" );
                 // System.out.println ( "Stopping JMS bridge");
                 getDestination ().stop ();
             } else {
@@ -264,8 +264,8 @@ public abstract class AbstractBridge implements MessageListener
             }
         } catch ( JMSException e ) {
             // e.printStackTrace();
-            if ( LOGGER.isInfoEnabled() ) Configuration.logInfo ( "Bridge: error during message processing", e );
-            if ( LOGGER.isInfoEnabled() ) Configuration.logInfo ( "Bridge: linked exception is " + e.getLinkedException() );
+            if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( "Bridge: error during message processing", e );
+            if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( "Bridge: linked exception is " + e.getLinkedException() );
             Stack errors = new Stack ();
             errors.push ( e );
             // throw runtime to rollback

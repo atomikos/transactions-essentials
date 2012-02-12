@@ -173,7 +173,7 @@ public class SessionHandleState
 			}
 			//check enlistment
 			if ( suspended != null ) {
-				if ( LOGGER.isInfoEnabled() ) Configuration.logInfo ( this + ": resuming suspended XA context for transaction " + ct.getTid() );
+				if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": resuming suspended XA context for transaction " + ct.getTid() );
 				currentContext = suspended;
 				currentContext.transactionResumed();
 			}
@@ -185,7 +185,7 @@ public class SessionHandleState
 				}
 				catch ( UnexpectedTransactionContextException txBoundaryPassed ) {
 					//we are being used in a different context than expected -> suspend!
-					if ( LOGGER.isInfoEnabled() ) Configuration.logInfo (  this + ": suspending existing XA context and creating a new one for transaction " + ct );
+					if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo (  this + ": suspending existing XA context and creating a new one for transaction " + ct );
 					currentContext.transactionSuspended();
 					currentContext = new TransactionContext ( resource , xaResource );
 					allContexts.add ( currentContext );
@@ -195,7 +195,7 @@ public class SessionHandleState
 						currentContext.checkEnlistBeforeUse ( ct , hmsg );
 					} catch ( UnexpectedTransactionContextException e )  {
 						String msg = "Unexpected error in session handle";
-						Configuration.logWarning ( msg , e );
+						LOGGER.logWarning ( msg , e );
 						throw new InvalidSessionHandleStateException ( msg );
 					}
 				}

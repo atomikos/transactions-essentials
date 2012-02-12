@@ -52,8 +52,8 @@ import com.atomikos.icatch.imp.ResumePreviousTransactionSubTxAwareParticipant;
 import com.atomikos.icatch.system.Configuration;
 
 /**
- * 
- * 
+ *
+ *
  * The JTA transaction manager implementation.
  */
 
@@ -64,12 +64,12 @@ public class TransactionManagerImp implements TransactionManager,
 	/**
 	 * Logger for this class
 	 */
-	private static final Logger logger = LoggerFactory.createLogger(TransactionManagerImp.class);
+	private static final Logger LOGGER = LoggerFactory.createLogger(TransactionManagerImp.class);
 
 	private static final long serialVersionUID = -3048879409985542685L;
 
 	/**
-     * Transaction property name to indicate that the transaction is a 
+     * Transaction property name to indicate that the transaction is a
      * JTA transaction. If this property is set to an arbitrary non-null
      * value then a JTA transaction is assumed by this class.
      * This property is used for detecting incompatible existing transactions:
@@ -115,8 +115,8 @@ public class TransactionManagerImp implements TransactionManager,
     private boolean automaticResourceRegistration_;
 
     // should uknown resources be added as a temporary resource?
-    
-    private static final void raiseNoTransaction() 
+
+    private static final void raiseNoTransaction()
     {
     		StringBuffer msg = new StringBuffer();
     		msg.append ( "This method needs a transaction for the calling thread and none exists.\n" );
@@ -127,13 +127,13 @@ public class TransactionManagerImp implements TransactionManager,
     		msg.append ( "2. Make sure you didn't terminate it yet.\n" );
     		msg.append ( "3. Increase the transaction timeout to avoid automatic rollback of long transactions;\n" );
     		msg.append ( "   check http://www.atomikos.com/Documentation/JtaProperties for how to do this." );
-    		Configuration.logWarning ( msg.toString() );
+    		LOGGER.logWarning ( msg.toString() );
     		throw new IllegalStateException ( msg.toString() );
     }
 
     /**
      * Set the default serial mode for new txs.
-     * 
+     *
      * @param serial
      *            If true, then new txs will be set to serial mode.
      */
@@ -145,7 +145,7 @@ public class TransactionManagerImp implements TransactionManager,
 
     /**
      * Get the default mode for new txs.
-     * 
+     *
      * @return boolean If true, then new txs started through here will be in
      *         serial mode.
      */
@@ -154,10 +154,10 @@ public class TransactionManagerImp implements TransactionManager,
     {
         return default_serial;
     }
-    
+
     /**
      * Set the default transaction timeout value.
-     * 
+     *
      * @param defaultTimeoutValue
      * 				the default transaction timeout value in seconds.
      */
@@ -165,10 +165,10 @@ public class TransactionManagerImp implements TransactionManager,
 	{
 		defaultTimeout = defaultTimeoutValue;
 	}
-	
+
 	/**
 	 * Get the default timeout value.
-	 * 
+	 *
 	 * @return the default transaction timeout value in seconds.
 	 */
 	public static int getDefaultTimeout ()
@@ -179,14 +179,14 @@ public class TransactionManagerImp implements TransactionManager,
 
     /**
      * Install a transaction manager.
-     * 
+     *
      * @param ctm
      *            The composite transaction manager to use.
      * @param automaticResourceRegistration
      *            If true, then unknown XAResource instances should lead to the
      *            addition of a new temporary resource. If false, then unknown
      *            resources will lead to an exception.
-     * 
+     *
      */
 
     public static synchronized void installTransactionManager (
@@ -204,7 +204,7 @@ public class TransactionManagerImp implements TransactionManager,
 
     /**
      * Get the installed transaction manager, if any.
-     * 
+     *
      * @return TransactionManager The installed instance, null if none.
      */
 
@@ -215,7 +215,7 @@ public class TransactionManagerImp implements TransactionManager,
 
     /**
      * Private constructor, to enforce Singleton pattern.
-     * 
+     *
      * @param ctm
      *            The composite tm to wrap.
      * @param automaticResourceRegistration
@@ -245,7 +245,7 @@ public class TransactionManagerImp implements TransactionManager,
         }
     }
 
-    private CompositeTransaction getCompositeTransaction() throws ExtendedSystemException 
+    private CompositeTransaction getCompositeTransaction() throws ExtendedSystemException
     {
     	CompositeTransaction ct = null;
     	 try {
@@ -258,11 +258,11 @@ public class TransactionManagerImp implements TransactionManager,
          }
          return ct;
     }
-    
+
     /**
      * Get any previous instance representing tid. Needed for consistently
      * returning the same tx handle to client.
-     * 
+     *
      * @param tid
      *            The tid to look for
      * @return TransactionImp The previous instance, or null.
@@ -280,7 +280,7 @@ public class TransactionManagerImp implements TransactionManager,
 
     /**
      * Retrieve an existing tx with given tid
-     * 
+     *
      * @param tid
      *            The tid of the tx.
      * @return Transaction The instance, or null if not found.
@@ -318,15 +318,15 @@ public class TransactionManagerImp implements TransactionManager,
         TransactionImp tx = null;
         CompositeTransaction ct = null;
         ResumePreviousTransactionSubTxAwareParticipant resumeParticipant = null;
-        
+
         ct = ctm_.getCompositeTransaction();
         if ( ct != null && ct.getProperty (  JTA_PROPERTY_NAME ) == null ) {
-            Configuration.logWarning ( "JTA: temporarily suspending incompatible transaction: " + ct.getTid() +
+            LOGGER.logWarning ( "JTA: temporarily suspending incompatible transaction: " + ct.getTid() +
                     " (will be resumed after JTA transaction ends)" );
             ct = ctm_.suspend();
             resumeParticipant = new ResumePreviousTransactionSubTxAwareParticipant ( ct );
         }
-        
+
         try {
             ct = ctm_.createCompositeTransaction ( ( ( long ) timeout ) * 1000 );
             if ( resumeParticipant != null ) ct.addSubTxAwareParticipant ( resumeParticipant );
@@ -393,7 +393,7 @@ public class TransactionManagerImp implements TransactionManager,
         	Configuration.logWarning( msg );
         	throw new SystemException ( msg );
         }
-            
+
     }
 
     public int getTransactionTimeout ()

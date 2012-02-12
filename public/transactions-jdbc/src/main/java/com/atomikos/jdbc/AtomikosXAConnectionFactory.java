@@ -43,19 +43,19 @@ import com.atomikos.datasource.xa.jdbc.JdbcTransactionalResource;
 import com.atomikos.icatch.SysException;
 import com.atomikos.icatch.system.Configuration;
 
-class AtomikosXAConnectionFactory implements ConnectionFactory 
+class AtomikosXAConnectionFactory implements ConnectionFactory
 {
 	/**
 	 * Logger for this class
 	 */
-	private static final Logger logger = LoggerFactory.createLogger(AtomikosXAConnectionFactory.class);
+	private static final Logger LOGGER = LoggerFactory.createLogger(AtomikosXAConnectionFactory.class);
 
 	//TODO user and password to get new connections
 	private JdbcTransactionalResource jdbcTransactionalResource;
 	private XADataSource xaDataSource;
 	private ConnectionPoolProperties props;
-	
-	public AtomikosXAConnectionFactory ( XADataSource xaDataSource, JdbcTransactionalResource jdbcTransactionalResource, ConnectionPoolProperties props ) 
+
+	public AtomikosXAConnectionFactory ( XADataSource xaDataSource, JdbcTransactionalResource jdbcTransactionalResource, ConnectionPoolProperties props )
 	{
 		this.xaDataSource = xaDataSource;
 		this.jdbcTransactionalResource = jdbcTransactionalResource;
@@ -69,7 +69,7 @@ class AtomikosXAConnectionFactory implements ConnectionFactory
 			return new AtomikosXAPooledConnection ( xaConnection, jdbcTransactionalResource, props );
 		} catch ( SQLException e ) {
 			String msg = "XAConnectionFactory: failed to create pooled connection - DBMS down or unreachable?";
-			Configuration.logWarning ( msg , e );
+			LOGGER.logWarning ( msg , e );
 			throw new CreateConnectionException ( msg , e );
 		}
 	}

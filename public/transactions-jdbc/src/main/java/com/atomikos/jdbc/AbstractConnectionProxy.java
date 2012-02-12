@@ -64,12 +64,12 @@ implements InvocationHandler
 			Statement s = ( Statement ) it.next();
 			try {
 				String msg = "Forcing close of pending statement: " + s;
-				if ( warn ) Configuration.logWarning ( msg );
+				if ( warn ) LOGGER.logWarning ( msg );
 				else LOGGER.logDebug ( msg );
 				s.close();
 			} catch ( Exception e ) {
 				//ignore but log
-				Configuration.logWarning ( "Error closing pending statement: " , e );
+				LOGGER.logWarning ( "Error closing pending statement: " , e );
 			}
 			//cf case 31275: also remove statement from list!
 			it.remove();

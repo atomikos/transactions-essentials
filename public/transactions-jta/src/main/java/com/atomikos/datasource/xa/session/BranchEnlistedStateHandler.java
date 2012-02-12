@@ -117,7 +117,7 @@ class BranchEnlistedStateHandler extends TransactionContextStateHandler
 		try {
 			branch.xaSuspend();
 		} catch ( XAException e ) {
-			Configuration.logWarning ( "Error in suspending transaction context for transaction: " + ct , e );
+			LOGGER.logWarning ( "Error in suspending transaction context for transaction: " + ct , e );
 			String msg = "Failed to suspend branch: " + branch;
 			throw new InvalidSessionHandleStateException ( msg , e );
 		}

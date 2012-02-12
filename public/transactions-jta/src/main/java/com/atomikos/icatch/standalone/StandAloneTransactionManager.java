@@ -42,8 +42,8 @@ import com.atomikos.persistence.StateRecoveryManager;
 import com.atomikos.util.UniqueIdMgr;
 
 /**
- * 
- * 
+ *
+ *
  * A standalone TM implementation. No import or export supported.
  */
 
@@ -52,7 +52,7 @@ class StandAloneTransactionManager extends BaseTransactionManager
 	/**
 	 * Logger for this class
 	 */
-	private static final Logger logger = LoggerFactory.createLogger(StandAloneTransactionManager.class);
+	private static final Logger LOGGER = LoggerFactory.createLogger(StandAloneTransactionManager.class);
 
     TransactionServiceImp service_;
 
@@ -60,7 +60,7 @@ class StandAloneTransactionManager extends BaseTransactionManager
 
     /**
      * Create a new instance.
-     * 
+     *
      * @param tmName
      *            The unique name for the transaction manager.
      * @param srecmgr
@@ -73,13 +73,13 @@ class StandAloneTransactionManager extends BaseTransactionManager
      *            The max timeout value.
      * @param maxActives
      *            The max no of active txs, or negative if not applicable.
-     * @param single_threaded_2pc 
+     * @param single_threaded_2pc
      *            Whether 2PC commit should happen in the same thread that started the tx.
      */
 
     StandAloneTransactionManager ( String tmName ,
             StateRecoveryManager srecmgr , Console console ,
-            String outputDirPath , long maxTimeout , int maxActives , 
+            String outputDirPath , long maxTimeout , int maxActives ,
             boolean single_threaded_2pc )
     {
         super ();
@@ -89,7 +89,7 @@ class StandAloneTransactionManager extends BaseTransactionManager
         if ( idmgr.getMaxIdLengthInBytes() > XID.MAXGTRIDSIZE ) {
         	// see case 73086
         	String msg = "Value too long :" + tmName;
-        	Configuration.logWarning ( msg );
+        	LOGGER.logWarning ( msg );
         	throw new SysException(msg);
         }
         service_ = new TransactionServiceImp ( tmName, srecmgr, idmgr, console,

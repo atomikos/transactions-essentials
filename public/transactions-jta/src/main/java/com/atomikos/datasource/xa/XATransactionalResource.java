@@ -378,7 +378,7 @@ public abstract class XATransactionalResource implements TransactionalResource
             Configuration
                     .logDebug ( servername_ + ": refreshing XAResource..." );
             xares_ = refreshXAConnection ();
-            Configuration.logInfo ( servername_ + ": refreshed XAResource" );
+            LOGGER.logInfo ( servername_ + ": refreshed XAResource" );
         }
 
         // first, check if connection has not timed out
@@ -533,7 +533,7 @@ public abstract class XATransactionalResource implements TransactionalResource
         XAResource xaresource = getXAResource ();
         // if no connection then we can't recover the participant
         if ( xaresource == null ) {
-            Configuration.logWarning ( "XATransactionalResource " + getName() +
+            LOGGER.logWarning ( "XATransactionalResource " + getName() +
                 ": XAResource is NULL!" );
 
             return false;
@@ -598,7 +598,7 @@ public abstract class XATransactionalResource implements TransactionalResource
             		throw ora;
 
             } catch ( XAException xaerr ) {
-                Configuration.logWarning ( "Error in recovery", xaerr );
+                LOGGER.logWarning ( "Error in recovery", xaerr );
                 errors.push ( xaerr );
                 throw new ResourceException ( "Error in recovery", errors );
             }

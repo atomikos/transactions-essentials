@@ -204,7 +204,7 @@ public class AtomikosNonXADataSourceBean extends AbstractDataSourceBean
 
 	public synchronized Connection getConnection ( HeuristicMessage hmsg ) throws SQLException
 	{
-		if ( LOGGER.isInfoEnabled() ) Configuration.logInfo ( this + ": getConnection ( " + hmsg + " )..." );
+		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": getConnection ( " + hmsg + " )..." );
 
 		init();
 

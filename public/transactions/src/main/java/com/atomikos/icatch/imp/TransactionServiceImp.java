@@ -304,7 +304,7 @@ public class TransactionServiceImp implements TransactionService,
 	            }
             }
             catch ( Exception e ) {
-            		Configuration.logWarning ( "Error in TSListener" , e );
+            		LOGGER.logWarning ( "Error in TSListener" , e );
             }
         }
 
@@ -399,7 +399,7 @@ public class TransactionServiceImp implements TransactionService,
         if ( timeout > maxTimeout_ ) {
             timeout = maxTimeout_;
             //FIXED 20188
-            Configuration.logWarning ( "Attempt to create a transaction with a timeout that exceeds " +
+            LOGGER.logWarning ( "Attempt to create a transaction with a timeout that exceeds " +
             		AbstractUserTransactionServiceFactory.MAX_TIMEOUT_PROPERTY_NAME + " - truncating to: " + maxTimeout_ );
         }
 
@@ -561,7 +561,7 @@ public class TransactionServiceImp implements TransactionService,
                 // for swapping out after indoubt resolved.
             }
         } catch ( Exception e ) {
-            Configuration.logWarning ( "Error in recoverCoordinators", e );
+            LOGGER.logWarning ( "Error in recoverCoordinators", e );
             errors.push ( e );
             throw new SysException ( "Error in recoverCoordinators: "
                     + e.getMessage (), errors );
@@ -625,7 +625,7 @@ public class TransactionServiceImp implements TransactionService,
                         // resource in unreachable. Make sure that this does not
                         // crash
                         // the TM so don't throw anything here.
-                        Configuration.logWarning (
+                        LOGGER.logWarning (
                                 "Coordinator not recoverable: "
                                         + coord.getCoordinatorId (), e );
 
@@ -642,14 +642,14 @@ public class TransactionServiceImp implements TransactionService,
                     try {
                         res.endRecovery ();
                     } catch ( Exception error ) {
-                        Configuration.logWarning ( "ERROR IN RECOVERY", error );
+                        LOGGER.logWarning ( "ERROR IN RECOVERY", error );
                         // CONTINUE PROCESSING: JUST BECAUSE ONE RESOURCE
                         // DOES BAD THINGS DOESN'T MEAN EVERYONE MUST STAY
                         // IN DOUBT
                     }
                 }
             } catch ( Exception e ) {
-                Configuration.logWarning ( "Error in recover: "
+                LOGGER.logWarning ( "Error in recover: "
                         + e.getClass ().getName () + e.getMessage (), e );
 
                 Stack errors = new Stack ();

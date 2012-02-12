@@ -78,19 +78,19 @@ public class TaskManager
 		ExecutorFactory creator;
 		try {
 			if ( isClassAvailable ( Java15ExecutorFactory.MAIN_CLASS ) ) {
-				if ( LOGGER.isInfoEnabled() ) Configuration.logInfo ( "THREADS: using JDK thread pooling..." );
+				if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( "THREADS: using JDK thread pooling..." );
 				creator = new Java15ExecutorFactory();
 			}
 			else if ( isClassAvailable ( Java14BackportExecutorFactory.MAIN_CLASS ) ) {
-				if ( LOGGER.isInfoEnabled() ) Configuration.logInfo ( "THREADS: using 1.4 (backport) thread pooling..." );
+				if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( "THREADS: using 1.4 (backport) thread pooling..." );
 				creator = new Java14BackportExecutorFactory();
 			}
 			else {
-				Configuration.logWarning ( "THREADS: pooling NOT enabled!" );
+				LOGGER.logWarning ( "THREADS: pooling NOT enabled!" );
 				creator = new TrivialExecutorFactory();
 			}
 		} catch(Exception e) {
-			Configuration.logWarning ( "THREADS: Illegal setup, thread pooling is NOT enabled!", e);
+			LOGGER.logWarning ( "THREADS: Illegal setup, thread pooling is NOT enabled!", e);
 			creator = new TrivialExecutorFactory();
 		}
 

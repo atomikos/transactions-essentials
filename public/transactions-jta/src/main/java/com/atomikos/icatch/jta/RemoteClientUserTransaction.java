@@ -53,9 +53,9 @@ import javax.transaction.UserTransaction;
 import com.atomikos.icatch.system.Configuration;
 
 /**
- * 
- * 
- * An implementation of a (remote) client's user transaction. 
+ *
+ *
+ * An implementation of a (remote) client's user transaction.
  * Client applications can use the result to control
  * transaction demarcation, and even pass their instance to other VMs so that
  * those can share the same transaction context. The server-side applications
@@ -64,10 +64,10 @@ import com.atomikos.icatch.system.Configuration;
  * <b>client</b> that demarcates its own transactions <b>only has to ship the
  * UserTransaction</b> to the server (or to other clients) to identify what
  * transaction it is in. <br>
- * 
+ *
  * NOTE: remote clients that use instances of this class can do transaction
  * demarcation, but they can <b>not</b> do nested transactions!<br>
- * 
+ *
  * NOTE: instances that are meant to be bound in JNDI should be bound <b>without</b>
  * any transaction context (i.e., without calling begin() first).
  */
@@ -78,7 +78,7 @@ public final class RemoteClientUserTransaction implements UserTransaction,
 	/**
 	 * Logger for this class
 	 */
-	private static final Logger logger = LoggerFactory.createLogger(RemoteClientUserTransaction.class);
+	private static final Logger LOGGER = LoggerFactory.createLogger(RemoteClientUserTransaction.class);
 
     static final int DEFAULT_TIMEOUT = 30;
 
@@ -119,7 +119,7 @@ public final class RemoteClientUserTransaction implements UserTransaction,
 
     /**
      * Preferred constructor.
-     * 
+     *
      * @param name
      *            The unique name of the UserTransactionServer.
      * @param initialContextFactory
@@ -162,7 +162,7 @@ public final class RemoteClientUserTransaction implements UserTransaction,
     /**
      * Referenceable mechanism requires later setup of txmgr_, otherwise binding
      * into JNDI already requires that TM is running.
-     * 
+     *
      * @return boolean True if running in server VM, false if remote.
      */
 
@@ -358,7 +358,7 @@ public final class RemoteClientUserTransaction implements UserTransaction,
     /**
      * Overrides the default behaviour, to allow retrieving the corresponding
      * transaction at the server side.
-     * 
+     *
      * @return String The transaction ID (tid) of the transaction for which the
      *         thread is executing. Null if no transaction.
      */
@@ -373,7 +373,7 @@ public final class RemoteClientUserTransaction implements UserTransaction,
                 tx = txmgr_.getTransaction ();
             } catch ( SystemException e ) {
                 String msg = "Error getting transaction";
-                Configuration.logWarning ( msg, e );
+                LOGGER.logWarning ( msg, e );
             }
             if ( tx != null )
                 ret = tx.toString ();

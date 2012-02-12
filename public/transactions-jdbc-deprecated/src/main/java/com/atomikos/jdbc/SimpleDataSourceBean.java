@@ -136,11 +136,11 @@ public class SimpleDataSourceBean implements HeuristicDataSource,
         StringTokenizer t = new StringTokenizer ( xaProperties_, ";" );
         if ( xaProperties_.indexOf ( "," ) >= 0 ) {
         		//case 20167: generate warning
-        		Configuration.logWarning ( "xaDataSourceProperties: found comma(s) - please make sure to use ';' to separate properties: " + xaProperties_ );
+        		LOGGER.logWarning ( "xaDataSourceProperties: found comma(s) - please make sure to use ';' to separate properties: " + xaProperties_ );
         }
         else if ( t.countTokens() <= 1 ) {
         		//case 20167: generate warning
-        		Configuration.logWarning ( "xaDataSourceProperties: only one property found - please check format: " + xaProperties_ );
+        		LOGGER.logWarning ( "xaDataSourceProperties: only one property found - please check format: " + xaProperties_ );
         }
         while ( t.hasMoreTokens () ) {
             String next = t.nextToken ();
@@ -185,7 +185,7 @@ public class SimpleDataSourceBean implements HeuristicDataSource,
 	            }
 
 	        } catch ( Exception e ) {
-	            Configuration.logWarning (
+	            LOGGER.logWarning (
 	                    "SimpleDataSourceBean: could not configure XADataSource of class "
 	                            + getXaDataSourceClassName (), e );
 	            throw new SQLException ( "Could not configure XADataSource: "
@@ -228,7 +228,7 @@ public class SimpleDataSourceBean implements HeuristicDataSource,
 
         if ( LOGGER.isDebugEnabled() ) Configuration.logDebug(sb.toString());
 
-        Configuration.logWarning ( "WARNING: class " + getClass().getName() + " is deprecated!" );
+        LOGGER.logWarning ( "WARNING: class " + getClass().getName() + " is deprecated!" );
 
     }
 
@@ -501,7 +501,7 @@ public class SimpleDataSourceBean implements HeuristicDataSource,
 	    	    		}
     	    	    }
     	    	    catch ( PropertyException e ) {
-    	    	    		Configuration.logWarning ( "Error in getXaDataSourceProperties" , e );
+    	    	    		LOGGER.logWarning ( "Error in getXaDataSourceProperties" , e );
     	    	    		throw new UndeclaredThrowableException ( e );
     	    	    }
     	    }
@@ -558,7 +558,7 @@ public class SimpleDataSourceBean implements HeuristicDataSource,
                 // this will also close the resultsets if any
             }
         } catch ( SQLException e ) {
-            Configuration.logWarning (
+            LOGGER.logWarning (
                     "Error in validating query for resource "
                             + getUniqueResourceName (), e );
         } finally {

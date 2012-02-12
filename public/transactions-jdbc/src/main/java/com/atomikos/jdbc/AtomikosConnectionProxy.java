@@ -100,7 +100,7 @@ class AtomikosConnectionProxy extends AbstractConnectionProxy
 		if ( methodName.equals ( "getInvocationHandler" ) ) return this;
 
 		if (methodName.equals("reap")) {
-			if ( LOGGER.isInfoEnabled() ) Configuration.logInfo ( this + ": reaping pending connection..." );
+			if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": reaping pending connection..." );
 
 			//Configuration.logDebug("{} : reaping pending connection..", this);
 			reap();
@@ -108,7 +108,7 @@ class AtomikosConnectionProxy extends AbstractConnectionProxy
 			return null;
 		}
 		if (methodName.equals("isClosed")) {
-			if ( LOGGER.isInfoEnabled() ) Configuration.logInfo ( this + ": isClosed()..." );
+			if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": isClosed()..." );
 			Object ret = Boolean.valueOf(closed);
 			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": isClosed() returning " + ret );
 			return ret;
@@ -161,7 +161,7 @@ class AtomikosConnectionProxy extends AbstractConnectionProxy
  		}
 		else {
 			try {
-				if ( LOGGER.isInfoEnabled() ) Configuration.logInfo ( this + ": calling " + methodName + "...");
+				if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": calling " + methodName + "...");
 				ret = method.invoke(delegate, args);
 
 			} catch (Exception ex) {
@@ -181,7 +181,7 @@ class AtomikosConnectionProxy extends AbstractConnectionProxy
 
 
 	private void reap() {
-		Configuration.logWarning ( this + ": reaping - check if the application closes connections correctly, or increase the reapTimeout value");
+		LOGGER.logWarning ( this + ": reaping - check if the application closes connections correctly, or increase the reapTimeout value");
 		close();
 		//added for 22101
 		sessionHandleState.notifySessionErrorOccurred();
@@ -190,7 +190,7 @@ class AtomikosConnectionProxy extends AbstractConnectionProxy
 
 	private CompositeTransactionManager getCompositeTransactionManager() {
 		CompositeTransactionManager ret = Configuration.getCompositeTransactionManager();
-		if ( ret == null ) Configuration.logWarning ( this + ": WARNING: transaction manager not running?" );
+		if ( ret == null ) LOGGER.logWarning ( this + ": WARNING: transaction manager not running?" );
 		return ret;
 	}
 
@@ -225,7 +225,7 @@ class AtomikosConnectionProxy extends AbstractConnectionProxy
 	}
 
 	private void close() {
-		if ( LOGGER.isInfoEnabled() ) Configuration.logInfo ( this + ": close()...");
+		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": close()...");
 		forceCloseAllPendingStatements ( false );
 		closed = true;
 		sessionHandleState.notifySessionClosed();

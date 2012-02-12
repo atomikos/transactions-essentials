@@ -36,15 +36,15 @@ public class AtomikosTransactionRequiredJMSException extends
 	/**
 	 * Logger for this class
 	 */
-	private static final Logger logger = LoggerFactory.createLogger(AtomikosTransactionRequiredJMSException.class);
+	private static final Logger LOGGER = LoggerFactory.createLogger(AtomikosTransactionRequiredJMSException.class);
 
 	public static void throwAtomikosTransactionRequiredJMSException ( String reason )
 	throws AtomikosTransactionRequiredJMSException
 	{
-		Configuration.logWarning ( reason );
+		LOGGER.logWarning ( reason );
 		throw new AtomikosTransactionRequiredJMSException ( reason );
 	}
-	
+
 	AtomikosTransactionRequiredJMSException(String reason) {
 		super(reason);
 	}

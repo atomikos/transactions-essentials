@@ -53,15 +53,15 @@ public class JdbcConnectionProxyHelper {
 			throws SQLException {
 				if ( ex instanceof Error ) {
 					Error err = ( Error ) ex;
-					Configuration.logWarning ( msg , err );
+					LOGGER.logWarning ( msg , err );
 					throw err;
 				} else if ( ex instanceof RuntimeException ) {
 					RuntimeException rte = ( RuntimeException ) ex;
-					Configuration.logWarning ( msg , ex );
+					LOGGER.logWarning ( msg , ex );
 					throw rte;
 				} else if ( ex instanceof SQLException ) {
 					SQLException driverError = ( SQLException ) ex;
-					Configuration.logWarning ( msg , ex );
+					LOGGER.logWarning ( msg , ex );
 					throw driverError;
 				} else if ( ex instanceof InvocationTargetException ) {
 					InvocationTargetException ite = ( InvocationTargetException ) ex;
@@ -90,11 +90,11 @@ public class JdbcConnectionProxyHelper {
 			return;
 
 		try {
-			if ( LOGGER.isInfoEnabled() ) Configuration.logInfo ( "setting isolation level to " + defaultIsolationLevel);
+			if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( "setting isolation level to " + defaultIsolationLevel);
 			connection.setTransactionIsolation ( defaultIsolationLevel );
 		}
 		catch (SQLException ex) {
-			Configuration.logWarning ( "cannot set isolation level to " + defaultIsolationLevel, ex);
+			LOGGER.logWarning ( "cannot set isolation level to " + defaultIsolationLevel, ex);
 			throw new CreateConnectionException ( "The configured default isolation level " + defaultIsolationLevel +
 					" seems unsupported by the driver - please check your JDBC driver documentation?" , ex );
 		}

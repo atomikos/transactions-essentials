@@ -37,8 +37,8 @@ import com.atomikos.icatch.RollbackException;
 import com.atomikos.icatch.system.Configuration;
 
 /**
- * 
- * 
+ *
+ *
  * A commit message implemenation.
  */
 
@@ -47,7 +47,7 @@ class CommitMessage extends PropagationMessage
 	/**
 	 * Logger for this class
 	 */
-	private static final Logger logger = LoggerFactory.createLogger(CommitMessage.class);
+	private static final Logger LOGGER = LoggerFactory.createLogger(CommitMessage.class);
 
     protected boolean onephase_ = false;
 
@@ -64,7 +64,7 @@ class CommitMessage extends PropagationMessage
 
     /**
      * A commit message.
-     * 
+     *
      * @return Object An array of heuristic messages.
      * @exception PropagationException
      *                If problems. If heuristics, this will be a heuristic
@@ -91,7 +91,7 @@ class CommitMessage extends PropagationMessage
             // fill in exact heuristic messages by using buffer effect
             // of participant proxies.
             String msg = "Unexpected error in commit";
-            Configuration.logWarning ( msg, e );
+            LOGGER.logWarning ( msg, e );
             HeurHazardException heurh = new HeurHazardException ( part
                     .getHeuristicMessages () );
             throw new PropagationException ( heurh, true );

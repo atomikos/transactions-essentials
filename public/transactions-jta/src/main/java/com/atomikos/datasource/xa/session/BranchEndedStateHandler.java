@@ -35,23 +35,23 @@ import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.system.Configuration;
 
 /**
- * 
- * 
+ *
+ *
  * State handler for when delisted in an XA branch.
  *
  */
 
-class BranchEndedStateHandler 
-extends TransactionContextStateHandler 
+class BranchEndedStateHandler
+extends TransactionContextStateHandler
 {
 	/**
 	 * Logger for this class
 	 */
-	private static final Logger logger = LoggerFactory.createLogger(BranchEndedStateHandler.class);
+	private static final Logger LOGGER = LoggerFactory.createLogger(BranchEndedStateHandler.class);
 
 	private CompositeTransaction ct;
-	
-	BranchEndedStateHandler ( XATransactionalResource resource , XAResourceTransaction branch , CompositeTransaction ct ) 
+
+	BranchEndedStateHandler ( XATransactionalResource resource , XAResourceTransaction branch , CompositeTransaction ct )
 	{
 		super ( resource , null );
 		this.ct = ct;
@@ -59,28 +59,28 @@ extends TransactionContextStateHandler
 	}
 
 	TransactionContextStateHandler checkEnlistBeforeUse ( CompositeTransaction ct , HeuristicMessage hmsg )
-			throws InvalidSessionHandleStateException 
+			throws InvalidSessionHandleStateException
 	{
 		String msg = "Detected illegal attempt to use a closed XA session";
-		Configuration.logWarning ( msg );
+		LOGGER.logWarning ( msg );
 		throw new InvalidSessionHandleStateException ( msg );
 	}
 
-	TransactionContextStateHandler sessionClosed() 
+	TransactionContextStateHandler sessionClosed()
 	{
 		//close can happen several times -> should be idempotent
 		return null;
 	}
 
-	
-	TransactionContextStateHandler transactionTerminated ( CompositeTransaction tx ) 
+
+	TransactionContextStateHandler transactionTerminated ( CompositeTransaction tx )
 	{
 		TransactionContextStateHandler ret = null;
 		if ( ct.isSameTransaction ( tx ) ) ret = new TerminatedStateHandler ();
 		return ret;
 	}
-	
-	boolean isInactiveInTransaction ( CompositeTransaction tx ) 
+
+	boolean isInactiveInTransaction ( CompositeTransaction tx )
 	{
 		return ct.isSameTransaction ( tx );
 	}

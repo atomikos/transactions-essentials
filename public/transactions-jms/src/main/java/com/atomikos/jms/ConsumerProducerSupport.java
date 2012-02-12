@@ -99,7 +99,7 @@ abstract class ConsumerProducerSupport
 				state.notifyBeforeUse ( ct , shmsg );
 			} catch ( InvalidSessionHandleStateException ex ) {
 				String msg = "error during enlist: " + ex.getMessage();
-				Configuration.logWarning ( this + ": " + msg );
+				LOGGER.logWarning ( this + ": " + msg );
 				AtomikosJMSException.throwAtomikosJMSException ( msg , ex );
 			}
 		}
@@ -110,7 +110,7 @@ abstract class ConsumerProducerSupport
 			"2. increase the maxPoolSize of the AtomikosConnectionFactoryBean to avoid transaction timeout while waiting for a connection, or" + "\n" +
 			"3. create a non-transacted session and do session acknowledgment yourself, or" + "\n" +
 			"4. set localTransactionMode to true so connection-level commit/rollback are enabled.";
-			Configuration.logWarning ( this + ": " + msg );
+			LOGGER.logWarning ( this + ": " + msg );
 			AtomikosTransactionRequiredJMSException.throwAtomikosTransactionRequiredJMSException ( msg );
 		}
 

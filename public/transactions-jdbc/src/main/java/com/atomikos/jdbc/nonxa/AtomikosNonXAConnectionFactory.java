@@ -44,19 +44,19 @@ import com.atomikos.util.ClassLoadingHelper;
 
 
  /**
-  * 
-  * 
+  *
+  *
   * @author guy
   *
   */
 
-class AtomikosNonXAConnectionFactory implements ConnectionFactory 
+class AtomikosNonXAConnectionFactory implements ConnectionFactory
 {
 	/**
 	 * Logger for this class
 	 */
-	private static final Logger logger = LoggerFactory.createLogger(AtomikosNonXAConnectionFactory.class);
-	
+	private static final Logger LOGGER = LoggerFactory.createLogger(AtomikosNonXAConnectionFactory.class);
+
 	private String url;
 	private String driverClassName;
 	private String user;
@@ -64,12 +64,12 @@ class AtomikosNonXAConnectionFactory implements ConnectionFactory
 	private ConnectionPoolProperties props;
 	private int loginTimeout;
 	private boolean readOnly;
-	
-	
+
+
 	private Driver driver;
 	protected Properties connectionProperties = new Properties();
-	public AtomikosNonXAConnectionFactory ( ConnectionPoolProperties props , 
-			String url , String driverClassName , String user , 
+	public AtomikosNonXAConnectionFactory ( ConnectionPoolProperties props ,
+			String url , String driverClassName , String user ,
 			String password , int loginTimeout , boolean readOnly )
 	{
 		this.props = props;
@@ -80,29 +80,29 @@ class AtomikosNonXAConnectionFactory implements ConnectionFactory
 		this.loginTimeout = loginTimeout;
 		this.readOnly = readOnly;
 	}
-	
-	public void init() throws SQLException 
+
+	public void init() throws SQLException
 	{
 		try {
 
 
 			Class driverClass = ClassLoadingHelper.loadClass ( driverClassName );
-            
+
             Object aDriver = driverClass.newInstance();
-            
+
             if ( ! ( aDriver instanceof java.sql.Driver ) ) {
             	String msg = "Driver class '" + driverClassName + "' does not seem to be a valid JDBC driver - please check the spelling and verify your JDBC vendor's documentation";
             	AtomikosSQLException.throwAtomikosSQLException ( msg );
-            } 
+            }
             driver = (Driver) aDriver;
             if(user!=null){
-            	connectionProperties.put("user", user);	
+            	connectionProperties.put("user", user);
             }
-            
+
             if(password!=null){
             	connectionProperties.put("password",password);
             }
-            
+
         } catch ( InstantiationException e ) {
            AtomikosSQLException.throwAtomikosSQLException ( "Could not instantiate driver class: "
                     + driverClassName );
@@ -114,10 +114,10 @@ class AtomikosNonXAConnectionFactory implements ConnectionFactory
         }
         DriverManager.setLoginTimeout ( loginTimeout );
 	}
-	
-	private Connection getConnection() throws SQLException 
+
+	private Connection getConnection() throws SQLException
 	{
-		
+
 		Connection ret = null;
 	    //case : 61748 Usage of drivermanager is not possible, as it does not respect the ContextClassLoader
         //ret = DriverManager.getConnection ( url , user, password );
@@ -131,7 +131,7 @@ class AtomikosNonXAConnectionFactory implements ConnectionFactory
 		try {
 			c = getConnection();
 		} catch (SQLException e) {
-			Configuration.logWarning ( "NonXAConnectionFactory: failed to create connection: " , e );
+			LOGGER.logWarning ( "NonXAConnectionFactory: failed to create connection: " , e );
 			throw new CreateConnectionException ( "Could not create JDBC connection" , e );
 		}
 		return new AtomikosNonXAPooledConnection ( c , props , readOnly );

@@ -35,8 +35,8 @@ import com.atomikos.icatch.TxState;
 import com.atomikos.icatch.system.Configuration;
 
 /**
- * 
- * 
+ *
+ *
  * A class for wrapping Synchronization to FSMPreEnterListener.
  */
 
@@ -45,7 +45,7 @@ class SynchToFSM implements FSMEnterListener
 	/**
 	 * Logger for this class
 	 */
-	private static final Logger logger = LoggerFactory.createLogger(SynchToFSM.class);
+	private static final Logger LOGGER = LoggerFactory.createLogger(SynchToFSM.class);
 
     private Synchronization synch_;
 
@@ -64,20 +64,20 @@ class SynchToFSM implements FSMEnterListener
         aftercompletion_ = false;
         termination_ = false;
     }
-    
-    private void doAfterCompletion ( TxState state ) 
+
+    private void doAfterCompletion ( TxState state )
     {
     	try {
 			synch_.afterCompletion ( state );
 		} catch ( RuntimeException e ) {
 			//see case 24246: ignore but log
-			Configuration.logWarning ( "Error during afterCompletion" , e );
+			LOGGER.logWarning ( "Error during afterCompletion" , e );
 		}
     }
 
     public void entered ( FSMEnterEvent e )
     {
-    	
+
         if ( e != null ) {
             if ( e.getState ().equals ( TxState.COMMITTING )
                     && (!aftercompletion_) ) {

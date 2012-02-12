@@ -140,7 +140,7 @@ public class NonXADataSourceBean implements HeuristicDataSource, Referenceable,
 
         if ( LOGGER.isDebugEnabled() ) Configuration.logDebug(sb.toString());
 
-        Configuration.logWarning ( "WARNING: class " + getClass().getName() + " is deprecated!" );
+        LOGGER.logWarning ( "WARNING: class " + getClass().getName() + " is deprecated!" );
     }
 
     /**

@@ -37,8 +37,8 @@ import com.atomikos.icatch.system.Configuration;
 /**
  * This is a <b>long-lived</b> JMS sender session, representing a
  * self-refreshing JMS session that can be used to send JMS messages in a
- * transacted way (a JTA transaction context is required). 
- * 
+ * transacted way (a JTA transaction context is required).
+ *
  * The client code does not have to worry about refreshing or
  * closing JMS objects explicitly: this is all handled in this class. All the
  * client needs to do is indicate when it wants to start or stop using the
@@ -50,34 +50,34 @@ import com.atomikos.icatch.system.Configuration;
  * <b>Important: if you change any properties AFTER sending on the session, then
  * you will need to explicitly stop and restart the session to have the changes
  * take effect!</b>
- * 
+ *
  *
  */
 
-public class SingleThreadedJmsSenderTemplate extends AbstractJmsSenderTemplate 
+public class SingleThreadedJmsSenderTemplate extends AbstractJmsSenderTemplate
 {
 	/**
 	 * Logger for this class
 	 */
-	private static final Logger logger = LoggerFactory.createLogger(SingleThreadedJmsSenderTemplate.class);
+	private static final Logger LOGGER = LoggerFactory.createLogger(SingleThreadedJmsSenderTemplate.class);
 
 	private Session session;
 	private Connection connection;
-	
+
 	public SingleThreadedJmsSenderTemplate()
 	{
 		super();
 	}
 
-	protected Session getOrRefreshSession ( Connection c ) throws JMSException 
+	protected Session getOrRefreshSession ( Connection c ) throws JMSException
 	{
 		//just reuse the prepared session
 		return session;
 	}
 
 
-	
-	public String toString() 
+
+	public String toString()
 	{
 		return "SingleThreadedJmsSenderTemplate";
 	}
@@ -91,13 +91,13 @@ public class SingleThreadedJmsSenderTemplate extends AbstractJmsSenderTemplate
 		try {
 			s.close();
 		} catch ( JMSException warn ) {
-			Configuration.logWarning ( this + ": error closing session" , warn);
+			LOGGER.logWarning ( this + ": error closing session" , warn);
 		}
-		
+
 		try {
 			c.close();
 		} catch ( JMSException warn ) {
-			Configuration.logWarning ( this + ": error closing connection" , warn);
+			LOGGER.logWarning ( this + ": error closing connection" , warn);
 		}
 		session = null;
 		connection = null;
@@ -105,10 +105,10 @@ public class SingleThreadedJmsSenderTemplate extends AbstractJmsSenderTemplate
 
 	protected void afterUseWithoutErrors ( Connection c, Session s )
 			throws JMSException {
-		//reuse connection and session next time	
+		//reuse connection and session next time
 	}
 
-	protected Connection getOrReuseConnection() throws JMSException 
+	protected Connection getOrReuseConnection() throws JMSException
 	{
 		if ( connection == null ) {
 			connection = refreshConnection();

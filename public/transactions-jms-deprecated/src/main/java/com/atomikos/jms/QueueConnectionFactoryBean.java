@@ -160,7 +160,7 @@ implements QueueConnectionFactory,
             msg.append ( "]" );
             if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( msg.toString() );
 
-            Configuration.logWarning ( "WARNING: class " + getClass().getName() + " is deprecated!" );
+            LOGGER.logWarning ( "WARNING: class " + getClass().getName() + " is deprecated!" );
         }
     }
 

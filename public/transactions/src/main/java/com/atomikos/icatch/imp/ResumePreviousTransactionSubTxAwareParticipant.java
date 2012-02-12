@@ -34,12 +34,12 @@ import com.atomikos.icatch.SubTxAwareParticipant;
 import com.atomikos.icatch.system.Configuration;
 
 /**
- * 
- * 
  *
- * A subtx aware participant that resumes a previous 
+ *
+ *
+ * A subtx aware participant that resumes a previous
  * transaction upon termination of the (sub)transaction
- * it is registered with. 
+ * it is registered with.
  *
  */
 public class ResumePreviousTransactionSubTxAwareParticipant implements
@@ -48,36 +48,36 @@ public class ResumePreviousTransactionSubTxAwareParticipant implements
 	/**
 	 * Logger for this class
 	 */
-	private static final Logger logger = LoggerFactory.createLogger(ResumePreviousTransactionSubTxAwareParticipant.class);
+	private static final Logger LOGGER = LoggerFactory.createLogger(ResumePreviousTransactionSubTxAwareParticipant.class);
 
     private CompositeTransaction previous;
-    
+
     public ResumePreviousTransactionSubTxAwareParticipant (
             CompositeTransaction previous )
     {
-        if ( previous == null ) 
+        if ( previous == null )
             throw new IllegalArgumentException ( "Previous transaction is null?" );
         this.previous = previous;
     }
-    
+
     private void resume()
     {
-        CompositeTransactionManager ctm = 
+        CompositeTransactionManager ctm =
             Configuration.getCompositeTransactionManager();
         if ( ctm == null ) {
-            Configuration.logWarning ( "ResumePreviousTransactionSubTxAwareParticipant: no transaction manager found?" );
-        } 
+            LOGGER.logWarning ( "ResumePreviousTransactionSubTxAwareParticipant: no transaction manager found?" );
+        }
         else {
             try {
                 ctm.resume ( previous );
             }
             catch ( Exception error ) {
-                Configuration.logWarning ( "ResumePreviousTransactionSubTxAwareParticipant: could not resume previous transaction" , error );
+                LOGGER.logWarning ( "ResumePreviousTransactionSubTxAwareParticipant: could not resume previous transaction" , error );
             }
         }
-        
+
     }
-    
+
     public void committed ( CompositeTransaction tx )
     {
         resume();

@@ -263,10 +263,10 @@ class ThreadLocalConnection implements InvocationHandler
         // delegate commit or rollback to the underlying connection
         try {
             if ( commit ) {
-                if ( LOGGER.isInfoEnabled() ) Configuration.logInfo ( "ThreadLocalConnection: committing on connection...");
+                if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( "ThreadLocalConnection: committing on connection...");
                 wrapped.commit ();
             } else {
-            	   if ( LOGGER.isInfoEnabled() ) Configuration.logInfo ( "ThreadLocalConnection: rolling back on connection...");
+            	   if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( "ThreadLocalConnection: rolling back on connection...");
                 wrapped.rollback ();
             }
         } catch ( SQLException e ) {

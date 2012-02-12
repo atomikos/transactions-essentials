@@ -52,14 +52,14 @@ import com.atomikos.icatch.imp.thread.InterruptedExceptionHelper;
 import com.atomikos.icatch.system.Configuration;
 
 /**
- * 
- * 
+ *
+ *
  * Application of the state pattern to the transaction coordinator: each
  * important state has a handler and this class is the superclass that holds
  * common logic.
- * 
- * <b>Note: this class and it subclasses should not use synchronized blocks; 
- * the coordinator (owner) class is responsible for synchronizing access to 
+ *
+ * <b>Note: this class and it subclasses should not use synchronized blocks;
+ * the coordinator (owner) class is responsible for synchronizing access to
  * this class.</b>
  */
 
@@ -68,7 +68,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
 	/**
 	 * Logger for this class
 	 */
-	private static final Logger logger = LoggerFactory.createLogger(CoordinatorStateHandler.class);
+	private static final Logger LOGGER = LoggerFactory.createLogger(CoordinatorStateHandler.class);
 
     private static final int THREADS = 1;
     // how many propagator threads do we need?
@@ -98,10 +98,10 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
 
     /**
      * Creates a new instance.
-     * 
+     *
      * @param coordinator
      *            The coordinator to represent.
-     * 
+     *
      */
 
     protected CoordinatorStateHandler ( CoordinatorImp coordinator )
@@ -123,7 +123,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
      * For use in this class or subclasses only. This constructor creates a new
      * instance based on a previous state handler's attributes. In this case,
      * activate or recover should NOT be called!
-     * 
+     *
      * @param other
      *            The previous instance whose attributes should be used.
      */
@@ -153,7 +153,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
     /**
      * Performs a deep clone of the state handler, needed for logging the state
      * information in this handler.
-     * 
+     *
      * @return Object The deep clone.
      */
 
@@ -191,7 +191,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
 
     /**
      * Adds a participant with a given heuristic state to the map.
-     * 
+     *
      * @param p
      *            The participant.
      * @param state
@@ -213,7 +213,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
      * states -> participants. This method is called after heuristics on
      * commit/rollback, and allows to retrieve the exact state of each single
      * participant in case of heuristic terminations.
-     * 
+     *
      * @param participants
      *            The participant to heuristic state map.
      */
@@ -232,7 +232,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
     /**
      * Gets the heuristic messages for all participants that are in the given
      * heuristic state
-     * 
+     *
      * @param heuristicState
      *            The heuristic state, or the terminated state.
      * @return HeuristicMessage[] The heuristic messages of all participants in
@@ -265,7 +265,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
 
     /**
      * Get the heuristic info for the message round.
-     * 
+     *
      * @return HeuristicMessages[] The heuristic messages, or an empty array if
      *         none.
      */
@@ -292,7 +292,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
 
     /**
      * Get the coordinator whose state we handle.
-     * 
+     *
      * @return CoordinatorImp The coordinator.
      */
 
@@ -309,7 +309,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
 
     /**
      * Get the replay stack for replay completion requests.
-     * 
+     *
      * @return Stack The stack with replay requests, or an empty stack if none
      *         are present.
      */
@@ -321,7 +321,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
 
     /**
      * Get the readonly table.
-     * 
+     *
      * @return The table.
      */
 
@@ -332,7 +332,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
 
     /**
      * Get the cascade list.
-     * 
+     *
      * @return Dictionary The cascade list.
      */
 
@@ -343,7 +343,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
 
     /**
      * Get the propagator for sending messages in the subclasses.
-     * 
+     *
      * @return Propagator The propagator.
      */
 
@@ -354,7 +354,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
 
     /**
      * Test if the result was commit.
-     * 
+     *
      * @return Boolean Null if not known yet, True if commit, False if rollback.
      */
 
@@ -365,7 +365,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
 
     /**
      * Tests if commit has happened.
-     * 
+     *
      * @return boolean True iff commit happened.
      */
 
@@ -379,7 +379,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
 
     /**
      * Print a message to the console.
-     * 
+     *
      * @param message
      *            The message to print.
      */
@@ -408,7 +408,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
 
     /**
      * Sets the table of readonly participants.
-     * 
+     *
      * @param table
      *            The table.
      */
@@ -437,7 +437,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
     /**
      * Recover the state handler after restart. For safety, this method should
      * be called AFTER activate has been called, or recovery may not work fine!
-     * 
+     *
      * @param coordinator
      *            The (transient) coordinator to use.
      */
@@ -463,7 +463,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
      * Handle a replay request for a participant. This method makes the
      * participant eligible for replay on the next timer event, but does nothing
      * else. Subclasses should take care of checking preconditions!
-     * 
+     *
      * @return Boolean Indication of the termination decision, null if not known yet.
      */
 
@@ -480,10 +480,10 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
 
     /**
      * Utility method for subclasses.
-     * 
+     *
      * @param participants
      */
-    protected void addAllForReplay ( Collection participants ) 
+    protected void addAllForReplay ( Collection participants )
     {
     	Iterator it = participants.iterator();
     	while ( it.hasNext() ) {
@@ -491,7 +491,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
     		replayCompletion ( p );
     	}
     }
-    
+
     /**
      * The corresponding 2PC method is delegated hereto.
      */
@@ -512,7 +512,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
 
     /**
      * Get the (non-pseudo) coordinator state to which this handler belongs.
-     * 
+     *
      * @return Object The object that represents the corresponsding coordinator
      *         state.
      */
@@ -537,7 +537,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
      * The corresponding 2PC method is delegated hereto. Subclasses should
      * override this, and may use the auxiliary commit method provided by this
      * class (in addition to their state-specific preconditions).
-     * 
+     *
      */
 
     protected abstract HeuristicMessage[] commit ( boolean onePhase )
@@ -558,7 +558,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
     /**
      * Auxiliary method for committing. This method can be reused in subclasses
      * in order to process commit.
-     * 
+     *
      * @param heuristic
      *            True iff a heuristic commit should be done.
      * @param onePhase
@@ -583,22 +583,22 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
             committed_ = new Boolean ( true );
             // for replaying completion: commit decision was reached
             // otherwise, replay requests might only see TERMINATED!
-            
+
             try {
             	coordinator_.setState ( TxState.COMMITTING );
             } catch ( RuntimeException error ) {
         		//See case 23334
         		String msg = "Error in committing: " + error.getMessage() + " - rolling back instead";
-        		Configuration.logWarning ( msg , error );
+        		LOGGER.logWarning ( msg , error );
         		try {
 					rollback ( getCoordinator().isRecoverableWhileActive().booleanValue() , false );
 					throw new RollbackException ( msg );
         		} catch ( HeurCommitException e ) {
-					Configuration.logWarning ( "Illegal heuristic commit during rollback:" + e );
+					LOGGER.logWarning ( "Illegal heuristic commit during rollback:" + e );
 					throw new HeurMixedException ( e.getHeuristicMessages() );
 				}
         	}
-      
+
 
             // start messages
             Enumeration enumm = participants.elements ();
@@ -715,7 +715,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
     /**
      * Auxiliary method for rollback. This method can be reused in subclasses in
      * order to process rollback.
-     * 
+     *
      * @param indoubt
      *            True iff some participants may already have voted YES.
      * @param heuristic

@@ -404,7 +404,7 @@ class MessageConsumerSession
 	            	//see http://activemq.apache.org/virtual-destinations.html
 	            	String connectionClientID = connection.getClientID();
 	            	if ( connectionClientID == null ) connection.setClientID(clientID);
-	            	else Configuration.logWarning ( "Reusing connection with preset clientID: " + connectionClientID );
+	            	else LOGGER.logWarning ( "Reusing connection with preset clientID: " + connectionClientID );
 	            }
 
 	            connection.start ();
@@ -442,39 +442,39 @@ class MessageConsumerSession
 
 						if ( threadWillStop && subscriberName != null && properties.getUnsubscribeOnClose() ) {
 							try {
-								Configuration.logWarning ( "MessageConsumerSession: unsubscribing " + subscriberName + "...");
+								LOGGER.logWarning ( "MessageConsumerSession: unsubscribing " + subscriberName + "...");
 								if ( Thread.currentThread() != this ) {
 									//see case 62452: wait for listener thread to exit so the subscriber is no longer in use
-									if ( LOGGER.isInfoEnabled() ) Configuration.logInfo ( "MessageConsumerSession: waiting for listener thread to finish..." );
+									if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( "MessageConsumerSession: waiting for listener thread to finish..." );
 									this.join ( getTransactionTimeout() * 1000 );
 									if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "MessageConsumerSession: waiting done." );
 								}
-								if ( LOGGER.isInfoEnabled() ) Configuration.logInfo ( "MessageConsumerSession: unsubscribing " + subscriberName + "..." );
+								if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( "MessageConsumerSession: unsubscribing " + subscriberName + "..." );
 								session.unsubscribe ( subscriberName );
 								if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "MessageConsumerSession: unsubscribed.");
 							} catch ( JMSException e ) {
-								 if ( LOGGER.isInfoEnabled() ) Configuration.logInfo (
+								 if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo (
 					                    "MessageConsumerSession: Error unsubscribing on JMS session",
 					                    e );
-					            if ( LOGGER.isInfoEnabled() ) Configuration.logInfo ( "MessageConsumerSession: linked exception is " , e.getLinkedException() );
+					            if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( "MessageConsumerSession: linked exception is " , e.getLinkedException() );
 							}
 						}
 
 					    try {
-					    	if ( LOGGER.isInfoEnabled() ) Configuration.logInfo ( "MessageConsumerSession: closing JMS session..." );
+					    	if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( "MessageConsumerSession: closing JMS session..." );
 					        session.close ();
 					        session = null;
 					        if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "MessageConsumerSession: JMS session closed." );
 					    } catch ( JMSException e ) {
-					        if ( LOGGER.isInfoEnabled() ) Configuration.logInfo (
+					        if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo (
 					                "MessageConsumerSession: Error closing JMS session",
 					                e );
-					        if ( LOGGER.isInfoEnabled() ) Configuration.logInfo ( "MessageConsumerSession: linked exception is " , e.getLinkedException() );
+					        if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( "MessageConsumerSession: linked exception is " , e.getLinkedException() );
 					    }
 					}
 					if ( connection != null )
 					    try {
-					    	if ( LOGGER.isInfoEnabled() ) Configuration.logInfo ( "MessageConsumerSession: closing JMS connection..." );
+					    	if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( "MessageConsumerSession: closing JMS connection..." );
 					        connection.close ();
 					        connection = null;
 					        if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "MessageConsumerSession: JMS connection closed." );
@@ -483,10 +483,10 @@ class MessageConsumerSession
 					                .logWarning (
 					                        "MessageConsumerSession: Error closing JMS connection",
 					                        e );
-					        Configuration.logWarning ( "MessageConsumerSession: linked exception is " , e.getLinkedException() );
+					        LOGGER.logWarning ( "MessageConsumerSession: linked exception is " , e.getLinkedException() );
 					    }
 				} catch ( Throwable e ) {
-					Configuration.logWarning ( "MessageConsumerSession: Unexpected error during close: " , e );
+					LOGGER.logWarning ( "MessageConsumerSession: Unexpected error during close: " , e );
 					//DON'T rethrow
 				}
 	        }
@@ -555,7 +555,7 @@ class MessageConsumerSession
 	                            commit = false;
 	                        }
 	                    } catch ( Exception e ) {
-	                        if ( LOGGER.isInfoEnabled() ) Configuration.logInfo (
+	                        if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo (
 	                                "MessageConsumerSession: Error during JMS processing of message "
 	                                        + msg.toString () + " - rolling back.",
 	                                e );
@@ -568,11 +568,11 @@ class MessageConsumerSession
 	                    }
 
 	                } catch ( JMSException e ) {
-	                    Configuration.logWarning (
+	                    LOGGER.logWarning (
 	                            "MessageConsumerSession: Error in JMS thread", e );
 	                    Exception linkedException = e.getLinkedException();
 	                    if ( linkedException != null ) {
-	                    	Configuration.logWarning ( "Linked JMS exception is: " , linkedException );
+	                    	LOGGER.logWarning ( "Linked JMS exception is: " , linkedException );
 	                    }
 	                    // refresh connection to avoid corruption of thread state.
 	                    refresh = true;
@@ -580,7 +580,7 @@ class MessageConsumerSession
 	                    notifyExceptionListener ( e );
 
 	                } catch ( Throwable e ) {
-	                    Configuration.logWarning (
+	                    LOGGER.logWarning (
 	                            "MessageConsumerSession: Error in JMS thread", e );
 	                    // Happens if there is an error not generated by the
 	                    // listener;
