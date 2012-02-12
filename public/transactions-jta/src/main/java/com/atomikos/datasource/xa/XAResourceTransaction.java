@@ -587,6 +587,7 @@ public class XAResourceTransaction implements ResourceTransaction,
                 xaresource_.forget ( xid_ );
             // xaresource is null if recovery failed
         } catch ( Exception err ) {
+        	Configuration.logDebug ( "Error forgetting xid: " + xid_ , err );
             // we don't care here
         }
         setState ( TxState.TERMINATED );
@@ -622,8 +623,8 @@ public class XAResourceTransaction implements ResourceTransaction,
             ret = xaresource_.prepare ( xid_ );
 
         } catch ( XAException xaerr ) {
-        	    String msg = interpretErrorCode ( resourcename_ , "prepare" , xid_ , xaerr.errorCode );
-            if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( msg , xaerr );
+        	String msg = interpretErrorCode ( resourcename_ , "prepare" , xid_ , xaerr.errorCode );
+            Configuration.logWarning ( msg , xaerr ); // see case 84253  
             if ( (XAException.XA_RBBASE <= xaerr.errorCode)
                     && (xaerr.errorCode <= XAException.XA_RBEND) ) {
                 throw new RollbackException ( msg );
@@ -784,7 +785,7 @@ public class XAResourceTransaction implements ResourceTransaction,
             xaresource_.commit ( xid_, onePhase );
             
         } catch ( XAException xaerr ) {
-        	   String msg = interpretErrorCode ( resourcename_ , "commit" , xid_ , xaerr.errorCode );
+        	String msg = interpretErrorCode ( resourcename_ , "commit" , xid_ , xaerr.errorCode );
             Configuration.logWarning ( msg , xaerr );
 
             if ( (XAException.XA_RBBASE <= xaerr.errorCode)

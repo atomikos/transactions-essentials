@@ -397,7 +397,8 @@ implements JtaAwareNonXaConnection
                 wrapped.commit ();
                 
             } else {
-            	forceCloseAllPendingStatements ( true );
+            	// see case 84252
+            	forceCloseAllPendingStatements ( false );
  				if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": transaction aborting - " +
  						"pessimistically closing all pending statements to avoid autoCommit after timeout" );
             	if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": rolling back on connection...");

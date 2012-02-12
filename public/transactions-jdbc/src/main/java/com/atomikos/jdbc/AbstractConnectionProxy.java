@@ -56,7 +56,9 @@ implements InvocationHandler
 		while ( it.hasNext() ) {
 			Statement s = ( Statement ) it.next();
 			try {
-				if ( warn ) Configuration.logWarning ( "Forcing close of pending statement: " + s );
+				String msg = "Forcing close of pending statement: " + s;
+				if ( warn ) Configuration.logWarning ( msg );
+				else Configuration.logDebug ( msg );
 				s.close();
 			} catch ( Exception e ) {
 				//ignore but log
