@@ -3,7 +3,7 @@ package com.atomikos.logging;
 import java.util.logging.Level;
 
 
-public class JULLogger implements Logger {
+class JULLogger implements Logger {
 
 	private final java.util.logging.Logger julLogger;
 

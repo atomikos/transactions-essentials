@@ -1,6 +1,6 @@
 package com.atomikos.logging;
 
-public class JULLoggerFactoryDelegate implements LoggerFactoryDelegate {
+class JULLoggerFactoryDelegate implements LoggerFactoryDelegate {
 
 	public Logger createLogger(Class<?> clazz) {
 

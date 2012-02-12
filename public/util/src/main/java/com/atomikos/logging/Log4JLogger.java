@@ -1,6 +1,6 @@
 package com.atomikos.logging;
 
-public class Log4JLogger implements Logger {
+class Log4JLogger implements Logger {
 
 	private final org.apache.log4j.Logger log4jLogger;
 
