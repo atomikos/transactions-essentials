@@ -24,6 +24,10 @@
  */
 
 package com.atomikos.beans;
+
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -47,6 +51,11 @@ public class TextFieldComponent
 extends AbstractPropertyEditorComponent
 implements CaretListener //ActionListener
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(TextFieldComponent.class);
+
     private JTextField text_;
     //the text field
     

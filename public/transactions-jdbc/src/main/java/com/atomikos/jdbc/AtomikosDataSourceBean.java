@@ -24,6 +24,10 @@
  */
 
 package com.atomikos.jdbc;
+
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.util.Enumeration;
 import java.util.Properties;
 
@@ -48,6 +52,10 @@ import com.atomikos.util.ClassLoadingHelper;
 public class AtomikosDataSourceBean 
 extends AbstractDataSourceBean
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(AtomikosDataSourceBean.class);
 	
 	
 	private static final long serialVersionUID = 1L;

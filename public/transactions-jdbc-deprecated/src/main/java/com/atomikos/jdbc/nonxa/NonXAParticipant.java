@@ -25,6 +25,9 @@
 
 package com.atomikos.jdbc.nonxa;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Dictionary;
@@ -56,6 +59,10 @@ import com.atomikos.icatch.system.Configuration;
 
 class NonXAParticipant implements Participant, Serializable
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(NonXAParticipant.class);
 
     private boolean recovered;
     // true iff recovered

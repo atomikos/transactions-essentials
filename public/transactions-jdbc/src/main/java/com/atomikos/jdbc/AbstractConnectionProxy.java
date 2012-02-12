@@ -25,6 +25,9 @@
 
 package com.atomikos.jdbc;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.lang.reflect.InvocationHandler;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -42,6 +45,10 @@ import com.atomikos.util.DynamicProxy;
 public abstract class AbstractConnectionProxy 
 implements InvocationHandler
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(AbstractConnectionProxy.class);
 	
 	private List statements = new ArrayList();
 

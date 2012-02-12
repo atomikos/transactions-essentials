@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.standalone;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import com.atomikos.icatch.config.TSInitInfo;
 import com.atomikos.icatch.config.UserTransactionService;
 
@@ -41,6 +44,11 @@ import com.atomikos.icatch.config.UserTransactionService;
 
 public final class StandAloneConfiguration
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(StandAloneConfiguration.class);
+
     private static final UserTransactionService uts_ = new com.atomikos.icatch.config.UserTransactionServiceImp ();
 
     /**

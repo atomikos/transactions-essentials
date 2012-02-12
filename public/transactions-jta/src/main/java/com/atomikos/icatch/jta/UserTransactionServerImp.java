@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.jta;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Enumeration;
@@ -59,6 +62,11 @@ import com.atomikos.icatch.system.Configuration;
 
 public class UserTransactionServerImp implements UserTransactionServer
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(UserTransactionServerImp.class);
+
     // @todo assert no exceptions if RMI-IIOP not enabled!
 
     private static UserTransactionServerImp singleton_ = null;

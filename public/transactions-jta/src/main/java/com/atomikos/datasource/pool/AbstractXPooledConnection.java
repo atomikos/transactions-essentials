@@ -25,6 +25,9 @@
 
 package com.atomikos.datasource.pool;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +45,10 @@ import com.atomikos.icatch.system.Configuration;
   */
 
 public abstract class AbstractXPooledConnection implements XPooledConnection {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger LOGGER = LoggerFactory.createLogger(AbstractXPooledConnection.class);
 
 	private long lastTimeAcquired = System.currentTimeMillis();
 	private long lastTimeReleased = System.currentTimeMillis();
@@ -67,7 +74,7 @@ public abstract class AbstractXPooledConnection implements XPooledConnection {
 		updateLastTimeAcquired();
 		testUnderlyingConnection();
 		currentProxy = doCreateConnectionProxy ( hmsg );
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": returning proxy " + currentProxy );
+		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": returning proxy " + currentProxy );
 		return currentProxy;
 	}
 
@@ -81,19 +88,19 @@ public abstract class AbstractXPooledConnection implements XPooledConnection {
 	}
 
 	public void registerXPooledConnectionEventListener(XPooledConnectionEventListener listener) {
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": registering listener " + listener );
+		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": registering listener " + listener );
 		poolEventListeners.add(listener);
 	}
 
 	public void unregisterXPooledConnectionEventListener(XPooledConnectionEventListener listener) {
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": unregistering listener " + listener );
+		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": unregistering listener " + listener );
 		poolEventListeners.remove(listener);
 	}
 
 	protected void fireOnXPooledConnectionTerminated() {
 		for (int i=0; i<poolEventListeners.size() ;i++) {
 			XPooledConnectionEventListener listener = (XPooledConnectionEventListener) poolEventListeners.get(i);
-			if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": notifying listener: " + listener );
+			if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": notifying listener: " + listener );
 			listener.onXPooledConnectionTerminated(this);
 		}
 		updateLastTimeReleased();
@@ -105,12 +112,12 @@ public abstract class AbstractXPooledConnection implements XPooledConnection {
 	}
 	
 	protected void updateLastTimeReleased() {
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": updating last time released" );
+		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": updating last time released" );
 		lastTimeReleased = System.currentTimeMillis();
 	}
 	
 	protected void updateLastTimeAcquired() {
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug (  this + ": updating last time acquired" );
+		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug (  this + ": updating last time acquired" );
 		lastTimeAcquired = System.currentTimeMillis();
 		
 	}

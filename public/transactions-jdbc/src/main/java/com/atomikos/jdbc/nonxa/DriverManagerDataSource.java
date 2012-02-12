@@ -25,6 +25,9 @@
 
 package com.atomikos.jdbc.nonxa;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.sql.Connection;
@@ -53,6 +56,10 @@ import com.atomikos.util.ClassLoadingHelper;
 
 public class DriverManagerDataSource implements DataSource, Serializable
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(DriverManagerDataSource.class);
 
     private String driverClassName;
 

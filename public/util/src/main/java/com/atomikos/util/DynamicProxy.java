@@ -25,6 +25,9 @@
 
 package com.atomikos.util;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 
  /**
   * An interface to improve performance of dynamic proxies.

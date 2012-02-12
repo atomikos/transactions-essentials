@@ -25,6 +25,9 @@
 
 package com.atomikos.datasource.xa;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Stack;
@@ -47,10 +50,10 @@ import com.atomikos.icatch.system.Configuration;
 import com.atomikos.persistence.StateRecoveryManager;
 
 /**
- * 
- * 
+ *
+ *
  * An abstract XA implementation of a transactional resource.
- * 
+ *
  * For a particular XA data source, it is necessary to implement the
  * refreshXAConnection method, because in general there is no standard way of
  * getting XAResource instances. Therefore, this class is agnostic about it.
@@ -65,6 +68,10 @@ import com.atomikos.persistence.StateRecoveryManager;
 
 public abstract class XATransactionalResource implements TransactionalResource
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger LOGGER = LoggerFactory.createLogger(XATransactionalResource.class);
 
     protected XAResource xares_;
     // the xa resource for which txs are created.
@@ -103,7 +110,7 @@ public abstract class XATransactionalResource implements TransactionalResource
 
     /**
      * Construct a new instance with a default XidFactory.
-     * 
+     *
      * @param servername
      *            The servername, needed to identify the xid instances for the
      *            current configuration. Max BYTE length is 64!
@@ -130,13 +137,13 @@ public abstract class XATransactionalResource implements TransactionalResource
 
     /**
      * Construct a new instance with a custom XidFactory.
-     * 
+     *
      * @param servername
      *            The servername, needed to identify the xid instances for the
      *            current configuration. Max BYTE length is 64!
      * @param factory
      *            The custom XidFactory.
-     * 
+     *
      */
 
     public XATransactionalResource ( String servername , XidFactory factory )
@@ -154,7 +161,7 @@ public abstract class XATransactionalResource implements TransactionalResource
      * time-out, this method is called to refresh the XAResource instance. This
      * is typically done by (re-)establishing a connection to the server and
      * <b>keeping this connection open!</b>.
-     * 
+     *
      * @return XAResource A XAResource instance that will be used to represent
      *         the server.
      * @exception ResourceException
@@ -167,7 +174,7 @@ public abstract class XATransactionalResource implements TransactionalResource
     /**
      * Get the xidFactory for this instance. Needed by XAResourceTransaction to
      * create new XID.
-     * 
+     *
      * @return XidFactory The XidFactory for the resource.
      */
 
@@ -210,7 +217,7 @@ public abstract class XATransactionalResource implements TransactionalResource
 
     /**
      * Check if the XAResource needs to be refreshed.
-     * 
+     *
      * @return boolean True if the XAResource needs refresh.
      */
 
@@ -230,7 +237,7 @@ public abstract class XATransactionalResource implements TransactionalResource
             }
         } catch ( XAException xa ) {
             // timed out?
-            if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( servername_
+            if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( servername_
                     + ": XAResource needs refresh?", xa );
 
         }
@@ -241,11 +248,11 @@ public abstract class XATransactionalResource implements TransactionalResource
      * Set this instance to use the weak compare mode setting. This method
      * should be called <b>before</b> recovery is done, so before
      * initialization of the transaction service.
-     * 
-     * 
+     *
+     *
      * this is no longer needed at all, and taken care of by the transaction
      * service automatically.
-     * 
+     *
      * @return weakCompare True iff weak compare mode should be used. This mode
      *         is relevant for integration with certain vendors whose XAResource
      *         instances do not correctly implements isSameRM.
@@ -266,8 +273,8 @@ public abstract class XATransactionalResource implements TransactionalResource
 
     /**
      * Test if this instance uses weak compare mode.
-     * 
-     * 
+     *
+     *
      * @return boolean True iff weak compare mode is in use. This mode is
      *         relevant for integration with certain vendors whose XAResource
      *         instances do not correctly implement isSameRM.
@@ -279,13 +286,13 @@ public abstract class XATransactionalResource implements TransactionalResource
     }
 
     /**
-     * 
+     *
      * Specify whether to entirely shortcut the isSameRM method of the
      * XAResource implementations, and always return true for usesXAResource.
      * The consequence is that branches are always different (even in the same
      * tx) and that the resource names will not entirely match in the logfiles.
      * Besides that, no serious problems should happen.
-     * 
+     *
      * @param val
      */
     public void setAcceptAllXAResources ( boolean val )
@@ -294,7 +301,7 @@ public abstract class XATransactionalResource implements TransactionalResource
     }
 
     /**
-     * 
+     *
      * @return boolean True if usesXAResource is always true.
      */
     public boolean acceptsAllXAResources ()
@@ -304,7 +311,7 @@ public abstract class XATransactionalResource implements TransactionalResource
 
     /**
      * Test if the XAResource is used by this instance.
-     * 
+     *
      * @param xares
      *            The XAResource to test.
      * @return boolean True iff this instance uses the same back-end resource,
@@ -360,7 +367,7 @@ public abstract class XATransactionalResource implements TransactionalResource
 
     /**
      * Get the XAResource instance that this instance is using.
-     * 
+     *
      * @return XAResource The XAResource instance.
      */
 
@@ -404,7 +411,7 @@ public abstract class XATransactionalResource implements TransactionalResource
         // that the last used ResourceTransaction was for a sibling!
         if ( ct == null )
             return null; // happens in create method of beans
-        
+
 
         // String root = ct.getCompositeCoordinator().getRootTid();
 
@@ -450,7 +457,7 @@ public abstract class XATransactionalResource implements TransactionalResource
      * The default close operation. Subclasses may need to override this method
      * in order to process XA-specific close procedures such as closing
      * connections.
-     * 
+     *
      */
 
     public void close () throws ResourceException
@@ -460,7 +467,7 @@ public abstract class XATransactionalResource implements TransactionalResource
 
     /**
      * Test if the resource is closed.
-     * 
+     *
      * @return boolean True if closed.
      * @throws ResourceException
      */
@@ -496,7 +503,7 @@ public abstract class XATransactionalResource implements TransactionalResource
 
         // null during testing
         if ( recoveryService != null ) {
-            if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "Installing recovery service on resource "
+            if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( "Installing recovery service on resource "
                     + getName () );
             branchIdentifier_ = recoveryService.getName ();
 
@@ -526,9 +533,9 @@ public abstract class XATransactionalResource implements TransactionalResource
         XAResource xaresource = getXAResource ();
         // if no connection then we can't recover the participant
         if ( xaresource == null ) {
-            Configuration.logWarning ( "XATransactionalResource " + getName() + 
+            Configuration.logWarning ( "XATransactionalResource " + getName() +
                 ": XAResource is NULL!" );
-            
+
             return false;
         }
 
@@ -539,7 +546,7 @@ public abstract class XATransactionalResource implements TransactionalResource
 
         if ( !recoveryMap_.containsKey ( xarestx.getXid() ) ) {
         	//TAKE CARE: if multiple resources 'recover' the same Xid from the same backend
-        	//then this will be a problem here: endRecovery will rollback a transaction 
+        	//then this will be a problem here: endRecovery will rollback a transaction
         	//as per presumed abort!
             recovered = false;
         }
@@ -548,7 +555,7 @@ public abstract class XATransactionalResource implements TransactionalResource
         //this happens if VM exits between XA commit and log flush
         //-> should lead to NOTA in commit
         //see case 21552
-        if ( recovered || getName().equals ( xarestx.getResourceName() ) ) 
+        if ( recovered || getName().equals ( xarestx.getResourceName() ) )
         		xarestx.setRecoveredXAResource ( getXAResource () );
         recoveryMap_.remove ( xarestx.getXid() );
         return recovered;
@@ -557,7 +564,7 @@ public abstract class XATransactionalResource implements TransactionalResource
     /**
      * Recover the contained XAResource, and retrieve the xid instances that
      * start with our server's name.
-     * 
+     *
      * @exception ResourceException
      *                If a failure occurs.
      */
@@ -589,7 +596,7 @@ public abstract class XATransactionalResource implements TransactionalResource
             			printMsg ( "ORACLE NOT CONFIGURED FOR XA? PLEASE CONTACT YOUR DBA TO FIX THIS..." , Console.WARN );
             		}
             		throw ora;
-           
+
             } catch ( XAException xaerr ) {
                 Configuration.logWarning ( "Error in recovery", xaerr );
                 errors.push ( xaerr );
@@ -692,7 +699,7 @@ public abstract class XATransactionalResource implements TransactionalResource
 
     /**
      * Set the XID factory, needed for online management tools.
-     * 
+     *
      * @param factory
      */
     public void setXidFactory ( XidFactory factory )
@@ -703,7 +710,7 @@ public abstract class XATransactionalResource implements TransactionalResource
 
     /**
      * Create an XID for the given tx.
-     * 
+     *
      * @param tid
      *            The tx id.
      * @return Xid A globally unique Xid that can be recovered by any resource

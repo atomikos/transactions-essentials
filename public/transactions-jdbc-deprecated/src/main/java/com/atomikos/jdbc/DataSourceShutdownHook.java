@@ -25,6 +25,9 @@
 
 package com.atomikos.jdbc;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 
 /**
  * 
@@ -37,6 +40,11 @@ package com.atomikos.jdbc;
  */
 public class DataSourceShutdownHook extends Thread
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(DataSourceShutdownHook.class);
+
     JtaDataSourceImp ds_;
 
     /**

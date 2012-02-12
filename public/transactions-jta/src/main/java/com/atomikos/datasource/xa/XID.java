@@ -25,6 +25,9 @@
 
 package com.atomikos.datasource.xa;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.io.Serializable;
 import java.util.Arrays;
 
@@ -38,6 +41,10 @@ import javax.transaction.xa.Xid;
 
 public class XID implements Serializable, Xid
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(XID.class);
 
 	private static final long serialVersionUID = 4796496938014754464L;
 

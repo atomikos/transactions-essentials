@@ -25,6 +25,9 @@
 
 package com.atomikos.jdbc;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.lang.reflect.UndeclaredThrowableException;
@@ -56,17 +59,21 @@ import com.atomikos.util.ClassLoadingHelper;
 import com.atomikos.util.SerializableObjectFactory;
 
 /**
- * 
- * 
+ *
+ *
  * An Atomikos DataSource implementation.
- * 
+ *
  * @deprecated As of release 3.3, the {@link AtomikosDataSourceBean} should be used instead.
- * 
+ *
  */
 
 public class SimpleDataSourceBean implements HeuristicDataSource,
         ConnectionPoolDataSource, Serializable, Referenceable
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger LOGGER = LoggerFactory.createLogger(SimpleDataSourceBean.class);
 
 	private static final long serialVersionUID = 6413560960979946477L;
 
@@ -104,7 +111,7 @@ public class SimpleDataSourceBean implements HeuristicDataSource,
 
     private String xaDataSourceClassName_;
     // the name of the XADataSource class to use
-    
+
     private boolean testOnBorrow_;
     //should connections be tested upon get or not?
 
@@ -176,7 +183,7 @@ public class SimpleDataSourceBean implements HeuristicDataSource,
 	                String val = p.getProperty ( name );
 	                inspector.setPropertyValue ( name, val );
 	            }
-	
+
 	        } catch ( Exception e ) {
 	            Configuration.logWarning (
 	                    "SimpleDataSourceBean: could not configure XADataSource of class "
@@ -204,8 +211,8 @@ public class SimpleDataSourceBean implements HeuristicDataSource,
         // shut it down. therefore, add a shutdown hook to do this job
         DataSourceShutdownHook hook = new DataSourceShutdownHook ( ds_ );
         Configuration.addShutdownHook ( hook );
-        
-        
+
+
         StringBuffer sb = new StringBuffer();
         sb.append("SimpleDataSourceBean configured with [");
         sb.append("resourceName=").append(resourceName_).append(", ");
@@ -218,22 +225,22 @@ public class SimpleDataSourceBean implements HeuristicDataSource,
         sb.append("xaDataSourceClassName=").append(xaDataSourceClassName_).append(", ");
         sb.append("testOnBorrow=").append(testOnBorrow_);
         sb.append("]");
-        
-        if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug(sb.toString());
-        
+
+        if ( LOGGER.isDebugEnabled() ) Configuration.logDebug(sb.toString());
+
         Configuration.logWarning ( "WARNING: class " + getClass().getName() + " is deprecated!" );
-        
+
     }
 
     private synchronized void checkSetup () throws SQLException
     {
         checkSetup ( false );
     }
-    
+
     /**
      * Init method to setup the bean for recovery
      * and other init stuff.
-     * @throws SQLException 
+     * @throws SQLException
      *
      */
     public void init() throws SQLException
@@ -246,7 +253,7 @@ public class SimpleDataSourceBean implements HeuristicDataSource,
      * Set the identifying name for this data source (required). Used by the
      * transaction logging mechanism. NOTE: the value should not exceed
      * 45 bytes in length.
-     * 
+     *
      * @param resourceName
      */
     public void setUniqueResourceName ( String resourceName )
@@ -256,7 +263,7 @@ public class SimpleDataSourceBean implements HeuristicDataSource,
 
     /**
      * Get the unique resource name for this instance.
-     * 
+     *
      * @return String The name.
      */
 
@@ -270,7 +277,7 @@ public class SimpleDataSourceBean implements HeuristicDataSource,
      * also implements ConnectionPoolDataSource, meaning that it can be used for
      * third-party connection pools. In that case, the internal connection pool
      * size can still be configured to have pooling at two levels.
-     * 
+     *
      * @param poolSize
      *            The size of the pool.
      */
@@ -282,22 +289,22 @@ public class SimpleDataSourceBean implements HeuristicDataSource,
 
     /**
      * Get the size of the connection pool.
-     * 
+     *
      * @return int The size.
      */
-    
+
     public int getConnectionPoolSize ()
     {
         return poolSize_;
     }
-    
+
     /**
      * Set whether connections should be tested when gotten (optional). Default is false.
-     * 
+     *
      * @param value True if connections should be tested when gotten.
      */
-    
-    public void setTestOnBorrow ( boolean value ) 
+
+    public void setTestOnBorrow ( boolean value )
     {
     		testOnBorrow_ = value;
     }
@@ -306,16 +313,16 @@ public class SimpleDataSourceBean implements HeuristicDataSource,
      * Get whether connections should be tested when gotten.
      * @return
      */
-    
-    public boolean getTestOnBorrow() 
+
+    public boolean getTestOnBorrow()
     {
     		return testOnBorrow_;
     }
-    
+
     /**
      * Set the timeout after which connections should be checked for liveness
      * (optional).
-     * 
+     *
      * @param timeout
      *            The timeout in seconds.
      */
@@ -327,7 +334,7 @@ public class SimpleDataSourceBean implements HeuristicDataSource,
 
     /**
      * Get the timeout after which connections are checked for liveness.
-     * 
+     *
      * @return int The timeout.
      */
     public int getConnectionTimeout ()
@@ -337,7 +344,7 @@ public class SimpleDataSourceBean implements HeuristicDataSource,
 
     /**
      * Set the sharing preferences (optional).
-     * 
+     *
      * @param mode
      *            The mode. If true, then connections are not shared when they
      *            are in a transaction. This is the safest setting and allows to
@@ -354,7 +361,7 @@ public class SimpleDataSourceBean implements HeuristicDataSource,
 
     /**
      * Get the sharing preference.
-     * 
+     *
      * @return boolean true if exclusive, false if not.
      */
 
@@ -365,7 +372,7 @@ public class SimpleDataSourceBean implements HeuristicDataSource,
 
     /**
      * Get the transactional resource.
-     * 
+     *
      * @return TransactionalResource The resource as it is used by the
      *         transaction service during recovery.
      */
@@ -385,7 +392,7 @@ public class SimpleDataSourceBean implements HeuristicDataSource,
      * Set the validating query for this datasource (optional). This optional
      * property allows you to give a test query to see if the configuration
      * works.
-     * 
+     *
      * @param query
      *            The SQL query that should work if the connectivity is made.
      */
@@ -397,7 +404,7 @@ public class SimpleDataSourceBean implements HeuristicDataSource,
 
     /**
      * Get the validating query.
-     * 
+     *
      * @return String The query.
      */
     public String getValidatingQuery ()
@@ -407,7 +414,7 @@ public class SimpleDataSourceBean implements HeuristicDataSource,
 
     /**
      * Set the fully qualified name of the XADataSource class to use (required).
-     * 
+     *
      * @param name
      *            The vendor-specific XADataSource class to use. Ignored if the XADataSource instance is set directly.
      */
@@ -424,7 +431,7 @@ public class SimpleDataSourceBean implements HeuristicDataSource,
     // * true if the validating query could be executed,
     // * or if no validating query was specified.
     // */
-    //    
+    //
     // public boolean isValidatingQueryOK()
     // {
     // boolean ret = false;
@@ -435,14 +442,14 @@ public class SimpleDataSourceBean implements HeuristicDataSource,
     // }
     // catch (SQLException e)
     // {
-    //            
+    //
     // }
     // return ret ;
     // }
-    //    
+    //
     /**
      * Get the full name of the vendor-specific XADataSource class.
-     * 
+     *
      * @return String The fully qualified name.
      */
 
@@ -460,7 +467,7 @@ public class SimpleDataSourceBean implements HeuristicDataSource,
     /**
      * Set the XADataSource-specific properties as a semicolon-separated list of
      * string values (required unless the XADataSource instance is set directly).
-     * 
+     *
      * @param properties
      *            The properties expressed as a semi-colon separated list. For
      *            example: port=8000;user=demo;password=sa
@@ -474,15 +481,15 @@ public class SimpleDataSourceBean implements HeuristicDataSource,
 
     /**
      * Get the XADataSource properties as one large string.
-     * 
+     *
      * @return String The poperty list as set previously by setXaDataSourceProperties.
      */
 
-    public String getXaDataSourceProperties () 
+    public String getXaDataSourceProperties ()
     {
     	    StringBuffer ret = new StringBuffer();
     	    if ( xaProperties_ != null ) ret.append ( xaProperties_ );
-    	    if ( ret.length() == 0 && xads_ != null ) { 	    
+    	    if ( ret.length() == 0 && xads_ != null ) {
     	    	    try {
 	    	    		BeanInspector inspector = new BeanInspector ( xads_ );
 	    	    		Property[] props = inspector.getProperties();
@@ -500,19 +507,19 @@ public class SimpleDataSourceBean implements HeuristicDataSource,
     	    }
         return ret.toString();
     }
-    
+
     /**
      * Sets the (preconfigured) XADataSource instance.
-     * 
+     *
      * @param xads The instance.
      */
-    public void setXaDataSource ( XADataSource xads ) 
+    public void setXaDataSource ( XADataSource xads )
     {
     		this.xads_ = xads;
     }
-    
+
     /**
-     * Gets the configured XADataSource instance (if set). 
+     * Gets the configured XADataSource instance (if set).
      * @return The XADataSource - or null if not set.
      */
     public XADataSource getXaDataSource()
@@ -523,7 +530,7 @@ public class SimpleDataSourceBean implements HeuristicDataSource,
     /**
      * Perform validation based on the validating query. This method does
      * nothing if no query was specified.
-     * 
+     *
      * @throws SQLException
      *             If validation fails.
      */
@@ -677,7 +684,7 @@ public class SimpleDataSourceBean implements HeuristicDataSource,
     {
     	    //DON'T setup: see issue 10098
         //checkSetup ();
-    	
+
     		if ( ds_ != null  ) {
     			//issue 10098: don't call setup -> added null check
     			ds_.close ();

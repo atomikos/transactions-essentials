@@ -25,6 +25,9 @@
 
 package com.atomikos.jdbc.nonxa;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -47,6 +50,10 @@ import com.atomikos.jdbc.XPooledConnection;
 
 class NonXAPooledConnectionImp implements XPooledConnection
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(NonXAPooledConnectionImp.class);
 
     private Connection connection;
     // the actual JDBC connection (non-XA capable)

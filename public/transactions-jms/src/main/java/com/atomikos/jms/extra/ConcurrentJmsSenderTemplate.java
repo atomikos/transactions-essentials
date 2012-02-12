@@ -25,6 +25,9 @@
 
 package com.atomikos.jms.extra;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 
 import javax.jms.Connection;
 import javax.jms.JMSException;
@@ -56,6 +59,10 @@ import com.atomikos.icatch.system.Configuration;
 
 public class ConcurrentJmsSenderTemplate extends AbstractJmsSenderTemplate
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(ConcurrentJmsSenderTemplate.class);
 
 	public ConcurrentJmsSenderTemplate()
 	{

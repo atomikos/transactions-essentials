@@ -26,6 +26,9 @@
 
 package com.atomikos.jms;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import javax.jms.ConnectionConsumer;
 import javax.jms.JMSException;
 import javax.jms.ServerSessionPool;
@@ -50,6 +53,10 @@ import com.atomikos.icatch.system.Configuration;
 class JtaTopicConnection extends DefaultJtaConnection implements
 		TopicConnection 
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(JtaTopicConnection.class);
 
 	
 	

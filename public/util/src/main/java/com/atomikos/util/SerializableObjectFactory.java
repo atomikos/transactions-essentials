@@ -25,6 +25,9 @@
 
 package com.atomikos.util;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -50,6 +53,10 @@ import javax.naming.spi.ObjectFactory;
 
 public class SerializableObjectFactory implements ObjectFactory
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(SerializableObjectFactory.class);
 	
 	static Reference createReference ( Serializable object , String factoryClassName )
 	throws NamingException

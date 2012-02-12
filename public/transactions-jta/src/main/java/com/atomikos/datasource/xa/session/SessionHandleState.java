@@ -25,6 +25,9 @@
 
 package com.atomikos.datasource.xa.session;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -37,19 +40,24 @@ import com.atomikos.datasource.xa.XATransactionalResource;
 import com.atomikos.icatch.CompositeTransaction;
 import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.system.Configuration;
- 
+
  /**
-  * 
-  * 
+  *
+  *
   * A reusable state tracker for XA session/connection handles.
-  * An instance of this class can be used for automatically tracking the 
+  * An instance of this class can be used for automatically tracking the
   * enlistment and termination states of all branches
   * that a connection handle is involved in. It does this by switching states
   * behind the scenes, so the same instance can be used for several branches.
   */
 
-public class SessionHandleState 
+public class SessionHandleState
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger LOGGER = LoggerFactory.createLogger(SessionHandleState.class);
+
 	private TransactionContext currentContext;
 	private Set allContexts;
 	private XATransactionalResource resource;
@@ -57,8 +65,8 @@ public class SessionHandleState
 	private boolean erroneous;
 	private boolean closed;
 	private List sessionHandleStateChangeListeners = new ArrayList();
-	
-	
+
+
 	public SessionHandleState ( XATransactionalResource resource , XAResource xaResource )
 	{
 		this.resource = resource;
@@ -67,15 +75,15 @@ public class SessionHandleState
 		this.erroneous = false;
 		this.closed = true;
 	}
-	
+
 	/**
 	 * Checks if the session handle is terminated (i.e., can be discarded) and the
-	 * underlying vendor xa connection/session can be reused or destroyed. 
-	 * 
-	 * @return True if the underlying vendor connection can be reused or destroyed. 
+	 * underlying vendor xa connection/session can be reused or destroyed.
+	 *
+	 * @return True if the underlying vendor connection can be reused or destroyed.
 	 * The session handle itself (i.e., the Atomikos proxy) should be discarded.
 	 */
-	
+
 	public synchronized boolean isTerminated()
 	{
 		boolean terminated = true;
@@ -87,42 +95,42 @@ public class SessionHandleState
 			}
 			else terminated = false;
 		}
-		
+
 		if ( terminated ) currentContext = null;
-		
+
 		return terminated;
 	}
-	
+
 	/**
 	 * Notification that the session was gotten from the pool.
-	 * 
-	 * 
+	 *
+	 *
 	 */
 	public synchronized void notifySessionBorrowed()
 	{
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": notifySessionBorrowed" );
+		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": notifySessionBorrowed" );
 		currentContext = new TransactionContext ( resource , xaResource );
 		allContexts.add ( currentContext );
 		closed = false;
 	}
-	
+
 	/**
-	 * Notification that the session handle has been closed by 
-	 * the application. 
+	 * Notification that the session handle has been closed by
+	 * the application.
 	 *
 	 */
-	
+
 	public void notifySessionClosed()
 	{
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": entering notifySessionClosed" );
+		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": entering notifySessionClosed" );
 		boolean notifyOfClosedEvent = false;
-	
+
 		synchronized ( this ) {
 			boolean alreadyTerminated = isTerminated();
 			Iterator it = allContexts.iterator();
 			while ( it.hasNext() ) {
 				TransactionContext b = ( TransactionContext ) it.next();
-				if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": delegeting session close to " + b ) ;
+				if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": delegeting session close to " + b ) ;
 				b.sessionClosed();
 			}
 			closed = true;
@@ -130,30 +138,30 @@ public class SessionHandleState
 		}
 		//do callbacks out of synch!!!
 		if ( notifyOfClosedEvent ) {
-			if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": all contexts terminated, firing TerminatedEvent" );
+			if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": all contexts terminated, firing TerminatedEvent" );
 			fireTerminatedEvent();
 		}
 	}
-	
+
 	/**
 	 * Notification that the session handle is about to be used in the current
-	 * transaction context (i.e. whatever transaction exists for the calling thread). 
+	 * transaction context (i.e. whatever transaction exists for the calling thread).
 	 * This method MUST be called BEFORE any work is delegated to the underlying
 	 * vendor connection.
-	 * @param ct The current transaction, or null if none. 
+	 * @param ct The current transaction, or null if none.
 	 * @param HeuristicMessage hmsg The heuristic message, null if none.
-	 * 
-	 * @throws InvalidSessionHandleStateException 
+	 *
+	 * @throws InvalidSessionHandleStateException
 	 */
-	
+
 	public synchronized void notifyBeforeUse ( CompositeTransaction ct , HeuristicMessage hmsg ) throws InvalidSessionHandleStateException
 	{
 		if ( closed ) throw new InvalidSessionHandleStateException ( "The underlying XA session is closed" );
-		
+
 		try {
 			//first check if a suspended context exists for the current tx;
 			//this happens if a transaction was suspended and now resumed
-			TransactionContext suspended = null;			
+			TransactionContext suspended = null;
 			if ( ct != null ) {
 				Iterator it = allContexts.iterator();
 				while ( it.hasNext() && suspended == null ) {
@@ -172,7 +180,7 @@ public class SessionHandleState
 			else {
 				//no suspended branch was found -> try to use the current branch
 				try {
-					if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": checking XA context for transaction " + ct );
+					if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": checking XA context for transaction " + ct );
 					currentContext.checkEnlistBeforeUse ( ct , hmsg );
 				}
 				catch ( UnexpectedTransactionContextException txBoundaryPassed ) {
@@ -181,7 +189,7 @@ public class SessionHandleState
 					currentContext.transactionSuspended();
 					currentContext = new TransactionContext ( resource , xaResource );
 					allContexts.add ( currentContext );
-					//note: we keep all branches - if the new current branch is a Subtransaction 
+					//note: we keep all branches - if the new current branch is a Subtransaction
 					//then it will not terminate early and needs to stay around
 					try {
 						currentContext.checkEnlistBeforeUse ( ct , hmsg );
@@ -197,42 +205,42 @@ public class SessionHandleState
 			notifySessionErrorOccurred();
 			throw e;
 		}
-		
+
 	}
-	
+
 	/**
 	 * Checks if the session has had any errors.
-	 * This method can be used to decide whether or not to reuse the underlying 
+	 * This method can be used to decide whether or not to reuse the underlying
 	 * vendor connection in the pool.
-	 * 
+	 *
 	 * @return True if sessionErrorOccurred has been called, false if not.
 	 */
-	
+
 	public boolean isErroneous()
 	{
 		return erroneous;
 	}
-	
+
 	/**
 	 * Marks this session as erroneous. This has no other effect than that
-	 * isErroneous returns true. 
+	 * isErroneous returns true.
 	 *
 	 */
-	
+
 	public void notifySessionErrorOccurred()
 	{
 		this.erroneous = true;
 	}
-	
+
 	/**
 	 * Notifies the session that the transaction was terminated.
-	 * 
+	 *
 	 * @param ct
 	 */
-	
-	public void notifyTransactionTerminated ( CompositeTransaction ct ) 
+
+	public void notifyTransactionTerminated ( CompositeTransaction ct )
 	{
-		
+
 		boolean notifyOfTerminatedEvent = false;
 		synchronized ( this ) {
 			boolean alreadyTerminated = isTerminated();
@@ -243,44 +251,44 @@ public class SessionHandleState
 			}
 			if ( isTerminated() && !alreadyTerminated ) notifyOfTerminatedEvent = true;
 		}
-		
+
 		//check termination status CHANGES - only fire event once for safety!
 		if ( notifyOfTerminatedEvent ) {
-			if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug( this + ": all contexts terminated, firing TerminatedEvent for " + this);
+			if ( LOGGER.isDebugEnabled() ) Configuration.logDebug( this + ": all contexts terminated, firing TerminatedEvent for " + this);
 			fireTerminatedEvent();
 		}
 	}
 
-	
-	public void registerSessionHandleStateChangeListener(SessionHandleStateChangeListener listener) 
+
+	public void registerSessionHandleStateChangeListener(SessionHandleStateChangeListener listener)
 	{
 		sessionHandleStateChangeListeners.add(listener);
 	}
-	
-	public void unregisterSessionHandleStateChangeListener(SessionHandleStateChangeListener listener) 
+
+	public void unregisterSessionHandleStateChangeListener(SessionHandleStateChangeListener listener)
 	{
 		sessionHandleStateChangeListeners.remove(listener);
 	}
 
-	private void fireTerminatedEvent() 
+	private void fireTerminatedEvent()
 	{
 		for (int i=0; i<sessionHandleStateChangeListeners.size() ;i++) {
 			SessionHandleStateChangeListener listener = (SessionHandleStateChangeListener) sessionHandleStateChangeListeners.get(i);
 			listener.onTerminated();
 		}
 	}
-	
-	public String toString() 
+
+	public String toString()
 	{
 		return "a SessionHandleState with " + allContexts.size() + " context(s)";
 	}
-	
+
 	/**
 	 * Tests if the session is active (enlisted) in the given transaction.
 	 * @param tx
 	 * @return
 	 */
-	public boolean isActiveInTransaction ( CompositeTransaction  tx ) 
+	public boolean isActiveInTransaction ( CompositeTransaction  tx )
 	{
 		boolean ret = false;
 		if ( currentContext != null && tx != null ) ret = currentContext.isInTransaction ( tx );
@@ -292,7 +300,7 @@ public class SessionHandleState
 	 * @param tx
 	 * @return
 	 */
-	public boolean isInactiveInTransaction( CompositeTransaction tx ) 
+	public boolean isInactiveInTransaction( CompositeTransaction tx )
 	{
 		boolean ret = false;
 		if ( currentContext != null && tx != null ) ret = currentContext.isInactiveInTransaction ( tx );

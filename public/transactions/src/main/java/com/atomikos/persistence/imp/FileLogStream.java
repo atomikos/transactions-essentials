@@ -25,6 +25,9 @@
 
 package com.atomikos.persistence.imp;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -51,6 +54,10 @@ import com.atomikos.util.VersionedFile;
 
 public class FileLogStream implements LogStream
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(FileLogStream.class);
   
 
     private FileOutputStream output_;

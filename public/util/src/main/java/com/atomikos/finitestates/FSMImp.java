@@ -24,6 +24,10 @@
  */
 
 package com.atomikos.finitestates;
+
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.util.Enumeration;
 import java.util.Hashtable;
 
@@ -44,6 +48,10 @@ import java.util.Hashtable;
 
 public class FSMImp implements FSM 
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(FSMImp.class);
 
     private Object state_ = null;
     //the current state

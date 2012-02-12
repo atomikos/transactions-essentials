@@ -25,6 +25,9 @@
 
 package com.atomikos.jms;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 
 import javax.jms.JMSException;
 
@@ -36,6 +39,10 @@ import com.atomikos.icatch.system.Configuration;
   */
 
 public class AtomikosJMSException extends JMSException {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(AtomikosJMSException.class);
 	
 
 	private static final long serialVersionUID = 1L;

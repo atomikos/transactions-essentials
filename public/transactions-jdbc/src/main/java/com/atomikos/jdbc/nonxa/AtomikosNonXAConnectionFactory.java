@@ -25,6 +25,9 @@
 
 package com.atomikos.jdbc.nonxa;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
@@ -49,6 +52,10 @@ import com.atomikos.util.ClassLoadingHelper;
 
 class AtomikosNonXAConnectionFactory implements ConnectionFactory 
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(AtomikosNonXAConnectionFactory.class);
 	
 	private String url;
 	private String driverClassName;

@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.admin.imp;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.HeadlessException;
@@ -67,6 +70,11 @@ import com.atomikos.swing.PropertyListener;
 
 class AdminTool implements PropertyListener, ListSelectionListener
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(AdminTool.class);
+
     private LogControl control_;
     // the tx service, null if standalone
 

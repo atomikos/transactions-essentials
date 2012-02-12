@@ -25,6 +25,9 @@
 
 package com.atomikos.jms.extra;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -66,6 +69,11 @@ import com.atomikos.jms.AtomikosConnectionFactoryBean;
 public class MessageDrivenContainer 
 implements MessageConsumerSessionProperties
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(MessageDrivenContainer.class);
+
 	private static final int DEFAULT_TIMEOUT = 30;
 
 	

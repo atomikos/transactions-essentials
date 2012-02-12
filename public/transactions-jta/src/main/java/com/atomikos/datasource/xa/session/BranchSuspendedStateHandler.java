@@ -25,6 +25,9 @@
 
 package com.atomikos.datasource.xa.session;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import javax.transaction.xa.XAResource;
 
 import com.atomikos.datasource.xa.XAResourceTransaction;
@@ -35,6 +38,11 @@ import com.atomikos.icatch.system.Configuration;
 
 class BranchSuspendedStateHandler extends TransactionContextStateHandler 
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(BranchSuspendedStateHandler.class);
+
 	private XAResourceTransaction branch;
 	private CompositeTransaction ct;
 	

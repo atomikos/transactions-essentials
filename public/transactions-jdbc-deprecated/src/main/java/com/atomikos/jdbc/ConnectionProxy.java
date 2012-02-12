@@ -25,6 +25,9 @@
 
 package com.atomikos.jdbc;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -43,18 +46,22 @@ import com.atomikos.icatch.jta.TransactionManagerImp;
 import com.atomikos.icatch.system.Configuration;
 
 /**
- * 
- * 
- * 
- * 
- * 
+ *
+ *
+ *
+ *
+ *
  * A dynamic proxy to allow external pooling, and also to allow late enlisting
  * of resources with transactions.
  */
 
 class ConnectionProxy implements InvocationHandler
 {
-	
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger LOGGER = LoggerFactory.createLogger(ConnectionProxy.class);
+
 	private final static List NON_TRANSACTIONAL_METHOD_NAMES = Arrays.asList(new String[] {
 			"equals",
 			"hashCode",
@@ -64,27 +71,27 @@ class ConnectionProxy implements InvocationHandler
 			"wait"
 			});
 
-   
-	
+
+
 	static Set getAllImplementedInterfaces ( Class clazz )
     {
     		Set ret = null;
-    		
+
     		if ( clazz.getSuperclass() != null ) {
     			//if superclass exists: first add the superclass interfaces!!!
-    			ret = getAllImplementedInterfaces ( clazz.getSuperclass() ); 
+    			ret = getAllImplementedInterfaces ( clazz.getSuperclass() );
     		}
     		else {
     			//no superclass: start with empty set
     			ret = new HashSet();
-    		} 
-    		
+    		}
+
     		//add the interfaces in this class
     		Class[] interfaces = clazz.getInterfaces();
     		for ( int i = 0 ; i < interfaces.length ; i++ ) {
     			ret.add ( interfaces[i] );
     		}
-    		
+
     		return ret;
     }
 
@@ -123,7 +130,7 @@ class ConnectionProxy implements InvocationHandler
             throws Throwable
     {
         if (NON_TRANSACTIONAL_METHOD_NAMES.contains(m.getName())) {
-        	if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ("Calling non-transactional method '" + m.getName() + "' on connection proxy, bypassing enlistment");
+        	if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ("Calling non-transactional method '" + m.getName() + "' on connection proxy, bypassing enlistment");
         	return m.invoke ( wrapped_, args );
         }
 
@@ -172,16 +179,16 @@ class ConnectionProxy implements InvocationHandler
         }
 
         try {
-            if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "JDBC ConnectionProxy: delegating "
+            if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( "JDBC ConnectionProxy: delegating "
                     + m.getName () + " to connection " + wrapped_.toString () );
 //            if ("close".equals(m.getName())) {
-//            	
+//
 //            }
             ret = m.invoke ( wrapped_, args );
         } catch ( InvocationTargetException i ) {
             pc_.setInvalidated ();
             pc_.close ();
-            if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug (
+            if ( LOGGER.isDebugEnabled() ) Configuration.logDebug (
                     "Exception in pooled connection - closing it", i );
             AtomikosSQLException.throwAtomikosSQLException ( i.getMessage() , i );
         } catch ( Exception e ) {

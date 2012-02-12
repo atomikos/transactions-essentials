@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.jta;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
@@ -72,6 +75,10 @@ import com.atomikos.icatch.system.Configuration;
 public final class RemoteClientUserTransaction implements UserTransaction,
         Externalizable, Referenceable
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(RemoteClientUserTransaction.class);
 
     static final int DEFAULT_TIMEOUT = 30;
 

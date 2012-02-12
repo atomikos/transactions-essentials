@@ -25,6 +25,9 @@
 
 package com.atomikos.jdbc;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.beans.PropertyDescriptor;
 import java.beans.SimpleBeanInfo;
 
@@ -37,6 +40,10 @@ import java.beans.SimpleBeanInfo;
 
 public class SimpleDataSourceBeanBeanInfo extends SimpleBeanInfo
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(SimpleDataSourceBeanBeanInfo.class);
 
     public PropertyDescriptor[] getPropertyDescriptors ()
     {

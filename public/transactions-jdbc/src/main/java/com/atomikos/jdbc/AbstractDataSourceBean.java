@@ -25,6 +25,9 @@
 
 package com.atomikos.jdbc;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.sql.Connection;
@@ -50,17 +53,21 @@ import com.atomikos.util.IntraVmObjectRegistry;
 import com.atomikos.datasource.pool.ConnectionFactory;
 
  /**
-  * 
-  * 
+  *
+  *
   * Abstract data source bean with generic functionality.
-  * 
+  *
   *
   */
 
-public abstract class AbstractDataSourceBean 
+public abstract class AbstractDataSourceBean
 implements HeuristicDataSource, ConnectionPoolProperties, Referenceable, Serializable
 {
-	
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger LOGGER = LoggerFactory.createLogger(AbstractDataSourceBean.class);
+
 	static final int DEFAULT_ISOLATION_LEVEL_UNSET = -1;
 	static final int DEFAULT_POOL_SIZE = 1;
 
@@ -77,19 +84,19 @@ implements HeuristicDataSource, ConnectionPoolProperties, Referenceable, Seriali
 	private String resourceName;
 
 	private int defaultIsolationLevel = DEFAULT_ISOLATION_LEVEL_UNSET;
-	
-	protected void throwAtomikosSQLException ( String msg ) throws AtomikosSQLException 
+
+	protected void throwAtomikosSQLException ( String msg ) throws AtomikosSQLException
 	{
 		throwAtomikosSQLException ( msg , null );
 	}
-	
-	protected void throwAtomikosSQLException ( String msg , Throwable cause ) throws AtomikosSQLException 
+
+	protected void throwAtomikosSQLException ( String msg , Throwable cause ) throws AtomikosSQLException
 	{
 		AtomikosSQLException.throwAtomikosSQLException ( msg  , cause );
 	}
 
 	/**
-	 * Gets the minimum size of the pool. 
+	 * Gets the minimum size of the pool.
 	 */
 	public int getMinPoolSize() {
 		return minPoolSize;
@@ -99,7 +106,7 @@ implements HeuristicDataSource, ConnectionPoolProperties, Referenceable, Seriali
 	 * Sets the minimum pool size. The amount of pooled connections won't go
 	 * below that value. The pool will open this amount of connections during
 	 * initialization. Optional, defaults to 1.
-	 * 
+	 *
 	 * @param minPoolSize
 	 */
 	public void setMinPoolSize(int minPoolSize) {
@@ -107,7 +114,7 @@ implements HeuristicDataSource, ConnectionPoolProperties, Referenceable, Seriali
 	}
 
 	/**
-	 * Get the maximum pool size. 
+	 * Get the maximum pool size.
 	 */
 	public int getMaxPoolSize() {
 		return maxPoolSize;
@@ -116,7 +123,7 @@ implements HeuristicDataSource, ConnectionPoolProperties, Referenceable, Seriali
 	/**
 	 * Sets the maximum pool size. The amount of pooled connections won't go
 	 * above this value. Optional, defaults to 1.
-	 * 
+	 *
 	 * @param maxPoolSize
 	 */
 	public void setMaxPoolSize(int maxPoolSize) {
@@ -124,17 +131,17 @@ implements HeuristicDataSource, ConnectionPoolProperties, Referenceable, Seriali
 	}
 
 	/**
-	 * Sets both the minimal and maximal pool size. Required if the maxPoolSize is not set. 
+	 * Sets both the minimal and maximal pool size. Required if the maxPoolSize is not set.
 	 */
 	public void setPoolSize(int poolSize) {
-		this.minPoolSize = poolSize; 
+		this.minPoolSize = poolSize;
 		this.maxPoolSize = poolSize;
 	}
 
 	/**
 	 * Get the maximum amount of time in seconds the pool will block
 	 * waiting for a connection to become available in the pool when it
-	 * is empty. 
+	 * is empty.
 	 */
 	public int getBorrowConnectionTimeout() {
 		return borrowConnectionTimeout;
@@ -144,7 +151,7 @@ implements HeuristicDataSource, ConnectionPoolProperties, Referenceable, Seriali
 	 * Sets the maximum amount of time in seconds the pool will block
 	 * waiting for a connection to become available in the pool when it
 	 * is empty. Optional.
-	 * 
+	 *
 	 * @param borrowConnectionTimeout The time in seconds. Zero or negative means no waiting at all.
 	 * Defaults to 30 seconds.
 	 */
@@ -162,11 +169,11 @@ implements HeuristicDataSource, ConnectionPoolProperties, Referenceable, Seriali
 
 	/**
 	 * Sets the amount of time (in seconds) that the connection pool will allow a connection
-	 * to be in use, before claiming it back. Optional. 
-	 * 
-	 * @param reapTimeout The timeout in seconds. Zero means unlimited. Note that this value is 
+	 * to be in use, before claiming it back. Optional.
+	 *
+	 * @param reapTimeout The timeout in seconds. Zero means unlimited. Note that this value is
 	 * only an indication; the pool will check regularly as indicated by the maintenanceInteval property.
-	 * Default is 0 (no timeout). 
+	 * Default is 0 (no timeout).
 	 */
 	public void setReapTimeout(int reapTimeout) {
 		this.reapTimeout = reapTimeout;
@@ -174,8 +181,8 @@ implements HeuristicDataSource, ConnectionPoolProperties, Referenceable, Seriali
 
 	/**
 	 * Sets the maintenance interval for the pool maintenance thread.
-	 * Optional. 
-	 * 
+	 * Optional.
+	 *
 	 * @param maintenanceInterval The interval in seconds. If not set or not positive then the pool's default (60 secs) will be used.
 	 */
 	public void setMaintenanceInterval(int maintenanceInterval) {
@@ -199,10 +206,10 @@ implements HeuristicDataSource, ConnectionPoolProperties, Referenceable, Seriali
 
 	/**
 	 * Sets the maximum amount of seconds that unused excess connections should stay in the pool. Optional.
-	 * 
+	 *
 	 * Note: excess connections are connections that are created above the minPoolSize limit.
-	 * 
-	 * @param maxIdleTime The preferred idle time for unused excess connections. Note that this value is 
+	 *
+	 * @param maxIdleTime The preferred idle time for unused excess connections. Note that this value is
 	 * only an indication; the pool will check regularly as indicated by the maintenanceInteval property.
 	 * The default is 60 seconds.
 	 */
@@ -211,16 +218,16 @@ implements HeuristicDataSource, ConnectionPoolProperties, Referenceable, Seriali
 	}
 
 	/**
-	 * Gets the SQL query used to test a connection before returning it. 
+	 * Gets the SQL query used to test a connection before returning it.
 	 */
 	public String getTestQuery() {
 		return testQuery;
 	}
 
 	/**
-	 * Sets the SQL query or statement used to validate a connection before returning it. Optional. 
-	 * 
-	 * @param testQuery - The SQL query or statement to validate the connection with. Note that 
+	 * Sets the SQL query or statement used to validate a connection before returning it. Optional.
+	 *
+	 * @param testQuery - The SQL query or statement to validate the connection with. Note that
 	 * although you can specify updates here, these will NOT be part of any JTA transaction!
 	 */
 	public void setTestQuery(String testQuery) {
@@ -251,43 +258,43 @@ implements HeuristicDataSource, ConnectionPoolProperties, Referenceable, Seriali
 		this.loginTimeout = seconds;
 	}
 
-	public synchronized void init() throws AtomikosSQLException 
+	public synchronized void init() throws AtomikosSQLException
 	{
 		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": init..." );
 		if (connectionPool != null)
 			return;
-		
+
 		if ( maxPoolSize < 1 )
 			throwAtomikosSQLException ( "Property 'maxPoolSize' must be greater than 0, was: " + maxPoolSize );
 		if ( minPoolSize < 0 || minPoolSize > maxPoolSize )
 			throwAtomikosSQLException("Property 'minPoolSize' must be at least 0 and at most maxPoolSize, was: " + minPoolSize);
 		if ( getUniqueResourceName() == null )
 			throwAtomikosSQLException("Property 'uniqueResourceName' cannot be null");
-		if ( getTestQuery() == null ) 
+		if ( getTestQuery() == null )
 			Configuration.logWarning ( this + ": no testQuery set - the connection pool will not be able to validate the connections!" );
 		if ( getMinPoolSize() == DEFAULT_POOL_SIZE ) {
 			Configuration.logWarning ( this + ": poolSize equals default - this may cause performance problems!" );
 		}
-		
+
 		try {
 			//initialize JNDI infrastructure for lookup
 			getReference();
 			ConnectionFactory cf = doInit();
 			connectionPool = new ConnectionPool(cf, this);
-		
-			
-		
+
+
+
 		} catch ( AtomikosSQLException e ) {
 			//these are logged at creation time -> just rethrow
 			throw e;
-		} catch ( Exception ex) { 
+		} catch ( Exception ex) {
 			String msg =  "Cannot initialize AtomikosDataSourceBean";
 			AtomikosSQLException.throwAtomikosSQLException ( msg , ex );
 		}
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": init done." );
+		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": init done." );
 	}
-	
-	public void close() 
+
+	public void close()
 	{
 		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": close..." );
 		if (connectionPool != null) {
@@ -299,27 +306,27 @@ implements HeuristicDataSource, ConnectionPoolProperties, Referenceable, Seriali
 			IntraVmObjectRegistry.removeResource ( getUniqueResourceName() );
 		} catch ( NameNotFoundException e ) {
 			//ignore but log
-			if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": Error removing from JNDI" , e );
+			if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": Error removing from JNDI" , e );
 		}
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": close done." );
+		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": close done." );
 	}
-	
+
 	protected abstract ConnectionFactory doInit() throws Exception;
 
 	protected abstract void doClose();
 
 	/* DataSource impl */
 
-	public Connection getConnection ( HeuristicMessage msg ) throws SQLException 
+	public Connection getConnection ( HeuristicMessage msg ) throws SQLException
 	{
 		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": getConnection ( " + msg + " )..." );
 		Connection connection = null;
-		
+
 		init();
-		
+
 		try {
 			connection = (Connection) connectionPool.borrowConnection ( msg );
-			
+
 		} catch (CreateConnectionException ex) {
 			throwAtomikosSQLException("Failed to grow the connection pool", ex);
 		} catch (PoolExhaustedException e) {
@@ -327,18 +334,18 @@ implements HeuristicDataSource, ConnectionPoolProperties, Referenceable, Seriali
 		} catch (ConnectionPoolException e) {
 			throwAtomikosSQLException("Error borrowing connection", e );
 		}
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": returning " + connection );
+		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": returning " + connection );
 		return connection;
 	}
 
-	public Connection getConnection(String username, String password) throws SQLException 
+	public Connection getConnection(String username, String password) throws SQLException
 	{
     	Configuration.logWarning ( this + ": getConnection ( user , password ) ignores authentication - returning default connection" );
 		return getConnection();
 	}
 
 	/**
-	 * Get the resource name. 
+	 * Get the resource name.
 	 */
 	public String getUniqueResourceName() {
 		return resourceName;
@@ -346,14 +353,14 @@ implements HeuristicDataSource, ConnectionPoolProperties, Referenceable, Seriali
 
 	/**
 	 * Sets the resource name. Required.
-	 * 
+	 *
 	 * @param resourceName An arbitrary user-specified value that identifies
 	 * this datasource. It must be unique for recovery purposes.
 	 */
 	public void setUniqueResourceName(String resourceName) {
 		this.resourceName = resourceName;
 	}
-	
+
 	/**
 	 * Tests whether local transactions are allowed - defaults to true
 	 * for JDBC. This property is used by the pooling mechanism.
@@ -362,11 +369,11 @@ implements HeuristicDataSource, ConnectionPoolProperties, Referenceable, Seriali
 		return true;
 	}
 
-	public Reference getReference() throws NamingException 
-	{	
-		return IntraVmObjectFactory.createReference ( this , getUniqueResourceName() );		
+	public Reference getReference() throws NamingException
+	{
+		return IntraVmObjectFactory.createReference ( this , getUniqueResourceName() );
 	}
-	
+
 	public Connection getConnection() throws SQLException
 	{
 		StringHeuristicMessage m = null;
@@ -386,7 +393,7 @@ implements HeuristicDataSource, ConnectionPoolProperties, Referenceable, Seriali
     	return getConnection ( msg );
     }
 
-  
+
     public Connection getConnection ( String user , String passwd ,
             HeuristicMessage msg ) throws SQLException
     {
@@ -397,8 +404,8 @@ implements HeuristicDataSource, ConnectionPoolProperties, Referenceable, Seriali
 	/**
 	 * Sets the default isolation level of connections returned by this datasource.
 	 * Optional, defaults to the vendor-specific JDBC or DBMS settings.
-	 * 
-	 * @param defaultIsolationLevel The default isolation level. 
+	 *
+	 * @param defaultIsolationLevel The default isolation level.
 	 * Negative values are ignored and result in vendor-specific JDBC driver or DBMS internal defaults.
 	 */
 	public void setDefaultIsolationLevel(int defaultIsolationLevel) {
@@ -406,14 +413,14 @@ implements HeuristicDataSource, ConnectionPoolProperties, Referenceable, Seriali
 	}
 
 	/**
-	 * Gets the default isolation level for connections created by this datasource. 
-	 * 
+	 * Gets the default isolation level for connections created by this datasource.
+	 *
 	 * @return The default isolation level, or -1 if no specific value was set.
-	 * 
+	 *
 	 */
 	public int getDefaultIsolationLevel() {
 		return defaultIsolationLevel;
 	}
 
-	
+
 }

@@ -25,6 +25,9 @@
 
 package com.atomikos.jdbc.nonxa;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -44,6 +47,10 @@ import com.atomikos.jdbc.XPooledConnection;
  */
 public class NonXAConnectionFactory implements ConnectionFactory
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(NonXAConnectionFactory.class);
 
     private String userName;
 

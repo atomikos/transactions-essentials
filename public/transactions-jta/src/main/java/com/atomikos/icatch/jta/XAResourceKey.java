@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.jta;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
 
@@ -37,6 +40,10 @@ import javax.transaction.xa.XAResource;
  */
 class XAResourceKey
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(XAResourceKey.class);
 
     private XAResource xares;
 

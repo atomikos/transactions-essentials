@@ -25,6 +25,9 @@
 
 package com.atomikos.datasource.xa.session;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import com.atomikos.icatch.CompositeTransaction;
 import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.system.Configuration;
@@ -32,6 +35,10 @@ import com.atomikos.icatch.system.Configuration;
 class TerminatedStateHandler 
 extends TransactionContextStateHandler 
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(TerminatedStateHandler.class);
 
 	TerminatedStateHandler() 
 	{

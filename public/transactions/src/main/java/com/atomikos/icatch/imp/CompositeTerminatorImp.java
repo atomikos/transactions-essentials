@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.imp;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.util.Dictionary;
 import java.util.Stack;
 
@@ -45,6 +48,11 @@ import com.atomikos.icatch.TransactionService;
 
 class CompositeTerminatorImp implements CompositeTerminator
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(CompositeTerminatorImp.class);
+
     protected CoordinatorImp coordinator_ = null;
 
     protected CompositeTransactionImp transaction_ = null;

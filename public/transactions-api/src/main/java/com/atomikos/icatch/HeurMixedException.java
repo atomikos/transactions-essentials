@@ -34,6 +34,9 @@
 
 package com.atomikos.icatch;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 
 /**
  * An exception signaling that some participants 
@@ -42,6 +45,11 @@ package com.atomikos.icatch;
 
 public class HeurMixedException extends Exception
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(HeurMixedException.class);
+
     protected HeuristicMessage[] aborts_=null, commits_=null, msgs_=null;
 
  

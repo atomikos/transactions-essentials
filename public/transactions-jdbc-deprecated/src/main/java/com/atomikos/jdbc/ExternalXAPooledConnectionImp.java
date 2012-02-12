@@ -25,6 +25,9 @@
 
 package com.atomikos.jdbc;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -53,6 +56,10 @@ import com.atomikos.icatch.TxState;
 public class ExternalXAPooledConnectionImp implements DTPPooledConnection,
         ConnectionEventListener
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(ExternalXAPooledConnectionImp.class);
 	
 	protected static void suspendResourceTransaction (
 			ResourceTransaction restx ) {

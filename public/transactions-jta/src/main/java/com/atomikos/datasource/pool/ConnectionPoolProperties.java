@@ -24,6 +24,10 @@
  */
 
 package com.atomikos.datasource.pool;
+
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
  /**
   * This interface describes connection
   * pool properties. 

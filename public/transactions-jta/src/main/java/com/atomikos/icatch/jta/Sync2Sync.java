@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.jta;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import javax.transaction.Status;
 
 import com.atomikos.icatch.TxState;
@@ -38,6 +41,11 @@ import com.atomikos.icatch.system.Configuration;
 
 class Sync2Sync implements com.atomikos.icatch.Synchronization
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(Sync2Sync.class);
+
     protected javax.transaction.Synchronization sync_;
 
     private Boolean committed_;

@@ -25,6 +25,9 @@
 
 package com.atomikos.beans;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -43,6 +46,11 @@ import java.util.ArrayList;
 
 public class ClassInspector
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(ClassInspector.class);
+
     private Class clazz_;
     //the class to inspect
 

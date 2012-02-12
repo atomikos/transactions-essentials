@@ -25,6 +25,10 @@
 
 
 package com.atomikos.swing;
+
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import javax.swing.SwingUtilities;
 
 /**
@@ -40,6 +44,11 @@ import javax.swing.SwingUtilities;
  * creating it.
  */
 public abstract class SwingWorker {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(SwingWorker.class);
+
     private Object value;  // see getValue(), setValue()
     private Thread thread;
 

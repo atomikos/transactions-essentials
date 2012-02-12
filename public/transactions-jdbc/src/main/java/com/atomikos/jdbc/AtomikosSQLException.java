@@ -25,11 +25,18 @@
 
 package com.atomikos.jdbc;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.sql.SQLException;
 
 import com.atomikos.icatch.system.Configuration;
 
 public class AtomikosSQLException extends SQLException {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(AtomikosSQLException.class);
 	
 	/**
 	 * Logs and throws an AtomikosSQLException.

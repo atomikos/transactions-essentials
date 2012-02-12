@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.admin.imp;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.util.Vector;
 
 import javax.swing.table.AbstractTableModel;
@@ -41,6 +44,11 @@ import com.atomikos.swing.PropertiesTableModel;
 class StateTableModel extends AbstractTableModel implements
         PropertiesTableModel
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(StateTableModel.class);
+
     private Vector data_;
 
     StateTableModel ( Vector data )

@@ -25,6 +25,9 @@
 
 package com.atomikos.finitestates;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.util.EventObject;
 
 /**
@@ -33,6 +36,11 @@ import java.util.EventObject;
 *Events signalling the transition of the FSM to a new state.
 */
 public class FSMEnterEvent extends EventObject{
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(FSMEnterEvent.class);
+
 	/**
 	 * 
 	 */

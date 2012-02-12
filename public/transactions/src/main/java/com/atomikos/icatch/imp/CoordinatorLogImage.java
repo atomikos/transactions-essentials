@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.imp;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.io.IOException;
 import java.io.InvalidClassException;
 import java.io.ObjectInput;
@@ -44,6 +47,11 @@ import com.atomikos.persistence.Recoverable;
 
 class CoordinatorLogImage implements ObjectImage
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(CoordinatorLogImage.class);
+
     // force serial version UID for backward log compatibility
     static final long serialVersionUID = 3404629869531420208L;
 

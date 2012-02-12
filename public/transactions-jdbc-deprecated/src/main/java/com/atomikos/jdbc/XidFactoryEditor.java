@@ -25,6 +25,9 @@
 
 package com.atomikos.jdbc;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.beans.PropertyEditorSupport;
 
 /**
@@ -36,6 +39,11 @@ import java.beans.PropertyEditorSupport;
 
 public class XidFactoryEditor extends PropertyEditorSupport
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(XidFactoryEditor.class);
+
     public XidFactoryEditor ()
     {
     }

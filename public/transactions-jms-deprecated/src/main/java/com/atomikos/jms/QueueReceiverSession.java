@@ -25,16 +25,19 @@
 
 package com.atomikos.jms;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import javax.jms.JMSException;
 import javax.jms.Queue;
 
 import com.atomikos.icatch.system.Configuration;
 
 /**
- * 
- * 
- * 
- * 
+ *
+ *
+ *
+ *
  * A light-weight alternative for message-driven beans: the QueueReceiverSession
  * allows MessageListener instances to listen on JMS messages in a transactional
  * way (non-transactional mode is not supported). This class is implemented as a
@@ -47,12 +50,12 @@ import com.atomikos.icatch.system.Configuration;
  * <b>IMPORTANT:</b> the transactional behaviour guarantees redelivery after failures.
  * As a side-effect, this can lead to so-called <em>poison messages</em>: messages
  * whose processing repeatedly fails due to some recurring error (for instance, a primary
- * key violation in the database, a NullPointerException, ...). 
+ * key violation in the database, a NullPointerException, ...).
  * Poison messages are problematic
  * because they can prevent other messages from being processed, and block the system.
  * Some messaging systems
- * provide a way to deal with poison messages, others don't. In that case, it is up 
- * to the registered MessageListener to detect poison messages. The easiest way to 
+ * provide a way to deal with poison messages, others don't. In that case, it is up
+ * to the registered MessageListener to detect poison messages. The easiest way to
  * detect these is by inspecting the <code>JMSRedelivered</code> header and/or the
  * (sometimes available) JMS property called <code>JMSXDeliveryCount</code>. For instance, if the
  * delivery count is too high then your application may choose to send the message to
@@ -63,7 +66,7 @@ import com.atomikos.icatch.system.Configuration;
  * <b>Instances of this class consume JMS messages in a single thread only. Use
  * QueueReceiverSessionPool if you want to have multiple concurrent threads for
  * the same queue.</b>
- * 
+ *
  */
 
 // TODO check if non-transactional mode is desirable and feasible
@@ -71,19 +74,24 @@ import com.atomikos.icatch.system.Configuration;
 public class QueueReceiverSession
 extends MessageConsumerSession
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger LOGGER = LoggerFactory.createLogger(QueueReceiverSession.class);
+
     /**
      * Create a new instance. Configuration should be done via the setters.
      */
 
     public QueueReceiverSession ()
     {
-        
-       
+
+
     }
-    
+
     /**
      * Set the queue connection factory to use.
-     * 
+     *
      * @param factory
      *            The queue connection factory. This factory needs to be
      *            configured independently before this method is called.
@@ -97,7 +105,7 @@ extends MessageConsumerSession
 
     /**
      * Get the queue connection factory.
-     * 
+     *
      * @return
      */
 
@@ -108,7 +116,7 @@ extends MessageConsumerSession
 
     /**
      * Set the queue to use for listening on.
-     * 
+     *
      * @param queue
      *            This is the queue where messages are to be taken off
      *            transactionally.
@@ -121,7 +129,7 @@ extends MessageConsumerSession
 
     /**
      * Get the queue.
-     * 
+     *
      * @return
      */
     public Queue getQueue ()
@@ -129,7 +137,7 @@ extends MessageConsumerSession
         return ( Queue ) getDestination();
     }
 
-	protected String getDestinationName() 
+	protected String getDestinationName()
 	{
 		String ret = null;
 		Queue queue = getQueue();
@@ -137,7 +145,7 @@ extends MessageConsumerSession
 			try {
 				ret = queue.getQueueName();
 			} catch ( JMSException e ) {
-				if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "QueueReceiverSession: error retrieving queue name" , e );
+				if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( "QueueReceiverSession: error retrieving queue name" , e );
 			}
 		}
 		return ret;
@@ -155,14 +163,14 @@ extends MessageConsumerSession
 
 	protected void setNoLocal(boolean value) {
 		//ignore for queues
-		
+
 	}
 
 	protected void setSubscriberName(String name) {
 		//ignore for queues
-		
+
 	}
 
-  
+
 
 }

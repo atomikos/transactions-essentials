@@ -25,6 +25,9 @@
 
 package com.atomikos.datasource.xa;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
 
@@ -46,6 +49,11 @@ import com.atomikos.diagnostics.Console;
 
 public class TemporaryXATransactionalResource extends XATransactionalResource
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(TemporaryXATransactionalResource.class);
+
 	/**
 	 * Max length in bytes of the resource name
 	 */

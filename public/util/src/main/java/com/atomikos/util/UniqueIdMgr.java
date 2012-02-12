@@ -25,6 +25,10 @@
 
 
 package com.atomikos.util;
+
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.FileInputStream;
@@ -43,6 +47,11 @@ import java.util.Date;
 
 public class UniqueIdMgr 
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(UniqueIdMgr.class);
+
     private static long MAX_PER_EPOCH = 32000;
     //max no of txs with same epoch part in xid.
     //constructs a unique TID for a particular server

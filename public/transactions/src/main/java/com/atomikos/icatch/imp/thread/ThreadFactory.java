@@ -25,45 +25,52 @@
 
 package com.atomikos.icatch.imp.thread;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import com.atomikos.icatch.system.Configuration;
 
 /**
- * 
+ *
  * A singleton factory for creating new threads.
- * 
+ *
  * @author guy
  *
  */
-final class ThreadFactory 
+final class ThreadFactory
 {
-	
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger LOGGER = LoggerFactory.createLogger(ThreadFactory.class);
+
 	static final ThreadFactory singleton = new ThreadFactory ( "Atomikos" );
-	
-	static ThreadFactory getInstance() 
+
+	static ThreadFactory getInstance()
 	{
 		return singleton;
 	}
-	
+
 	private final String name;
 	private int count;
 	private final ThreadGroup group;
-	
+
 	private ThreadFactory ( String threadBaseName )
 	{
 		SecurityManager sm = System.getSecurityManager();
         group = ( sm != null ? sm.getThreadGroup() : Thread.currentThread().getThreadGroup() );
 		this.name = threadBaseName;
 	}
-	
-	String getBaseName() 
+
+	String getBaseName()
 	{
 		return name;
 	}
-	
-	Thread newThread ( Runnable r ) 
+
+	Thread newThread ( Runnable r )
 	{
 		String realName = name + ":" + incCount();
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "ThreadFactory: creating new thread: " + realName );
+		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( "ThreadFactory: creating new thread: " + realName );
 		Thread thread = new Thread ( group , r , realName );
 		thread.setContextClassLoader( Thread.currentThread().getContextClassLoader() );
 		thread.setDaemon ( true );

@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.imp.thread;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 
 /**
  * 

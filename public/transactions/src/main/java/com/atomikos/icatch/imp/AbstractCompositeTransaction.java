@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.imp;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.util.Properties;
 import java.util.Stack;
 
@@ -53,6 +56,10 @@ import com.atomikos.icatch.TransactionControl;
 public abstract class AbstractCompositeTransaction implements CompositeTransaction,
         java.io.Serializable
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(AbstractCompositeTransaction.class);
 
     /**
 	 * 

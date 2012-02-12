@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.admin.jmx;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import javax.management.ObjectName;
 
 /**

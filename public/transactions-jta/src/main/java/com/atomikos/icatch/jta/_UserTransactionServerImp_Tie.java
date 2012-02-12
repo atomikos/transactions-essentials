@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.jta;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.rmi.Remote;
 
 import javax.rmi.CORBA.Tie;
@@ -44,6 +47,10 @@ import org.omg.CORBA_2_3.portable.ObjectImpl;
 
 public class _UserTransactionServerImp_Tie extends ObjectImpl implements Tie
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(_UserTransactionServerImp_Tie.class);
 
     private UserTransactionServerImp target = null;
 

@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.imp;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import com.atomikos.icatch.Participant;
 
 /**
@@ -35,6 +38,11 @@ import com.atomikos.icatch.Participant;
 
 class Reply
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(Reply.class);
+
     protected Exception exception_ = null;
 
     protected Object response_ = null;

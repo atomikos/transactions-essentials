@@ -25,6 +25,9 @@
 
 package com.atomikos.jms;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.io.Serializable;
 import java.util.Enumeration;
 
@@ -90,6 +93,10 @@ import com.atomikos.jms.AbstractBridge;
 
 public class Bridge extends AbstractBridge
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(Bridge.class);
 
     protected Message bridgeMessage ( Message message ) throws JMSException
     {

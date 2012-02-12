@@ -25,6 +25,9 @@
 
 package com.atomikos.persistence.imp;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -46,6 +49,11 @@ import com.atomikos.persistence.StateRecoveryManager;
 public class VolatileStateRecoveryManager implements StateRecoveryManager,
         FSMPreEnterListener
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(VolatileStateRecoveryManager.class);
+
     private Map idToElementMap;
 
  

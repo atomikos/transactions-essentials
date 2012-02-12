@@ -25,6 +25,9 @@
 
 package com.atomikos.jdbc.nonxa;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.util.Hashtable;
 
 import javax.naming.Context;
@@ -42,6 +45,10 @@ import javax.naming.spi.ObjectFactory;
  */
 public class NonXADataSourceImpFactory implements ObjectFactory
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(NonXADataSourceImpFactory.class);
 
     public Object getObjectInstance ( Object obj , Name name , Context nameCtx ,
             Hashtable environment ) throws Exception

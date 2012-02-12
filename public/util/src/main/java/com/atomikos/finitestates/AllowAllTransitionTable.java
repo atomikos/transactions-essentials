@@ -25,6 +25,9 @@
 
 package com.atomikos.finitestates;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 /**
  *
  *
@@ -34,6 +37,10 @@ package com.atomikos.finitestates;
  
  public class AllowAllTransitionTable implements TransitionTable
  {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(AllowAllTransitionTable.class);
  
       public AllowAllTransitionTable() {}
       

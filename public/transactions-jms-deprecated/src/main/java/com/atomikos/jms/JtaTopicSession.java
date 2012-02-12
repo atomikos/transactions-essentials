@@ -25,6 +25,9 @@
 
 package com.atomikos.jms;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import javax.jms.JMSException;
 import javax.jms.Topic;
 import javax.jms.TopicPublisher;
@@ -36,46 +39,50 @@ import javax.transaction.xa.XAResource;
 import com.atomikos.datasource.TransactionalResource;
 
 /**
- * 
- * 
+ *
+ *
  * A topic session implementation.
  *<p>
  * Topic functionality in this product was sponsored by <a href="http://www.webtide.com">Webtide</a>.
  */
 
 
-class JtaTopicSession 
+class JtaTopicSession
 extends DefaultJtaSession
-implements TopicSession 
+implements TopicSession
 {
-	
-	JtaTopicSession ( XATopicSession session , 
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger LOGGER = LoggerFactory.createLogger(JtaTopicSession.class);
+
+	JtaTopicSession ( XATopicSession session ,
 			TransactionalResource res , XAResource xares )
 	{
 		super ( session , res , xares );
 	}
-	
+
 	private TopicSession getTopicSession()
 	{
 		return ( TopicSession ) getSession();
 	}
-	
-	public TopicSubscriber createSubscriber ( Topic topic ) 
-	throws JMSException 
+
+	public TopicSubscriber createSubscriber ( Topic topic )
+	throws JMSException
 	{
 		TopicSubscriber ts = getTopicSession().createSubscriber ( topic );
 		return new JtaTopicSubscriber ( ts , getTransactionalResource() , getXAResource() );
 	}
 
-	public TopicSubscriber createSubscriber ( 
-			Topic topic , String messageSelector , boolean noLocal ) throws JMSException 
+	public TopicSubscriber createSubscriber (
+			Topic topic , String messageSelector , boolean noLocal ) throws JMSException
 	{
 		TopicSubscriber ts = getTopicSession().createSubscriber ( topic  , messageSelector, noLocal );
 		return new JtaTopicSubscriber ( ts , getTransactionalResource() , getXAResource() );
-	
+
 	}
 
-	public TopicPublisher createPublisher (Topic topic ) throws JMSException 
+	public TopicPublisher createPublisher (Topic topic ) throws JMSException
 	{
 		TopicPublisher tp = getTopicSession().createPublisher ( topic );
 		return new JtaTopicPublisher ( tp , getTransactionalResource() , getXAResource() );

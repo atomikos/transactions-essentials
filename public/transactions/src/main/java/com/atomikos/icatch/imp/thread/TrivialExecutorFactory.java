@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.imp.thread;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 /**
  * This creator exclusively creates trivial executors, ie. the "new thread"
  * strategy without pooling.
@@ -34,6 +37,10 @@ package com.atomikos.icatch.imp.thread;
 
 class TrivialExecutorFactory implements ExecutorFactory 
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(TrivialExecutorFactory.class);
 
 	public InternalSystemExecutor createExecutor() throws Exception
 	{

@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.imp;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.Participant;
@@ -39,6 +42,10 @@ import com.atomikos.icatch.StringHeuristicMessage;
 
 class PrepareMessage extends PropagationMessage
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(PrepareMessage.class);
 
     public PrepareMessage ( Participant participant , Result result )
     {

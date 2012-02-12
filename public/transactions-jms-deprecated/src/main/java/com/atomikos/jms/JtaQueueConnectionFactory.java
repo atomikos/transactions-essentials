@@ -25,6 +25,9 @@
 
 package com.atomikos.jms;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.util.HashMap;
 
 import javax.jms.Connection;
@@ -74,6 +77,10 @@ import com.atomikos.datasource.xa.jms.JmsTransactionalResource;
 public class JtaQueueConnectionFactory implements QueueConnectionFactory,
         Referenceable
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(JtaQueueConnectionFactory.class);
 
     private static HashMap nameToFactory_ = new HashMap ();
     // for JNDI lookup: maps name to instance

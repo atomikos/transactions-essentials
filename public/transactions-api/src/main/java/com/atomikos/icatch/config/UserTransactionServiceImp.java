@@ -27,6 +27,9 @@
 
 package com.atomikos.icatch.config;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -66,6 +69,10 @@ import com.atomikos.util.ClassLoadingHelper;
 public class UserTransactionServiceImp
         implements java.io.Serializable , UserTransactionService
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger LOGGER = LoggerFactory.createLogger(UserTransactionServiceImp.class);
 
 	private static final long serialVersionUID = -3374591336514451887L;
 
@@ -90,13 +97,13 @@ public class UserTransactionServiceImp
      */
 
     public static final String FILE_PATH_PROPERTY_NAME = "com.atomikos.icatch.file";
-    
+
     /**
      * The name of the system property to disable printing 'Using init file...' messages
      * to System.err - if this system property to an arbitrary value then no such message
      * will be shown on System.err during startup.
      */
-    
+
     public static final String HIDE_INIT_FILE_PATH_PROPERTY_NAME = "com.atomikos.icatch.hide_init_file_path";
 
     /**
@@ -104,22 +111,22 @@ public class UserTransactionServiceImp
      *
      */
 
-    
+
     public static final String DEFAULT_PROPERTIES_FILE_NAME = "transactions.properties";
-    
+
     private static final String PRE_3_0_DEFAULT_PROPERTIES_FILE_NAME = "jta.properties";
 
     private Properties properties_;
-    
+
     private List tsListeners_;
     private List logAdministrators_;
     private List resources_;
 
     private transient UserTransactionService delegate_;
     //the instance to delegate to; obtained from factory
-    
+
     /**
-     * Replace ${...} sequence with the referenced value from the given properties or 
+     * Replace ${...} sequence with the referenced value from the given properties or
      * (if not found) the system properties -
      * contributed through Marian Kelc (marian.kelc@eplus.de)
      * E-Plus Mobilfunk GmbH &amp; Co. KG, Germany
@@ -128,7 +135,7 @@ public class UserTransactionServiceImp
      {
          String result = value;
          //by default, the value as-is is returned
-         
+
          int startIndex = value.indexOf ( '$' );
          if ( startIndex > -1 && value.charAt ( startIndex +1 ) == '{') {
         	 	//at least one reference is found
@@ -138,7 +145,7 @@ public class UserTransactionServiceImp
              if ( endIndex == -1 )
                  throw new IllegalArgumentException ( "unclosed property ref: ${" + value.substring ( startIndex + 2 ) );
 
-             //strip-off reference characters -> get the referenced property name 
+             //strip-off reference characters -> get the referenced property name
              String subPropertyKey = value.substring ( startIndex + 2, endIndex );
              //the properties take precedence -> try them first
              String subPropertyValue = properties.getProperty ( subPropertyKey );
@@ -146,7 +153,7 @@ public class UserTransactionServiceImp
             		//not found in properties -> try system property
             		subPropertyValue = System.getProperty ( subPropertyKey );
             	}
-             
+
              if ( subPropertyValue != null ) {
             	    //in-line refs supported - result is prefix + value + suffix !!!
                  result = result.substring ( 0, startIndex ) + subPropertyValue + result.substring ( endIndex +1 );
@@ -157,24 +164,24 @@ public class UserTransactionServiceImp
             	 	//referenced value not found -> ignore any other references and return value as-is
             	    //NOTE: trying to resolve further references would lead to infinite recursion
              }
-            	 
+
          }
-         
+
          return result;
      }
 
 
-     private static void logToStdErr ( String msg ) 
+     private static void logToStdErr ( String msg )
      {
  		if ( System.getProperty ( HIDE_INIT_FILE_PATH_PROPERTY_NAME ) == null ) {
  			System.err.println ( msg );
  		}
  	}
- 
-    
+
+
     private static Properties mergeProperties ( Properties first, Properties defaults )
     {
-    	
+
     	Enumeration names = first.propertyNames();
     	while ( names.hasMoreElements() ) {
     		String name = ( String ) names.nextElement();
@@ -183,21 +190,21 @@ public class UserTransactionServiceImp
     	}
     	return defaults;
     }
-    
+
     private URL findPropertiesFileInClasspath ( String fileName )
     {
     		URL ret = null;
-    		
+
     		// FIRST: look in application classpath (cf ISSUE 10091)
     		ret = ClassLoadingHelper.loadResourceFromClasspath( getClass() , fileName );
-    		
+
     		if ( ret == null ) {
     			//if not found in app classpath: try what we always did:
     			//lookup as a system resource, without extra prefix
     			ret = getClass().getClassLoader().
 			   	getSystemResource ( fileName );
     		}
-    		
+
     		return ret;
     }
 
@@ -205,7 +212,7 @@ public class UserTransactionServiceImp
     {
         Properties p = new Properties();
 
-        
+
          //look for system property that specifies the transactions.properties file
          //if not found: look for properties file in classpath
          //if not found: use default properties
@@ -240,11 +247,11 @@ public class UserTransactionServiceImp
                         //ignore: just leave url null
                         //and use default
                     }
-              		
+
               }
               try {
-                  
-                  
+
+
                   if ( url == null ) throw new IOException();
                   logToStdErr ( "Using init file: " + url.getPath() );
                   InputStream in = url.openStream();
@@ -269,7 +276,7 @@ public class UserTransactionServiceImp
               p.setProperty ( "com.atomikos.icatch.service" ,
                               System.getProperty ( "com.atomikos.icatch.service" ));
           }
-          
+
           substitutePlaceHolderValues(p);
 
           return p;
@@ -290,19 +297,19 @@ public class UserTransactionServiceImp
               }
           }
 	}
-    
+
 
 
 
 
 	private String getOrFindProperty ( String name )
     {
-    	
+
         if ( properties_ == null ) properties_ = findProperties();
 
         return properties_.getProperty ( name );
     }
-    
+
     /**
      * Default constructor.
      *
@@ -313,7 +320,7 @@ public class UserTransactionServiceImp
 		tsListeners_ = new ArrayList();
 		logAdministrators_ = new ArrayList();
 		resources_ = new ArrayList();
-       
+
     }
 
 	/**
@@ -321,17 +328,17 @@ public class UserTransactionServiceImp
 	 * If this constructor is called, then file-based initialization is overridden.
 	 * In particular, the given properties will take precedence over the file-based
 	 * properties (if found).
-	 * 
+	 *
 	 * @param properties The properties.
 	 */
-	
+
     public UserTransactionServiceImp ( Properties properties )
     {
     	this();
-    	
+
     	properties_ = findProperties();
-    		
-    	//override defaults in file with specified properties   		
+
+    	//override defaults in file with specified properties
         properties_.putAll ( properties );
     }
 
@@ -427,7 +434,7 @@ public class UserTransactionServiceImp
     }
 
 
-   
+
 
     /**
      *@see UserTransactionService
@@ -458,7 +465,7 @@ public class UserTransactionServiceImp
     {
         checkInit();
         delegate_.registerResource(res);
-        
+
     }
 
     /**
@@ -468,7 +475,7 @@ public class UserTransactionServiceImp
     {
         checkInit();
         delegate_.registerLogAdministrator ( admin );
-        
+
     }
 
     /**
@@ -489,26 +496,26 @@ public class UserTransactionServiceImp
         return delegate_.getLogAdministrators();
     }
 
-	public void removeResource ( RecoverableResource res ) 
+	public void removeResource ( RecoverableResource res )
 	{
 		checkInit();
 		delegate_.removeResource ( res );
-		
+
 	}
 
-	public void removeLogAdministrator ( LogAdministrator admin ) 
+	public void removeLogAdministrator ( LogAdministrator admin )
 	{
 		checkInit();
 		delegate_.removeLogAdministrator ( admin );
 	}
 
-	public void registerTSListener ( TSListener listener ) 
+	public void registerTSListener ( TSListener listener )
 	{
 		checkInit();
 		delegate_.registerTSListener ( listener );
 	}
 
-	public void removeTSListener ( TSListener listener ) 
+	public void removeTSListener ( TSListener listener )
 	{
 		checkInit();
 		delegate_.removeTSListener ( listener );
@@ -516,62 +523,62 @@ public class UserTransactionServiceImp
 
 
 	/**
-	 * Convenience shutdown method for DI containers like Spring. 
-	 * 
+	 * Convenience shutdown method for DI containers like Spring.
+	 *
 	 */
-	
-	public void shutdownForce() 
+
+	public void shutdownForce()
 	{
 		shutdown ( true );
-		
+
 	}
 
 	/**
-	 * Convenience shutdown method for DI containers like Spring. 
-	 * 
+	 * Convenience shutdown method for DI containers like Spring.
+	 *
 	 */
-	
-	public void shutdownWait() 
+
+	public void shutdownWait()
 	{
 		shutdown ( false );
-		
+
 	}
 
 	/**
 	 * Dependency injection of all resources to be added during init.
-	 * 
+	 *
 	 * @param resources
 	 */
-	public void setInitialRecoverableResources ( List resources ) 
+	public void setInitialRecoverableResources ( List resources )
 	{
 		resources_ = resources;
-		
+
 	}
 
 	/**
 	 * Dependency injection of all administrators to be added during init.
-	 * 
+	 *
 	 * @param administrators
 	 */
-	public void setInitialLogAdministrators ( List administrators ) 
+	public void setInitialLogAdministrators ( List administrators )
 	{
 		logAdministrators_ = administrators;
-		
+
 	}
 
 	/**
 	 * Dependency injection of all listeners to be added during init.
 	 * @param listeners
 	 */
-	public void setInitialTSListeners ( List listeners ) 
+	public void setInitialTSListeners ( List listeners )
 	{
 		tsListeners_ = listeners;
-		
+
 	}
-	
+
 	/**
-	 * Convenience init method for DI containers like Spring. 
-	 * 
+	 * Convenience init method for DI containers like Spring.
+	 *
 	 */
 	public void init()
 	{

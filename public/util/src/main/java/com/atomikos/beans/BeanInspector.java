@@ -24,6 +24,10 @@
  */
 
 package com.atomikos.beans;
+
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.beans.BeanInfo;
 import java.beans.IndexedPropertyDescriptor;
 import java.beans.Introspector;
@@ -40,6 +44,11 @@ import java.beans.PropertyDescriptor;
 
 public class BeanInspector
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(BeanInspector.class);
+
     private Object bean_;
     //the bean instance for inspection/creation
     

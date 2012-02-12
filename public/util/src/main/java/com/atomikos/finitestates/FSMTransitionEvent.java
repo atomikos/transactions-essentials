@@ -25,6 +25,9 @@
 
 package com.atomikos.finitestates;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.util.EventObject;
 
 /**
@@ -33,6 +36,10 @@ import java.util.EventObject;
 *Events signalling a transition of a FSM.
 */
 public class FSMTransitionEvent extends EventObject{
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(FSMTransitionEvent.class);
 	
 	private static final long serialVersionUID = 7629493293234798149L;
 	

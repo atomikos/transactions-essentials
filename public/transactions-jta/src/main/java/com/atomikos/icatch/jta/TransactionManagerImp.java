@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.jta;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.util.Hashtable;
 import java.util.Stack;
 
@@ -58,6 +61,11 @@ public class TransactionManagerImp implements TransactionManager,
         SubTxAwareParticipant, Referenceable, UserTransaction
 
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(TransactionManagerImp.class);
+
 	private static final long serialVersionUID = -3048879409985542685L;
 
 	/**

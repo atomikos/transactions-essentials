@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.jta;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeurMixedException;
@@ -42,6 +45,11 @@ import com.atomikos.icatch.SysException;
 
 class RollbackOnlyParticipant implements Participant
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(RollbackOnlyParticipant.class);
+
     private StringHeuristicMessage msg_;
     // the message to return in exception
 

@@ -25,6 +25,9 @@
 
 package com.atomikos.beans;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
  /**
   *
   *
@@ -34,6 +37,11 @@ package com.atomikos.beans;
 public class PropertyException
 extends Exception
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(PropertyException.class);
+
     private Throwable nested_;
     //the nested exception
     

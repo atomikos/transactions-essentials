@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.imp;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeurMixedException;
 import com.atomikos.icatch.HeurRollbackException;
@@ -41,6 +44,11 @@ import com.atomikos.icatch.system.Configuration;
 
 class CommitMessage extends PropagationMessage
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(CommitMessage.class);
+
     protected boolean onephase_ = false;
 
     protected int retrycount_ = 0;

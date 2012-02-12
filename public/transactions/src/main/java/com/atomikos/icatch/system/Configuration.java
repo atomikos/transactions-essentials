@@ -26,6 +26,9 @@
 
 package com.atomikos.icatch.system;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -61,6 +64,10 @@ import com.atomikos.util.ExceptionHelper;
 
 public final class Configuration
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(Configuration.class);
 
 
     private static CompositeTransactionManager ctxmgr_ = null;

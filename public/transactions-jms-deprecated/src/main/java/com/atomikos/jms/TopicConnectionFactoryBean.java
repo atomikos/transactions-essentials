@@ -25,6 +25,9 @@
 
 package com.atomikos.jms;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import javax.jms.Connection;
 import javax.jms.JMSException;
 import javax.jms.TopicConnection;
@@ -40,8 +43,8 @@ import com.atomikos.datasource.xa.XidFactory;
 import com.atomikos.icatch.system.Configuration;
 
 /**
- * 
- * 
+ *
+ *
  * Use this class to access JMS topics within your JTA transactions: rollback of
  * the transaction will also cancel any messages sent or received. Instances of
  * this class need a JMS vendor-specific instance of XATopicConnectionFactory to
@@ -51,7 +54,7 @@ import com.atomikos.icatch.system.Configuration;
  * everything automatically. As soon as an instance is created, it is fully
  * capable of interacting with the Atomikos transaction manager, and will
  * transparently take part in active transactions.
- * 
+ *
  * <p>
  * <b>Note: any property changes made AFTER getting the first connection
  * will NOT have any effect!</b>
@@ -60,16 +63,21 @@ import com.atomikos.icatch.system.Configuration;
  */
 
 
-public class TopicConnectionFactoryBean 
+public class TopicConnectionFactoryBean
 extends AbstractConnectionFactoryBean
 implements TopicConnectionFactory
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger LOGGER = LoggerFactory.createLogger(TopicConnectionFactoryBean.class);
+
 	private transient JtaTopicConnectionFactory factory_;
-	
+
 	private XATopicConnectionFactory xaFactory_;
 	//where to get the XA connections from
-	
-	
+
+
 	   protected synchronized void checkSetup () throws JMSException
 	    {
 	        factory_ = JtaTopicConnectionFactory.getInstance ( resourceName_ );
@@ -102,54 +110,54 @@ implements TopicConnectionFactory
 	                                    + ne.getMessage () );
 	                }
 	            }
-	            
+
 	            factory_ = JtaTopicConnectionFactory.getOrCreate ( resourceName_,
 	                    xaFactory_, xidFactory );
 	            TransactionalResource res = factory_.getTransactionalResource ();
 	            if ( Configuration.getResource ( res.getName () ) == null )
 	                Configuration.addResource ( res );
-	            
+
 	            StringBuffer msg = new StringBuffer();
 	            msg.append ( "TopicConnectionFactoryBean configured with [" );
 	            msg.append ( "resourceName=" ).append(resourceName_).append (", ");
 	            msg.append ( "xaFactoryJndiName=" ).append( xaFactoryJndiName_ );
 	            msg.append ( "]" );
-	            if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( msg.toString() );
-	            
+	            if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( msg.toString() );
+
 	            Configuration.logWarning ( "WARNING: class " + getClass().getName() + " is deprecated!" );
 	        }
 	    }
-	
+
     /**
-     * Sets the XATopicConnectionFactory to use. 
+     * Sets the XATopicConnectionFactory to use.
      * This method is optional and an
      * alternative to setXaFactoryJndiName.
-     * 
+     *
      * @param xaFactory
      *            The object to use.
      */
-	
+
 	public void setXaTopicConnectionFactory ( XATopicConnectionFactory factory )
 	{
 		this.xaFactory_ = factory;
 	}
-	
+
     /**
      * Get the XATopicConnectionFactory as previously set.
-     * 
+     *
      * @return XATopicConnectionFactory The factory, or null if only the JNDI
      *         name was set.
      */
-	
+
 	public XATopicConnectionFactory getXaTopicConnectionFactory()
 	{
 		return xaFactory_;
 	}
-	
+
 	/**
 	 * Creates a default topic connection.
 	 */
-	public TopicConnection createTopicConnection() throws JMSException 
+	public TopicConnection createTopicConnection() throws JMSException
 	{
 		checkSetup ();
         return factory_.createTopicConnection ();
@@ -158,9 +166,9 @@ implements TopicConnectionFactory
 	/**
 	 * Creates a topic connection with given user credentials.
 	 */
-	public TopicConnection createTopicConnection ( 
+	public TopicConnection createTopicConnection (
 			String userName , String password )
-			throws JMSException 
+			throws JMSException
 	{
 		checkSetup ();
         return factory_.createTopicConnection ( userName , password );
@@ -169,7 +177,7 @@ implements TopicConnectionFactory
 	/**
 	 * Creates a default connection.
 	 */
-	public Connection createConnection() throws JMSException 
+	public Connection createConnection() throws JMSException
 	{
 		return createTopicConnection();
 	}
@@ -177,14 +185,14 @@ implements TopicConnectionFactory
 	/**
 	 * Creates a default connection with given user credentials.
 	 */
-	public Connection createConnection ( 
+	public Connection createConnection (
 			String userName , String password )
-			throws JMSException 
+			throws JMSException
 	{
 		return createTopicConnection ( userName , password );
 	}
 
-	
+
 
 	public boolean equals ( Object o )
 	{
@@ -201,7 +209,7 @@ implements TopicConnectionFactory
 		}
 		return ret;
 	}
-	
+
 	public int hashCode()
 	{
 		int ret = 0;

@@ -25,6 +25,9 @@
 
 package com.atomikos.jms;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
@@ -45,8 +48,8 @@ import com.atomikos.datasource.xa.XidFactory;
 import com.atomikos.icatch.system.Configuration;
 
 /**
- * 
- * 
+ *
+ *
  * Use this class to access JMS queues within your JTA transactions: rollback of
  * the transaction will also cancel any messages sent or received. Instances of
  * this class need a JMS vendor-specific instance of XAQueueConnectionFactory to
@@ -73,6 +76,11 @@ extends AbstractConnectionFactoryBean
 implements QueueConnectionFactory,
         Externalizable
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger LOGGER = LoggerFactory.createLogger(QueueConnectionFactoryBean.class);
+
     private transient JtaQueueConnectionFactory factory_;
 
     // private String xaLookupName_;
@@ -84,8 +92,8 @@ implements QueueConnectionFactory,
 
     public QueueConnectionFactoryBean ()
     {
-        
-       
+
+
         factory_ = null;
         xaFactory_ = null;
         // xaLookupName_ = "jms/xaName";
@@ -138,31 +146,31 @@ implements QueueConnectionFactory,
                 }
             }
 
-           
+
             factory_ = JtaQueueConnectionFactory.getOrCreate ( resourceName_,
                     xaFactory_, xidFactory );
             TransactionalResource res = factory_.getTransactionalResource ();
             if ( Configuration.getResource ( res.getName () ) == null )
                 Configuration.addResource ( res );
-            
+
             StringBuffer msg = new StringBuffer();
             msg.append ( "QueueConnectionFactoryBean configured with [" );
             msg.append ( "resourceName=" ).append(resourceName_).append (", ");
             msg.append ( "xaFactoryJndiName=" ).append( xaFactoryJndiName_ );
             msg.append ( "]" );
-            if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( msg.toString() );
-            
+            if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( msg.toString() );
+
             Configuration.logWarning ( "WARNING: class " + getClass().getName() + " is deprecated!" );
         }
     }
-    
 
-    
-   
+
+
+
 
     /**
      * Get the XAQueueConnectionFactory as previously set.
-     * 
+     *
      * @return XAQueueConnectionFactory The factory, or null if only the JNDI
      *         name was set.
      */
@@ -174,7 +182,7 @@ implements QueueConnectionFactory,
     /**
      * Set the XAQueueConnectionFactory to use. This method is optional and an
      * alternative to setXaFactoryJndiName.
-     * 
+     *
      * @param xaFactory
      *            The object to use.
      */
@@ -197,7 +205,7 @@ implements QueueConnectionFactory,
 
     /**
      * Creates a connection for a given user and password.
-     * 
+     *
      * @return QueueConnection The connection.
      * @param user
      *            The user name.
@@ -211,33 +219,33 @@ implements QueueConnectionFactory,
         checkSetup ();
         return factory_.createQueueConnection ( user, pw );
     }
-    
+
     /**
      * Creates a default connection.
-     * 
+     *
      * @return Connection The connection.
      */
-    
-	public Connection createConnection() throws JMSException 
+
+	public Connection createConnection() throws JMSException
 	{
 		return createQueueConnection();
 	}
 
 	/**
      * Creates a connection for a given user and password.
-     * 
+     *
      * @return Connection The connection.
      * @param userName
      *            The user name.
      * @param password
      *            The password.
      */
-	public Connection createConnection ( String userName , String password ) throws JMSException 
+	public Connection createConnection ( String userName , String password ) throws JMSException
 	{
 		return createQueueConnection ( userName , password );
 	}
 
- 
+
 
     public void writeExternal ( ObjectOutput objectOutput ) throws IOException
     {

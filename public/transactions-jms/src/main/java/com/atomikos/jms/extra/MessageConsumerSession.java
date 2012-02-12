@@ -25,6 +25,9 @@
 
 package com.atomikos.jms.extra;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import javax.jms.Connection;
 import javax.jms.Destination;
 import javax.jms.ExceptionListener;
@@ -45,14 +48,18 @@ import com.atomikos.icatch.system.Configuration;
 import com.atomikos.jms.AtomikosConnectionFactoryBean;
 
 /**
- * 
- * 
+ *
+ *
  * Common message-driven session functionality.
  *
  */
 
-class MessageConsumerSession 
+class MessageConsumerSession
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger LOGGER = LoggerFactory.createLogger(MessageConsumerSession.class);
 
 	private AtomikosConnectionFactoryBean factory;
 	private String user;
@@ -68,7 +75,7 @@ class MessageConsumerSession
 	private UserTransactionManager tm;
 	private boolean active;
 	private ExceptionListener exceptionListener;
-	
+
 	//for durable subscribers only
 	private boolean noLocal;
 	private String subscriberName;
@@ -81,43 +88,43 @@ class MessageConsumerSession
 		noLocal = false;
 		subscriberName = null;
 	}
-	
+
 	protected String getSubscriberName()
 	{
 		return subscriberName;
 	}
-	
+
 	protected void setSubscriberName ( String name )
 	{
 		this.subscriberName = name;
 	}
-	
-	protected  void setNoLocal ( boolean value ) 
+
+	protected  void setNoLocal ( boolean value )
 	{
 		this.noLocal = value;
 	}
-	
-	protected boolean getNoLocal() 
+
+	protected boolean getNoLocal()
 	{
 		return noLocal;
 	}
-	
+
 	protected void setAtomikosConnectionFactoryBean ( AtomikosConnectionFactoryBean bean )
 	{
 		this.factory = bean;
 	}
-	
+
 	protected AtomikosConnectionFactoryBean getAtomikosConnectionFactoryBean()
 	{
 		return factory;
 	}
-	
+
 	/**
 	 * Sets whether threads should be daemon threads or not.
 	 * Default is false.
 	 * @param value If true then threads will be daemon threads.
 	 */
-	public void setDaemonThreads ( boolean value ) 
+	public void setDaemonThreads ( boolean value )
 	{
 			this.daemonThreads = value;
 	}
@@ -126,27 +133,27 @@ class MessageConsumerSession
 	 * Tests whether threads are daemon threads.
 	 * @return True if threads are deamons.
 	 */
-	public boolean getDaemonThreads() 
+	public boolean getDaemonThreads()
 	{
 			return daemonThreads;
 	}
 
 	/**
 	 * Get the message selector (if any)
-	 * 
+	 *
 	 * @return The selector, or null if none.
 	 */
-	public String getMessageSelector() 
+	public String getMessageSelector()
 	{
 	    return messageSelector;
 	}
 
 	/**
 	 * Set the message selector to use.
-	 * 
+	 *
 	 * @param selector
 	 */
-	public void setMessageSelector(String selector) 
+	public void setMessageSelector(String selector)
 	{
 	    this.messageSelector = selector;
 	}
@@ -154,7 +161,7 @@ class MessageConsumerSession
 	/**
 	 * Set the user to create connections with. If the user is not set then the
 	 * default connection will be used.
-	 * 
+	 *
 	 * @param user
 	 */
 	public void setUser(String user) {
@@ -163,7 +170,7 @@ class MessageConsumerSession
 
 	/**
 	 * Get the user to connect with.
-	 * 
+	 *
 	 * @return The user or null if no explicit authentication is to be used.
 	 */
 	public String getUser() {
@@ -173,28 +180,28 @@ class MessageConsumerSession
 	/**
 	 * Set the password to use for connecting. This property only needs to be
 	 * set if the User property was also set.
-	 * 
+	 *
 	 * @param password
 	 */
 	public void setPassword(String password) {
 	    this.password = password;
 	}
-	
+
 	/**
 	 * Gets the destination.
-	 * 
+	 *
 	 * @return Null if none was set.
 	 */
-	public Destination getDestination() 
+	public Destination getDestination()
 	{
 		return destination;
 	}
-	
+
 	/**
 	 * Sets the destination to listen on.
 	 * @param destination
 	 */
-	public void setDestination ( Destination destination ) 
+	public void setDestination ( Destination destination )
 	{
 		this.destination = destination;
 	}
@@ -203,7 +210,7 @@ class MessageConsumerSession
 
 	/**
 	 * Get the transaction timeout in seconds.
-	 * 
+	 *
 	 * @return
 	 */
 	public int getTransactionTimeout() {
@@ -216,10 +223,10 @@ class MessageConsumerSession
 	 * receive incoming messages in its onMessage method, in a JTA transaction.
 	 * By default, the receiver will commit the transaction unless the onMessage
 	 * method throws a runtime exception (in which case rollback will happen).
-	 * 
+	 *
 	 * If no more messages are desired, then this method should be called a
 	 * second time with a null argument.
-	 * 
+	 *
 	 * @param listener
 	 */
 	public void setMessageListener(MessageListener listener) {
@@ -228,7 +235,7 @@ class MessageConsumerSession
 
 	/**
 	 * Get the message listener of this session, if any.
-	 * 
+	 *
 	 * @return
 	 */
 	public MessageListener getMessageListener() {
@@ -237,19 +244,19 @@ class MessageConsumerSession
 
 	/**
 	 * Start listening for messages.
-	 * 
+	 *
 	 */
 	public void startListening() throws JMSException, SystemException {
-	
+
 		if ( active ) throw new IllegalStateException ( "MessageConsumerSession: startListening() called a second time without stopListening() in between" );
-		
+
 	    if ( getDestinationName() == null )
 	        throw new JMSException ( "Please set property 'destination' or 'destinationName' first" );
 	    if ( factory == null )
 	        throw new JMSException (
 	                "Please set the ConnectionFactory first" );
-	
-	
+
+
 	    tm.setStartupTransactionService ( true );
 	    tm.init();
 	    //disable startup to avoid threads re-start the core
@@ -257,7 +264,7 @@ class MessageConsumerSession
 	    tm.setStartupTransactionService ( false );
 	    active = true;
 	    startNewThread();
-	
+
 	    StringBuffer msg = new StringBuffer();
 	    msg.append ( "MessageConsumerSession configured with [" );
 	    msg.append ( "user=" ).append( getUser() ).append ( ", " );
@@ -271,17 +278,17 @@ class MessageConsumerSession
 	    msg.append ( "exceptionListener=" ).append ( getExceptionListener() ).append ( ", " );
 	    msg.append ( "connectionFactory=" ).append ( getAtomikosConnectionFactoryBean() );
 	    msg.append ( "]" );
-	    if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( msg.toString() );
-	    
+	    if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( msg.toString() );
+
 	}
-	
+
 	/**
-	 * Gets the destination name, either as set directly or 
+	 * Gets the destination name, either as set directly or
 	 * as set by the destinationName property.
-	 * 
+	 *
 	 * @return The destination's provider-specific name, or null if none set.
 	 */
-	public String getDestinationName() 
+	public String getDestinationName()
 	{
 		String ret = destinationName;
 		if ( ret == null ) {
@@ -290,14 +297,14 @@ class MessageConsumerSession
 				try {
 					ret = q.getQueueName();
 				} catch (JMSException e) {
-					if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "Error retrieving queue name" , e );
+					if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( "Error retrieving queue name" , e );
 				}
 			} else if ( destination instanceof Topic ) {
 				Topic t = ( Topic ) destination;
 				try {
 					ret = t.getTopicName();
 				} catch (JMSException e) {
-					if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "Error retrieving topic name" , e );
+					if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( "Error retrieving topic name" , e );
 				}
 			}
 		}
@@ -305,30 +312,30 @@ class MessageConsumerSession
 	}
 
 	/**
-	 * Sets the provider-specific destination name. Required, unless 
+	 * Sets the provider-specific destination name. Required, unless
 	 * setDestination is called instead.
-	 * 
+	 *
 	 * @param destinationName
 	 */
-	public void setDestinationName ( String destinationName ) 
+	public void setDestinationName ( String destinationName )
 	{
 		this.destinationName = destinationName;
 	}
-	
+
 	protected void startNewThread() {
 		    if ( active ) {
 	        current = new ReceiverThread ();
 	        //FIXED 10082
 	        current.setDaemon ( daemonThreads );
 	        current.start ();
-	        if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "MessageConsumerSession: started new thread: " + current );
+	        if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( "MessageConsumerSession: started new thread: " + current );
 		    }
 		    //if not active: ignore
 	}
-	
-	private synchronized void notifyExceptionListener ( JMSException e ) 
+
+	private synchronized void notifyExceptionListener ( JMSException e )
 	{
-		if ( exceptionListener != null ) exceptionListener.onException ( e );		
+		if ( exceptionListener != null ) exceptionListener.onException ( e );
 	}
 
 	/**
@@ -336,15 +343,15 @@ class MessageConsumerSession
 	 * calling this method will indirectly lead to the invocation of the
 	 * listener's onMessage method with a null argument (and without a
 	 * transaction). This allows receivers to detect shutdown.
-	 * 
+	 *
 	 */
 	public void stopListening() {
-	
+
 		if ( current != null ) {
 			ReceiverThread t = current;
-			// cf issue 62452: next, FIRST set current to null 
+			// cf issue 62452: next, FIRST set current to null
 			// to allow listener thread to exit
-			// needed because the subsequent JMS cleanup will wait 
+			// needed because the subsequent JMS cleanup will wait
 			// for the listener thread to finish!!!
 			current = null;
 			t.closeJmsResources ( true );
@@ -354,12 +361,12 @@ class MessageConsumerSession
 	}
 
 	/**
-	 * 
+	 *
 	 * Check wether the session is configured to notify the listener upon close.
-	 * 
+	 *
 	 * @return boolean If true then the listener will receive a null message
 	 *         when the session is closed.
-	 * 
+	 *
 	 */
 	public boolean getNotifyListenerOnClose() {
 	    return notifyListenerOnClose;
@@ -367,7 +374,7 @@ class MessageConsumerSession
 
 	/**
 	 * Set whether the listener should be notified on close.
-	 * 
+	 *
 	 * @param b
 	 */
 	public void setNotifyListenerOnClose(boolean b) {
@@ -389,7 +396,7 @@ class MessageConsumerSession
 
 	            if ( user != null ) {
 	                connection = factory.createConnection ( user, password );
-	                
+
 	            } else {
 	                connection = factory.createConnection ();
 	            }
@@ -397,11 +404,11 @@ class MessageConsumerSession
 	            	//see http://activemq.apache.org/virtual-destinations.html
 	            	String connectionClientID = connection.getClientID();
 	            	if ( connectionClientID == null ) connection.setClientID(clientID);
-	            	else Configuration.logWarning ( "Reusing connection with preset clientID: " + connectionClientID );	            	
+	            	else Configuration.logWarning ( "Reusing connection with preset clientID: " + connectionClientID );
 	            }
-	            
+
 	            connection.start ();
-	            
+
 	            session = connection.createSession ( true, 0 );
 	            if ( getDestination() == null ) {
 	            	Destination d = DestinationHelper.findDestination ( getDestinationName() , session );
@@ -412,7 +419,7 @@ class MessageConsumerSession
 	            if ( subscriberName == null )  {
 	            	// cf case 33305: only use the noLocal flag if the destination is a topic
 	            	if ( destination instanceof Topic ) {
-	            		// topic -> use noLocal 
+	            		// topic -> use noLocal
 	            		ret = session.createConsumer ( destination, getMessageSelector () , getNoLocal() );
 	            	}
 	            	else {
@@ -424,7 +431,7 @@ class MessageConsumerSession
 	            	// subscriberName is not null -> topic -> use noLocal flag too
 	            	ret = session.createDurableSubscriber( ( Topic ) destination , subscriberName , getMessageSelector() , getNoLocal() );
 	            }
-	            
+
 	            return ret;
 	        }
 
@@ -432,7 +439,7 @@ class MessageConsumerSession
 	        {
 	            try {
 					if ( session != null ) {
-						
+
 						if ( threadWillStop && subscriberName != null && properties.getUnsubscribeOnClose() ) {
 							try {
 								Configuration.logWarning ( "MessageConsumerSession: unsubscribing " + subscriberName + "...");
@@ -440,11 +447,11 @@ class MessageConsumerSession
 									//see case 62452: wait for listener thread to exit so the subscriber is no longer in use
 									if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( "MessageConsumerSession: waiting for listener thread to finish..." );
 									this.join ( getTransactionTimeout() * 1000 );
-									if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "MessageConsumerSession: waiting done." );
+									if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( "MessageConsumerSession: waiting done." );
 								}
 								if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( "MessageConsumerSession: unsubscribing " + subscriberName + "..." );
 								session.unsubscribe ( subscriberName );
-								if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "MessageConsumerSession: unsubscribed.");
+								if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( "MessageConsumerSession: unsubscribed.");
 							} catch ( JMSException e ) {
 								 if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo (
 					                    "MessageConsumerSession: Error unsubscribing on JMS session",
@@ -452,12 +459,12 @@ class MessageConsumerSession
 					            if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( "MessageConsumerSession: linked exception is " , e.getLinkedException() );
 							}
 						}
-						
+
 					    try {
 					    	if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( "MessageConsumerSession: closing JMS session..." );
 					        session.close ();
 					        session = null;
-					        if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "MessageConsumerSession: JMS session closed." );
+					        if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( "MessageConsumerSession: JMS session closed." );
 					    } catch ( JMSException e ) {
 					        if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo (
 					                "MessageConsumerSession: Error closing JMS session",
@@ -470,7 +477,7 @@ class MessageConsumerSession
 					    	if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( "MessageConsumerSession: closing JMS connection..." );
 					        connection.close ();
 					        connection = null;
-					        if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "MessageConsumerSession: JMS connection closed." );
+					        if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( "MessageConsumerSession: JMS connection closed." );
 					    } catch ( JMSException e ) {
 					        Configuration
 					                .logWarning (
@@ -487,7 +494,7 @@ class MessageConsumerSession
 	        public void run ()
 	        {
 	            MessageConsumer receiver = null;
-	            
+
 	            try {
 	                // FIRST set transaction timeout, to trigger
 	                // TM startup if needed; otherwise the logging
@@ -504,8 +511,8 @@ class MessageConsumerSession
 	                    .logInfo ( "MessageConsumerSession: Starting JMS listener thread." );
 
 	            while ( Thread.currentThread () == current ) {
-	            	   
-	            	   if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "MessageConsumerSession: JMS listener thread iterating..." );
+
+	            	   if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( "MessageConsumerSession: JMS listener thread iterating..." );
 	                boolean refresh = false;
 	                boolean commit = true;
 	                try {
@@ -552,7 +559,7 @@ class MessageConsumerSession
 	                                "MessageConsumerSession: Error during JMS processing of message "
 	                                        + msg.toString () + " - rolling back.",
 	                                e );
-	                        
+
 	                        // This happens if the listener generated the error.
 	                        // In that case, don't refresh the connection but rather
 	                        // only rollback. There is no reason to assume that the
@@ -562,7 +569,7 @@ class MessageConsumerSession
 
 	                } catch ( JMSException e ) {
 	                    Configuration.logWarning (
-	                            "MessageConsumerSession: Error in JMS thread", e );	 
+	                            "MessageConsumerSession: Error in JMS thread", e );
 	                    Exception linkedException = e.getLinkedException();
 	                    if ( linkedException != null ) {
 	                    	Configuration.logWarning ( "Linked JMS exception is: " , linkedException );
@@ -571,7 +578,7 @@ class MessageConsumerSession
 	                    refresh = true;
 	                    commit = false;
 	                    notifyExceptionListener ( e );
-	                    
+
 	                } catch ( Throwable e ) {
 	                    Configuration.logWarning (
 	                            "MessageConsumerSession: Error in JMS thread", e );
@@ -582,7 +589,7 @@ class MessageConsumerSession
 	                    commit = false;
 	                    JMSException listenerError = new JMSException ( "Unexpected error - please see Atomikos console file for more info" );
 	                    notifyExceptionListener ( listenerError );
-	                    
+
 	                } finally {
 
 	                    // Make sure no tx exists for thread, or we can't reuse
@@ -667,7 +674,7 @@ class MessageConsumerSession
 	                    	try {
 	                    		receiver.close();
 	                    	} catch ( Throwable e ) {
-	                    		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "MessageConsumerSession: Error closing receiver" , e );
+	                    		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( "MessageConsumerSession: Error closing receiver" , e );
 	                    	}
 	                        receiver = null;
 	                        closeJmsResources ( false );
@@ -675,7 +682,7 @@ class MessageConsumerSession
 	                }
 
 	            }
-	            
+
                 // thread is going to die, close the receiver here.
 	            if(receiver != null) {
 	              try {
@@ -685,7 +692,7 @@ class MessageConsumerSession
                   }
                   receiver = null;
 	            }
-	            
+
 	            Configuration
 	                    .logInfo ( "MessageConsumerSession: JMS listener thread exiting." );
 	            if ( listener != null && current == null && notifyListenerOnClose ) {
@@ -697,31 +704,31 @@ class MessageConsumerSession
 
 	        }
 
-		
+
 
 	    }
 
 	/**
-	 * Gets the exception listener (if any). 
+	 * Gets the exception listener (if any).
 	 * @return Null if no ExceptionListener was set.
 	 */
-	public ExceptionListener getExceptionListener() 
+	public ExceptionListener getExceptionListener()
 	{
 		return exceptionListener;
 	}
 
 	/**
 	 * Sets the exception listener. The listener will be
-	 * notified of connection-level JMS errors. 
-	 * <b>IMPORTANT:</b> exception listeners will NOT be 
+	 * notified of connection-level JMS errors.
+	 * <b>IMPORTANT:</b> exception listeners will NOT be
 	 * notified of any errors thrown by the MessageListener.
-	 * Instead, the ExceptionListener mechanism is meant 
+	 * Instead, the ExceptionListener mechanism is meant
 	 * for system-level connectivity errors towards and from
-	 * the underlying message system. 
-	 * 
+	 * the underlying message system.
+	 *
 	 * @param exceptionListener
 	 */
-	public void setExceptionListener ( ExceptionListener exceptionListener ) 
+	public void setExceptionListener ( ExceptionListener exceptionListener )
 	{
 		this.exceptionListener = exceptionListener;
 	}

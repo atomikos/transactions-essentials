@@ -26,6 +26,9 @@
 
 package com.atomikos.timing;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 /**
  *
  *

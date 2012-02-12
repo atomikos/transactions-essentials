@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.imp;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.util.Enumeration;
 import java.util.Hashtable;
 
@@ -47,6 +50,11 @@ import com.atomikos.icatch.TxState;
 
 class IndoubtStateHandler extends CoordinatorStateHandler
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(IndoubtStateHandler.class);
+
     private int inquiries_;
     // how many timeout events have happened?
     // if max allowed -> take heuristic decision

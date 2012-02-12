@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.config.imp;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.UnknownHostException;
@@ -56,6 +59,10 @@ import com.atomikos.util.IOHelper;
 public abstract class AbstractUserTransactionService implements
         UserTransactionService
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(AbstractUserTransactionService.class);
 
 	 
 	private static void echoProperties ( Properties properties )

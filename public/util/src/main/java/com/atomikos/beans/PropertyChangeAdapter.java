@@ -24,6 +24,10 @@
  */
 
 package  com.atomikos.beans;
+
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -37,6 +41,11 @@ import java.beans.PropertyChangeSupport;
 class PropertyChangeAdapter
 implements PropertyChangeListener
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(PropertyChangeAdapter.class);
+
     private PropertyChangeSupport support_;
     //the listeners to notify with an adapted event
   

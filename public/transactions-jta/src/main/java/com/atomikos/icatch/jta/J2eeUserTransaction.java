@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.jta;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.io.Serializable;
 
 import javax.naming.NamingException;
@@ -50,6 +53,10 @@ import com.atomikos.util.SerializableObjectFactory;
 public class J2eeUserTransaction implements UserTransaction, Serializable,
         Referenceable
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(J2eeUserTransaction.class);
  
 	private static final long serialVersionUID = -7656447860674832182L;
 

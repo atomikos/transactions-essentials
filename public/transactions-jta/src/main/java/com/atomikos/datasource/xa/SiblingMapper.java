@@ -25,6 +25,9 @@
 
 package com.atomikos.datasource.xa;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Stack;
@@ -42,6 +45,11 @@ import com.atomikos.icatch.CompositeTransaction;
 
 class SiblingMapper
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(SiblingMapper.class);
+
     protected Hashtable siblings_;
     protected XATransactionalResource res_;
 

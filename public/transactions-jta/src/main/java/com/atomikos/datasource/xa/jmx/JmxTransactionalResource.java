@@ -25,6 +25,9 @@
 
 package com.atomikos.datasource.xa.jmx;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import javax.management.MBeanRegistration;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -44,6 +47,10 @@ import com.atomikos.datasource.xa.XATransactionalResource;
 public class JmxTransactionalResource implements JmxTransactionalResourceMBean,
         MBeanRegistration
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(JmxTransactionalResource.class);
 
     private XATransactionalResource resource;
 

@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.config.imp;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.util.Enumeration;
 import java.util.Properties;
 
@@ -40,6 +43,10 @@ import com.atomikos.icatch.system.Configuration;
 
 public class TSInitInfoImp implements TSInitInfo
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(TSInitInfoImp.class);
 
  
     private Properties properties_;

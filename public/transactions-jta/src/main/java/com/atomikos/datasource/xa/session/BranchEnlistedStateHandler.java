@@ -25,6 +25,9 @@
 
 package com.atomikos.datasource.xa.session;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
 
@@ -35,19 +38,23 @@ import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.system.Configuration;
 
  /**
-  * 
-  * 
+  *
+  *
   * State handler for when enlisted in an XA branch.
   *
   */
 
-class BranchEnlistedStateHandler extends TransactionContextStateHandler 
+class BranchEnlistedStateHandler extends TransactionContextStateHandler
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger LOGGER = LoggerFactory.createLogger(BranchEnlistedStateHandler.class);
 
 	private CompositeTransaction ct;
 	private XAResourceTransaction branch;
-	
-	BranchEnlistedStateHandler ( XATransactionalResource resource , CompositeTransaction ct , XAResource xaResource , HeuristicMessage hmsg ) 
+
+	BranchEnlistedStateHandler ( XATransactionalResource resource , CompositeTransaction ct , XAResource xaResource , HeuristicMessage hmsg )
     {
 		super ( resource , xaResource );
 		this.ct = ct;
@@ -57,9 +64,9 @@ class BranchEnlistedStateHandler extends TransactionContextStateHandler
 		branch.resume();
 	}
 
-	public BranchEnlistedStateHandler ( 
-			XATransactionalResource resource, CompositeTransaction ct, 
-			XAResource xaResource , XAResourceTransaction branch ) throws InvalidSessionHandleStateException 
+	public BranchEnlistedStateHandler (
+			XATransactionalResource resource, CompositeTransaction ct,
+			XAResource xaResource , XAResourceTransaction branch ) throws InvalidSessionHandleStateException
 	{
 		super ( resource , xaResource  );
 		this.ct = ct;
@@ -74,38 +81,38 @@ class BranchEnlistedStateHandler extends TransactionContextStateHandler
 	}
 
 	TransactionContextStateHandler checkEnlistBeforeUse ( CompositeTransaction currentTx , HeuristicMessage hmsg )
-			throws InvalidSessionHandleStateException, UnexpectedTransactionContextException 
+			throws InvalidSessionHandleStateException, UnexpectedTransactionContextException
 	{
-		
+
 		if ( currentTx == null || !currentTx.isSameTransaction ( ct ) ) {
 			//OOPS! we are being used a different tx context than the one expected...
-			
+
 			//TODO check: what if subtransaction? Possible solution: ignore if serial_jta mode, error otherwise.
-			
+
 			String msg = "The connection/session object is already enlisted in a (different) transaction.";
-			if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( msg );
+			if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( msg );
 			throw new UnexpectedTransactionContextException();
 		}
-		
+
 		//tx context is still the same -> no change in state required
 		return null;
 	}
 
-	TransactionContextStateHandler sessionClosed() 
+	TransactionContextStateHandler sessionClosed()
 	{
 		return new BranchEndedStateHandler ( getXATransactionalResource() , branch , ct );
 	}
 
-	
-	TransactionContextStateHandler transactionTerminated ( CompositeTransaction tx ) 
+
+	TransactionContextStateHandler transactionTerminated ( CompositeTransaction tx )
 	{
 		TransactionContextStateHandler ret = null;
 		if ( ct.isSameTransaction ( tx ) ) ret = new NotInBranchStateHandler  ( getXATransactionalResource() , getXAResource() );
 		return ret;
-		
+
 	}
-	
-	public TransactionContextStateHandler transactionSuspended() throws InvalidSessionHandleStateException 
+
+	public TransactionContextStateHandler transactionSuspended() throws InvalidSessionHandleStateException
 	{
 		try {
 			branch.xaSuspend();

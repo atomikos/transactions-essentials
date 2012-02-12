@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.jta;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.util.Hashtable;
 
 import javax.naming.Context;
@@ -40,6 +43,11 @@ import javax.naming.spi.ObjectFactory;
 
 public class RemoteClientUserTransactionFactory implements ObjectFactory
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(RemoteClientUserTransactionFactory.class);
+
     private String url_;
 
     // the RMI url of the server

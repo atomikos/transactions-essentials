@@ -24,6 +24,10 @@
  */
 
 package com.atomikos.swing;
+
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.io.File;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -38,6 +42,11 @@ import java.util.Hashtable;
 public class ExtensionsFileFilter
 extends javax.swing.filechooser.FileFilter
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(ExtensionsFileFilter.class);
+
       public static String getExtension ( File f )
       {
         String ext = null;

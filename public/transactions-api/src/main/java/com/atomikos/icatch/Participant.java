@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 /**
  * A participant for (distributed) two-phase commit of composite transactions.
  * 

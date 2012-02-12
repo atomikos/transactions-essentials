@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.imp;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.Participant;
 
@@ -36,6 +39,11 @@ import com.atomikos.icatch.Participant;
 
 abstract class PropagationMessage
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(PropagationMessage.class);
+
     /**
      * How many times is message re-sent if comm. failure?
      */

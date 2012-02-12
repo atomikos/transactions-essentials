@@ -25,6 +25,9 @@
 
 package com.atomikos.jms;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -35,21 +38,25 @@ import com.atomikos.icatch.system.Configuration;
 
 class AtomikosJmsMessageProducerProxy extends ConsumerProducerSupport implements
 		HeuristicMessageProducer {
-	
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger LOGGER = LoggerFactory.createLogger(AtomikosJmsMessageProducerProxy.class);
+
 	private MessageProducer delegate;
-	
-	AtomikosJmsMessageProducerProxy ( MessageProducer delegate , SessionHandleState state ) 
+
+	AtomikosJmsMessageProducerProxy ( MessageProducer delegate , SessionHandleState state )
 	{
 		super ( state );
 		this.delegate = delegate;
 	}
 
 	public void send ( Message msg, String heuristicMessage ) throws JMSException {
-		
+
 		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": send ( message , heuristicMessage )..." );
 		enlist ( heuristicMessage );
 		delegate.send ( msg );
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": send done." );
+		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": send done." );
 	}
 
 	public void send ( Destination dest, Message msg, String heuristicMessage)
@@ -57,134 +64,134 @@ class AtomikosJmsMessageProducerProxy extends ConsumerProducerSupport implements
 		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": send ( destination , message , heuristicMessage )..." );
 		enlist ( heuristicMessage );
 		delegate.send ( dest , msg );
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": send done." );
+		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": send done." );
 	}
 
 	public void send ( Message msg, int deliveryMode, int priority,
 			long timeToLive, String heuristicMessage ) throws JMSException {
-		
+
 		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": send ( message , deliveryMode , priority , timeToLive , heuristicMessage )..." );
 		enlist ( heuristicMessage );
 		delegate.send (  msg , deliveryMode , priority , timeToLive );
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": send done." );
+		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": send done." );
 	}
 
 	public void send ( Destination dest , Message msg, int deliveryMode,
-			int priority, long timeToLive, String heuristicMessage ) 
+			int priority, long timeToLive, String heuristicMessage )
 			throws JMSException {
 		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": send ( destination , message , deliveryMode , priority , timeToLive , heuristicMessage )..." );
 		enlist ( heuristicMessage );
 		delegate.send (  dest , msg , deliveryMode , priority , timeToLive );
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": send done." );
+		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": send done." );
 	}
 
 	public void close() throws JMSException {
 		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo( this + ": close..." );
 		delegate.close();
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": close done." );
+		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": close done." );
 	}
 
 	public int getDeliveryMode() throws JMSException {
 		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": getDeliveryMode()..." );
 		int ret = delegate.getDeliveryMode();
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": getDeliveryMode() returning " + ret );
+		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": getDeliveryMode() returning " + ret );
 		return ret;
 	}
 
 	public Destination getDestination() throws JMSException {
 		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": getDestination()..." );
 		Destination ret = delegate.getDestination();
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": getDestination() returning " + ret );
+		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": getDestination() returning " + ret );
 		return ret;
 	}
 
 	public boolean getDisableMessageID() throws JMSException {
 		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": getDisableMessageID()..." );
 		boolean ret = delegate.getDisableMessageID();
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": getDisableMessageID() returning " + ret );
+		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": getDisableMessageID() returning " + ret );
 		return ret;
 	}
 
 	public boolean getDisableMessageTimestamp() throws JMSException {
 		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": getDisableMessageTimestamp()..." );
 		boolean ret = delegate.getDisableMessageTimestamp();
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": getDisableMessageTimestamp() returning " + ret );
+		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": getDisableMessageTimestamp() returning " + ret );
 		return ret;
 	}
 
 	public int getPriority() throws JMSException {
 		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": getPriority()..." );
 		int ret =  delegate.getPriority();
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": getPriority() returning " + ret );
+		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": getPriority() returning " + ret );
 		return ret;
 	}
 
 	public long getTimeToLive() throws JMSException {
 		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": getTimeToLive()..." );
 		long ret =  delegate.getTimeToLive();
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": getTimeToLive() returning " + ret );
+		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": getTimeToLive() returning " + ret );
 		return ret;
 	}
 
 	public void send ( Message msg ) throws JMSException {
 		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": send ( message )..." );
 		send ( msg , null );
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": send done." );
+		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": send done." );
 
 	}
 
 	public void send(Destination dest , Message msg ) throws JMSException {
 		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": send ( destination , message )..." );
 		send ( dest , msg , null );
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": send done." );
+		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": send done." );
 	}
 
 	public void send(Message msg , int deliveryMode , int pty , long ttl )
 			throws JMSException {
 		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": send ( message , deliveryMode , priority , timeToLive )..." );
 		send ( msg , deliveryMode , pty , ttl, null );
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": send done." );
+		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": send done." );
 	}
 
 	public void send ( Destination dest , Message msg , int mode , int pty ,
 			long ttl ) throws JMSException {
 		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": send ( destination , message , deliveryMode , priority , timeToLive )..." );
 		send ( dest , msg , mode , pty , ttl, null );
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": send done." );
+		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": send done." );
 	}
 
 	public void setDeliveryMode ( int mode ) throws JMSException {
 		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": setDeliveryMode ( " + mode + " )..." );
 		delegate.setDeliveryMode ( mode );
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": setDeliveryMode done." );
+		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": setDeliveryMode done." );
 	}
 
 	public void setDisableMessageID ( boolean mode ) throws JMSException {
 		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": setDisableMessageID ( " + mode + " )..." );
 		delegate.setDisableMessageID ( mode );
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": setDisableMessageID done." );
+		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": setDisableMessageID done." );
 	}
 
 	public void setDisableMessageTimestamp ( boolean mode ) throws JMSException {
-		
+
 		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": setDisableMessageTimestamp ( " + mode + " )..." );
 		delegate.setDisableMessageTimestamp ( mode );
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": setDisableMessageTimestamp done." );
+		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": setDisableMessageTimestamp done." );
 	}
 
 	public void setPriority ( int pty ) throws JMSException {
 		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": setPriority ( " + pty + " )..." );
 		delegate.setPriority ( pty );
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": setPriority done." );
+		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": setPriority done." );
 	}
 
 	public void setTimeToLive ( long ttl ) throws JMSException {
 		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": setTimeToLive ( " + ttl + " )..." );
 		delegate.setTimeToLive ( ttl );
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": setTimeToLive done." );
+		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": setTimeToLive done." );
 	}
-	
-	public String toString() 
+
+	public String toString()
 	{
 		return "atomikos MessageProducer proxy for " + delegate;
 	}

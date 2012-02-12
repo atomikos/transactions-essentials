@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.imp.thread;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 
 import com.atomikos.icatch.system.Configuration;
 import com.atomikos.util.ClassLoadingHelper;
@@ -34,38 +37,43 @@ import com.atomikos.util.ClassLoadingHelper;
  * This class will check the runtime classes
  * for the 1.5 java.util.concurrent package, if failing that it will look for the 1.4 backport, and
  * failing that revert to a "two threads per transaction" strategy.
- * 
+ *
  * @author Lars J. Nilsson
  */
 
-public class TaskManager 
+public class TaskManager
 {
-	private static TaskManager singleton;
-	
-	private InternalSystemExecutor executor;
-	
-
-	
 	/**
-	 * Gets the singleton instance. 
-	 * 
+	 * Logger for this class
+	 */
+	private static final Logger LOGGER = LoggerFactory.createLogger(TaskManager.class);
+
+	private static TaskManager singleton;
+
+	private InternalSystemExecutor executor;
+
+
+
+	/**
+	 * Gets the singleton instance.
+	 *
 	 * @return
 	 */
-	public static synchronized final TaskManager getInstance() 
+	public static synchronized final TaskManager getInstance()
 	{
 		if ( singleton == null ) {
-			if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "TaskManager: initializing..." );
+			if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( "TaskManager: initializing..." );
 			singleton = new TaskManager();
 		}
 		return singleton;
 	}
 
 	protected TaskManager ()
-	{		
+	{
 			init();
 	}
 
-	private void init() 
+	private void init()
 	{
 		ExecutorFactory creator;
 		try {
@@ -85,16 +93,16 @@ public class TaskManager
 			Configuration.logWarning ( "THREADS: Illegal setup, thread pooling is NOT enabled!", e);
 			creator = new TrivialExecutorFactory();
 		}
-		
+
 		try {
 			executor = creator.createExecutor();
 		} catch (Exception e) {
 			Configuration.logWarning("Failed to create system executor; Received message: " + e.getMessage() + "; Failling back to a trivial executor.", e);
 			executor = new TrivialSystemExecutor();
 		}
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "THREADS: using executor " + executor.getClass());
+		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( "THREADS: using executor " + executor.getClass());
 	}
-	
+
 	/**
 	 * Notification of shutdown to close all pooled threads.
 	 *
@@ -106,13 +114,13 @@ public class TaskManager
 			executor = null;
 		}
 	}
-	
+
 	/**
 	 * Schedules a task for execution by a thread.
-	 * 
+	 *
 	 * @param task
 	 */
-	public void executeTask ( Runnable task ) 
+	public void executeTask ( Runnable task )
 	{
 		if ( executor == null ) {
 			//happens on restart of TS within same VM
@@ -120,7 +128,7 @@ public class TaskManager
 		}
 		executor.execute ( task );
 	}
-	
+
 	private boolean isClassAvailable(String clazz)
 	{
 		try {

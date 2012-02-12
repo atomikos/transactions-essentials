@@ -25,6 +25,9 @@
 
 package com.atomikos.jms;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.io.Serializable;
 
 import javax.jms.ConnectionFactory;
@@ -45,6 +48,10 @@ import com.atomikos.util.SerializableObjectFactory;
 public abstract class AbstractConnectionFactoryBean 
 implements Serializable, Referenceable, ConnectionFactory
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(AbstractConnectionFactoryBean.class);
 
 	protected String resourceName_;
 	protected String xaFactoryJndiName_;

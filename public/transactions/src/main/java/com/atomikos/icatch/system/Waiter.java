@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.system;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import com.atomikos.icatch.imp.thread.InterruptedExceptionHelper;
 
 /**
@@ -36,6 +39,11 @@ import com.atomikos.icatch.imp.thread.InterruptedExceptionHelper;
 
 public class Waiter
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(Waiter.class);
+
     private int numActive;
     // the number of still active threads.
     private int abortCount;

@@ -25,6 +25,9 @@
 
 package com.atomikos.datasource.xa.jdbc;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.sql.SQLException;
 import java.util.Stack;
 
@@ -44,6 +47,11 @@ import com.atomikos.datasource.xa.XidFactory;
 
 public class JdbcTransactionalResource extends XATransactionalResource
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(JdbcTransactionalResource.class);
+
     private XADataSource xads_;
 
     // where to get new connections

@@ -25,6 +25,9 @@
 
 package com.atomikos.datasource.pool;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -41,17 +44,21 @@ import com.atomikos.timing.PooledAlarmTimer;
 
 public class ConnectionPool implements XPooledConnectionEventListener
 {
-	
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger LOGGER = LoggerFactory.createLogger(ConnectionPool.class);
+
 	public final static int DEFAULT_MAINTENANCE_INTERVAL = 60;
-	
+
 	private List connections = new ArrayList();
 	private ConnectionFactory connectionFactory;
 	private ConnectionPoolProperties properties;
 	private boolean destroyed;
 	private PooledAlarmTimer maintenanceTimer;
 
-	
-	public ConnectionPool ( ConnectionFactory connectionFactory , ConnectionPoolProperties properties ) throws ConnectionPoolException  
+
+	public ConnectionPool ( ConnectionFactory connectionFactory , ConnectionPoolProperties properties ) throws ConnectionPoolException
 	{
 		this.connectionFactory = connectionFactory;
 		this.properties = properties;
@@ -63,10 +70,10 @@ public class ConnectionPool implements XPooledConnectionEventListener
 	{
 		if ( destroyed ) throw new ConnectionPoolException ( "Pool was already destroyed - you can no longer use it" );
 	}
-	
+
 	private void init() throws ConnectionPoolException
 	{
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": initializing..." );
+		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": initializing..." );
 		for ( int i=0; i < properties.getMinPoolSize() ; i++ ) {
 			try {
 				XPooledConnection xpc = connectionFactory.createPooledConnection();
@@ -74,15 +81,15 @@ public class ConnectionPool implements XPooledConnectionEventListener
 				xpc.registerXPooledConnectionEventListener ( this );
 			} catch ( Exception dbDown ) {
 				//see case 26380
-				if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": could not establish initial connection" , dbDown );
+				if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": could not establish initial connection" , dbDown );
 			}
 		}
 		int maintenanceInterval = properties.getMaintenanceInterval();
 		if ( maintenanceInterval <= 0 ) {
-			if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": using default maintenance interval..." );
+			if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": using default maintenance interval..." );
 			maintenanceInterval = DEFAULT_MAINTENANCE_INTERVAL;
 		}
-	
+
 		maintenanceTimer = new PooledAlarmTimer ( maintenanceInterval * 1000 );
 		maintenanceTimer.addAlarmTimerListener(new AlarmTimerListener() {
 			public void alarm(AlarmTimer timer) {
@@ -93,16 +100,16 @@ public class ConnectionPool implements XPooledConnectionEventListener
 		TaskManager.getInstance().executeTask ( maintenanceTimer );
 
 	}
-	
+
 	private Reapable recycleConnectionIfPossible ( HeuristicMessage hmsg ) throws Exception
 	{
 		Reapable ret = null;
 		for (int i = 0; i < totalSize(); i++) {
 			XPooledConnection xpc = (XPooledConnection) connections.get(i);
-			
+
 			if (xpc.canBeRecycledForCallingThread()) {
 				ret = xpc.createConnectionProxy ( hmsg );
-				if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug( this + ": recycling connection from pool..." );
+				if ( LOGGER.isDebugEnabled() ) Configuration.logDebug( this + ": recycling connection from pool..." );
 				return ret;
 			}
 		}
@@ -111,22 +118,22 @@ public class ConnectionPool implements XPooledConnectionEventListener
 
 	/**
 	 * Borrows a connection from the pool.
-	 * @param hmsg The heuristic message to get the connection with. 
+	 * @param hmsg The heuristic message to get the connection with.
 	 * @return The connection as Reapable.
 	 * @throws CreateConnectionException If the pool attempted to grow but failed.
-	 * @throws PoolExhaustedException If the pool could not grow because it is exhaused. 
+	 * @throws PoolExhaustedException If the pool could not grow because it is exhaused.
 	 * @throws ConnectionPoolException Other errors.
 	 */
 	public synchronized Reapable borrowConnection ( HeuristicMessage hmsg ) throws CreateConnectionException , PoolExhaustedException, ConnectionPoolException
 	{
-		
+
 		long remainingTime = properties.getBorrowConnectionTimeout() * 1000L;
 		Reapable ret = null;
-		
+
 		while ( ret == null ) {
 			assertNotDestroyed();
 			if (remainingTime <= 0)
-				throw new PoolExhaustedException ( "Cannot get a connection after waiting for " + properties.getBorrowConnectionTimeout() + " secs" );				
+				throw new PoolExhaustedException ( "Cannot get a connection after waiting for " + properties.getBorrowConnectionTimeout() + " secs" );
 
 			Reapable recycledConnection = null ;
 			try {
@@ -137,21 +144,21 @@ public class ConnectionPool implements XPooledConnectionEventListener
 				//don't throw: just try normal borrow logic instead...
 			}
 			if ( recycledConnection != null ) return recycledConnection;
-			
-			
+
+
 			if (availableSize() == 0 && totalSize() < properties.getMaxPoolSize()) {
 				growPool();
 			} else {
 				if (totalSize() == properties.getMaxPoolSize())
-					if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug( this +  ": pool reached max size: " + properties.getMaxPoolSize());
+					if ( LOGGER.isDebugEnabled() ) Configuration.logDebug( this +  ": pool reached max size: " + properties.getMaxPoolSize());
 
-				if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug( this +  ": current size: " + availableSize() + "/" + totalSize());
+				if ( LOGGER.isDebugEnabled() ) Configuration.logDebug( this +  ": current size: " + availableSize() + "/" + totalSize());
 				remainingTime = waitForConnectionInPoolIfNecessary(remainingTime);
 			}
-			
+
 			XPooledConnection xpc = null;
-			
-				
+
+
 			Iterator it = connections.iterator();
 			while ( it.hasNext() && ret == null ) {
 				xpc = (XPooledConnection) it.next();
@@ -159,7 +166,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 				if (xpc.isAvailable()) {
 					try {
 						ret = xpc.createConnectionProxy ( hmsg );
-						if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug( this + ": got connection from pool, new size: " + availableSize() + "/" + totalSize());
+						if ( LOGGER.isDebugEnabled() ) Configuration.logDebug( this + ": got connection from pool, new size: " + availableSize() + "/" + totalSize());
 					} catch ( CreateConnectionException ex ) {
 						String msg = this +  ": error creating proxy of connection " + xpc;
 						Configuration.logWarning( msg , ex);
@@ -180,23 +187,23 @@ public class ConnectionPool implements XPooledConnectionEventListener
 					// ignore
 				}
 				remainingTime -= 1000;
-			} 			
+			}
 		} // while (ret == null)
 		return ret;
 	}
 
 	private synchronized void growPool() throws CreateConnectionException {
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug( this + ": growing pool size to: " + (totalSize() + 1));
+		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug( this + ": growing pool size to: " + (totalSize() + 1));
 		XPooledConnection xpc = connectionFactory.createPooledConnection();
 		connections.add ( xpc );
 		xpc.registerXPooledConnectionEventListener(this);
 	}
-	
+
 	private synchronized void shrinkPool() {
 		if (connections == null || properties.getMaxIdleTime() <= 0 )
 			return;
-		
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": trying to shrink pool" );
+
+		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": trying to shrink pool" );
 		List connectionsToRemove = new ArrayList();
 		int maxConnectionsToRemove = totalSize() - properties.getMinPoolSize();
 		if ( maxConnectionsToRemove > 0 ) {
@@ -205,10 +212,10 @@ public class ConnectionPool implements XPooledConnectionEventListener
 				long lastRelease = xpc.getLastTimeReleased();
 				long maxIdle = properties.getMaxIdleTime();
 				long now = System.currentTimeMillis();
-				if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": connection idle for " + (now - lastRelease) + "ms");
+				if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": connection idle for " + (now - lastRelease) + "ms");
 				if ( xpc.isAvailable() &&  ( (now - lastRelease) >= (maxIdle * 1000L) ) && ( connectionsToRemove.size() < maxConnectionsToRemove ) ) {
-					if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": connection idle for more than " + maxIdle + "s, closing it: " + xpc);
-					
+					if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": connection idle for more than " + maxIdle + "s, closing it: " + xpc);
+
 					xpc.destroy();
 					connectionsToRemove.add(xpc);
 				}
@@ -216,31 +223,31 @@ public class ConnectionPool implements XPooledConnectionEventListener
 		}
 		connections.removeAll(connectionsToRemove);
 	}
-	
+
 	private synchronized void reapPool()
 	{
 		long maxInUseTime = properties.getReapTimeout();
 		if ( connections == null || maxInUseTime <= 0 ) return;
-		
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": reaping old connections" );		
-		
+
+		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": reaping old connections" );
+
 		Iterator it = connections.iterator();
 		while ( it.hasNext() ) {
 			XPooledConnection xpc = ( XPooledConnection ) it.next();
 			long lastTimeReleased = xpc.getLastTimeAcquired();
 			boolean inUse = !xpc.isAvailable();
-			
+
 			long now = System.currentTimeMillis();
 			if ( inUse && ( ( now - maxInUseTime * 1000 ) > lastTimeReleased ) ) {
-				if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": connection in use for more than " + maxInUseTime + "s, reaping it: " + xpc );
+				if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": connection in use for more than " + maxInUseTime + "s, reaping it: " + xpc );
 				xpc.reap();
 			}
 		}
 	}
-	
-	public synchronized void destroy() 
+
+	public synchronized void destroy()
 	{
-		
+
 		if ( ! destroyed ) {
 			Configuration.logWarning ( this + ": destroying pool..." );
 			for ( int i=0 ; i < connections.size() ; i++ ) {
@@ -250,7 +257,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 			connections = null;
 			destroyed = true;
 			maintenanceTimer.stop();
-			if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": pool destroyed." );
+			if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": pool destroyed." );
 		}
 	}
 
@@ -265,17 +272,17 @@ public class ConnectionPool implements XPooledConnectionEventListener
         	if ( properties.getBorrowConnectionTimeout() <= 0 ) throw new PoolExhaustedException ( "ConnectionPool: pool is empty and borrowConnectionTimeout is not set" );
             long before = System.currentTimeMillis();
         	try {
-        		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": about to wait for connection during " + remainingTime + "ms...");
-        		
+        		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": about to wait for connection during " + remainingTime + "ms...");
+
         		this.wait (remainingTime);
-        		
+
 			} catch (InterruptedException ex) {
 				// cf bug 67457
 				InterruptedExceptionHelper.handleInterruptedException ( ex );
 				// ignore
-				if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": interrupted during wait" , ex );
+				if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": interrupted during wait" , ex );
 			}
-			if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": done waiting." );
+			if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": done waiting." );
 			long now = System.currentTimeMillis();
             remainingTime -= (now - before);
             if (remainingTime <= 0)
@@ -283,15 +290,15 @@ public class ConnectionPool implements XPooledConnectionEventListener
         }
         return remainingTime;
 	}
-	
+
 	/**
-	 * The amount of pooled connections in state available. 
+	 * The amount of pooled connections in state available.
 	 * @return the amount of pooled connections in state available.
 	 */
-	public synchronized int availableSize() 
+	public synchronized int availableSize()
 	{
 		int ret = 0;
-		
+
 		if ( !destroyed ) {
 			int count = 0;
 			for ( int i=0 ; i < connections.size() ; i++ ) {
@@ -302,23 +309,23 @@ public class ConnectionPool implements XPooledConnectionEventListener
 		}
 		return ret;
 	}
-	
+
 	/**
-	 * The total amount of pooled connections in any state. 
+	 * The total amount of pooled connections in any state.
 	 * @return the total amount of pooled connections in any state
 	 */
-	public synchronized int totalSize() 
+	public synchronized int totalSize()
 	{
 		if ( destroyed ) return 0;
-		
+
 		return connections.size();
 	}
 
 	public synchronized void onXPooledConnectionTerminated(XPooledConnection connection) {
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug( this +  ": connection " + connection + " became available, notifying potentially waiting threads");
-		
+		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug( this +  ": connection " + connection + " became available, notifying potentially waiting threads");
+
 		this.notify();
-		
+
 	}
 
 	public String toString() {
@@ -326,5 +333,5 @@ public class ConnectionPool implements XPooledConnectionEventListener
 		if ( properties != null ) name = properties.getUniqueResourceName();
 		return "atomikos connection pool '" + name + "'";
 	}
-	
+
 }

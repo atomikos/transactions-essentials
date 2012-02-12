@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.imp;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.util.Stack;
 
 import com.atomikos.diagnostics.Console;
@@ -58,6 +61,10 @@ public class CompositeTransactionImp
 extends AbstractCompositeTransaction implements
         TransactionControl, FSMEnterListener
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(CompositeTransactionImp.class);
 
     protected CoordinatorImp coordinator_ = null;
     // the coordinator for this invocation

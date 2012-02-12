@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.imp;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Stack;
@@ -49,6 +52,10 @@ import com.atomikos.icatch.system.Configuration;
 public class BaseTransactionManager implements CompositeTransactionManager,
         SubTxAwareParticipant
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(BaseTransactionManager.class);
 
     /**
 	 * 

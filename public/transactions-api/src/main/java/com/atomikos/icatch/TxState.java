@@ -24,6 +24,10 @@
  */
 
 package com.atomikos.icatch;
+
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.lang.reflect.Field;
 import java.util.Enumeration;
 import java.util.Vector;
@@ -36,6 +40,11 @@ import java.util.Vector;
 
 public class TxState implements java.io.Serializable
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(TxState.class);
+
     //force UID for backward log compatibilty
     static final long serialVersionUID = 648321112075712930L;
     

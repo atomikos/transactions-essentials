@@ -25,6 +25,9 @@
 
 package com.atomikos.datasource.xa.jca;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.util.Stack;
 
 import javax.resource.spi.ManagedConnection;
@@ -48,6 +51,10 @@ import com.atomikos.diagnostics.Console;
 
 public class JcaTransactionalResource extends XATransactionalResource
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(JcaTransactionalResource.class);
 
     private ManagedConnectionFactory mcf;
 

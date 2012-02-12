@@ -25,6 +25,9 @@
 
 package com.atomikos.jms;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Queue;
@@ -33,9 +36,9 @@ import com.atomikos.icatch.system.Configuration;
 
 
 /**
- * 
- * 
- * 
+ *
+ *
+ *
  * This is a <b>long-lived</b> queue sender session, representing a
  * self-refreshing JMS session that can be used to send JMS messages in a
  * transactional way. The client code does not have to worry about refreshing or
@@ -49,12 +52,17 @@ import com.atomikos.icatch.system.Configuration;
  * <b>Important: if you change any properties AFTER sending on the session, then
  * you will need to explicitly stop and restart the session to have the changes
  * take effect!</b>
- * 
+ *
  */
 
 public class QueueSenderSession
 extends MessageProducerSession
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger LOGGER = LoggerFactory.createLogger(QueueSenderSession.class);
+
     /**
      * Default constructor in JavaBean style. Needed to ensure compatibility
      * with third-party frameworks such as Spring.
@@ -71,12 +79,12 @@ extends MessageProducerSession
      * property indicates the queue to where the replies are to be sent (optional). The
      * session uses this to set the JMSReplyTo header accordingly. This property
      * can be omitted if no reply is needed.
-     * 
+     *
      * <p>
      * The replyToQueue should be in the same JMS vendor domain as the send
      * queue. To cross domains, configure a bridge for both the request and the
      * reply channels.
-     * 
+     *
      * @param queue
      *            The queue where a reply should go.
      */
@@ -89,7 +97,7 @@ extends MessageProducerSession
     /**
      * Gets the queue where replies are expected, or null if not applicable
      * (or if the replyToDestination is not a queue but a topic).
-     * 
+     *
      * @return
      */
 
@@ -123,7 +131,7 @@ extends MessageProducerSession
 
     /**
      * Set the queue to use for sending (required).
-     * 
+     *
      * @param queue
      *            The queue.
      */
@@ -136,7 +144,7 @@ extends MessageProducerSession
     /**
      * Set the queue connection factory, needed to create or refresh
      * connections (required).
-     * 
+     *
      * @param bean
      */
 
@@ -145,7 +153,7 @@ extends MessageProducerSession
         setAbstractConnectionFactoryBean ( bean );
     }
 
-	protected String getDestinationName() 
+	protected String getDestinationName()
 	{
 		String ret = null;
 		Queue q = getQueue();
@@ -153,13 +161,13 @@ extends MessageProducerSession
 			try {
 				ret = q.getQueueName();
 			} catch ( JMSException e ) {
-				if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "QueueSenderSession: error retrieving queue name" , e );
+				if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( "QueueSenderSession: error retrieving queue name" , e );
 			}
 		}
 		return ret;
 	}
 
-	protected String getReplyToDestinationName() 
+	protected String getReplyToDestinationName()
 	{
 		String ret = null;
 		Queue q = getReplyToQueue();
@@ -167,7 +175,7 @@ extends MessageProducerSession
 			try {
 				ret = q.getQueueName();
 			} catch ( JMSException e ) {
-				if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "QueueSenderSession: error retrieving queue name" , e );
+				if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( "QueueSenderSession: error retrieving queue name" , e );
 			}
 		}
 		return ret;

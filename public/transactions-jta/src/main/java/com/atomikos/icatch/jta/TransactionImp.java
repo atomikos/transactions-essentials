@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.jta;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -53,29 +56,33 @@ import com.atomikos.icatch.TxState;
 import com.atomikos.icatch.system.Configuration;
 
 /**
- * 
- * 
+ *
+ *
  * An adaptor for the javax transaction interface.
  */
 
 class TransactionImp implements Transaction
 {
-	
-	static void rethrowAsJtaRollbackException ( String msg , Throwable cause ) throws javax.transaction.RollbackException 
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger LOGGER = LoggerFactory.createLogger(TransactionImp.class);
+
+	static void rethrowAsJtaRollbackException ( String msg , Throwable cause ) throws javax.transaction.RollbackException
 	{
 		javax.transaction.RollbackException ret = new javax.transaction.RollbackException ( msg );
 		ret.initCause ( cause );
 		throw ret;
 	}
-	
-	static void rethrowAsJtaHeuristicMixedException ( String msg , Throwable cause ) throws javax.transaction.HeuristicMixedException 
+
+	static void rethrowAsJtaHeuristicMixedException ( String msg , Throwable cause ) throws javax.transaction.HeuristicMixedException
 	{
 		javax.transaction.HeuristicMixedException ret = new javax.transaction.HeuristicMixedException ( msg );
 		ret.initCause ( cause );
 		throw ret;
 	}
-	
-	static void rethrowAsJtaHeuristicRollbackException ( String msg , Throwable cause ) throws javax.transaction.HeuristicRollbackException 
+
+	static void rethrowAsJtaHeuristicRollbackException ( String msg , Throwable cause ) throws javax.transaction.HeuristicRollbackException
 	{
 		javax.transaction.HeuristicRollbackException ret = new javax.transaction.HeuristicRollbackException ( msg );
 		ret.initCause ( cause );
@@ -129,7 +136,7 @@ class TransactionImp implements Transaction
         else if ( level == Console.INFO )
             if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( msg );
         else
-            if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( msg );
+            if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( msg );
     }
 
     // MM patch: synchronized to allow threaded access
@@ -196,8 +203,8 @@ class TransactionImp implements Transaction
             // other cases are either very short or irrelevant to user?
             return Status.STATUS_UNKNOWN;
     }
-    
-   
+
+
 
     /**
      * @see javax.transaction.Transaction.
@@ -209,7 +216,7 @@ class TransactionImp implements Transaction
             javax.transaction.SystemException, java.lang.SecurityException
     {
 
-       
+
         try {
             ct_.commit ();
         } catch ( HeurHazardException hh ) {
@@ -235,7 +242,7 @@ class TransactionImp implements Transaction
     public void rollback () throws IllegalStateException, SystemException
     {
 
-    	
+
         try {
             ct_.rollback ();
         } catch ( SysException se ) {
@@ -274,7 +281,7 @@ class TransactionImp implements Transaction
         	Configuration.logWarning ( msg );
             throw new javax.transaction.RollbackException ( msg );
         }
-        
+
         // if this xares was suspended then it will still be in the map
         XAResourceTransaction active = findXAResourceTransaction ( xares );
 
@@ -306,7 +313,7 @@ class TransactionImp implements Transaction
             }
 
         } else {
-        	
+
             res = findRecoverableResourceForXaResource(xares);
 
             printMsg ( "enlistResource ( " + xares + " ) with transaction "
@@ -316,7 +323,7 @@ class TransactionImp implements Transaction
                 	String msg = "There is no registered resource that can recover the given XAResource instance. " + "\n" +
                     "Either enable automatic resource registration, or register a corresponding resource.";
                 	Configuration.logWarning ( msg );
-                    throw new javax.transaction.SystemException ( msg );            
+                    throw new javax.transaction.SystemException ( msg );
             }
 
             try {
@@ -374,12 +381,12 @@ class TransactionImp implements Transaction
             }
 
         }
-        
+
         if ( ret == null && autoRegistration_ ) {
 
             synchronized ( Configuration.class ) {
             	// synchronized to avoid case 61740
-            	
+
             	ret = new TemporaryXATransactionalResource(xares);
             	// cf case 61740: check for concurrent additions before this synch block was entered
             	if ( Configuration.getResource ( ret.getName() ) == null ) {
@@ -390,7 +397,7 @@ class TransactionImp implements Transaction
 			}
 
         }
-        
+
 		return ret;
 	}
 
@@ -406,7 +413,7 @@ class TransactionImp implements Transaction
 
         printMsg ( "delistResource ( " + xares + " ) with transaction "
                 + toString (), Console.INFO );
-        
+
         XAResourceTransaction active = findXAResourceTransaction ( xares );
         // NOTE: the lookup MUST have succeeded since the delist must be
         // done by the same XAResource INSTANCE as the enlist before,
@@ -427,7 +434,7 @@ class TransactionImp implements Transaction
             }
             removeXAResourceTransaction ( xares );
             if ( flag == XAResource.TMFAIL ) setRollbackOnly ();
-            
+
         } else if ( flag == XAResource.TMSUSPEND ) {
             try {
                 active.xaSuspend ();
@@ -448,10 +455,10 @@ class TransactionImp implements Transaction
 
     /**
      * Compares to another object.
-     * 
+     *
      * @param o
      *            The other object to compare to.
-     * 
+     *
      * @return boolean True iff the underlying tx is the same.
      */
 
@@ -479,12 +486,12 @@ class TransactionImp implements Transaction
         return ct_.getTid ().toString ();
     }
 
-	void suspendEnlistedXaResources() throws ExtendedSystemException 
+	void suspendEnlistedXaResources() throws ExtendedSystemException
 	{
 		// cf case 61305
 		Iterator xaResourceTransactions = xaresToTxMap_.values().iterator();
 		while ( xaResourceTransactions.hasNext() ) {
-			XAResourceTransaction resTx = (XAResourceTransaction) xaResourceTransactions.next();			
+			XAResourceTransaction resTx = (XAResourceTransaction) xaResourceTransactions.next();
 			try {
 				resTx.xaSuspend();
 			} catch (XAException e) {

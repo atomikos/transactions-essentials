@@ -25,6 +25,9 @@
 
 package com.atomikos.jms;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
@@ -49,6 +52,10 @@ import com.atomikos.icatch.system.Configuration;
 
 class DefaultJtaMessageConsumer implements HeuristicMessageConsumer 
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(DefaultJtaMessageConsumer.class);
 
 	private MessageConsumer receiver_;
 	private TransactionalResource res_;

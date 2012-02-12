@@ -25,6 +25,9 @@
 
 package com.atomikos.jms;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.lang.reflect.Proxy;
 
 import javax.jms.JMSException;
@@ -44,7 +47,11 @@ import com.atomikos.icatch.system.Configuration;
 import com.atomikos.util.DynamicProxy;
 
 class AtomikosPooledJmsConnection extends AbstractXPooledConnection implements SessionHandleStateChangeListener {
-	
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger LOGGER = LoggerFactory.createLogger(AtomikosPooledJmsConnection.class);
+
 	private XAConnection xaConnection;
 	private XATransactionalResource jmsTransactionalResource;
 	private Reapable currentProxy;
@@ -69,7 +76,7 @@ class AtomikosPooledJmsConnection extends AbstractXPooledConnection implements S
 	}
 
 	public void destroy() {
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": destroying connection..." );
+		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": destroying connection..." );
 		if (xaConnection != null) {
 			try {
 				xaConnection.close();
@@ -85,12 +92,12 @@ class AtomikosPooledJmsConnection extends AbstractXPooledConnection implements S
 		boolean ret = true;
 		if ( currentProxy != null ) {
 			DynamicProxy dproxy = ( DynamicProxy ) currentProxy;
-			AtomikosJmsConnectionProxy proxy = (AtomikosJmsConnectionProxy) dproxy.getInvocationHandler();			
+			AtomikosJmsConnectionProxy proxy = (AtomikosJmsConnectionProxy) dproxy.getInvocationHandler();
 			ret = proxy.isAvailable();
 		}
 		return ret;
 	}
-	
+
 
 	public synchronized boolean isErroneous() {
 		boolean ret = erroneous;
@@ -113,10 +120,10 @@ class AtomikosPooledJmsConnection extends AbstractXPooledConnection implements S
 
 	public void onTerminated() {
 		boolean fireTerminatedEvent = false;
-		
+
 		synchronized ( this ) {
 			//a session has terminated -> check reusability of all remaining
-			if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": a session has terminated, is connection now available ? " + isAvailable() );
+			if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": a session has terminated, is connection now available ? " + isAvailable() );
 			if ( isAvailable() ) {
 				if ( currentProxy != null ) {
 					DynamicProxy dproxy = ( DynamicProxy ) currentProxy;
@@ -124,7 +131,7 @@ class AtomikosPooledJmsConnection extends AbstractXPooledConnection implements S
 					if ( proxy.isErroneous() ) erroneous = true;
 					proxy.destroy();
 				}
-				
+
 				fireTerminatedEvent = true;
 			} else {
 				//not yet available, but check if the connection is erroneous
@@ -136,36 +143,36 @@ class AtomikosPooledJmsConnection extends AbstractXPooledConnection implements S
 				}
 			}
 		}
-		
+
         if ( fireTerminatedEvent ) {
             //callbacks done outside synch to avoid deadlock in case 27614
         	fireOnXPooledConnectionTerminated();
         }
 
-		
+
 	}
-	
+
 	public boolean canBeRecycledForCallingThread ()
 	{
 		boolean ret = false;
 		if ( currentProxy != null ) {
 			CompositeTransactionManager tm = Configuration.getCompositeTransactionManager();
-			
+
 			CompositeTransaction current = tm.getCompositeTransaction();
 			if ( ( current != null ) && ( current.getProperty ( TransactionManagerImp.JTA_PROPERTY_NAME) != null )) {
 				DynamicProxy dproxy = ( DynamicProxy ) currentProxy;
 				AtomikosJmsConnectionProxy proxy = (AtomikosJmsConnectionProxy) dproxy.getInvocationHandler();
-				//recycle if either inactive in this tx, OR if active (since a new session will be created anyway, and 
+				//recycle if either inactive in this tx, OR if active (since a new session will be created anyway, and
 				//concurrent sessions are allowed on the same underlying connection!
 				ret = proxy.isInactiveInTransaction(current) || proxy.isInTransaction( current );
 			}
 		}
-		
-		
+
+
 		return ret;
 	}
-	
-	public String toString() 
+
+	public String toString()
 	{
 		return "atomikos pooled connection for resource " + jmsTransactionalResource.getName();
 	}

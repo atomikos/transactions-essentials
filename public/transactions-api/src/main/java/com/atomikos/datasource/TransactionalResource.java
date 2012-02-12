@@ -25,6 +25,9 @@
 
 package com.atomikos.datasource;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import com.atomikos.icatch.CompositeTransaction;
 
 /**

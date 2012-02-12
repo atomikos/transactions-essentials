@@ -25,6 +25,9 @@
 
 package com.atomikos.jdbc.nonxa;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.sql.Connection;
@@ -42,19 +45,23 @@ import com.atomikos.jdbc.HeuristicDataSource;
 import com.atomikos.util.SerializableObjectFactory;
 
 /**
- * 
- * 
- * 
+ *
+ *
+ *
  * A Bean class for DataSource access to non-XA JDBC implementations. Instances
  * are transaction-aware and can rollback the work done over multiple
  * connections (provided that all work was done in one and the same thread).
- * 
+ *
  *  @deprecated As of release 3.3, the {@link AtomikosNonXADataSourceBean} should be used instead.
- * 
+ *
  */
 public class NonXADataSourceBean implements HeuristicDataSource, Referenceable,
         Serializable
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger LOGGER = LoggerFactory.createLogger(NonXADataSourceBean.class);
 
     private String validatingQuery;
 
@@ -71,10 +78,10 @@ public class NonXADataSourceBean implements HeuristicDataSource, Referenceable,
     private int poolSize;
 
     private int connectionTimeout;
-    
+
     private boolean testOnBorrow;
 
-    
+
     private transient NonXADataSourceImp delegate;
 
     public NonXADataSourceBean ()
@@ -118,7 +125,7 @@ public class NonXADataSourceBean implements HeuristicDataSource, Referenceable,
         // shut it down. therefore, add a shutdown hook to do this job
         DataSourceShutdownHook hook = new DataSourceShutdownHook ( delegate );
         Configuration.addShutdownHook ( hook );
-        
+
         StringBuffer sb = new StringBuffer();
         sb.append("NonXADataSourceBean configured with [");
         sb.append("uniqueResourceName=").append(jndiName).append(", ");
@@ -130,9 +137,9 @@ public class NonXADataSourceBean implements HeuristicDataSource, Referenceable,
         sb.append("connectionTimeout=").append(connectionTimeout).append(", ");
         sb.append("testOnBorrow=").append(testOnBorrow);
         sb.append("]");
-        
-        if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug(sb.toString());
-        
+
+        if ( LOGGER.isDebugEnabled() ) Configuration.logDebug(sb.toString());
+
         Configuration.logWarning ( "WARNING: class " + getClass().getName() + " is deprecated!" );
     }
 
@@ -305,20 +312,20 @@ public class NonXADataSourceBean implements HeuristicDataSource, Referenceable,
     {
         return user;
     }
-    
+
     /**
      * Set whether connections should be tested when gotten.
-     * 
+     *
      * @param value Whether to test connections when taken out of the pool.
      */
-    
+
     public void setTestOnBorrow ( boolean value )
     {
     		this.testOnBorrow = value;
     }
-    
+
     /**
-     * 
+     *
      * @return whether to test connections when gotten.
      */
     public boolean getTestOnBorrow()
@@ -328,7 +335,7 @@ public class NonXADataSourceBean implements HeuristicDataSource, Referenceable,
 
     /**
      * Set the refresh timeout interval for pool connections (optional).
-     * 
+     *
      * @param secs
      *            The value in seconds.
      */
@@ -340,7 +347,7 @@ public class NonXADataSourceBean implements HeuristicDataSource, Referenceable,
     /**
      * Set the name of the driver class that the DriverManager should use
      * (required).
-     * 
+     *
      * @param name
      *            The name.
      */
@@ -351,7 +358,7 @@ public class NonXADataSourceBean implements HeuristicDataSource, Referenceable,
 
     /**
      * Set the JNDI name to bind on (required). Should be unique.
-     * 
+     *
      * @param name
      *            The JNDI name.
      */
@@ -362,7 +369,7 @@ public class NonXADataSourceBean implements HeuristicDataSource, Referenceable,
 
     /**
      * Set the password to use.
-     * 
+     *
      * @param string
      */
     public void setPassword ( String string )
@@ -372,7 +379,7 @@ public class NonXADataSourceBean implements HeuristicDataSource, Referenceable,
 
     /**
      * Set the minimum size of the pool (optional).
-     * 
+     *
      * @param size
      */
     public void setPoolSize ( int size )
@@ -382,7 +389,7 @@ public class NonXADataSourceBean implements HeuristicDataSource, Referenceable,
 
     /**
      * Set the URL to use for getting connections (required).
-     * 
+     *
      * @param url
      */
     public void setUrl ( String url )
@@ -392,7 +399,7 @@ public class NonXADataSourceBean implements HeuristicDataSource, Referenceable,
 
     /**
      * Set the user name to get connections with.
-     * 
+     *
      * @param string
      */
     public void setUser ( String string )
@@ -402,7 +409,7 @@ public class NonXADataSourceBean implements HeuristicDataSource, Referenceable,
 
     /**
      * Set a validating query for easy verification of connectivity (optional).
-     * 
+     *
      * @param query
      */
 
@@ -413,7 +420,7 @@ public class NonXADataSourceBean implements HeuristicDataSource, Referenceable,
 
     /**
      * Get the validating query
-     * 
+     *
      * @return String The query.
      */
 
@@ -435,7 +442,7 @@ public class NonXADataSourceBean implements HeuristicDataSource, Referenceable,
     /**
      * Perform validation based on the validating query. This method does
      * nothing if no query was specified.
-     * 
+     *
      * @throws SQLException
      *             If validation fails.
      */

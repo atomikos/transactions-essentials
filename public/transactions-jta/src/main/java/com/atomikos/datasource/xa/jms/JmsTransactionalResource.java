@@ -25,6 +25,9 @@
 
 package com.atomikos.datasource.xa.jms;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.util.Stack;
 
 import javax.jms.JMSException;
@@ -46,6 +49,11 @@ import com.atomikos.datasource.xa.XidFactory;
 
 public class JmsTransactionalResource extends XATransactionalResource
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(JmsTransactionalResource.class);
+
     private XAConnectionFactory factory_;
 
     private XAConnection conn_;

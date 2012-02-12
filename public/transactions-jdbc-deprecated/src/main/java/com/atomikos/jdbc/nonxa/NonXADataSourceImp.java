@@ -25,6 +25,9 @@
 
 package com.atomikos.jdbc.nonxa;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.io.PrintWriter;
 import java.lang.reflect.Proxy;
 import java.sql.Connection;
@@ -50,22 +53,26 @@ import com.atomikos.jdbc.HeuristicDataSource;
 import com.atomikos.jdbc.XPooledConnection;
 
 /**
- * 
- * 
- * 
+ *
+ *
+ *
  * A DataSource implementation that is capable of handling 2-phase commit and
  * transactions without requiring XA support from the JDBC drivers of the
  * database. Instances can be used to involve non-XA databases in a transaction,
  * at the risk of not being able to recover prepared transactions (recovery of
  * prepared transactions will result in heuristics).
- * 
+ *
  *  @deprecated As of release 3.3, the {@link AtomikosNonXADataSourceBean} should be used instead.
- * 
+ *
  */
 
 public class NonXADataSourceImp implements HeuristicDataSource,
         ConnectionEventListener, Referenceable
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger LOGGER = LoggerFactory.createLogger(NonXADataSourceImp.class);
 
     private Map previousConnections;
     // for each thread, the previously used connection if any
@@ -81,7 +88,7 @@ public class NonXADataSourceImp implements HeuristicDataSource,
     /**
      * Helper method for JNDI lookup; helps looking up a previously constructed
      * instance.
-     * 
+     *
      * @param name
      *            The name of the resource.
      * @return NonXADataSourceImp The data source, or null if not found.
@@ -96,7 +103,7 @@ public class NonXADataSourceImp implements HeuristicDataSource,
 
     /**
      * Add an instance to the map, so that it can be found by name.
-     * 
+     *
      * @param name
      *            The name to map on.
      * @param instance
@@ -119,7 +126,7 @@ public class NonXADataSourceImp implements HeuristicDataSource,
 
     /**
      * Remove a map entry for the given name.
-     * 
+     *
      * @param name
      *            The name to unmap.
      */
@@ -127,13 +134,13 @@ public class NonXADataSourceImp implements HeuristicDataSource,
     private synchronized static void removeFromMap ( String name )
     {
     		//test null: quick fix for 20718 (Tomcat classloader problem)
-    		if ( name != null && nameToDataSource_ != null ) 
+    		if ( name != null && nameToDataSource_ != null )
     			nameToDataSource_.remove ( name );
     }
 
     /**
      * Create a new instance.
-     * 
+     *
      * @param driver
      *            The original datasource driver to use. This can be a MySQL,
      *            for instance. Note: don't use a pooling driver!
@@ -150,11 +157,11 @@ public class NonXADataSourceImp implements HeuristicDataSource,
      * @param connectionTimeout
      *            The number of seconds after which the pool's connections are
      *            checked periodically.
-     * @param testQuery 
+     * @param testQuery
      *        	 A SQL test query to validate connection liveness.
      * @param testOnBorrow
      * 			Should connections be tested when gotten?
-     * 
+     *
      * @throws SQLException
      */
 
@@ -168,7 +175,7 @@ public class NonXADataSourceImp implements HeuristicDataSource,
 
     /**
      * Create a new instance.
-     * 
+     *
      * @param driver
      *            The original datasource driver to use. This can be a MySQL,
      *            for instance. Note: don't use a pooling driver!
@@ -188,11 +195,11 @@ public class NonXADataSourceImp implements HeuristicDataSource,
      * @param validation
      *            True if the instance will be used for validation only. No
      *            binding is done in that case.
-     * @param testQuery 
+     * @param testQuery
      * 			 A query to validate connection liveness.
      * @param testOnBorrow
      * 			 Should connections be tested when gotten?
-     * 
+     *
      * @throws SQLException
      */
 
@@ -359,7 +366,7 @@ public class NonXADataSourceImp implements HeuristicDataSource,
 
     /**
      * Closes the datasource (and shuts down the pool).
-     * 
+     *
      */
 
     public void close ()

@@ -25,6 +25,9 @@
 
 package com.atomikos.jms;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
@@ -35,20 +38,24 @@ import com.atomikos.icatch.system.Configuration;
 
 class AtomikosJmsMessageConsumerProxy extends ConsumerProducerSupport implements
 		HeuristicMessageConsumer {
-	
-	
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger LOGGER = LoggerFactory.createLogger(AtomikosJmsMessageConsumerProxy.class);
+
+
 	private MessageConsumer delegate;
-	
+
 	public AtomikosJmsMessageConsumerProxy ( MessageConsumer delegate , SessionHandleState state ) {
 		super ( state );
 		this.delegate = delegate;
 	}
-	
-	protected MessageConsumer getDelegate() 
+
+	protected MessageConsumer getDelegate()
 	{
 		return delegate;
 	}
-	
+
 	public Message receive ( String hmsg ) throws JMSException {
 		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": receive ( " + hmsg + " )..." );
 		Message ret = null;
@@ -58,13 +65,13 @@ class AtomikosJmsMessageConsumerProxy extends ConsumerProducerSupport implements
 		} catch (Exception e) {
 			handleException ( e );
 		}
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": receive returning " + ret );
+		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": receive returning " + ret );
 		return ret;
 	}
 
 	public Message receive ( long timeout , String hmsg ) throws JMSException {
 		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": receive ( " + timeout + " , " + hmsg + " )..." );
-		
+
 		Message ret = null;
 		try {
 			enlist ( hmsg );
@@ -72,13 +79,13 @@ class AtomikosJmsMessageConsumerProxy extends ConsumerProducerSupport implements
 		} catch (Exception e) {
 			handleException ( e );
 		}
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": receive returning " + ret );
+		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": receive returning " + ret );
 		return ret;
 	}
 
 	public Message receiveNoWait ( String hmsg ) throws JMSException {
 		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": receiveNoWait ( " + hmsg + " )..." );
-		
+
 		Message ret = null;
 		try {
 			enlist ( hmsg );
@@ -86,7 +93,7 @@ class AtomikosJmsMessageConsumerProxy extends ConsumerProducerSupport implements
 		} catch (Exception e) {
 			handleException ( e );
 		}
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": receiveNoWait returning " + ret );
+		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": receiveNoWait returning " + ret );
 		return ret;
 	}
 
@@ -98,7 +105,7 @@ class AtomikosJmsMessageConsumerProxy extends ConsumerProducerSupport implements
 		} catch (Exception e) {
 			handleException ( e );
 		}
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": close done." );	
+		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": close done." );
 	}
 
 	public MessageListener getMessageListener() throws JMSException {
@@ -109,7 +116,7 @@ class AtomikosJmsMessageConsumerProxy extends ConsumerProducerSupport implements
 		} catch (Exception e) {
 			handleException ( e );
 		}
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": getMessageListener() returning " + ret );
+		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": getMessageListener() returning " + ret );
 		return ret;
 	}
 
@@ -121,28 +128,28 @@ class AtomikosJmsMessageConsumerProxy extends ConsumerProducerSupport implements
 		} catch (Exception e) {
 			handleException ( e );
 		}
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": getMessageSelector() returning " + ret );
+		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": getMessageSelector() returning " + ret );
 		return ret;
 	}
 
 	public Message receive() throws JMSException {
 		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": receive()..." );
 		Message ret = receive ( null );
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": receive() returning " + ret );
+		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": receive() returning " + ret );
 		return ret;
 	}
 
 	public Message receive ( long timeout ) throws JMSException {
 		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": receive ( " + timeout + " )..." );
 		Message ret =  receive ( timeout , null );
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": receive() returning " + ret );
+		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": receive() returning " + ret );
 		return ret;
 	}
 
 	public Message receiveNoWait() throws JMSException {
 		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": receiveNoWait()..." );
 		Message ret = receiveNoWait ( null );
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": receiveNoWait() returning " + ret );
+		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": receiveNoWait() returning " + ret );
 		return ret;
 	}
 
@@ -153,10 +160,10 @@ class AtomikosJmsMessageConsumerProxy extends ConsumerProducerSupport implements
 		}catch (Exception e) {
 			handleException ( e );
 		}
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": setMessageListener done." );
+		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": setMessageListener done." );
 	}
-	
-	public String toString() 
+
+	public String toString()
 	{
 		return "atomikos MessageConsumer proxy for " + delegate;
 	}

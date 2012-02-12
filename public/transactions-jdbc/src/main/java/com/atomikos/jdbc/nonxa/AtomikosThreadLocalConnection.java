@@ -25,6 +25,9 @@
 
 package com.atomikos.jdbc.nonxa;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -51,28 +54,32 @@ import com.atomikos.util.ClassLoadingHelper;
 import com.atomikos.util.DynamicProxy;
 
 /**
- * 
- * 
- * 
+ *
+ *
+ *
  * A dynamic proxy class that wraps JDBC local connections to enable them for
  * JTA transactions and the J2EE programming model: different modules in the
  * same thread (and transaction) can get a connection from the datasource, and
  * rollback will undo all that work.
- * 
+ *
  * This proxy also maintains state on behalf of the application/transaction;
  * the underlying connection can be re-pooled if two conditions evaluate to true:
  * <ul>
  * <li>There is no pending SQL work in a pending transaction; i.e. all SQL has been committed or rolled back.</li>
  * <li>There are no pending close() calls, i.e. no further SQL will arrive on the application's behalf.</li>
  * </ul>
- * 
+ *
  */
 
 class AtomikosThreadLocalConnection extends AbstractConnectionProxy
 implements JtaAwareNonXaConnection
 {
-	
-	
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger LOGGER = LoggerFactory.createLogger(AtomikosThreadLocalConnection.class);
+
+
 	private final static List ENLISTMENT_METHODS = Arrays.asList(new String[] {"createStatement", "prepareStatement", "prepareCall"});
 	private final static List CLOSE_METHODS = Arrays.asList(new String[] {"close"});
 	private final static List XA_INCOMPATIBLE_METHODS = Arrays.asList(new String[] {"commit", "rollback", "setSavepoint", "releaseSavepoint"});
@@ -85,29 +92,29 @@ implements JtaAwareNonXaConnection
 			"wait"
 			});
 
-	
+
 	private int useCount;
-	
+
 	private CompositeTransaction transaction;
-	
+
 	private boolean stale;
-	
+
 	private AtomikosNonXAPooledConnection pooledConnection;
 
 	private Connection wrapped;
-	
+
 	private boolean originalAutoCommitState;
-	
+
 	private AtomikosNonXAParticipant participant;
 	// the participant; kept here to add heuristic msgs to
 	// note: this will be null for non-transactional use!
-	
+
 	private boolean readOnly;
-	
+
 	private String resourceName;
-	
+
 	static Object newInstance ( AtomikosNonXAPooledConnection pooledConnection , String resourceName )
-	
+
 	{
 		Object ret = null;
 		Object obj = pooledConnection.getConnection();
@@ -116,29 +123,29 @@ implements JtaAwareNonXaConnection
 		//see case 24532
 		interfaces.add ( DynamicProxy.class );
 		Class[] interfaceClasses = ( Class[] ) interfaces.toArray ( new Class[0] );
-		
+
 		Set minimumSetOfInterfaces = new HashSet();
 		minimumSetOfInterfaces.add ( Reapable.class );
 		minimumSetOfInterfaces.add ( DynamicProxy.class );
 		minimumSetOfInterfaces.add ( java.sql.Connection.class );
         Class[] minimumSetOfInterfaceClasses = ( Class[] ) minimumSetOfInterfaces.toArray( new Class[0] );
-		
-		
+
+
 		List classLoaders = new ArrayList();
 		classLoaders.add ( Thread.currentThread().getContextClassLoader() );
 		classLoaders.add ( obj.getClass().getClassLoader() );
 		classLoaders.add ( AtomikosThreadLocalConnection.class.getClassLoader() );
-		
+
 		ret = ClassLoadingHelper.newProxyInstance ( classLoaders , minimumSetOfInterfaceClasses , interfaceClasses , new AtomikosThreadLocalConnection ( pooledConnection ) );
-		
+
 		DynamicProxy dproxy = (DynamicProxy) ret;
 		AtomikosThreadLocalConnection c = (AtomikosThreadLocalConnection) dproxy.getInvocationHandler();
 		c.resourceName = resourceName;
-		
+
 		return ret;
 	}
-	
-	private AtomikosThreadLocalConnection ( AtomikosNonXAPooledConnection pooledConnection ) 
+
+	private AtomikosThreadLocalConnection ( AtomikosNonXAPooledConnection pooledConnection )
 	{
 		this.stale = false;
 		this.useCount = 0;
@@ -148,11 +155,11 @@ implements JtaAwareNonXaConnection
 		this.readOnly = pooledConnection.getReadOnly();
 	}
 
-	private void setStale () 
+	private void setStale ()
 	{
 		this.stale = true;
 	}
-	
+
     private void resetForNextTransaction ()
     {
 
@@ -167,29 +174,29 @@ implements JtaAwareNonXaConnection
         participant = null;
 
     }
-    
+
     boolean isStale ()
     {
         return stale;
     }
-    
+
     private void decUseCount ()
     {
         useCount--;
         markForReuseIfPossible ();
     }
-    
+
     public void incUseCount ()
     {
         useCount++;
     }
 
-    
+
     private void setTransaction ( CompositeTransaction tx )
     {
     	this.transaction = tx;
     }
-    
+
     private void updateInTransaction () throws SQLException
     {
         CompositeTransactionManager ctm = Configuration
@@ -231,22 +238,22 @@ implements JtaAwareNonXaConnection
                 transactionTerminated ( false );
         }
     }
-    
-	
+
+
 	public Object invoke ( Object o , Method m , Object[] args )
-			throws Throwable 
+			throws Throwable
 	{
-	
-       
+
+
         final String methodName = m.getName();
-        
+
         //see case 24532
 		if ( methodName.equals ( "getInvocationHandler" ) ) return this;
-       
+
 		if (methodName.equals("reap")) {
 			if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": reap()..." );
 			reap();
-			if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": reap done." );
+			if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": reap done." );
 			return null;
 		}
 		else if ( methodName.equals ("isNoLongerInUse") ) {
@@ -257,33 +264,33 @@ implements JtaAwareNonXaConnection
 		}
 		else if (methodName.equals("isClosed")) {
 			if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": isClosed()..." );
-			Object ret = Boolean.valueOf ( isStale() );	
-			if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": isClosed() returning " + ret );
+			Object ret = Boolean.valueOf ( isStale() );
+			if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": isClosed() returning " + ret );
 			return ret;
 		}
         // detect illegal use after connection was resubmitted to the pool
 		else if ( isStale () && !NON_TRANSACTIONAL_METHOD_NAMES.contains ( methodName ) ) {
-        	if (!methodName.equals("close")) 
+        	if (!methodName.equals("close"))
         		AtomikosSQLException.throwAtomikosSQLException ( "Attempt to use connection after it was closed." );
-        }       
+        }
         // disallow local TX methods in global TX context
 		else if ( isInTransaction() ) {
 	        if (XA_INCOMPATIBLE_METHODS.contains(methodName))
 	        	AtomikosSQLException.throwAtomikosSQLException("Cannot call method '" + methodName + "' while a global transaction is running");
-	        
+
 	        if (methodName.equals("setAutoCommit") && args[0].equals(Boolean.TRUE)) {
 	        	AtomikosSQLException.throwAtomikosSQLException("Cannot call 'setAutoCommit(true)' while a global transaction is running");
 	        }
 	        if (methodName.equals("getAutoCommit")) {
 	        	if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": getAutoCommit()..." );
 	        	Object ret = Boolean.FALSE;
-	        	if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": getAutoCommit() returning false." );
+	        	if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": getAutoCommit() returning false." );
 	        	return ret;
 	        }
-	        
+
 	        CompositeTransactionManager ctm = Configuration.getCompositeTransactionManager ();
 	        CompositeTransaction ct = ctm.getCompositeTransaction();
-	        
+
             // if we are already in another (parent) tx then reject this,
             // because nested tx rollback can not be supported!!!
             if ( ct != null && !isInTransaction ( ct ) )
@@ -297,28 +304,28 @@ implements JtaAwareNonXaConnection
 		// check for enlistment
 		else if (ENLISTMENT_METHODS.contains(methodName)) {
         	updateInTransaction();
-        }       
-		
+        }
+
 		Object ret = null;
-		
+
         // check for delistment
         if (CLOSE_METHODS.contains(methodName)) {
         	if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": close..." );
 			decUseCount();
-			if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": close done." );
+			if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": close done." );
 			return null;
 		}
 		else {
 			try {
 				if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": calling " + methodName + " on vendor connection..." );
 				ret =  m.invoke ( wrapped , args);
-				
+
 			} catch (Exception ex) {
 				pooledConnection.setErroneous();
 				JdbcConnectionProxyHelper.convertProxyError ( ex , "Error delegating '" + methodName + "' call" );
 			}
 		}
-        if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": " + methodName + " returning " + ret );
+        if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": " + methodName + " returning " + ret );
         if ( ret instanceof Statement ) {
         	Statement s = ( Statement ) ret;
         	addStatement ( s );
@@ -326,11 +333,11 @@ implements JtaAwareNonXaConnection
 		return ret;
 
 	}
-	
-	
+
+
 	/**
 	 * Checks if the connection is being used on behalf the a transaction.
-	 * 
+	 *
 	 * @return
 	 */
 	private boolean isInTransaction()
@@ -340,12 +347,12 @@ implements JtaAwareNonXaConnection
 
 	/**
 	 * Checks if the connection is being used on behalf of the given transaction.
-	 * 
+	 *
 	 * @param ct
 	 * @return
 	 */
-	
-	boolean isInTransaction ( CompositeTransaction ct ) 
+
+	boolean isInTransaction ( CompositeTransaction ct )
 	{
 		boolean ret = false;
 		//See case 29060 and 28683 :COPY attribute to avoid race conditions with NPE results
@@ -357,11 +364,11 @@ implements JtaAwareNonXaConnection
 	}
 
 	//can the underlying connection be pooled again?
-	boolean isNoLongerInUse() 
+	boolean isNoLongerInUse()
 	{
 		return useCount <= 0 && !isInTransaction();
 	}
-	
+
 	private void markForReuseIfPossible ()
     {
 
@@ -371,11 +378,11 @@ implements JtaAwareNonXaConnection
             setStale();
             pooledConnection.fireOnXPooledConnectionTerminated();
         } else {
-            if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "ThreadLocalConnection: not reusable yet" );
+            if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( "ThreadLocalConnection: not reusable yet" );
         }
 
     }
-	
+
 	private void reap() {
 		Configuration.logWarning ( this + ": reaping - check if the application closes connections correctly, or increase the reapTimeout value");
 		setStale();
@@ -387,7 +394,7 @@ implements JtaAwareNonXaConnection
 	}
 
 	//notification of transaction termination
-	public void transactionTerminated ( boolean commit ) throws SQLException 
+	public void transactionTerminated ( boolean commit ) throws SQLException
 	{
 
 		// delegate commit or rollback to the underlying connection
@@ -395,7 +402,7 @@ implements JtaAwareNonXaConnection
             if ( commit ) {
                 if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": committing on connection...");
                 wrapped.commit ();
-                
+
             } else {
             	// see case 84252
             	forceCloseAllPendingStatements ( false );
@@ -403,7 +410,7 @@ implements JtaAwareNonXaConnection
  						"pessimistically closing all pending statements to avoid autoCommit after timeout" );
             	if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": rolling back on connection...");
                 wrapped.rollback ();
-               
+
             }
         } catch ( SQLException e ) {
             // make sure that reuse in pool is not possible
@@ -421,22 +428,22 @@ implements JtaAwareNonXaConnection
             //see case 30752: resetting autoCommit should not be done here:
             //connection may have been reused already!
         }
-		
+
 	}
-	
-	public void registerXPooledConnectionEventListener ( XPooledConnectionEventListener l ) 
+
+	public void registerXPooledConnectionEventListener ( XPooledConnectionEventListener l )
 	{
 		pooledConnection.registerXPooledConnectionEventListener ( l );
 	}
-	
-	public String toString() 
+
+	public String toString()
 	{
 		StringBuffer ret = new StringBuffer();
 		ret.append ( "atomikos non-xa connection proxy for " + wrapped );
 		return ret.toString();
 	}
 
-	public boolean usesConnection ( XPooledConnection xpc ) 
+	public boolean usesConnection ( XPooledConnection xpc )
 	{
 		boolean ret = false;
 		if ( pooledConnection != null ) {
@@ -445,7 +452,7 @@ implements JtaAwareNonXaConnection
 		return ret;
 	}
 
-	public void addHeuristicMessage ( HeuristicMessage hmsg ) 
+	public void addHeuristicMessage ( HeuristicMessage hmsg )
 	{
 		if ( participant != null ) participant.addHeuristicMessage ( hmsg );
 	}

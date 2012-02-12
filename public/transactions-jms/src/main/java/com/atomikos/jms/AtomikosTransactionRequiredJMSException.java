@@ -25,11 +25,18 @@
 
 package com.atomikos.jms;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import com.atomikos.icatch.system.Configuration;
 
 
 public class AtomikosTransactionRequiredJMSException extends
 		AtomikosJMSException {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(AtomikosTransactionRequiredJMSException.class);
 
 	public static void throwAtomikosTransactionRequiredJMSException ( String reason )
 	throws AtomikosTransactionRequiredJMSException

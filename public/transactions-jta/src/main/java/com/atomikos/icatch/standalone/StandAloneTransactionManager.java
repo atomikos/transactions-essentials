@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.standalone;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.util.Properties;
 
 import com.atomikos.datasource.xa.XID;
@@ -46,6 +49,10 @@ import com.atomikos.util.UniqueIdMgr;
 
 class StandAloneTransactionManager extends BaseTransactionManager
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(StandAloneTransactionManager.class);
 
     TransactionServiceImp service_;
 

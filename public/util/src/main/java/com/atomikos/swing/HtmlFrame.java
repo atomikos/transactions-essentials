@@ -24,6 +24,10 @@
  */
 
 package com.atomikos.swing;
+
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -56,6 +60,11 @@ import javax.swing.event.HyperlinkListener;
 public class HtmlFrame 
 implements HyperlinkListener, ActionListener
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(HtmlFrame.class);
+
     private JFrame win_;
     //the window to display in
     

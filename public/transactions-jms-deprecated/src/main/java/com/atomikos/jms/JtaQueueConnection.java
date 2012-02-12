@@ -25,6 +25,9 @@
 
 package com.atomikos.jms;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import javax.jms.ConnectionConsumer;
 import javax.jms.JMSException;
 import javax.jms.Queue;
@@ -49,6 +52,11 @@ class JtaQueueConnection
 extends DefaultJtaConnection
 implements QueueConnection
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(JtaQueueConnection.class);
+
     JtaQueueConnection ( XAQueueConnection c , TransactionalResource res )
     {
         super ( c , res );

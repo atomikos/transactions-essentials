@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.imp.thread;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -39,6 +42,10 @@ import com.atomikos.util.ClassLoadingHelper;
  */
 public class Java14BackportExecutorFactory 
 extends Java15ExecutorFactory  {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(Java14BackportExecutorFactory.class);
 
 	public static final String MAIN_CLASS = "edu.emory.mathcs.backport.java.util.concurrent.ThreadPoolExecutor";
 	public static final String IQUEUE_CLASS = "edu.emory.mathcs.backport.java.util.concurrent.BlockingQueue";

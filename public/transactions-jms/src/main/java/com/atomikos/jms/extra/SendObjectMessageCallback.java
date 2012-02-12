@@ -25,6 +25,9 @@
 
 package com.atomikos.jms.extra;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.io.Serializable;
 
 import javax.jms.Destination;
@@ -34,6 +37,11 @@ import javax.jms.Session;
 
 class SendObjectMessageCallback extends AbstractSendMessageCallback 
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(SendObjectMessageCallback.class);
+
 	private Serializable content;
 
 	protected SendObjectMessageCallback ( Serializable content , Destination destination,

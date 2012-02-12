@@ -25,6 +25,9 @@
 
 package com.atomikos.jms;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Queue;
@@ -33,9 +36,9 @@ import javax.jms.Topic;
 import com.atomikos.icatch.system.Configuration;
 
  /**
-  * 
-  * 
-  * 
+  *
+  *
+  *
   * This is a <b>long-lived</b> topic sender session, representing a
   * self-refreshing JMS session that can be used to send JMS messages in a
   * transactional way. The client code does not have to worry about refreshing or
@@ -49,19 +52,24 @@ import com.atomikos.icatch.system.Configuration;
   * <b>Important: if you change any properties AFTER sending on the session, then
   * you will need to explicitly stop and restart the session to have the changes
   * take effect!</b>
-  * 
+  *
   * <p>
   * Topic functionality in this product was sponsored by <a href="http://www.webtide.com">Webtide</a>.
   *
   */
 
-public class TopicPublisherSession extends MessageProducerSession 
+public class TopicPublisherSession extends MessageProducerSession
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger LOGGER = LoggerFactory.createLogger(TopicPublisherSession.class);
+
 	public TopicPublisherSession()
 	{
-		
+
 	}
-	
+
 	/**
 	 * Gets the topic to send to.
 	 * @return
@@ -69,35 +77,35 @@ public class TopicPublisherSession extends MessageProducerSession
 	public Topic getTopic()
 	{
 		return ( Topic ) getDestination();
-		
+
 	}
-	
+
 	/**
 	 * Sets the topic to send to (required).
 	 * @param topic
 	 */
-	
+
 	public void setTopic ( Topic topic )
 	{
 		setDestination ( topic );
 	}
-	
+
 	/**
 	 * Sets the topic to reply to (optional).
 	 * @param topic
 	 */
-	
+
 	public void setReplyToTopic ( Topic topic )
 	{
 		setReplyToDestination ( topic );
 	}
-	
+
 	/**
 	 * Gets the topic to reply to.
 	 * @return Null if no reply topic was set, or if
 	 * the replyTo destination is not a topic but a queue.
 	 */
-	
+
 	public Topic getReplyToTopic()
 	{
 		Topic ret = null;
@@ -107,19 +115,19 @@ public class TopicPublisherSession extends MessageProducerSession
 		}
 		return ret;
 	}
-	
+
 	/**
 	 * Sets the connection factory to use (required). This is needed
 	 * to create or refresh connections for sending.
-	 * 
+	 *
 	 * @param bean
 	 */
-	public void setTopicConnectionFactoryBean ( 
+	public void setTopicConnectionFactoryBean (
 			TopicConnectionFactoryBean bean )
 	{
 		setAbstractConnectionFactoryBean ( bean );
 	}
-	
+
 	/**
 	 * Gets the connection factory.
 	 * @return
@@ -129,7 +137,7 @@ public class TopicPublisherSession extends MessageProducerSession
 		return ( TopicConnectionFactoryBean ) getAbstractConnectionFactoryBean();
 	}
 
-	protected String getDestinationName() 
+	protected String getDestinationName()
 	{
 		String ret = null;
 		Topic t = getTopic();
@@ -137,13 +145,13 @@ public class TopicPublisherSession extends MessageProducerSession
 			try {
 				ret = t.getTopicName();
 			} catch ( JMSException e ) {
-				if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "TopicPublisherSession: error retrieving topic name" , e );
+				if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( "TopicPublisherSession: error retrieving topic name" , e );
 			}
 		}
 		return ret;
 	}
 
-	protected String getReplyToDestinationName() 
+	protected String getReplyToDestinationName()
 	{
 		String ret = null;
 		Topic t = getReplyToTopic();
@@ -151,7 +159,7 @@ public class TopicPublisherSession extends MessageProducerSession
 			try {
 				ret = t.getTopicName();
 			} catch ( JMSException e ) {
-				if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "TopicPublisherSession: error retrieving topic name" , e );
+				if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( "TopicPublisherSession: error retrieving topic name" , e );
 			}
 		}
 		return ret;

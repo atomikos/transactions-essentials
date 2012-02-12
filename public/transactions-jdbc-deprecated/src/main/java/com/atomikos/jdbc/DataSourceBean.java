@@ -25,6 +25,9 @@
 
 package com.atomikos.jdbc;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.sql.Connection;
@@ -55,6 +58,10 @@ import com.atomikos.icatch.system.Configuration;
 public class DataSourceBean implements HeuristicDataSource, Serializable,
         Referenceable
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(DataSourceBean.class);
 
     private transient JtaDataSourceImp ds_;
     // the data source to delegate to

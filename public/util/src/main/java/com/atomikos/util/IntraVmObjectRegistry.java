@@ -25,6 +25,9 @@
 
 package com.atomikos.util;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,6 +42,10 @@ import javax.naming.NameNotFoundException;
  * @author lorban
  */
 public class IntraVmObjectRegistry {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(IntraVmObjectRegistry.class);
 	
 	private final static Map resourcesMap = new HashMap();
 	

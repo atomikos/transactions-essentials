@@ -25,6 +25,9 @@
 
 package com.atomikos.jdbc;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -33,17 +36,21 @@ import com.atomikos.datasource.pool.CreateConnectionException;
 import com.atomikos.icatch.system.Configuration;
 
 public class JdbcConnectionProxyHelper {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger LOGGER = LoggerFactory.createLogger(JdbcConnectionProxyHelper.class);
 
 	/**
-	 * Converts a driver error (generic exception) into an appropriate 
-	 * SQLException or RuntimeException. 
-	 * 
+	 * Converts a driver error (generic exception) into an appropriate
+	 * SQLException or RuntimeException.
+	 *
 	 * @param ex The driver exception.
 	 * @param msg The message to use in the logs and conversion.
 	 */
-	
+
 	public static void convertProxyError(Throwable ex, String msg)
-			throws SQLException {	
+			throws SQLException {
 				if ( ex instanceof Error ) {
 					Error err = ( Error ) ex;
 					Configuration.logWarning ( msg , err );
@@ -61,24 +68,24 @@ public class JdbcConnectionProxyHelper {
 					Throwable cause = ite.getCause();
 					if ( cause != null ) {
 						//log as debug and let the convert do the rest for the cause
-						if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( msg , ite );
+						if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( msg , ite );
 						convertProxyError ( cause , msg );
 					}
 					else {
 						//cause is null -> throw AtomikosSQLException?
 						AtomikosSQLException.throwAtomikosSQLException ( msg , ite );
 					}
-				} 
-				
+				}
+
 				//default: throw AtomikosSQLException
 				AtomikosSQLException.throwAtomikosSQLException ( msg , ex );
-				
+
 			}
-	
+
 	public static void setIsolationLevel ( Connection connection , int defaultIsolationLevel )
 	throws CreateConnectionException
 	{
-		
+
 		if (defaultIsolationLevel < 0)
 			return;
 

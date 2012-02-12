@@ -25,6 +25,9 @@
 
 package com.atomikos.jdbc;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -47,19 +50,23 @@ import com.atomikos.icatch.system.Configuration;
 
 public class AtomikosXAPooledConnection extends AbstractXPooledConnection
 {
-	
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger LOGGER = LoggerFactory.createLogger(AtomikosXAPooledConnection.class);
 
-	
+
+
 
 	private SessionHandleState sessionHandleState;
 	private XAConnection xaConnection;
 	private Connection connection;
 
 
-	public AtomikosXAPooledConnection ( XAConnection xaConnection, 
-			JdbcTransactionalResource jdbcTransactionalResource, 
-			ConnectionPoolProperties props ) 
-	throws SQLException 
+	public AtomikosXAPooledConnection ( XAConnection xaConnection,
+			JdbcTransactionalResource jdbcTransactionalResource,
+			ConnectionPoolProperties props )
+	throws SQLException
 	{
 		super ( props );
 		this.xaConnection = xaConnection;
@@ -67,19 +74,19 @@ public class AtomikosXAPooledConnection extends AbstractXPooledConnection
 		this.sessionHandleState = new SessionHandleState ( jdbcTransactionalResource, xaConnection.getXAResource());
 		sessionHandleState.registerSessionHandleStateChangeListener(new SessionHandleStateChangeListener() {
 			public void onTerminated() {
-				if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug( "SessionHandleState terminated, firing XPooledConnectionTerminated event for " + AtomikosXAPooledConnection.this);
+				if ( LOGGER.isDebugEnabled() ) Configuration.logDebug( "SessionHandleState terminated, firing XPooledConnectionTerminated event for " + AtomikosXAPooledConnection.this);
 				updateLastTimeReleased();
 				fireOnXPooledConnectionTerminated();
 			}
 		});
-		
+
 	}
 
-	
 
-	public void destroy() 
+
+	public void destroy()
 	{
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": destroying connection..." );
+		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": destroying connection..." );
 		if (connection != null) {
 			try {
 					connection.close();
@@ -96,16 +103,16 @@ public class AtomikosXAPooledConnection extends AbstractXPooledConnection
 				Configuration.logWarning ( this + ": error closing XAConnection: " , e );
 			}
 		}
-		
+
 		connection = null;
 		xaConnection = null;
 	}
 
 
-	
+
 	protected Reapable doCreateConnectionProxy ( HeuristicMessage hmsg ) throws CreateConnectionException
 	{
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": creating connection proxy..." );
+		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": creating connection proxy..." );
 		JdbcConnectionProxyHelper.setIsolationLevel ( connection , getDefaultIsolationLevel() );
 		return AtomikosConnectionProxy.newInstance ( connection , sessionHandleState , hmsg );
 	}
@@ -114,7 +121,7 @@ public class AtomikosXAPooledConnection extends AbstractXPooledConnection
 		if ( isErroneous() ) throw new CreateConnectionException ( this + ": connection is erroneous" );
 		String testQuery = getTestQuery();
 		if (testQuery != null) {
-			if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": testing connection with query [" + testQuery + "]" );
+			if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": testing connection with query [" + testQuery + "]" );
 			Statement stmt = null;
 			try {
 				stmt = connection.createStatement();
@@ -125,21 +132,21 @@ public class AtomikosXAPooledConnection extends AbstractXPooledConnection
 				//catch any Exception - cf case 22198
 				throw new CreateConnectionException ( "Error executing testQuery" ,  e );
 			}
-			if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": connection tested OK" );
+			if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": connection tested OK" );
 		}
 		else {
-			if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": no test query, skipping test" );
+			if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": no test query, skipping test" );
 		}
 	}
 
-	public boolean isAvailable() 
+	public boolean isAvailable()
 	{
 		boolean available = false;
 		available = sessionHandleState.isTerminated() && (xaConnection != null);
 		return available;
 	}
 
-	public boolean isErroneous() 
+	public boolean isErroneous()
 	{
 		return sessionHandleState.isErroneous();
 	}
@@ -148,26 +155,26 @@ public class AtomikosXAPooledConnection extends AbstractXPooledConnection
 		return "an AtomikosXAPooledConnection with " + sessionHandleState;
 	}
 
-	public boolean isInTransaction ( CompositeTransaction ct ) 
+	public boolean isInTransaction ( CompositeTransaction ct )
 	{
 		return sessionHandleState.isActiveInTransaction ( ct );
 	}
-	
-	
-	
+
+
+
 	public boolean canBeRecycledForCallingThread ()
 	{
 		boolean ret = false;
-		
+
 		CompositeTransactionManager tm = Configuration.getCompositeTransactionManager();
-		
+
 		CompositeTransaction current = tm.getCompositeTransaction();
 		if ( ( current != null ) && ( current.getProperty ( TransactionManagerImp.JTA_PROPERTY_NAME) != null )) {
 			ret = sessionHandleState.isInactiveInTransaction(current);
 		}
-		
+
 		return ret;
 	}
-	
+
 
 }

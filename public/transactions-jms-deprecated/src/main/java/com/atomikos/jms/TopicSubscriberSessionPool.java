@@ -25,6 +25,9 @@
 
 package com.atomikos.jms;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import javax.jms.Topic;
 
 
@@ -62,6 +65,10 @@ import javax.jms.Topic;
 
 public class TopicSubscriberSessionPool extends MessageConsumerSessionPool 
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(TopicSubscriberSessionPool.class);
 
 	private boolean noLocal;
 	private String subscriberName;

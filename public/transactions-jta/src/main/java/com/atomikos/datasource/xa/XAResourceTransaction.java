@@ -25,6 +25,9 @@
 
 package com.atomikos.datasource.xa;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
@@ -58,26 +61,30 @@ import com.atomikos.icatch.TxState;
 import com.atomikos.icatch.system.Configuration;
 
 /**
- * 
- * 
+ *
+ *
  * An implementation of ResourceTransaction for XA transactions.
  */
 
 public class XAResourceTransaction implements ResourceTransaction,
         Externalizable, Participant
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger LOGGER = LoggerFactory.createLogger(XAResourceTransaction.class);
 
     // force-set version ID for backward log compatibility
     static final long serialVersionUID = -8227293322090019196L;
-    
+
     protected static String interpretErrorCode ( String resourceName , String opCode , Xid xid , int errorCode ) {
-    		
+
     		String msg = "unkown";
     		switch ( errorCode ) {
-    			case XAException.XAER_RMFAIL: 
+    			case XAException.XAER_RMFAIL:
     				msg = "the XA resource has become unavailable";
     				break;
-    			case XAException.XA_RBROLLBACK: 
+    			case XAException.XA_RBROLLBACK:
     				msg = "the XA resource has rolled back for an unspecified reason";
     				break;
     			case XAException.XA_RBCOMMFAIL:
@@ -118,7 +125,7 @@ public class XAResourceTransaction implements ResourceTransaction,
     				break;
     			case XAException.XA_RETRY:
     				msg = "the XA command had no effect and may be retried";
-    				break;	
+    				break;
     			case XAException.XA_RDONLY:
     				msg = "the XA resource had no updates to perform for this transaction";
     				break;
@@ -140,9 +147,9 @@ public class XAResourceTransaction implements ResourceTransaction,
     			case XAException.XAER_OUTSIDE:
     				msg = "the XA resource is currently involved in a local (non-XA) transaction";
     				break;
-    			default: msg = "unknown";    		
+    			default: msg = "unknown";
     		}
-    		return "XA resource '" + resourceName + "': " + opCode + " for XID '" + xidToHexString ( xid ) + 
+    		return "XA resource '" + resourceName + "': " + opCode + " for XID '" + xidToHexString ( xid ) +
     			   "' raised " + errorCode + ": " + msg;
     }
 
@@ -160,10 +167,10 @@ public class XAResourceTransaction implements ResourceTransaction,
 
     private transient String xidToHexString;
 	private transient String toString;
-    
+
     private void setXid_(Xid xid_) {
 		this.xid_ = xid_;
-		
+
 		xidToHexString=	xidToHexString(xid_);
 		toString = "XAResourceTransaction: "+xidToHexString;
 	}
@@ -182,7 +189,7 @@ public class XAResourceTransaction implements ResourceTransaction,
     // true as soon as registered with XAResource.
 
     private transient int timeout_;
-    
+
 
 
     public XAResourceTransaction ()
@@ -209,7 +216,7 @@ public class XAResourceTransaction implements ResourceTransaction,
             timeout_ = (int) transaction.getTransactionControl ().getTimeout () / 1000;
 
         }
-        
+
         tid_ = transaction.getTid ();
         root_ = root;
         resourcename_ = resource.getName ();
@@ -224,13 +231,13 @@ public class XAResourceTransaction implements ResourceTransaction,
         addHeuristicMessage ( new StringHeuristicMessage ( "XA resource '"
                 + resource.getName () + "' accessed with Xid '" + xidToHexString  + "'" ) );
     }
-    
-	void setResource ( XATransactionalResource resource ) 
+
+	void setResource ( XATransactionalResource resource )
 	{
 		this.resource_ = resource;
 	}
 
-	void setState ( TxState state ) 
+	void setState ( TxState state )
 	{
 		this.state_ = state;
 	}
@@ -238,7 +245,7 @@ public class XAResourceTransaction implements ResourceTransaction,
    static String xidToHexString(Xid xid) {
     	String gtrid = byteArrayToHexString(xid.getGlobalTransactionId());
     	String bqual = byteArrayToHexString(xid.getBranchQualifier());
-    	
+
 		return gtrid + ":" + bqual;
 	}
 
@@ -250,8 +257,8 @@ public class XAResourceTransaction implements ResourceTransaction,
 		}
     	return sb.toString().toUpperCase();
 	}
-	
-	private void switchToHeuristicState ( String opCode , TxState state , XAException cause ) 
+
+	private void switchToHeuristicState ( String opCode , TxState state , XAException cause )
 	{
 		String errorMsg = interpretErrorCode ( resourcename_ , opCode , xid_ , cause.errorCode );
 		addHeuristicMessage ( new StringHeuristicMessage ( errorMsg ) );
@@ -274,9 +281,9 @@ public class XAResourceTransaction implements ResourceTransaction,
             }
         } catch ( XAException xa ) {
             // timed out?
-           if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( resourcename_
+           if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( resourcename_
                     + ": XAResource needs refresh", xa );
-            
+
             if ( resource_ == null ) {
     			// cf bug 67951
     			// happens on recovery without resource found
@@ -287,16 +294,16 @@ public class XAResourceTransaction implements ResourceTransaction,
         }
 
     }
-	
+
 	protected void forceRefreshXAConnection() throws XAException
 	{
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( resourcename_ + ": forcing refresh of XAConnection..." );
+		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( resourcename_ + ": forcing refresh of XAConnection..." );
 		if ( resource_ == null ) {
 			// cf bug 67951
 			// happens on recovery without resource found
 			throwXAExceptionForUnavailableResource();
 		}
-		
+
 		try {
 			xaresource_ = resource_.refreshXAConnection();
 		} catch ( ResourceException re ) {
@@ -304,7 +311,7 @@ public class XAResourceTransaction implements ResourceTransaction,
 		}
 	}
 
-	private void throwXAExceptionForUnavailableResource() throws XAException 
+	private void throwXAExceptionForUnavailableResource() throws XAException
 	{
 		String msg = resourcename_ + ": resource no longer available - recovery might be at risk!";
 		Configuration.logWarning ( msg );
@@ -364,13 +371,13 @@ public class XAResourceTransaction implements ResourceTransaction,
 
         heuristicMessages_ = (Vector) in.readObject ();
         resourcename_ = (String) in.readObject ();
-        
+
         try {
 			Boolean xaresSerializable = (Boolean) in.readObject();
 			if (xaresSerializable !=null && xaresSerializable ) {
 			    // cf case 59238
 			    xaresource_ = ( XAResource ) in.readObject();
-			} 
+			}
 		} catch (OptionalDataException e) {
 			// happens if boolean is missing - like in older logfiles
 			Configuration.logDebug ("Ignoring missing field" , e );
@@ -455,11 +462,11 @@ public class XAResourceTransaction implements ResourceTransaction,
 	                    + resourcename_ + " represented by XAResource instance "
 	                    + xaresource_, Console.INFO );
 	            xaresource_.end ( xid_, XAResource.TMSUCCESS );
-	            
+
 	        } catch ( XAException xaerr ) {
 	            errors.push ( xaerr );
 	            String msg = interpretErrorCode ( resourcename_ , "end" , xid_ , xaerr.errorCode );
-	            if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( msg, xaerr );
+	            if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( msg, xaerr );
 	            throw new ResourceException ( msg, errors );
 	        }
 	        setState ( TxState.LOCALLY_DONE );
@@ -491,7 +498,7 @@ public class XAResourceTransaction implements ResourceTransaction,
                     + " represented by XAResource instance " + xaresource_,
                     Console.INFO );
             xaresource_.start ( xid_, flag );
-            
+
         } catch ( XAException xaerr ) {
         		String msg = interpretErrorCode ( resourcename_ , "resume" , xid_ , xaerr.errorCode );
             Configuration.logWarning ( msg ,
@@ -526,7 +533,7 @@ public class XAResourceTransaction implements ResourceTransaction,
     {
         boolean recovered = false;
         // perform extra initialization
-        
+
         if ( TxState.ACTIVE.equals ( state_ ) || TxState.LOCALLY_DONE.equals ( state_ ) ) {
         	//see case 23364: recovery before prepare should do nothing
         	//and certainly not reset the xaresource
@@ -624,7 +631,7 @@ public class XAResourceTransaction implements ResourceTransaction,
 
         } catch ( XAException xaerr ) {
         	String msg = interpretErrorCode ( resourcename_ , "prepare" , xid_ , xaerr.errorCode );
-            Configuration.logWarning ( msg , xaerr ); // see case 84253  
+            Configuration.logWarning ( msg , xaerr ); // see case 84253
             if ( (XAException.XA_RBBASE <= xaerr.errorCode)
                     && (xaerr.errorCode <= XAException.XA_RBEND) ) {
                 throw new RollbackException ( msg );
@@ -635,7 +642,7 @@ public class XAResourceTransaction implements ResourceTransaction,
         }
         setState ( TxState.IN_DOUBT );
         if ( ret == XAResource.XA_RDONLY ) {
-            printMsg ( "XAResource.prepare ( " + xidToHexString 
+            printMsg ( "XAResource.prepare ( " + xidToHexString
                     + " ) returning XAResource.XA_RDONLY " + "on resource "
                     + resourcename_ + " represented by XAResource instance "
                     + xaresource_, Console.INFO );
@@ -700,7 +707,7 @@ public class XAResourceTransaction implements ResourceTransaction,
             if ( (XAException.XA_RBBASE <= xaerr.errorCode)
                     && (xaerr.errorCode <= XAException.XA_RBEND) ) {
                 // do nothing, corresponds with semantics of rollback
-                if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( msg );
+                if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( msg );
             } else {
                 Configuration.logWarning ( msg , xaerr );
                 switch ( xaerr.errorCode ) {
@@ -744,7 +751,7 @@ public class XAResourceTransaction implements ResourceTransaction,
     {
         Stack errors = new Stack ();
         terminateInResource ();
-        
+
         if ( state_.equals ( TxState.TERMINATED ) )
             return getHeuristicMessages ();
         if ( state_.equals ( TxState.HEUR_MIXED ) )
@@ -783,7 +790,7 @@ public class XAResourceTransaction implements ResourceTransaction,
                     + " represented by XAResource instance " + xaresource_,
                     Console.INFO );
             xaresource_.commit ( xid_, onePhase );
-            
+
         } catch ( XAException xaerr ) {
         	String msg = interpretErrorCode ( resourcename_ , "commit" , xid_ , xaerr.errorCode );
             Configuration.logWarning ( msg , xaerr );
@@ -873,7 +880,7 @@ public class XAResourceTransaction implements ResourceTransaction,
 
     /**
      * Get the Xid. Needed by jta mappings.
-     * 
+     *
      * @return Xid The Xid of this restx.
      */
 
@@ -881,8 +888,8 @@ public class XAResourceTransaction implements ResourceTransaction,
     {
         return xid_;
     }
-    
-    protected void setRecoveredXAResource ( XAResource xaresource ) 
+
+    protected void setRecoveredXAResource ( XAResource xaresource )
     {
     	// See case 25671: only reset xaresource if NOT enlisted!
     	// Otherwise, the delist will fail since XA does not allow
@@ -896,7 +903,7 @@ public class XAResourceTransaction implements ResourceTransaction,
 
     /**
      * Set the XAResource attribute.
-     * 
+     *
      * @param xaresource
      *            The new XAResource to use. This new XAResource represents the
      *            new connection to the XA database. Necessary because on reuse,
@@ -908,7 +915,7 @@ public class XAResourceTransaction implements ResourceTransaction,
     {
 
 
-    	if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this
+    	if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this
     			+ ": about to switch to XAResource " + xaresource );
     	xaresource_ = xaresource;
 
@@ -920,7 +927,7 @@ public class XAResourceTransaction implements ResourceTransaction,
     		// we don't care
     	}
 
-    	if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "XAResourceTransaction " + getXid ()
+    	if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( "XAResourceTransaction " + getXid ()
     			+ ": switched to XAResource " + xaresource );
 
 
@@ -937,7 +944,7 @@ public class XAResourceTransaction implements ResourceTransaction,
     	// our suspends (triggered by transaction suspend)
     	if ( !isXaSuspended_ ) {
     		try {
-    			printMsg ( "XAResource.suspend ( " + xidToHexString 
+    			printMsg ( "XAResource.suspend ( " + xidToHexString
     					+ " , XAResource.TMSUSPEND ) on resource "
     					+ resourcename_ + " represented by XAResource instance "
     					+ xaresource_, Console.INFO );
@@ -965,7 +972,7 @@ public class XAResourceTransaction implements ResourceTransaction,
                     + resourcename_ + " represented by XAResource instance "
                     + xaresource_, Console.INFO );
         		xaresource_.start ( xid_, XAResource.TMRESUME );
-        		
+
              isXaSuspended_ = false;
         }
         catch ( XAException xaerr ) {
@@ -973,12 +980,12 @@ public class XAResourceTransaction implements ResourceTransaction,
 			Configuration.logWarning ( msg , xaerr );
 			throw xaerr;
 		}
-        
+
     }
 
     /**
      * Test if the resource has been ended with TMSUSPEND.
-     * 
+     *
      * @return boolean True if so.
      */
     public boolean isXaSuspended ()
@@ -988,7 +995,7 @@ public class XAResourceTransaction implements ResourceTransaction,
 
     /**
      * Test if the restx is active (in use).
-     * 
+     *
      * @return boolean True if so.
      */
     public boolean isActive ()
@@ -1005,12 +1012,12 @@ public class XAResourceTransaction implements ResourceTransaction,
         return null;
     }
 
-	String getResourceName() 
+	String getResourceName()
 	{
 		return resourcename_;
 	}
 
-	XAResource getXAResource() 
+	XAResource getXAResource()
 	{
 		return xaresource_;
 	}

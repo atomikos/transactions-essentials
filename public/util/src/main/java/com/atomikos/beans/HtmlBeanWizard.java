@@ -24,6 +24,10 @@
  */
 
 package com.atomikos.beans;
+
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -50,6 +54,11 @@ import com.atomikos.util.ClassLoadingHelper;
 
 public class HtmlBeanWizard
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(HtmlBeanWizard.class);
+
 	private static final String PAR_NAME_PREFIX = "com.atomikos.beans.property.";
 	//unique prefix to ensure that properties are represented by 
 	//unique parameter names in HTML requests

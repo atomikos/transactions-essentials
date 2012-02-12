@@ -25,6 +25,9 @@
 
 package com.atomikos.jms;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import javax.jms.JMSException;
 
 import com.atomikos.datasource.xa.session.InvalidSessionHandleStateException;
@@ -39,55 +42,59 @@ import com.atomikos.icatch.system.Configuration;
 
  /**
   * Support for common logic in producer and consumer.
-  * 
+  *
   *
   */
 
-abstract class ConsumerProducerSupport 
+abstract class ConsumerProducerSupport
 {
-	
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger LOGGER = LoggerFactory.createLogger(ConsumerProducerSupport.class);
+
 	private SessionHandleState state;
 
 
-	protected ConsumerProducerSupport ( SessionHandleState state ) 
+	protected ConsumerProducerSupport ( SessionHandleState state )
 	{
 		this.state = state;
 	}
-	
 
-	protected void handleException ( Exception e ) throws AtomikosJMSException 
+
+	protected void handleException ( Exception e ) throws AtomikosJMSException
 	{
 		state.notifySessionErrorOccurred();
 		AtomikosJMSException.throwAtomikosJMSException ( "Error in proxy" , e );
 	}
-	
 
 
-	protected CompositeTransactionManager getCompositeTransactionManager() 
+
+	protected CompositeTransactionManager getCompositeTransactionManager()
 	{
 		CompositeTransactionManager ret = null;
 		ret = Configuration.getCompositeTransactionManager();
 		return ret;
 	}
 
-	
-	
+
+
 	protected void enlist ( String hmsg ) throws JMSException
 	{
 		CompositeTransaction ct = null;
 		CompositeTransactionManager ctm = getCompositeTransactionManager();
 		boolean enlist = false;
 		StringHeuristicMessage shmsg = new StringHeuristicMessage ( hmsg );
-		
+
 		if ( ctm != null ) {
 			ct = ctm.getCompositeTransaction();
 			if ( ct != null && ct.getProperty ( TransactionManagerImp.JTA_PROPERTY_NAME ) != null ) {
 				enlist = true;
 			}
 		}
-		
+
 		if ( enlist ) {
-			registerSynchronization ( ct );	
+			registerSynchronization ( ct );
 			try {
 				state.notifyBeforeUse ( ct , shmsg );
 			} catch ( InvalidSessionHandleStateException ex ) {
@@ -98,26 +105,26 @@ abstract class ConsumerProducerSupport
 		}
 		else {
 			String msg = "The JMS session you are using requires a JTA transaction context for the calling thread and none was found." + "\n" +
-			"Please correct your code to do one of the following: " + "\n" +			
-			"1. start a JTA transaction if you want your JMS operations to be subject to JTA commit/rollback, or" + "\n" + 
+			"Please correct your code to do one of the following: " + "\n" +
+			"1. start a JTA transaction if you want your JMS operations to be subject to JTA commit/rollback, or" + "\n" +
 			"2. increase the maxPoolSize of the AtomikosConnectionFactoryBean to avoid transaction timeout while waiting for a connection, or" + "\n" +
 			"3. create a non-transacted session and do session acknowledgment yourself, or" + "\n" +
 			"4. set localTransactionMode to true so connection-level commit/rollback are enabled.";
 			Configuration.logWarning ( this + ": " + msg );
 			AtomikosTransactionRequiredJMSException.throwAtomikosTransactionRequiredJMSException ( msg );
 		}
-		
+
 	}
 
 	private void registerSynchronization ( CompositeTransaction ct ) throws AtomikosJMSException {
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": detected transaction " + ct );
+		if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( this + ": detected transaction " + ct );
 		ct.registerSynchronization ( new JmsRequeueSynchronization( ct ) );
 	}
-	
-	
+
+
 	private class JmsRequeueSynchronization implements Synchronization {
 		private static final long serialVersionUID = 1L;
-		
+
 		private CompositeTransaction compositeTransaction;
 		private boolean afterCompletionDone;
 
@@ -128,7 +135,7 @@ abstract class ConsumerProducerSupport
 
 		public void afterCompletion(Object txstate) {
 			if ( afterCompletionDone ) return;
-			
+
 			if ( txstate.equals ( TxState.TERMINATED )
 	                || txstate.equals ( TxState.HEUR_MIXED )
 	                || txstate.equals ( TxState.HEUR_HAZARD )
@@ -136,20 +143,20 @@ abstract class ConsumerProducerSupport
 	                || txstate.equals ( TxState.HEUR_COMMITTED ) ) {
 
 	            // connection is reusable!
-				if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug( "JmsRequeueSynchronization: detected termination of transaction " + compositeTransaction );
+				if ( LOGGER.isDebugEnabled() ) Configuration.logDebug( "JmsRequeueSynchronization: detected termination of transaction " + compositeTransaction );
 				state.notifyTransactionTerminated(compositeTransaction);
-				if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug( "JmsRequeueSynchronization: is in terminated state ? " + state.isTerminated() );
-			
+				if ( LOGGER.isDebugEnabled() ) Configuration.logDebug( "JmsRequeueSynchronization: is in terminated state ? " + state.isTerminated() );
+
 	            afterCompletionDone = true;
-	           
-	        }	
-        	
+
+	        }
+
 		}
 
 		public void beforeCompletion() {
-		
+
 		}
-		
+
 		//override equals: synchronizations for the same tx are equal
 		//to avoid receiving double notifications on termination!
 		public boolean equals ( Object other )
@@ -161,8 +168,8 @@ abstract class ConsumerProducerSupport
 			}
 		    return ret;
 		}
-		
-		public int hashCode() 
+
+		public int hashCode()
 		{
 			return compositeTransaction.hashCode();
 		}

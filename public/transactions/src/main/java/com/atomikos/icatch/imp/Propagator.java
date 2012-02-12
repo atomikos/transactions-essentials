@@ -25,18 +25,25 @@
 
 package com.atomikos.icatch.imp;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import com.atomikos.icatch.imp.thread.TaskManager;
 import com.atomikos.icatch.system.Configuration;
 
 /**
- * 
- * 
+ *
+ *
  * A propagator sends PropagationMessages to participants.
  */
 
 class Propagator
 {
-	
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger LOGGER = LoggerFactory.createLogger(Propagator.class);
+
     static long RETRY_INTERVAL = 10000;
     // how long do we wait for retriable messages
 
@@ -44,7 +51,7 @@ class Propagator
     private boolean threaded_ = true;
     //a thread per message or not?
 
-    
+
     Propagator ( boolean threaded )
     {
     		threaded_ = threaded;
@@ -52,7 +59,7 @@ class Propagator
 
     /**
      * Schedules a message for submit.
-     * 
+     *
      * @param msg
      *            The message to add.
      */
@@ -65,21 +72,21 @@ class Propagator
     		} else {
     			t.run();
     		}
-    
+
     }
 
 
-    
+
     private static class PropagatorThread implements Runnable
     {
     		private PropagationMessage msg;
-    		
-    		PropagatorThread ( PropagationMessage msg ) 
+
+    		PropagatorThread ( PropagationMessage msg )
     		{
     			this.msg = msg;
     		}
-    		
-    		public void run() 
+
+    		public void run()
     		{
         		try {
         			boolean tryAgain = true;
@@ -88,7 +95,7 @@ class Propagator
         				if ( tryAgain  ) {
         					//wait a little before retrying
         					Thread.sleep ( RETRY_INTERVAL );
-                         if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "Propagator: retrying "
+                         if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( "Propagator: retrying "
                                             + "message: " + msg );
         				}
         			} while ( tryAgain );
@@ -100,6 +107,6 @@ class Propagator
                             , e );
         		}
     		}
-    	
+
     }
 }

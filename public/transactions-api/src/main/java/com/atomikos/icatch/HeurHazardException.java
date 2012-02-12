@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 
 /**
  * Exception signaling that two-phase commit was not acknowledged
@@ -33,6 +36,10 @@ package com.atomikos.icatch;
 
 public class HeurHazardException extends Exception
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(HeurHazardException.class);
 	
 	private static final long serialVersionUID = 1L;
 	

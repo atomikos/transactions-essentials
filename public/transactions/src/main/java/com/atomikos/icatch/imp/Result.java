@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.imp;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.util.Hashtable;
 import java.util.Stack;
 import java.util.Vector;
@@ -39,6 +42,11 @@ import com.atomikos.icatch.HeuristicMessage;
 
 abstract class Result
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(Result.class);
+
     /**
      * Result status codes. Set during analyze().
      */

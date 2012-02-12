@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.imp;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import com.atomikos.icatch.TxState;
 
 /**
@@ -36,6 +39,10 @@ import com.atomikos.icatch.TxState;
 
 class TxActiveStateHandler extends TransactionStateHandler
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(TxActiveStateHandler.class);
 
     protected TxActiveStateHandler ( CompositeTransactionImp ct )
     {

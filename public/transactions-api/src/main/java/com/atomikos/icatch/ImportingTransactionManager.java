@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 /**
  * Represents a handle to import a transaction from an incoming request, 
  * so that the work in this VM becomes part of the request's commit or rollback.

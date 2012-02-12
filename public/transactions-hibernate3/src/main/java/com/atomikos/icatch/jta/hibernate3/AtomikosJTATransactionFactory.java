@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.jta.hibernate3;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import com.atomikos.icatch.jta.UserTransactionImp;
 import com.atomikos.icatch.system.Configuration;
 
@@ -39,27 +42,31 @@ import java.util.Properties;
  * rely on JNDI for standalone (JNDI-less) deployments.
  *
  * <p>To use Atomikos as the Hibernate JTA transaction manager,
- * specify this class as the value of the 
+ * specify this class as the value of the
  * <b>hibernate.transaction.factory_class</b> of the
  * hibernate configuration properties.</p>
- * 
- * 
+ *
+ *
  * @author Les Hazlewood
  * @author Ludovic Orban
  */
 public class AtomikosJTATransactionFactory extends JTATransactionFactory {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger LOGGER = LoggerFactory.createLogger(AtomikosJTATransactionFactory.class);
 
     private UserTransaction userTransaction;
 
     public void configure ( Properties props ) throws HibernateException {
-    	
+
     	try {
 			//fix for case 32252: hibernate config init - required for Hibernate 3.2.6 or lower!!!
 			super.configure ( props );
 		} catch ( Exception e ) {
 			//fix for case 58114: exceptions here for Hibernate 3.2.7 and higher
 			String msg = "Hibernate: error during config - ignore for hibernate 3.2.7 or higher";
-			if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( msg , e );
+			if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( msg , e );
 		}
     }
 

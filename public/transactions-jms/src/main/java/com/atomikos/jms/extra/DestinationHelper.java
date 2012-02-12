@@ -25,6 +25,9 @@
 
 package com.atomikos.jms.extra;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Session;
@@ -34,35 +37,39 @@ import com.atomikos.jms.AtomikosJMSException;
 
  /**
   * Helper class for common destination logic.
-  * 
+  *
   *
   */
 
-class DestinationHelper 
+class DestinationHelper
 {
-	
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger LOGGER = LoggerFactory.createLogger(DestinationHelper.class);
+
 	/**
 	 * Finds a destination with a given provider-specific name.
-	 * 
+	 *
 	 * @param destinationName
 	 * @param session
-	 * @return The destination 
+	 * @return The destination
 	 * @throws JMSException If not found or if any other JMS error occurs.
 	 */
 	public static Destination findDestination ( String destinationName , Session session )
 	throws JMSException {
 		Destination destination = null;
-		
+
 		try {
 			destination = session.createQueue  ( destinationName );
 		} catch ( Exception failed ) {
-			if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "Failed to find queue with name: " + destinationName , failed );
+			if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( "Failed to find queue with name: " + destinationName , failed );
 		}
 		if ( destination == null ) {
 			try {
 				destination = session.createTopic  ( destinationName );
 			} catch ( Exception failed ) {
-				if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "Failed to find topic with name: " + destinationName , failed );
+				if ( LOGGER.isDebugEnabled() ) Configuration.logDebug ( "Failed to find topic with name: " + destinationName , failed );
 			}
 		}
 		if ( destination == null ) {

@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.admin.jmx;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import com.atomikos.icatch.admin.AdminTransaction;
 
 /**
@@ -36,6 +39,10 @@ import com.atomikos.icatch.admin.AdminTransaction;
 public class JmxHeuristicTransaction extends JmxTransaction implements
         JmxHeuristicTransactionMBean
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(JmxHeuristicTransaction.class);
 
     /**
      * @param adminTransaction

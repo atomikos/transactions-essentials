@@ -25,6 +25,9 @@
 
 package com.atomikos.jdbc;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.sql.SQLException;
 import java.util.Stack;
 
@@ -42,6 +45,11 @@ import com.atomikos.icatch.system.Configuration;
 
 class AtomikosXAConnectionFactory implements ConnectionFactory 
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(AtomikosXAConnectionFactory.class);
+
 	//TODO user and password to get new connections
 	private JdbcTransactionalResource jdbcTransactionalResource;
 	private XADataSource xaDataSource;

@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.imp;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Collection;
@@ -62,6 +65,11 @@ import com.atomikos.icatch.system.Configuration;
 
 abstract class CoordinatorStateHandler implements Serializable, Cloneable
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(CoordinatorStateHandler.class);
+
     private static final int THREADS = 1;
     // how many propagator threads do we need?
 

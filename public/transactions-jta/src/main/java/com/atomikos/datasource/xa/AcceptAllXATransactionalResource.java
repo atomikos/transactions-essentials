@@ -25,6 +25,9 @@
 
 package com.atomikos.datasource.xa;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import javax.transaction.xa.XAResource;
 
 import com.atomikos.datasource.ResourceException;
@@ -45,6 +48,10 @@ import com.atomikos.datasource.ResourceException;
  */
 public class AcceptAllXATransactionalResource extends XATransactionalResource
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(AcceptAllXATransactionalResource.class);
 
     /**
      * @param servername
