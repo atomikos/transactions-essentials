@@ -24,6 +24,10 @@
  */
 
 package com.atomikos.jdbc;
+
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.util.Enumeration;
 import java.util.Properties;
 
@@ -48,6 +52,7 @@ import com.atomikos.util.ClassLoadingHelper;
 public class AtomikosDataSourceBean 
 extends AbstractDataSourceBean
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(AtomikosDataSourceBean.class);
 	
 	
 	private static final long serialVersionUID = 1L;
@@ -152,7 +157,7 @@ extends AbstractDataSourceBean
 		}
 		
 		
-		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo(
+		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo(
 				this + ": initializing with [" +
 				" xaDataSourceClassName=" + xaDataSourceClassName + "," +
 				" uniqueResourceName=" + getUniqueResourceName() + "," +

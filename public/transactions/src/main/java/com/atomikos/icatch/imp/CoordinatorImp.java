@@ -309,7 +309,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
         			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( msg ); 
         			break;
         		case Console.INFO: 
-        			if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( msg ); 
+        			if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( msg ); 
         			break;
         		default: Configuration.logWarning ( msg );
         	}

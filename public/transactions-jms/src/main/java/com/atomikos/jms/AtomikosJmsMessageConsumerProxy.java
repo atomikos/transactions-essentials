@@ -54,7 +54,7 @@ class AtomikosJmsMessageConsumerProxy extends ConsumerProducerSupport implements
 	}
 	
 	public Message receive ( String hmsg ) throws JMSException {
-		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": receive ( " + hmsg + " )..." );
+		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": receive ( " + hmsg + " )..." );
 		Message ret = null;
 		try {
 			enlist ( hmsg );
@@ -67,7 +67,7 @@ class AtomikosJmsMessageConsumerProxy extends ConsumerProducerSupport implements
 	}
 
 	public Message receive ( long timeout , String hmsg ) throws JMSException {
-		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": receive ( " + timeout + " , " + hmsg + " )..." );
+		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": receive ( " + timeout + " , " + hmsg + " )..." );
 		
 		Message ret = null;
 		try {
@@ -81,7 +81,7 @@ class AtomikosJmsMessageConsumerProxy extends ConsumerProducerSupport implements
 	}
 
 	public Message receiveNoWait ( String hmsg ) throws JMSException {
-		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": receiveNoWait ( " + hmsg + " )..." );
+		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": receiveNoWait ( " + hmsg + " )..." );
 		
 		Message ret = null;
 		try {
@@ -96,7 +96,7 @@ class AtomikosJmsMessageConsumerProxy extends ConsumerProducerSupport implements
 
 	public void close() throws JMSException {
 		//note: delist is done at session level!
-		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": close..." );
+		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": close..." );
 		try {
 			delegate.close();
 		} catch (Exception e) {
@@ -106,7 +106,7 @@ class AtomikosJmsMessageConsumerProxy extends ConsumerProducerSupport implements
 	}
 
 	public MessageListener getMessageListener() throws JMSException {
-		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": getMessageListener()..." );
+		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": getMessageListener()..." );
 		MessageListener ret = null;
 		try {
 			ret = delegate.getMessageListener();
@@ -118,7 +118,7 @@ class AtomikosJmsMessageConsumerProxy extends ConsumerProducerSupport implements
 	}
 
 	public String getMessageSelector() throws JMSException {
-		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": getMessageSelector()..." );
+		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": getMessageSelector()..." );
 		String ret = null;
 		try {
 			ret = delegate.getMessageSelector();
@@ -130,28 +130,28 @@ class AtomikosJmsMessageConsumerProxy extends ConsumerProducerSupport implements
 	}
 
 	public Message receive() throws JMSException {
-		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": receive()..." );
+		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": receive()..." );
 		Message ret = receive ( null );
 		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": receive() returning " + ret );
 		return ret;
 	}
 
 	public Message receive ( long timeout ) throws JMSException {
-		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": receive ( " + timeout + " )..." );
+		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": receive ( " + timeout + " )..." );
 		Message ret =  receive ( timeout , null );
 		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": receive() returning " + ret );
 		return ret;
 	}
 
 	public Message receiveNoWait() throws JMSException {
-		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": receiveNoWait()..." );
+		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": receiveNoWait()..." );
 		Message ret = receiveNoWait ( null );
 		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": receiveNoWait() returning " + ret );
 		return ret;
 	}
 
 	public void setMessageListener ( MessageListener listener ) throws JMSException {
-		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": setMessageListener ( " + listener + " )..." );
+		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": setMessageListener ( " + listener + " )..." );
 		try {
 			delegate.setMessageListener ( listener );
 		}catch (Exception e) {

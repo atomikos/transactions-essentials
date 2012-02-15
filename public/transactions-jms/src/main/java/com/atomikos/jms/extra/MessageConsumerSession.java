@@ -442,36 +442,36 @@ class MessageConsumerSession
 								Configuration.logWarning ( "MessageConsumerSession: unsubscribing " + subscriberName + "...");
 								if ( Thread.currentThread() != this ) {
 									//see case 62452: wait for listener thread to exit so the subscriber is no longer in use
-									if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( "MessageConsumerSession: waiting for listener thread to finish..." );
+									if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( "MessageConsumerSession: waiting for listener thread to finish..." );
 									this.join ( getTransactionTimeout() * 1000 );
 									if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "MessageConsumerSession: waiting done." );
 								}
-								if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( "MessageConsumerSession: unsubscribing " + subscriberName + "..." );
+								if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( "MessageConsumerSession: unsubscribing " + subscriberName + "..." );
 								session.unsubscribe ( subscriberName );
 								if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "MessageConsumerSession: unsubscribed.");
 							} catch ( JMSException e ) {
-								 if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo (
+								 if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo (
 					                    "MessageConsumerSession: Error unsubscribing on JMS session",
 					                    e );
-					            if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( "MessageConsumerSession: linked exception is " , e.getLinkedException() );
+					            if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( "MessageConsumerSession: linked exception is " , e.getLinkedException() );
 							}
 						}
 						
 					    try {
-					    	if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( "MessageConsumerSession: closing JMS session..." );
+					    	if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( "MessageConsumerSession: closing JMS session..." );
 					        session.close ();
 					        session = null;
 					        if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "MessageConsumerSession: JMS session closed." );
 					    } catch ( JMSException e ) {
-					        if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo (
+					        if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo (
 					                "MessageConsumerSession: Error closing JMS session",
 					                e );
-					        if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( "MessageConsumerSession: linked exception is " , e.getLinkedException() );
+					        if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( "MessageConsumerSession: linked exception is " , e.getLinkedException() );
 					    }
 					}
 					if ( connection != null )
 					    try {
-					    	if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( "MessageConsumerSession: closing JMS connection..." );
+					    	if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( "MessageConsumerSession: closing JMS connection..." );
 					        connection.close ();
 					        connection = null;
 					        if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "MessageConsumerSession: JMS connection closed." );
@@ -552,7 +552,7 @@ class MessageConsumerSession
 	                            commit = false;
 	                        }
 	                    } catch ( Exception e ) {
-	                        if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo (
+	                        if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo (
 	                                "MessageConsumerSession: Error during JMS processing of message "
 	                                        + msg.toString () + " - rolling back.",
 	                                e );

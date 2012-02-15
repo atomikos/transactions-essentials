@@ -97,7 +97,7 @@ class AtomikosConnectionProxy extends AbstractConnectionProxy
 		if ( methodName.equals ( "getInvocationHandler" ) ) return this;
 		
 		if (methodName.equals("reap")) {
-			if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": reaping pending connection..." );
+			if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": reaping pending connection..." );
 			
 			//LOGGER.logDebug("{} : reaping pending connection..", this);
 			reap();
@@ -105,7 +105,7 @@ class AtomikosConnectionProxy extends AbstractConnectionProxy
 			return null;
 		}
 		if (methodName.equals("isClosed")) {
-			if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": isClosed()..." );
+			if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": isClosed()..." );
 			Object ret = Boolean.valueOf(closed);
 			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": isClosed() returning " + ret );
 			return ret;
@@ -158,7 +158,7 @@ class AtomikosConnectionProxy extends AbstractConnectionProxy
  		}
 		else {
 			try {
-				if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": calling " + methodName + "...");
+				if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": calling " + methodName + "...");
 				ret = method.invoke(delegate, args);
 			
 			} catch (Exception ex) {
@@ -222,7 +222,7 @@ class AtomikosConnectionProxy extends AbstractConnectionProxy
 	}
 
 	private void close() {
-		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": close()...");
+		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": close()...");
 		forceCloseAllPendingStatements ( false );
 		closed = true;
 		sessionHandleState.notifySessionClosed();

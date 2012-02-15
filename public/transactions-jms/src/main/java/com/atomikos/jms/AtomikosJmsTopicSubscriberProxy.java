@@ -47,7 +47,7 @@ class AtomikosJmsTopicSubscriberProxy extends AtomikosJmsMessageConsumerProxy
 	
 	private TopicSubscriber getDelegateTopicSubscriber()
 	{
-		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": getDelegateTopicSubscriber()..." );
+		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": getDelegateTopicSubscriber()..." );
 		TopicSubscriber ret =  ( TopicSubscriber ) getDelegate();
 		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": getDelegateTopicSubscriber() returning " + ret );
 		return ret;
@@ -55,7 +55,7 @@ class AtomikosJmsTopicSubscriberProxy extends AtomikosJmsMessageConsumerProxy
 
 	public boolean getNoLocal() throws JMSException 
 	{
-		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": getNoLocal()..." );
+		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": getNoLocal()..." );
 		boolean ret = false;
 		try {
 			ret = getDelegateTopicSubscriber().getNoLocal();
@@ -68,7 +68,7 @@ class AtomikosJmsTopicSubscriberProxy extends AtomikosJmsMessageConsumerProxy
 
 	public Topic getTopic() throws JMSException 
 	{
-		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": getTopic()..." );
+		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": getTopic()..." );
 		Topic ret = null;
 		try {
 			ret = getDelegateTopicSubscriber().getTopic();

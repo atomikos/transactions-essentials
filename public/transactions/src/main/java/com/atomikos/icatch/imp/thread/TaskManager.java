@@ -75,11 +75,11 @@ public class TaskManager
 		ExecutorFactory creator;
 		try {
 			if ( isClassAvailable ( Java15ExecutorFactory.MAIN_CLASS ) ) {
-				if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( "THREADS: using JDK thread pooling..." );
+				if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( "THREADS: using JDK thread pooling..." );
 				creator = new Java15ExecutorFactory();
 			}
 			else if ( isClassAvailable ( Java14BackportExecutorFactory.MAIN_CLASS ) ) {
-				if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( "THREADS: using 1.4 (backport) thread pooling..." );
+				if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( "THREADS: using 1.4 (backport) thread pooling..." );
 				creator = new Java14BackportExecutorFactory();
 			}
 			else {

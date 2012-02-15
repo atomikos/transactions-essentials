@@ -375,7 +375,7 @@ public abstract class XATransactionalResource implements TransactionalResource
             Configuration
                     .logDebug ( servername_ + ": refreshing XAResource..." );
             xares_ = refreshXAConnection ();
-            Configuration.logInfo ( servername_ + ": refreshed XAResource" );
+            LOGGER.logInfo ( servername_ + ": refreshed XAResource" );
         }
 
         // first, check if connection has not timed out

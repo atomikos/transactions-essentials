@@ -170,7 +170,7 @@ public class SessionHandleState
 			}
 			//check enlistment
 			if ( suspended != null ) {
-				if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": resuming suspended XA context for transaction " + ct.getTid() );
+				if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": resuming suspended XA context for transaction " + ct.getTid() );
 				currentContext = suspended;
 				currentContext.transactionResumed();
 			}
@@ -182,7 +182,7 @@ public class SessionHandleState
 				}
 				catch ( UnexpectedTransactionContextException txBoundaryPassed ) {
 					//we are being used in a different context than expected -> suspend!
-					if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo (  this + ": suspending existing XA context and creating a new one for transaction " + ct );
+					if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo (  this + ": suspending existing XA context and creating a new one for transaction " + ct );
 					currentContext.transactionSuspended();
 					currentContext = new TransactionContext ( resource , xaResource );
 					allContexts.add ( currentContext );

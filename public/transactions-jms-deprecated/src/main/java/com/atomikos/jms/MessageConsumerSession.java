@@ -359,10 +359,10 @@ public abstract class MessageConsumerSession
 	                    session.close ();
 	                    session = null;
 	                } catch ( JMSException e ) {
-	                    if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo (
+	                    if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo (
 	                            "MessageConsumerSession: Error closing JMS session",
 	                            e );
-	                    if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( "MessageConsumerSession: linked exception is " , e.getLinkedException() );
+	                    if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( "MessageConsumerSession: linked exception is " , e.getLinkedException() );
 	                }
 	            if ( connection != null )
 	                try {
@@ -373,7 +373,7 @@ public abstract class MessageConsumerSession
 	                            .logInfo (
 	                                    "MessageConsumerSession: Error closing JMS connection",
 	                                    e );
-	                    if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( "MessageConsumerSession: linked exception is " , e.getLinkedException() );
+	                    if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( "MessageConsumerSession: linked exception is " , e.getLinkedException() );
 	                }
 	        }
 
@@ -441,7 +441,7 @@ public abstract class MessageConsumerSession
 	                            commit = false;
 	                        }
 	                    } catch ( Exception e ) {
-	                        if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo (
+	                        if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo (
 	                                "MessageConsumerSession: Error during JMS processing of message "
 	                                        + msg.toString () + " - rolling back.",
 	                                e );

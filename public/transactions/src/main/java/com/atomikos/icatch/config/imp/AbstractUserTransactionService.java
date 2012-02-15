@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.config.imp;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.UnknownHostException;
@@ -56,18 +59,19 @@ import com.atomikos.util.IOHelper;
 public abstract class AbstractUserTransactionService implements
         UserTransactionService
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(AbstractUserTransactionService.class);
 
 	 
 	private static void echoProperties ( Properties properties )
     {
-		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( "USING core version: " + Configuration.getVersion() );
+		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( "USING core version: " + Configuration.getVersion() );
         if ( properties != null ) {
             Enumeration names = properties.propertyNames ();
             while ( names.hasMoreElements () ) {
                 String name = (String) names.nextElement ();
                 String value = properties.getProperty ( name );
                 //log as INFO - see case 24689
-                if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( "USING " + name + " = " + value );
+                if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( "USING " + name + " = " + value );
             }
         }
     }

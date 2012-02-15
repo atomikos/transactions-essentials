@@ -131,7 +131,7 @@ class TransactionImp implements Transaction
         if ( level == Console.WARN )
             Configuration.logWarning ( msg );
         else if ( level == Console.INFO )
-            if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( msg );
+            if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( msg );
         else
             if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( msg );
     }
