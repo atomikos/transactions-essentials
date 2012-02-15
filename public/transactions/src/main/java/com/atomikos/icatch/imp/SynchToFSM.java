@@ -25,14 +25,12 @@
 
 package com.atomikos.icatch.imp;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import com.atomikos.finitestates.FSMEnterEvent;
 import com.atomikos.finitestates.FSMEnterListener;
 import com.atomikos.icatch.Synchronization;
 import com.atomikos.icatch.TxState;
-import com.atomikos.icatch.system.Configuration;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 
 /**
  * 

@@ -40,8 +40,6 @@ import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
 
-import com.atomikos.icatch.config.TSInitInfo;
-import com.atomikos.icatch.config.UserTransactionService;
 import com.atomikos.icatch.config.UserTransactionServiceImp;
 import com.atomikos.util.SerializableObjectFactory;
 

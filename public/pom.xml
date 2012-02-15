@@ -6,9 +6,7 @@
 		<artifactId>atomikos-parent</artifactId>
 		<version>3.8.0-SNAPSHOT</version>
 	</parent>
-	<groupId>com.atomikos</groupId>
 	<artifactId>ate</artifactId>
-	<version>3.8.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Atomikos Transactions Essentials</name>
 
@@ -74,7 +72,7 @@
 						<exclude>axt/**</exclude>
 					</excludes>
 					<useDefaultExcludes>true</useDefaultExcludes>
-					<!-- <mapping> <jwc>XML_STYLE</jwc> <application>XML_STYLE</application> 
+					<!-- <mapping> <jwc>XML_STYLE</jwc> <application>XML_STYLE</application>
 						<myFileExtension>JAVADOC_STYLE</myFileExtension> </mapping> -->
 					<useDefaultMapping>true</useDefaultMapping>
 					<properties>
@@ -83,7 +81,7 @@
 						<email>info@atomikos.com</email>
 					</properties>
 					<encoding>UTF-8</encoding>
-					<!-- <headerDefinitions> <headerDefinition>def1.xml</headerDefinition> 
+					<!-- <headerDefinitions> <headerDefinition>def1.xml</headerDefinition>
 						<headerDefinition>def2.xml</headerDefinition> </headerDefinitions> -->
 
 				</configuration>

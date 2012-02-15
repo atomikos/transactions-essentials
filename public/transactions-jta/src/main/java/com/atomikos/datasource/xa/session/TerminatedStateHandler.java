@@ -25,12 +25,10 @@
 
 package com.atomikos.datasource.xa.session;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import com.atomikos.icatch.CompositeTransaction;
 import com.atomikos.icatch.HeuristicMessage;
-import com.atomikos.icatch.system.Configuration;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 
 class TerminatedStateHandler 
 extends TransactionContextStateHandler 

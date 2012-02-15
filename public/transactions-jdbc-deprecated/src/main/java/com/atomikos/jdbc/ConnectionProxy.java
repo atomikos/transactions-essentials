@@ -25,9 +25,6 @@
 
 package com.atomikos.jdbc;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -44,13 +41,15 @@ import com.atomikos.icatch.CompositeTransaction;
 import com.atomikos.icatch.CompositeTransactionManager;
 import com.atomikos.icatch.jta.TransactionManagerImp;
 import com.atomikos.icatch.system.Configuration;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 
 /**
- * 
- * 
- * 
- * 
- * 
+ *
+ *
+ *
+ *
+ *
  * A dynamic proxy to allow external pooling, and also to allow late enlisting
  * of resources with transactions.
  */
@@ -58,7 +57,7 @@ import com.atomikos.icatch.system.Configuration;
 class ConnectionProxy implements InvocationHandler
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(ConnectionProxy.class);
-	
+
 	private final static List NON_TRANSACTIONAL_METHOD_NAMES = Arrays.asList(new String[] {
 			"equals",
 			"hashCode",
@@ -68,27 +67,27 @@ class ConnectionProxy implements InvocationHandler
 			"wait"
 			});
 
-   
-	
+
+
 	static Set getAllImplementedInterfaces ( Class clazz )
     {
     		Set ret = null;
-    		
+
     		if ( clazz.getSuperclass() != null ) {
     			//if superclass exists: first add the superclass interfaces!!!
-    			ret = getAllImplementedInterfaces ( clazz.getSuperclass() ); 
+    			ret = getAllImplementedInterfaces ( clazz.getSuperclass() );
     		}
     		else {
     			//no superclass: start with empty set
     			ret = new HashSet();
-    		} 
-    		
+    		}
+
     		//add the interfaces in this class
     		Class[] interfaces = clazz.getInterfaces();
     		for ( int i = 0 ; i < interfaces.length ; i++ ) {
     			ret.add ( interfaces[i] );
     		}
-    		
+
     		return ret;
     }
 
@@ -167,7 +166,7 @@ class ConnectionProxy implements InvocationHandler
                         .getResourceTransaction ( ct );
                 pc_.setResourceTransaction ( restx );
                 restx.resume ();
-                Configuration
+                LOGGER
                         .logDebug ( "JDBC ConnectionProxy: using resource transaction: "
                                 + restx.getXid () );
 
@@ -179,7 +178,7 @@ class ConnectionProxy implements InvocationHandler
             if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "JDBC ConnectionProxy: delegating "
                     + m.getName () + " to connection " + wrapped_.toString () );
 //            if ("close".equals(m.getName())) {
-//            	
+//
 //            }
             ret = m.invoke ( wrapped_, args );
         } catch ( InvocationTargetException i ) {

@@ -25,9 +25,6 @@
 
 package com.atomikos.icatch.standalone;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.util.Properties;
 
 import com.atomikos.datasource.xa.XID;
@@ -37,7 +34,8 @@ import com.atomikos.icatch.RollbackException;
 import com.atomikos.icatch.SysException;
 import com.atomikos.icatch.imp.BaseTransactionManager;
 import com.atomikos.icatch.imp.TransactionServiceImp;
-import com.atomikos.icatch.system.Configuration;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 import com.atomikos.persistence.StateRecoveryManager;
 import com.atomikos.util.UniqueIdMgr;
 

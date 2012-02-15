@@ -25,10 +25,8 @@
 
 package com.atomikos.jms;
 
-import com.atomikos.logging.LoggerFactory;
 import com.atomikos.logging.Logger;
-
-import com.atomikos.icatch.system.Configuration;
+import com.atomikos.logging.LoggerFactory;
 
 
 public class AtomikosTransactionRequiredJMSException extends

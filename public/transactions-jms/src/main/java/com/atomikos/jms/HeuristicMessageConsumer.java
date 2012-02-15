@@ -29,8 +29,6 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
 
-import com.atomikos.icatch.HeuristicMessage;
-
 /**
  * 
  * 

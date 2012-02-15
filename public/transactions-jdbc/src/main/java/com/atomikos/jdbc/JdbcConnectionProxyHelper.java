@@ -25,15 +25,13 @@
 
 package com.atomikos.jdbc;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
 import com.atomikos.datasource.pool.CreateConnectionException;
-import com.atomikos.icatch.system.Configuration;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 
 public class JdbcConnectionProxyHelper {
 	private static final Logger LOGGER = LoggerFactory.createLogger(JdbcConnectionProxyHelper.class);

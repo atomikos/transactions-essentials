@@ -25,9 +25,6 @@
 
 package com.atomikos.icatch.imp;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -51,17 +48,18 @@ import com.atomikos.icatch.TSListener;
 import com.atomikos.icatch.TransactionService;
 import com.atomikos.icatch.TxState;
 import com.atomikos.icatch.admin.LogControl;
-import com.atomikos.icatch.config.TSInitInfo;
 import com.atomikos.icatch.config.imp.AbstractUserTransactionServiceFactory;
 import com.atomikos.icatch.imp.thread.InterruptedExceptionHelper;
 import com.atomikos.icatch.system.Configuration;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 import com.atomikos.persistence.LogException;
 import com.atomikos.persistence.StateRecoveryManager;
 import com.atomikos.util.UniqueIdMgr;
 
 /**
- * 
- * 
+ *
+ *
  * General implementation of Transaction Service.
  */
 
@@ -123,20 +121,20 @@ public class TransactionServiceImp implements TransactionService,
     // the max number of active transactions, or -1 if unlimited
 
     private String name_;
-    
+
     // the unique name of this TS, needed for recovery
     // of the resources, and for supplying to each
     // resource to constructs XIDs with
-    
+
     private Properties properties_;
     //the properties used to initialize the system
-    
+
     private boolean single_threaded_2pc_;
     //should 2PC happen in the same thread as the application code?
 
     /**
      * Create a new instance, with orphan checking set.
-     * 
+     *
      * @param name
      *            The unique name of this TM.
      * @param recoverymanager
@@ -149,7 +147,7 @@ public class TransactionServiceImp implements TransactionService,
      *            The max timeout for new or imported txs.
      * @param maxActives
      *            The max number of active txs, or negative if unlimited.
-     * @param single_threaded_2pc 
+     * @param single_threaded_2pc
      *            Whether 2PC commit should happen in the same thread that started the tx.
      */
 
@@ -163,7 +161,7 @@ public class TransactionServiceImp implements TransactionService,
 
     /**
      * Create a new instance, with orphan checking set.
-     * 
+     *
      * @param name
      *            The unique name of this TM.
      * @param recoverymanager
@@ -181,7 +179,7 @@ public class TransactionServiceImp implements TransactionService,
      *            <b>even for creation requests that ask for checks</b>. This
      *            mode may be needed for being compatible with certain
      *            configurations that do not support orphan detection.
-     * @param single_threaded_2pc 
+     * @param single_threaded_2pc
      *            Whether 2PC commit should happen in the same thread that started the tx.
      *
      */
@@ -218,7 +216,7 @@ public class TransactionServiceImp implements TransactionService,
     /**
      * Get an object to lock for the given root. To increase concurrency and
      * still provide atomic operations within the scope of one root.
-     * 
+     *
      * @return Object The object to lock for the given root.
      */
 
@@ -230,7 +228,7 @@ public class TransactionServiceImp implements TransactionService,
 
     /**
      * Set the map to ct for this tid.
-     * 
+     *
      * @param tid
      *            The tx id to map.
      * @param ct
@@ -255,7 +253,7 @@ public class TransactionServiceImp implements TransactionService,
     /**
      * For inspector tool: get a list of all active coordinator instances, to
      * allow admin intervention.
-     * 
+     *
      * @return Vector A copy of the list of active coordinators. Empty vector if
      *         none.
      */
@@ -279,7 +277,7 @@ public class TransactionServiceImp implements TransactionService,
 
     /**
      * Utility method to notify the registered listeners
-     * 
+     *
      * @param init
      *            True for init, false for shutdown.
      * @param before
@@ -289,7 +287,7 @@ public class TransactionServiceImp implements TransactionService,
 
     private void notifyListeners ( boolean init , boolean before )
     {
-    		
+
         Enumeration enumm = listeners_.elements ();
         while ( enumm.hasMoreElements () ) {
             TSListener l = (TSListener) enumm.nextElement ();
@@ -309,7 +307,7 @@ public class TransactionServiceImp implements TransactionService,
 
     /**
      * Removes the coordinator from the root map.
-     * 
+     *
      * @param coord
      *            The coordinator to remove.
      */
@@ -331,9 +329,9 @@ public class TransactionServiceImp implements TransactionService,
 
     /**
      * Removes the tx from the map.
-     * 
+     *
      * Does nothing if not found or if ct null.
-     * 
+     *
      * @param ct
      *            The transaction to remove.
      */
@@ -348,7 +346,7 @@ public class TransactionServiceImp implements TransactionService,
 
     /**
      * Creation method for composite transactions.
-     * 
+     *
      * @return CompositeTransaction.
      */
 
@@ -366,7 +364,7 @@ public class TransactionServiceImp implements TransactionService,
 
     /**
      * Creation method for composite coordinators.
-     * 
+     *
      * @param RecoveryCoordinator
      *            An existing coordinator for the given root. Null if not a
      *            subtx, or an <b>adaptor</b> in other cases.
@@ -392,11 +390,11 @@ public class TransactionServiceImp implements TransactionService,
             long timeout )
     {
         CoordinatorImp cc = null;
-        
+
         if ( timeout > maxTimeout_ ) {
             timeout = maxTimeout_;
             //FIXED 20188
-            LOGGER.logWarning ( "Attempt to create a transaction with a timeout that exceeds " + 
+            LOGGER.logWarning ( "Attempt to create a transaction with a timeout that exceeds " +
             		AbstractUserTransactionServiceFactory.MAX_TIMEOUT_PROPERTY_NAME + " - truncating to: " + maxTimeout_ );
         }
 
@@ -431,10 +429,10 @@ public class TransactionServiceImp implements TransactionService,
 
     /**
      * Start listening for terminated states, so coordinator can be removed.
-     * 
+     *
      * @param coordinator
      *            The coordinator to listen on.
-     * 
+     *
      */
 
     private void startlistening ( CoordinatorImp coordinator )
@@ -511,7 +509,7 @@ public class TransactionServiceImp implements TransactionService,
 
     /**
      * Create a new tid.
-     * 
+     *
      * @return String The newly created and unique identifier.
      */
 
@@ -522,7 +520,7 @@ public class TransactionServiceImp implements TransactionService,
 
     /**
      * Get the state recovery manager.
-     * 
+     *
      * @return StateRecoveryManager The recovery manager.
      */
 
@@ -533,8 +531,8 @@ public class TransactionServiceImp implements TransactionService,
 
     /**
      * Recover instances from a given recovery manager.
-     * 
-     * 
+     *
+     *
      * @exception SysException
      *                For unexpected failure.
      */
@@ -573,7 +571,7 @@ public class TransactionServiceImp implements TransactionService,
 
     /**
      * @see RecoveryService
-     * 
+     *
      */
     public void recover ()
     {
@@ -583,9 +581,9 @@ public class TransactionServiceImp implements TransactionService,
         if ( Configuration.getTransactionService () == null ) {
             Configuration.installTransactionService ( this );
             Configuration.installRecoveryService ( this );
-            
+
         }
-        
+
         //call listeners here: pending listeners may have been installed
         //by the installation step above
         if ( ! initialized_ ) {
@@ -661,7 +659,7 @@ public class TransactionServiceImp implements TransactionService,
 
     /**
      * Get a LogControl for the service.
-     * 
+     *
      * @return LogControl The instance.
      */
 
@@ -699,9 +697,9 @@ public class TransactionServiceImp implements TransactionService,
 	        if ( initialized_ ) {
 	            listener.init ( false , properties_ );
 	        }
-	        if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug (  "Added TSListener: " + listener ); 
+	        if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug (  "Added TSListener: " + listener );
     		}
-        
+
 
     }
 
@@ -725,7 +723,7 @@ public class TransactionServiceImp implements TransactionService,
     {
         Stack errors = new Stack ();
         this.properties_ = properties;
-        
+
         try {
             recoverymanager_.init ();
         } catch ( LogException le ) {
@@ -734,10 +732,10 @@ public class TransactionServiceImp implements TransactionService,
                     errors );
         }
         recoverCoordinators ();
-        
+
         //initialized is now set in recover()
         //initialized_ = true;
-        
+
         shuttingDown_ = false;
         control_ = new LogControlImp ( this );
         // call recovery already, to make sure that the
@@ -773,7 +771,7 @@ public class TransactionServiceImp implements TransactionService,
     /**
      * Called if a tx is ended successfully. In order to remove the tx from the
      * mapping.
-     * 
+     *
      * @see SubTxAwareParticipant
      */
 
@@ -784,7 +782,7 @@ public class TransactionServiceImp implements TransactionService,
 
     /**
      * Called if a tx is ended with failure. In order to remove tx from mapping.
-     * 
+     *
      * @see SubTxAwareParticipant
      */
 
@@ -813,7 +811,7 @@ public class TransactionServiceImp implements TransactionService,
 
     /**
      * Creates a subtransaction for the given parent
-     * 
+     *
      * @param parent
      * @return
      */
@@ -930,7 +928,7 @@ public class TransactionServiceImp implements TransactionService,
             Enumeration enumm = roottocoordinatormap_.keys ();
             while ( enumm.hasMoreElements () ) {
                 String tid = (String) enumm.nextElement ();
-                Configuration
+                LOGGER
                         .logDebug ( "Transaction Service: Stopping thread for root "
                                 + tid + "..." );
                 CoordinatorImp c = (CoordinatorImp) roottocoordinatormap_
@@ -939,14 +937,14 @@ public class TransactionServiceImp implements TransactionService,
                 		//null if intermediate termination while in enumm
                 		c.dispose ();
                 }
-                Configuration
+                LOGGER
                         .logDebug ( "Transaction Service: Thread stopped." );
             }
 
         } // if wasShuttingDown
 
         synchronized ( shutdownWaiter_ ) {
-            Configuration
+        	LOGGER
                     .logDebug ( "Transaction Service: Shutdown acquired lock on waiter." );
             wasShuttingDown = shuttingDown_;
             shuttingDown_ = true;
@@ -963,7 +961,7 @@ public class TransactionServiceImp implements TransactionService,
             // txs..." );
             while ( !roottocoordinatormap_.isEmpty () && !force ) {
                 try {
-                    Configuration
+                	LOGGER
                             .logWarning ( "Transaction Service: Waiting for non-terminated coordinators..." );
                     //wait for max timeout to let actives finish
                     shutdownWaiter_.wait ( maxTimeout_ );
@@ -981,7 +979,7 @@ public class TransactionServiceImp implements TransactionService,
                     		}
                     }
                     //contine the loop: if not empty then wait again
-                    
+
                 } catch ( InterruptedException inter ) {
                 	// cf bug 67457
         			InterruptedExceptionHelper.handleInterruptedException ( inter );

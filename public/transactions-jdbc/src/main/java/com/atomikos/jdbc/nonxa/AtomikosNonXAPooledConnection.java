@@ -25,11 +25,7 @@
 
 package com.atomikos.jdbc.nonxa;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -43,6 +39,8 @@ import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.jta.TransactionManagerImp;
 import com.atomikos.icatch.system.Configuration;
 import com.atomikos.jdbc.JdbcConnectionProxyHelper;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 import com.atomikos.util.DynamicProxy;
 
  /**

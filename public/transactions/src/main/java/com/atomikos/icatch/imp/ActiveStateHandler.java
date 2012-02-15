@@ -25,9 +25,6 @@
 
 package com.atomikos.icatch.imp;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.util.Enumeration;
 import java.util.Stack;
 import java.util.Vector;
@@ -42,7 +39,8 @@ import com.atomikos.icatch.RollbackException;
 import com.atomikos.icatch.SysException;
 import com.atomikos.icatch.TxState;
 import com.atomikos.icatch.imp.thread.InterruptedExceptionHelper;
-import com.atomikos.icatch.system.Configuration;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 
 /**
  *

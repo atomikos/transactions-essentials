@@ -29,7 +29,6 @@ package com.atomikos.jms;
 import javax.jms.ConnectionConsumer;
 import javax.jms.JMSException;
 import javax.jms.ServerSessionPool;
-import javax.jms.Session;
 import javax.jms.Topic;
 import javax.jms.TopicConnection;
 import javax.jms.TopicSession;
@@ -37,7 +36,6 @@ import javax.jms.XATopicConnection;
 import javax.jms.XATopicSession;
 
 import com.atomikos.datasource.TransactionalResource;
-import com.atomikos.icatch.system.Configuration;
 
 /**
  * 

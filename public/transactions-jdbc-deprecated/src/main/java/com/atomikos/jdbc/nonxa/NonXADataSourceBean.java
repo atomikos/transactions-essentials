@@ -25,9 +25,6 @@
 
 package com.atomikos.jdbc.nonxa;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.sql.Connection;
@@ -42,6 +39,8 @@ import javax.naming.Referenceable;
 import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.system.Configuration;
 import com.atomikos.jdbc.HeuristicDataSource;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 import com.atomikos.util.SerializableObjectFactory;
 
 /**

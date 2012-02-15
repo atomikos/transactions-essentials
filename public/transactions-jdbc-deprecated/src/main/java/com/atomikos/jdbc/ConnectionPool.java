@@ -25,9 +25,6 @@
 
 package com.atomikos.jdbc;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -38,17 +35,18 @@ import java.util.Vector;
 
 import javax.sql.PooledConnection;
 
-import com.atomikos.icatch.system.Configuration;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 
 /**
- * 
- * 
+ *
+ *
  * <p>
  * A connection pooling implementation. This class is NOT meant to be used by
  * the application directly. Rather, a DataSource object should wrap this class.
- * 
+ *
  *  @deprecated As of release 3.3, the newer pool should be used instead.
- * 
+ *
  */
 
 public class ConnectionPool implements Runnable
@@ -76,14 +74,14 @@ public class ConnectionPool implements Runnable
 
     /**
      * Constructor.
-     * 
+     *
      * @param size
-     *            The size of the pool. 
+     *            The size of the pool.
      * @param connSource
      *            The ConnectionFactory to use.
      * @param seconds
-     *            The timeout for old connections in the pool. 
-     * @param testQuery 
+     *            The timeout for old connections in the pool.
+     * @param testQuery
      * 			 A test query to validate connection liveness.
      * @param testOnBorrow
      * 			 Should connections be tested when borrowed or not?
@@ -120,7 +118,7 @@ public class ConnectionPool implements Runnable
 
     /**
      * Get the current size of the available pool.
-     * 
+     *
      * @return int The current size. Does NOT include connections that are
      *         currently being used!
      */
@@ -132,7 +130,7 @@ public class ConnectionPool implements Runnable
 
     /**
      * Get a PooledConnection instance from the pool.
-     * 
+     *
      * @return PooledConnection The instance.
      * @exception SQLException
      *                On error.
@@ -145,10 +143,10 @@ public class ConnectionPool implements Runnable
 
         if ( pool_.isEmpty () ) {
             retVal = ( XPooledConnection ) source_.getPooledConnection ();
-            Configuration
+            LOGGER
                     .logWarning ( "JDBC ConnectionPool exhausted - allocated new connection: "
                             + retVal.toString () );
-           
+
             if ( testOnBorrow_ ) {
             		//test, but DON'T CLOSE handle since the application will still need it!
             		test ( retVal , false );
@@ -156,10 +154,10 @@ public class ConnectionPool implements Runnable
             //this is a NEW connection -> failure of test is DBMS problem -> propagate to application
         }
         else {
-	
+
 	        // here we are if pool not empty
 	        retVal = (XPooledConnection) pool_.firstElement ();
-	
+
 	        if ( !pool_.removeElement ( retVal ) )
 	            throw new SQLException ( "Unable to take connection out of pool?" );
 
@@ -173,9 +171,9 @@ public class ConnectionPool implements Runnable
 		        }
 	        }
         }
-        
+
         if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "JDBC ConnectionPool: using connection: "
-                + retVal );        
+                + retVal );
         return retVal;
     }
 
@@ -188,7 +186,7 @@ public class ConnectionPool implements Runnable
     /**
      * Puts back a connection after usage. This method should be called by
      * DataSource objects.
-     * 
+     *
      * @param conn
      *            The connection. If the connection has been invalidated, or if
      *            the pool is large enough, then this method will actually close
@@ -247,7 +245,7 @@ public class ConnectionPool implements Runnable
                 while ( timerNeeded_ && enumm.hasMoreElements () ) {
                     XPooledConnection pc = (XPooledConnection) enumm
                             .nextElement ();
-                    
+
                     try {
                         if ( !pc.getInvalidated () ) {
                         	   test ( pc , true );
@@ -262,7 +260,7 @@ public class ConnectionPool implements Runnable
                             PooledConnection newConn = source_
                                     .getPooledConnection ();
                             putInPool ( newConn );
-                            Configuration
+                            LOGGER
                                     .logDebug ( "ConnectionPool: replacing invalidated connection "
                                             + pc.toString () );
                         }
@@ -274,7 +272,7 @@ public class ConnectionPool implements Runnable
                             PooledConnection newConn = source_
                                     .getPooledConnection ();
                             putInPool ( newConn );
-                            Configuration
+                            LOGGER
                                     .logDebug ( "ConnectionPool: connection invalid, replacing it: "
                                             + pc.toString (), sqlErr );
 
@@ -295,9 +293,9 @@ public class ConnectionPool implements Runnable
      * @param closeConnectionAfterTest Whether to close the connection handle or not.
      * @throws SQLException On error - in that case, the connection will have been closed and should not be used.
      */
-    private void test ( PooledConnection pc , boolean closeConnectionAfterTest ) throws SQLException 
+    private void test ( PooledConnection pc , boolean closeConnectionAfterTest ) throws SQLException
     {
-    		Connection connection = null; 
+    		Connection connection = null;
     		boolean cleanup = false;
     		try {
 				connection = pc.getConnection();
@@ -305,7 +303,7 @@ public class ConnectionPool implements Runnable
 					if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "ConnectionPool: no query to test connection, trying getMetaData(): " + connection );
 					connection.getMetaData();
 					return;
-				} 	
+				}
 				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "ConnectionPool: trying query '" + testQuery_ + "' on connection " + connection );
 				Statement stmt = connection.createStatement();
 				ResultSet rs = stmt.executeQuery ( testQuery_ );

@@ -29,7 +29,6 @@ import javax.management.MBeanRegistration;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
-import com.atomikos.datasource.xa.DefaultXidFactory;
 import com.atomikos.datasource.xa.XATransactionalResource;
 
 /**

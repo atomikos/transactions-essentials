@@ -25,9 +25,6 @@
 
 package com.atomikos.icatch.jta;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -54,6 +51,8 @@ import com.atomikos.icatch.HeurRollbackException;
 import com.atomikos.icatch.SysException;
 import com.atomikos.icatch.TxState;
 import com.atomikos.icatch.system.Configuration;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 
 /**
  * 

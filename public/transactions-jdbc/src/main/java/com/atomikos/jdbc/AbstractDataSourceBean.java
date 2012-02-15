@@ -25,9 +25,6 @@
 
 package com.atomikos.jdbc;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.sql.Connection;
@@ -38,6 +35,7 @@ import javax.naming.NamingException;
 import javax.naming.Reference;
 import javax.naming.Referenceable;
 
+import com.atomikos.datasource.pool.ConnectionFactory;
 import com.atomikos.datasource.pool.ConnectionPool;
 import com.atomikos.datasource.pool.ConnectionPoolException;
 import com.atomikos.datasource.pool.ConnectionPoolProperties;
@@ -45,12 +43,10 @@ import com.atomikos.datasource.pool.CreateConnectionException;
 import com.atomikos.datasource.pool.PoolExhaustedException;
 import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.StringHeuristicMessage;
-import com.atomikos.icatch.system.Configuration;
-import com.atomikos.jdbc.AtomikosSQLException;
-import com.atomikos.jdbc.HeuristicDataSource;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 import com.atomikos.util.IntraVmObjectFactory;
 import com.atomikos.util.IntraVmObjectRegistry;
-import com.atomikos.datasource.pool.ConnectionFactory;
 
  /**
   * 

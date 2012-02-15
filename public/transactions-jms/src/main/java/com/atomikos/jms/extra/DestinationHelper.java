@@ -25,15 +25,13 @@
 
 package com.atomikos.jms.extra;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Session;
 
-import com.atomikos.icatch.system.Configuration;
 import com.atomikos.jms.AtomikosJMSException;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 
  /**
   * Helper class for common destination logic.

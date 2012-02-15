@@ -25,17 +25,16 @@
 
 package com.atomikos.icatch.jta.hibernate3;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
+import java.util.Properties;
 
-import com.atomikos.icatch.jta.UserTransactionImp;
-import com.atomikos.icatch.system.Configuration;
+import javax.transaction.UserTransaction;
 
 import org.hibernate.HibernateException;
 import org.hibernate.transaction.JTATransactionFactory;
 
-import javax.transaction.UserTransaction;
-import java.util.Properties;
+import com.atomikos.icatch.jta.UserTransactionImp;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 
 /**
  * Atomikos-specific JTATransactionFactory implementation that does not

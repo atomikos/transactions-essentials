@@ -25,9 +25,6 @@
 
 package com.atomikos.jms.extra;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.io.Serializable;
 import java.util.Map;
 
@@ -41,17 +38,18 @@ import javax.transaction.Status;
 import javax.transaction.SystemException;
 
 import com.atomikos.icatch.jta.UserTransactionManager;
-import com.atomikos.icatch.system.Configuration;
 import com.atomikos.jms.AtomikosConnectionFactoryBean;
 import com.atomikos.jms.AtomikosJMSException;
 import com.atomikos.jms.AtomikosTransactionRequiredJMSException;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 
  /**
   * Common functionality for the sender templates.
   *
   */
 
-public abstract class AbstractJmsSenderTemplate 
+public abstract class AbstractJmsSenderTemplate
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(AbstractJmsSenderTemplate.class);
 
@@ -74,24 +72,24 @@ public abstract class AbstractJmsSenderTemplate
         setDeliveryMode ( javax.jms.DeliveryMode.PERSISTENT );
         setPriority ( 4 );
 	}
-	
+
 	protected abstract Session getOrRefreshSession ( Connection c ) throws JMSException;
-	
+
 	protected abstract Connection getOrReuseConnection() throws JMSException;
-	
+
 	protected abstract void afterUseWithoutErrors ( Connection c , Session s ) throws JMSException;
-	
+
 	protected abstract void destroy ( Connection c , Session s ) throws JMSException;
-	
+
 	protected synchronized Connection refreshConnection() throws JMSException {
 		Connection connection = null;
 	    if ( getDestinationName() == null )
 	        throw new JMSException ( "Please call setDestination or setDestinationName first!" );
-	
+
 	    if ( user != null ) {
 	        connection = connectionFactoryBean.createConnection (
 	                user, password );
-	
+
 	    } else {
 	        connection = connectionFactoryBean.createConnection ();
 	    }
@@ -101,10 +99,10 @@ public abstract class AbstractJmsSenderTemplate
 
 
 	/**
-	 * Initializes the session for sending. 
+	 * Initializes the session for sending.
 	 * Call this method first.
 	 */
-	
+
 	public void init() throws JMSException
 	{
 		if ( ! inited ) {
@@ -123,11 +121,11 @@ public abstract class AbstractJmsSenderTemplate
 			msg.append ( "replyToDestination=" ).append ( getReplyToDestinationName() );
 			msg.append ( "]" );
 			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( msg.toString() );
-			inited = true;		
+			inited = true;
 		}
 	}
-	
-	private void retrieveDestinationIfNecessary() throws JMSException 
+
+	private void retrieveDestinationIfNecessary() throws JMSException
 	{
 		if ( getDestination() == null ) {
 			String dName = getDestinationName();
@@ -135,10 +133,10 @@ public abstract class AbstractJmsSenderTemplate
 			executeCallbackInternal ( cb );
 			setDestination ( cb.getDestination() );
 		}
-		
+
 	}
-	
-	private void retrieveReplyToDestinationIfNecessary() throws JMSException 
+
+	private void retrieveReplyToDestinationIfNecessary() throws JMSException
 	{
 		if ( getReplyToDestination() == null ) {
 			String dName = getReplyToDestinationName();
@@ -147,9 +145,9 @@ public abstract class AbstractJmsSenderTemplate
 				executeCallbackInternal ( cb );
 				setReplyToDestination ( cb.getDestination() );
 			}
-			
+
 		}
-		
+
 	}
 
 	/**
@@ -167,18 +165,18 @@ public abstract class AbstractJmsSenderTemplate
 	public Destination getDestination() {
 		return destination;
 	}
-	
+
 
 	/**
 	 * Sets the (provider-specific) destination name in order
 	 * to lookup the destination (rather than providing one directly).
-	 * 
+	 *
 	 * Required, unless you set the destination directly.
-	 * 
+	 *
 	 * @param destinationName
 	 */
-	
-	public void setDestinationName ( String destinationName ) 
+
+	public void setDestinationName ( String destinationName )
 	{
 		this.destinationName = destinationName;
 	}
@@ -186,7 +184,7 @@ public abstract class AbstractJmsSenderTemplate
 	/**
 	 * Sets the destination to send to. Required, unless
 	 * you set the destinationName instead.
-	 * 
+	 *
 	 * @param destination
 	 */
 	public void setDestination(Destination destination) {
@@ -236,32 +234,32 @@ public abstract class AbstractJmsSenderTemplate
 	 * property indicates the destination where the replies are to be sent (optional). The
 	 * session uses this to set the JMSReplyTo header accordingly. This property
 	 * can be omitted if no reply is needed.
-	 * 
+	 *
 	 * <p>
 	 * The replyToDestination should be in the same JMS vendor domain as the send
 	 * queue. To cross domains, configure a bridge for both the request and the
 	 * reply channels.
 	 */
-	public void setReplyToDestination(Destination destination) 
+	public void setReplyToDestination(Destination destination)
 	{
 		this.replyToDestination = destination;
 	}
 
 	/**
 	 * Sets the provider-specific replyToDestinationName. Optional.
-	 * 
+	 *
 	 * @param replyToDestinationName
 	 */
 
-	public void setReplyToDestinationName ( String replyToDestinationName ) 
+	public void setReplyToDestinationName ( String replyToDestinationName )
 	{
 		this.replyToDestinationName = replyToDestinationName;
-		
-	}	
-	
+
+	}
+
 	/**
 	 * Gets the replyToDestination.
-	 * 
+	 *
 	 * @return
 	 */
 	public Destination getReplyToDestination() {
@@ -269,10 +267,10 @@ public abstract class AbstractJmsSenderTemplate
 	}
 
 	/**
-	 * Set the password for explicit authentication (optional). 
+	 * Set the password for explicit authentication (optional).
 	 * This is only required if
 	 * the user has also been set.
-	 * 
+	 *
 	 * @param password
 	 *            The password.
 	 */
@@ -283,36 +281,36 @@ public abstract class AbstractJmsSenderTemplate
 	/**
 	 * Set the user to use for explicit authentication (optional). If no explicit
 	 * authentication is required then this method should not be called.
-	 * 
+	 *
 	 * @param user
 	 */
 	public void setUser(String user) {
 	    this.user = user;
 	}
-	
-	protected void executeCallbackInternal ( 
+
+	protected void executeCallbackInternal (
 			JmsSenderTemplateCallback callback ) throws JMSException {
-		
+
 		init();
 		Session  session = null;
 	    Connection conn = null;
 	    try {
 	    	conn = getOrReuseConnection();
-	    	session = getOrRefreshSession ( conn );	
+	    	session = getOrRefreshSession ( conn );
 	    	if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Calling callback..." );
 	    	callback.doInJmsSession ( session );
 	        if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Callback done!" );
 	        afterUseWithoutErrors ( conn , session );
-	        
+
 	    } catch ( AtomikosTransactionRequiredJMSException notx ) {
 	    	destroy ( conn , session );
 	    	String msg = "The JMS session you are using requires a JTA transaction context for the calling thread and none was found." + "\n" +
-			"Please correct your code to do one of the following: " + "\n" +			
-			"1. start a JTA transaction before sending any message, or" + "\n" + 
+			"Please correct your code to do one of the following: " + "\n" +
+			"1. start a JTA transaction before sending any message, or" + "\n" +
 			"2. increase the maxPoolSize of the AtomikosConnectionFactoryBean to avoid transaction timeout while waiting for a connection.";
 	    	LOGGER.logWarning ( msg );
 	    	AtomikosTransactionRequiredJMSException.throwAtomikosTransactionRequiredJMSException ( msg );
-	
+
 	    } catch ( JMSException e ) {
 	    	destroy ( conn , session );
 	        String msg = this + ": error in sending JMS message";
@@ -322,31 +320,31 @@ public abstract class AbstractJmsSenderTemplate
 
 	/**
 	 * Executes an application-level call-back within the managed session.
-	 * 
+	 *
 	 * @param callback
 	 * @throws JMSException
 	 */
 	public void executeCallback(JmsSenderTemplateCallback callback) throws JMSException {
-		
-		init();		
-		
+
+		init();
+
 
 		retrieveDestinationIfNecessary();
 		retrieveReplyToDestinationIfNecessary();
-		
+
 		UserTransactionManager tm = new UserTransactionManager ();
 	    try {
 	        if ( tm.getStatus () != Status.STATUS_ACTIVE )
 	            throw new JMSException (
 	                    "This method requires an active transaction!" );
 	    } catch ( SystemException e ) {
-	        Configuration
+	    	LOGGER
 	                .logWarning ( this +": error in getting transaction status", e );
 	        throw new RuntimeException ( e.getMessage () );
 	    }
-	    
+
 	    executeCallbackInternal ( callback );
-	    
+
 	}
 
 
@@ -373,10 +371,10 @@ public abstract class AbstractJmsSenderTemplate
 	}
 
 	/**
-	 * 
+	 *
 	 * Set the deliverymode for messages sent in this session (optional). Defaults to
 	 * persistent.
-	 * 
+	 *
 	 * @param
 	 */
 	public void setDeliveryMode(int i) {
@@ -385,7 +383,7 @@ public abstract class AbstractJmsSenderTemplate
 
 	/**
 	 * Set the priority for messages sent in this session (optional). Defaults to 4.
-	 * 
+	 *
 	 * @param
 	 */
 	public void setPriority(int i) {
@@ -394,7 +392,7 @@ public abstract class AbstractJmsSenderTemplate
 
 	/**
 	 * Set the time to live for messages sent in this session (optional). Defaults to 0.
-	 * 
+	 *
 	 * @param
 	 */
 	public void setTimeToLive(long l) {
@@ -403,9 +401,9 @@ public abstract class AbstractJmsSenderTemplate
 
 	/**
 	 * Sends a TextMessage.
-	 * 
+	 *
 	 * @param content The text as a string.
-	 * @throws JMSException 
+	 * @throws JMSException
 	 */
 	public void sendTextMessage(String content) throws JMSException {
 		SendTextMessageCallback cb = new SendTextMessageCallback ( content , getDestination() , getReplyToDestination() , getDeliveryMode() , getPriority() , getTimeToLive() );
@@ -414,30 +412,30 @@ public abstract class AbstractJmsSenderTemplate
 
 	/**
 	 * Sends a MapMessage.
-	 * 
+	 *
 	 * @param content The Map to get the content from.
-	 * 
+	 *
 	 * @throws JMSException
 	 */
 	public void sendMapMessage(Map content) throws JMSException {
 		SendMapMessageCallback cb = new SendMapMessageCallback ( content , getDestination() , getReplyToDestination() , getDeliveryMode() , getPriority() , getTimeToLive() );
-		executeCallback ( cb );		
+		executeCallback ( cb );
 	}
 
 	/**
 	 * Sends an ObjectMessage.
-	 * 
+	 *
 	 * @param content The serializable object content.
 	 * @throws JMSException
 	 */
 	public void sendObjectMessage(Serializable content) throws JMSException {
 		SendObjectMessageCallback cb = new SendObjectMessageCallback ( content , getDestination() , getReplyToDestination() , getDeliveryMode() , getPriority() , getTimeToLive() );
-		executeCallback ( cb );		
+		executeCallback ( cb );
 	}
 
 	/**
 	 * Sends a ByteMessage.
-	 * 
+	 *
 	 * @param content The content as a byte array.
 	 * @throws JMSException
 	 */

@@ -25,11 +25,7 @@
 
 package com.atomikos.jdbc;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -44,9 +40,11 @@ import com.atomikos.datasource.xa.session.SessionHandleState;
 import com.atomikos.datasource.xa.session.SessionHandleStateChangeListener;
 import com.atomikos.icatch.CompositeTransaction;
 import com.atomikos.icatch.CompositeTransactionManager;
-import com.atomikos.icatch.jta.TransactionManagerImp;
 import com.atomikos.icatch.HeuristicMessage;
+import com.atomikos.icatch.jta.TransactionManagerImp;
 import com.atomikos.icatch.system.Configuration;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 
 public class AtomikosXAPooledConnection extends AbstractXPooledConnection
 {

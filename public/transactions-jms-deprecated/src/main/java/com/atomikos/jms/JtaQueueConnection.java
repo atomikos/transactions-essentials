@@ -36,7 +36,6 @@ import javax.jms.XAQueueConnection;
 import javax.jms.XAQueueSession;
 
 import com.atomikos.datasource.TransactionalResource;
-import com.atomikos.icatch.system.Configuration;
 
 /**
  * 

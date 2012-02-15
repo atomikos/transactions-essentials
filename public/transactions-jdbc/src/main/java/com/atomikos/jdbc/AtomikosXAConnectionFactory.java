@@ -25,23 +25,18 @@
 
 package com.atomikos.jdbc;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.sql.SQLException;
-import java.util.Stack;
 
 import javax.sql.XAConnection;
 import javax.sql.XADataSource;
-
 
 import com.atomikos.datasource.pool.ConnectionFactory;
 import com.atomikos.datasource.pool.ConnectionPoolProperties;
 import com.atomikos.datasource.pool.CreateConnectionException;
 import com.atomikos.datasource.pool.XPooledConnection;
 import com.atomikos.datasource.xa.jdbc.JdbcTransactionalResource;
-import com.atomikos.icatch.SysException;
-import com.atomikos.icatch.system.Configuration;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 
 class AtomikosXAConnectionFactory implements ConnectionFactory 
 {

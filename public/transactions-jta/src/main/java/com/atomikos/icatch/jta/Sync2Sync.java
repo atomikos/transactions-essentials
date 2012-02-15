@@ -28,16 +28,19 @@ package com.atomikos.icatch.jta;
 import javax.transaction.Status;
 
 import com.atomikos.icatch.TxState;
-import com.atomikos.icatch.system.Configuration;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 
 /**
- * 
- * 
+ *
+ *
  * An adaptor for the native icatch Synchronization towards JTA synch.
  */
 
 class Sync2Sync implements com.atomikos.icatch.Synchronization
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(Sync2Sync.class);
+
     protected javax.transaction.Synchronization sync_;
 
     private Boolean committed_;
@@ -61,20 +64,20 @@ class Sync2Sync implements com.atomikos.icatch.Synchronization
             if ( committed_ == null ) {
                 // happens on readonly vote -> outcome not known!
                 sync_.afterCompletion ( Status.STATUS_UNKNOWN );
-                Configuration
+                LOGGER
                         .logInfo ( "afterCompletion ( STATUS_UNKNOWN ) called "
                                 + " on Synchronization: " + sync_.toString () );
             } else {
                 boolean commit = committed_.booleanValue ();
                 if ( commit ) {
                     sync_.afterCompletion ( Status.STATUS_COMMITTED );
-                    Configuration
+                    LOGGER
                             .logInfo ( "afterCompletion ( STATUS_COMMITTED ) called "
                                     + " on Synchronization: "
                                     + sync_.toString () );
                 } else {
                     sync_.afterCompletion ( Status.STATUS_ROLLEDBACK );
-                    Configuration
+                    LOGGER
                             .logInfo ( "afterCompletion ( STATUS_ROLLEDBACK ) called "
                                     + " on Synchronization: "
                                     + sync_.toString () );

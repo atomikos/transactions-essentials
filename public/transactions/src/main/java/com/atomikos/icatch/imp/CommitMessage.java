@@ -25,16 +25,14 @@
 
 package com.atomikos.icatch.imp;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeurMixedException;
 import com.atomikos.icatch.HeurRollbackException;
 import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.Participant;
 import com.atomikos.icatch.RollbackException;
-import com.atomikos.icatch.system.Configuration;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 
 /**
  * 

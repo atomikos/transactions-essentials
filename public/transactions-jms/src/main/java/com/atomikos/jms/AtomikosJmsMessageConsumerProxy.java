@@ -25,16 +25,14 @@
 
 package com.atomikos.jms;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
 import javax.jms.MessageListener;
 
 import com.atomikos.datasource.xa.session.SessionHandleState;
-import com.atomikos.icatch.system.Configuration;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 
 class AtomikosJmsMessageConsumerProxy extends ConsumerProducerSupport implements
 		HeuristicMessageConsumer {

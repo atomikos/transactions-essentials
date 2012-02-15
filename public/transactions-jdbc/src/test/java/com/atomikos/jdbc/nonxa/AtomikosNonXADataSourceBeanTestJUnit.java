@@ -2,9 +2,9 @@ package com.atomikos.jdbc.nonxa;
 
 import java.sql.SQLException;
 
-import com.atomikos.jdbc.AtomikosSQLException;
-
 import junit.framework.TestCase;
+
+import com.atomikos.jdbc.AtomikosSQLException;
 
 public class AtomikosNonXADataSourceBeanTestJUnit extends TestCase 
 {

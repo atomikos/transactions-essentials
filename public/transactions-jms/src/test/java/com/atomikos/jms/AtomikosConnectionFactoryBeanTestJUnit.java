@@ -2,12 +2,11 @@ package com.atomikos.jms;
 
 import java.util.Properties;
 
-
 import javax.naming.Reference;
 
-import com.atomikos.util.IntraVmObjectFactory;
-
 import junit.framework.TestCase;
+
+import com.atomikos.util.IntraVmObjectFactory;
 
 public class AtomikosConnectionFactoryBeanTestJUnit extends TestCase 
 {

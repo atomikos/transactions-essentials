@@ -1,9 +1,5 @@
 package com.atomikos.timing;
 
-import com.atomikos.timing.AlarmTimer;
-import com.atomikos.timing.AlarmTimerListener;
-import com.atomikos.timing.PooledAlarmTimer;
-
 import junit.framework.TestCase;
 
 public class PooledAlarmTimerTestJUnit extends TestCase {

@@ -45,13 +45,13 @@ import javax.transaction.Transaction;
 import javax.transaction.UserTransaction;
 
 import com.atomikos.icatch.SysException;
-import com.atomikos.icatch.config.TSInitInfo;
 import com.atomikos.icatch.config.imp.AbstractUserTransactionServiceFactory;
-import com.atomikos.icatch.system.Configuration;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 
 /**
- * 
- * 
+ *
+ *
  * An implementation of the server-side UserTransaction infrastructure. An
  * instance of this class is created and exported automatically (when
  * client-demarcated transactions are enabled).
@@ -59,6 +59,8 @@ import com.atomikos.icatch.system.Configuration;
 
 public class UserTransactionServerImp implements UserTransactionServer
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(UserTransactionServerImp.class);
+
     // @todo assert no exceptions if RMI-IIOP not enabled!
 
     private static UserTransactionServerImp singleton_ = null;
@@ -87,7 +89,7 @@ public class UserTransactionServerImp implements UserTransactionServer
 
     /**
      * Creates a new instance.
-     * 
+     *
      */
 
     private UserTransactionServerImp ()
@@ -101,7 +103,7 @@ public class UserTransactionServerImp implements UserTransactionServer
      * Utility method to return an initial context based on the contents of the
      * properties. This is needed because the JNDI does not recognize the
      * default properties unless they are explicitly converted to a Hashtable.
-     * 
+     *
      * @return An initial context whose environment depends on the properties.
      * @throws NamingException
      */
@@ -119,7 +121,7 @@ public class UserTransactionServerImp implements UserTransactionServer
 
     /**
      * Get a usertx for this server.
-     * 
+     *
      * @return UserTransaction Null if the server is not exported; a usertx that
      *         can be used at remote clients otherwise.
      */
@@ -136,7 +138,7 @@ public class UserTransactionServerImp implements UserTransactionServer
 
     /**
      * Get the name on which this instance is listening in RMI.
-     * 
+     *
      * @return String The name.
      */
 
@@ -148,7 +150,7 @@ public class UserTransactionServerImp implements UserTransactionServer
     /**
      * Initializes the server object. Should be called as the first method, and
      * only <b>after</b> the JTA transaction manager has been set up.
-     * 
+     *
      * @param properties
      *            The JNDI environment to use.
      * @param tmUniqueName
@@ -165,7 +167,7 @@ public class UserTransactionServerImp implements UserTransactionServer
         canExport = "UnicastRemoteObject".equals ( exportClass )
                 || "PortableRemoteObject".equals ( exportClass );
         if ( !canExport ) {
-            Configuration
+            LOGGER
                     .logWarning ( "Client transaction demarcation not supported for "
                             + "com.atomikos.icatch.rmi_export_class="
                             + exportClass );

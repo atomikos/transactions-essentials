@@ -25,9 +25,6 @@
 
 package com.atomikos.jdbc.nonxa;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -45,24 +42,26 @@ import com.atomikos.icatch.CompositeTransactionManager;
 import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.jta.TransactionManagerImp;
 import com.atomikos.icatch.system.Configuration;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 
 /**
- * 
- * 
- * 
+ *
+ *
+ *
  * A dynamic proxy class that wraps JDBC local connections to enable them for
  * JTA transactions and the J2EE programming model: different modules in the
  * same thread (and transaction) can get a connection from the datasource, and
  * rollback will undo all that work.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 
 class ThreadLocalConnection implements InvocationHandler
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(ThreadLocalConnection.class);
-	
+
 	private final static List NON_TRANSACTIONAL_METHOD_NAMES = Arrays.asList(new String[] {
 			"equals",
 			"hashCode",
@@ -108,25 +107,25 @@ class ThreadLocalConnection implements InvocationHandler
     static Set getAllImplementedInterfaces ( Class clazz )
     {
     		Set ret = null;
-    		
+
     		if ( clazz.getSuperclass() != null ) {
     			//if superclass exists: first add the superclass interfaces!!!
-    			ret = getAllImplementedInterfaces ( clazz.getSuperclass() ); 
+    			ret = getAllImplementedInterfaces ( clazz.getSuperclass() );
     		}
     		else {
     			//no superclass: start with empty set
     			ret = new HashSet();
-    		} 
-    		
+    		}
+
     		//add the interfaces in this class
     		Class[] interfaces = clazz.getInterfaces();
     		for ( int i = 0 ; i < interfaces.length ; i++ ) {
     			ret.add ( interfaces[i] );
     		}
-    		
+
     		return ret;
     }
-    
+
     /**
      * Private constructor: instances should be gotten through factory method.
      */
@@ -233,7 +232,7 @@ class ThreadLocalConnection implements InvocationHandler
     {
 
         if ( useCount == 0 && !isInTransaction () ) {
-            Configuration
+        	LOGGER
                     .logDebug ( "ThreadLocalConnection: detected reusability" );
             setStale ( true );
             pooledConnection.notifyCloseListeners ();
@@ -292,7 +291,7 @@ class ThreadLocalConnection implements InvocationHandler
         	return m.invoke ( wrapped, args );
         }
 
-    	
+
         Object result = null;
 
         // detect illegal use after connection was resubmitted to the pool
@@ -317,16 +316,16 @@ class ThreadLocalConnection implements InvocationHandler
             // delegate to the underlying JDBC connection
             try {
                 // System.out.println ( "Proxy: calling method" );
-            	   if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "ThreadLocalConnection: delegating method " + m + 
+            	   if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "ThreadLocalConnection: delegating method " + m +
             			   " to wrapped connection with args: " + args );
                 result = m.invoke ( wrapped, args );
-               
-            
+
+
             } catch ( InvocationTargetException e ) {
 
                 throw e.getTargetException ();
             } catch ( Exception e ) {
-                Configuration
+            	LOGGER
                         .logDebug (
                                 "ThreadLocalConnection: Unexpected invocation exception",
                                 e );

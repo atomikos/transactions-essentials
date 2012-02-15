@@ -25,9 +25,6 @@
 
 package com.atomikos.datasource.xa.session;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
 
@@ -35,7 +32,8 @@ import com.atomikos.datasource.xa.XAResourceTransaction;
 import com.atomikos.datasource.xa.XATransactionalResource;
 import com.atomikos.icatch.CompositeTransaction;
 import com.atomikos.icatch.HeuristicMessage;
-import com.atomikos.icatch.system.Configuration;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 
  /**
   * 

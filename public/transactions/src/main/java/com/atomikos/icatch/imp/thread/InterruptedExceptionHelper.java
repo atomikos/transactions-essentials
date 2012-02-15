@@ -1,9 +1,7 @@
 package com.atomikos.icatch.imp.thread;
 
-import com.atomikos.logging.LoggerFactory;
 import com.atomikos.logging.Logger;
-
-import com.atomikos.icatch.system.Configuration;
+import com.atomikos.logging.LoggerFactory;
 
 public class InterruptedExceptionHelper 
 {

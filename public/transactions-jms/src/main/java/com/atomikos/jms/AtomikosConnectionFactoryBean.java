@@ -25,9 +25,6 @@
 
 package com.atomikos.jms;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.Properties;
@@ -50,6 +47,8 @@ import com.atomikos.datasource.pool.CreateConnectionException;
 import com.atomikos.datasource.pool.PoolExhaustedException;
 import com.atomikos.datasource.xa.jms.JmsTransactionalResource;
 import com.atomikos.icatch.system.Configuration;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 import com.atomikos.util.ClassLoadingHelper;
 import com.atomikos.util.IntraVmObjectFactory;
 import com.atomikos.util.IntraVmObjectRegistry;

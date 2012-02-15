@@ -2,11 +2,10 @@ package com.atomikos.jdbc.nonxa;
 
 import java.sql.SQLException;
 
-import com.atomikos.icatch.HeurMixedException;
+import junit.framework.TestCase;
+
 import com.atomikos.icatch.HeurRollbackException;
 import com.atomikos.icatch.Participant;
-
-import junit.framework.TestCase;
 
 public class AtomikosNonXAParticipantTestJUnit extends TestCase 
 {

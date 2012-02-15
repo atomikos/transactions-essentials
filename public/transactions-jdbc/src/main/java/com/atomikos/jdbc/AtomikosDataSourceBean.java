@@ -25,9 +25,6 @@
 
 package com.atomikos.jdbc;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.util.Enumeration;
 import java.util.Properties;
 
@@ -37,7 +34,8 @@ import com.atomikos.beans.PropertyUtils;
 import com.atomikos.datasource.RecoverableResource;
 import com.atomikos.datasource.xa.jdbc.JdbcTransactionalResource;
 import com.atomikos.icatch.system.Configuration;
-import com.atomikos.jdbc.AbstractDataSourceBean;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 import com.atomikos.util.ClassLoadingHelper;
 
  /**

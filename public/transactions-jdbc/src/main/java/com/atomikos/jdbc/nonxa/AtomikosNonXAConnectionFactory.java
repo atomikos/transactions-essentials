@@ -25,9 +25,6 @@
 
 package com.atomikos.jdbc.nonxa;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
@@ -38,8 +35,9 @@ import com.atomikos.datasource.pool.ConnectionFactory;
 import com.atomikos.datasource.pool.ConnectionPoolProperties;
 import com.atomikos.datasource.pool.CreateConnectionException;
 import com.atomikos.datasource.pool.XPooledConnection;
-import com.atomikos.icatch.system.Configuration;
 import com.atomikos.jdbc.AtomikosSQLException;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 import com.atomikos.util.ClassLoadingHelper;
 
 

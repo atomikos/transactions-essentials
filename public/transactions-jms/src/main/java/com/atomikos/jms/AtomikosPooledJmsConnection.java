@@ -25,9 +25,6 @@
 
 package com.atomikos.jms;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.lang.reflect.Proxy;
 
 import javax.jms.JMSException;
@@ -44,6 +41,8 @@ import com.atomikos.icatch.CompositeTransactionManager;
 import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.jta.TransactionManagerImp;
 import com.atomikos.icatch.system.Configuration;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 import com.atomikos.util.DynamicProxy;
 
 class AtomikosPooledJmsConnection extends AbstractXPooledConnection implements SessionHandleStateChangeListener {

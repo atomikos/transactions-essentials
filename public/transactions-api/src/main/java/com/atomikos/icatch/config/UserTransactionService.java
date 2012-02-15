@@ -27,9 +27,6 @@ package com.atomikos.icatch.config;
 import java.util.Enumeration;
 import java.util.Properties;
 
-import javax.transaction.TransactionManager;
-import javax.transaction.UserTransaction;
-
 import com.atomikos.datasource.RecoverableResource;
 import com.atomikos.icatch.CompositeTransactionManager;
 import com.atomikos.icatch.ExportingTransactionManager;

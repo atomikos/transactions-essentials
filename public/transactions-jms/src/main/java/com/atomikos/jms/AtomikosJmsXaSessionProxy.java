@@ -25,9 +25,6 @@
 
 package com.atomikos.jms;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,7 +45,8 @@ import com.atomikos.datasource.xa.XATransactionalResource;
 import com.atomikos.datasource.xa.session.SessionHandleState;
 import com.atomikos.datasource.xa.session.SessionHandleStateChangeListener;
 import com.atomikos.icatch.CompositeTransaction;
-import com.atomikos.icatch.system.Configuration;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 import com.atomikos.util.ClassLoadingHelper;
 import com.atomikos.util.DynamicProxy;
 

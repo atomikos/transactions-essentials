@@ -48,8 +48,9 @@ import com.atomikos.icatch.TSListener;
 import com.atomikos.icatch.TransactionService;
 import com.atomikos.icatch.admin.LogAdministrator;
 import com.atomikos.icatch.admin.LogControl;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 import com.atomikos.util.ClassLoadingHelper;
-import com.atomikos.util.ExceptionHelper;
 
 /**
  *
@@ -61,6 +62,7 @@ import com.atomikos.util.ExceptionHelper;
 
 public final class Configuration
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(Configuration.class);
 
 
     private static CompositeTransactionManager ctxmgr_ = null;
@@ -107,7 +109,7 @@ public final class Configuration
 				props.load ( in );
 	    		in.close();
 			} catch (IOException e) {
-				logWarning ( "Could not determine runtime version" , e );
+				LOGGER.logWarning ( "Could not determine runtime version" , e );
 			}
     		String version = props.getProperty ( "product.version" );
     		if ( version != null ) ret = version;
@@ -387,23 +389,23 @@ public final class Configuration
         purgeResources ();
         int numResources = resources_.size ();
         if ( numResources > 100 ) {
-            logWarning ( numResources
+        	LOGGER.logWarning ( numResources
                     + " RESOURCES IN CONFIGURATION -- "
                     + "SOME XARESOURCE IMPLEMENTATIONS MAY NOT CORRECTLY IMPLEMENT isSameRM()!" );
-            logWarning ( "TO SAVE MEMORY, USE EXPLICIT RESOURCE REGISTRATION MODE." );
+        	LOGGER.logWarning ( "TO SAVE MEMORY, USE EXPLICIT RESOURCE REGISTRATION MODE." );
         }
 
         if ( resources_.containsKey ( resource.getName () ) )
             throw new IllegalStateException ( "Attempt to register second "
                     + "resource with name " + resource.getName () );
 
-        logDebug ( "Configuration: adding resource " + resource.getName () );
+        LOGGER.logDebug ( "Configuration: adding resource " + resource.getName () );
 
         resources_.put ( resource.getName (), resource );
         resourceList_.add ( resource );
         resource.setRecoveryService ( recoveryService_ );
 
-        logDebug ( "Configuration: added resource " + resource.getName () );
+        LOGGER.logDebug ( "Configuration: added resource " + resource.getName () );
     }
 
     /**
@@ -460,7 +462,7 @@ public final class Configuration
         	if ( ret != null ) resourceList_.remove ( ret );
 
         }
-        logDebug ( "Configuration: removed resource " + name );
+        LOGGER.logDebug ( "Configuration: removed resource " + name );
         return ret;
     }
 
@@ -541,125 +543,125 @@ public final class Configuration
         }
     }
 
-    /**
-     * Write a message to the installed console.
-     *
-     * @param msg
-     *            The message to write.
-     */
-    public static void logWarning ( String msg )
-    {
-        log ( msg, Console.WARN );
-    }
-
-    /**
-     * Write a message and associated exception to the console.
-     *
-     * @param msg
-     * @param error
-     */
-    public static void logWarning ( String msg , Throwable error )
-    {
-        log ( msg, error, Console.WARN );
-    }
-
-    /**
-     * Write a log entry for the INFO level.
-     *
-     * @param msg
-     */
-    public static void logInfo ( String msg )
-    {
-        log ( msg, Console.INFO );
-    }
-
-    /**
-     * Write an info message and error to the log.
-     *
-     * @param msg
-     * @param error
-     */
-    public static void logInfo ( String msg , Throwable error )
-    {
-        log ( msg, error, Console.INFO );
-    }
-
-    /**
-     * Write a debug message to the log.
-     *
-     * @param msg
-     */
-
-    public static void logDebug ( String msg )
-    {
-        log ( msg, Console.DEBUG );
-    }
-
-    /**
-     * Write a debug msg and error to the log.
-     *
-     * @param msg
-     * @param error
-     */
-
-    public static void logDebug ( String msg , Throwable error )
-    {
-        log ( msg, error, Console.DEBUG );
-    }
-
-    private static void log ( String msg , int level )
-    {
-        try {
-            Console console = Configuration.getConsole ();
-            if ( console != null ) {
-                console.println ( msg, level );
-            }
-        } catch ( Exception ignore ) {
-        }
-    }
-
-    private static void log ( String msg , Throwable e , int level )
-    {
-		if ( e != null ) {
-			String stackTrace = ExceptionHelper.convertStackTrace ( e );
-			log ( msg + "\n" + stackTrace , level );
-		} else {
-			log ( msg , level );
-		}
-
-
-    }
-
-    /**
-     * Tests if DEBUG logging is enabled. Call this before you construct DEBUG strings!
-     * @return
-     */
-
-	public static boolean isDebugLoggingEnabled()
-	{
-		// cf case 66587
-		boolean ret = false;
-		Console console = getConsole();
-		if ( console != null ) {
-			ret = console.getLevel() == Console.DEBUG;
-		}
-		return ret;
-	}
-
-	/**
-	 * Tests if INFO logging is enabled. Call this before you construct INFO strings!
-	 *
-	 * @return
-	 */
-	public static boolean isInfoLoggingEnabled()
-	{
-		// cf case 66587
-		boolean info = false;
-		boolean debug = isDebugLoggingEnabled();
-		Console console = getConsole();
-		if ( console != null ) {
-			info = console.getLevel() == Console.INFO;
-		}
-		return debug || info;
-	}
+//    /**
+//     * Write a message to the installed console.
+//     *
+//     * @param msg
+//     *            The message to write.
+//     */
+//    public static void logWarning ( String msg )
+//    {
+//        log ( msg, Console.WARN );
+//    }
+//
+//    /**
+//     * Write a message and associated exception to the console.
+//     *
+//     * @param msg
+//     * @param error
+//     */
+//    public static void logWarning ( String msg , Throwable error )
+//    {
+//        log ( msg, error, Console.WARN );
+//    }
+//
+//    /**
+//     * Write a log entry for the INFO level.
+//     *
+//     * @param msg
+//     */
+//    public static void logInfo ( String msg )
+//    {
+//        log ( msg, Console.INFO );
+//    }
+//
+//    /**
+//     * Write an info message and error to the log.
+//     *
+//     * @param msg
+//     * @param error
+//     */
+//    public static void logInfo ( String msg , Throwable error )
+//    {
+//        log ( msg, error, Console.INFO );
+//    }
+//
+//    /**
+//     * Write a debug message to the log.
+//     *
+//     * @param msg
+//     */
+//
+//    public static void logDebug ( String msg )
+//    {
+//        log ( msg, Console.DEBUG );
+//    }
+//
+//    /**
+//     * Write a debug msg and error to the log.
+//     *
+//     * @param msg
+//     * @param error
+//     */
+//
+//    public static void logDebug ( String msg , Throwable error )
+//    {
+//        log ( msg, error, Console.DEBUG );
+//    }
+//
+//    private static void log ( String msg , int level )
+//    {
+//        try {
+//            Console console = Configuration.getConsole ();
+//            if ( console != null ) {
+//                console.println ( msg, level );
+//            }
+//        } catch ( Exception ignore ) {
+//        }
+//    }
+//
+//    private static void log ( String msg , Throwable e , int level )
+//    {
+//		if ( e != null ) {
+//			String stackTrace = ExceptionHelper.convertStackTrace ( e );
+//			log ( msg + "\n" + stackTrace , level );
+//		} else {
+//			log ( msg , level );
+//		}
+//
+//
+//    }
+//
+//    /**
+//     * Tests if DEBUG logging is enabled. Call this before you construct DEBUG strings!
+//     * @return
+//     */
+//
+//	public static boolean isDebugLoggingEnabled()
+//	{
+//		// cf case 66587
+//		boolean ret = false;
+//		Console console = getConsole();
+//		if ( console != null ) {
+//			ret = console.getLevel() == Console.DEBUG;
+//		}
+//		return ret;
+//	}
+//
+//	/**
+//	 * Tests if INFO logging is enabled. Call this before you construct INFO strings!
+//	 *
+//	 * @return
+//	 */
+//	public static boolean isInfoLoggingEnabled()
+//	{
+//		// cf case 66587
+//		boolean info = false;
+//		boolean debug = isDebugLoggingEnabled();
+//		Console console = getConsole();
+//		if ( console != null ) {
+//			info = console.getLevel() == Console.INFO;
+//		}
+//		return debug || info;
+//	}
 }

@@ -6,9 +6,7 @@
         <artifactId>ate</artifactId>
         <version>3.8.0-SNAPSHOT</version>
     </parent>
-    <groupId>com.atomikos</groupId>
     <artifactId>transactions-jms</artifactId>
-    <version>3.8.0-SNAPSHOT</version>
     <name>Transactions JMS</name>
     <dependencies>
         <dependency>

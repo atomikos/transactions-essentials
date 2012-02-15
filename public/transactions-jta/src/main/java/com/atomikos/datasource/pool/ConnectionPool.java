@@ -25,10 +25,6 @@
 
 package com.atomikos.datasource.pool;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -36,7 +32,8 @@ import java.util.List;
 import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.imp.thread.InterruptedExceptionHelper;
 import com.atomikos.icatch.imp.thread.TaskManager;
-import com.atomikos.icatch.system.Configuration;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 import com.atomikos.timing.AlarmTimer;
 import com.atomikos.timing.AlarmTimerListener;
 import com.atomikos.timing.PooledAlarmTimer;

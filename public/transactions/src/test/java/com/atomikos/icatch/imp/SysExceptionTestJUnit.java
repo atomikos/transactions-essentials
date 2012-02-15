@@ -2,9 +2,9 @@ package com.atomikos.icatch.imp;
 
 import java.util.Stack;
 
-import com.atomikos.icatch.SysException;
-
 import junit.framework.TestCase;
+
+import com.atomikos.icatch.SysException;
 
 public class SysExceptionTestJUnit extends TestCase 
 {

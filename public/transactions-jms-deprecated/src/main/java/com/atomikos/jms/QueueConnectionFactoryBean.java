@@ -25,9 +25,6 @@
 
 package com.atomikos.jms;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
@@ -46,6 +43,8 @@ import com.atomikos.datasource.TransactionalResource;
 import com.atomikos.datasource.xa.DefaultXidFactory;
 import com.atomikos.datasource.xa.XidFactory;
 import com.atomikos.icatch.system.Configuration;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 
 /**
  * 

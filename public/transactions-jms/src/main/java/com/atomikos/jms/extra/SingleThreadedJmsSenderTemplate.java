@@ -25,14 +25,12 @@
 
 package com.atomikos.jms.extra;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import javax.jms.Connection;
 import javax.jms.JMSException;
 import javax.jms.Session;
 
-import com.atomikos.icatch.system.Configuration;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 
 /**
  * This is a <b>long-lived</b> JMS sender session, representing a

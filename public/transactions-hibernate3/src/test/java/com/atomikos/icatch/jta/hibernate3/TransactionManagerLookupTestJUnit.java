@@ -1,10 +1,8 @@
 package com.atomikos.icatch.jta.hibernate3;
 
-import org.hibernate.HibernateException;
-
-import com.atomikos.icatch.jta.hibernate3.TransactionManagerLookup;
-
 import junit.framework.TestCase;
+
+import org.hibernate.HibernateException;
 
 public class TransactionManagerLookupTestJUnit extends TestCase {
 

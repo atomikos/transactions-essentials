@@ -25,9 +25,6 @@
 
 package com.atomikos.icatch.standalone;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -64,6 +61,8 @@ import com.atomikos.icatch.jta.JTA;
 import com.atomikos.icatch.jta.TransactionManagerImp;
 import com.atomikos.icatch.jta.UserTransactionServerImp;
 import com.atomikos.icatch.system.Configuration;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 import com.atomikos.persistence.StateRecoveryManager;
 import com.atomikos.persistence.imp.FileLogStream;
 import com.atomikos.persistence.imp.StateRecoveryManagerImp;

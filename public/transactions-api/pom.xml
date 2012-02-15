@@ -6,12 +6,10 @@
         <artifactId>ate</artifactId>
         <version>3.8.0-SNAPSHOT</version>
     </parent>
-    <groupId>com.atomikos</groupId>
     <artifactId>transactions-api</artifactId>
-    <version>3.8.0-SNAPSHOT</version>
     <name>Transactions API</name>
-    
-   
+
+
     <dependencies>
         <dependency>
             <groupId>com.atomikos</groupId>

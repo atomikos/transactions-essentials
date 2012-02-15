@@ -25,9 +25,6 @@
 
 package com.atomikos.jms.extra;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -37,8 +34,9 @@ import javax.jms.ExceptionListener;
 import javax.jms.JMSException;
 import javax.jms.MessageListener;
 
-import com.atomikos.icatch.system.Configuration;
 import com.atomikos.jms.AtomikosConnectionFactoryBean;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 
  /**
   * 

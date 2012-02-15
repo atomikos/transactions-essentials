@@ -25,17 +25,14 @@
 
 package com.atomikos.jdbc;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.lang.reflect.InvocationHandler;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import com.atomikos.icatch.system.Configuration;
-import com.atomikos.util.DynamicProxy;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 
 /**
  * Common logic for the different dynamic connection proxies.

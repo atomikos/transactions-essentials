@@ -25,14 +25,12 @@
 
 package com.atomikos.datasource.pool;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import com.atomikos.icatch.HeuristicMessage;
-import com.atomikos.icatch.system.Configuration;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 
  
  /**

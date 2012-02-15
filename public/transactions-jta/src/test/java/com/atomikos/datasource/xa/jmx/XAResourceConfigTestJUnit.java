@@ -1,9 +1,9 @@
 package com.atomikos.datasource.xa.jmx;
 
-import junit.framework.TestCase;
-
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
+
+import junit.framework.TestCase;
 
 public class XAResourceConfigTestJUnit extends TestCase {
 

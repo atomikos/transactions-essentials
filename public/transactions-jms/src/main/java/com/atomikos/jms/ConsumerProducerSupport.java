@@ -25,9 +25,6 @@
 
 package com.atomikos.jms;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import javax.jms.JMSException;
 
 import com.atomikos.datasource.xa.session.InvalidSessionHandleStateException;
@@ -39,6 +36,8 @@ import com.atomikos.icatch.Synchronization;
 import com.atomikos.icatch.TxState;
 import com.atomikos.icatch.jta.TransactionManagerImp;
 import com.atomikos.icatch.system.Configuration;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 
  /**
   * Support for common logic in producer and consumer.

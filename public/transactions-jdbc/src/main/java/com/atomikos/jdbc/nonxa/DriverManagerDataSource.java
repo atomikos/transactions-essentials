@@ -33,7 +33,6 @@ import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
-import com.atomikos.jdbc.AtomikosDataSourceBean;
 import com.atomikos.jdbc.AtomikosSQLException;
 import com.atomikos.util.ClassLoadingHelper;
 

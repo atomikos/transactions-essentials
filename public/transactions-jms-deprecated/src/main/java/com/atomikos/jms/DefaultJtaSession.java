@@ -25,9 +25,6 @@
 
 package com.atomikos.jms;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import javax.jms.BytesMessage;
 import javax.jms.Destination;
 import javax.jms.JMSException;
@@ -40,7 +37,6 @@ import javax.jms.ObjectMessage;
 import javax.jms.Queue;
 import javax.jms.QueueBrowser;
 import javax.jms.Session;
-import javax.jms.XASession;
 import javax.jms.StreamMessage;
 import javax.jms.TemporaryQueue;
 import javax.jms.TemporaryTopic;
@@ -48,10 +44,12 @@ import javax.jms.TextMessage;
 import javax.jms.Topic;
 import javax.jms.TopicSubscriber;
 import javax.jms.TransactionInProgressException;
+import javax.jms.XASession;
 import javax.transaction.xa.XAResource;
 
 import com.atomikos.datasource.TransactionalResource;
-import com.atomikos.icatch.system.Configuration;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 
 /**
  * 

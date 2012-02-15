@@ -38,9 +38,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Stack;
 
-import javax.transaction.TransactionManager;
-import javax.transaction.UserTransaction;
-
 import com.atomikos.datasource.RecoverableResource;
 import com.atomikos.icatch.CompositeTransactionManager;
 import com.atomikos.icatch.ExportingTransactionManager;

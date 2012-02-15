@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch;
 
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+
 /**
  * A participant for (distributed) two-phase commit of composite transactions.
  * 

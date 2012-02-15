@@ -25,17 +25,14 @@
 
 package com.atomikos.jdbc.nonxa;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
-
 import java.sql.Connection;
 import java.sql.SQLException;
 
 import com.atomikos.datasource.pool.ConnectionFactory;
 import com.atomikos.icatch.HeuristicMessage;
-import com.atomikos.icatch.system.Configuration;
 import com.atomikos.jdbc.AbstractDataSourceBean;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 import com.atomikos.util.DynamicProxy;
 
  /**

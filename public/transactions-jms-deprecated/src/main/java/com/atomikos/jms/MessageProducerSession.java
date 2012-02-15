@@ -25,9 +25,6 @@
 
 package com.atomikos.jms;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import javax.jms.BytesMessage;
 import javax.jms.Connection;
 import javax.jms.Destination;
@@ -43,16 +40,17 @@ import javax.transaction.Status;
 import javax.transaction.SystemException;
 
 import com.atomikos.icatch.jta.UserTransactionManager;
-import com.atomikos.icatch.system.Configuration;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 
  /**
-  * 
-  * 
+  *
+  *
   * Common logic for the message producer session.
   *
   */
 
-public abstract class MessageProducerSession 
+public abstract class MessageProducerSession
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(MessageProducerSession.class);
 
@@ -75,17 +73,17 @@ public abstract class MessageProducerSession
         setDeliveryMode ( javax.jms.DeliveryMode.PERSISTENT );
         setPriority ( 4 );
 	}
-	
-	private synchronized MessageProducer refresh() throws JMSException 
+
+	private synchronized MessageProducer refresh() throws JMSException
 	{
 	    MessageProducer ret = null;
 	    if ( destination == null )
 	        throw new JMSException ( "Please call setDestination first!" );
-	
+
 	    if ( user != null ) {
 	        connection = connectionFactoryBean.createConnection (
 	                user, password );
-	
+
 	    } else {
 	        connection = connectionFactoryBean.createConnection ();
 	    }
@@ -93,45 +91,45 @@ public abstract class MessageProducerSession
 	    session = connection.createSession ( true, 0 );
 	    ret = session.createProducer ( destination );
 	    sender = ret;
-	    
+
 	    return ret;
 	}
 
-	private synchronized void closeResources() 
+	private synchronized void closeResources()
 	{
 	    if ( session != null )
 	        try {
 	            session.close ();
 	        } catch ( JMSException e ) {
 	            LOGGER.logWarning ( "Error closing JMS session", e );
-				LOGGER.logWarning ( "MessageProducerSession: linked exception is " , e.getLinkedException() );        
+				LOGGER.logWarning ( "MessageProducerSession: linked exception is " , e.getLinkedException() );
 			} finally {
 	        	//fix for issue 23119
 	        	session = null;
 	        }
-	        
+
 	    if ( connection != null )
 	        try {
 	            connection.close ();
 	        } catch ( JMSException e ) {
 	            LOGGER.logWarning ( "Error closing JMS connection", e );
-	        	LOGGER.logWarning ( "MessageProducerSession: linked exception is " , e.getLinkedException() );        
+	        	LOGGER.logWarning ( "MessageProducerSession: linked exception is " , e.getLinkedException() );
 			} finally {
 	        	connection = null;
 	        }
 	    sender = null;
 	}
-	
+
 	protected void setAbstractConnectionFactoryBean ( AbstractConnectionFactoryBean bean )
 	{
 		this.connectionFactoryBean = bean;
 	}
-	
+
 	protected AbstractConnectionFactoryBean getAbstractConnectionFactoryBean()
 	{
 		return connectionFactoryBean;
 	}
-	
+
 	protected Destination getDestination()
 	{
 		return destination;
@@ -141,17 +139,17 @@ public abstract class MessageProducerSession
 	{
 		this.destination = destination;
 	}
-	
+
 	protected abstract String getDestinationName();
-	
+
 	protected abstract String getReplyToDestinationName();
-	
+
 	/**
-	 * Initializes the session for sending. 
+	 * Initializes the session for sending.
 	 * Call this method first.
 	 */
-	
-	public void init() 
+
+	public void init()
 	{
 	    StringBuffer msg = new StringBuffer();
 	    msg.append ( "MessageProducerSession configured with [" );
@@ -165,22 +163,22 @@ public abstract class MessageProducerSession
 	    msg.append ( "]" );
 	    if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( msg.toString() );
 	}
-	
+
 	/**
 	 * @return The user to connect with, or null if no explicit authentication
 	 *         is to be used.
 	 */
-	public String getUser() 
+	public String getUser()
 	{
 	    return user;
 	}
-	
+
 	/**
 	 * If this session is used for sending request/reply messages, then this
      * property indicates the destination where the replies are to be sent (optional). The
      * session uses this to set the JMSReplyTo header accordingly. This property
      * can be omitted if no reply is needed.
-     * 
+     *
      * <p>
      * The replyToDestination should be in the same JMS vendor domain as the send
      * queue. To cross domains, configure a bridge for both the request and the
@@ -190,10 +188,10 @@ public abstract class MessageProducerSession
 	{
 		this.replyToDestination = destination;
 	}
-	
+
 	/**
 	 * Gets the replyToDestination.
-	 * 
+	 *
 	 * @return
 	 */
 	public Destination getReplyToDestination()
@@ -202,14 +200,14 @@ public abstract class MessageProducerSession
 	}
 
 	/**
-	 * Set the password for explicit authentication (optional). 
+	 * Set the password for explicit authentication (optional).
 	 * This is only required if
 	 * the user has also been set.
-	 * 
+	 *
 	 * @param password
 	 *            The password.
 	 */
-	public void setPassword ( String password ) 
+	public void setPassword ( String password )
 	{
 	    this.password = password;
 	}
@@ -217,28 +215,28 @@ public abstract class MessageProducerSession
 	/**
 	 * Set the user to use for explicit authentication (optional). If no explicit
 	 * authentication is required then this method should not be called.
-	 * 
+	 *
 	 * @param user
 	 */
-	public void setUser ( String user ) 
+	public void setUser ( String user )
 	{
 	    this.user = user;
 	}
 
 	/**
 	 * Send a message to the destination queue, in a transactional way.
-	 * 
+	 *
 	 * This method will open or reopen any connections if required, so that the
 	 * client doesn't have to worry about that.
-	 * 
+	 *
 	 * Note: this method will fail if there is no transaction for the calling
 	 * thread.
-	 * 
+	 *
 	 * @param message
 	 * @throws JMSException
 	 *             On failures.
 	 */
-	public void sendMessage ( Message message ) throws JMSException 
+	public void sendMessage ( Message message ) throws JMSException
 	{
 	    UserTransactionManager tm = new UserTransactionManager ();
 	    try {
@@ -246,23 +244,23 @@ public abstract class MessageProducerSession
 	            throw new JMSException (
 	                    "This method requires an active transaction!" );
 	    } catch ( SystemException e ) {
-	        Configuration
+	        LOGGER
 	                .logWarning ( "Error in getting transaction status", e );
 	        throw new RuntimeException ( e.getMessage () );
 	    }
-	
+
 	    try {
 	        if ( sender == null )
 	            sender = refresh ();
 	        if ( replyToDestination != null )
 	            message.setJMSReplyTo ( replyToDestination );
-	
+
 	        if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( "Calling send ( " + message + " ,  "
 	                + deliveryMode + " , " + priority + " , " + timeToLive
 	                + " )..." );
 	        sender.send ( message, deliveryMode, priority, timeToLive );
 	        if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Send done!" );
-	
+
 	    } catch ( JMSException e ) {
 	        closeResources ();
 	        sender = null;
@@ -274,13 +272,13 @@ public abstract class MessageProducerSession
 
 	/**
 	 * Create a text message.
-	 * 
+	 *
 	 * @return
 	 */
-	public TextMessage createTextMessage() throws JMSException 
+	public TextMessage createTextMessage() throws JMSException
 	{
 	    TextMessage ret = null;
-	
+
 	    try {
 	        if ( session == null )
 	            refresh ();
@@ -291,19 +289,19 @@ public abstract class MessageProducerSession
 	        closeResources ();
 	        throw e;
 	    }
-	
+
 	    return ret;
 	}
 
 	/**
 	 * Create a map message.
-	 * 
+	 *
 	 * @return
 	 */
-	public MapMessage createMapMessage() throws JMSException 
+	public MapMessage createMapMessage() throws JMSException
 	{
 	    MapMessage ret = null;
-	
+
 	    try {
 	        if ( session == null )
 	            refresh ();
@@ -314,19 +312,19 @@ public abstract class MessageProducerSession
 	        closeResources ();
 	        throw e;
 	    }
-	
+
 	    return ret;
 	}
 
 	/**
 	 * Create an object message.
-	 * 
+	 *
 	 * @return
 	 */
-	public ObjectMessage createObjectMessage() throws JMSException 
+	public ObjectMessage createObjectMessage() throws JMSException
 	{
 	    ObjectMessage ret = null;
-	
+
 	    try {
 	        if ( session == null )
 	            refresh ();
@@ -337,19 +335,19 @@ public abstract class MessageProducerSession
 	        closeResources ();
 	        throw e;
 	    }
-	
+
 	    return ret;
 	}
 
 	/**
 	 * Create a bytes message.
-	 * 
+	 *
 	 * @return
 	 */
-	public BytesMessage createBytesMessage() throws JMSException 
+	public BytesMessage createBytesMessage() throws JMSException
 	{
 	    BytesMessage ret = null;
-	
+
 	    try {
 	        if ( session == null )
 	            refresh ();
@@ -360,19 +358,19 @@ public abstract class MessageProducerSession
 	        closeResources ();
 	        throw e;
 	    }
-	
+
 	    return ret;
 	}
 
 	/**
 	 * Create a stream message.
-	 * 
+	 *
 	 * @return
 	 */
-	public StreamMessage createStreamMessage() throws JMSException 
+	public StreamMessage createStreamMessage() throws JMSException
 	{
 	    StreamMessage ret = null;
-	
+
 	    try {
 	        if ( session == null )
 	            refresh ();
@@ -383,7 +381,7 @@ public abstract class MessageProducerSession
 	        closeResources ();
 	        throw e;
 	    }
-	
+
 	    return ret;
 	}
 
@@ -391,7 +389,7 @@ public abstract class MessageProducerSession
 	 * Close any open resources. This method should be called when the client no
 	 * longer needs the session.
 	 */
-	public void stop() 
+	public void stop()
 	{
 	    closeResources ();
 	}
@@ -399,7 +397,7 @@ public abstract class MessageProducerSession
 	/**
 	 * @return The deliverymode for messages sent in this session.
 	 */
-	public int getDeliveryMode() 
+	public int getDeliveryMode()
 	{
 	    return deliveryMode;
 	}
@@ -407,7 +405,7 @@ public abstract class MessageProducerSession
 	/**
 	 * @return The priority for messages sent in this session.
 	 */
-	public int getPriority() 
+	public int getPriority()
 	{
 	    return priority;
 	}
@@ -415,39 +413,39 @@ public abstract class MessageProducerSession
 	/**
 	 * @return The timeToLive for messages sent in this session.
 	 */
-	public long getTimeToLive() 
+	public long getTimeToLive()
 	{
 	    return timeToLive;
 	}
 
 	/**
-	 * 
+	 *
 	 * Set the deliverymode for messages sent in this session (optional). Defaults to
 	 * persistent.
-	 * 
+	 *
 	 * @param
 	 */
-	public void setDeliveryMode ( int i ) 
+	public void setDeliveryMode ( int i )
 	{
 	    deliveryMode = i;
 	}
 
 	/**
 	 * Set the priority for messages sent in this session (optional).
-	 * 
+	 *
 	 * @param
 	 */
-	public void setPriority ( int i ) 
+	public void setPriority ( int i )
 	{
 	    priority = i;
 	}
 
 	/**
 	 * Set the time to live for messages sent in this session (optional).
-	 * 
+	 *
 	 * @param
 	 */
-	public void setTimeToLive ( long l ) 
+	public void setTimeToLive ( long l )
 	{
 	    timeToLive = l;
 	}

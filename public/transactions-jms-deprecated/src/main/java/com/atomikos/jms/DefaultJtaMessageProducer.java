@@ -31,8 +31,6 @@ import javax.jms.Message;
 import javax.jms.MessageProducer;
 import javax.transaction.xa.XAResource;
 
-import sun.misc.GC.LatencyRequest;
-
 import com.atomikos.datasource.TransactionalResource;
 import com.atomikos.datasource.xa.XAResourceTransaction;
 import com.atomikos.icatch.CompositeTransaction;

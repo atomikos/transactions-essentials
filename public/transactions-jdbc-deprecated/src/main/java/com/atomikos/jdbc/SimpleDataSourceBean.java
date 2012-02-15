@@ -25,9 +25,6 @@
 
 package com.atomikos.jdbc;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.lang.reflect.UndeclaredThrowableException;
@@ -55,6 +52,8 @@ import com.atomikos.datasource.xa.DefaultXidFactory;
 import com.atomikos.datasource.xa.XidFactory;
 import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.system.Configuration;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 import com.atomikos.util.ClassLoadingHelper;
 import com.atomikos.util.SerializableObjectFactory;
 

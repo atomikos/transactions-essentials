@@ -28,7 +28,6 @@ package com.atomikos.icatch.config;
 import java.util.Enumeration;
 import java.util.Properties;
 
-
 import com.atomikos.datasource.RecoverableResource;
 import com.atomikos.icatch.admin.LogAdministrator;
 

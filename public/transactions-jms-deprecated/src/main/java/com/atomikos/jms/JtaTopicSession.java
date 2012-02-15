@@ -29,8 +29,8 @@ import javax.jms.JMSException;
 import javax.jms.Topic;
 import javax.jms.TopicPublisher;
 import javax.jms.TopicSession;
-import javax.jms.XATopicSession;
 import javax.jms.TopicSubscriber;
+import javax.jms.XATopicSession;
 import javax.transaction.xa.XAResource;
 
 import com.atomikos.datasource.TransactionalResource;

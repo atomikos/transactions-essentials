@@ -37,8 +37,6 @@ import javax.jms.ObjectMessage;
 import javax.jms.StreamMessage;
 import javax.jms.TextMessage;
 
-import com.atomikos.jms.AbstractBridge;
-
 /**
  * 
  * 

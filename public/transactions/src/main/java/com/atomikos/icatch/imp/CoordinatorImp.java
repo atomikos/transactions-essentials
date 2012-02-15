@@ -25,9 +25,6 @@
 
 package com.atomikos.icatch.imp;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Vector;
@@ -52,7 +49,8 @@ import com.atomikos.icatch.Synchronization;
 import com.atomikos.icatch.SysException;
 import com.atomikos.icatch.TxState;
 import com.atomikos.icatch.imp.thread.TaskManager;
-import com.atomikos.icatch.system.Configuration;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 import com.atomikos.persistence.ObjectImage;
 import com.atomikos.persistence.StateRecoverable;
 import com.atomikos.timing.AlarmTimer;

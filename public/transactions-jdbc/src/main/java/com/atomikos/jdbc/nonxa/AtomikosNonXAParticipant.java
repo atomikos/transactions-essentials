@@ -25,9 +25,6 @@
 
 package com.atomikos.jdbc.nonxa;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Dictionary;
@@ -41,7 +38,8 @@ import com.atomikos.icatch.Participant;
 import com.atomikos.icatch.RollbackException;
 import com.atomikos.icatch.StringHeuristicMessage;
 import com.atomikos.icatch.SysException;
-import com.atomikos.icatch.system.Configuration;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 
 /**
  * 

@@ -1,9 +1,9 @@
 package com.atomikos.datasource;
 
+import junit.framework.TestCase;
+
 import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.StringHeuristicMessage;
-
-import junit.framework.TestCase;
 
 public class HeuristicExceptionTestJUnit extends TestCase {
 

@@ -3,10 +3,10 @@ package com.atomikos.jms.extra;
 import javax.jms.DeliveryMode;
 import javax.jms.Destination;
 
+import junit.framework.TestCase;
+
 import com.atomikos.jms.AtomikosConnectionFactoryBean;
 import com.atomikos.jms.TestQueue;
-
-import junit.framework.TestCase;
 
 public class SingleThreadedJmsSenderTemplateTestJUnit extends TestCase {
 
