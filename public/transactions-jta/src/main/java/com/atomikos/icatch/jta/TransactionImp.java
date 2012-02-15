@@ -129,7 +129,7 @@ class TransactionImp implements Transaction
     private void printMsg ( String msg , int level )
     {
         if ( level == Console.WARN )
-            Configuration.logWarning ( msg );
+            LOGGER.logWarning ( msg );
         else if ( level == Console.INFO )
             if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( msg );
         else
@@ -173,7 +173,7 @@ class TransactionImp implements Transaction
             ct_.registerSynchronization ( adaptor );
         } catch ( SysException se ) {
         	String msg = "Unexpected error during registerSynchronization";
-        	Configuration.logWarning ( msg , se );
+        	LOGGER.logWarning ( msg , se );
             throw new ExtendedSystemException ( msg , se
                     .getErrors () );
         }
@@ -223,7 +223,7 @@ class TransactionImp implements Transaction
         } catch ( HeurMixedException hm ) {
         	rethrowAsJtaHeuristicMixedException ( hm.getMessage () , hm );
         } catch ( SysException se ) {
-        	Configuration.logWarning ( se.getMessage() , se );
+        	LOGGER.logWarning ( se.getMessage() , se );
             throw new ExtendedSystemException ( se.getMessage (), se
                     .getErrors () );
         } catch ( com.atomikos.icatch.RollbackException rb ) {
@@ -243,7 +243,7 @@ class TransactionImp implements Transaction
         try {
             ct_.rollback ();
         } catch ( SysException se ) {
-        	Configuration.logWarning ( se.getMessage() , se );
+        	LOGGER.logWarning ( se.getMessage() , se );
             throw new ExtendedSystemException ( se.getMessage (), se
                     .getErrors () );
         }
@@ -275,7 +275,7 @@ class TransactionImp implements Transaction
 
         if ( getStatus () == Status.STATUS_MARKED_ROLLBACK ) {
         	String msg =  "Transaction is already marked for rollback - enlisting more resources is useless.";
-        	Configuration.logWarning ( msg );
+        	LOGGER.logWarning ( msg );
             throw new javax.transaction.RollbackException ( msg );
         }
         
@@ -288,7 +288,7 @@ class TransactionImp implements Transaction
             // and the invariant of the xaresToTxMap table
             if ( !active.isXaSuspended () ) {
             	String msg = "The given XAResource instance is being enlisted a second time without delist in between?";
-            	Configuration.logWarning ( msg );
+            	LOGGER.logWarning ( msg );
                 throw new IllegalStateException ( msg );
             }
 
@@ -319,7 +319,7 @@ class TransactionImp implements Transaction
             if ( res == null ) {
                 	String msg = "There is no registered resource that can recover the given XAResource instance. " + "\n" +
                     "Either enable automatic resource registration, or register a corresponding resource.";
-                	Configuration.logWarning ( msg );
+                	LOGGER.logWarning ( msg );
                     throw new javax.transaction.SystemException ( msg );            
             }
 
@@ -417,7 +417,7 @@ class TransactionImp implements Transaction
         // and lookup also uses instance comparison.
         if ( active == null ) {
         	String msg = "Illegal attempt to delist an XAResource instance that was not previously enlisted.";
-        	Configuration.logWarning ( msg );
+        	LOGGER.logWarning ( msg );
             throw new IllegalStateException ( msg );
         }
 
@@ -442,7 +442,7 @@ class TransactionImp implements Transaction
 
         } else {
         	String msg = "Unknown delist flag: " + flag;
-        	Configuration.logWarning ( msg );
+        	LOGGER.logWarning ( msg );
             throw new javax.transaction.SystemException ( msg );
         }
         return true;

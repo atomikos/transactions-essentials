@@ -79,7 +79,7 @@ class AtomikosPooledJmsConnection extends AbstractXPooledConnection implements S
 				xaConnection.close();
 			} catch (JMSException ex) {
 				//ignore but log
-				Configuration.logWarning ( this + ": error closing XAConnection: " , ex );
+				LOGGER.logWarning ( this + ": error closing XAConnection: " , ex );
 			}
 		}
 		xaConnection = null;

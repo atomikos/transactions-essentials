@@ -115,7 +115,7 @@ class AtomikosJmsXaSessionProxy extends AbstractJmsSessionProxy implements Sessi
 			if (closed) {
 				if (!methodName.equals(CLOSE_METHOD)) {
 					String msg = "Session was closed already - calling " + methodName + " is no longer allowed.";
-					Configuration.logWarning ( this + ": " + msg );
+					LOGGER.logWarning ( this + ": " + msg );
 					throw new javax.jms.IllegalStateException( msg );
 				}
 				return null;
@@ -218,7 +218,7 @@ class AtomikosJmsXaSessionProxy extends AbstractJmsSessionProxy implements Sessi
 				try {
 					delegate.close(); 
 				} catch  ( JMSException e ) {
-					Configuration.logWarning ( this + ": could not close underlying vendor session" , e );
+					LOGGER.logWarning ( this + ": could not close underlying vendor session" , e );
 				}
 			}
 			closed = true;

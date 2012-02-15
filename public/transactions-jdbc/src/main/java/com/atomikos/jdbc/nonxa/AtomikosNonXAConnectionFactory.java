@@ -25,6 +25,9 @@
 
 package com.atomikos.jdbc.nonxa;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
@@ -49,6 +52,7 @@ import com.atomikos.util.ClassLoadingHelper;
 
 class AtomikosNonXAConnectionFactory implements ConnectionFactory 
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(AtomikosNonXAConnectionFactory.class);
 	
 	private String url;
 	private String driverClassName;
@@ -124,7 +128,7 @@ class AtomikosNonXAConnectionFactory implements ConnectionFactory
 		try {
 			c = getConnection();
 		} catch (SQLException e) {
-			Configuration.logWarning ( "NonXAConnectionFactory: failed to create connection: " , e );
+			LOGGER.logWarning ( "NonXAConnectionFactory: failed to create connection: " , e );
 			throw new CreateConnectionException ( "Could not create JDBC connection" , e );
 		}
 		return new AtomikosNonXAPooledConnection ( c , props , readOnly );

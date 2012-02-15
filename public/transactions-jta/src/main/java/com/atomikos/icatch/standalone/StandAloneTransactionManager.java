@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.standalone;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.util.Properties;
 
 import com.atomikos.datasource.xa.XID;
@@ -46,6 +49,7 @@ import com.atomikos.util.UniqueIdMgr;
 
 class StandAloneTransactionManager extends BaseTransactionManager
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(StandAloneTransactionManager.class);
 
     TransactionServiceImp service_;
 
@@ -82,7 +86,7 @@ class StandAloneTransactionManager extends BaseTransactionManager
         if ( idmgr.getMaxIdLengthInBytes() > XID.MAXGTRIDSIZE ) {
         	// see case 73086
         	String msg = "Value too long :" + tmName;
-        	Configuration.logWarning ( msg );
+        	LOGGER.logWarning ( msg );
         	throw new SysException(msg);
         }
         service_ = new TransactionServiceImp ( tmName, srecmgr, idmgr, console,

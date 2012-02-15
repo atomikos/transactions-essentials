@@ -56,17 +56,17 @@ abstract class AbstractJmsProxy implements InvocationHandler
 	{	
 		if ( ex instanceof Error ) {
 			Error err = ( Error ) ex;
-			Configuration.logWarning ( msg , err );
+			LOGGER.logWarning ( msg , err );
 			throw err;
 		} else if ( ex instanceof RuntimeException ) {
 			RuntimeException rte = ( RuntimeException ) ex;
-			Configuration.logWarning ( msg , ex );
+			LOGGER.logWarning ( msg , ex );
 			throw rte;
 		} else if ( ex instanceof JMSException ) {
 			JMSException driverError = ( JMSException ) ex;
-			Configuration.logWarning ( msg , ex );
+			LOGGER.logWarning ( msg , ex );
 			Exception linkedException = driverError.getLinkedException();
-			if ( linkedException != null ) Configuration.logWarning ( "linked exception is " , linkedException );
+			if ( linkedException != null ) LOGGER.logWarning ( "linked exception is " , linkedException );
 			throw driverError;
 		} else if ( ex instanceof InvocationTargetException ) {
 			InvocationTargetException ite = ( InvocationTargetException ) ex;

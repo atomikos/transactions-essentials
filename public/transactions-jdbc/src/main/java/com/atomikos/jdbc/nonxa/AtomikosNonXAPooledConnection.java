@@ -87,7 +87,7 @@ class AtomikosNonXAPooledConnection extends AbstractXPooledConnection
 			if ( connection != null ) connection.close();
 		} catch ( SQLException e ) {
 			//ignore, just log
-			Configuration.logWarning ( this + ": Error closing JDBC connection: " , e );
+			LOGGER.logWarning ( this + ": Error closing JDBC connection: " , e );
 		}
 
 	}

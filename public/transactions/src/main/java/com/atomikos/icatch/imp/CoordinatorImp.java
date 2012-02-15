@@ -290,7 +290,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
             }
         } else {
         	//null on recovery
-        	Configuration.logWarning ( msg );
+        	LOGGER.logWarning ( msg );
         }
     }
 
@@ -311,7 +311,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
         		case Console.INFO: 
         			if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( msg ); 
         			break;
-        		default: Configuration.logWarning ( msg );
+        		default: LOGGER.logWarning ( msg );
         	}
         }
     }

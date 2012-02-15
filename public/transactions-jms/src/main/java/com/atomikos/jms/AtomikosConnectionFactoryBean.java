@@ -604,7 +604,7 @@ Referenceable, Serializable {
 	
 	public javax.jms.Connection createConnection ( String user, String password ) throws JMSException
 	{
-		Configuration.logWarning ( this + ": createConnection ( user , password ) ignores authentication - returning default connection" );
+		LOGGER.logWarning ( this + ": createConnection ( user , password ) ignores authentication - returning default connection" );
 		return createConnection();
 	}
 

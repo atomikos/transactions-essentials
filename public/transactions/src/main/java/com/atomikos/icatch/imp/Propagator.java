@@ -98,7 +98,7 @@ class Propagator
         			} while ( tryAgain );
         		}
         		catch ( Exception e ) {
-        			Configuration.logWarning ( "ERROR in propagator: "
+        			LOGGER.logWarning ( "ERROR in propagator: "
                             + e.getMessage ()
                             + (msg != null ? " while sending message: " + msg : "")
                             , e );

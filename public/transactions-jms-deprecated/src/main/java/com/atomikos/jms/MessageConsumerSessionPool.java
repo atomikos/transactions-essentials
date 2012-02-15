@@ -25,6 +25,9 @@
 
 package com.atomikos.jms;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -45,6 +48,7 @@ import com.atomikos.icatch.system.Configuration;
 
 public abstract class MessageConsumerSessionPool 
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(MessageConsumerSessionPool.class);
 
 	private AbstractConnectionFactoryBean connectionFactoryBean;
 	private MessageListener messageListener;
@@ -292,7 +296,7 @@ public abstract class MessageConsumerSessionPool
 	            // System.out.println ( "MessageConsumerSessionPool: started
 	            // session");
 	        } catch ( Exception e ) {
-	            Configuration.logWarning ( "Error starting pool", e );
+	            LOGGER.logWarning ( "Error starting pool", e );
 	        }
 	        sessions.add ( s );
 	    }

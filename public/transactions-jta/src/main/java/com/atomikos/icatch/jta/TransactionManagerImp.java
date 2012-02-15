@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.jta;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.util.Hashtable;
 import java.util.Stack;
 
@@ -58,6 +61,8 @@ public class TransactionManagerImp implements TransactionManager,
         SubTxAwareParticipant, Referenceable, UserTransaction
 
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(TransactionManagerImp.class);
+
 	private static final long serialVersionUID = -3048879409985542685L;
 
 	/**
@@ -119,7 +124,7 @@ public class TransactionManagerImp implements TransactionManager,
     		msg.append ( "2. Make sure you didn't terminate it yet.\n" );
     		msg.append ( "3. Increase the transaction timeout to avoid automatic rollback of long transactions;\n" );
     		msg.append ( "   check http://www.atomikos.com/Documentation/JtaProperties for how to do this." );
-    		Configuration.logWarning ( msg.toString() );
+    		LOGGER.logWarning ( msg.toString() );
     		throw new IllegalStateException ( msg.toString() );
     }
 
@@ -244,7 +249,7 @@ public class TransactionManagerImp implements TransactionManager,
              ct = ctm_.getCompositeTransaction ();
          } catch ( SysException se ) {
          	String msg = "Error while retrieving the transaction for the calling thread";
-         	Configuration.logWarning( msg , se);
+         	LOGGER.logWarning( msg , se);
             throw new ExtendedSystemException ( msg , se
                      .getErrors () );
          }
@@ -313,7 +318,7 @@ public class TransactionManagerImp implements TransactionManager,
         
         ct = ctm_.getCompositeTransaction();
         if ( ct != null && ct.getProperty (  JTA_PROPERTY_NAME ) == null ) {
-            Configuration.logWarning ( "JTA: temporarily suspending incompatible transaction: " + ct.getTid() +
+            LOGGER.logWarning ( "JTA: temporarily suspending incompatible transaction: " + ct.getTid() +
                     " (will be resumed after JTA transaction ends)" );
             ct = ctm_.suspend();
             resumeParticipant = new ResumePreviousTransactionSubTxAwareParticipant ( ct );
@@ -327,7 +332,7 @@ public class TransactionManagerImp implements TransactionManager,
             ct.setProperty ( JTA_PROPERTY_NAME , "true" );
         } catch ( SysException se ) {
         	String msg = "Error in begin()";
-        	Configuration.logWarning( msg , se );
+        	LOGGER.logWarning( msg , se );
             throw new ExtendedSystemException ( msg , se
                     .getErrors () );
         }
@@ -382,7 +387,7 @@ public class TransactionManagerImp implements TransactionManager,
             timeout_ = defaultTimeout;
         } else {
         	String msg = "setTransactionTimeout: value must be >= 0";
-        	Configuration.logWarning( msg );
+        	LOGGER.logWarning( msg );
         	throw new SystemException ( msg );
         }
             
@@ -408,7 +413,7 @@ public class TransactionManagerImp implements TransactionManager,
             ct = ctm_.suspend ();
         } catch ( SysException se ) {
         	String msg = "Unexpected error while suspending the existing transaction for the current thread";
-        	Configuration.logWarning( msg , se );
+        	LOGGER.logWarning( msg , se );
             throw new ExtendedSystemException ( msg , se
                     .getErrors () );
         }
@@ -433,7 +438,7 @@ public class TransactionManagerImp implements TransactionManager,
     {
         if ( tobj == null || !(tobj instanceof TransactionImp) ) {
         	String msg = "The specified transaction object is invalid for this configuration: " + tobj;
-        	Configuration.logWarning( msg );
+        	LOGGER.logWarning( msg );
             throw new InvalidTransactionException ( msg );
         }
 
@@ -442,7 +447,7 @@ public class TransactionManagerImp implements TransactionManager,
             ctm_.resume ( tximp.getCT () );
         } catch ( SysException se ) {
         	String msg = "Unexpected error while resuming the transaction in the calling thread";
-        	Configuration.logWarning( msg , se );
+        	LOGGER.logWarning( msg , se );
             throw new ExtendedSystemException (  msg , se
                     .getErrors () );
         }
@@ -540,7 +545,7 @@ public class TransactionManagerImp implements TransactionManager,
         } catch ( SecurityException se ) {
             errors.push ( se );
             String msg = "Unexpected error during setRollbackOnly";
-            Configuration.logWarning( msg , se );
+            LOGGER.logWarning( msg , se );
             throw new ExtendedSystemException ( msg, errors );
         }
     }

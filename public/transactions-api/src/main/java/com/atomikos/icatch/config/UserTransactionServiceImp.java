@@ -254,7 +254,7 @@ public class UserTransactionServiceImp
               catch ( IOException io ) {
               	 //io.printStackTrace();
               	 String msg = "Failed to open transactions properties file - using default values";
-              	 //Configuration.logWarning ( msg , io );
+              	 //LOGGER.logWarning ( msg , io );
                  logToStdErr ( msg );
                  //use the default standalone service
                  p.setProperty ( "com.atomikos.icatch.service" ,

@@ -25,6 +25,9 @@
 
 package com.atomikos.datasource.xa.session;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import com.atomikos.datasource.xa.XAResourceTransaction;
 import com.atomikos.datasource.xa.XATransactionalResource;
 import com.atomikos.icatch.CompositeTransaction;
@@ -41,6 +44,7 @@ import com.atomikos.icatch.system.Configuration;
 class BranchEndedStateHandler 
 extends TransactionContextStateHandler 
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(BranchEndedStateHandler.class);
 
 	private CompositeTransaction ct;
 	
@@ -55,7 +59,7 @@ extends TransactionContextStateHandler
 			throws InvalidSessionHandleStateException 
 	{
 		String msg = "Detected illegal attempt to use a closed XA session";
-		Configuration.logWarning ( msg );
+		LOGGER.logWarning ( msg );
 		throw new InvalidSessionHandleStateException ( msg );
 	}
 

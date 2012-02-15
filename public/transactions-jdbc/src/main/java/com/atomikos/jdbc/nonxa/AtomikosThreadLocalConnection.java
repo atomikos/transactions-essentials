@@ -165,7 +165,7 @@ implements JtaAwareNonXaConnection
         	//see case 24567
             wrapped.setAutoCommit ( originalAutoCommitState );
         }catch ( Exception ex ){
-            Configuration.logWarning ( "Failed to reset original autoCommit state: "+ex.getMessage(), ex);
+            LOGGER.logWarning ( "Failed to reset original autoCommit state: "+ex.getMessage(), ex);
         }
         setTransaction ( null );
         participant = null;
@@ -381,7 +381,7 @@ implements JtaAwareNonXaConnection
     }
 	
 	private void reap() {
-		Configuration.logWarning ( this + ": reaping - check if the application closes connections correctly, or increase the reapTimeout value");
+		LOGGER.logWarning ( this + ": reaping - check if the application closes connections correctly, or increase the reapTimeout value");
 		setStale();
 		useCount =0;
 		markForReuseIfPossible();

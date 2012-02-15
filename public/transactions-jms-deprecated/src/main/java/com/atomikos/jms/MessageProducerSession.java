@@ -103,8 +103,8 @@ public abstract class MessageProducerSession
 	        try {
 	            session.close ();
 	        } catch ( JMSException e ) {
-	            Configuration.logWarning ( "Error closing JMS session", e );
-				Configuration.logWarning ( "MessageProducerSession: linked exception is " , e.getLinkedException() );        
+	            LOGGER.logWarning ( "Error closing JMS session", e );
+				LOGGER.logWarning ( "MessageProducerSession: linked exception is " , e.getLinkedException() );        
 			} finally {
 	        	//fix for issue 23119
 	        	session = null;
@@ -114,8 +114,8 @@ public abstract class MessageProducerSession
 	        try {
 	            connection.close ();
 	        } catch ( JMSException e ) {
-	            Configuration.logWarning ( "Error closing JMS connection", e );
-	        	Configuration.logWarning ( "MessageProducerSession: linked exception is " , e.getLinkedException() );        
+	            LOGGER.logWarning ( "Error closing JMS connection", e );
+	        	LOGGER.logWarning ( "MessageProducerSession: linked exception is " , e.getLinkedException() );        
 			} finally {
 	        	connection = null;
 	        }
@@ -266,8 +266,8 @@ public abstract class MessageProducerSession
 	    } catch ( JMSException e ) {
 	        closeResources ();
 	        sender = null;
-	        Configuration.logWarning ( "MessageProducerSession: error in sending JMS message", e );
-	        Configuration.logWarning ( "MessageProducerSession: linked exception is " , e.getLinkedException() );
+	        LOGGER.logWarning ( "MessageProducerSession: error in sending JMS message", e );
+	        LOGGER.logWarning ( "MessageProducerSession: linked exception is " , e.getLinkedException() );
 	        throw e;
 	    }
 	}
@@ -286,8 +286,8 @@ public abstract class MessageProducerSession
 	            refresh ();
 	        ret = session.createTextMessage ();
 	    } catch ( JMSException e ) {
-	        Configuration.logWarning ( "MessageProducerSession: error creating new message", e );
-	        Configuration.logWarning ( "MessageProducerSession: linked exception is " , e.getLinkedException() );
+	        LOGGER.logWarning ( "MessageProducerSession: error creating new message", e );
+	        LOGGER.logWarning ( "MessageProducerSession: linked exception is " , e.getLinkedException() );
 	        closeResources ();
 	        throw e;
 	    }
@@ -309,8 +309,8 @@ public abstract class MessageProducerSession
 	            refresh ();
 	        ret = session.createMapMessage ();
 	    } catch ( JMSException e ) {
-	        Configuration.logWarning ( "MessageProducerSession: error creating new message", e );
-	        Configuration.logWarning ( "MessageProducerSession: linked exception is " , e.getLinkedException() );
+	        LOGGER.logWarning ( "MessageProducerSession: error creating new message", e );
+	        LOGGER.logWarning ( "MessageProducerSession: linked exception is " , e.getLinkedException() );
 	        closeResources ();
 	        throw e;
 	    }
@@ -332,8 +332,8 @@ public abstract class MessageProducerSession
 	            refresh ();
 	        ret = session.createObjectMessage ();
 	    } catch ( JMSException e ) {
-	        Configuration.logWarning ( "MessageProducersession: error creating new message", e );
-	        Configuration.logWarning ( "MessageProducerSession: linked exception is " , e.getLinkedException() );
+	        LOGGER.logWarning ( "MessageProducersession: error creating new message", e );
+	        LOGGER.logWarning ( "MessageProducerSession: linked exception is " , e.getLinkedException() );
 	        closeResources ();
 	        throw e;
 	    }
@@ -355,8 +355,8 @@ public abstract class MessageProducerSession
 	            refresh ();
 	        ret = session.createBytesMessage ();
 	    } catch ( JMSException e ) {
-	        Configuration.logWarning ( "MessageProducerSession: error creating new message", e );
-	        Configuration.logWarning ( "MessageProducerSession: linked exception is " , e.getLinkedException() );
+	        LOGGER.logWarning ( "MessageProducerSession: error creating new message", e );
+	        LOGGER.logWarning ( "MessageProducerSession: linked exception is " , e.getLinkedException() );
 	        closeResources ();
 	        throw e;
 	    }
@@ -378,8 +378,8 @@ public abstract class MessageProducerSession
 	            refresh ();
 	        ret = session.createStreamMessage ();
 	    } catch ( JMSException e ) {
-	        Configuration.logWarning ( "MessageProducerSession: error creating new message", e );
-	        Configuration.logWarning ( "MessageProducerSession: linked exception is " , e.getLinkedException() );
+	        LOGGER.logWarning ( "MessageProducerSession: error creating new message", e );
+	        LOGGER.logWarning ( "MessageProducerSession: linked exception is " , e.getLinkedException() );
 	        closeResources ();
 	        throw e;
 	    }

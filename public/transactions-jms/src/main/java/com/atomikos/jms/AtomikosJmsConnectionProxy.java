@@ -111,7 +111,7 @@ implements SessionHandleStateChangeListener
 	}
 
 	private void reap() {
-		Configuration.logWarning ( this + ": reaping - check if the application closes connections correctly, or increase the reapTimeout value");
+		LOGGER.logWarning ( this + ": reaping - check if the application closes connections correctly, or increase the reapTimeout value");
 		close();
 		//added for 22101
 		erroneous = true;
@@ -149,11 +149,11 @@ implements SessionHandleStateChangeListener
 				return null;
 			} else if ( reaped ) {
 				String msg = "Connection was reaped - calling method " + methodName + " no longer allowed. Increase the reapTimeout to avoid this.";
-				Configuration.logWarning ( this + ": " + msg );
+				LOGGER.logWarning ( this + ": " + msg );
 				throw new javax.jms.IllegalStateException ( msg );
 			} else if ( closed ) {
 				String msg = "Connection is closed already - calling method " + methodName + " no longer allowed.";
-				Configuration.logWarning ( this + ": " + msg );
+				LOGGER.logWarning ( this + ": " + msg );
 				throw new javax.jms.IllegalStateException ( msg );
 			}
 			else if ( CREATE_SESSION_METHOD.equals ( methodName ) ) {
@@ -260,7 +260,7 @@ implements SessionHandleStateChangeListener
 				try {
 					session.close ();
 				} catch (JMSException ex) {
-					Configuration.logWarning ( this + ": error closing session " + session, ex );
+					LOGGER.logWarning ( this + ": error closing session " + session, ex );
 				}
 			}
 		}
@@ -286,7 +286,7 @@ implements SessionHandleStateChangeListener
 				try {
 					session.close ();
 				} catch (JMSException ex) {
-					Configuration.logWarning ( this + ": error closing session " + session, ex );
+					LOGGER.logWarning ( this + ": error closing session " + session, ex );
 				}
 			}
 		}

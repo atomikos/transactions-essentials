@@ -268,9 +268,9 @@ implements HeuristicDataSource, ConnectionPoolProperties, Referenceable, Seriali
 		if ( getUniqueResourceName() == null )
 			throwAtomikosSQLException("Property 'uniqueResourceName' cannot be null");
 		if ( getTestQuery() == null ) 
-			Configuration.logWarning ( this + ": no testQuery set - the connection pool will not be able to validate the connections!" );
+			LOGGER.logWarning ( this + ": no testQuery set - the connection pool will not be able to validate the connections!" );
 		if ( getMinPoolSize() == DEFAULT_POOL_SIZE ) {
-			Configuration.logWarning ( this + ": poolSize equals default - this may cause performance problems!" );
+			LOGGER.logWarning ( this + ": poolSize equals default - this may cause performance problems!" );
 		}
 		
 		try {
@@ -337,7 +337,7 @@ implements HeuristicDataSource, ConnectionPoolProperties, Referenceable, Seriali
 
 	public Connection getConnection(String username, String password) throws SQLException 
 	{
-    	Configuration.logWarning ( this + ": getConnection ( user , password ) ignores authentication - returning default connection" );
+    	LOGGER.logWarning ( this + ": getConnection ( user , password ) ignores authentication - returning default connection" );
 		return getConnection();
 	}
 
@@ -386,7 +386,7 @@ implements HeuristicDataSource, ConnectionPoolProperties, Referenceable, Seriali
     public Connection getConnection ( String user , String passwd , String msg )
             throws SQLException
     {
-    	Configuration.logWarning ( this + ": getConnection ( user , password , msg ) ignores authentication - returning default connection" );
+    	LOGGER.logWarning ( this + ": getConnection ( user , password , msg ) ignores authentication - returning default connection" );
     	return getConnection ( msg );
     }
 
@@ -394,7 +394,7 @@ implements HeuristicDataSource, ConnectionPoolProperties, Referenceable, Seriali
     public Connection getConnection ( String user , String passwd ,
             HeuristicMessage msg ) throws SQLException
     {
-    	Configuration.logWarning ( this + ": getConnection ( user , password , msg ) ignores authentication - returning default connection" );
+    	LOGGER.logWarning ( this + ": getConnection ( user , password , msg ) ignores authentication - returning default connection" );
     	return getConnection ( msg );
     }
 

@@ -137,7 +137,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 				recycledConnection = recycleConnectionIfPossible ( hmsg );
 			} catch (Exception e) {
 				//ignore but log
-				Configuration.logWarning ( this + ": error while trying to recycle" , e );
+				LOGGER.logWarning ( this + ": error while trying to recycle" , e );
 				//don't throw: just try normal borrow logic instead...
 			}
 			if ( recycledConnection != null ) return recycledConnection;
@@ -166,7 +166,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 						if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug( this + ": got connection from pool, new size: " + availableSize() + "/" + totalSize());
 					} catch ( CreateConnectionException ex ) {
 						String msg = this +  ": error creating proxy of connection " + xpc;
-						Configuration.logWarning( msg , ex);
+						LOGGER.logWarning( msg , ex);
 						it.remove();
 						xpc.destroy();
 					}
@@ -175,7 +175,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 
 			if ( ret == null ) {
 				//no available connection found -> wait and try again until DB available or remaining time is over
-				Configuration.logWarning ( this + ": no connection found - waiting a bit..." );
+				LOGGER.logWarning ( this + ": no connection found - waiting a bit..." );
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
@@ -246,7 +246,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 	{
 		
 		if ( ! destroyed ) {
-			Configuration.logWarning ( this + ": destroying pool..." );
+			LOGGER.logWarning ( this + ": destroying pool..." );
 			for ( int i=0 ; i < connections.size() ; i++ ) {
 				XPooledConnection xpc = ( XPooledConnection ) connections.get(i);
 				xpc.destroy();

@@ -225,7 +225,7 @@ class Java15ExecutorFactory implements ExecutorFactory
 			try {
 				shutdown.invoke(target, new Object[0]);
 			} catch (Exception e) {
-				Configuration.logWarning("Failed to shutdown 1.5 concurrent thread pool", e);
+				LOGGER.logWarning("Failed to shutdown 1.5 concurrent thread pool", e);
 			} 
 		}
 		
@@ -234,7 +234,7 @@ class Java15ExecutorFactory implements ExecutorFactory
 				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug("(1.5) executing task: " + task);
 				submit.invoke(target, new Object[] { task });
 			} catch (Exception e) {
-				Configuration.logWarning("Failed to invoke 1.5 concurrent thread pool", e);
+				LOGGER.logWarning("Failed to invoke 1.5 concurrent thread pool", e);
 			} 
 		}
 	}

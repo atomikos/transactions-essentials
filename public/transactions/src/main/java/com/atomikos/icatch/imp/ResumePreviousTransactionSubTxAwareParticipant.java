@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.imp;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import com.atomikos.icatch.CompositeTransaction;
 import com.atomikos.icatch.CompositeTransactionManager;
 import com.atomikos.icatch.SubTxAwareParticipant;
@@ -42,6 +45,7 @@ import com.atomikos.icatch.system.Configuration;
 public class ResumePreviousTransactionSubTxAwareParticipant implements
         SubTxAwareParticipant
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(ResumePreviousTransactionSubTxAwareParticipant.class);
 
     private CompositeTransaction previous;
     
@@ -58,14 +62,14 @@ public class ResumePreviousTransactionSubTxAwareParticipant implements
         CompositeTransactionManager ctm = 
             Configuration.getCompositeTransactionManager();
         if ( ctm == null ) {
-            Configuration.logWarning ( "ResumePreviousTransactionSubTxAwareParticipant: no transaction manager found?" );
+            LOGGER.logWarning ( "ResumePreviousTransactionSubTxAwareParticipant: no transaction manager found?" );
         } 
         else {
             try {
                 ctm.resume ( previous );
             }
             catch ( Exception error ) {
-                Configuration.logWarning ( "ResumePreviousTransactionSubTxAwareParticipant: could not resume previous transaction" , error );
+                LOGGER.logWarning ( "ResumePreviousTransactionSubTxAwareParticipant: could not resume previous transaction" , error );
             }
         }
         

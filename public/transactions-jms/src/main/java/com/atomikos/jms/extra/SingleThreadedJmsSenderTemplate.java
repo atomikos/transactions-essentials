@@ -25,6 +25,9 @@
 
 package com.atomikos.jms.extra;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import javax.jms.Connection;
 import javax.jms.JMSException;
 import javax.jms.Session;
@@ -53,6 +56,8 @@ import com.atomikos.icatch.system.Configuration;
 
 public class SingleThreadedJmsSenderTemplate extends AbstractJmsSenderTemplate 
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(SingleThreadedJmsSenderTemplate.class);
+
 	private Session session;
 	private Connection connection;
 	
@@ -83,13 +88,13 @@ public class SingleThreadedJmsSenderTemplate extends AbstractJmsSenderTemplate
 		try {
 			s.close();
 		} catch ( JMSException warn ) {
-			Configuration.logWarning ( this + ": error closing session" , warn);
+			LOGGER.logWarning ( this + ": error closing session" , warn);
 		}
 		
 		try {
 			c.close();
 		} catch ( JMSException warn ) {
-			Configuration.logWarning ( this + ": error closing connection" , warn);
+			LOGGER.logWarning ( this + ": error closing connection" , warn);
 		}
 		session = null;
 		connection = null;

@@ -89,7 +89,7 @@ public class AtomikosXAPooledConnection extends AbstractXPooledConnection
 					connection.close();
 			} catch (SQLException e ) {
 				//ignore but log
-				Configuration.logWarning ( this + ": error closing Connection: " , e );
+				LOGGER.logWarning ( this + ": error closing Connection: " , e );
 			}
 		}
 		if (xaConnection != null) {
@@ -97,7 +97,7 @@ public class AtomikosXAPooledConnection extends AbstractXPooledConnection
 				xaConnection.close();
 			} catch (SQLException e ) {
 				//ignore but log
-				Configuration.logWarning ( this + ": error closing XAConnection: " , e );
+				LOGGER.logWarning ( this + ": error closing XAConnection: " , e );
 			}
 		}
 		

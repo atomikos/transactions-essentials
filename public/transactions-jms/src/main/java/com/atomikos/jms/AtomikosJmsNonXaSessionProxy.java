@@ -127,7 +127,7 @@ class AtomikosJmsNonXaSessionProxy extends AbstractJmsSessionProxy
 			if (closed) {
 				if (!methodName.equals(CLOSE_METHOD)) {
 					String msg = "Session was closed already - calling " + methodName + " is no longer allowed.";
-					Configuration.logWarning ( this + ": " + msg );
+					LOGGER.logWarning ( this + ": " + msg );
 					throw new javax.jms.IllegalStateException(msg);
 				}
 				return null;
@@ -168,7 +168,7 @@ class AtomikosJmsNonXaSessionProxy extends AbstractJmsSessionProxy
 				connectionProxy.onTerminated();
 			}
 		} catch  ( JMSException e ) {
-			Configuration.logWarning ( this + ": could not close JMS session" , e );
+			LOGGER.logWarning ( this + ": could not close JMS session" , e );
 		}
 	
 	}

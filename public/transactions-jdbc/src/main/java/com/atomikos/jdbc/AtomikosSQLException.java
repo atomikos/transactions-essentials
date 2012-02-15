@@ -25,11 +25,15 @@
 
 package com.atomikos.jdbc;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.sql.SQLException;
 
 import com.atomikos.icatch.system.Configuration;
 
 public class AtomikosSQLException extends SQLException {
+	private static final Logger LOGGER = LoggerFactory.createLogger(AtomikosSQLException.class);
 	
 	/**
 	 * Logs and throws an AtomikosSQLException.
@@ -40,7 +44,7 @@ public class AtomikosSQLException extends SQLException {
 	 */
 	public static void throwAtomikosSQLException ( String message , Throwable cause ) throws AtomikosSQLException 
 	{
-		Configuration.logWarning ( message , cause );
+		LOGGER.logWarning ( message , cause );
 		throw new AtomikosSQLException ( message , cause );
 	}
 	

@@ -25,6 +25,9 @@
 
 package com.atomikos.jms.extra;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -66,6 +69,8 @@ import com.atomikos.jms.AtomikosConnectionFactoryBean;
 public class MessageDrivenContainer 
 implements MessageConsumerSessionProperties
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(MessageDrivenContainer.class);
+
 	private static final int DEFAULT_TIMEOUT = 30;
 
 	
@@ -416,7 +421,7 @@ implements MessageConsumerSessionProperties
 	            // System.out.println ( "MessageDrivenContainer: started
 	            // session");
 	        } catch ( Exception e ) {
-	            Configuration.logWarning ( "Error starting pool", e );
+	            LOGGER.logWarning ( "Error starting pool", e );
 	        }
 	        sessions.add ( s );
 	    }

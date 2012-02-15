@@ -25,6 +25,9 @@
 
 package com.atomikos.jdbc.nonxa;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Dictionary;
@@ -56,6 +59,7 @@ import com.atomikos.icatch.system.Configuration;
 
 class AtomikosNonXAParticipant implements Participant, Serializable
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(AtomikosNonXAParticipant.class);
     
 	
 
@@ -136,7 +140,7 @@ class AtomikosNonXAParticipant implements Participant, Serializable
         	 try {
                  connection.transactionTerminated ( true );
              } catch ( Exception e ) {
-                 Configuration.logWarning ( "Error in non-XA commit", e );
+                 LOGGER.logWarning ( "Error in non-XA commit", e );
                  //see case 30752: don't throw HAZARD because retries are probably useless
                  //and the connection won't be reused by the pool but destroyed instead
                  throw new HeurMixedException ( getHeuristicMessages () );
@@ -165,7 +169,7 @@ class AtomikosNonXAParticipant implements Participant, Serializable
             try {
                 connection.transactionTerminated ( false );
             } catch ( Exception e ) {
-                Configuration.logWarning ( "Error in non-XA rollback", e );
+                LOGGER.logWarning ( "Error in non-XA rollback", e );
                 //see case 30752: don't throw HAZARD because retries are probably useless
                 //and the connection won't be reused by the pool but destroyed instead
                 throw new HeurMixedException ( getHeuristicMessages () );

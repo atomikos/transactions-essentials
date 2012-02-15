@@ -78,7 +78,7 @@ public abstract class AbstractXPooledConnection implements XPooledConnection {
 	public void reap() {
 		
 		if ( currentProxy != null ) {
-			Configuration.logWarning ( this + ": reaping connection..." );
+			LOGGER.logWarning ( this + ": reaping connection..." );
 			currentProxy.reap();
 		}
 		updateLastTimeReleased();

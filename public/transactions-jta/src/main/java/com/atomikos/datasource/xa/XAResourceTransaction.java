@@ -304,14 +304,14 @@ public class XAResourceTransaction implements ResourceTransaction,
 		try {
 			xaresource_ = resource_.refreshXAConnection();
 		} catch ( ResourceException re ) {
-			Configuration.logWarning ( resourcename_ + ": could not refresh XAConnection" , re );
+			LOGGER.logWarning ( resourcename_ + ": could not refresh XAConnection" , re );
 		}
 	}
 
 	private void throwXAExceptionForUnavailableResource() throws XAException 
 	{
 		String msg = resourcename_ + ": resource no longer available - recovery might be at risk!";
-		Configuration.logWarning ( msg );
+		LOGGER.logWarning ( msg );
 		XAException err = new XAException ( msg );
 		err.errorCode = XAException.XAER_RMFAIL;
 		throw err;
@@ -498,7 +498,7 @@ public class XAResourceTransaction implements ResourceTransaction,
             
         } catch ( XAException xaerr ) {
         		String msg = interpretErrorCode ( resourcename_ , "resume" , xid_ , xaerr.errorCode );
-            Configuration.logWarning ( msg ,
+            LOGGER.logWarning ( msg ,
                     xaerr );
             errors.push ( xaerr );
             throw new ResourceException ( msg ,
@@ -628,7 +628,7 @@ public class XAResourceTransaction implements ResourceTransaction,
 
         } catch ( XAException xaerr ) {
         	String msg = interpretErrorCode ( resourcename_ , "prepare" , xid_ , xaerr.errorCode );
-            Configuration.logWarning ( msg , xaerr ); // see case 84253  
+            LOGGER.logWarning ( msg , xaerr ); // see case 84253  
             if ( (XAException.XA_RBBASE <= xaerr.errorCode)
                     && (xaerr.errorCode <= XAException.XA_RBEND) ) {
                 throw new RollbackException ( msg );
@@ -674,7 +674,7 @@ public class XAResourceTransaction implements ResourceTransaction,
         if ( state_.equals ( TxState.HEUR_COMMITTED ) )
             throw new HeurCommitException ( getHeuristicMessages () );
         if ( xaresource_ == null ) {
-        		Configuration.logWarning ( "XAResourceTransaction " + getXid ()
+        		LOGGER.logWarning ( "XAResourceTransaction " + getXid ()
                     + ": no XAResource to rollback - the required resource is probably not yet intialized?" );
             throw new HeurHazardException ( getHeuristicMessages () );
         }
@@ -706,7 +706,7 @@ public class XAResourceTransaction implements ResourceTransaction,
                 // do nothing, corresponds with semantics of rollback
                 if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( msg );
             } else {
-                Configuration.logWarning ( msg , xaerr );
+                LOGGER.logWarning ( msg , xaerr );
                 switch ( xaerr.errorCode ) {
                 case XAException.XA_HEURHAZ:
                 	switchToHeuristicState ( "rollback" , TxState.HEUR_HAZARD , xaerr );
@@ -756,7 +756,7 @@ public class XAResourceTransaction implements ResourceTransaction,
         if ( state_.equals ( TxState.HEUR_ABORTED ) )
             throw new HeurRollbackException ( getHeuristicMessages () );
         if ( xaresource_ == null ) {
-            Configuration.logWarning ( "XAResourceTransaction " + getXid ()
+            LOGGER.logWarning ( "XAResourceTransaction " + getXid ()
                     + ": no XAResource to commit - the required resource is probably not yet intialized?" );
             throw new HeurHazardException ( getHeuristicMessages () );
         }
@@ -790,7 +790,7 @@ public class XAResourceTransaction implements ResourceTransaction,
             
         } catch ( XAException xaerr ) {
         	String msg = interpretErrorCode ( resourcename_ , "commit" , xid_ , xaerr.errorCode );
-            Configuration.logWarning ( msg , xaerr );
+            LOGGER.logWarning ( msg , xaerr );
 
             if ( (XAException.XA_RBBASE <= xaerr.errorCode)
                     && (xaerr.errorCode <= XAException.XA_RBEND) ) {
@@ -920,7 +920,7 @@ public class XAResourceTransaction implements ResourceTransaction,
     		xaresource_.setTransactionTimeout ( timeout_ );
     	} catch ( XAException e ) {
     		String msg = interpretErrorCode ( resourcename_ , "setTransactionTimeout" , xid_ , e.errorCode );
-    		Configuration.logWarning ( msg , e );
+    		LOGGER.logWarning ( msg , e );
     		// we don't care
     	}
 
@@ -951,7 +951,7 @@ public class XAResourceTransaction implements ResourceTransaction,
     		}
     		catch ( XAException xaerr ) {
     			String msg = interpretErrorCode ( resourcename_ , "suspend" , xid_ , xaerr.errorCode );
-    			Configuration.logWarning ( msg , xaerr );
+    			LOGGER.logWarning ( msg , xaerr );
     			throw xaerr;
     		}
     	}
@@ -974,7 +974,7 @@ public class XAResourceTransaction implements ResourceTransaction,
         }
         catch ( XAException xaerr ) {
 			String msg = interpretErrorCode ( resourcename_ , "resume" , xid_ , xaerr.errorCode );
-			Configuration.logWarning ( msg , xaerr );
+			LOGGER.logWarning ( msg , xaerr );
 			throw xaerr;
 		}
         

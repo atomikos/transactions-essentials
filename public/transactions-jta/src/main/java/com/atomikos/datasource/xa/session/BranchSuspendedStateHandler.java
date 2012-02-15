@@ -25,6 +25,9 @@
 
 package com.atomikos.datasource.xa.session;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import javax.transaction.xa.XAResource;
 
 import com.atomikos.datasource.xa.XAResourceTransaction;
@@ -35,6 +38,8 @@ import com.atomikos.icatch.system.Configuration;
 
 class BranchSuspendedStateHandler extends TransactionContextStateHandler 
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(BranchSuspendedStateHandler.class);
+
 	private XAResourceTransaction branch;
 	private CompositeTransaction ct;
 	
@@ -50,7 +55,7 @@ class BranchSuspendedStateHandler extends TransactionContextStateHandler
 			UnexpectedTransactionContextException 
 	{
 		String msg = "Detected illegal attempt to use a suspended XA session";
-		Configuration.logWarning ( msg );
+		LOGGER.logWarning ( msg );
 		throw new InvalidSessionHandleStateException ( msg );
 	}
 

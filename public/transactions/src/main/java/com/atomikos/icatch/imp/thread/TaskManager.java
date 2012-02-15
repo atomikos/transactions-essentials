@@ -83,18 +83,18 @@ public class TaskManager
 				creator = new Java14BackportExecutorFactory();
 			}
 			else {
-				Configuration.logWarning ( "THREADS: pooling NOT enabled!" );
+				LOGGER.logWarning ( "THREADS: pooling NOT enabled!" );
 				creator = new TrivialExecutorFactory();
 			}
 		} catch(Exception e) {
-			Configuration.logWarning ( "THREADS: Illegal setup, thread pooling is NOT enabled!", e);
+			LOGGER.logWarning ( "THREADS: Illegal setup, thread pooling is NOT enabled!", e);
 			creator = new TrivialExecutorFactory();
 		}
 		
 		try {
 			executor = creator.createExecutor();
 		} catch (Exception e) {
-			Configuration.logWarning("Failed to create system executor; Received message: " + e.getMessage() + "; Failling back to a trivial executor.", e);
+			LOGGER.logWarning("Failed to create system executor; Received message: " + e.getMessage() + "; Failling back to a trivial executor.", e);
 			executor = new TrivialSystemExecutor();
 		}
 		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "THREADS: using executor " + executor.getClass());

@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.imp;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import com.atomikos.finitestates.FSMEnterEvent;
 import com.atomikos.finitestates.FSMEnterListener;
 import com.atomikos.icatch.Synchronization;
@@ -39,6 +42,8 @@ import com.atomikos.icatch.system.Configuration;
 
 class SynchToFSM implements FSMEnterListener
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(SynchToFSM.class);
+
     private Synchronization synch_;
 
     private boolean aftercompletion_;
@@ -63,7 +68,7 @@ class SynchToFSM implements FSMEnterListener
 			synch_.afterCompletion ( state );
 		} catch ( RuntimeException e ) {
 			//see case 24246: ignore but log
-			Configuration.logWarning ( "Error during afterCompletion" , e );
+			LOGGER.logWarning ( "Error during afterCompletion" , e );
 		}
     }
 

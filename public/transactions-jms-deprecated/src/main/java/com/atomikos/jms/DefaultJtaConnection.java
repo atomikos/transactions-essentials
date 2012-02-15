@@ -85,7 +85,7 @@ class DefaultJtaConnection implements Connection
 			try {
 				ret = tm.getStatus() == Status.STATUS_ACTIVE;
 			} catch (SystemException e) {
-				Configuration.logWarning ( "Could not determine transaction status: " , e );
+				LOGGER.logWarning ( "Could not determine transaction status: " , e );
 				JMSException error = new JMSException ( "Could not determine transaction status - see linked exception for more info" );
 				error.setLinkedException ( e );
 				throw error;

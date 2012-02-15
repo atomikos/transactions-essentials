@@ -313,7 +313,7 @@ public class ConnectionPool implements Runnable
 				stmt.close();
 		} catch ( Exception e ) {
 			//catch any Exception - cf case 22198
-			Configuration.logWarning ( "ConnectionPool: error testing connection" , e );
+			LOGGER.logWarning ( "ConnectionPool: error testing connection" , e );
 			cleanup = true;
 			//rethrow to fail test!
 			SQLException sqlErr = new SQLException ( e.getMessage() );
@@ -326,7 +326,7 @@ public class ConnectionPool implements Runnable
 				if ( cleanup ) pc.close();
 			}
 			catch ( SQLException error ) {
-				Configuration.logWarning ( "ConnectionPool: error closing connection during test" , error );
+				LOGGER.logWarning ( "ConnectionPool: error closing connection during test" , error );
 				//ignore; let original SQLException be thrown if any
 			}
 		}

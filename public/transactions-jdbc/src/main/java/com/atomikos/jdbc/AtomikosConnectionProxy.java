@@ -178,7 +178,7 @@ class AtomikosConnectionProxy extends AbstractConnectionProxy
 
 
 	private void reap() {
-		Configuration.logWarning ( this + ": reaping - check if the application closes connections correctly, or increase the reapTimeout value");
+		LOGGER.logWarning ( this + ": reaping - check if the application closes connections correctly, or increase the reapTimeout value");
 		close();
 		//added for 22101
 		sessionHandleState.notifySessionErrorOccurred();
@@ -187,7 +187,7 @@ class AtomikosConnectionProxy extends AbstractConnectionProxy
 
 	private CompositeTransactionManager getCompositeTransactionManager() {
 		CompositeTransactionManager ret = Configuration.getCompositeTransactionManager();
-		if ( ret == null ) Configuration.logWarning ( this + ": WARNING: transaction manager not running?" );
+		if ( ret == null ) LOGGER.logWarning ( this + ": WARNING: transaction manager not running?" );
 		return ret;
 	}
 	

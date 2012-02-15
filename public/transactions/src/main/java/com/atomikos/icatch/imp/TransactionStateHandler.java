@@ -284,7 +284,7 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
         	} catch ( RuntimeException error ) {
         		//see case 24246: rollback only
         		setRollbackOnly();
-        		Configuration.logWarning ( "Unexpected error in beforeCompletion: " , error );
+        		LOGGER.logWarning ( "Unexpected error in beforeCompletion: " , error );
         	}
         }
 
