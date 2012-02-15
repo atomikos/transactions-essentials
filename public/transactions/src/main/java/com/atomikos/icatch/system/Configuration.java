@@ -52,8 +52,8 @@ import com.atomikos.util.ClassLoadingHelper;
 import com.atomikos.util.ExceptionHelper;
 
 /**
- * 
- * 
+ *
+ *
  * Configuration is a facade for the icatch transaction management facilities.
  * Allows the application server code to find the transaction manager, even if
  * the actual implementation varies over time.
@@ -95,7 +95,7 @@ public final class Configuration
     private static Vector tsListenersList_ = new Vector ();
 
     private static List shutdownHooks_ = new ArrayList();
-    
+
     public static String getVersion() {
     	String ret = "UNKNOWN";
     	Properties props = new Properties();
@@ -127,7 +127,7 @@ public final class Configuration
 
     /**
      * Construction not allowed.
-     * 
+     *
      */
     private Configuration ()
     {
@@ -135,7 +135,7 @@ public final class Configuration
 
     /**
      * Installs the transaction service in use.
-     * 
+     *
      * @param service
      *            The service.
      */
@@ -150,19 +150,19 @@ public final class Configuration
             service_.addTSListener ( l );
         }
     }
-    
+
     /**
-     * Adds a shutdown hook to the configuration. 
+     * Adds a shutdown hook to the configuration.
      * Shutdown hooks are managed here, since regular shutdown
      * of the transaction core should remove hooks
      * (cf case 21519).
-     * 
+     *
      * @param hook
      */
     public static synchronized void addShutdownHook ( Thread hook )
     {
     	if ( shutdownHooks_.contains ( hook ) ) return;
-    	
+
     	shutdownHooks_.add ( hook );
     	try {
     		Runtime.getRuntime().addShutdownHook ( hook );
@@ -177,11 +177,11 @@ public final class Configuration
      * Removes all shutdown hooks from the system.
      * This method should be called on shutdown of the core.
      */
-    
+
     public static synchronized void removeShutdownHooks()
     {
     	Iterator it = shutdownHooks_.iterator();
-    	
+
     	//first check if we are not already doing a VM exit;
     	//don't remove the hooks if so
     	boolean vmShutdown = false;
@@ -189,7 +189,7 @@ public final class Configuration
     		Thread t = ( Thread ) it.next();
     		if ( t.equals ( Thread.currentThread() ) ) vmShutdown = true;
     	}
-    	
+
     	it = shutdownHooks_.iterator();
     	while ( !vmShutdown && it.hasNext() ) {
     		Thread hook = ( Thread ) it.next();
@@ -203,10 +203,10 @@ public final class Configuration
     		}
     	}
     }
-    
+
     /**
      * Retrieves the transaction service being used.
-     * 
+     *
      * @return TransactionService The transaction service.
      */
 
@@ -217,7 +217,7 @@ public final class Configuration
 
     /**
      * Add a transaction service listener.
-     * 
+     *
      * @param l
      *            The listener.
      */
@@ -232,7 +232,7 @@ public final class Configuration
 
     /**
      * Remove a transaction service listener.
-     * 
+     *
      * @param l
      *            The listener.
      */
@@ -246,7 +246,7 @@ public final class Configuration
 
     /**
      * Installs a composite transaction manager as a Singleton.
-     * 
+     *
      * @param compositeTransactionManager
      *            The instance to install.
      */
@@ -260,7 +260,7 @@ public final class Configuration
 
     /**
      * Installs a recovery service as a Singleton.
-     * 
+     *
      * @param service
      *            The recovery service.
      */
@@ -278,13 +278,13 @@ public final class Configuration
                 next.setRecoveryService ( service );
 
             }
-            
+
         }
     }
 
     /**
      * Installs the log control interface to use.
-     * 
+     *
      * @param control
      */
 
@@ -303,7 +303,7 @@ public final class Configuration
 
     /**
      * Installs an importing transaction manager as a Singleton.
-     * 
+     *
      * @param importingTransactionManager
      *            The instance to install.
      */
@@ -317,7 +317,7 @@ public final class Configuration
 
     /**
      * Installs an exporting transaction manager as a Singleton.
-     * 
+     *
      * @param exportingTransactionManager
      *            The instance to install.
      */
@@ -331,7 +331,7 @@ public final class Configuration
 
     /**
      * Get the composite transaction manager.
-     * 
+     *
      * @return CompositeTransactionManager The instance, or null if none.
      */
 
@@ -342,7 +342,7 @@ public final class Configuration
 
     /**
      * Get the importing transaction manager.
-     * 
+     *
      * @return ImportingTransactionManager The instance, or null if none.
      */
 
@@ -353,7 +353,7 @@ public final class Configuration
 
     /**
      * Get the exporting transaction manager.
-     * 
+     *
      * @return ExportingTransactionManager The instance, or null if none.
      */
 
@@ -370,10 +370,10 @@ public final class Configuration
      * ResourceTransction. This is needed for those ResourceTransaction
      * instances that do not encapsulate the full state themselves, as in the
      * XAResource case.
-     * 
+     *
      * @param resource
      *            The resource to add.
-     * 
+     *
      * @exception IllegalStateException
      *                If the name of the resource is already in use.
      */
@@ -408,13 +408,13 @@ public final class Configuration
 
     /**
      * Add a log administrator.
-     * 
+     *
      * @param admin
      */
     public static synchronized void addLogAdministrator ( LogAdministrator admin )
     {
     	if ( logAdministrators_.contains ( admin ) ) return;
-    	
+
         logAdministrators_.add ( admin );
         if ( logControl_ != null ) {
             admin.registerLogControl ( logControl_ );
@@ -423,7 +423,7 @@ public final class Configuration
 
     /**
      * Remove a log administrator.
-     * 
+     *
      * @param admin
      */
     public static void removeLogAdministrator ( LogAdministrator admin )
@@ -435,7 +435,7 @@ public final class Configuration
 
     /**
      * Get all registered logadministrators.
-     * 
+     *
      * @return Enumeration The logadministrators.
      */
     public static Enumeration getLogAdministrators ()
@@ -446,7 +446,7 @@ public final class Configuration
 
     /**
      * Removes a resource from the config.
-     * 
+     *
      * @param name
      *            The resource's name.
      * @return RecoverableResource The removed object.
@@ -458,7 +458,7 @@ public final class Configuration
         if ( name != null ) {
         	ret = (RecoverableResource) resources_.remove ( name );
         	if ( ret != null ) resourceList_.remove ( ret );
-        	
+
         }
         logDebug ( "Configuration: removed resource " + name );
         return ret;
@@ -466,7 +466,7 @@ public final class Configuration
 
     /**
      * Get the resource with the given name.
-     * 
+     *
      * @return RecoverableResource The resource.
      * @param name
      *            The name to find.
@@ -481,7 +481,7 @@ public final class Configuration
 
     /**
      * Get all resources added so far, in the order that they were added.
-     * 
+     *
      * @return Enumeration The resources.
      */
 
@@ -496,7 +496,7 @@ public final class Configuration
     /**
      * Add a console for the configuration. More than one console can be set; if
      * so then all of them will receive the output.
-     * 
+     *
      * @param console
      *            The console to add.
      */
@@ -515,7 +515,7 @@ public final class Configuration
     /**
      * Get the console for the configuration. If more than one console was
      * installed, then the returned console will cascade to all of them.
-     * 
+     *
      * @return Console The console for the configuration.
      */
 
@@ -543,7 +543,7 @@ public final class Configuration
 
     /**
      * Write a message to the installed console.
-     * 
+     *
      * @param msg
      *            The message to write.
      */
@@ -554,7 +554,7 @@ public final class Configuration
 
     /**
      * Write a message and associated exception to the console.
-     * 
+     *
      * @param msg
      * @param error
      */
@@ -565,7 +565,7 @@ public final class Configuration
 
     /**
      * Write a log entry for the INFO level.
-     * 
+     *
      * @param msg
      */
     public static void logInfo ( String msg )
@@ -575,7 +575,7 @@ public final class Configuration
 
     /**
      * Write an info message and error to the log.
-     * 
+     *
      * @param msg
      * @param error
      */
@@ -586,7 +586,7 @@ public final class Configuration
 
     /**
      * Write a debug message to the log.
-     * 
+     *
      * @param msg
      */
 
@@ -597,7 +597,7 @@ public final class Configuration
 
     /**
      * Write a debug msg and error to the log.
-     * 
+     *
      * @param msg
      * @param error
      */
@@ -620,22 +620,22 @@ public final class Configuration
 
     private static void log ( String msg , Throwable e , int level )
     {
-		if ( e != null ) { 
+		if ( e != null ) {
 			String stackTrace = ExceptionHelper.convertStackTrace ( e );
 			log ( msg + "\n" + stackTrace , level );
 		} else {
 			log ( msg , level );
 		}
-    
-    	
+
+
     }
-    
+
     /**
      * Tests if DEBUG logging is enabled. Call this before you construct DEBUG strings!
      * @return
      */
-    
-	public static boolean isDebugLoggingEnabled() 
+
+	public static boolean isDebugLoggingEnabled()
 	{
 		// cf case 66587
 		boolean ret = false;
@@ -648,10 +648,10 @@ public final class Configuration
 
 	/**
 	 * Tests if INFO logging is enabled. Call this before you construct INFO strings!
-	 * 
+	 *
 	 * @return
 	 */
-	public static boolean isInfoLoggingEnabled() 
+	public static boolean isInfoLoggingEnabled()
 	{
 		// cf case 66587
 		boolean info = false;
