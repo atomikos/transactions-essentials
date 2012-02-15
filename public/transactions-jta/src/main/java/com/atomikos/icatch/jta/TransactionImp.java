@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.jta;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -60,6 +63,7 @@ import com.atomikos.icatch.system.Configuration;
 
 class TransactionImp implements Transaction
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(TransactionImp.class);
 	
 	static void rethrowAsJtaRollbackException ( String msg , Throwable cause ) throws javax.transaction.RollbackException 
 	{
@@ -129,7 +133,7 @@ class TransactionImp implements Transaction
         else if ( level == Console.INFO )
             if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( msg );
         else
-            if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( msg );
+            if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( msg );
     }
 
     // MM patch: synchronized to allow threaded access

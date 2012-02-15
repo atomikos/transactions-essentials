@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.imp.thread;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import com.atomikos.icatch.system.Configuration;
 
 /**
@@ -36,6 +39,7 @@ import com.atomikos.icatch.system.Configuration;
  */
 final class ThreadFactory 
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(ThreadFactory.class);
 	
 	static final ThreadFactory singleton = new ThreadFactory ( "Atomikos" );
 	
@@ -63,7 +67,7 @@ final class ThreadFactory
 	Thread newThread ( Runnable r ) 
 	{
 		String realName = name + ":" + incCount();
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "ThreadFactory: creating new thread: " + realName );
+		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "ThreadFactory: creating new thread: " + realName );
 		Thread thread = new Thread ( group , r , realName );
 		thread.setContextClassLoader( Thread.currentThread().getContextClassLoader() );
 		thread.setDaemon ( true );

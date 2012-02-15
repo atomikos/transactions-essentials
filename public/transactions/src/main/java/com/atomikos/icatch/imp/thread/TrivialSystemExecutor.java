@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.imp.thread;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import com.atomikos.icatch.system.Configuration;
 
 /**
@@ -33,6 +36,7 @@ import com.atomikos.icatch.system.Configuration;
  */
 public class TrivialSystemExecutor implements InternalSystemExecutor
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(TrivialSystemExecutor.class);
 	
 	public TrivialSystemExecutor()
 	{
@@ -40,7 +44,7 @@ public class TrivialSystemExecutor implements InternalSystemExecutor
 	
 	public void execute(Runnable targ)
 	{
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug("(T) executing task: " + targ);
+		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug("(T) executing task: " + targ);
 		Thread newThread = ThreadFactory.getInstance().newThread(targ);
 		newThread.start();
 	}

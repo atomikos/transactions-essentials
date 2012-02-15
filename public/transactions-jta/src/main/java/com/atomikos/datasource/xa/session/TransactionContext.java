@@ -25,6 +25,9 @@
 
 package com.atomikos.datasource.xa.session;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import javax.transaction.xa.XAResource;
 
 import com.atomikos.datasource.xa.XATransactionalResource;
@@ -43,6 +46,8 @@ import com.atomikos.icatch.system.Configuration;
 
 class TransactionContext 
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(TransactionContext.class);
+
 	private TransactionContextStateHandler state;
 	
 	TransactionContext ( XATransactionalResource resource , XAResource xaResource ) 
@@ -54,7 +59,7 @@ class TransactionContext
 	
 	private synchronized void setState ( TransactionContextStateHandler state )
 	{
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": changing to state " + state );
+		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": changing to state " + state );
 		if ( state != null ) this.state = state;
 		
 	}
@@ -94,7 +99,7 @@ class TransactionContext
 	synchronized void sessionClosed() 
 	{
 		TransactionContextStateHandler nextState = state.sessionClosed();
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": changing state to " + nextState );
+		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": changing state to " + nextState );
 		setState ( nextState );
 	}
 	

@@ -25,6 +25,9 @@
 
 package com.atomikos.jms;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import javax.jms.JMSException;
 import javax.jms.Topic;
 
@@ -68,6 +71,7 @@ import com.atomikos.icatch.system.Configuration;
 
 public class TopicSubscriberSession extends MessageConsumerSession 
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(TopicSubscriberSession.class);
 	
 	private boolean noLocal;
 	
@@ -128,7 +132,7 @@ public class TopicSubscriberSession extends MessageConsumerSession
 			try {
 				ret = topic.getTopicName();
 			} catch ( JMSException e ) {
-				if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "TopicSubscriberSession: error retrieving topic name" , e );
+				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "TopicSubscriberSession: error retrieving topic name" , e );
 			}
 		}
 		return ret;

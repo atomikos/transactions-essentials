@@ -25,6 +25,9 @@
 
 package com.atomikos.jms;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -48,6 +51,8 @@ import com.atomikos.util.DynamicProxy;
 
 class AtomikosJmsNonXaSessionProxy extends AbstractJmsSessionProxy 
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(AtomikosJmsNonXaSessionProxy.class);
+
 	private final static String CLOSE_METHOD = "close";
 	
 	public static Object newInstance ( Session s , SessionHandleStateChangeListener pooledConnection , SessionHandleStateChangeListener connectionProxy ) throws JMSException 
@@ -95,7 +100,7 @@ class AtomikosJmsNonXaSessionProxy extends AbstractJmsSessionProxy
 			try {
 				tx = tm.getTransaction();
 			} catch (SystemException e) {
-				if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": Failed to get transaction."  , e );
+				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": Failed to get transaction."  , e );
 				//ignore
 			}
 			if ( tx != null ) {
@@ -139,7 +144,7 @@ class AtomikosJmsNonXaSessionProxy extends AbstractJmsSessionProxy
 			try {
 				if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": calling " + methodName + " on vendor session..." );
 				Object ret =  method.invoke(delegate, args);
-				if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": " + methodName + " returning " + ret );
+				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": " + methodName + " returning " + ret );
 				return ret;
 			} catch (Exception ex) {
 				errorsOccurred = true;

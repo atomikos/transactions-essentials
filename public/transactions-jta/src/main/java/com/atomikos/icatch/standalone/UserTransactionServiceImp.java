@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.standalone;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -75,6 +78,8 @@ import com.atomikos.persistence.imp.VolatileStateRecoveryManager;
 
 class UserTransactionServiceImp extends AbstractJtaUserTransactionService
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(UserTransactionServiceImp.class);
+
     private static final String PRODUCT_NAME = "TransactionsEssentials";
     // the product name as it should be in the license.
 
@@ -202,7 +207,7 @@ class UserTransactionServiceImp extends AbstractJtaUserTransactionService
         	slf4jConsole.setLevel ( level );
         	Configuration.addConsole ( slf4jConsole );
         } catch (ClassNotFoundException ex) {
-        	if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug("cannot load SLF4J, skipping this console", ex);
+        	if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug("cannot load SLF4J, skipping this console", ex);
 		}
 
 

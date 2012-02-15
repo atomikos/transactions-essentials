@@ -25,6 +25,9 @@
 
 package com.atomikos.jms;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import javax.jms.BytesMessage;
 import javax.jms.Connection;
 import javax.jms.Destination;
@@ -51,6 +54,7 @@ import com.atomikos.icatch.system.Configuration;
 
 public abstract class MessageProducerSession 
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(MessageProducerSession.class);
 
 	private AbstractConnectionFactoryBean connectionFactoryBean;
 	private String user;
@@ -159,7 +163,7 @@ public abstract class MessageProducerSession
 	    msg.append ( "destination=" ).append( getDestinationName() ).append ( ", " );
 	    msg.append ( "replyToDestination=" ).append ( getReplyToDestinationName() );
 	    msg.append ( "]" );
-	    if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( msg.toString() );
+	    if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( msg.toString() );
 	}
 	
 	/**
@@ -257,7 +261,7 @@ public abstract class MessageProducerSession
 	                + deliveryMode + " , " + priority + " , " + timeToLive
 	                + " )..." );
 	        sender.send ( message, deliveryMode, priority, timeToLive );
-	        if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "Send done!" );
+	        if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Send done!" );
 	
 	    } catch ( JMSException e ) {
 	        closeResources ();

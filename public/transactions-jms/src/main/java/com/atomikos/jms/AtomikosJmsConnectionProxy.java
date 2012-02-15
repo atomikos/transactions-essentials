@@ -25,6 +25,9 @@
 
 package com.atomikos.jms;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -53,6 +56,7 @@ import com.atomikos.util.DynamicProxy;
 class AtomikosJmsConnectionProxy extends AbstractJmsProxy 
 implements SessionHandleStateChangeListener
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(AtomikosJmsConnectionProxy.class);
 	
 	private static final String CREATE_SESSION_METHOD = "createSession";
 	
@@ -72,7 +76,7 @@ implements SessionHandleStateChangeListener
  	   }
  	   catch ( Exception e ) {
  		   //ignore: workaround code
- 		   if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "JMS: driver complains while enforcing XA mode - ignore if no later errors:" , e );
+ 		   if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "JMS: driver complains while enforcing XA mode - ignore if no later errors:" , e );
  	   } 
  	   finally {
  		   if ( s != null ) {
@@ -80,7 +84,7 @@ implements SessionHandleStateChangeListener
  				   s.close();
  			   } catch ( JMSException e ) {
  				   //ignore: workaround code
- 				   if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "JMS: driver complains while enforcing XA mode - ignore if no later errors:" , e );
+ 				   if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "JMS: driver complains while enforcing XA mode - ignore if no later errors:" , e );
  			   }
  		   }
  	   }
@@ -140,7 +144,7 @@ implements SessionHandleStateChangeListener
 			}
 			
 			if ( CLOSE_METHOD.equals ( methodName ) ) {
-				if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug( this + ": intercepting call to close" );
+				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug( this + ": intercepting call to close" );
 				close();
 				return null;
 			} else if ( reaped ) {
@@ -192,14 +196,14 @@ implements SessionHandleStateChangeListener
 					session = ( Session ) AtomikosJmsNonXaSessionProxy.newInstance( wrapped , owner , this );
 					addSession ( session );
 				}
-				if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": returning " + session );
+				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": returning " + session );
 				return session;
 				
 			} else {		
 			
 					if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": calling " + methodName + " on JMS driver...");
 					Object ret = method.invoke(delegate, args);
-					if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": " + methodName + " returning " + ret );
+					if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": " + methodName + " returning " + ret );
 					return ret;
 			
 			}
@@ -246,7 +250,7 @@ implements SessionHandleStateChangeListener
 		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": close()...");
 		
 		closed = true;		
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": closing " + sessions.size() + " session(s)" );
+		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": closing " + sessions.size() + " session(s)" );
 		
 		//close all sessions to make sure the session close notifications are done!
 		synchronized (sessions) {
@@ -261,18 +265,18 @@ implements SessionHandleStateChangeListener
 			}
 		}
 		
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug( this + ": is available ? " + isAvailable() );
+		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug( this + ": is available ? " + isAvailable() );
 		if (isAvailable())
 			owner.onTerminated();
 		
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": closed." );	
+		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": closed." );	
 		//leave destroy to the owning pooled connection - that one knows when any and all 2PCs are done
 	}
 
 
 	//should only be called after ALL sessions are done, i.e. when the connection can be pooled again
 	synchronized void destroy() {
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": closing connection and all " + sessions.size() + " session(s)" );
+		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": closing connection and all " + sessions.size() + " session(s)" );
 
 		//close all sessions to make sure the session close notifications are done!
 		synchronized (sessions) {

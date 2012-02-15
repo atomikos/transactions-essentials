@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.imp.thread;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
@@ -43,6 +46,7 @@ import com.atomikos.util.ClassLoadingHelper;
  */
 class Java15ExecutorFactory implements ExecutorFactory 
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(Java15ExecutorFactory.class);
 
 	public static final String MAIN_CLASS = "java.util.concurrent.ThreadPoolExecutor";
 	public static final String IQUEUE_CLASS = "java.util.concurrent.BlockingQueue";
@@ -227,7 +231,7 @@ class Java15ExecutorFactory implements ExecutorFactory
 		
 		public void execute(Runnable task) {
 			try {
-				if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug("(1.5) executing task: " + task);
+				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug("(1.5) executing task: " + task);
 				submit.invoke(target, new Object[] { task });
 			} catch (Exception e) {
 				Configuration.logWarning("Failed to invoke 1.5 concurrent thread pool", e);

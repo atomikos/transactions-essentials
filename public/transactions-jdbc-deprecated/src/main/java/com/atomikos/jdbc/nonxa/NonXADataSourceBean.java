@@ -25,6 +25,9 @@
 
 package com.atomikos.jdbc.nonxa;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.sql.Connection;
@@ -55,6 +58,7 @@ import com.atomikos.util.SerializableObjectFactory;
 public class NonXADataSourceBean implements HeuristicDataSource, Referenceable,
         Serializable
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(NonXADataSourceBean.class);
 
     private String validatingQuery;
 
@@ -131,7 +135,7 @@ public class NonXADataSourceBean implements HeuristicDataSource, Referenceable,
         sb.append("testOnBorrow=").append(testOnBorrow);
         sb.append("]");
         
-        if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug(sb.toString());
+        if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug(sb.toString());
         
         Configuration.logWarning ( "WARNING: class " + getClass().getName() + " is deprecated!" );
     }

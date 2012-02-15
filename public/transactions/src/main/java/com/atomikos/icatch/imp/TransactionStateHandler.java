@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.imp;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -53,6 +56,8 @@ import com.atomikos.icatch.system.Configuration;
 
 abstract class TransactionStateHandler implements SubTxAwareParticipant
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(TransactionStateHandler.class);
+
     private int subtxs_;
 
     // REMOVED: one coordinator per subtransaction
@@ -321,7 +326,7 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
         } catch ( IllegalStateException alreadyTerminated ) {
             //happens in rollback after timeout - see case 27857
         	//ignore but log
-        	if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "Error during setRollbackOnly" , alreadyTerminated );
+        	if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Error during setRollbackOnly" , alreadyTerminated );
         }
         synchronized ( this ) {
         	ct_.localSetTransactionStateHandler ( new TxRollbackOnlyStateHandler ( ct_,

@@ -25,6 +25,9 @@
 
 package com.atomikos.jms;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import javax.jms.Connection;
 import javax.jms.Destination;
 import javax.jms.ExceptionListener;
@@ -51,6 +54,7 @@ import com.atomikos.icatch.system.Configuration;
 
 public abstract class MessageConsumerSession 
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(MessageConsumerSession.class);
 
 	private static final int DEFAULT_TIMEOUT = 30;
 	private AbstractConnectionFactoryBean factory;
@@ -262,7 +266,7 @@ public abstract class MessageConsumerSession
 	    msg.append ( "exceptionListener=" ).append ( getExceptionListener() ).append ( ", " );
 	    msg.append ( "connectionFactory=" ).append ( getAbstractConnectionFactoryBean() );
 	    msg.append ( "]" );
-	    if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( msg.toString() );
+	    if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( msg.toString() );
 	    
 	}
 	
@@ -274,7 +278,7 @@ public abstract class MessageConsumerSession
 	        //FIXED 10082
 	        current.setDaemon ( daemonThreads );
 	        current.start ();
-	        if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "MessageConsumerSession: started new thread: " + current );
+	        if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "MessageConsumerSession: started new thread: " + current );
 		    }
 		    //if not active: ignore
 	}
@@ -394,7 +398,7 @@ public abstract class MessageConsumerSession
 
 	            while ( Thread.currentThread () == current ) {
 	            	   
-	            	   if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "MessageConsumerSession: JMS listener thread iterating..." );
+	            	   if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "MessageConsumerSession: JMS listener thread iterating..." );
 	                boolean refresh = false;
 	                boolean commit = true;
 	                try {

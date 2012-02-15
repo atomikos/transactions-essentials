@@ -25,6 +25,9 @@
 
 package com.atomikos.jms;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Queue;
@@ -57,6 +60,8 @@ import com.atomikos.icatch.system.Configuration;
 
 public class TopicPublisherSession extends MessageProducerSession 
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(TopicPublisherSession.class);
+
 	public TopicPublisherSession()
 	{
 		
@@ -137,7 +142,7 @@ public class TopicPublisherSession extends MessageProducerSession
 			try {
 				ret = t.getTopicName();
 			} catch ( JMSException e ) {
-				if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "TopicPublisherSession: error retrieving topic name" , e );
+				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "TopicPublisherSession: error retrieving topic name" , e );
 			}
 		}
 		return ret;
@@ -151,7 +156,7 @@ public class TopicPublisherSession extends MessageProducerSession
 			try {
 				ret = t.getTopicName();
 			} catch ( JMSException e ) {
-				if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "TopicPublisherSession: error retrieving topic name" , e );
+				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "TopicPublisherSession: error retrieving topic name" , e );
 			}
 		}
 		return ret;

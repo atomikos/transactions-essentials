@@ -25,6 +25,9 @@
 
 package com.atomikos.jms;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import javax.jms.JMSException;
 
 import com.atomikos.datasource.xa.session.InvalidSessionHandleStateException;
@@ -45,6 +48,7 @@ import com.atomikos.icatch.system.Configuration;
 
 abstract class ConsumerProducerSupport 
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(ConsumerProducerSupport.class);
 	
 	private SessionHandleState state;
 
@@ -110,7 +114,7 @@ abstract class ConsumerProducerSupport
 	}
 
 	private void registerSynchronization ( CompositeTransaction ct ) throws AtomikosJMSException {
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": detected transaction " + ct );
+		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": detected transaction " + ct );
 		ct.registerSynchronization ( new JmsRequeueSynchronization( ct ) );
 	}
 	
@@ -136,9 +140,9 @@ abstract class ConsumerProducerSupport
 	                || txstate.equals ( TxState.HEUR_COMMITTED ) ) {
 
 	            // connection is reusable!
-				if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug( "JmsRequeueSynchronization: detected termination of transaction " + compositeTransaction );
+				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug( "JmsRequeueSynchronization: detected termination of transaction " + compositeTransaction );
 				state.notifyTransactionTerminated(compositeTransaction);
-				if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug( "JmsRequeueSynchronization: is in terminated state ? " + state.isTerminated() );
+				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug( "JmsRequeueSynchronization: is in terminated state ? " + state.isTerminated() );
 			
 	            afterCompletionDone = true;
 	           

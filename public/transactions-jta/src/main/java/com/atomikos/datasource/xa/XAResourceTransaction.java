@@ -25,6 +25,9 @@
 
 package com.atomikos.datasource.xa;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
@@ -66,6 +69,7 @@ import com.atomikos.icatch.system.Configuration;
 public class XAResourceTransaction implements ResourceTransaction,
         Externalizable, Participant
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(XAResourceTransaction.class);
 
     // force-set version ID for backward log compatibility
     static final long serialVersionUID = -8227293322090019196L;
@@ -274,7 +278,7 @@ public class XAResourceTransaction implements ResourceTransaction,
             }
         } catch ( XAException xa ) {
             // timed out?
-           if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( resourcename_
+           if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( resourcename_
                     + ": XAResource needs refresh", xa );
             
             if ( resource_ == null ) {
@@ -290,7 +294,7 @@ public class XAResourceTransaction implements ResourceTransaction,
 	
 	protected void forceRefreshXAConnection() throws XAException
 	{
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( resourcename_ + ": forcing refresh of XAConnection..." );
+		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( resourcename_ + ": forcing refresh of XAConnection..." );
 		if ( resource_ == null ) {
 			// cf bug 67951
 			// happens on recovery without resource found
@@ -373,7 +377,7 @@ public class XAResourceTransaction implements ResourceTransaction,
 			} 
 		} catch (OptionalDataException e) {
 			// happens if boolean is missing - like in older logfiles
-			Configuration.logDebug ("Ignoring missing field" , e );
+			LOGGER.logDebug ("Ignoring missing field" , e );
 		}
 
     }
@@ -459,7 +463,7 @@ public class XAResourceTransaction implements ResourceTransaction,
 	        } catch ( XAException xaerr ) {
 	            errors.push ( xaerr );
 	            String msg = interpretErrorCode ( resourcename_ , "end" , xid_ , xaerr.errorCode );
-	            if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( msg, xaerr );
+	            if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( msg, xaerr );
 	            throw new ResourceException ( msg, errors );
 	        }
 	        setState ( TxState.LOCALLY_DONE );
@@ -587,7 +591,7 @@ public class XAResourceTransaction implements ResourceTransaction,
                 xaresource_.forget ( xid_ );
             // xaresource is null if recovery failed
         } catch ( Exception err ) {
-        	Configuration.logDebug ( "Error forgetting xid: " + xid_ , err );
+        	LOGGER.logDebug ( "Error forgetting xid: " + xid_ , err );
             // we don't care here
         }
         setState ( TxState.TERMINATED );
@@ -700,7 +704,7 @@ public class XAResourceTransaction implements ResourceTransaction,
             if ( (XAException.XA_RBBASE <= xaerr.errorCode)
                     && (xaerr.errorCode <= XAException.XA_RBEND) ) {
                 // do nothing, corresponds with semantics of rollback
-                if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( msg );
+                if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( msg );
             } else {
                 Configuration.logWarning ( msg , xaerr );
                 switch ( xaerr.errorCode ) {
@@ -908,7 +912,7 @@ public class XAResourceTransaction implements ResourceTransaction,
     {
 
 
-    	if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this
+    	if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this
     			+ ": about to switch to XAResource " + xaresource );
     	xaresource_ = xaresource;
 
@@ -920,7 +924,7 @@ public class XAResourceTransaction implements ResourceTransaction,
     		// we don't care
     	}
 
-    	if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "XAResourceTransaction " + getXid ()
+    	if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "XAResourceTransaction " + getXid ()
     			+ ": switched to XAResource " + xaresource );
 
 

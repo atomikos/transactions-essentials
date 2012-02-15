@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.jta.hibernate3;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import com.atomikos.icatch.jta.UserTransactionImp;
 import com.atomikos.icatch.system.Configuration;
 
@@ -48,6 +51,7 @@ import java.util.Properties;
  * @author Ludovic Orban
  */
 public class AtomikosJTATransactionFactory extends JTATransactionFactory {
+	private static final Logger LOGGER = LoggerFactory.createLogger(AtomikosJTATransactionFactory.class);
 
     private UserTransaction userTransaction;
 
@@ -59,7 +63,7 @@ public class AtomikosJTATransactionFactory extends JTATransactionFactory {
 		} catch ( Exception e ) {
 			//fix for case 58114: exceptions here for Hibernate 3.2.7 and higher
 			String msg = "Hibernate: error during config - ignore for hibernate 3.2.7 or higher";
-			if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( msg , e );
+			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( msg , e );
 		}
     }
 

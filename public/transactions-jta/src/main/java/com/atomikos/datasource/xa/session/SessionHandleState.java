@@ -25,6 +25,9 @@
 
 package com.atomikos.datasource.xa.session;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -50,6 +53,8 @@ import com.atomikos.icatch.system.Configuration;
 
 public class SessionHandleState 
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(SessionHandleState.class);
+
 	private TransactionContext currentContext;
 	private Set allContexts;
 	private XATransactionalResource resource;
@@ -100,7 +105,7 @@ public class SessionHandleState
 	 */
 	public synchronized void notifySessionBorrowed()
 	{
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": notifySessionBorrowed" );
+		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": notifySessionBorrowed" );
 		currentContext = new TransactionContext ( resource , xaResource );
 		allContexts.add ( currentContext );
 		closed = false;
@@ -114,7 +119,7 @@ public class SessionHandleState
 	
 	public void notifySessionClosed()
 	{
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": entering notifySessionClosed" );
+		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": entering notifySessionClosed" );
 		boolean notifyOfClosedEvent = false;
 	
 		synchronized ( this ) {
@@ -122,7 +127,7 @@ public class SessionHandleState
 			Iterator it = allContexts.iterator();
 			while ( it.hasNext() ) {
 				TransactionContext b = ( TransactionContext ) it.next();
-				if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": delegeting session close to " + b ) ;
+				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": delegeting session close to " + b ) ;
 				b.sessionClosed();
 			}
 			closed = true;
@@ -130,7 +135,7 @@ public class SessionHandleState
 		}
 		//do callbacks out of synch!!!
 		if ( notifyOfClosedEvent ) {
-			if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": all contexts terminated, firing TerminatedEvent" );
+			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": all contexts terminated, firing TerminatedEvent" );
 			fireTerminatedEvent();
 		}
 	}
@@ -172,7 +177,7 @@ public class SessionHandleState
 			else {
 				//no suspended branch was found -> try to use the current branch
 				try {
-					if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": checking XA context for transaction " + ct );
+					if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": checking XA context for transaction " + ct );
 					currentContext.checkEnlistBeforeUse ( ct , hmsg );
 				}
 				catch ( UnexpectedTransactionContextException txBoundaryPassed ) {
@@ -246,7 +251,7 @@ public class SessionHandleState
 		
 		//check termination status CHANGES - only fire event once for safety!
 		if ( notifyOfTerminatedEvent ) {
-			if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug( this + ": all contexts terminated, firing TerminatedEvent for " + this);
+			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug( this + ": all contexts terminated, firing TerminatedEvent for " + this);
 			fireTerminatedEvent();
 		}
 	}

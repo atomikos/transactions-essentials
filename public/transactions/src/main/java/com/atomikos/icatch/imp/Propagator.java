@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.imp;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import com.atomikos.icatch.imp.thread.TaskManager;
 import com.atomikos.icatch.system.Configuration;
 
@@ -36,6 +39,7 @@ import com.atomikos.icatch.system.Configuration;
 
 class Propagator
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(Propagator.class);
 	
     static long RETRY_INTERVAL = 10000;
     // how long do we wait for retriable messages
@@ -88,7 +92,7 @@ class Propagator
         				if ( tryAgain  ) {
         					//wait a little before retrying
         					Thread.sleep ( RETRY_INTERVAL );
-                         if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "Propagator: retrying "
+                         if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Propagator: retrying "
                                             + "message: " + msg );
         				}
         			} while ( tryAgain );

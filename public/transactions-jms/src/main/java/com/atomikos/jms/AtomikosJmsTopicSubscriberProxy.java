@@ -25,6 +25,9 @@
 
 package com.atomikos.jms;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import javax.jms.JMSException;
 import javax.jms.Topic;
 import javax.jms.TopicSubscriber;
@@ -34,6 +37,7 @@ import com.atomikos.icatch.system.Configuration;
 
 class AtomikosJmsTopicSubscriberProxy extends AtomikosJmsMessageConsumerProxy
 		implements TopicSubscriber {
+	private static final Logger LOGGER = LoggerFactory.createLogger(AtomikosJmsTopicSubscriberProxy.class);
 
 	public AtomikosJmsTopicSubscriberProxy ( TopicSubscriber delegate,
 			SessionHandleState state ) {
@@ -45,7 +49,7 @@ class AtomikosJmsTopicSubscriberProxy extends AtomikosJmsMessageConsumerProxy
 	{
 		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": getDelegateTopicSubscriber()..." );
 		TopicSubscriber ret =  ( TopicSubscriber ) getDelegate();
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": getDelegateTopicSubscriber() returning " + ret );
+		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": getDelegateTopicSubscriber() returning " + ret );
 		return ret;
 	}
 
@@ -58,7 +62,7 @@ class AtomikosJmsTopicSubscriberProxy extends AtomikosJmsMessageConsumerProxy
 		} catch (Exception e) {
 			handleException(e);
 		}
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": getNoLocal() returning " + ret );
+		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": getNoLocal() returning " + ret );
 		return ret;
 	}
 
@@ -71,7 +75,7 @@ class AtomikosJmsTopicSubscriberProxy extends AtomikosJmsMessageConsumerProxy
 		} catch (Exception e) {
 			handleException ( e );
 		}
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug (  this + ": getTopic() returning " + ret );
+		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug (  this + ": getTopic() returning " + ret );
 		return ret;
 	}
 	

@@ -25,6 +25,9 @@
 
 package com.atomikos.jms;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.Properties;
@@ -133,6 +136,7 @@ import com.atomikos.util.IntraVmObjectRegistry;
 public class AtomikosConnectionFactoryBean 
 implements javax.jms.ConnectionFactory, ConnectionPoolProperties, 
 Referenceable, Serializable {
+	private static final Logger LOGGER = LoggerFactory.createLogger(AtomikosConnectionFactoryBean.class);
 
 	private static final long serialVersionUID = 1L;
 
@@ -340,7 +344,7 @@ Referenceable, Serializable {
 			//don't log: AtomikosJMSException is logged on creation by the factory methods
 			throwAtomikosJMSException("Cannot initialize AtomikosConnectionFactoryBean", ex);
 		}
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": init done." );
+		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": init done." );
 
 	}
 	
@@ -549,7 +553,7 @@ Referenceable, Serializable {
 			IntraVmObjectRegistry.removeResource ( getUniqueResourceName() );
 		} catch ( NameNotFoundException e ) {
 			//ignore but log
-			if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": error removing from JNDI" , e );
+			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": error removing from JNDI" , e );
 		}
 		
 		RecoverableResource res = Configuration.getResource ( getUniqueResourceName() );
@@ -559,7 +563,7 @@ Referenceable, Serializable {
 			res.close();
 		}
 		
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": close done." );
+		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": close done." );
 	}
 	
 	public String toString() 
@@ -590,7 +594,7 @@ Referenceable, Serializable {
 		} catch (ConnectionPoolException e) {
 			throwAtomikosJMSException ( "Error borrowing connection", e );
 		}
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": createConnection() returning " + ret );
+		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": createConnection() returning " + ret );
 		return ret;
 	}
 
@@ -613,7 +617,7 @@ Referenceable, Serializable {
 		Reference ret = null;
 		if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": getReference()..." );
 		ret = IntraVmObjectFactory.createReference ( this , getUniqueResourceName() );
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": getReference() returning " + ret );
+		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": getReference() returning " + ret );
 		return ret;
 	}
 

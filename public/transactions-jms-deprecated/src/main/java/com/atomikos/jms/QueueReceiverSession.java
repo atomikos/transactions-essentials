@@ -25,6 +25,9 @@
 
 package com.atomikos.jms;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import javax.jms.JMSException;
 import javax.jms.Queue;
 
@@ -71,6 +74,8 @@ import com.atomikos.icatch.system.Configuration;
 public class QueueReceiverSession
 extends MessageConsumerSession
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(QueueReceiverSession.class);
+
     /**
      * Create a new instance. Configuration should be done via the setters.
      */
@@ -137,7 +142,7 @@ extends MessageConsumerSession
 			try {
 				ret = queue.getQueueName();
 			} catch ( JMSException e ) {
-				if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "QueueReceiverSession: error retrieving queue name" , e );
+				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "QueueReceiverSession: error retrieving queue name" , e );
 			}
 		}
 		return ret;

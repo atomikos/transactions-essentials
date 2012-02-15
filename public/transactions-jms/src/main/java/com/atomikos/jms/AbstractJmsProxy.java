@@ -25,6 +25,9 @@
 
 package com.atomikos.jms;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -39,6 +42,7 @@ import com.atomikos.icatch.system.Configuration;
   */
 abstract class AbstractJmsProxy implements InvocationHandler 
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(AbstractJmsProxy.class);
 
 	/**
 	 * Converts a driver error (generic exception) into an appropriate 
@@ -69,7 +73,7 @@ abstract class AbstractJmsProxy implements InvocationHandler
 			Throwable cause = ite.getCause();
 			if ( cause != null ) {
 				//log as debug and let the convert do the rest for the cause
-				if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( msg , ite );
+				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( msg , ite );
 				convertProxyError ( cause , msg );
 			}
 			else {

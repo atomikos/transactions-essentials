@@ -25,6 +25,9 @@
 
 package com.atomikos.jms;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import javax.jms.BytesMessage;
 import javax.jms.Destination;
 import javax.jms.JMSException;
@@ -60,6 +63,7 @@ import com.atomikos.icatch.system.Configuration;
 
 class DefaultJtaSession implements Session 
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(DefaultJtaSession.class);
 
 	private XASession session_;
 	private TransactionalResource res_;
@@ -156,7 +160,7 @@ class DefaultJtaSession implements Session
 
 	public void close() throws JMSException 
 	{
-	    if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "Closing JMS session..." );
+	    if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Closing JMS session..." );
 	    session_.close ();
 	    if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( "Closed JMS session" );
 	}

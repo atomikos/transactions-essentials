@@ -25,6 +25,9 @@
 
 package com.atomikos.datasource.xa;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Stack;
@@ -65,6 +68,7 @@ import com.atomikos.persistence.StateRecoveryManager;
 
 public abstract class XATransactionalResource implements TransactionalResource
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(XATransactionalResource.class);
 
     protected XAResource xares_;
     // the xa resource for which txs are created.
@@ -230,7 +234,7 @@ public abstract class XATransactionalResource implements TransactionalResource
             }
         } catch ( XAException xa ) {
             // timed out?
-            if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( servername_
+            if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( servername_
                     + ": XAResource needs refresh?", xa );
 
         }
@@ -496,7 +500,7 @@ public abstract class XATransactionalResource implements TransactionalResource
 
         // null during testing
         if ( recoveryService != null ) {
-            if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "Installing recovery service on resource "
+            if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Installing recovery service on resource "
                     + getName () );
             branchIdentifier_ = recoveryService.getName ();
 

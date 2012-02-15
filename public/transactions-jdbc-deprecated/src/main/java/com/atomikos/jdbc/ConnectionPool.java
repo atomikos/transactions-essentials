@@ -25,6 +25,9 @@
 
 package com.atomikos.jdbc;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -50,6 +53,7 @@ import com.atomikos.icatch.system.Configuration;
 
 public class ConnectionPool implements Runnable
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(ConnectionPool.class);
 
 
     // timeout_ after which connections are tested for liveness and removed if
@@ -170,7 +174,7 @@ public class ConnectionPool implements Runnable
 	        }
         }
         
-        if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "JDBC ConnectionPool: using connection: "
+        if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "JDBC ConnectionPool: using connection: "
                 + retVal );        
         return retVal;
     }
@@ -194,13 +198,13 @@ public class ConnectionPool implements Runnable
     public synchronized void putBack ( XPooledConnection conn )
     {
         if ( !conn.getInvalidated () && getSize () < maxSize_ ) {
-            if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "Putting connection back in pool: "
+            if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Putting connection back in pool: "
                     + conn.toString () );
             putInPool ( conn );
         } else {
 
             try {
-                if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "Pool: closing connection: "
+                if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Pool: closing connection: "
                         + conn.toString () );
                 conn.close ();
                 // closes underlying connection
@@ -247,7 +251,7 @@ public class ConnectionPool implements Runnable
                     try {
                         if ( !pc.getInvalidated () ) {
                         	   test ( pc , true );
-                        	   if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "ConnectionPool: connection is fine, keeping it in pool: " + pc);
+                        	   if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "ConnectionPool: connection is fine, keeping it in pool: " + pc);
                             // here we are if connection still OK
                             putInPool ( pc );
 
@@ -298,11 +302,11 @@ public class ConnectionPool implements Runnable
     		try {
 				connection = pc.getConnection();
 				if ( testQuery_ == null || "".equals ( testQuery_ ) ) {
-					if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "ConnectionPool: no query to test connection, trying getMetaData(): " + connection );
+					if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "ConnectionPool: no query to test connection, trying getMetaData(): " + connection );
 					connection.getMetaData();
 					return;
 				} 	
-				if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "ConnectionPool: trying query '" + testQuery_ + "' on connection " + connection );
+				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "ConnectionPool: trying query '" + testQuery_ + "' on connection " + connection );
 				Statement stmt = connection.createStatement();
 				ResultSet rs = stmt.executeQuery ( testQuery_ );
 				rs.close();

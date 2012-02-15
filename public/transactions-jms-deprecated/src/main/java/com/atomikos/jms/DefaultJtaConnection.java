@@ -25,6 +25,9 @@
 
 package com.atomikos.jms;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import javax.jms.Connection;
 import javax.jms.ConnectionConsumer;
 import javax.jms.ConnectionMetaData;
@@ -53,6 +56,7 @@ import com.atomikos.icatch.system.Configuration;
 
 class DefaultJtaConnection implements Connection 
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(DefaultJtaConnection.class);
 	
 	protected static void forceConnectionIntoXaMode ( Connection c )
 	{
@@ -66,7 +70,7 @@ class DefaultJtaConnection implements Connection
  	   }
  	   catch ( Exception e ) {
  		   //ignore: workaround code
- 		   if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "JMS: driver complains while enforcing XA mode - ignore if no later errors:" , e );
+ 		   if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "JMS: driver complains while enforcing XA mode - ignore if no later errors:" , e );
  	   }
 	}
 

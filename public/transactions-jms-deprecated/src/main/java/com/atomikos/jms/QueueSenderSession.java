@@ -25,6 +25,9 @@
 
 package com.atomikos.jms;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Queue;
@@ -55,6 +58,8 @@ import com.atomikos.icatch.system.Configuration;
 public class QueueSenderSession
 extends MessageProducerSession
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(QueueSenderSession.class);
+
     /**
      * Default constructor in JavaBean style. Needed to ensure compatibility
      * with third-party frameworks such as Spring.
@@ -153,7 +158,7 @@ extends MessageProducerSession
 			try {
 				ret = q.getQueueName();
 			} catch ( JMSException e ) {
-				if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "QueueSenderSession: error retrieving queue name" , e );
+				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "QueueSenderSession: error retrieving queue name" , e );
 			}
 		}
 		return ret;
@@ -167,7 +172,7 @@ extends MessageProducerSession
 			try {
 				ret = q.getQueueName();
 			} catch ( JMSException e ) {
-				if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "QueueSenderSession: error retrieving queue name" , e );
+				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "QueueSenderSession: error retrieving queue name" , e );
 			}
 		}
 		return ret;

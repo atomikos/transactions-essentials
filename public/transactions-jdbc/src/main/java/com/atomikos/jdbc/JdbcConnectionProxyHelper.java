@@ -25,6 +25,9 @@
 
 package com.atomikos.jdbc;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -33,6 +36,7 @@ import com.atomikos.datasource.pool.CreateConnectionException;
 import com.atomikos.icatch.system.Configuration;
 
 public class JdbcConnectionProxyHelper {
+	private static final Logger LOGGER = LoggerFactory.createLogger(JdbcConnectionProxyHelper.class);
 
 	/**
 	 * Converts a driver error (generic exception) into an appropriate 
@@ -61,7 +65,7 @@ public class JdbcConnectionProxyHelper {
 					Throwable cause = ite.getCause();
 					if ( cause != null ) {
 						//log as debug and let the convert do the rest for the cause
-						if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( msg , ite );
+						if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( msg , ite );
 						convertProxyError ( cause , msg );
 					}
 					else {

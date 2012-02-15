@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.imp;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -65,6 +68,8 @@ import com.atomikos.util.UniqueIdMgr;
 public class TransactionServiceImp implements TransactionService,
         FSMEnterListener, SubTxAwareParticipant, RecoveryService
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(TransactionServiceImp.class);
+
     private static final int NUMLATCHES = 97;
     // a number of latches to lock on a per-root basis
     // this is the size of a hash array of latch objects
@@ -351,7 +356,7 @@ public class TransactionServiceImp implements TransactionService,
             CoordinatorImp coordinator , Stack lineage , boolean serial )
             throws SysException
     {
-    		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "Creating composite transaction: " + tid );
+    		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Creating composite transaction: " + tid );
         CompositeTransactionImp ct = new CompositeTransactionImp ( this,
                 lineage, tid, serial, coordinator );
 
@@ -694,7 +699,7 @@ public class TransactionServiceImp implements TransactionService,
 	        if ( initialized_ ) {
 	            listener.init ( false , properties_ );
 	        }
-	        if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug (  "Added TSListener: " + listener ); 
+	        if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug (  "Added TSListener: " + listener ); 
     		}
         
 
@@ -708,7 +713,7 @@ public class TransactionServiceImp implements TransactionService,
     {
 
         listeners_.removeElement ( listener );
-        if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug  ( "Removed TSListener: " + listener );
+        if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug  ( "Removed TSListener: " + listener );
 
     }
 
@@ -908,7 +913,7 @@ public class TransactionServiceImp implements TransactionService,
     {
         Stack errors = new Stack ();
         boolean wasShuttingDown = false;
-        if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "Transaction Service: Entering shutdown ( "
+        if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Transaction Service: Entering shutdown ( "
                 + force + " )..." );
 
         // FOLLOWING MOVED OUT OF SYNCH BLOCK TO HERE TO AVOID DEADLOCK ON
@@ -964,14 +969,14 @@ public class TransactionServiceImp implements TransactionService,
                     shutdownWaiter_.wait ( maxTimeout_ );
                     //PURGE to avoid issue 10079
                     //use a clone to avoid concurrency interference
-                    if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "Transaction Service: Purging coordinators for shutdown..." );
+                    if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Transaction Service: Purging coordinators for shutdown..." );
                     Hashtable clone = ( Hashtable ) roottocoordinatormap_.clone();
                     Enumeration coordinatorIds = clone.keys();
                     while ( coordinatorIds.hasMoreElements() ) {
                     		String id = ( String ) coordinatorIds.nextElement();
                     		CoordinatorImp c = ( CoordinatorImp ) clone.get ( id );
                     		if ( TxState.TERMINATED.equals ( c.getState() ) ) {
-                    			if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "Transaction Service: removing terminated coordinator: " + id );
+                    			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Transaction Service: removing terminated coordinator: " + id );
                     			roottocoordinatormap_.remove ( id );
                     		}
                     }

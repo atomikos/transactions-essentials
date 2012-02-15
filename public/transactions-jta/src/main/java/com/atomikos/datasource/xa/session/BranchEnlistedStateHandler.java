@@ -25,6 +25,9 @@
 
 package com.atomikos.datasource.xa.session;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
 
@@ -43,6 +46,7 @@ import com.atomikos.icatch.system.Configuration;
 
 class BranchEnlistedStateHandler extends TransactionContextStateHandler 
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(BranchEnlistedStateHandler.class);
 
 	private CompositeTransaction ct;
 	private XAResourceTransaction branch;
@@ -83,7 +87,7 @@ class BranchEnlistedStateHandler extends TransactionContextStateHandler
 			//TODO check: what if subtransaction? Possible solution: ignore if serial_jta mode, error otherwise.
 			
 			String msg = "The connection/session object is already enlisted in a (different) transaction.";
-			if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( msg );
+			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( msg );
 			throw new UnexpectedTransactionContextException();
 		}
 		

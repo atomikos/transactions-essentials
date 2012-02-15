@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.imp.thread;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 
 import com.atomikos.icatch.system.Configuration;
 import com.atomikos.util.ClassLoadingHelper;
@@ -40,6 +43,8 @@ import com.atomikos.util.ClassLoadingHelper;
 
 public class TaskManager 
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(TaskManager.class);
+
 	private static TaskManager singleton;
 	
 	private InternalSystemExecutor executor;
@@ -54,7 +59,7 @@ public class TaskManager
 	public static synchronized final TaskManager getInstance() 
 	{
 		if ( singleton == null ) {
-			if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "TaskManager: initializing..." );
+			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "TaskManager: initializing..." );
 			singleton = new TaskManager();
 		}
 		return singleton;
@@ -92,7 +97,7 @@ public class TaskManager
 			Configuration.logWarning("Failed to create system executor; Received message: " + e.getMessage() + "; Failling back to a trivial executor.", e);
 			executor = new TrivialSystemExecutor();
 		}
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "THREADS: using executor " + executor.getClass());
+		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "THREADS: using executor " + executor.getClass());
 	}
 	
 	/**

@@ -25,6 +25,9 @@
 
 package com.atomikos.jdbc.nonxa;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -71,6 +74,7 @@ import com.atomikos.util.DynamicProxy;
 class AtomikosThreadLocalConnection extends AbstractConnectionProxy
 implements JtaAwareNonXaConnection
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(AtomikosThreadLocalConnection.class);
 	
 	
 	private final static List ENLISTMENT_METHODS = Arrays.asList(new String[] {"createStatement", "prepareStatement", "prepareCall"});
@@ -246,7 +250,7 @@ implements JtaAwareNonXaConnection
 		if (methodName.equals("reap")) {
 			if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": reap()..." );
 			reap();
-			if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": reap done." );
+			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": reap done." );
 			return null;
 		}
 		else if ( methodName.equals ("isNoLongerInUse") ) {
@@ -258,7 +262,7 @@ implements JtaAwareNonXaConnection
 		else if (methodName.equals("isClosed")) {
 			if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": isClosed()..." );
 			Object ret = Boolean.valueOf ( isStale() );	
-			if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": isClosed() returning " + ret );
+			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": isClosed() returning " + ret );
 			return ret;
 		}
         // detect illegal use after connection was resubmitted to the pool
@@ -277,7 +281,7 @@ implements JtaAwareNonXaConnection
 	        if (methodName.equals("getAutoCommit")) {
 	        	if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": getAutoCommit()..." );
 	        	Object ret = Boolean.FALSE;
-	        	if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": getAutoCommit() returning false." );
+	        	if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": getAutoCommit() returning false." );
 	        	return ret;
 	        }
 	        
@@ -305,7 +309,7 @@ implements JtaAwareNonXaConnection
         if (CLOSE_METHODS.contains(methodName)) {
         	if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": close..." );
 			decUseCount();
-			if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": close done." );
+			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": close done." );
 			return null;
 		}
 		else {
@@ -318,7 +322,7 @@ implements JtaAwareNonXaConnection
 				JdbcConnectionProxyHelper.convertProxyError ( ex , "Error delegating '" + methodName + "' call" );
 			}
 		}
-        if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": " + methodName + " returning " + ret );
+        if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": " + methodName + " returning " + ret );
         if ( ret instanceof Statement ) {
         	Statement s = ( Statement ) ret;
         	addStatement ( s );
@@ -371,7 +375,7 @@ implements JtaAwareNonXaConnection
             setStale();
             pooledConnection.fireOnXPooledConnectionTerminated();
         } else {
-            if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "ThreadLocalConnection: not reusable yet" );
+            if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "ThreadLocalConnection: not reusable yet" );
         }
 
     }

@@ -25,6 +25,9 @@
 
 package com.atomikos.jms.extra;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Session;
@@ -40,6 +43,7 @@ import com.atomikos.jms.AtomikosJMSException;
 
 class DestinationHelper 
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(DestinationHelper.class);
 	
 	/**
 	 * Finds a destination with a given provider-specific name.
@@ -56,13 +60,13 @@ class DestinationHelper
 		try {
 			destination = session.createQueue  ( destinationName );
 		} catch ( Exception failed ) {
-			if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "Failed to find queue with name: " + destinationName , failed );
+			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Failed to find queue with name: " + destinationName , failed );
 		}
 		if ( destination == null ) {
 			try {
 				destination = session.createTopic  ( destinationName );
 			} catch ( Exception failed ) {
-				if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "Failed to find topic with name: " + destinationName , failed );
+				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Failed to find topic with name: " + destinationName , failed );
 			}
 		}
 		if ( destination == null ) {

@@ -25,6 +25,9 @@
 
 package com.atomikos.jms.extra;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.io.Serializable;
 import java.util.Map;
 
@@ -50,6 +53,7 @@ import com.atomikos.jms.AtomikosTransactionRequiredJMSException;
 
 public abstract class AbstractJmsSenderTemplate 
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(AbstractJmsSenderTemplate.class);
 
 	protected AtomikosConnectionFactoryBean connectionFactoryBean;
 	private String user;
@@ -118,7 +122,7 @@ public abstract class AbstractJmsSenderTemplate
 			msg.append ( "destination=" ).append( getDestinationName() ).append ( ", " );
 			msg.append ( "replyToDestination=" ).append ( getReplyToDestinationName() );
 			msg.append ( "]" );
-			if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( msg.toString() );
+			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( msg.toString() );
 			inited = true;		
 		}
 	}
@@ -197,14 +201,14 @@ public abstract class AbstractJmsSenderTemplate
 				try {
 					ret = q.getQueueName();
 				} catch ( JMSException e ) {
-					if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": error retrieving queue name" , e );
+					if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": error retrieving queue name" , e );
 				}
 			} else if ( d instanceof Topic ) {
 				Topic t = ( Topic ) d;
 				try {
 					ret = t.getTopicName();
 				} catch ( JMSException e ) {
-					if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": error retrieving topic name" , e );
+					if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": error retrieving topic name" , e );
 				}
 			}
 		}
@@ -295,9 +299,9 @@ public abstract class AbstractJmsSenderTemplate
 	    try {
 	    	conn = getOrReuseConnection();
 	    	session = getOrRefreshSession ( conn );	
-	    	if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "Calling callback..." );
+	    	if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Calling callback..." );
 	    	callback.doInJmsSession ( session );
-	        if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "Callback done!" );
+	        if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Callback done!" );
 	        afterUseWithoutErrors ( conn , session );
 	        
 	    } catch ( AtomikosTransactionRequiredJMSException notx ) {

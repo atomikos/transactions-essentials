@@ -25,6 +25,9 @@
 
 package com.atomikos.jdbc.nonxa;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -45,6 +48,8 @@ import com.atomikos.util.DynamicProxy;
   */
 public class AtomikosNonXADataSourceBean extends AbstractDataSourceBean 
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(AtomikosNonXADataSourceBean.class);
+
 	private static final long serialVersionUID = 1L;
 	
 	private String url;
@@ -210,7 +215,7 @@ public class AtomikosNonXADataSourceBean extends AbstractDataSourceBean
 
         previous.incUseCount();
         previous.addHeuristicMessage ( hmsg );
-        if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": returning " + proxy );
+        if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": returning " + proxy );
 		return proxy;
 	}
 

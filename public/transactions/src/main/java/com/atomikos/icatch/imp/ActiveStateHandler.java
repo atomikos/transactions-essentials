@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.imp;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.util.Enumeration;
 import java.util.Stack;
 import java.util.Vector;
@@ -42,19 +45,26 @@ import com.atomikos.icatch.imp.thread.InterruptedExceptionHelper;
 import com.atomikos.icatch.system.Configuration;
 
 /**
- * 
- * 
+ *
+ *
  * A state handler for the active coordinator state.
  */
 
 class ActiveStateHandler extends CoordinatorStateHandler
 {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = -80097456886481668L;
+
+	private static final Logger LOGGER = LoggerFactory.createLogger(ActiveStateHandler.class);
+
     private long rollbackTicks_;
     // how many timeout events have happened?
     // if max allowed -> rollback on timeout
 
     private int globalSiblingCount_;
-   
+
 
     ActiveStateHandler ( CoordinatorImp coordinator )
     {
@@ -126,11 +136,11 @@ class ActiveStateHandler extends CoordinatorStateHandler
                         .getLocalSiblingCount () ) {
             // NO COMMIT ALLOWED: ORPHANS!!!!
             try {
-                if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "Orphans detected: "
+                if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Orphans detected: "
                         + getCoordinator ().getLocalSiblingCount () + " vs "
                         + globalSiblingCount_ + " - forcing rollback." );
                 super.rollback ( getCoordinator().isRecoverableWhileActive().booleanValue() , false );
-           
+
             } catch ( HeurCommitException hc ) {
                 throw new HeurMixedException ( hc.getHeuristicMessages() );
             }

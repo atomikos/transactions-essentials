@@ -25,6 +25,9 @@
 
 package com.atomikos.jdbc.nonxa;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -58,6 +61,7 @@ import com.atomikos.icatch.system.Configuration;
 
 class ThreadLocalConnection implements InvocationHandler
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(ThreadLocalConnection.class);
 	
 	private final static List NON_TRANSACTIONAL_METHOD_NAMES = Arrays.asList(new String[] {
 			"equals",
@@ -234,7 +238,7 @@ class ThreadLocalConnection implements InvocationHandler
             setStale ( true );
             pooledConnection.notifyCloseListeners ();
         } else {
-            if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "ThreadLocalConnection: not reusable yet" );
+            if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "ThreadLocalConnection: not reusable yet" );
         }
 
     }
@@ -284,7 +288,7 @@ class ThreadLocalConnection implements InvocationHandler
             throws Throwable
     {
         if (NON_TRANSACTIONAL_METHOD_NAMES.contains(m.getName())) {
-        	if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ("Calling non-transactional method '" + m.getName() + "' on ThreadLocal connection, bypassing enlistment");
+        	if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ("Calling non-transactional method '" + m.getName() + "' on ThreadLocal connection, bypassing enlistment");
         	return m.invoke ( wrapped, args );
         }
 
@@ -313,7 +317,7 @@ class ThreadLocalConnection implements InvocationHandler
             // delegate to the underlying JDBC connection
             try {
                 // System.out.println ( "Proxy: calling method" );
-            	   if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "ThreadLocalConnection: delegating method " + m + 
+            	   if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "ThreadLocalConnection: delegating method " + m + 
             			   " to wrapped connection with args: " + args );
                 result = m.invoke ( wrapped, args );
                

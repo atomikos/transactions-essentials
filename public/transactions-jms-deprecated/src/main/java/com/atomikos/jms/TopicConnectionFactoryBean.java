@@ -25,6 +25,9 @@
 
 package com.atomikos.jms;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import javax.jms.Connection;
 import javax.jms.JMSException;
 import javax.jms.TopicConnection;
@@ -64,6 +67,8 @@ public class TopicConnectionFactoryBean
 extends AbstractConnectionFactoryBean
 implements TopicConnectionFactory
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(TopicConnectionFactoryBean.class);
+
 	private transient JtaTopicConnectionFactory factory_;
 	
 	private XATopicConnectionFactory xaFactory_;
@@ -114,7 +119,7 @@ implements TopicConnectionFactory
 	            msg.append ( "resourceName=" ).append(resourceName_).append (", ");
 	            msg.append ( "xaFactoryJndiName=" ).append( xaFactoryJndiName_ );
 	            msg.append ( "]" );
-	            if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( msg.toString() );
+	            if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( msg.toString() );
 	            
 	            Configuration.logWarning ( "WARNING: class " + getClass().getName() + " is deprecated!" );
 	        }

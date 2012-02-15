@@ -25,6 +25,9 @@
 
 package com.atomikos.jms;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.lang.reflect.Proxy;
 
 import javax.jms.JMSException;
@@ -44,6 +47,7 @@ import com.atomikos.icatch.system.Configuration;
 import com.atomikos.util.DynamicProxy;
 
 class AtomikosPooledJmsConnection extends AbstractXPooledConnection implements SessionHandleStateChangeListener {
+	private static final Logger LOGGER = LoggerFactory.createLogger(AtomikosPooledJmsConnection.class);
 	
 	private XAConnection xaConnection;
 	private XATransactionalResource jmsTransactionalResource;
@@ -69,7 +73,7 @@ class AtomikosPooledJmsConnection extends AbstractXPooledConnection implements S
 	}
 
 	public void destroy() {
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": destroying connection..." );
+		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": destroying connection..." );
 		if (xaConnection != null) {
 			try {
 				xaConnection.close();
@@ -116,7 +120,7 @@ class AtomikosPooledJmsConnection extends AbstractXPooledConnection implements S
 		
 		synchronized ( this ) {
 			//a session has terminated -> check reusability of all remaining
-			if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": a session has terminated, is connection now available ? " + isAvailable() );
+			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": a session has terminated, is connection now available ? " + isAvailable() );
 			if ( isAvailable() ) {
 				if ( currentProxy != null ) {
 					DynamicProxy dproxy = ( DynamicProxy ) currentProxy;

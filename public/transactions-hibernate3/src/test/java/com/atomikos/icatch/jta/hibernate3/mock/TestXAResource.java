@@ -1,4 +1,8 @@
 package com.atomikos.icatch.jta.hibernate3.mock;
+
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
@@ -17,6 +21,7 @@ import com.atomikos.icatch.system.Configuration;
 public class TestXAResource
 implements XAResource, Cloneable
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(TestXAResource.class);
 
   
     
@@ -255,7 +260,7 @@ implements XAResource, Cloneable
       
     public void reset()
     {
-    	if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "XAResource.reset called on " + this );
+    	if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "XAResource.reset called on " + this );
          lastStartedXid_ = null;
          lastEndedXid_ = null;
          lastCommittedXid_ = null;
@@ -341,7 +346,7 @@ implements XAResource, Cloneable
     public void start ( Xid xid , int flags )
     throws XAException
     {
-    		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "XAResource.start called on " + this );
+    		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "XAResource.start called on " + this );
         lastStartedXid_ = xid;
         if ( startException_ != null )
             throw startException_;
@@ -354,7 +359,7 @@ implements XAResource, Cloneable
     public void end ( Xid xid , int flags )
     throws XAException
     {
-    	    if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "XAResource.end called on " + this );
+    	    if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "XAResource.end called on " + this );
         lastEndedXid_ = xid;
         if ( endException_ != null )
             throw endException_; 
@@ -367,7 +372,7 @@ implements XAResource, Cloneable
     public int prepare ( Xid xid )
     throws XAException
     {
-    	    if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "XAResource.prepare called on " + this );
+    	    if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "XAResource.prepare called on " + this );
         lastPreparedXid_ = xid;
         if ( prepareException_ != null )
             throw prepareException_;
@@ -384,7 +389,7 @@ implements XAResource, Cloneable
     public void rollback ( Xid xid )
     throws XAException
     {
-    		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "XAResource.rollback called on " + this );
+    		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "XAResource.rollback called on " + this );
         lastRolledbackXid_ = xid;
         if ( rollbackException_ != null )
             throw rollbackException_; 
@@ -397,7 +402,7 @@ implements XAResource, Cloneable
     public void commit ( Xid xid , boolean onephase )
     throws XAException
     {
-    		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "XAResource.commit called on " + this );
+    		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "XAResource.commit called on " + this );
         lastCommittedXid_ = xid;
         if (  commitException_ != null ) {
             

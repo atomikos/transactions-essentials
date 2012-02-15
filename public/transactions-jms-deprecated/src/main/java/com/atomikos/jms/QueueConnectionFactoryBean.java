@@ -25,6 +25,9 @@
 
 package com.atomikos.jms;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
@@ -73,6 +76,8 @@ extends AbstractConnectionFactoryBean
 implements QueueConnectionFactory,
         Externalizable
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(QueueConnectionFactoryBean.class);
+
     private transient JtaQueueConnectionFactory factory_;
 
     // private String xaLookupName_;
@@ -150,7 +155,7 @@ implements QueueConnectionFactory,
             msg.append ( "resourceName=" ).append(resourceName_).append (", ");
             msg.append ( "xaFactoryJndiName=" ).append( xaFactoryJndiName_ );
             msg.append ( "]" );
-            if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( msg.toString() );
+            if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( msg.toString() );
             
             Configuration.logWarning ( "WARNING: class " + getClass().getName() + " is deprecated!" );
         }

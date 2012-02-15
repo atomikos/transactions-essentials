@@ -25,6 +25,9 @@
 
 package com.atomikos.jms;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,6 +54,8 @@ import com.atomikos.util.DynamicProxy;
 
 class AtomikosJmsXaSessionProxy extends AbstractJmsSessionProxy implements SessionHandleStateChangeListener
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(AtomikosJmsXaSessionProxy.class);
+
 	private final static List PRODUCER_CONSUMER_METHODS = Arrays.asList(new String[] {"createConsumer", "createProducer","createDurableSubscriber"});
 	private final static List SESSION_TRANSACTION_METHODS = Arrays.asList(new String[] {"commit", "rollback"});
 	private final static String CLOSE_METHOD = "close";
@@ -182,7 +187,7 @@ class AtomikosJmsXaSessionProxy extends AbstractJmsSessionProxy implements Sessi
 					}
 					producerConsumerProxy = new AtomikosJmsTopicSubscriberProxy ( vendorSubscriber , state );
 				}
-				if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": " + methodName + " returning " + producerConsumerProxy );
+				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": " + methodName + " returning " + producerConsumerProxy );
 				return producerConsumerProxy;
 			
 			}
@@ -190,7 +195,7 @@ class AtomikosJmsXaSessionProxy extends AbstractJmsSessionProxy implements Sessi
 			try {
 				if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( this + ": calling " + methodName + " on JMS driver session..." );
 				Object ret = method.invoke(delegate, args);
-				if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": " + methodName + " returning " + ret );
+				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": " + methodName + " returning " + ret );
 				return ret;
 			}  catch (Exception ex) {
 				String msg =  "Error delegating call to " + methodName + " on JMS driver";
@@ -209,7 +214,7 @@ class AtomikosJmsXaSessionProxy extends AbstractJmsSessionProxy implements Sessi
 	protected void destroy ( boolean closeXaSession ) {
 			if ( closeXaSession ) {
 				//see case 71079: don't close vendor session if transaction is not done yet
-				if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": closing underlying vendor session " + this );
+				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": closing underlying vendor session " + this );
 				try {
 					delegate.close(); 
 				} catch  ( JMSException e ) {

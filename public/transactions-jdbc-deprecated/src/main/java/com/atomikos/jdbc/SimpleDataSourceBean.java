@@ -25,6 +25,9 @@
 
 package com.atomikos.jdbc;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.lang.reflect.UndeclaredThrowableException;
@@ -67,6 +70,7 @@ import com.atomikos.util.SerializableObjectFactory;
 public class SimpleDataSourceBean implements HeuristicDataSource,
         ConnectionPoolDataSource, Serializable, Referenceable
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(SimpleDataSourceBean.class);
 
 	private static final long serialVersionUID = 6413560960979946477L;
 
@@ -219,7 +223,7 @@ public class SimpleDataSourceBean implements HeuristicDataSource,
         sb.append("testOnBorrow=").append(testOnBorrow_);
         sb.append("]");
         
-        if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug(sb.toString());
+        if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug(sb.toString());
         
         Configuration.logWarning ( "WARNING: class " + getClass().getName() + " is deprecated!" );
         

@@ -25,6 +25,9 @@
 
 package com.atomikos.jdbc;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.sql.Connection;
@@ -60,6 +63,7 @@ import com.atomikos.datasource.pool.ConnectionFactory;
 public abstract class AbstractDataSourceBean 
 implements HeuristicDataSource, ConnectionPoolProperties, Referenceable, Serializable
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(AbstractDataSourceBean.class);
 	
 	static final int DEFAULT_ISOLATION_LEVEL_UNSET = -1;
 	static final int DEFAULT_POOL_SIZE = 1;
@@ -284,7 +288,7 @@ implements HeuristicDataSource, ConnectionPoolProperties, Referenceable, Seriali
 			String msg =  "Cannot initialize AtomikosDataSourceBean";
 			AtomikosSQLException.throwAtomikosSQLException ( msg , ex );
 		}
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": init done." );
+		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": init done." );
 	}
 	
 	public void close() 
@@ -299,9 +303,9 @@ implements HeuristicDataSource, ConnectionPoolProperties, Referenceable, Seriali
 			IntraVmObjectRegistry.removeResource ( getUniqueResourceName() );
 		} catch ( NameNotFoundException e ) {
 			//ignore but log
-			if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": Error removing from JNDI" , e );
+			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": Error removing from JNDI" , e );
 		}
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": close done." );
+		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": close done." );
 	}
 	
 	protected abstract ConnectionFactory doInit() throws Exception;
@@ -327,7 +331,7 @@ implements HeuristicDataSource, ConnectionPoolProperties, Referenceable, Seriali
 		} catch (ConnectionPoolException e) {
 			throwAtomikosSQLException("Error borrowing connection", e );
 		}
-		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( this + ": returning " + connection );
+		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": returning " + connection );
 		return connection;
 	}
 

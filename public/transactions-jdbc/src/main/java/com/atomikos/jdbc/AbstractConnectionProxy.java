@@ -25,6 +25,9 @@
 
 package com.atomikos.jdbc;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.lang.reflect.InvocationHandler;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -42,6 +45,7 @@ import com.atomikos.util.DynamicProxy;
 public abstract class AbstractConnectionProxy 
 implements InvocationHandler
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(AbstractConnectionProxy.class);
 	
 	private List statements = new ArrayList();
 
@@ -58,7 +62,7 @@ implements InvocationHandler
 			try {
 				String msg = "Forcing close of pending statement: " + s;
 				if ( warn ) Configuration.logWarning ( msg );
-				else Configuration.logDebug ( msg );
+				else LOGGER.logDebug ( msg );
 				s.close();
 			} catch ( Exception e ) {
 				//ignore but log
