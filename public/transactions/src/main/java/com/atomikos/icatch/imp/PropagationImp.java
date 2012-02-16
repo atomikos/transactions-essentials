@@ -25,9 +25,6 @@
 
 package com.atomikos.icatch.imp;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.util.Stack;
 
 import com.atomikos.icatch.CompositeTransaction;
@@ -35,17 +32,13 @@ import com.atomikos.icatch.Propagation;
 import com.atomikos.icatch.RecoveryCoordinator;
 
 /**
- * 
- * 
+ *
+ *
  * Implementation of <code>Propagation</code> interface.
  */
 
 public class PropagationImp implements Propagation
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(PropagationImp.class);
 
     /**
      * Create a new instance. This method replaces the lowest ancestor by an
@@ -53,7 +46,7 @@ public class PropagationImp implements Propagation
      * Implementations of ImportingTransactionManager should use this method to
      * convert an incoming propagation into the proper local instance, or replay
      * requests will not work properly.
-     * 
+     *
      * @param propagation
      *            The propagation for which to create a new instance.
      * @param adaptor
@@ -84,12 +77,12 @@ public class PropagationImp implements Propagation
     private boolean serial_;
 
     private long timeout_;
-    
+
 
 
     /**
      * Construct a new instance.
-     * 
+     *
      * @param lineage
      *            The lineage stack of ancestors.
      * @param serial
@@ -97,7 +90,7 @@ public class PropagationImp implements Propagation
      * @param timeout
      *            The timeout left for the tx.
      */
-    
+
     public PropagationImp ( Stack lineage , boolean serial , long timeout )
     {
         serial_ = serial;
@@ -164,6 +157,6 @@ public class PropagationImp implements Propagation
 
         return ret;
     }
-    
- 
+
+
 }

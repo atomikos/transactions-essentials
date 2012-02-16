@@ -25,9 +25,6 @@
 
 package com.atomikos.icatch.imp;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Stack;
@@ -44,17 +41,13 @@ import com.atomikos.icatch.TxState;
 import com.atomikos.icatch.imp.thread.InterruptedExceptionHelper;
 
 /**
- * 
- * 
+ *
+ *
  * A state handler for the heuristic mixed coordinator state.
  */
 
 class HeurMixedStateHandler extends CoordinatorStateHandler
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(HeurMixedStateHandler.class);
 
     private Hashtable hazards_;
 
@@ -62,7 +55,7 @@ class HeurMixedStateHandler extends CoordinatorStateHandler
     {
         super ( coordinator );
         hazards_ = new Hashtable ();
-        
+
     }
 
     HeurMixedStateHandler ( CoordinatorStateHandler previous , Hashtable hazards )
@@ -82,9 +75,9 @@ class HeurMixedStateHandler extends CoordinatorStateHandler
         // this state can only be reached through COMMITTING or ABORTING
         // so getCommitted can not be null
         boolean committed = getCommitted ().booleanValue ();
-        
+
         //replay does remove -> re-add hazards each time
-        addAllForReplay ( hazards_.keySet() ); 
+        addAllForReplay ( hazards_.keySet() );
 
         Stack replayStack = getReplayStack ();
         boolean replay = false;
@@ -92,7 +85,7 @@ class HeurMixedStateHandler extends CoordinatorStateHandler
         	replay = true;
             int count = replayStack.size ();
             TerminationResult result = new TerminationResult ( count );
-            
+
             while ( !replayStack.empty () ) {
                 Participant part = (Participant) replayStack.pop ();
                 if ( committed ) {

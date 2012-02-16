@@ -25,9 +25,6 @@
 
 package com.atomikos.icatch.jta;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.io.Serializable;
 
 import javax.naming.NamingException;
@@ -45,8 +42,8 @@ import com.atomikos.icatch.config.UserTransactionServiceImp;
 import com.atomikos.util.SerializableObjectFactory;
 
 /**
- * 
- * 
+ *
+ *
  * Our UserTransaction implementation for J2SE transactions. This class is
  * special in that it automatically starts up and recover the transaction
  * service on first use. <b>Note: don't use this class in J2EE applications in
@@ -57,10 +54,6 @@ import com.atomikos.util.SerializableObjectFactory;
 public class UserTransactionImp implements UserTransaction, Serializable,
         Referenceable
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(UserTransactionImp.class);
 
     private transient TransactionManager txmgr_;
 

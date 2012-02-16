@@ -25,9 +25,6 @@
 
 package com.atomikos.icatch;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -39,10 +36,6 @@ import java.util.Stack;
 
 public class SysException extends RuntimeException
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(SysException.class);
 
 	private static final long serialVersionUID = -9183281406145817016L;
 
@@ -61,7 +54,7 @@ public class SysException extends RuntimeException
 			else {
 				nxt.printStackTrace();
 			}
-		} 
+		}
 	}
 
 	private static void addStackTraceElementsToList ( StackTraceElement[] elements ,
@@ -85,7 +78,7 @@ public class SysException extends RuntimeException
 		myErrors=(java.util.Stack) nestedList.clone();
 	}
 
-	private void addStackTraceToList ( List list ) 
+	private void addStackTraceToList ( List list )
 	{
 		StackTraceElement[] elements = super.getStackTrace();
 		addStackTraceElementsToList ( elements , list );
@@ -104,7 +97,7 @@ public class SysException extends RuntimeException
 		}
 	}
 
-	public java.util.Stack getErrors() 
+	public java.util.Stack getErrors()
 	{
 		if (myErrors==null) return null;
 		else return (java.util.Stack) myErrors.clone();
@@ -119,7 +112,7 @@ public class SysException extends RuntimeException
 
 	public StackTraceElement[] getStackTrace()
 	{
-		ArrayList elements = new ArrayList();  		
+		ArrayList elements = new ArrayList();
 		this.addStackTraceToList ( elements );
 		return ( StackTraceElement[] ) elements.toArray ( new StackTraceElement[0] );
 	}

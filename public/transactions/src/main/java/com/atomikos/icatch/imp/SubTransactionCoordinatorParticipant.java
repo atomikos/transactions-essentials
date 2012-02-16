@@ -25,9 +25,6 @@
 
 package com.atomikos.icatch.imp;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.util.Dictionary;
 
 import com.atomikos.icatch.HeurCommitException;
@@ -42,19 +39,15 @@ import com.atomikos.icatch.TransactionService;
 import com.atomikos.icatch.system.Configuration;
 
 /**
- * 
- * 
- * 
+ *
+ *
+ *
  * A participant for registering a subtx coordinator as a subordinate in 2PC of
  * the parent transaction coordinator.
  */
 
 public class SubTransactionCoordinatorParticipant implements Participant
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(SubTransactionCoordinatorParticipant.class);
 
     private static final long serialVersionUID = -321213151844934630L;
 

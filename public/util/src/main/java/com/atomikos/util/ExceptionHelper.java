@@ -25,9 +25,6 @@
 
 package com.atomikos.util;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
@@ -36,17 +33,13 @@ import java.io.StringWriter;
   *
   */
 
-public class ExceptionHelper 
+public class ExceptionHelper
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(ExceptionHelper.class);
-	
-	public static String convertStackTrace ( Throwable e ) 
+
+	public static String convertStackTrace ( Throwable e )
 	{
 		String ret = null;
-		if ( e != null ) { 
+		if ( e != null ) {
 			StringWriter sw = new StringWriter();
 			PrintWriter pw = new PrintWriter(sw);
 			e.printStackTrace(pw);
@@ -56,8 +49,8 @@ public class ExceptionHelper
 		}
 		return ret;
 	}
-	
+
 	private ExceptionHelper(){}
-	
-	
+
+
 }

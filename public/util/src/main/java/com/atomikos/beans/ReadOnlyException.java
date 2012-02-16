@@ -25,8 +25,6 @@
 
 package com.atomikos.beans;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
 
  /**
   *
@@ -35,23 +33,19 @@ import com.atomikos.logging.Logger;
   *unsupported set operation.
   */
 
-public class ReadOnlyException 
+public class ReadOnlyException
 extends Exception
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(ReadOnlyException.class);
- 
+
 	private static final long serialVersionUID = 246767479746061509L;
 
-	public ReadOnlyException () 
+	public ReadOnlyException ()
     {
-        super(); 
+        super();
     }
-    
+
     public ReadOnlyException ( String msg )
     {
-        super ( msg ); 
+        super ( msg );
     }
 }

@@ -25,38 +25,32 @@
 
 package com.atomikos.datasource.xa.session;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
 
  /**
-  * 
-  * 
-  * 
-  * Exception signaling that the state has 
+  *
+  *
+  *
+  * Exception signaling that the state has
   * been corrupted. Occurrences should almost
   * invariably cause the session handle to be
   * discarded.
-  * 
+  *
   *
   */
 
-public class InvalidSessionHandleStateException 
-extends Exception 
+public class InvalidSessionHandleStateException
+extends Exception
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(InvalidSessionHandleStateException.class);
-	
-	InvalidSessionHandleStateException ( String msg ) 
+
+	InvalidSessionHandleStateException ( String msg )
 	{
 		super ( msg );
 	}
-	
-	
-	InvalidSessionHandleStateException ( String msg , Exception cause ) 
+
+
+	InvalidSessionHandleStateException ( String msg , Exception cause )
 	{
 		super ( msg , cause );
 	}
-	
+
 }

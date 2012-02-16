@@ -25,9 +25,6 @@
 
 package com.atomikos.util;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -37,52 +34,48 @@ import java.io.IOException;
 
 
  /**
-  * A file with underlying version capabilities to ensure safe overwriting. 
-  * 
+  * A file with underlying version capabilities to ensure safe overwriting.
+  *
   * Unlike regular files, this type of file is safe w.r.t. (over)writing
   * a previous version: a backup version of the original content is kept
-  * until the client application explicitly states that a consistent 
+  * until the client application explicitly states that a consistent
   * new version has been written.
   *
   */
 
-public class VersionedFile 
+public class VersionedFile
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(VersionedFile.class);
-	
+
 	private String baseDir;
 	private String suffix;
 	private String baseName;
 
 	//state attributes below
-	
+
 	private long version;
 	private FileInputStream inputStream;
 	private FileOutputStream outputStream;
-	
+
 
 
 	/**
 	 * Creates a new instance based on the given name parameters.
-	 * The actual complete name(s) of the physical file(s) will be based on a version number 
+	 * The actual complete name(s) of the physical file(s) will be based on a version number
 	 * inserted in between, to identify versions.
-	 * 
+	 *
 	 * @param baseDir The base folder.
 	 * @param baseName The base name for of the file path/name.
 	 * @param suffix The suffix to append to the complete file name.
 	 */
-	public VersionedFile ( String baseDir , String baseName , String suffix ) 
+	public VersionedFile ( String baseDir , String baseName , String suffix )
 	{
 		this.baseDir = baseDir;
 		this.suffix = suffix;
 		this.baseName = baseName;
 		resetVersion();
 	}
-	
-	private void resetVersion() 
+
+	private void resetVersion()
 	{
 		this.version = extractLastValidVersionNumberFromFileNames();
 	}
@@ -105,7 +98,7 @@ public class VersionedFile
         	}
         }
 
-        return version;	
+        return version;
 	}
 
 	private long extractVersion ( String name )
@@ -123,49 +116,49 @@ public class VersionedFile
 		}
         return ret;
     }
-	
-	private String getBackupVersionFileName() 
+
+	private String getBackupVersionFileName()
 	{
 		return getBaseUrl() + (version - 1) + getSuffix();
 	}
 
-	public String getCurrentVersionFileName() 
+	public String getCurrentVersionFileName()
 	{
 		return getBaseUrl() + version + getSuffix();
 	}
-	
-	public String getBaseUrl() 
+
+	public String getBaseUrl()
 	{
 		return baseDir + baseName;
 	}
-	
+
 	public String getBaseDir()
 	{
 		return this.baseDir;
 	}
-	
-	public String getBaseName() 
+
+	public String getBaseName()
 	{
 		return this.baseName;
 	}
 
-	public String getSuffix() 
+	public String getSuffix()
 	{
 		return this.suffix;
 	}
 
 	/**
 	 * Opens the last valid version for reading.
-	 * 
+	 *
 	 * @return A stream to read the last valid contents
 	 * of the file: either the backup version (if present)
 	 * or the current (and only) version if no backup is found.
-	 * 
+	 *
 	 * @throws IllegalStateException If a newer version was opened for writing.
 	 * @throws FileNotFoundException If no last version was found.
 	 */
-	public FileInputStream openLastValidVersionForReading() 
-	throws IllegalStateException, FileNotFoundException 
+	public FileInputStream openLastValidVersionForReading()
+	throws IllegalStateException, FileNotFoundException
 	{
 		if ( outputStream != null ) throw new IllegalStateException ( "Already started writing." );
 		inputStream = new FileInputStream ( getCurrentVersionFileName() );
@@ -177,16 +170,16 @@ public class VersionedFile
 	 * this new version is tentative and cannot be read
 	 * by {@link #openLastValidVersionForReading()} until
 	 * {@link #discardBackupVersion()} is called.
-	 * 
+	 *
 	 * @return A stream for writing to.
-	 * @throws FileNotFoundException 
-	 * @throws FileNotFoundException 
-	 * 
+	 * @throws FileNotFoundException
+	 * @throws FileNotFoundException
+	 *
 	 * @throws IllegalStateException If called more than once
 	 * without a close in between.
 	 * @throws FileNotFoundException If the file cannot be opened for writing.
 	 */
-	public FileOutputStream openNewVersionForWriting() throws FileNotFoundException 
+	public FileOutputStream openNewVersionForWriting() throws FileNotFoundException
 	{
 		if ( outputStream != null ) throw new IllegalStateException ( "Already writing a new version." );
 		version++;
@@ -195,15 +188,15 @@ public class VersionedFile
 	}
 
 	/**
-	 * Discards the backup version (if any). 
+	 * Discards the backup version (if any).
 	 * After calling this method, the newer version
 	 * produced after calling {@link #openNewVersionForWriting()}
-	 * becomes valid for reading next time when 
+	 * becomes valid for reading next time when
 	 * {@link #openLastValidVersionForReading()} is called.
-	 * 
+	 *
 	 * Note: it is the caller's responsibility to make sure that
 	 * all new data has been flushed to disk before calling this method!
-	 * 
+	 *
 	 * @throws IllegalStateException If {@link #openNewVersionForWriting()} has not been called yet.
 	 * @throws IOException If the previous version exists but could no be deleted.
 	 */
@@ -213,14 +206,14 @@ public class VersionedFile
 		String fileName = getBackupVersionFileName();
 		File temp = new File ( fileName );
         if ( temp.exists() && !temp.delete() ) throw new IOException ( "Failed to delete backup version: " + fileName );
-		
+
 	}
 
 	/**
 	 * Closes any open resources and resets the file for reading again.
 	 * @throws IOException If the output stream could not be closed.
 	 */
-	
+
 	public void close() throws IOException
 	{
 		resetVersion();
@@ -236,14 +229,14 @@ public class VersionedFile
 		}
 		if ( outputStream != null ) {
 			try {
-				if ( outputStream.getFD().valid() ) outputStream.close();	
+				if ( outputStream.getFD().valid() ) outputStream.close();
 			} finally {
 				outputStream = null;
 			}
-		}	
+		}
 	}
 
-	public long getSize() 
+	public long getSize()
 	{
 		long res = -1;
 		File f = new File ( getCurrentVersionFileName() );

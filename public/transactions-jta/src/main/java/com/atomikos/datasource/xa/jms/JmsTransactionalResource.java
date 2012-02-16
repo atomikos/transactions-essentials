@@ -25,9 +25,6 @@
 
 package com.atomikos.datasource.xa.jms;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.util.Stack;
 
 import javax.jms.JMSException;
@@ -41,18 +38,14 @@ import com.atomikos.datasource.xa.XATransactionalResource;
 import com.atomikos.datasource.xa.XidFactory;
 
 /**
- * 
+ *
  * resource implementation for JMS queues.
- * 
- * 
+ *
+ *
  */
 
 public class JmsTransactionalResource extends XATransactionalResource
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(JmsTransactionalResource.class);
 
     private XAConnectionFactory factory_;
 
@@ -60,7 +53,7 @@ public class JmsTransactionalResource extends XATransactionalResource
 
     /**
      * Create a new instance.
-     * 
+     *
      * @param name
      *            The unique resource name.
      * @param factory
@@ -79,7 +72,7 @@ public class JmsTransactionalResource extends XATransactionalResource
      * Create a new instance, but one that requires a specific Xid format. This
      * may be necessary for some JMS implementations that require their own
      * format.
-     * 
+     *
      * @param name
      *            The unique resource name.
      * @param qFactory
@@ -98,7 +91,7 @@ public class JmsTransactionalResource extends XATransactionalResource
 
     /**
      * Implements the functionality to get an XAResource handle.
-     * 
+     *
      * @return XAResource The XAResource instance.
      */
 

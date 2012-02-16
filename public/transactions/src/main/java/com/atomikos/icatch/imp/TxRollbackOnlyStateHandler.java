@@ -25,9 +25,6 @@
 
 package com.atomikos.icatch.imp;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import com.atomikos.icatch.CompositeTransaction;
 import com.atomikos.icatch.Participant;
 import com.atomikos.icatch.RecoveryCoordinator;
@@ -36,24 +33,20 @@ import com.atomikos.icatch.SysException;
 import com.atomikos.icatch.TxState;
 
 /**
- * 
- * 
+ *
+ *
  * A rollback only state handler.
  */
 
 class TxRollbackOnlyStateHandler extends TransactionStateHandler
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(TxRollbackOnlyStateHandler.class);
 
     protected TxRollbackOnlyStateHandler ( CompositeTransactionImp ct ,
             TransactionStateHandler handler )
     {
         super ( ct , handler );
     }
-    
+
     protected RecoveryCoordinator addParticipant ( Participant participant )
     throws SysException, java.lang.IllegalStateException
     {

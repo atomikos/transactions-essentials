@@ -25,9 +25,6 @@
 
 package com.atomikos.beans;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -59,10 +56,6 @@ import javax.swing.JScrollPane;
 public class BeanWizard
 implements PropertyChangeListener
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(BeanWizard.class);
 
     /**
      *Filter the given properties to contain only those to be managed
@@ -75,9 +68,9 @@ implements PropertyChangeListener
     throws PropertyException
     {
         if ( props == null ) return null;
-        
+
         ArrayList list = new ArrayList();
-        
+
         for ( int i = 0 ; i < props.length ; i++ ) {
             if ( ! (  props[i].isHidden() ||
                       props[i].isReadOnly() ||
@@ -92,7 +85,7 @@ implements PropertyChangeListener
         }
         return ( Property[] ) list.toArray ( new Property[0] );
     }
-    
+
     private JPanel panel_;
     //the panel to display in a client program
 
@@ -111,7 +104,7 @@ implements PropertyChangeListener
         tempPanel.setLayout ( new GridLayout ( rows , 1 ) );
         for ( int i = 0 ; i < rows ; i++ ) {
             JPanel propertyPanel = new JPanel();
-           
+
             propertyPanel.setLayout ( new GridLayout ( 1 , 2 ) );
             JLabel nameLabel = new JLabel ( properties[i].getName() );
             //set the name to bold if the property is essential
@@ -133,13 +126,13 @@ implements PropertyChangeListener
             else
                 propertyPanel.add ( properties[i].getEditor().getComponent() );
             properties[i].getEditor().addPropertyChangeListener ( this );
-            
+
             tempPanel.add ( propertyPanel );
             panel_.setPreferredSize ( new Dimension ( 300 , 300 ) );
             panel_.add ( new JScrollPane ( tempPanel ) , BorderLayout.CENTER );
-            
+
         }
-        
+
     }
 
     /**
@@ -149,7 +142,7 @@ implements PropertyChangeListener
      *
      *@return JPanel The panel.
      */
-    
+
     public JPanel getPanel()
     {
         return panel_;
@@ -162,7 +155,7 @@ implements PropertyChangeListener
      *
      *@return Object The bean instance.
      */
-    
+
     public Object getBean()
     {
         if ( inspector_ == null ) return null;

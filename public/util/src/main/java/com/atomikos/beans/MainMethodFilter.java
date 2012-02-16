@@ -25,9 +25,6 @@
 
 package com.atomikos.beans;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -35,34 +32,30 @@ import java.lang.reflect.Modifier;
 
 
 /**
- * 
- * 
- * 
- * A filter class for main static methods (application entry points).
- * 
- * 
  *
- * 
+ *
+ *
+ * A filter class for main static methods (application entry points).
+ *
+ *
+ *
+ *
  */
 
 public class MainMethodFilter
 implements MemberFilter
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(MainMethodFilter.class);
 
     public boolean acceptsField(Field field)
     {
-        
+
         return false;
     }
 
-  
+
     public boolean acceptsMethod(Method method)
     {
-     
+
      	//System.out.println ( "Checking main");
      	//System.out.println ( method.getName());
         if ( !method.getName().endsWith ( "main" ) ) return false;
@@ -83,12 +76,12 @@ implements MemberFilter
         return true;
     }
 
-   
+
     public boolean acceptsConstructor(Constructor constructor)
     {
         return false;
     }
 
 
-    
+
 }

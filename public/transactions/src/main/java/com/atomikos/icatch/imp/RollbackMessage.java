@@ -25,9 +25,6 @@
 
 package com.atomikos.icatch.imp;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeurMixedException;
@@ -35,17 +32,13 @@ import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.Participant;
 
 /**
- * 
- * 
+ *
+ *
  * A rollback message implemenation.
  */
 
 class RollbackMessage extends PropagationMessage
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(RollbackMessage.class);
 
     protected int retrycount_ = 0;
     // no of retries so far
@@ -63,7 +56,7 @@ class RollbackMessage extends PropagationMessage
 
     /**
      * A rollback message.
-     * 
+     *
      * @return Object An array of heuristic messages.
      * @exception PropagationException
      *                If problems. If heuristics, this will be a fatal

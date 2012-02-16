@@ -25,9 +25,6 @@
 
 package com.atomikos.icatch.jta;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.util.Hashtable;
 
 import javax.naming.Context;
@@ -36,17 +33,13 @@ import javax.naming.Reference;
 import javax.naming.spi.ObjectFactory;
 
 /**
- * 
- * 
+ *
+ *
  * The factory for JNDI lookup of RemoteClientUserTransactionFactory objects.
  */
 
 public class RemoteClientUserTransactionFactory implements ObjectFactory
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(RemoteClientUserTransactionFactory.class);
 
     private String url_;
 

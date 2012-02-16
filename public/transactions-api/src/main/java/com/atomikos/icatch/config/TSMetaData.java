@@ -25,8 +25,6 @@
 
 package com.atomikos.icatch.config;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
 
  /**
   *

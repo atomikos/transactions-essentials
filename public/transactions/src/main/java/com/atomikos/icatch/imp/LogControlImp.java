@@ -25,9 +25,6 @@
 
 package com.atomikos.icatch.imp;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
@@ -36,23 +33,19 @@ import com.atomikos.icatch.admin.AdminTransaction;
 import com.atomikos.icatch.admin.LogControl;
 
 /**
- * 
- * 
+ *
+ *
  * A default implementation of LogControl.
  */
 
 class LogControlImp implements com.atomikos.icatch.admin.LogControl
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(LogControlImp.class);
 
     private TransactionServiceImp service_;
 
     /**
      * Create a new instance.
-     * 
+     *
      * @param service
      *            The transaction service to work with.
      */

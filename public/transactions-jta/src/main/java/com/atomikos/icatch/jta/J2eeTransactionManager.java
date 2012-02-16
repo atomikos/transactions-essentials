@@ -25,9 +25,6 @@
 
 package com.atomikos.icatch.jta;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.io.Serializable;
 
 import javax.naming.NamingException;
@@ -46,26 +43,22 @@ import javax.transaction.UserTransaction;
 import com.atomikos.util.SerializableObjectFactory;
 
 /**
- * 
- * 
- * 
- * 
- * 
+ *
+ *
+ *
+ *
+ *
  * An implementation of TransactionManager that should be used by J2EE
  * applications. Instances can be bound in JNDI if the application server allows
  * this.
  */
-public class J2eeTransactionManager 
+public class J2eeTransactionManager
 implements TransactionManager,
         Serializable, Referenceable, UserTransaction
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(J2eeTransactionManager.class);
 
 	private static final long serialVersionUID = 8584376600562353607L;
-	
+
 	private transient TransactionManagerImp tm;
 
     private void checkSetup () throws SystemException

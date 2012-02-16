@@ -25,8 +25,6 @@
 
 package com.atomikos.icatch;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
 
 /**
  * An interface for a TM that allows outgoing remote calls to be transactional.

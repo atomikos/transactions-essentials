@@ -25,9 +25,6 @@
 
 package com.atomikos.icatch.jta;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
 
@@ -36,14 +33,10 @@ import javax.transaction.xa.XAResource;
  * hashtable that uses the XAResource instance for mapping. This is needed
  * because otherwise the JTA wouldn't work with XAResource implementations that
  * have overridden equals.
- * 
+ *
  */
 class XAResourceKey
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(XAResourceKey.class);
 
     private XAResource xares;
 

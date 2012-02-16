@@ -25,9 +25,6 @@
 
 package com.atomikos.icatch.admin.jmx;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import com.atomikos.icatch.admin.AdminTransaction;
 
 /**
@@ -37,10 +34,6 @@ import com.atomikos.icatch.admin.AdminTransaction;
 
 public class JmxDefaultTransaction extends JmxTransaction
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(JmxDefaultTransaction.class);
 
     /**
      * @param adminTransaction

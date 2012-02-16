@@ -25,9 +25,6 @@
 
 package com.atomikos.beans;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -51,22 +48,18 @@ public class TextFieldComponent
 extends AbstractPropertyEditorComponent
 implements CaretListener //ActionListener
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(TextFieldComponent.class);
 
     private JTextField text_;
     //the text field
-    
+
     private JPanel panel_;
     //the component that can be returned to clients
-    
+
     private Property property_;
 
     private boolean decimal_;
     //true iff numeric and decimal point allowed
-    
+
     public TextFieldComponent ( Property property )
     throws PropertyException
     {
@@ -102,11 +95,11 @@ implements CaretListener //ActionListener
                 }
             }} );
     }
-  
+
    /**
     *@see PropertyEditorComponent
     */
-    
+
    public Component getComponent()
    {
         try {
@@ -117,23 +110,23 @@ implements CaretListener //ActionListener
         catch ( PropertyException e ) { }
         return panel_;
    }
-   
+
    public void actionPerformed ( ActionEvent e )
    {
-        Class wrapperClass = 
+        Class wrapperClass =
           PrimitiveClasses.getWrapperClass ( property_.getType() );
         try {
             if ( wrapperClass == null ) {
                 getPropertyEditor().setAsText ( text_.getText() );
-                
+
             }
             else {
-                Object value = PrimitiveClasses.createWrapperObject ( 
+                Object value = PrimitiveClasses.createWrapperObject (
                     text_.getText() , property_.getType() );
-                getPropertyEditor().setValue ( value ); 
+                getPropertyEditor().setValue ( value );
             }
             //text_.setColumns ( text_.getText().length() +  3 );
-            
+
         }
         catch ( Exception err ) {
               err.printStackTrace();
@@ -143,7 +136,7 @@ implements CaretListener //ActionListener
     public void caretUpdate ( CaretEvent e )
     {
         if ( text_.getText() == null || text_.getText().equals ( "" ) ) return;
-        
+
         Class wrapperClass =
         PrimitiveClasses.getWrapperClass ( property_.getType() );
         try {

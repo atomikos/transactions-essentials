@@ -25,9 +25,6 @@
 
 package com.atomikos.jms.extra;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Session;
@@ -35,18 +32,14 @@ import javax.jms.TextMessage;
 
 class SendTextMessageCallback extends AbstractSendMessageCallback
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(SendTextMessageCallback.class);
 
 	private String text;
-	
+
 	public SendTextMessageCallback ( String text , Destination destination , Destination replyToDestination , int deliveryMode  , int priority , long ttl ) {
 		super ( destination , replyToDestination , deliveryMode , priority , ttl );
 		this.text = text;
 	}
-	
+
 	public void doInJmsSession ( Session session ) throws JMSException
 	{
 		TextMessage msg = session.createTextMessage();

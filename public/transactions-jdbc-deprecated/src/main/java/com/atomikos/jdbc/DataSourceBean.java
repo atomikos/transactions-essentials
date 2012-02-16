@@ -25,9 +25,6 @@
 
 package com.atomikos.jdbc;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.sql.Connection;
@@ -49,19 +46,15 @@ import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.system.Configuration;
 
 /**
- * 
- * 
+ *
+ *
  * @deprecated As of release 3.3, the {@link AtomikosDataSourceBean} should be used instead.
- * 
+ *
  */
 
 public class DataSourceBean implements HeuristicDataSource, Serializable,
         Referenceable
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(DataSourceBean.class);
 
     private transient JtaDataSourceImp ds_;
     // the data source to delegate to
@@ -91,7 +84,7 @@ public class DataSourceBean implements HeuristicDataSource, Serializable,
 
     private String validatingQuery_;
     // an optional query for validating all settings
-    
+
     private boolean testOnBorrow_;
     //should connections be tested when gotten?
 
@@ -157,12 +150,12 @@ public class DataSourceBean implements HeuristicDataSource, Serializable,
     {
         checkSetup ( false );
     }
-    
+
     public void setTestOnBorrow ( String value )
     {
     		testOnBorrow_ = "true".equals ( value );
     }
-    
+
     public String getTestOnBorrow()
     {
     		return testOnBorrow_ + "";
@@ -262,7 +255,7 @@ public class DataSourceBean implements HeuristicDataSource, Serializable,
     /**
      * Perform validation based on the validating query. This method does
      * nothing if no query was specified.
-     * 
+     *
      * @throws SQLException
      *             If validation fails.
      */
@@ -386,5 +379,5 @@ public class DataSourceBean implements HeuristicDataSource, Serializable,
         return JtaDataSourceImp.createReference ( getUniqueResourceName () );
     }
 
-	
+
 }

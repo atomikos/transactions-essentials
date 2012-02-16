@@ -25,9 +25,6 @@
 
 package com.atomikos.jms;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import javax.jms.JMSException;
 import javax.jms.Queue;
 import javax.jms.QueueReceiver;
@@ -39,29 +36,25 @@ import javax.transaction.xa.XAResource;
 import com.atomikos.datasource.TransactionalResource;
 
 /**
- * 
- * 
+ *
+ *
  * A special session for Atomikos JTA.
  * <p>
- * Topic functionality in this product was sponsored by 
+ * Topic functionality in this product was sponsored by
  * <a href="http://www.webtide.com">Webtide</a>.
  */
 
-class JtaQueueSession 
+class JtaQueueSession
 extends DefaultJtaSession
 implements QueueSession
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(JtaQueueSession.class);
-   
+
     JtaQueueSession ( XAQueueSession session , TransactionalResource res ,
             XAResource xares )
     {
         super ( session , res , xares );
     }
-    
+
     private QueueSession getQueueSession()
     {
     		return ( QueueSession ) getSession();
@@ -85,7 +78,7 @@ implements QueueSession
         QueueReceiver receiver = getQueueSession().createReceiver ( q );
         return new JtaQueueReceiver ( receiver , getTransactionalResource() , getXAResource() );
     }
-    
+
 
 
 }

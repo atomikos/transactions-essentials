@@ -25,9 +25,6 @@
 
 package com.atomikos.icatch.admin.imp;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -46,8 +43,8 @@ import com.atomikos.icatch.admin.LogControl;
 import com.atomikos.icatch.config.UserTransactionService;
 
 /**
- * 
- * 
+ *
+ *
  * An administration tool for the TM, allowing log inspection. The inspection
  * window for viewing active transactions will <b>not show transactions that
  * start afterwards</b>. Only a (periodically refreshed) snapshot of those
@@ -57,10 +54,6 @@ import com.atomikos.icatch.config.UserTransactionService;
 
 public class LocalLogAdministrator implements ActionListener, LogAdministrator
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(LocalLogAdministrator.class);
 
     private JFrame frame_;
     // the frame for displaying
@@ -78,19 +71,19 @@ public class LocalLogAdministrator implements ActionListener, LogAdministrator
 
     private ResourceBundle messages_;
 
-    
+
     /**
      * Creates a new instance in standalone mode.
      */
-    
-    public LocalLogAdministrator () 
+
+    public LocalLogAdministrator ()
     {
     	this ( "Atomikos LogAdministrator" , true );
     }
-    
+
     /**
      * Construct a new LocalLogAdministrator utility.
-     * 
+     *
      * @param title
      *            The title for the tool window.
      * @param standalone
@@ -140,7 +133,7 @@ public class LocalLogAdministrator implements ActionListener, LogAdministrator
         // ImageIcon img = new ImageIcon ( bytes );
         // JLabel label = new JLabel ( img );
         // frame_.getContentPane().add ( label );
-        //              
+        //
         // }
         // catch ( Exception e ) {
         // e.printStackTrace();
@@ -177,7 +170,7 @@ public class LocalLogAdministrator implements ActionListener, LogAdministrator
 
     /**
      * Initialize the tool to use a given recovery manager.
-     * 
+     *
      * @param service
      *            The transaction service being used.
      */
@@ -190,7 +183,7 @@ public class LocalLogAdministrator implements ActionListener, LogAdministrator
 
     /**
      * Get the frame we are using.
-     * 
+     *
      * @return JFrame The swing frame.
      */
 

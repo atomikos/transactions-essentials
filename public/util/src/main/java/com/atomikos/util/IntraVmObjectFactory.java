@@ -25,9 +25,6 @@
 
 package com.atomikos.util;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.io.Serializable;
 import java.util.Hashtable;
 
@@ -42,32 +39,28 @@ import javax.naming.spi.ObjectFactory;
 
 
 /**
- * An intra-VM object factory. Objects registered in the 
+ * An intra-VM object factory. Objects registered in the
  * IntraVmObjectRegistry can be restored from a reference
  * with the help of this factory.
- * 
- * 
+ *
+ *
  */
 
-public class IntraVmObjectFactory implements ObjectFactory 
+public class IntraVmObjectFactory implements ObjectFactory
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(IntraVmObjectFactory.class);
 
 	private static final String NAME_REF_ADDRESS_TYPE = "uniqueResourceName";
-	
+
 	private static SerializableObjectFactory serializableObjectFactory = new SerializableObjectFactory();
-	
+
 	//synchronized static to avoid race conditions between concurrent retrievals
-	private static synchronized Object retrieveObjectInstance ( 
-			Object obj, Name name, Context nameCtx, Hashtable environment) 
+	private static synchronized Object retrieveObjectInstance (
+			Object obj, Name name, Context nameCtx, Hashtable environment)
 			throws Exception
 	{
 		Object  ret = null;
-		
-		
+
+
 		if ( obj instanceof Reference ) {
 			String resourceName = null;
 			Reference ref = ( Reference ) obj;
@@ -80,28 +73,28 @@ public class IntraVmObjectFactory implements ObjectFactory
 				Object resource = serializableObjectFactory.getObjectInstance(obj, name, nameCtx, environment);
 				IntraVmObjectRegistry.addResource ( resourceName, resource );
 				ret = resource;
-			}		
+			}
 		}
-		
+
 		return ret;
 	}
-	
-	public static synchronized Reference createReference ( Serializable object , String name ) throws NamingException 
+
+	public static synchronized Reference createReference ( Serializable object , String name ) throws NamingException
 	{
 		Reference ret = null;
 		if ( object == null ) throw new IllegalArgumentException ( "invalid resource: null" );
 		if ( name == null ) throw new IllegalArgumentException ( "name should not be null" );
-		
+
 		//make sure that lookup works - add the bean to the registry if needed
 		try {
 			Object existing = IntraVmObjectRegistry.getResource ( name );
 			if ( existing != object ) {
-				//another instance with the same name already there 
+				//another instance with the same name already there
 				String msg = "Another resource already exists with name " + name + " - pick a different name";
 				throw new NamingException ( msg );
 			}
 		} catch ( NameNotFoundException notThere ) {
-			// make sure this bean is registered for JNDI lookups to find the same instance 
+			// make sure this bean is registered for JNDI lookups to find the same instance
 			// otherwise, concurrent lookups would create race conditions during init
 			// and the thread that creates a bean might not be able to use it (unfair?)
 			IntraVmObjectRegistry.addResource ( name , object );
@@ -112,7 +105,7 @@ public class IntraVmObjectFactory implements ObjectFactory
 		return ret;
 	}
 
-	
+
 	public Object getObjectInstance(Object obj, Name name, Context nameCtx, Hashtable environment) throws Exception
 	{
 		return retrieveObjectInstance(obj, name, nameCtx, environment);

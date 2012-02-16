@@ -25,9 +25,6 @@
 
 package com.atomikos.icatch.imp;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.util.Hashtable;
 import java.util.Stack;
 import java.util.Vector;
@@ -35,17 +32,13 @@ import java.util.Vector;
 import com.atomikos.icatch.HeuristicMessage;
 
 /**
- * 
- * 
+ *
+ *
  * A Result is responsible for collecting the replies of a PropagationMessage.
  */
 
 abstract class Result
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(Result.class);
 
     /**
      * Result status codes. Set during analyze().
@@ -76,7 +69,7 @@ abstract class Result
 
     /**
      * Constructor.
-     * 
+     *
      * @param messagecount
      *            For synchronization: the number of replies that has to arrive
      *            before the round is done.
@@ -89,9 +82,9 @@ abstract class Result
 
     /**
      * Get the overall result for this communication round.
-     * 
+     *
      * @return int One of the static codes.
-     * 
+     *
      * @exception IllegalStateException
      *                If active msgs exist.
      * @exception InterruptedException
@@ -106,7 +99,7 @@ abstract class Result
 
     /**
      * Add any heuristic messages from this message round.
-     * 
+     *
      * Needed in implementation of analyze().
      */
 
@@ -123,7 +116,7 @@ abstract class Result
      * Add any heuristic messages from this message round. This method serves
      * for adding the messages of participants that decided ON THEIR OWN to
      * terminate heuristically.
-     * 
+     *
      * Needed in implementation of analyze().
      */
 
@@ -138,7 +131,7 @@ abstract class Result
 
     /**
      * Abstract method: analyze the results for this message round.
-     * 
+     *
      * @exception IllegalStateException
      *                If not done yet.
      * @exception InterruptedException
@@ -152,7 +145,7 @@ abstract class Result
      * Get the heuristic info for the message round. This returns all heuristic
      * messages for participants that did NOT heuristically terminate on their
      * own.
-     * 
+     *
      * @return HeuristicMessages[] The heuristic messages, or null if none.
      * @exception IllegalStateException
      *                If not done yet.
@@ -179,7 +172,7 @@ abstract class Result
     /**
      * Get the heuristic error info for the message round. These are for
      * participants that actually did terminate heuristically on their own.
-     * 
+     *
      * @return HeuristicMessages[] The heuristic messages, or null if none.
      * @exception IllegalStateException
      *                If not done yet.
@@ -205,7 +198,7 @@ abstract class Result
 
     /**
      * Add a reply to the result.
-     * 
+     *
      * @param reply
      *            The reply to add.
      */
@@ -228,7 +221,7 @@ abstract class Result
 
     /**
      * Get all replies for this result's message round. Block until ready.
-     * 
+     *
      * @return Stack All replies in a stack.
      * @exception IllegalStateException
      *                If not all replies are in yet.
@@ -245,7 +238,7 @@ abstract class Result
 
     /**
      * Wait until all replies arrived.
-     * 
+     *
      * @exception InterruptedException
      *                If the wait is interrupted.
      */

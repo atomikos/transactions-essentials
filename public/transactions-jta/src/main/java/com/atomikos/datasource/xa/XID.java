@@ -25,26 +25,19 @@
 
 package com.atomikos.datasource.xa;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.io.Serializable;
 import java.util.Arrays;
 
 import javax.transaction.xa.Xid;
 
 /**
- * 
- * 
+ *
+ *
  * An adaptor class for mapping a String to Xid type.
  */
 
 public class XID implements Serializable, Xid
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(XID.class);
 
 	private static final long serialVersionUID = 4796496938014754464L;
 
@@ -79,7 +72,7 @@ public class XID implements Serializable, Xid
     /**
      * Create a new instance with the resource name as branch. This is the main
      * constructor for new instances.
-     * 
+     *
      * @param tid
      *            The global transaction identifier.
      * @param resourceURL
@@ -107,7 +100,7 @@ public class XID implements Serializable, Xid
      * Copy constructor needed during recovery: if the data source returns
      * inappropriate instances (that do not implement equals and hashCode) then
      * we will need this constructor.
-     * 
+     *
      * @param xid
      *            The xid.
      */
@@ -151,7 +144,7 @@ public class XID implements Serializable, Xid
 //        String id3 = new String ( getGlobalTransactionId () ).intern ();
 //        String id4 = new String ( getBranchQualifier () ).intern ();
 //      return (id1.intern ().equals ( id3.intern () ) && id2.intern ().equals (
-//      id4.intern () ));        
+//      id4.intern () ));
         //PLQ : this should be faster...
         return Arrays.equals(xid.getGlobalTransactionId (),getGlobalTransactionId ()) && Arrays.equals(xid.getBranchQualifier (), getBranchQualifier ());
 

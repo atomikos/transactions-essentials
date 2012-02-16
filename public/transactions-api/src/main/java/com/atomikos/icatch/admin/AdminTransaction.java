@@ -25,9 +25,6 @@
 
 package com.atomikos.icatch.admin;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.io.Serializable;
 
 import com.atomikos.icatch.HeurCommitException;
@@ -39,44 +36,44 @@ import com.atomikos.icatch.SysException;
 
  /**
   * An administration interface for a transaction.
-  * Allows inspection of heuristic info, 
+  * Allows inspection of heuristic info,
   * as well as forced two-phase commit methods.
   */
 
 public interface AdminTransaction extends Serializable
 {
 	 public static final int STATE_ACTIVE = -3;
-	 
-	 public static final int STATE_PREPARING = -2;
-  
-     public static final int STATE_UNKNOWN = -1;
-     
-     public static final int STATE_PREPARED = 0;
-     
-     public static final int STATE_HEUR_COMMITTED = 1;
-     
-     public static final int STATE_HEUR_ABORTED = 2;
-     
-     public static final int STATE_HEUR_HAZARD = 3;
-     
-     public static final int STATE_HEUR_MIXED = 4;
-     
-     public static final int STATE_ABORTING = 5;
-     
-     public static final int STATE_COMMITTING = 6;
-     
-     public static final int STATE_TERMINATED = 7;
-     
 
-      
+	 public static final int STATE_PREPARING = -2;
+
+     public static final int STATE_UNKNOWN = -1;
+
+     public static final int STATE_PREPARED = 0;
+
+     public static final int STATE_HEUR_COMMITTED = 1;
+
+     public static final int STATE_HEUR_ABORTED = 2;
+
+     public static final int STATE_HEUR_HAZARD = 3;
+
+     public static final int STATE_HEUR_MIXED = 4;
+
+     public static final int STATE_ABORTING = 5;
+
+     public static final int STATE_COMMITTING = 6;
+
+     public static final int STATE_TERMINATED = 7;
+
+
+
        /**
         * Gets the transaction identifier.
         *
         * @return String The unique id.
         */
-        
+
       public String getTid();
-      
+
        /**
         *Gets the transaction's state.
         *
@@ -84,38 +81,38 @@ public interface AdminTransaction extends Serializable
         * NOTE: the state is an int rather than the generic Object,
         * because instances need to be Serializable.
         */
-      
+
       public int getState();
-      
+
        /**
         * Gets the high-level heuristic comments.
         * This is what remote clients will see as well.
         * @return HeuristicMessage The comments giving a summary
         * of the tasks done in this transaction.
         */
-        
+
       public HeuristicMessage[] getTags();
-      
+
        /**
         * Gets the HeuristicMessage detailed info for this transaction.
         * @return HeuristicMessage[] The detailed heuristic messages.
-        * These show the comments for EACH individual resource 
+        * These show the comments for EACH individual resource
         * that was part of the transaction.
         */
-      
+
       public HeuristicMessage[] getHeuristicMessages();
-        
+
         /**
          * Gets the heuristic messages for work in the given state.
          * This method is useful in particular for STATE_HEUR_MIXED
          * and STATE_HEUR_HAZARD.
          *
-         * @return HeuristicMessage[] The description of all work in 
+         * @return HeuristicMessage[] The description of all work in
          * the given state, or null if no such work exists.
          */
-         
+
       public HeuristicMessage[] getHeuristicMessages ( int state );
-      
+
        /**
         * Tests if the transaction's 2PC outcome was commit.
         * Needed especially for the heuristic states, if the
@@ -128,10 +125,10 @@ public interface AdminTransaction extends Serializable
         * @return True if commit was decided (either heuristically
         * or by the super coordinator).
         */
-      
+
       public boolean wasCommitted();
-      
-      
+
+
       /**
        * Forces commit of the transaction.
        *
@@ -139,7 +136,7 @@ public interface AdminTransaction extends Serializable
        *
        * @exception HeurMixedException If part of it was rolled back.
        * @exception HeurHazardException On possible conflicts.
-       * @exception SysException 
+       * @exception SysException
        */
 
 
@@ -149,22 +146,22 @@ public interface AdminTransaction extends Serializable
              HeurMixedException,
              SysException;
 
-      
+
       /**
        * Forces rollback of the transaction.
        *
-       * @exception HeurCommitException If heuristically committed in 
+       * @exception HeurCommitException If heuristically committed in
        * the meantime.
-       * 
+       *
        * @exception HeurHazardException If the state is not certain.
-       * 
+       *
        * @exception  HeurMixedException If partially rolled back.
-       * 
+       *
        * @exception SysException
        */
 
-      
-      public void forceRollback() 
+
+      public void forceRollback()
       throws HeurCommitException,
              HeurMixedException,
              HeurHazardException,
@@ -175,5 +172,5 @@ public interface AdminTransaction extends Serializable
        */
 
       public void forceForget();
-       
+
 }

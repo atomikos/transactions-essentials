@@ -25,9 +25,6 @@
 
 package com.atomikos.jms;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.util.HashMap;
 
 import javax.jms.Connection;
@@ -46,8 +43,8 @@ import com.atomikos.datasource.xa.XidFactory;
 import com.atomikos.datasource.xa.jms.JmsTransactionalResource;
 
 /**
- * 
- * 
+ *
+ *
  * A queue connection factory that couples JMS queue sends/receives to JTA
  * transactions. Use this class only if you need to do explicit resource
  * registration with the transaction service (i.e., when the underlying
@@ -70,17 +67,13 @@ import com.atomikos.datasource.xa.jms.JmsTransactionalResource;
  *com.atomikos.icatch.UserTransactionService uts = new com.atomikos.icatch.UserTransactionServiceImp();<br>
  *uts.registerResource ( resource );<br>
  *</code>
- * 
- * 
+ *
+ *
  */
 
 public class JtaQueueConnectionFactory implements QueueConnectionFactory,
         Referenceable
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(JtaQueueConnectionFactory.class);
 
     private static HashMap nameToFactory_ = new HashMap ();
     // for JNDI lookup: maps name to instance
@@ -92,7 +85,7 @@ public class JtaQueueConnectionFactory implements QueueConnectionFactory,
 
     /**
      * Create a reference for the given resource.
-     * 
+     *
      * @param uniqueName
      * @return
      */
@@ -110,7 +103,7 @@ public class JtaQueueConnectionFactory implements QueueConnectionFactory,
     /**
      * Helper method to get an instance with given name. JNDI Object Factories
      * can use this to retrieve an instance that was previously bound.
-     * 
+     *
      * @param name
      *            The name of the connection factory.
      * @return JtaQueueConnectionFactory The factory, null if not there.
@@ -150,7 +143,7 @@ public class JtaQueueConnectionFactory implements QueueConnectionFactory,
 
     /**
      * Add an instance to the map, so that it can be found by name.
-     * 
+     *
      * @param name
      *            The name to map on.
      * @param instance
@@ -166,7 +159,7 @@ public class JtaQueueConnectionFactory implements QueueConnectionFactory,
 
     /**
      * Remove a map entry for the given name.
-     * 
+     *
      * @param name
      *            The name to unmap.
      */
@@ -180,7 +173,7 @@ public class JtaQueueConnectionFactory implements QueueConnectionFactory,
     /**
      * Create a new instance with a given JMS vendor-supplied xa connection
      * factory.
-     * 
+     *
      * @param resourceName
      *            The unique name for the transactional resource that will be
      *            created.
@@ -200,7 +193,7 @@ public class JtaQueueConnectionFactory implements QueueConnectionFactory,
     /**
      * Create a new instance with a given JMS vendor-supplied xa connection
      * factory, and a specific XidFactory.
-     * 
+     *
      * @param resourceName
      *            The unique name for the transactional resource that will be
      *            created.
@@ -220,7 +213,7 @@ public class JtaQueueConnectionFactory implements QueueConnectionFactory,
 
     /**
      * Gets the transactional resource created during initialization.
-     * 
+     *
      * @return JmsTransactionalResource The resource. This should be added to
      *         the transaction service's recoverable resources.
      */
@@ -232,7 +225,7 @@ public class JtaQueueConnectionFactory implements QueueConnectionFactory,
 
     /**
      * Creates a default connection.
-     * 
+     *
      * @return QueueConnection The connection.
      */
 
@@ -244,7 +237,7 @@ public class JtaQueueConnectionFactory implements QueueConnectionFactory,
 
     /**
      * Creates a connection for a given user and password.
-     * 
+     *
      * @return QueueConnection The connection.
      * @param user
      *            The user name.
@@ -269,25 +262,25 @@ public class JtaQueueConnectionFactory implements QueueConnectionFactory,
 
     /**
      * Creates a default connection.
-     * 
+     *
      * @return Connection The connection.
      */
-    
-	public Connection createConnection() throws JMSException 
+
+	public Connection createConnection() throws JMSException
 	{
 		return createQueueConnection();
 	}
 
 	/**
      * Creates a connection for a given user and password.
-     * 
+     *
      * @return Connection The connection.
      * @param userName
      *            The user name.
      * @param password
      *            The password.
      */
-	public Connection createConnection ( String userName , String password ) throws JMSException 
+	public Connection createConnection ( String userName , String password ) throws JMSException
 	{
 		return createQueueConnection ( userName , password );
 	}

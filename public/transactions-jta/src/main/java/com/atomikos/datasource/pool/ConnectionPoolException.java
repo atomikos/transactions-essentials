@@ -25,29 +25,23 @@
 
 package com.atomikos.datasource.pool;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
 
  /**
-  * Common superclass for all exceptions thrown by the 
+  * Common superclass for all exceptions thrown by the
   * pooling mechanism.
   *
   */
 
-public class ConnectionPoolException extends Exception 
+public class ConnectionPoolException extends Exception
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(ConnectionPoolException.class);
 
 	private static final long serialVersionUID = 1L;
-	
-	public ConnectionPoolException ( String reason , Exception cause ) 
+
+	public ConnectionPoolException ( String reason , Exception cause )
 	{
 		super ( reason , cause );
 	}
-	public ConnectionPoolException ( String reason ) 
+	public ConnectionPoolException ( String reason )
 	{
 		super ( reason );
 	}

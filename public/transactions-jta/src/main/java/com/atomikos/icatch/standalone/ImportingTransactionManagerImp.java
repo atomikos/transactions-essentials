@@ -25,9 +25,6 @@
 
 package com.atomikos.icatch.standalone;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import com.atomikos.icatch.CompositeTransaction;
 import com.atomikos.icatch.Extent;
 import com.atomikos.icatch.ImportingTransactionManager;
@@ -37,18 +34,14 @@ import com.atomikos.icatch.SysException;
 import com.atomikos.icatch.TransactionService;
 
 /**
- * 
- * 
+ *
+ *
  * A standalone version of the importing TM. Needed for the SubTxThread
  * mechanism to work, NOT for propagation between VMs.
  */
 
 class ImportingTransactionManagerImp implements ImportingTransactionManager
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(ImportingTransactionManagerImp.class);
 
     private TransactionService ts_;
 

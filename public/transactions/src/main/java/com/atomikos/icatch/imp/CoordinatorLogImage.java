@@ -25,9 +25,6 @@
 
 package com.atomikos.icatch.imp;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.io.IOException;
 import java.io.InvalidClassException;
 import java.io.ObjectInput;
@@ -40,17 +37,13 @@ import com.atomikos.persistence.ObjectImage;
 import com.atomikos.persistence.Recoverable;
 
 /**
- * 
- * 
+ *
+ *
  * A log image for CoordinatorImp instances.
  */
 
 class CoordinatorLogImage implements ObjectImage
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(CoordinatorLogImage.class);
 
     // force serial version UID for backward log compatibility
     static final long serialVersionUID = 3404629869531420208L;
@@ -75,16 +68,16 @@ class CoordinatorLogImage implements ObjectImage
 
     boolean activity_;
     //activity or not
-    
+
     int localSiblingCount_;
     //for activity: active state to recover
-    
+
     boolean checkSiblings_;
     //for activity: active state to recover
-    
+
     boolean single_threaded_2pc_;
     //2PC without threads desired?
-    
+
     /**
      * Required by Externalizable interface.
      */
@@ -96,7 +89,7 @@ class CoordinatorLogImage implements ObjectImage
 
     /**
      * Constructor for non-activities.
-     * 
+     *
      * @param root
      * @param state
      * @param participants
@@ -123,10 +116,10 @@ class CoordinatorLogImage implements ObjectImage
         checkSiblings_ = false;
         single_threaded_2pc_ = single_threaded_2pc;
     }
-    
+
     /**
      * Constructor for activities in active state.
-     * 
+     *
      * @param root
      * @param state
      * @param participants
@@ -143,10 +136,10 @@ class CoordinatorLogImage implements ObjectImage
             boolean commit_on_heuristic , long maxinquiries ,
             CoordinatorStateHandler stateHandler , int localSiblingCount ,
             boolean checkSiblings , boolean single_threaded_2pc
-            
+
             )
     {
-        this ( root , state , participants , coordinator , commit_on_heuristic , 
+        this ( root , state , participants , coordinator , commit_on_heuristic ,
                 maxinquiries , stateHandler , single_threaded_2pc );
         activity_ = true;
         localSiblingCount_ = localSiblingCount;

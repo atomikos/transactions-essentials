@@ -25,37 +25,30 @@
 
 package com.atomikos.datasource;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.util.Stack;
 
 /**
-* Exception on the level of the resource manager. 
+* Exception on the level of the resource manager.
 * Contains more detailed info of actual underlying exception.
 */
 
 public class ResourceException extends com.atomikos.icatch.SysException
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(ResourceException.class);
-    
+
     public ResourceException(String msg){
         super(msg);
-        
+
     }
-    
+
     public ResourceException(String msg, Stack errors)
     {
         super ( msg , errors );
     }
-    
+
     public ResourceException(Stack errors){
-        
+
         super ( "ResourceException" , errors );
     }
-    
+
 }
 

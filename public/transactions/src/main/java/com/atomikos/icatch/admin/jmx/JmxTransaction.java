@@ -25,9 +25,6 @@
 
 package com.atomikos.icatch.admin.jmx;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import javax.management.MBeanRegistration;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -42,10 +39,6 @@ import com.atomikos.icatch.admin.AdminTransaction;
 public abstract class JmxTransaction implements JmxTransactionMBean,
         MBeanRegistration
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(JmxTransaction.class);
 
     private AdminTransaction adminTransaction;
 
@@ -55,7 +48,7 @@ public abstract class JmxTransaction implements JmxTransactionMBean,
 
     /**
      * Converts the given int state.
-     * 
+     *
      * @param state
      *            The given int state.
      * @return String The string state, or null if not found.
@@ -118,7 +111,7 @@ public abstract class JmxTransaction implements JmxTransactionMBean,
 
     /**
      * Wraps an existing AdminTransaction instance as an MBean.
-     * 
+     *
      * @param adminTransaction
      *            The existing to wrap.
      */

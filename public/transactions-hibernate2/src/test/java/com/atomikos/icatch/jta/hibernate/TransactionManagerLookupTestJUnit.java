@@ -1,7 +1,7 @@
 package com.atomikos.icatch.jta.hibernate;
 
-import net.sf.hibernate.HibernateException;
 import junit.framework.TestCase;
+import net.sf.hibernate.HibernateException;
 
 public class TransactionManagerLookupTestJUnit extends TestCase {
 

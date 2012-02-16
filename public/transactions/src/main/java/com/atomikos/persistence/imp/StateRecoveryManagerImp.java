@@ -25,9 +25,6 @@
 
 package com.atomikos.persistence.imp;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.util.Enumeration;
 import java.util.Vector;
 
@@ -46,17 +43,13 @@ import com.atomikos.persistence.StateRecoveryManager;
 public class StateRecoveryManagerImp implements StateRecoveryManager,
         FSMPreEnterListener
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(StateRecoveryManagerImp.class);
 
     protected ObjectLog objectlog_;
     // for delegation of storage tasks
 
     /**
      * Construct a new instance that uses an underlying log.
-     * 
+     *
      * @param objectlog
      *            The log to delegate to.
      */

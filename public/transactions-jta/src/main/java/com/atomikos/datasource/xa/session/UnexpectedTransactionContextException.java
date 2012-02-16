@@ -25,23 +25,17 @@
 
 package com.atomikos.datasource.xa.session;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
- 
+
  /**
-  * 
-  * 
+  *
+  *
   *
   * An exception to signal that an unexpected
   * transaction context exists for the current thread.
   */
 
-class UnexpectedTransactionContextException 
-extends Exception 
+class UnexpectedTransactionContextException
+extends Exception
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(UnexpectedTransactionContextException.class);
-	
+
 }

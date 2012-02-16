@@ -25,16 +25,13 @@
 
 package com.atomikos.jdbc;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.io.PrintWriter;
 import java.sql.SQLException;
 
 
 /**
- * 
- * 
+ *
+ *
  * A wrapper for masking the different JDBC pooled connection factory
  * interfaces, (discrepancy between ConnectionPoolDataSource and XADataSource)
  * so that one pool can be used for both. Instances should have a public no-arg
@@ -48,7 +45,7 @@ public interface ConnectionFactory
 
     /**
      * Gets the log writer for debugging.
-     * 
+     *
      * @return PrintWriter The log writer; null if none or if not supported.
      * @exception SQLException
      *                On error.
@@ -58,7 +55,7 @@ public interface ConnectionFactory
 
     /**
      * Sets the log writer for debugging.
-     * 
+     *
      * @param pw
      *            The print writer to log to.
      * @exception SQLException
@@ -69,7 +66,7 @@ public interface ConnectionFactory
 
     /**
      * Get the login timeout in seconds
-     * 
+     *
      * @return int The no of secs before login times out.
      * @exception SQLException
      *                On error.
@@ -79,7 +76,7 @@ public interface ConnectionFactory
 
     /**
      * Sets the login timeout.
-     * 
+     *
      * @param secs
      *            The no of seconds.
      * @exception SQLException

@@ -25,9 +25,6 @@
 
 package com.atomikos.persistence.imp;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
@@ -36,18 +33,14 @@ import com.atomikos.persistence.ObjectImage;
 import com.atomikos.persistence.Recoverable;
 
 /**
- * 
- * 
+ *
+ *
  * An object image for reconstruction of staterecoverables through a state
  * recovery mgr.
  */
 
 class StateObjectImage implements Recoverable, ObjectImage
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(StateObjectImage.class);
 
     // force set serialUID to allow backward log compatibility.
     static final long serialVersionUID = 4440634956991605946L;

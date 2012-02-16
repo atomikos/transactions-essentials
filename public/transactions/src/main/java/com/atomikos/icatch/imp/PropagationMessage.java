@@ -25,24 +25,17 @@
 
 package com.atomikos.icatch.imp;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.Participant;
 
 /**
- * 
- * 
+ *
+ *
  * A PropagationMessage is used for propagation of 2pc communication.
  */
 
 abstract class PropagationMessage
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(PropagationMessage.class);
 
     /**
      * How many times is message re-sent if comm. failure?
@@ -63,7 +56,7 @@ abstract class PropagationMessage
 
     /**
      * Constructor.
-     * 
+     *
      * @param participant
      *            The participant to send it to.
      * @param result
@@ -78,7 +71,7 @@ abstract class PropagationMessage
 
     /**
      * Getter method.
-     * 
+     *
      * @return Participant The participant for this one.
      */
 
@@ -89,7 +82,7 @@ abstract class PropagationMessage
 
     /**
      * Abstract method: send the message.
-     * 
+     *
      * @return Object Application dependent.
      * @exception PropagationException
      *                If any. If the exception is transient, then the Propagator
@@ -102,7 +95,7 @@ abstract class PropagationMessage
     /**
      * Called by system to process message. This will call the send() method and
      * return a reply to the result object.
-     * 
+     *
      * @return boolean If true, then it should be tried again on failure.
      */
 

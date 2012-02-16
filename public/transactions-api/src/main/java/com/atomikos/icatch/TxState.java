@@ -25,9 +25,6 @@
 
 package com.atomikos.icatch;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.lang.reflect.Field;
 import java.util.Enumeration;
 import java.util.Vector;
@@ -40,14 +37,10 @@ import java.util.Vector;
 
 public class TxState implements java.io.Serializable
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(TxState.class);
 
     //force UID for backward log compatibilty
     static final long serialVersionUID = 648321112075712930L;
-    
+
     // public static final TxState INIT = new TxState("INIT");
     //initialized only
     public static final TxState ACTIVE = new TxState("ACTIVE");
@@ -64,10 +57,10 @@ public class TxState implements java.io.Serializable
     //in process of aborting
     public static final TxState COMMITTING  =  new TxState("COMMITTING");
     //in process of committing
-    
+
     public static final TxState SUSPENDED = new TxState("SUSPENDED");
-    
-  
+
+
     public static final TxState HEUR_COMMITTED = new TxState("HEUR_COMMITTED");
     public static final TxState HEUR_ABORTED = new TxState("HEUR_ABORTED");
     public static final TxState HEUR_MIXED = new TxState("HEUR_MIXED");
@@ -75,10 +68,10 @@ public class TxState implements java.io.Serializable
 
     public static final TxState TERMINATED = new TxState("TERMINATED");
     //all done with, can be forgotten about
-    
+
     public static Enumeration getStates()
     {
-        
+
         Vector v = new Vector();
         Class myClass = TxState.class;
         Field[] fields = myClass.getFields();
@@ -88,27 +81,27 @@ public class TxState implements java.io.Serializable
 	  }
 	  catch (Exception e) {}
         }//for
-        
+
         return v.elements();
     }
-    
-  
-    
-    private final String myName;
-    
 
-    
+
+
+    private final String myName;
+
+
+
     private TxState(final String s){
         myName = s;
     }
     public String toString(){
     	return myName;
     }
-	
+
 	public int hashCode() {
 		return myName.hashCode();
 	}
-	
+
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
@@ -125,11 +118,11 @@ public class TxState implements java.io.Serializable
 //			return false;
 //		return true;
 	}
-    
-    
-    
+
+
+
 //
-//    public boolean equals ( Object o ) 
+//    public boolean equals ( Object o )
 //    {
 //        if ( o == null || !(o instanceof TxState) )
 //	  return false;
@@ -137,11 +130,11 @@ public class TxState implements java.io.Serializable
 //        return state.toString().equals(toString());
 //    }
 //
-//    public int hashCode() 
+//    public int hashCode()
 //    {
 //        return myName.hashCode();
 //    }
-//    
-    
-    
+//
+
+
 }

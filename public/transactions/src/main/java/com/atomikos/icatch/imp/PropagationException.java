@@ -25,22 +25,16 @@
 
 package com.atomikos.icatch.imp;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
 
 /**
- * 
- * 
+ *
+ *
  * An error of propagation messages. Some errors are transient, leading to a
  * retry of the message send. Others are fatal, and reported back to the sender.
  */
 
 class PropagationException extends java.io.IOException
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(PropagationException.class);
 
     protected boolean transient_ = false;
     // default is fatal
@@ -51,7 +45,7 @@ class PropagationException extends java.io.IOException
 
     /**
      * Constructor.
-     * 
+     *
      * @param detail
      *            The wrapped exception.
      * @param trans
@@ -68,7 +62,7 @@ class PropagationException extends java.io.IOException
 
     /**
      * Get transient flag.
-     * 
+     *
      * @return boolean True if the error is transient and its message can be
      *         retried.
      */
@@ -80,7 +74,7 @@ class PropagationException extends java.io.IOException
 
     /**
      * Get detail.
-     * 
+     *
      * @return Exception The underlying error cause.
      */
 

@@ -25,9 +25,6 @@
 
 package com.atomikos.beans;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -42,38 +39,34 @@ import javax.servlet.http.HttpServletResponse;
 import com.atomikos.util.ClassLoadingHelper;
 
 /**
- * 
- * 
- * 
- * 
  *
- * A wizard class for HTML platforms. An instance can be used to 
- * configure a bean in an HTML browser. Indexed properties are 
+ *
+ *
+ *
+ *
+ * A wizard class for HTML platforms. An instance can be used to
+ * configure a bean in an HTML browser. Indexed properties are
  * NOT supported.
  */
 
 public class HtmlBeanWizard
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(HtmlBeanWizard.class);
 
 	private static final String PAR_NAME_PREFIX = "com.atomikos.beans.property.";
-	//unique prefix to ensure that properties are represented by 
+	//unique prefix to ensure that properties are represented by
 	//unique parameter names in HTML requests
-	
+
 	private static final String BOOLEAN_PREFIX = "boolean.";
 	//indicates which parameter correspond to boolean properties
 	//and are therefore represented by a checkbox in the form
-	
+
 	private static Property[] filterProperties ( Property[] props )
 	throws PropertyException
 	{
 		if ( props == null ) return null;
-        
+
 		ArrayList list = new ArrayList();
-        
+
 		for ( int i = 0 ; i < props.length ; i++ ) {
 			if ( ! (  props[i].isHidden() ||
 					  props[i].isReadOnly() ||
@@ -84,18 +77,18 @@ public class HtmlBeanWizard
 		}
 		return ( Property[] ) list.toArray ( new Property[0] );
 	}
-    
-	
+
+
 	private BeanInspector inspector;
-	
+
 	private Map parsedProperties;
-	
-	
+
+
 	public HtmlBeanWizard ()
 	{
 		parsedProperties = new HashMap();
 	}
-	
+
 	/**
 	 * Set the class name of the underlying bean.
 	 * This method should be called before using the instance.
@@ -103,12 +96,12 @@ public class HtmlBeanWizard
 	 * @throws ClassNotFoundException If the class is not found.
 	 *
 	 */
-	
-	public void setClassName ( String name ) 
+
+	public void setClassName ( String name )
 	throws ClassNotFoundException
 	{
 		Class clazz = ClassLoadingHelper.loadClass ( name );
-		
+
 		Object bean = null;
 		try {
 			bean = clazz.newInstance();
@@ -117,9 +110,9 @@ public class HtmlBeanWizard
 			throw new RuntimeException ( e.getMessage() );
 		}
 		inspector = new BeanInspector ( bean );
-		
+
 	}
-	
+
 	public String[] getPropertyNames()
 	throws PropertyException
 	{
@@ -127,19 +120,19 @@ public class HtmlBeanWizard
 		String[] template = new String[0];
 		//do nothing if not inited
 		if ( inspector == null ) return template;
-		
+
 		Property[] props = filterProperties ( inspector.getProperties() );
 		for ( int i = 0 ; i < props.length ; i++ ) {
 			names.add( props[i].getName() );
 		}
 		return ( String[] ) names.toArray ( template );
 	}
-	
+
 	public Object getPropertyValue ( String propertyName )
 	throws PropertyException
 	{
 		Object ret = null;
-		
+
 		if ( parsedProperties.containsKey ( propertyName ) ) {
 			//last parse has priority over what we set before,
 			//otherwise we can never set read-only properties
@@ -149,7 +142,7 @@ public class HtmlBeanWizard
 		else if ( inspector != null ) {
 			Property p = inspector.getProperty ( propertyName );
 			try {
-			
+
 				ret = p.getValue();
 			}
 			catch ( PropertyException readOnly ) {
@@ -158,14 +151,14 @@ public class HtmlBeanWizard
 		}
 		return ret;
 	}
-	
+
 	/**
 	 * Include the description of the properties in the
 	 * given response. This should be in an HTML form.
 	 * @param response
-	 * 
+	 *
 	 */
-	
+
 	public void showPropertiesInForm ( HttpServletResponse response )
 	{
 		if ( inspector == null ) return;
@@ -177,14 +170,14 @@ public class HtmlBeanWizard
             for ( int i = 0 ; i < props.length ; i++ )
             {
             	out.println ( "<tr>");
-            	
+
             	String name = props[i].getName();
             	out.println ( "<td>" + name + "</td>");
             	out.println ( "<td>" );
             	Class clazz = PrimitiveClasses.getWrapperClass ( props[i].getType() );
             	if ( props[i].getAllowedValues() != null ) {
             		out.println ( "<select name=\""+ PAR_NAME_PREFIX+name+"\" >" );
-            		
+
             		String[] values = props[i].getAllowedValues();
             		for ( int j = 0 ; j < values.length ; j++ ){
             			out.println ( "<option value=\""+values[j]+"\">"+values[j]);
@@ -195,11 +188,11 @@ public class HtmlBeanWizard
             	else if ( Boolean.class.equals ( clazz ) ) {
             		//check box
             		out.println ( "<input type=\"checkbox\" value=\"true\" name=\""+PAR_NAME_PREFIX+BOOLEAN_PREFIX+name+"\"");
-            		
+
             		try {
-            		
+
             			Boolean b = ( Boolean ) props[i].getValue();
-            		
+
             			if ( b.booleanValue() )  out.println ( " checked ");
             		}
             		catch ( Exception ignore ) {
@@ -207,29 +200,29 @@ public class HtmlBeanWizard
             			//don't mess up the GUI display for this!
             			//so don't throw anything
             		}
-            			
+
             		out.println ( ">");
             	}
             	else {
             		out.print ( "<input type=\"text\" name=\""+PAR_NAME_PREFIX+name+"\" value=\"" );
-            		
+
             		try {
-            		
+
             			Object value = props[i].getValue();
             			out.print ( value.toString() );
-										
+
             		}
             		catch ( NullPointerException noValue ) {
             			//ignore silently to avoid logs being filled
             		}
             		catch ( Exception ignore ) {
-            			
+
             			//ignore.printStackTrace();
             			//don't mess up GUI for this
             			//so don't throw anything
             		}
 					out.println ( "\" >");
-						
+
             	}
             	out.println ( "</td>");
             	out.println ( "</tr>");
@@ -242,30 +235,30 @@ public class HtmlBeanWizard
             //throw new ServletException ( e );
             //IGNORE OR CLIENT JSPs WILL FAIL!
         }
-		
+
 	}
-	
+
 	/**
 	 * Parse the name, value pairs from the given
-	 * request. This request should be the POST of 
+	 * request. This request should be the POST of
 	 * a form generated by showProperties.
 	 * @param request
 	 */
-	
+
 	public void parseProperties ( HttpServletRequest request )
 	throws ServletException, ReadOnlyException
 	{
 		if ( inspector == null ) return;
 		Enumeration pars = request.getParameterNames();
-		
+
 		parsedProperties = new HashMap();
-        
+
         while ( pars.hasMoreElements() ) {
         	boolean bool = false; //true if boolean property
         	String name = ( String ) pars.nextElement();
         	if ( name.startsWith ( PAR_NAME_PREFIX ) ) {
         		String propertyName = name.substring ( PAR_NAME_PREFIX.length() );
-        		
+
         		try
                 {
                     if ( propertyName.startsWith( BOOLEAN_PREFIX ) ) {
@@ -274,7 +267,7 @@ public class HtmlBeanWizard
                     }
                     //Property p = inspector.getProperty ( propertyName );
                     if ( request.getParameter ( name ) != null && !request.getParameter( name ).equals ("") ) {
-                    
+
                     	if ( ! bool ) {
                     		setProperty ( propertyName, request.getParameter ( name ));
                     		parsedProperties.put ( propertyName, request.getParameter ( name ) );
@@ -297,29 +290,29 @@ public class HtmlBeanWizard
                     //this can happen. DONT crash the UI for this
                     e1.printStackTrace();
                 }
-        		
+
         	}
         }
 	}
-	
-	public void setProperty ( String name , String value ) 
+
+	public void setProperty ( String name , String value )
 	throws ReadOnlyException, PropertyException
 	{
-			if ( inspector == null ) 
+			if ( inspector == null )
 				throw new IllegalStateException ( "Not initialized");
-				
+
 			Property p = inspector.getProperty ( name );
 			p.getEditor().setStringValue ( value );
 			p.setValue(p.getEditor().getEditedObject());
 	}
 
 //
-//    public void setProperty(String property, String value) 
+//    public void setProperty(String property, String value)
 //    throws PropertyException
 //    {
 //		Property p = inspector.getProperty ( property );
 //		p.getEditor().setStringValue(value);
-//        
+//
 //    }
-	
+
 }

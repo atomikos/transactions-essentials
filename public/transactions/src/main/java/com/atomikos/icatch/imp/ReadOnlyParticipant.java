@@ -25,9 +25,6 @@
 
 package com.atomikos.icatch.imp;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.util.Dictionary;
 
 import com.atomikos.icatch.HeurCommitException;
@@ -42,45 +39,41 @@ import com.atomikos.icatch.SysException;
 
 
 public class ReadOnlyParticipant implements Participant {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(ReadOnlyParticipant.class);
 
 	/**
-	 * 
+	 *
 	 */
 	//force set UID for backward log compatibility
 	private static final long serialVersionUID = -2141189205744565090L;
 
 	StringHeuristicMessage[] msgs;
-	
+
 	//keep coordinator ID for equality
 	private final String coordinatorId;
 
-	public ReadOnlyParticipant ( CoordinatorImp coordinator ) 
+	public ReadOnlyParticipant ( CoordinatorImp coordinator )
 	{
 		this.coordinatorId = coordinator.getCoordinatorId();
 		msgs = new StringHeuristicMessage[1];
 		msgs[0] = new StringHeuristicMessage ( "ReadOnlyParticipant" );
 	}
-	
+
 	public boolean recover() throws SysException {
 		return true;
 	}
 
 	public String getURI() {
-		
+
 		return null;
 	}
 
 	public void setCascadeList(Dictionary allParticipants) throws SysException {
-		
+
 
 	}
 
 	public void setGlobalSiblingCount(int count) {
-		
+
 
 	}
 
@@ -101,16 +94,16 @@ public class ReadOnlyParticipant implements Participant {
 	}
 
 	public void forget() {
-		
+
 
 	}
 
 	public HeuristicMessage[] getHeuristicMessages() {
 		return msgs;
 	}
-	
-	
-	
+
+
+
 	public boolean equals ( Object o ) {
 		boolean ret = false;
 		if ( o instanceof ReadOnlyParticipant && coordinatorId != null ) {
@@ -119,14 +112,14 @@ public class ReadOnlyParticipant implements Participant {
 		}
 		return ret;
 	}
-	
+
 	public int hashCode()
 	{
 		int ret = 1;
 		if ( coordinatorId != null ) ret = coordinatorId.hashCode();
 		return ret;
 	}
-	
-	
+
+
 
 }

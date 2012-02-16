@@ -32,19 +32,12 @@
 
 package com.atomikos.icatch.admin.imp;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import javax.swing.table.AbstractTableModel;
 
 import com.atomikos.icatch.HeuristicMessage;
 
 class MessageTableModel extends AbstractTableModel
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(MessageTableModel.class);
 
     private HeuristicMessage[] data_;
 

@@ -25,9 +25,6 @@
 
 package com.atomikos.swing;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.awt.GridLayout;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -43,59 +40,55 @@ import javax.swing.JTextField;
 /**
  *
  *
- *A generic login dialog that allows username and passwd to 
+ *A generic login dialog that allows username and passwd to
  *be entered by the user.
  */
- 
 
-public class LoginDialog extends JDialog 
+
+public class LoginDialog extends JDialog
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(LoginDialog.class);
-    
+
     private JTextField name_;
     private JPasswordField passwd_;
     private boolean valid_;
- 
-    
+
+
     /**
      *Constructs a new instance with a given title.
      *@param frame The parent frame.
      *@param title The title for the frame.
-     *@param message A description or name of the source that is 
+     *@param message A description or name of the source that is
      *being logged into.
      */
-    
+
     public LoginDialog ( JFrame frame , String title, String message  )
     {
          super ( frame, title, true );
-         
+
         name_ = new JTextField ( 8 );
         JLabel nameLabel = new JLabel ( "Username" );
         passwd_ = new JPasswordField ( 8 );
         JLabel passwdLabel = new JLabel ( "Password" );
-        
-        
+
+
         JPanel panel = new JPanel();
         panel.setLayout ( new GridLayout ( 0 , 1 ) );
         //JLabel label1 = new JLabel ( "Login for" );
         JLabel label2 = new JLabel ( message );
         //panel.add ( label1 );
         panel.add ( label2 );
-        panel.add ( nameLabel );panel.add ( name_ ); 
+        panel.add ( nameLabel );panel.add ( name_ );
         panel.add ( passwdLabel );  panel.add ( passwd_ );
         valid_ = false;
         final String connect = "Connect" ;
         final String cancel = "Cancel";
         String [] options = { connect, cancel };
-        final JOptionPane optionPane = 
-            new JOptionPane ( panel, JOptionPane.PLAIN_MESSAGE, 
+        final JOptionPane optionPane =
+            new JOptionPane ( panel, JOptionPane.PLAIN_MESSAGE,
                 JOptionPane.OK_CANCEL_OPTION, null, options, options [0] );
         setContentPane ( optionPane );
         setDefaultCloseOperation ( DO_NOTHING_ON_CLOSE );
-        optionPane.addPropertyChangeListener ( 
+        optionPane.addPropertyChangeListener (
             new PropertyChangeListener () {
                 public void propertyChange ( PropertyChangeEvent e ) {
                     if ( isVisible() && e.getSource() == optionPane ) {
@@ -109,44 +102,44 @@ public class LoginDialog extends JDialog
          );
          setSize ( 250,220 );
     }
-    
-    
-  
+
+
+
     /**
      *Gets the user name entered by the user.
      *
      *@return String the username as entered.
      */
-    
+
     public String getUserName()
     {
         return name_.getText();
     }
-    
+
     /**
      *Gets the password entered by the user.
      *
      *@return String The password as entered by the user.
      */
- 
+
     public String getPassword()
     {
-        return new String ( passwd_.getPassword() );	
+        return new String ( passwd_.getPassword() );
     }
-    
+
     /**
      *Checks if the Connect button has been pressed.
      *
      *@return boolean True iff the Connect button was pressed.
      */
-     
+
     public boolean isValid()
     {
-        return valid_;	
+        return valid_;
     }
-    
-    
-    public static void main ( String[] args ) 
+
+
+    public static void main ( String[] args )
     {
         try {
             JFrame frame = new JFrame ( "Test" );
@@ -155,14 +148,14 @@ public class LoginDialog extends JDialog
             if ( dialog.isValid() )
                 System.out.println ( "User entered " + dialog.getUserName() + "/" +
                     dialog.getPassword() );
-        
+
         }
         catch ( Exception e ) {
-            e.printStackTrace(); 
-        } 
+            e.printStackTrace();
+        }
         finally {
-            System.exit ( 0 ); 
+            System.exit ( 0 );
         }
     }
- 
+
 }

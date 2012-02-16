@@ -25,8 +25,6 @@
 
 package com.atomikos.beans;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
 
  /**
   *
@@ -37,15 +35,11 @@ import com.atomikos.logging.Logger;
 public class PropertyException
 extends Exception
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(PropertyException.class);
 
     private Throwable nested_;
     //the nested exception
-    
-    
+
+
    public PropertyException ( String msg ) {
 	super ( msg );
  }
@@ -53,34 +47,34 @@ extends Exception
       *Creates a new instance with a nested exception.
       *@param nested The nested exception.
       */
-      
+
     public PropertyException ( Throwable nested )
     {
         this ( null , nested );
-    } 
-    
+    }
+
     /**
       *Creates a new instance with a message and nested exception.
       *@param msg The message.
       *@param nested The nested exception.
       */
-      
+
     public PropertyException ( String msg , Throwable nested )
     {
         super ( msg );
         nested_ = nested;
     }
-    
+
     /**
      *Get the nested exception.
      *@return Exception The nested exception.
      */
-    
+
     public Throwable getNestedException()
     {
-        return nested_; 
+        return nested_;
     }
-    
+
     public void printStackTrace()
     {
     	if ( nested_ != null ) nested_.printStackTrace();

@@ -25,9 +25,6 @@
 
 package com.atomikos.icatch.imp;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Stack;
@@ -38,17 +35,13 @@ import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeurMixedException;
 
 /**
- * 
- * 
+ *
+ *
  * A result for prepare messages.
  */
 
 class PrepareResult extends Result
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(PrepareResult.class);
 
     protected Hashtable readonlytable_ = new Hashtable ();
     // for read only voters
@@ -64,7 +57,7 @@ class PrepareResult extends Result
 
     /**
      * Constructor.
-     * 
+     *
      * @param count
      *            The number of replies to deal with.
      */
@@ -160,7 +153,7 @@ class PrepareResult extends Result
     /**
      * Test if all answers represent a yes vote. Blocks until all results
      * arrived.
-     * 
+     *
      * @return boolean True if all are yes, false if not.
      * @exception InterruptedException
      *                If interrupt on wait.
@@ -175,7 +168,7 @@ class PrepareResult extends Result
 
     /**
      * Test if all answers were readonly votes. Blocks till all results known.
-     * 
+     *
      * @return boolean True if all readonly, false otherwise.
      * @exception InterruptedException
      *                If interrupted.
@@ -189,7 +182,7 @@ class PrepareResult extends Result
 
     /**
      * Get a table of readonly voting participants.
-     * 
+     *
      * @return Hashtable Contains a key per readonly participant.
      * @exception InterruptedException
      *                If interrupted on wait.
@@ -204,7 +197,7 @@ class PrepareResult extends Result
     /**
      * Get a table of indoubt participants, which have to be notified of commit
      * or rollback.
-     * 
+     *
      * @return Hashtable A key per indoubt participant.
      * @exception InterruptedException
      *                If interrupted on wait.

@@ -25,9 +25,6 @@
 
 package com.atomikos.datasource.xa.jdbc;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.sql.SQLException;
 import java.util.Stack;
 
@@ -40,17 +37,13 @@ import com.atomikos.datasource.xa.XATransactionalResource;
 import com.atomikos.datasource.xa.XidFactory;
 
 /**
- * 
- * 
+ *
+ *
  * A default XATransactionalResource implementation for JDBC.
  */
 
 public class JdbcTransactionalResource extends XATransactionalResource
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(JdbcTransactionalResource.class);
 
     private XADataSource xads_;
 
@@ -69,7 +62,7 @@ public class JdbcTransactionalResource extends XATransactionalResource
     // the password, empty string if not set
     /**
      * Constructs a new instance with a given name and XADataSource.
-     * 
+     *
      * @param serverName
      *            The unique name.
      * @param xads
@@ -89,7 +82,7 @@ public class JdbcTransactionalResource extends XATransactionalResource
      * Constructs a new instance with a given name and XADataSource, and an Xid
      * factory to use. The custom Xid factory is needed for data servers that do
      * not accept arbitrary Xid formats.
-     * 
+     *
      * @param serverName
      *            The unique name.
      * @param xads
@@ -108,7 +101,7 @@ public class JdbcTransactionalResource extends XATransactionalResource
 
     /**
      * Get the user
-     * 
+     *
      * @return String The user, or empty string.
      */
     private String getUser ()
@@ -122,7 +115,7 @@ public class JdbcTransactionalResource extends XATransactionalResource
 
     /**
      * Get the passwd
-     * 
+     *
      * @return String the password, or empty string
      */
     private String getPassword ()
@@ -135,7 +128,7 @@ public class JdbcTransactionalResource extends XATransactionalResource
 
     /**
      * Implements the functionality to get an XAResource handle.
-     * 
+     *
      * @return XAResource The XAResource instance.
      */
 
@@ -172,10 +165,10 @@ public class JdbcTransactionalResource extends XATransactionalResource
 
     /**
      * Optionally set the user name with which to get connections for recovery.
-     * 
+     *
      * If not set, then the right user name should be configured on the
      * XADataSource directly.
-     * 
+     *
      * @param user
      *            The user name.
      */
@@ -187,10 +180,10 @@ public class JdbcTransactionalResource extends XATransactionalResource
 
     /**
      * Optionally set the password with which to get connections for recovery.
-     * 
+     *
      * If not set, then the right password should be configured on the
      * XADataSource directly.
-     * 
+     *
      * @param password
      *            The password.
      */
@@ -218,7 +211,7 @@ public class JdbcTransactionalResource extends XATransactionalResource
             // DS shutdown is unpredictable)
         }
     }
-    
+
     private XAConnection createXAConnection()
     {
     		XAConnection conn = null;

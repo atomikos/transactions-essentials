@@ -25,26 +25,20 @@
 
 package com.atomikos.datasource.xa;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
 
 
 /**
- * 
- * 
+ *
+ *
  * A default Xid factory.
  */
 
 public class DefaultXidFactory extends AbstractXidFactory implements
         java.io.Serializable
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(DefaultXidFactory.class);
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = -8667085263366123575L;
 

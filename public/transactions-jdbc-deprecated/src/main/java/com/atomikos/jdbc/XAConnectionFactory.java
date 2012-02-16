@@ -25,9 +25,6 @@
 
 package com.atomikos.jdbc;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.io.PrintWriter;
 import java.sql.SQLException;
 
@@ -39,8 +36,8 @@ import com.atomikos.datasource.xa.XidFactory;
 import com.atomikos.datasource.xa.jdbc.JdbcTransactionalResource;
 
 /**
- * 
- * 
+ *
+ *
  * A default connection factory for XA connections that work with the Atomikos
  * connection pools.
  */
@@ -48,10 +45,6 @@ import com.atomikos.datasource.xa.jdbc.JdbcTransactionalResource;
 // @todo TEST NEW USER AND PASSWD SETS ON TXRESOURCE!!!
 public class XAConnectionFactory implements ConnectionFactory
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(XAConnectionFactory.class);
 
     private String userName_;
 
@@ -97,7 +90,7 @@ public class XAConnectionFactory implements ConnectionFactory
     /**
      * Creates a new instance with a given resource name, user name and password
      * for the XADataSource.
-     * 
+     *
      * @param resourceName
      *            The unique resource name for the corresponding
      *            JdbcTransactionalResource (which will be created
@@ -128,7 +121,7 @@ public class XAConnectionFactory implements ConnectionFactory
     /**
      * Creates a new instance with a given resource name, user name and password
      * for the XADataSource, and a custom XidFactory.
-     * 
+     *
      * @param resourceName
      *            The unique resource name for the corresponding
      *            JdbcTransactionalResource (which will be created
@@ -161,7 +154,7 @@ public class XAConnectionFactory implements ConnectionFactory
     /**
      * Used by getPooledConnection() to get a connection. If the drivers do not
      * support authentication, then an empty string should be returned here.
-     * 
+     *
      * @return String The user name, or null if not applicable.
      */
 
@@ -172,8 +165,8 @@ public class XAConnectionFactory implements ConnectionFactory
 
     /**
      * Used by getPooledConnection() to get a connection.
-     * 
-     * 
+     *
+     *
      * @return String The password, or null if not applicable.
      */
 
@@ -185,7 +178,7 @@ public class XAConnectionFactory implements ConnectionFactory
     /**
      * This method gets the underlying data source. It is called by
      * getPooledConnection() to get connections.
-     * 
+     *
      * @return XADataSource The data source to get XAConnections from.
      */
 
@@ -197,7 +190,7 @@ public class XAConnectionFactory implements ConnectionFactory
     /**
      * Sets the connections generated to exclusive for 2PC. This mode is needed
      * for certain databases that do not conform to XA entirely.
-     * 
+     *
      * @param exclusive
      *            If true, then connections will be kept until after
      *            commit/rollback, resulting in lower reuse.
@@ -210,7 +203,7 @@ public class XAConnectionFactory implements ConnectionFactory
 
     /**
      * Tests if the connections that are generated will be exclusive or not.
-     * 
+     *
      * @return boolean True iff connections are exclusive.
      */
 
@@ -221,7 +214,7 @@ public class XAConnectionFactory implements ConnectionFactory
 
     /**
      * Get the transactional resource.
-     * 
+     *
      * @return TransactionalResource The transactional resource.
      */
 
@@ -232,10 +225,10 @@ public class XAConnectionFactory implements ConnectionFactory
 
     /**
      * The main method: gets a new DTPPooledConnection instance.
-     * 
+     *
      * @return XPooledConnection An instance of DTPPooledConnection for use with
      *         DTPConnectionPool.
-     * 
+     *
      * @exception IllegalStateException
      *                If not initialized.
      * @exception SQLException

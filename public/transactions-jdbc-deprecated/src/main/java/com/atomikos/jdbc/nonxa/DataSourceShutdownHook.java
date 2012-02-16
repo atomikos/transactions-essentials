@@ -25,30 +25,24 @@
 
 package com.atomikos.jdbc.nonxa;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
 
 
 /**
- * 
- * 
- * 
- * 
- * 
- * 
+ *
+ *
+ *
+ *
+ *
+ *
  */
 public class DataSourceShutdownHook extends Thread
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(DataSourceShutdownHook.class);
 
     NonXADataSourceImp ds_;
 
     /**
      * Create a new instance for a given datasource.
-     * 
+     *
      * @param ds
      *            The datasource, which will be closed at shutdown.
      */

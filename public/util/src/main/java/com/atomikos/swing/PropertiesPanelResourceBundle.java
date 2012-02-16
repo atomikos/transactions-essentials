@@ -25,9 +25,6 @@
 
 package com.atomikos.swing;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.util.ListResourceBundle;
 
 /**
@@ -39,10 +36,6 @@ import java.util.ListResourceBundle;
 public class PropertiesPanelResourceBundle
         extends ListResourceBundle
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(PropertiesPanelResourceBundle.class);
 
     private static final Object[][] contents_ =
             {

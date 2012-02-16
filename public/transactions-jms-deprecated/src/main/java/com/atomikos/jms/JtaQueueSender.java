@@ -83,9 +83,6 @@
 
 package com.atomikos.jms;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Queue;
@@ -97,23 +94,19 @@ import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.StringHeuristicMessage;
 
 /**
- * 
- * 
+ *
+ *
  * A queue sender wrapper that enlists/delists before and after sends.
  */
 
-class JtaQueueSender extends DefaultJtaMessageProducer 
+class JtaQueueSender extends DefaultJtaMessageProducer
 implements HeuristicQueueSender
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(JtaQueueSender.class);
 
-  
+
     /**
      * Create a new instance.
-     * 
+     *
      * @param sender
      *            The sender to wrap.
      * @param res
@@ -127,7 +120,7 @@ implements HeuristicQueueSender
     {
         super ( sender , res , xares );
     }
-    
+
     private QueueSender getQueueSender()
     {
     		return ( QueueSender ) getMessageProducer();

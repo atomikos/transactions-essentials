@@ -25,9 +25,6 @@
 
 package com.atomikos.icatch.imp;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.Participant;
@@ -35,17 +32,13 @@ import com.atomikos.icatch.RollbackException;
 import com.atomikos.icatch.StringHeuristicMessage;
 
 /**
- * 
- * 
+ *
+ *
  * A prepare message implemenation.
  */
 
 class PrepareMessage extends PropagationMessage
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(PrepareMessage.class);
 
     public PrepareMessage ( Participant participant , Result result )
     {
@@ -54,7 +47,7 @@ class PrepareMessage extends PropagationMessage
 
     /**
      * A prepare message.
-     * 
+     *
      * @return Object Boolean True if YES vote, False if NO vote, null if
      *         readonly vote.
      */

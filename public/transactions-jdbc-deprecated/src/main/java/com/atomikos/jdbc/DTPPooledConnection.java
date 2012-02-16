@@ -25,9 +25,6 @@
 
 package com.atomikos.jdbc;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.sql.SQLException;
 
 import com.atomikos.datasource.ResourceTransaction;

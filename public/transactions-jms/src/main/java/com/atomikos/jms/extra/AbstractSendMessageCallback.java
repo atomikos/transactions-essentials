@@ -25,29 +25,22 @@
 
 package com.atomikos.jms.extra;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
 
-abstract class AbstractSendMessageCallback implements JmsSenderTemplateCallback 
+abstract class AbstractSendMessageCallback implements JmsSenderTemplateCallback
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(AbstractSendMessageCallback.class);
 
 	private Destination replyToDestination;
 	private Destination destination;
 	private int priority;
 	private long ttl;
 	private int deliveryMode;
-	
-	protected AbstractSendMessageCallback ( Destination destination , Destination replyToDestination , int deliveryMode  , int priority , long ttl ) 
+
+	protected AbstractSendMessageCallback ( Destination destination , Destination replyToDestination , int deliveryMode  , int priority , long ttl )
 	{
 		this.destination = destination;
 		this.replyToDestination = replyToDestination;
@@ -55,7 +48,7 @@ abstract class AbstractSendMessageCallback implements JmsSenderTemplateCallback
 		this.ttl = ttl;
 		this.deliveryMode = deliveryMode;
 	}
-	
+
 	protected void sendMessage ( Message m , Session s ) throws JMSException
 	{
 	    if ( replyToDestination != null )
@@ -64,5 +57,5 @@ abstract class AbstractSendMessageCallback implements JmsSenderTemplateCallback
         mp.send ( m , deliveryMode, priority, ttl );
         mp.close();
 	}
-		
+
 }

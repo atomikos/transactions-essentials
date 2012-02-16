@@ -25,9 +25,6 @@
 
 package com.atomikos.icatch.imp;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.util.Properties;
 import java.util.Stack;
 
@@ -47,8 +44,8 @@ import com.atomikos.icatch.SysException;
 import com.atomikos.icatch.TransactionControl;
 
 /**
- * 
- * 
+ *
+ *
  * An abstract base implementation of CompositeTransaction, for common behaviour
  * of both proxy and local instances.
  */
@@ -56,13 +53,9 @@ import com.atomikos.icatch.TransactionControl;
 public abstract class AbstractCompositeTransaction implements CompositeTransaction,
         java.io.Serializable
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(AbstractCompositeTransaction.class);
 
     /**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 3522422565305065464L;
 
@@ -80,9 +73,9 @@ public abstract class AbstractCompositeTransaction implements CompositeTransacti
     protected boolean serial_;
 
     protected HeuristicMessage tag_;
-    
+
     protected Properties properties_;
-    
+
     /**
      * Required for externalization of subclasses
      */
@@ -93,7 +86,7 @@ public abstract class AbstractCompositeTransaction implements CompositeTransacti
 
     /**
      * Constructor.
-     * 
+     *
      */
 
     public AbstractCompositeTransaction ( String tid , Stack lineage ,
@@ -113,8 +106,8 @@ public abstract class AbstractCompositeTransaction implements CompositeTransacti
         }
         if ( properties_ == null ) properties_ = new Properties();
         serial_ = serial;
-        
-    }       
+
+    }
 
     /**
      * @see CompositeTransaction.
@@ -145,7 +138,7 @@ public abstract class AbstractCompositeTransaction implements CompositeTransacti
 
     /**
      * @see CompositeTransaction.
-     * 
+     *
      * Defaults to false.
      */
 
@@ -262,7 +255,7 @@ public abstract class AbstractCompositeTransaction implements CompositeTransacti
         // OK if same invocation or if sibling, but serial mode.
     }
 
-  
+
 
     // ***************************************************************
     //
@@ -270,20 +263,20 @@ public abstract class AbstractCompositeTransaction implements CompositeTransacti
     //
     // ***************************************************************
 
-    
-    public int hashCode() 
+
+    public int hashCode()
     {
     	int ret = 0;
-    	
+
     	if ( tid_ == null ) {
     		ret = super.hashCode();
     	} else {
     		ret = getTid().hashCode();
     	}
-    	
+
     	return ret;
     }
-	
+
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
@@ -341,7 +334,7 @@ public abstract class AbstractCompositeTransaction implements CompositeTransacti
     }
 
     /**
-     * 
+     *
      * @see com.atomikos.icatch.CompositeTransaction#getLocalSubTxCount()
      */
     public int getLocalSubTxCount ()
@@ -393,32 +386,32 @@ public abstract class AbstractCompositeTransaction implements CompositeTransacti
     /**
      * @see com.atomikos.icatch.CompositeTransaction#rollback()
      */
-    
+
     public void rollback () throws IllegalStateException, SysException
     {
         fail ();
 
     }
-    
-    
+
+
     public void setProperty ( String name , String value )
     {
-        if ( getProperty ( name ) == null ) 
+        if ( getProperty ( name ) == null )
             properties_.setProperty ( name , value );
     }
 
-    public String getProperty ( String name ) 
+    public String getProperty ( String name )
     {
         return properties_.getProperty ( name );
     }
-    
+
     public Properties getProperties()
     {
         return ( Properties ) properties_.clone();
     }
-    
-   
-    
+
+
+
     //
     //
     //

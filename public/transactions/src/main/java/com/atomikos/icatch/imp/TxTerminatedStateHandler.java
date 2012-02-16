@@ -25,9 +25,6 @@
 
 package com.atomikos.icatch.imp;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import com.atomikos.icatch.CompositeTransaction;
 import com.atomikos.icatch.Participant;
 import com.atomikos.icatch.RecoveryCoordinator;
@@ -38,17 +35,13 @@ import com.atomikos.icatch.SysException;
 import com.atomikos.icatch.TxState;
 
 /**
- * 
- * 
+ *
+ *
  * A transaction terminated state handler.
  */
 
 class TxTerminatedStateHandler extends TransactionStateHandler
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(TxTerminatedStateHandler.class);
 
     private boolean commit_;
 

@@ -25,30 +25,24 @@
 
 package com.atomikos.beans;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
 
  /**
   *
   *
-  *An exception for the conversion of primitive values to 
+  *An exception for the conversion of primitive values to
   *their wrapper objects. Thrown if the associated
   *primitive class is not really a primitive class.
   */
 
-public class ClassNotPrimitiveException 
+public class ClassNotPrimitiveException
 extends Exception
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(ClassNotPrimitiveException.class);
 
     public ClassNotPrimitiveException()
     {
-        super(); 
-    } 
-    
+        super();
+    }
+
     public ClassNotPrimitiveException ( String msg )
     {
           super ( msg );

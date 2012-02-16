@@ -25,9 +25,6 @@
 
 package com.atomikos.icatch.imp;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.util.Properties;
 import java.util.Stack;
 
@@ -38,8 +35,8 @@ import com.atomikos.icatch.RecoveryCoordinator;
 import com.atomikos.icatch.SysException;
 
 /**
- * 
- * 
+ *
+ *
  * A composite transaction adaptor for interposition on an imported instance.
  * This allows substitution of the recovery coordinator adaptor.
  */
@@ -47,13 +44,9 @@ import com.atomikos.icatch.SysException;
 public class CompositeTransactionAdaptor extends AbstractCompositeTransaction
         implements CompositeCoordinator
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(CompositeTransactionAdaptor.class);
 
     /**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 6361601412982044104L;
 
@@ -61,14 +54,14 @@ public class CompositeTransactionAdaptor extends AbstractCompositeTransaction
     // the adaptor to use for replay requests
 
     private String root_;
-    
+
     private Boolean isRecoverableWhileActive_;
 
     // the root TID
 
     /**
      * Create a new instance.
-     * 
+     *
      * @param lineage
      *            The parent info, <b>not including</b> the instance being
      *            constructed here!
@@ -76,7 +69,7 @@ public class CompositeTransactionAdaptor extends AbstractCompositeTransaction
      *            True if serial.
      * @param adaptor
      *            The adaptor for replay requests.
-     * @param isRecoverableWhileActive 
+     * @param isRecoverableWhileActive
      *            Whether recoverable in active state or not. Null if not known.
      */
 
@@ -93,14 +86,14 @@ public class CompositeTransactionAdaptor extends AbstractCompositeTransaction
         root_ = parent.getTid ();
         isRecoverableWhileActive_ = isRecoverableWhileActive;
     }
-    
+
     /**
      * Constructor for testin.
      * @param root
      * @param serial
      * @param adaptor
      */
-    
+
     public CompositeTransactionAdaptor ( String root , boolean serial ,
             RecoveryCoordinator adaptor )
     {
@@ -110,7 +103,7 @@ public class CompositeTransactionAdaptor extends AbstractCompositeTransaction
     /**
      * Constructs a new instance for an imported ROOT. This constructor is
      * needed for message-based propagation where only the root TID is passed.
-     * 
+     *
      * @param root
      *            The root URI.
      * @param serial
@@ -173,5 +166,5 @@ public class CompositeTransactionAdaptor extends AbstractCompositeTransaction
     {
         throw new UnsupportedOperationException();
     }
-   
+
 }

@@ -25,9 +25,6 @@
 
 package com.atomikos.jms;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import javax.jms.JMSException;
 import javax.jms.XAConnection;
 import javax.jms.XAConnectionFactory;
@@ -39,15 +36,11 @@ import com.atomikos.datasource.xa.jms.JmsTransactionalResource;
 
 class AtomikosJmsXAConnectionFactory implements ConnectionFactory
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(AtomikosJmsXAConnectionFactory.class);
-	
+
 	private XAConnectionFactory xaConnectionFactory;
 	private JmsTransactionalResource jmsTransactionalResource;
 	private AtomikosConnectionFactoryBean atomikosConnectionFactory;
-	
+
 
 	public AtomikosJmsXAConnectionFactory(XAConnectionFactory xaConnectionFactory,
 			JmsTransactionalResource jmsTransactionalResource,

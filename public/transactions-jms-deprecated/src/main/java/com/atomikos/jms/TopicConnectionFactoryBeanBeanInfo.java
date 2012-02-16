@@ -25,28 +25,21 @@
 
 package com.atomikos.jms;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.beans.PropertyDescriptor;
 import java.beans.SimpleBeanInfo;
 
 /**
- * 
- * 
+ *
+ *
  * Bean info class for topic connection factories.
- * 
+ *
  * <p>
  * Topic functionality in this product was sponsored by <a href="http://www.webtide.com">Webtide</a>.
  *
  */
-public class TopicConnectionFactoryBeanBeanInfo extends SimpleBeanInfo 
+public class TopicConnectionFactoryBeanBeanInfo extends SimpleBeanInfo
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(TopicConnectionFactoryBeanBeanInfo.class);
-	
+
 	  public PropertyDescriptor[] getPropertyDescriptors ()
 	    {
 
@@ -62,7 +55,7 @@ public class TopicConnectionFactoryBeanBeanInfo extends SimpleBeanInfo
 	            ret[1] = new PropertyDescriptor ( "xaFactoryJndiName", clazz );
 	            ret[1].setShortDescription ( "JNDI name of XA factory" );
 	            ret[1].setHidden ( false );
-	            
+
 	            ret[2] = new PropertyDescriptor ( "xaTopicConnectionFactory", clazz );
 	            ret[2].setHidden ( true );
 

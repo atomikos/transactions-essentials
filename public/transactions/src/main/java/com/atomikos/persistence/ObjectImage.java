@@ -25,9 +25,6 @@
 
 package com.atomikos.persistence;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.io.Externalizable;
 
 import com.atomikos.util.Identifiable;

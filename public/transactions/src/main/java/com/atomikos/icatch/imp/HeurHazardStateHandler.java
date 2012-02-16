@@ -25,9 +25,6 @@
 
 package com.atomikos.icatch.imp;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Stack;
@@ -45,17 +42,13 @@ import com.atomikos.icatch.TxState;
 import com.atomikos.icatch.imp.thread.InterruptedExceptionHelper;
 
 /**
- * 
- * 
+ *
+ *
  * A state handler for the heuristic hazard coordinator state.
  */
 
 class HeurHazardStateHandler extends CoordinatorStateHandler
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(HeurHazardStateHandler.class);
 
     private Vector hazards_;
 
@@ -81,8 +74,8 @@ class HeurHazardStateHandler extends CoordinatorStateHandler
         hazards_.addAll ( hazards.keySet() );
 
     }
-    
- 
+
+
     protected void recover ( CoordinatorImp coordinator )
     {
         super.recover ( coordinator );
@@ -109,8 +102,8 @@ class HeurHazardStateHandler extends CoordinatorStateHandler
         // this state can only be reached through COMMITTING or ABORTING
         // so getCommitted can not be null
         boolean committed = getCommitted ().booleanValue ();
-        
-        addAllForReplay ( hazards_ ); 
+
+        addAllForReplay ( hazards_ );
 
         // get Stack to avoid overwriting effects of
         // intermediate recovery calls
@@ -146,7 +139,7 @@ class HeurHazardStateHandler extends CoordinatorStateHandler
 
                     if ( !reply.hasFailed () ) {
                         hazards_.remove ( reply.getParticipant () );
-                    } 
+                    }
                 }
                 // TODO if overall result failed: check if heuristic state
                 // should change?

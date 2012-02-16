@@ -25,9 +25,6 @@
 
 package com.atomikos.icatch.jta;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.rmi.RemoteException;
 import java.rmi.UnexpectedException;
 
@@ -47,10 +44,6 @@ import org.omg.CORBA.portable.ServantObject;
 public class _UserTransactionServer_Stub extends Stub implements
         UserTransactionServer
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(_UserTransactionServer_Stub.class);
 
     private static final String[] _type_ids = { "RMI:com.atomikos.icatch.jta.UserTransactionServer:0000000000000000" };
 

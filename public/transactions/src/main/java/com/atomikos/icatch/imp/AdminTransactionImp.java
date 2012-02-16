@@ -25,9 +25,6 @@
 
 package com.atomikos.icatch.imp;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.util.Stack;
 
 import com.atomikos.icatch.HeurCommitException;
@@ -41,17 +38,13 @@ import com.atomikos.icatch.TxState;
 import com.atomikos.icatch.admin.AdminTransaction;
 
 /**
- * 
- * 
+ *
+ *
  * A default implementation of the AdminTransaction. For local VM use only.
  */
 
 class AdminTransactionImp implements AdminTransaction
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(AdminTransactionImp.class);
 
     private CoordinatorImp coord_;
 
@@ -59,7 +52,7 @@ class AdminTransactionImp implements AdminTransaction
 
     /**
      * Convert the given state object.
-     * 
+     *
      * @param state
      *            The object state.
      * @return int The corresponding int state.
@@ -95,7 +88,7 @@ class AdminTransactionImp implements AdminTransaction
 
     /**
      * Convert the given int state.
-     * 
+     *
      * @param state
      *            The given int state.
      * @return Object The object state, or null if not found.
@@ -140,7 +133,7 @@ class AdminTransactionImp implements AdminTransaction
 
     /**
      * Create a new instance.
-     * 
+     *
      * @param coord
      *            The coordinator to use.
      */

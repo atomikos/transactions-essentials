@@ -25,23 +25,16 @@
 
 package com.atomikos.icatch.imp;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import com.atomikos.icatch.Participant;
 
 /**
- * 
- * 
+ *
+ *
  * A forget message implemenation.
  */
 
 class ForgetMessage extends PropagationMessage
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(ForgetMessage.class);
 
     ForgetMessage ( Participant participant )
     {
@@ -55,7 +48,7 @@ class ForgetMessage extends PropagationMessage
 
     /**
      * A forget message.
-     * 
+     *
      * @return Object The participant to whom this was sent.
      * @exception PropagationException
      *                Never returned; we don't care now.

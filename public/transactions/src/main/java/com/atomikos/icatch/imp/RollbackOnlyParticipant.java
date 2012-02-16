@@ -25,9 +25,6 @@
 
 package com.atomikos.icatch.imp;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeurMixedException;
@@ -39,18 +36,14 @@ import com.atomikos.icatch.StringHeuristicMessage;
 import com.atomikos.icatch.SysException;
 
 /**
- * 
- * 
+ *
+ *
  * A participant to add in case setRollbackOnly is called. This participant will
  * never allow commit.
  */
 
 public class RollbackOnlyParticipant implements Participant
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(RollbackOnlyParticipant.class);
 
     private StringHeuristicMessage msg_;
 

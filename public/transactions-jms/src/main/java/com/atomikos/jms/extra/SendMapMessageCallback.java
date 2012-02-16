@@ -25,9 +25,6 @@
 
 package com.atomikos.jms.extra;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.util.Iterator;
 import java.util.Map;
 
@@ -37,13 +34,9 @@ import javax.jms.MapMessage;
 import javax.jms.Session;
 
 class SendMapMessageCallback extends AbstractSendMessageCallback {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(SendMapMessageCallback.class);
 
 	private Map content;
-	
+
 	protected SendMapMessageCallback ( Map content , Destination destination,
 			Destination replyToDestination, int deliveryMode, int priority,
 			long ttl) {
@@ -51,7 +44,7 @@ class SendMapMessageCallback extends AbstractSendMessageCallback {
 		this.content = content;
 	}
 
-	public void doInJmsSession ( Session session ) throws JMSException 
+	public void doInJmsSession ( Session session ) throws JMSException
 	{
 		MapMessage msg = session.createMapMessage();
 		Iterator keys = content.keySet().iterator();
@@ -62,6 +55,6 @@ class SendMapMessageCallback extends AbstractSendMessageCallback {
 		}
 		sendMessage ( msg  , session );
 	}
-	
+
 
 }

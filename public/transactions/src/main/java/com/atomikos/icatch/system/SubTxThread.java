@@ -25,9 +25,6 @@
 
 package com.atomikos.icatch.system;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import com.atomikos.icatch.CompositeTransaction;
 import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.Propagation;
@@ -46,10 +43,6 @@ import com.atomikos.icatch.SysException;
 
 public class SubTxThread extends Thread
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(SubTxThread.class);
 
     private SubTxCode myCode;
     private Waiter myWaiter;
@@ -60,7 +53,7 @@ public class SubTxThread extends Thread
 
     /**
      * Creates a new instance for a given waiter, with a given subtx code.
-     * 
+     *
      * @param w
      *            The waiter for synchronization. The creating thread should
      *            wait for all subtx threads to finish.

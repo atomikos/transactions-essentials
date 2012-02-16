@@ -25,9 +25,6 @@
 
 package com.atomikos.datasource.xa;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.io.PrintWriter;
 
 import javax.transaction.xa.XAException;
@@ -35,17 +32,13 @@ import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
 
 /**
- * 
- * 
+ *
+ *
  * A wrapper for an XAResource that enables logging to a PrintWriter.
  */
 
 public class LoggingXAResource implements XAResource
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(LoggingXAResource.class);
 
     private PrintWriter writer_;
     // where to log to
@@ -56,7 +49,7 @@ public class LoggingXAResource implements XAResource
 
     /**
      * Create a new instance.
-     * 
+     *
      * @param xares
      *            The XAResource to wrap.
      * @param writer

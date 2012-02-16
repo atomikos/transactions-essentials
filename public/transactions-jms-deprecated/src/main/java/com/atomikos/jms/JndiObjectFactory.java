@@ -25,9 +25,6 @@
 
 package com.atomikos.jms;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.util.Hashtable;
 
 import javax.naming.Context;
@@ -36,17 +33,13 @@ import javax.naming.Reference;
 import javax.naming.spi.ObjectFactory;
 
 /**
- * 
- * 
+ *
+ *
  * An object factory for JMS administrated objects.
  */
 
 public class JndiObjectFactory implements ObjectFactory
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(JndiObjectFactory.class);
 
     public JndiObjectFactory ()
     {
@@ -58,13 +51,13 @@ public class JndiObjectFactory implements ObjectFactory
     		Object ret = null;
         if ( !(obj instanceof Reference) )
             return null;
-        
+
         Reference ref = (Reference) obj;
         String className = ref.getClassName();
         if ( JtaQueueConnectionFactory.class.getName ().equals ( className ) ) {
         		String url = (String) ref.get ( "ResourceName" ).getContent ();
         		ret = JtaQueueConnectionFactory.getInstance ( url );
-        }   
+        }
         else if ( JtaTopicConnectionFactory.class.getName ().equals ( className ) ) {
         		String url = (String) ref.get ( "ResourceName" ).getContent ();
         		ret = JtaTopicConnectionFactory.getInstance ( url );
@@ -73,7 +66,7 @@ public class JndiObjectFactory implements ObjectFactory
         		ret = null;
         		//as required by JNDI
         }
-        
+
         return ret;
     }
 

@@ -25,8 +25,6 @@
 
 package com.atomikos.icatch;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
 
 /**
  * A handle to contact by an indoubt participant 

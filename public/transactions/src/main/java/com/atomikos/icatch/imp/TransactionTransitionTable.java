@@ -25,26 +25,19 @@
 
 package com.atomikos.icatch.imp;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.util.Hashtable;
 
 import com.atomikos.finitestates.TransitionTable;
 import com.atomikos.icatch.TxState;
 
 /**
- * 
+ *
  * <P>
  * A transition table for transaction <b>coordinator</b> objects.
  */
 
 class TransactionTransitionTable implements TransitionTable
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(TransactionTransitionTable.class);
 
     protected Hashtable transitions;
 
@@ -52,7 +45,7 @@ class TransactionTransitionTable implements TransitionTable
 
     /**
      * Builds a default transition table for rootsets.
-     * 
+     *
      * @return Hashtable The default table for rootsets.
      */
 
@@ -184,7 +177,7 @@ class TransactionTransitionTable implements TransitionTable
 
     /**
      * This method allows checking whether a transition is valid.
-     * 
+     *
      * @param from
      *            The start state of the transition.
      * @param to

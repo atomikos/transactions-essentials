@@ -25,23 +25,16 @@
 
 package com.atomikos.icatch.imp;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import com.atomikos.icatch.Participant;
 
 /**
- * 
- * 
+ *
+ *
  * A reply for propagationmessages.
  */
 
 class Reply
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(Reply.class);
 
     protected Exception exception_ = null;
 
@@ -53,7 +46,7 @@ class Reply
 
     /**
      * Constructor.
-     * 
+     *
      * @param response
      *            The response value.
      * @param exception
@@ -76,7 +69,7 @@ class Reply
 
     /**
      * Check if response ok.
-     * 
+     *
      * @return boolean True if response is invalid. In that case, getException()
      *         returns the error.
      */
@@ -88,7 +81,7 @@ class Reply
 
     /**
      * To check if retried for failure case.
-     * 
+     *
      * @return boolean True if the original message will be retried.
      */
 
@@ -99,7 +92,7 @@ class Reply
 
     /**
      * Get any errors. Not null if hasFailed() is true.
-     * 
+     *
      * @return Exception The exception.
      */
 
@@ -110,7 +103,7 @@ class Reply
 
     /**
      * Get the response. OK if hasFailed() returns false.
-     * 
+     *
      * @return Object Application specific; can be null.
      */
 
@@ -122,7 +115,7 @@ class Reply
 
     /**
      * Get the participant who replied this.
-     * 
+     *
      * @return Participant.
      */
 

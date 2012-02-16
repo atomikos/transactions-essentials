@@ -25,8 +25,6 @@
 
 package com.atomikos.icatch.admin;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
 
  /**
   * The system's admin interface that is exposed to LogAdministrators.

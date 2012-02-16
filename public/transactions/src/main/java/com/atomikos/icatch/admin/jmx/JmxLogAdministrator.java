@@ -25,9 +25,6 @@
 
 package com.atomikos.icatch.admin.jmx;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import com.atomikos.icatch.admin.LogAdministrator;
 import com.atomikos.icatch.admin.LogControl;
 
@@ -42,10 +39,6 @@ import com.atomikos.icatch.admin.LogControl;
 
 class JmxLogAdministrator implements LogAdministrator
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(JmxLogAdministrator.class);
 
     private static final JmxLogAdministrator theInstance = new JmxLogAdministrator ();
 
@@ -73,7 +66,7 @@ class JmxLogAdministrator implements LogAdministrator
 
     /**
      * Gets the LogControl.
-     * 
+     *
      * @return LogControl, or null if unregistered.
      */
 

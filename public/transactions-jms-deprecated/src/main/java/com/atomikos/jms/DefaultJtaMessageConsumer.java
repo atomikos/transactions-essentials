@@ -25,9 +25,6 @@
 
 package com.atomikos.jms;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
@@ -44,24 +41,20 @@ import com.atomikos.icatch.jta.TransactionManagerImp;
 import com.atomikos.icatch.system.Configuration;
 
 /**
- * 
- * 
+ *
+ *
  * Common superclass for the JTA message consumers.
  *
  */
 
-class DefaultJtaMessageConsumer implements HeuristicMessageConsumer 
+class DefaultJtaMessageConsumer implements HeuristicMessageConsumer
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(DefaultJtaMessageConsumer.class);
 
 	private MessageConsumer receiver_;
 	private TransactionalResource res_;
 	private XAResourceTransaction restx_;
 	private XAResource xares_;
-	
+
 	DefaultJtaMessageConsumer ( MessageConsumer receiver  , TransactionalResource res ,
             XAResource xares )
     {
@@ -69,7 +62,7 @@ class DefaultJtaMessageConsumer implements HeuristicMessageConsumer
 		res_ = res;
 		xares_ = xares;
     }
-	
+
 	protected MessageConsumer getMessageConsumer()
 	{
 		return receiver_;
@@ -77,45 +70,45 @@ class DefaultJtaMessageConsumer implements HeuristicMessageConsumer
 
 	/**
 	 * Start a resource tx.
-	 * 
+	 *
 	 * @param msg
 	 *            The heuristic message to use, null if none.
 	 * @exception JMSException
 	 *                If already enlisted.
 	 */
-	private synchronized void enlist() throws JMSException 
+	private synchronized void enlist() throws JMSException
 	{
 	    if ( restx_ != null )
 	        throw new JMSException (
 	                "JtaMessageConsumer.enlist: already enlisted" );
-	
+
 	    CompositeTransactionManager ctm = Configuration
 	            .getCompositeTransactionManager ();
-	
+
 	    if ( ctm == null )
 	        throw new JMSException (
 	                "JtaMessageConsumer: requires Atomikos TransactionsEssentials to be running! Please make sure to start a transaction first." );
-	
+
 	    CompositeTransaction ct = ctm.getCompositeTransaction ();
 	    if ( ct == null || ct.getProperty (  TransactionManagerImp.JTA_PROPERTY_NAME ) == null )
 	        throw new JMSException (
 	                "JTA transaction required for JtaMessageConsumer" );
-	
+
 	    restx_ = (XAResourceTransaction) res_.getResourceTransaction ( ct );
 	    restx_.setXAResource ( xares_ );
 	    restx_.resume ();
-	
+
 	}
 
 	/**
 	 * End the resource tx.
-	 * 
+	 *
 	 * @param msg
 	 *            The heuristic message to use, null if none.
 	 * @exception JMSException
 	 *                If not previously enlisted.
 	 */
-	private synchronized void delist ( HeuristicMessage msg ) throws JMSException 
+	private synchronized void delist ( HeuristicMessage msg ) throws JMSException
 	{
 	    if ( restx_ == null )
 	        throw new JMSException ( "JtaMessageConsumer.delist: not enlisted" );
@@ -128,7 +121,7 @@ class DefaultJtaMessageConsumer implements HeuristicMessageConsumer
 	/**
 	 * @see HeuristicMessageConsumer
 	 */
-	public Message receive ( HeuristicMessage hmsg ) throws JMSException 
+	public Message receive ( HeuristicMessage hmsg ) throws JMSException
 	{
 	    Message ret = null;
 	    enlist ();
@@ -147,7 +140,7 @@ class DefaultJtaMessageConsumer implements HeuristicMessageConsumer
 	/**
 	 * @see HeuristicMessageConsumer
 	 */
-	public Message receive ( HeuristicMessage hmsg, long timeout ) throws JMSException 
+	public Message receive ( HeuristicMessage hmsg, long timeout ) throws JMSException
 	{
 	    Message ret = null;
 	    enlist ();
@@ -162,7 +155,7 @@ class DefaultJtaMessageConsumer implements HeuristicMessageConsumer
 	/**
 	 * @see HeuristicMessageConsumer
 	 */
-	public Message receiveNoWait ( HeuristicMessage hmsg ) throws JMSException 
+	public Message receiveNoWait ( HeuristicMessage hmsg ) throws JMSException
 	{
 	    Message ret = null;
 	    enlist ();
@@ -174,51 +167,51 @@ class DefaultJtaMessageConsumer implements HeuristicMessageConsumer
 	    return ret;
 	}
 
-	public Message receiveNoWait() throws JMSException 
+	public Message receiveNoWait() throws JMSException
 	{
 	    HeuristicMessage msg = null;
 	    return receiveNoWait ( msg );
 	}
 
-	public Message receive ( long timeout ) throws JMSException 
+	public Message receive ( long timeout ) throws JMSException
 	{
 	    HeuristicMessage msg = null;
 	    return receive ( msg, timeout );
 	}
 
-	public String getMessageSelector() throws JMSException 
+	public String getMessageSelector() throws JMSException
 	{
 	    return receiver_.getMessageSelector ();
 	}
 
-	public MessageListener getMessageListener() throws JMSException 
+	public MessageListener getMessageListener() throws JMSException
 	{
 	    return receiver_.getMessageListener ();
 	}
 
-	public void setMessageListener ( MessageListener l ) throws JMSException 
+	public void setMessageListener ( MessageListener l ) throws JMSException
 	{
 	    receiver_.setMessageListener ( l );
 	}
 
-	public void close() throws JMSException 
+	public void close() throws JMSException
 	{
 	    receiver_.close ();
 	}
 
-	public Message receive ( String hmsg ) throws JMSException 
+	public Message receive ( String hmsg ) throws JMSException
 	{
 	    StringHeuristicMessage msg = new StringHeuristicMessage ( hmsg );
 	    return receive ( msg );
 	}
 
-	public Message receive ( String hmsg, long timeout ) throws JMSException 
+	public Message receive ( String hmsg, long timeout ) throws JMSException
 	{
 	    StringHeuristicMessage msg = new StringHeuristicMessage ( hmsg );
 	    return receive ( msg, timeout );
 	}
 
-	public Message receiveNoWait ( String hmsg ) throws JMSException 
+	public Message receiveNoWait ( String hmsg ) throws JMSException
 	{
 	    StringHeuristicMessage msg = new StringHeuristicMessage ( hmsg );
 	    return receiveNoWait ( msg );
@@ -234,6 +227,6 @@ class DefaultJtaMessageConsumer implements HeuristicMessageConsumer
 	public Message receive(long timeout, String hmsg) throws JMSException {
 		return receive ( hmsg , timeout );
 	}
-	
+
 
 }

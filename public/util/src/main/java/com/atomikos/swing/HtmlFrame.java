@@ -25,9 +25,6 @@
 
 package com.atomikos.swing;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -53,34 +50,30 @@ import javax.swing.event.HyperlinkListener;
 /**
  *
  *
- *A frame to display an HTML document, and respond to clicks on 
+ *A frame to display an HTML document, and respond to clicks on
  *hyperlinks by loading the clicked link.
  */
- 
-public class HtmlFrame 
+
+public class HtmlFrame
 implements HyperlinkListener, ActionListener
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(HtmlFrame.class);
 
     private JFrame win_;
     //the window to display in
-    
+
     private JEditorPane pane_;
     //the editor pane to load URLs
-    
+
     private Stack stack_;
     //to go back
     private JButton back_;
-    
+
     private URL lastUrl_;
     //added to stack on new load
-    
+
     private JDialog dialog_;
     //null if not dialog mode.
-    
+
     /**
      *Creates a new window that displays the given URL.
      *
@@ -89,14 +82,14 @@ implements HyperlinkListener, ActionListener
      *Null means a standalone app.
      *This determines the behaviour for closing the window.
      */
-    
-    public HtmlFrame ( URL url , JFrame parent ) throws IOException 
+
+    public HtmlFrame ( URL url , JFrame parent ) throws IOException
     {
         pane_ = new JEditorPane();
         JScrollPane scrollpane = new JScrollPane ( pane_ );
         pane_.setEditable ( false );
         pane_.setPage ( url );
-        
+
         pane_.addHyperlinkListener ( this );
         ImageIcon backImageIcon = new ImageIcon (
                 this.getClass().getResource ( "/toolbarButtonGraphics/navigation/Back24.gif" ));
@@ -105,22 +98,22 @@ implements HyperlinkListener, ActionListener
         back_.addActionListener ( this );
         JPanel panel = new JPanel ();
         panel.add ( back_ );
-        
+
        // if ( !standalone )
 //            win_.setDefaultCloseOperation ( WindowConstants.DISPOSE_ON_CLOSE );
-//        
-       
+//
+
         stack_ = new Stack();
         lastUrl_ = url;
-        
+
         if ( parent == null ) {
-                
-                
+
+
                 win_ = new JFrame ( "HtmlViewer" );
                 win_.getContentPane().setLayout ( new BorderLayout () );
                 win_.getContentPane().add ( scrollpane , BorderLayout.CENTER );
                 win_.getContentPane().add ( panel, BorderLayout.NORTH );
-                
+
                 win_.addWindowListener ( new WindowAdapter () {
                 public void windowClosing ( WindowEvent e ) {
                     System.exit ( 0 );
@@ -143,61 +136,61 @@ implements HyperlinkListener, ActionListener
             dialog.setContentPane ( pane );
             //dialog.setSize ( new Dimension ( 800, 900) );
             //dialog.getContentPane().setSize ( new Dimension ( 500, 500 )) ;
-           
+
             dialog.pack();
             dialog.setSize ( new Dimension ( 500, 500 ) );
-            dialog.setVisible ( true );         
-            dialog_ = dialog;   
+            dialog.setVisible ( true );
+            dialog_ = dialog;
 
-            //JOptionPane.showMessageDialog ( parent , pane , 
+            //JOptionPane.showMessageDialog ( parent , pane ,
                // "URLViewer" , JOptionPane.PLAIN_MESSAGE );
-                
-         
+
+
         }
- 
+
     }
-    
-    private void setWaitCursor ( boolean wait ) 
+
+    private void setWaitCursor ( boolean wait )
     {
           Cursor cursor = null;
           if ( wait )
               cursor = Cursor.getPredefinedCursor ( Cursor.WAIT_CURSOR );
           else
               cursor = Cursor.getPredefinedCursor ( Cursor.DEFAULT_CURSOR );
-              
+
           if ( dialog_ != null )
               dialog_.getContentPane().setCursor ( cursor );
           else
               win_.getContentPane().setCursor( cursor );
       }
-    
+
     private void load ( URL url , boolean addToStack )
     {
          try {
             setWaitCursor ( true );
             pane_.setPage ( url );
             //System.err.println ( "Loading: " + url );
-   
+
             if ( addToStack ) {
                 stack_.push ( lastUrl_ );
                 back_.setEnabled ( true );
             }
             lastUrl_ = url;
-            
-            
+
+
         }
         catch ( IOException err ) {
-            System.err.println ( "Bad URL: " + url ); 
+            System.err.println ( "Bad URL: " + url );
         }
         finally {
-            setWaitCursor ( false ); 
+            setWaitCursor ( false );
         }
     }
-    
+
     /**
      *@see HyperlinkListener
      */
-     
+
     public void hyperlinkUpdate ( HyperlinkEvent e )
     {
         JEditorPane pane = ( JEditorPane ) e.getSource();
@@ -206,12 +199,12 @@ implements HyperlinkListener, ActionListener
             load ( url, true );
         }
     }
-    
+
     /**
      *@see ActionListener
      */
-     
-    public void actionPerformed ( ActionEvent e ) 
+
+    public void actionPerformed ( ActionEvent e )
     {
         if ( e.getSource() == back_  ) {
             load ( ( URL ) stack_.pop() , false );
@@ -219,27 +212,27 @@ implements HyperlinkListener, ActionListener
                 back_.setEnabled ( false );
         }
     }
-    
- 
+
+
     /**
      *Allows simple retrieval of command-line URL
      */
-     
-    public static void main ( String[] args ) 
+
+    public static void main ( String[] args )
     {
         if ( args.length !=1 ) {
             System.err.println ( "Usage: specify the URL to load" );
             System.exit ( 1 );
-         
+
         }
         try {
 
             HtmlFrame frame = new HtmlFrame ( new URL ( args [0] ) , null );
-           
+
         }
         catch ( Exception e ) {
-            e.printStackTrace(); 
-        } 
+            e.printStackTrace();
+        }
     }
 
 

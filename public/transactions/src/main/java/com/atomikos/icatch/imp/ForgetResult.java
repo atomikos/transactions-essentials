@@ -25,21 +25,15 @@
 
 package com.atomikos.icatch.imp;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
 
 /**
- * 
- * 
+ *
+ *
  * A result object for forget messages.
  */
 
 class ForgetResult extends Result
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(ForgetResult.class);
 
     protected boolean analyzed_;
 
@@ -47,7 +41,7 @@ class ForgetResult extends Result
 
     /**
      * Constructor.
-     * 
+     *
      * @param count
      *            The number of messages to process.
      */

@@ -25,9 +25,6 @@
 
 package com.atomikos.beans;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.awt.Component;
 import java.util.Vector;
 
@@ -50,19 +47,15 @@ public class TableComponent
 extends AbstractPropertyEditorComponent
 implements PropertyListener
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(TableComponent.class);
 
     private Vector data_;
     //the underlying data for the table view
-  
+
     private PropertiesPanel panel_;
     //the GUI component to return
-    
+
     private IndexedProperty property_;
-    
+
      /**
       *Helper method to construct a new object.
       *@param clazz The class to construct a new object for.
@@ -70,7 +63,7 @@ implements PropertyListener
       *@return Object The new object, or null if cancelled by user.
       *@exception PropertyException If the class is not a primitive class.
       */
-      
+
     private static Object constructNewObject ( Class clazz )
     throws PropertyException
     {
@@ -80,7 +73,7 @@ implements PropertyListener
          JCheckBox checkbox = null;
          Class wrapperClass = PrimitiveClasses.getWrapperClass ( clazz );
          if ( wrapperClass == null && !clazz.equals ( String.class ) ) {
-              throw new PropertyException ( 
+              throw new PropertyException (
               "Not a supported class: " + clazz.getName() , null );
          }
          if ( wrapperClass != null && wrapperClass.equals ( Boolean.class ) ) {
@@ -93,10 +86,10 @@ implements PropertyListener
             text = new JTextField ( "Enter value" );
             panel.add ( text );
          }
-         int answer = JOptionPane.showConfirmDialog ( 
+         int answer = JOptionPane.showConfirmDialog (
             null , panel , "New Element Property" ,
             JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE );
-        
+
         if ( answer == JOptionPane.OK_OPTION ) {
             if ( checkbox != null ) {
                 ret = new Boolean ( checkbox.isSelected() ).toString();
@@ -105,11 +98,11 @@ implements PropertyListener
                 ret = text.getText();
             }
         }
-        
+
         return ret;
 
     }
-    
+
     public TableComponent ( IndexedProperty property )
     throws PropertyException
     {
@@ -120,23 +113,23 @@ implements PropertyListener
         for ( int i = 0 ; i < data.length ; i++ ) {
              data_.addElement ( data[i] );
         }
-        IndexedPropertyTableModel table = 
+        IndexedPropertyTableModel table =
             new IndexedPropertyTableModel ( data_ , property.getName() );
         panel_ = new PropertiesPanel ( table , false );
         panel_.getPanel().setToolTipText ( property.getDescription() );
         panel_.addPropertyListener ( this );
     }
-    
+
     public Component getComponent()
     {
-        return panel_.getPanel(); 
+        return panel_.getPanel();
     }
-    
+
     public void newProperty ( PropertiesTableModel table )
     {
         Object object = null;
         try {
-            object = 
+            object =
                 constructNewObject ( property_.getIndexedType() ) ;
         }
         catch ( PropertyException pe ) {
@@ -149,7 +142,7 @@ implements PropertyListener
             getPropertyEditor().setValue ( value );
         }
     }
-    
+
     public void deleteProperty ( PropertiesTableModel table , int index )
     {
         Object toDelete = data_.elementAt ( index );
@@ -158,8 +151,8 @@ implements PropertyListener
         Object value = java.lang.reflect.Array.newInstance ( property_.getIndexedType() , data_.size() );
         getPropertyEditor().setValue ( value );
     }
-    
-    public void editProperty ( PropertiesTableModel table, int index ) 
+
+    public void editProperty ( PropertiesTableModel table, int index )
     {
         //do nothing: editing is not supported; delete and insert instead
         JOptionPane.showMessageDialog ( null , "To edit, please delete and create a new value..." );

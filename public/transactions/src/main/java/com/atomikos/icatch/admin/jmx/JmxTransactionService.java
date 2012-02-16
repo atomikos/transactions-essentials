@@ -25,9 +25,6 @@
 
 package com.atomikos.icatch.admin.jmx;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,10 +50,6 @@ import com.atomikos.icatch.system.Configuration;
 public class JmxTransactionService implements JmxTransactionServiceMBean,
         MBeanRegistration
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(JmxTransactionService.class);
 
     private MBeanServer server;
     // the server, to register TransactionMBean instances
@@ -64,7 +57,7 @@ public class JmxTransactionService implements JmxTransactionServiceMBean,
     private ObjectName[] beans;
     // cache the last set of beans, needed to unregister
     // them eventually
-    
+
     private boolean heuristicsOnly;
 
 
@@ -128,8 +121,8 @@ public class JmxTransactionService implements JmxTransactionServiceMBean,
     	for ( int i = 0 ; i < txs.length ; i++ ) {
     		AdminTransaction next = txs[i];
     		switch ( next.getState() ) {
-    			case AdminTransaction.STATE_HEUR_ABORTED: 
-    				ret.add ( next );	
+    			case AdminTransaction.STATE_HEUR_ABORTED:
+    				ret.add ( next );
     				break;
     			case AdminTransaction.STATE_HEUR_COMMITTED:
     				ret.add ( next );
@@ -145,7 +138,7 @@ public class JmxTransactionService implements JmxTransactionServiceMBean,
     	}
     	return ( AdminTransaction[] ) ret.toArray ( new AdminTransaction[0] );
     }
-    
+
     /**
      * @see com.atomikos.icatch.admin.jmx.TransactionServiceMBean#getTransactions()
      */
@@ -188,10 +181,10 @@ public class JmxTransactionService implements JmxTransactionServiceMBean,
             throws Exception
     {
         this.server = server;
-        
+
         JmxLogAdministrator admin = JmxLogAdministrator.getInstance();
         Configuration.addLogAdministrator ( admin );
-        
+
         if ( name == null )
             name = new ObjectName ( "atomikos", "name", "TransactionService" );
         return name;
@@ -227,18 +220,18 @@ public class JmxTransactionService implements JmxTransactionServiceMBean,
     /**
      * Sets whether only heuristic transactions should be returned.
      * Optional, defaults to false.
-     * 
-     * @param heuristicsOnly 
+     *
+     * @param heuristicsOnly
      */
-    
-	public void setHeuristicsOnly ( boolean heuristicsOnly ) 
+
+	public void setHeuristicsOnly ( boolean heuristicsOnly )
 	{
 		this.heuristicsOnly = heuristicsOnly;
-		
+
 	}
 
-	
-	public boolean getHeuristicsOnly() 
+
+	public boolean getHeuristicsOnly()
 	{
 		return heuristicsOnly;
 	}

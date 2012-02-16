@@ -25,9 +25,6 @@
 
 package com.atomikos.icatch.jta;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.io.Serializable;
 
 import javax.naming.NamingException;
@@ -41,8 +38,8 @@ import javax.transaction.UserTransaction;
 import com.atomikos.util.SerializableObjectFactory;
 
 /**
- * 
- * 
+ *
+ *
  * A J2EE UserTransaction implementation. J2EE applications can use instances of
  * this class to delimit transactions. Note: J2EE applications should NOT use
  * the default UserTransactionImp in order to avoid that the transaction service
@@ -53,11 +50,7 @@ import com.atomikos.util.SerializableObjectFactory;
 public class J2eeUserTransaction implements UserTransaction, Serializable,
         Referenceable
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(J2eeUserTransaction.class);
- 
+
 	private static final long serialVersionUID = -7656447860674832182L;
 
 	private transient TransactionManager txmgr_;

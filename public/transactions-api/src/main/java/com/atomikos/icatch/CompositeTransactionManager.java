@@ -25,8 +25,6 @@
 
 package com.atomikos.icatch;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
 
 /**
  * This interface outlines the API for managing composite transactions

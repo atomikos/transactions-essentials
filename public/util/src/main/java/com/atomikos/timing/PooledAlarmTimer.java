@@ -25,41 +25,34 @@
 
 package com.atomikos.timing;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 /**
  * An alarm timer for use in a pool of threads.
- * 
+ *
  * @author Lars J. Nilsson
  */
 public final class PooledAlarmTimer implements AlarmTimer {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(PooledAlarmTimer.class);
 
 	private final List listeners;
 	private final long timeout;
-	
+
 	private final Object runMonitor = new Object();
 	private boolean runFlag = true;
-	
+
 	public PooledAlarmTimer(long timeout) {
 		listeners = new ArrayList();
 		this.timeout = timeout;
 	}
-	
+
 	public void addAlarmTimerListener(AlarmTimerListener lstnr) {
 		synchronized(listeners) {
 			listeners.add(lstnr);
 		}
 	}
-	
+
 	public void removeAlarmTimerListener(AlarmTimerListener lstnr) {
 		synchronized(listeners) {
 			listeners.remove(lstnr);
@@ -85,20 +78,20 @@ public final class PooledAlarmTimer implements AlarmTimer {
 
 	public void run() {
 		/*
-		 * A short comment here, it is possible for Object.wait to 
+		 * A short comment here, it is possible for Object.wait to
 		 * return before the timeout silently, thus we need to double check
 		 * the actual elapsed time before calling it quits. /LJN
 		 */
 		while(isActive()) {
 			try {
-				
+
 				doWait(timeout);
 			} catch(InterruptedException e) {
-				// Question: At this point, the thread pool is most 
+				// Question: At this point, the thread pool is most
 				// likely shutting down, but I'm not entirely sure, does it
 				// mean we should or shouldn't notify waiters? If we shouldn't
 				// we should return from this method to kill the thread
-				
+
 				// return;
 			}
 
@@ -108,7 +101,7 @@ public final class PooledAlarmTimer implements AlarmTimer {
 	}
 
 	// --- PRIVATE METHODS --- //
-	
+
 	/*
 	 * Notify all listeners
 	 */
@@ -125,7 +118,7 @@ public final class PooledAlarmTimer implements AlarmTimer {
 	 */
 	private void doWait(long millis) throws InterruptedException {
 		synchronized(runMonitor) {
-			
+
 			runMonitor.wait(millis);
 		}
 	}

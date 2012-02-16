@@ -25,9 +25,6 @@
 
 package com.atomikos.icatch.admin.jmx;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -43,10 +40,6 @@ import javax.management.ObjectName;
 
 public class JmxRegistry implements JmxRegistryMBean
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(JmxRegistry.class);
 
     private static Map servers = new HashMap ();
     // key=instance that received server handle; value=server handle

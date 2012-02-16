@@ -25,9 +25,6 @@
 
 package com.atomikos.icatch.imp;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.util.Enumeration;
 import java.util.Hashtable;
 
@@ -43,17 +40,13 @@ import com.atomikos.icatch.SysException;
 import com.atomikos.icatch.TxState;
 
 /**
- * 
- * 
+ *
+ *
  * A state handler for the indoubt coordinator state.
  */
 
 class IndoubtStateHandler extends CoordinatorStateHandler
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(IndoubtStateHandler.class);
 
     private int inquiries_;
     // how many timeout events have happened?
@@ -130,7 +123,7 @@ class IndoubtStateHandler extends CoordinatorStateHandler
         try {
 
             if ( inquiries_ < getCoordinator ().getMaxIndoubtTicks () ) {
-            	    
+
                 inquiries_++;
                 if ( inquiries_ >= getCoordinator ().getMaxIndoubtTicks () / 2 ) {
                     // only ask for replay if half of timeout ticks has passed,

@@ -25,24 +25,15 @@
 
 package com.atomikos.jms;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
-
-
 import com.atomikos.icatch.CompositeTransaction;
 
 abstract class AbstractJmsSessionProxy extends AbstractJmsProxy
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(AbstractJmsSessionProxy.class);
 
 	protected abstract boolean isAvailable();
-	
+
 	protected abstract boolean isErroneous();
-	
+
 	protected abstract boolean isInTransaction ( CompositeTransaction ct );
 
 	protected boolean isInactiveTransaction ( CompositeTransaction ct )

@@ -25,9 +25,6 @@
 
 package com.atomikos.beans;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -45,17 +42,13 @@ public class CheckboxComponent
 extends AbstractPropertyEditorComponent
 implements ActionListener
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(CheckboxComponent.class);
 
     private JCheckBox checkbox_;
     //the checkbox
-    
+
     private JPanel panel_;
     //the component to return to clients
-    
+
     public CheckboxComponent ( Property property )
     throws PropertyException
     {
@@ -68,28 +61,28 @@ implements ActionListener
         panel_.add ( checkbox_ );
         checkbox_.addActionListener ( this );
     }
-    
+
     /**
     *@see PropertyEditorComponent
     */
-    
+
    public Component getComponent()
    {
         return panel_;
    }
-    
+
   /**
    *@see ActionListener
    */
-   
+
    public void actionPerformed ( ActionEvent e )
    {
         try {
-            getPropertyEditor().setValue ( 
+            getPropertyEditor().setValue (
                 new Boolean ( checkbox_.isSelected() ) );
         }
         catch ( Exception err ) {
-            err.printStackTrace(); 
+            err.printStackTrace();
         }
    }
 }

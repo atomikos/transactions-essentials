@@ -27,8 +27,6 @@
 
 package com.atomikos.icatch;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
 
 
 /**
@@ -37,10 +35,6 @@ import com.atomikos.logging.Logger;
 
 public class HeurRollbackException extends Exception
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(HeurRollbackException.class);
 
     protected HeuristicMessage[] msgs_=null;
 
@@ -49,7 +43,7 @@ public class HeurRollbackException extends Exception
         super("Heuristic Exception");
         msgs_=msgs;
     }
-    
+
     /**
      * @return HeuristicMessage[] The list of messages describing the work, or null if none.
      */
@@ -57,5 +51,5 @@ public class HeurRollbackException extends Exception
         return msgs_;
     }
 
-    
+
 }

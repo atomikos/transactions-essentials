@@ -25,23 +25,16 @@
 
 package com.atomikos.icatch.config.imp;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import com.atomikos.icatch.config.TSMetaData;
 
 /**
  * Copyrigth &copy; 2002, Atomikos. All rights reserved.
- * 
+ *
  * A meta data implementation.
  */
 
 public class TSMetaDataImp implements TSMetaData
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(TSMetaDataImp.class);
 
     private String jtaVersion_;
 
@@ -55,7 +48,7 @@ public class TSMetaDataImp implements TSMetaData
 
     /**
      * Create a new instance.
-     * 
+     *
      * @param jtaVersion
      *            The string denoting the JTA supported.
      * @param releaseVersion

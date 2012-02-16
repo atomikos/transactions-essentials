@@ -25,9 +25,6 @@
 
 package com.atomikos.swing;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.io.File;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -42,10 +39,6 @@ import java.util.Hashtable;
 public class ExtensionsFileFilter
 extends javax.swing.filechooser.FileFilter
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(ExtensionsFileFilter.class);
 
       public static String getExtension ( File f )
       {
@@ -56,20 +49,20 @@ extends javax.swing.filechooser.FileFilter
         if ( i > 0 &&  i < s.length() - 1 ) {
             ext = s.substring ( i+1 ).toLowerCase();
         }
-        return ext; 
-      } 
-        
+        return ext;
+      }
+
       private Hashtable extensions_;
-      
+
       public ExtensionsFileFilter ( String[] extensions )
       {
           super();
           extensions_ = new Hashtable();
           for ( int i = 0 ; i < extensions.length ; i++ ) {
-              extensions_.put ( extensions[i].toLowerCase() , extensions[i].toLowerCase() ); 
+              extensions_.put ( extensions[i].toLowerCase() , extensions[i].toLowerCase() );
           }
       }
-      
+
       public String getDescription()
       {
           StringBuffer ret = new StringBuffer();
@@ -77,10 +70,10 @@ extends javax.swing.filechooser.FileFilter
           while ( enumm.hasMoreElements() ) {
               String nxt = ( String ) enumm.nextElement();
               ret.append ( nxt ); ret.append ( " " );
-          } 
+          }
           return ret.toString();
       }
-      
+
       public boolean accept ( File f )
       {
         boolean ret = false;

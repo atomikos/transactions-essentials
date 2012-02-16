@@ -25,9 +25,6 @@
 
 package com.atomikos.persistence.imp;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
@@ -37,17 +34,13 @@ import com.atomikos.persistence.ObjectImage;
 import com.atomikos.persistence.Recoverable;
 
 /**
- * 
- * 
+ *
+ *
  * An internal system class for logging.
  */
 
 class SystemLogImage implements Recoverable, Externalizable
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(SystemLogImage.class);
 
     // Force-set the serial version ID to make sure that log
     // data can be read.
@@ -91,7 +84,7 @@ class SystemLogImage implements Recoverable, Externalizable
     /**
      * Get the recoverable. Needed to return the right implementation class to
      * the client!
-     * 
+     *
      * @return Recoverable The wrapped recoverable.
      */
 

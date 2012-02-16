@@ -25,28 +25,22 @@
 
 package com.atomikos.datasource.pool;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
 
  /**
   * An exception to signal errors during the creation of connections.
-  * 
+  *
   *
   */
 
-public class CreateConnectionException extends ConnectionPoolException 
+public class CreateConnectionException extends ConnectionPoolException
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(CreateConnectionException.class);
 
 	private static final long serialVersionUID = 1858243647893576738L;
-	public CreateConnectionException ( String reason , Exception cause ) 
+	public CreateConnectionException ( String reason , Exception cause )
 	{
 		super ( reason , cause );
 	}
-	public CreateConnectionException ( String reason ) 
+	public CreateConnectionException ( String reason )
 	{
 		super ( reason );
 	}

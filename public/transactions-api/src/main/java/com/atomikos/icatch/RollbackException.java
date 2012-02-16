@@ -25,29 +25,23 @@
 
 package com.atomikos.icatch;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
 
 /**
  * An exception indicating that a transaction has already been rolled back.
  */
- 
+
  public class RollbackException extends Exception
  {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(RollbackException.class);
 
 	private static final long serialVersionUID = 1L;
 
-	public RollbackException ( String msg ) 
+	public RollbackException ( String msg )
     {
-      super (msg);	
-    }	
-    
-    public RollbackException ( ) 
+      super (msg);
+    }
+
+    public RollbackException ( )
     {
-      super ();	
+      super ();
     }
  }

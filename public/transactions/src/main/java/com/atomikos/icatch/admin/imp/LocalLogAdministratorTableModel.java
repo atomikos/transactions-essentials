@@ -25,9 +25,6 @@
 
 package com.atomikos.icatch.admin.imp;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.util.Vector;
 
 import javax.swing.table.AbstractTableModel;
@@ -36,10 +33,6 @@ import com.atomikos.icatch.admin.AdminTransaction;
 
 class LocalLogAdministratorTableModel extends AbstractTableModel
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(LocalLogAdministratorTableModel.class);
 
     private Vector data_;
 

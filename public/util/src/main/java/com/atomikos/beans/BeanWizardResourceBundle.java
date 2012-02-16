@@ -25,9 +25,6 @@
 
 package com.atomikos.beans;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.util.ListResourceBundle;
 
 /**
@@ -40,10 +37,6 @@ import java.util.ListResourceBundle;
 public class BeanWizardResourceBundle
         extends ListResourceBundle
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(BeanWizardResourceBundle.class);
 
     private static final Object[][] contents_ = {
         {"editButtonName" , "Edit"}

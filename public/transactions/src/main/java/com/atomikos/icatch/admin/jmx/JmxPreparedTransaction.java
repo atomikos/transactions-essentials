@@ -25,9 +25,6 @@
 
 package com.atomikos.icatch.admin.jmx;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeurMixedException;
@@ -42,10 +39,6 @@ import com.atomikos.icatch.admin.AdminTransaction;
 public class JmxPreparedTransaction extends JmxTransaction implements
         JmxPreparedTransactionMBean
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(JmxPreparedTransaction.class);
 
     /**
      * @param adminTransaction

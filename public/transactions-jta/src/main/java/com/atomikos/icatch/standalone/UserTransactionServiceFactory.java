@@ -25,9 +25,6 @@
 
 package com.atomikos.icatch.standalone;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.net.UnknownHostException;
 import java.util.Properties;
 
@@ -35,8 +32,8 @@ import com.atomikos.icatch.config.UserTransactionService;
 import com.atomikos.icatch.config.imp.AbstractUserTransactionServiceFactory;
 
 /**
- * 
- * 
+ *
+ *
  * The configuration (facade) class for the standalone version of the
  * transaction manager. This version supports no import or export of
  * transactions.
@@ -45,11 +42,6 @@ import com.atomikos.icatch.config.imp.AbstractUserTransactionServiceFactory;
 public final class UserTransactionServiceFactory extends AbstractUserTransactionServiceFactory implements
         com.atomikos.icatch.config.UserTransactionServiceFactory
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(UserTransactionServiceFactory.class);
-
 
     static String getDefaultName ()
     {
@@ -67,7 +59,7 @@ public final class UserTransactionServiceFactory extends AbstractUserTransaction
 
     /**
      * Get the UserTransactionManager instance for the configuration.
-     * 
+     *
      * @param properties
      *            The properties as specified by the client.
      * @return UserTransactionManager The UserTransactionManager

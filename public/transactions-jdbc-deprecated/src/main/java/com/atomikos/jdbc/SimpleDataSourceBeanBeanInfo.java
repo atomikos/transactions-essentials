@@ -25,25 +25,18 @@
 
 package com.atomikos.jdbc;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.beans.PropertyDescriptor;
 import java.beans.SimpleBeanInfo;
 
 
 /**
- * 
- * 
+ *
+ *
  * A bean descriptor that tells GUI wizards which properties to edit.
  */
 
 public class SimpleDataSourceBeanBeanInfo extends SimpleBeanInfo
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(SimpleDataSourceBeanBeanInfo.class);
 
     public PropertyDescriptor[] getPropertyDescriptors ()
     {

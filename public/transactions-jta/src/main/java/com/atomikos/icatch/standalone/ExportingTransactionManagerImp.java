@@ -25,9 +25,6 @@
 
 package com.atomikos.icatch.standalone;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.util.Stack;
 
 import com.atomikos.icatch.CompositeTransaction;
@@ -39,18 +36,14 @@ import com.atomikos.icatch.imp.PropagationImp;
 import com.atomikos.icatch.system.Configuration;
 
 /**
- * 
- * 
+ *
+ *
  * An exporting TM implementation for the standalone. Needed to make the
  * SubTxThread mechanism work, NOT for propagation across VMs.
  */
 
 class ExportingTransactionManagerImp implements ExportingTransactionManager
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(ExportingTransactionManagerImp.class);
 
     /**
      * @see ExportingTransactionManager

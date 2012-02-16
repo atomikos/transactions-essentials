@@ -25,9 +25,6 @@
 
 package com.atomikos.jdbc;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -50,25 +47,21 @@ import com.atomikos.icatch.StringHeuristicMessage;
 import com.atomikos.icatch.system.Configuration;
 
 /**
- * 
- * 
+ *
+ *
  * A basic datasource implementation that works with Atomikos connection pools and
- * supports heuristic messages. Instances are referenceable in JNDI, but not Serializable. 
+ * supports heuristic messages. Instances are referenceable in JNDI, but not Serializable.
  * <p>
  * <b>Note: instead of using this class directly, it is highly recommended that you use
  * one of the other Atomikos DataSourceBean implementations instead.</b>
- * 
+ *
  * @deprecated As of release 3.3, the {@link AtomikosDataSourceBean} should be used instead.
- * 
+ *
  */
 
 public class JtaDataSourceImp implements HeuristicDataSource,
         ConnectionEventListener, Referenceable, ConnectionPoolDataSource
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(JtaDataSourceImp.class);
 
     private static Map nameToDataSource_ = new HashMap ();
 
@@ -76,7 +69,7 @@ public class JtaDataSourceImp implements HeuristicDataSource,
 
     /**
      * Create a JNDI reference for the given resource.
-     * 
+     *
      */
 
     static Reference createReference ( String uniqueName )
@@ -93,7 +86,7 @@ public class JtaDataSourceImp implements HeuristicDataSource,
     /**
      * Helper method for JNDI lookup; helps looking up a previously constructed
      * instance.
-     * 
+     *
      * @param name
      *            The name of the resource.
      * @return JtaDataSourceImp The data source, or null if not found.
@@ -107,7 +100,7 @@ public class JtaDataSourceImp implements HeuristicDataSource,
 
     /**
      * Add an instance to the map, so that it can be found by name.
-     * 
+     *
      * @param name
      *            The name to map on.
      * @param instance
@@ -130,7 +123,7 @@ public class JtaDataSourceImp implements HeuristicDataSource,
 
     /**
      * Remove a map entry for the given name.
-     * 
+     *
      * @param name
      *            The name to unmap.
      */
@@ -157,14 +150,14 @@ public class JtaDataSourceImp implements HeuristicDataSource,
 
     /**
      * Creates a new instance.
-     * 
+     *
      * @param fact
      *            The XAConnectionFactory to use.
      * @param poolSize
      *            The size of the pool.
      * @param connectionTimeout
      *            The timeout in seconds for each connection.
-     * @param testQuery 
+     * @param testQuery
      * 			 A test query to validate connection liveness.
      * @param testOnBorrow
      * 			 If true then connections will be tested when gotten from the pool.
@@ -181,7 +174,7 @@ public class JtaDataSourceImp implements HeuristicDataSource,
 
     /**
      * Constructor for validation of DataSourceBean instances.
-     * 
+     *
      * @param fact
      * @param poolSize
      * @param connectionTimeout
@@ -190,7 +183,7 @@ public class JtaDataSourceImp implements HeuristicDataSource,
      * @param registerWithTM
      *            If true, then the resource is added to the configuration for
      *            recovery.
-     * @param testOnBorrow 
+     * @param testOnBorrow
      * 			 If true then connections will be tested when gotten from the pool.
      * @throws SQLException
      */
@@ -246,7 +239,7 @@ public class JtaDataSourceImp implements HeuristicDataSource,
                 "Not supported: getConnection ( user , passwd )" );
     }
 
- 
+
     /**
      * @see javax.sql.DataSource
      */
@@ -297,7 +290,7 @@ public class JtaDataSourceImp implements HeuristicDataSource,
 
     /**
      * Get the underlying transactional resource.
-     * 
+     *
      * @return TransactionalResource The resource.
      */
     public TransactionalResource getTransactionalResource ()

@@ -25,27 +25,20 @@
 
 package com.atomikos.icatch.admin.imp;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import com.atomikos.icatch.admin.LogAdministrator;
 import com.atomikos.icatch.admin.LogControl;
 
 /**
- * 
- * 
- * 
- * 
- * 
+ *
+ *
+ *
+ *
+ *
  * A simple log administrator that can be used for different UI technologies.
  */
 
 public class SimpleLogAdministrator implements LogAdministrator
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(SimpleLogAdministrator.class);
 
     private static SimpleLogAdministrator instance;
 

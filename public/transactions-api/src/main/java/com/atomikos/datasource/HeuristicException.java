@@ -25,34 +25,27 @@
 
 package com.atomikos.datasource;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import com.atomikos.icatch.HeuristicMessage;
 
 public class HeuristicException extends ResourceException
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(HeuristicException.class);
 
 	private static final long serialVersionUID = 1L;
-	
+
 	protected HeuristicMessage[] myMsgs=null;
 
     public HeuristicException(String msg)
     {
         super(msg);
     }
-    
-    
+
+
     public HeuristicException(HeuristicMessage[] msgs)
     {
         super("Heuristic Exception");
         myMsgs=msgs;
     }
-    
+
     /**
      *
      *@return HeuristicMessage[] A list of messages, or null if none.

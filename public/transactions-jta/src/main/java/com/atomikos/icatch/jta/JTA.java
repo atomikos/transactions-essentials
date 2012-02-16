@@ -25,21 +25,15 @@
 
 package com.atomikos.icatch.jta;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
 
 /**
- * 
- * 
+ *
+ *
  * A class with information about the jta package.
  */
 
 public abstract class JTA
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(JTA.class);
 
     /**
      * A string representation of the version of the JTA specs that is

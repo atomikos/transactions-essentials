@@ -25,28 +25,21 @@
 
 package com.atomikos.datasource.xa;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import javax.transaction.xa.Xid;
 
 /**
- * 
- * 
- * 
+ *
+ *
+ *
  * An abstract superclass for all XidFactory implementations. This class
  * provides the functionality to create really unique XIDs.
- * 
- * 
- * 
- * 
+ *
+ *
+ *
+ *
  */
 public abstract class AbstractXidFactory implements XidFactory
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(AbstractXidFactory.class);
 
    private static final int MAX_LENGTH_OF_COUNTER = 8;
 //default scope for testing issue 10086
@@ -70,19 +63,19 @@ public abstract class AbstractXidFactory implements XidFactory
         super ();
 
     }
-    
+
     /**
      * @see com.atomikos.datasource.xa.XidFactory
      */
 
     public Xid createXid ( String tid , String resourcename )
     {
-    	
+
     	if ( resourcename.getBytes().length + MAX_LENGTH_OF_COUNTER > XID.MAXBQUALSIZE ) {
     		// see case 73086
     		throw new IllegalArgumentException ( "Value too long: " + resourcename );
     	}
-    	
+
         // first increment counter to make sure it is
         // different from the last call that was done
         // by the SAME tid (works because calls within

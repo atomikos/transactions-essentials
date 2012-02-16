@@ -25,32 +25,26 @@
 
 package com.atomikos.finitestates;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
 
 /**
  *
  *
- *A default transition table implementation that allows any 
+ *A default transition table implementation that allows any
  *transition without really checking anything.
  */
- 
+
  public class AllowAllTransitionTable implements TransitionTable
  {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(AllowAllTransitionTable.class);
- 
+
       public AllowAllTransitionTable() {}
-      
+
       /**
        *This method always returns true.
        */
-       
+
       public boolean legalTransition ( Object from, Object to )
       {
-          return true;	
-      }	
+          return true;
+      }
  }
- 
+

@@ -25,33 +25,26 @@
 
 package com.atomikos.datasource.xa;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import javax.transaction.xa.XAResource;
 
 import com.atomikos.datasource.ResourceException;
 
 /**
- * 
+ *
  * This class is useful only for enlist via the JTA API. In particular, this class
  * is a 'workaround' for buggy XAResource implementations where isSameRM returns false
- * even if it should not. With the default automatic resource registration mode, 
+ * even if it should not. With the default automatic resource registration mode,
  * this situation would lead to another XATransactionalResource being added to the
  * configuration for each such enlist. As an alternative, this class pretends to
- * recognize <b>any</b> XAResource and can be used to avoid problems when 
+ * recognize <b>any</b> XAResource and can be used to avoid problems when
  * automatic registration is <b>disabled</b>: instead of reporting errors
- * claiming that the XAResource is unknown for fault isSameRM cases, 
+ * claiming that the XAResource is unknown for fault isSameRM cases,
  * this class will silently accept them.
- * 
- * 
+ *
+ *
  */
 public class AcceptAllXATransactionalResource extends XATransactionalResource
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(AcceptAllXATransactionalResource.class);
 
     /**
      * @param servername
@@ -101,7 +94,7 @@ public class AcceptAllXATransactionalResource extends XATransactionalResource
         // nothing to do
     }
 
-    
+
 //    REMOVED: THIS METHOD IS OBSOLETE (ISSUE 10040)
 //    public boolean recoverParticipant ( Participant p )
 //    {

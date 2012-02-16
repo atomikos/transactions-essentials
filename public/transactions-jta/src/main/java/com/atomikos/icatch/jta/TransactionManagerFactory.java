@@ -25,9 +25,6 @@
 
 package com.atomikos.icatch.jta;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.util.Hashtable;
 
 import javax.naming.Context;
@@ -36,23 +33,19 @@ import javax.naming.Reference;
 import javax.naming.spi.ObjectFactory;
 
 /**
- * 
- * 
- * 
- * 
- * 
+ *
+ *
+ *
+ *
+ *
  * An Object factory for the Transaction Manager.
  */
 
 public class TransactionManagerFactory implements ObjectFactory
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(TransactionManagerFactory.class);
 
     /**
-     * 
+     *
      */
 
     public TransactionManagerFactory ()

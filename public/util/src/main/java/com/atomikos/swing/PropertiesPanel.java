@@ -25,9 +25,6 @@
 
 package com.atomikos.swing;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -52,46 +49,42 @@ import javax.swing.event.ListSelectionListener;
   *of properties, and provides for creation, deletion and editing of
   *such properties.
   */
-  
+
   public class PropertiesPanel implements ActionListener
   {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(PropertiesPanel.class);
 
       private static final int NONE_SELECTED = -1;
       //indicates that no rows are selected
-      
+
       private JPanel panel_;
       //the panel that contains the GUI elements
-      
-      private JButton newButton_, deleteButton_, editButton_; 
+
+      private JButton newButton_, deleteButton_, editButton_;
       //the three functions that the user can choose
-      
+
       private PropertiesTableModel model_;
       //the underlying table model, for insertion/edit/delete
-      
+
       private Vector listeners_;
       //the registered property listeners.
-      
+
       private int currentRow_;
       //keeps track of selection
       //needed for edit/delete
-      
-      
+
+
       /**
        *Creates a new instance.
        *
        *@param model The PropertiesTableModel to use.
        */
-       
+
       public PropertiesPanel ( PropertiesTableModel model )
       {
             this ( model , false );
 
       }
-      
+
        /**
        *Creates a new instance.
        *
@@ -99,11 +92,11 @@ import javax.swing.event.ListSelectionListener;
        *@param readonly If true, then there will be no new or delete buttons,
        *and the edit button will be a view button.
        */
-       
+
       public PropertiesPanel ( PropertiesTableModel model , boolean readonly )
       {
-          
-          
+
+
           panel_ = new JPanel ( );
           ResourceBundle messages =
                   ResourceBundle.getBundle (
@@ -134,20 +127,20 @@ import javax.swing.event.ListSelectionListener;
           editButton_.addActionListener ( this );
           buttons.add ( editButton_ );
           panel_.add ( buttons , BorderLayout.SOUTH );
-          
+
           listeners_ = new Vector();
           currentRow_ = NONE_SELECTED;
-          
-          
+
+
           table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
           ListSelectionModel rowSM = table.getSelectionModel();
-	
+
           rowSM.addListSelectionListener(new ListSelectionListener() {
 		public void valueChanged(ListSelectionEvent e) {
 		    //Ignore extra messages.
-		    if (e.getValueIsAdjusting()) 
+		    if (e.getValueIsAdjusting())
 			return;
-		    
+
 		    ListSelectionModel lsm =
 			(ListSelectionModel)e.getSource();
 		    if (lsm.isSelectionEmpty()) {
@@ -163,12 +156,12 @@ import javax.swing.event.ListSelectionListener;
                 }
             });
       }
-      
+
       /**
        *@see ActionListener
        */
-       
-      public synchronized void actionPerformed ( ActionEvent e ) 
+
+      public synchronized void actionPerformed ( ActionEvent e )
       {
           //determine which button, and call listeners for that button
           int i = -1;
@@ -178,7 +171,7 @@ import javax.swing.event.ListSelectionListener;
               i = 1;
           else if ( e.getSource() == deleteButton_ )
               i = 2;
-              
+
           Enumeration enumm = listeners_.elements();
           while ( enumm.hasMoreElements() ) {
               PropertyListener l = ( PropertyListener ) enumm.nextElement();
@@ -191,40 +184,40 @@ import javax.swing.event.ListSelectionListener;
                               deleteButton_.setEnabled ( false );
                               editButton_.setEnabled ( false );
                               break;
-                              
-                  default: break; 
+
+                  default: break;
               }
           }
       }
-      
+
       /**
        *Adds a property listener.
        *@param l The listener to add.
        */
-       
+
       public synchronized void addPropertyListener ( PropertyListener l )
       {
            listeners_.addElement ( l );
       }
-      
+
       /**
        *Removes the given property listener.
        *@param l The listener to remove.
        */
-       
+
       public synchronized void removePropertyListener ( PropertyListener l )
       {
           listeners_.remove ( l );
       }
-      
+
       /**
        *Gets the actual Swing panel.
        *@return JPanel The panel.
        */
-       
-      public JPanel getPanel() 
+
+      public JPanel getPanel()
       {
-          return panel_; 
+          return panel_;
       }
-      
+
   }

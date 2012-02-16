@@ -25,26 +25,18 @@
 
 package com.atomikos.jms;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import javax.jms.Destination;
 
  /**
-  * 
-  * 
+  *
+  *
   * Common functionality for sender session factories.
   *
   */
 
-public abstract class MessageProducerSessionFactory 
+public abstract class MessageProducerSessionFactory
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(MessageProducerSessionFactory.class);
 
-	
 	private String user;
 	private String password;
 	private Destination destination;
@@ -52,17 +44,17 @@ public abstract class MessageProducerSessionFactory
 	private int deliveryMode;
 	private int priority;
 	private long timeToLive;
-	
+
 	protected Destination getDestination()
 	{
 		return destination;
 	}
-	
+
 	protected void setDestination ( Destination dest )
 	{
 		this.destination = dest;
 	}
-	
+
 	/**
 	 * Sets the destination to reply to (optional).
 	 * @param dest
@@ -71,7 +63,7 @@ public abstract class MessageProducerSessionFactory
 	{
 		this.replyToDestination = dest;
 	}
-	
+
 	/**
 	 * Gets the destination to reply to (if any).
 	 * @return
@@ -83,22 +75,22 @@ public abstract class MessageProducerSessionFactory
 
 	/**
 	 * Gets the delivery mode.
-	 * 
+	 *
 	 * @return
 	 */
-	
-	public int getDeliveryMode() 
+
+	public int getDeliveryMode()
 	{
 	    return deliveryMode;
 	}
 
 	/**
 	 * Gets the priority.
-	 * 
+	 *
 	 * @return
 	 */
-	
-	public int getPriority() 
+
+	public int getPriority()
 	{
 	    return priority;
 	}
@@ -107,7 +99,7 @@ public abstract class MessageProducerSessionFactory
 	 * Gets the time to live.
 	 * @return
 	 */
-	public long getTimeToLive() 
+	public long getTimeToLive()
 	{
 	    return timeToLive;
 	}
@@ -116,7 +108,7 @@ public abstract class MessageProducerSessionFactory
 	 * Gets the user (if any).
 	 * @return
 	 */
-	public String getUser() 
+	public String getUser()
 	{
 	    return user;
 	}
@@ -125,7 +117,7 @@ public abstract class MessageProducerSessionFactory
 	 * Sets the JMS delivery mode for sending (optional).
 	 * @param mode
 	 */
-	public void setDeliveryMode ( int mode ) 
+	public void setDeliveryMode ( int mode )
 	{
 	    deliveryMode = mode;
 	}
@@ -135,11 +127,11 @@ public abstract class MessageProducerSessionFactory
 	 * if the user is set).
 	 * @param pw
 	 */
-	public void setPassword ( String pw ) 
+	public void setPassword ( String pw )
 	{
 	    password =  pw;
 	}
-	
+
 	protected String getPassword()
 	{
 		return password;
@@ -149,7 +141,7 @@ public abstract class MessageProducerSessionFactory
 	 * Sets the priority for sending (optional).
 	 * @param pty
 	 */
-	public void setPriority ( int pty ) 
+	public void setPriority ( int pty )
 	{
 	    priority = pty;
 	}
@@ -158,7 +150,7 @@ public abstract class MessageProducerSessionFactory
 	 * Sets the time to live for messages sent (optional).
 	 * @param ttl
 	 */
-	public void setTimeToLive ( long ttl ) 
+	public void setTimeToLive ( long ttl )
 	{
 	    timeToLive = ttl;
 	}
@@ -167,17 +159,17 @@ public abstract class MessageProducerSessionFactory
 	 * Sets the user name to use for sending (optional).
 	 * @param user
 	 */
-	public void setUser ( String user ) 
+	public void setUser ( String user )
 	{
 	    this.user = user;
 	}
-	
+
 	/**
 	 * Creates a new message producer session.
-	 * 
+	 *
 	 * @return
 	 */
-	protected abstract MessageProducerSession 
+	protected abstract MessageProducerSession
 	createMessageProducerSession();
 
 }

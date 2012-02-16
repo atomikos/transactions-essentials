@@ -25,9 +25,6 @@
 
 package com.atomikos.beans;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.awt.Component;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyEditor;
@@ -44,35 +41,31 @@ import java.beans.PropertyEditor;
 class EditorImp
 implements Editor
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(EditorImp.class);
 
     private PropertyEditor editor_;
     //the property editor for GUI editing,
     //null if none
-    
+
     private Property property_;
     //the property
-    
+
     private Object editedObject_;
     //the edited object (a local copy since no edit-in-place is done).
-    
+
     private PropertyChangeAdapter adapter_;
     //for converting change events
-    
-     /** 
+
+     /**
       *Creates a new instance for a given editor
-      *to delegate to. 
+      *to delegate to.
       *@param property The property.
       *@param editor The delegate, or null if none.
       */
-      
+
     EditorImp ( Property property , PropertyEditor editor )
     throws PropertyException
     {
-        editor_ = editor; 
+        editor_ = editor;
         property_ = property;
         try {
             editor.setValue ( property.getValue() );
@@ -83,42 +76,42 @@ implements Editor
         }
         adapter_ = new PropertyChangeAdapter ( this );
         editor_.addPropertyChangeListener ( adapter_ );
-    } 
-  
-    
+    }
+
+
     protected PropertyEditor getPropertyEditor()
     {
-        return editor_; 
+        return editor_;
     }
-    
+
     public Object getEditedObject()
     {
         return editor_.getValue();
     }
-    
+
     public void setEditedObject ( Object value )
     {
-        editor_.setValue ( value ); 
+        editor_.setValue ( value );
     }
-    
+
     public void addPropertyChangeListener (
         PropertyChangeListener l )
     {
           adapter_.addPropertyChangeListener ( l );
     }
-    
-    public void removePropertyChangeListener ( 
+
+    public void removePropertyChangeListener (
         PropertyChangeListener l )
     {
-        
-        adapter_.removePropertyChangeListener ( l ); 
+
+        adapter_.removePropertyChangeListener ( l );
     }
-    
+
     public Property getProperty()
     {
-        return property_; 
+        return property_;
     }
-    
+
     public void setStringValue ( String val )
     throws PropertyException
     {
@@ -127,7 +120,7 @@ implements Editor
 //        }
 //        catch ( Exception e ) {
 //            e.printStackTrace();
-//            throw new PropertyException ( e ); 
+//            throw new PropertyException ( e );
 //        }
 
 
@@ -157,7 +150,7 @@ implements Editor
     {
         return editor_.getAsText();
     }
-    
+
     public Component getComponent()
     {
         return editor_.getCustomEditor();

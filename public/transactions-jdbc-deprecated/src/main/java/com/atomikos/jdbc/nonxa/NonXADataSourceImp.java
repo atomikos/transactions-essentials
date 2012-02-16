@@ -25,9 +25,6 @@
 
 package com.atomikos.jdbc.nonxa;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.io.PrintWriter;
 import java.lang.reflect.Proxy;
 import java.sql.Connection;
@@ -51,6 +48,8 @@ import com.atomikos.icatch.StringHeuristicMessage;
 import com.atomikos.jdbc.ConnectionPool;
 import com.atomikos.jdbc.HeuristicDataSource;
 import com.atomikos.jdbc.XPooledConnection;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 
 /**
  *

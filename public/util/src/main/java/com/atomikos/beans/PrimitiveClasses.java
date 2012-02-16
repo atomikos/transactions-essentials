@@ -25,9 +25,6 @@
 
 package com.atomikos.beans;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,10 +38,6 @@ import java.util.Map;
 
 public final class PrimitiveClasses
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(PrimitiveClasses.class);
 
     private static Map map_ = new HashMap();
     //maps primitive classes to wrapper classes
@@ -54,7 +47,7 @@ public final class PrimitiveClasses
     //the mapped value is a Boolean: True iff the
     //class allows decimal values
 
-   
+
 
     static {
         map_.put ( Boolean.TYPE , Boolean.class );
@@ -72,7 +65,7 @@ public final class PrimitiveClasses
         numericMap_.put ( Long.class , new Boolean ( false ) );
         numericMap_.put ( Float.class , new Boolean ( true ) );
         numericMap_.put ( Double.class , new Boolean ( true ) );
-        
+
     }
 
 
@@ -81,7 +74,7 @@ public final class PrimitiveClasses
      *@param clazz The class to test.
      *@return boolean If true then the class allows only numeric values.
      */
-    
+
     public static boolean isNumericClass ( Class clazz )
     {
         return numericMap_.containsKey ( clazz );
@@ -102,26 +95,26 @@ public final class PrimitiveClasses
 
         return ret;
     }
-    
+
     /**
       *Get the wrapper type for the given primitive.
       *@param primitiveClass The primitive class.
       *@return Class The wrapper, or null if not a primitive.
       */
-      
+
     public static Class getWrapperClass ( Class primitiveClass )
     {
           return ( Class ) map_.get ( primitiveClass );
     }
-    
+
      /**
       *Constructs a wrapper object that holds a value
       *for the given primitiveClass, based on the
       *given String value.
       *@param val The String value.
-      *@param primitiveClass The class for which the 
+      *@param primitiveClass The class for which the
       *wrapper object should be made.
-      *@exception ClassNotPrimitiveException If 
+      *@exception ClassNotPrimitiveException If
       *the supplied class is not recognized as a primitive class.
       *@return Object The wrapper object.
       */
@@ -129,13 +122,13 @@ public final class PrimitiveClasses
     throws ClassNotPrimitiveException
     {
          Object ret = null;
-       
+
         Class[] args = new Class[1];
         args[0] = String.class;
         Class wrapperClass = getWrapperClass ( primitiveClass );
         if ( wrapperClass == null )
             throw new ClassNotPrimitiveException ( primitiveClass.getName() );
-        
+
         try {
           Constructor c = wrapperClass.getConstructor ( args );
           Object[] initArgs = new Object[1];
@@ -145,9 +138,9 @@ public final class PrimitiveClasses
         }
         catch ( Exception e ) {
             //e.printStackTrace();
-            throw new RuntimeException ( e.getMessage () ); 
+            throw new RuntimeException ( e.getMessage () );
         }
-       
+
         return ret;
     }
 }

@@ -25,25 +25,18 @@
 
 package com.atomikos.jdbc.nonxa;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.beans.PropertyDescriptor;
 
 /**
- * 
- * 
- * 
- * 
- * 
- * 
+ *
+ *
+ *
+ *
+ *
+ *
  */
 public class NonXADataSourceBeanBeanInfo extends java.beans.SimpleBeanInfo
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(NonXADataSourceBeanBeanInfo.class);
 
     public PropertyDescriptor[] getPropertyDescriptors ()
     {
@@ -75,7 +68,7 @@ public class NonXADataSourceBeanBeanInfo extends java.beans.SimpleBeanInfo
                     .setShortDescription ( "a SQL query to validate the settings" );
             ret[8] = new PropertyDescriptor ( "testOnBorrow" , clazz );
             ret[8].setShortDescription ( "test connections before use?" );
-            
+
         } catch ( Exception e ) {
             throw new RuntimeException ( e.getMessage () );
         }

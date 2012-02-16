@@ -25,9 +25,6 @@
 
 package com.atomikos.icatch.imp;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Stack;
@@ -41,17 +38,13 @@ import com.atomikos.icatch.StringHeuristicMessage;
 import com.atomikos.icatch.TxState;
 
 /**
- * 
- * 
+ *
+ *
  * A result object for termination messages.
  */
 
 class TerminationResult extends Result
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(TerminationResult.class);
 
     protected boolean analyzed_;
     // true if all answers processed
@@ -65,7 +58,7 @@ class TerminationResult extends Result
 
     /**
      * Constructor.
-     * 
+     *
      * @param count
      *            The number of messages to process.
      */
@@ -80,7 +73,7 @@ class TerminationResult extends Result
 
     /**
      * Get the heuristic participants for this termination round.
-     * 
+     *
      * @return Hashtable The heuristic participants, each mapped to its
      *         heuristic state object representation.
      * @exception IllegalStateException
@@ -97,7 +90,7 @@ class TerminationResult extends Result
 
     /**
      * To get a set of possibly indoubt participants: those with a hazard case.
-     * 
+     *
      * @return Hashtable The list of possibly indoubts.
      * @exception IllegalStateException
      *                If comm. not done yet.

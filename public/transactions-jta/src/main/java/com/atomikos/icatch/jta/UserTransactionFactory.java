@@ -25,9 +25,6 @@
 
 package com.atomikos.icatch.jta;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.util.Hashtable;
 
 import javax.naming.Context;
@@ -36,17 +33,13 @@ import javax.naming.Reference;
 import javax.naming.spi.ObjectFactory;
 
 /**
- * 
- * 
+ *
+ *
  * The factory for JNDI lookup of UserTransactionImp objects.
  */
 
 public class UserTransactionFactory implements ObjectFactory
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(UserTransactionFactory.class);
 
     public UserTransactionFactory ()
     {
@@ -70,7 +63,7 @@ public class UserTransactionFactory implements ObjectFactory
         else if ( ref.getClassName ().equals (
                 "com.atomikos.icatch.jta.J2eeUserTransaction" ) )
             ret = new J2eeUserTransaction ();
-        else if ( ref.getClassName().equals ( 
+        else if ( ref.getClassName().equals (
         		   "javax.transaction.UserTransaction" ) )
         		//ISSUE 10121: fix for Tomcat 5.5: class is always the JTA type
         		ret = new UserTransactionImp();

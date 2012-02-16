@@ -25,9 +25,6 @@
 
 package com.atomikos.jdbc;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -47,8 +44,8 @@ import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.TxState;
 
 /**
- * 
- * 
+ *
+ *
  * An implementation of a DTPPooledConnection that can be managed by internal as
  * well as external pools.
  */
@@ -56,15 +53,11 @@ import com.atomikos.icatch.TxState;
 public class ExternalXAPooledConnectionImp implements DTPPooledConnection,
         ConnectionEventListener
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(ExternalXAPooledConnectionImp.class);
-	
+
 	protected static void suspendResourceTransaction (
 			ResourceTransaction restx ) {
 		XAResourceTransaction xarestx = ( XAResourceTransaction ) restx;
-		if ( xarestx != null && 
+		if ( xarestx != null &&
 			!xarestx.getState().equals( TxState.TERMINATED )) {
 			//check terminated to resolve ISSUE 10102
 			xarestx.suspend();
@@ -167,7 +160,7 @@ public class ExternalXAPooledConnectionImp implements DTPPooledConnection,
 
     /**
      * To get the connection to work with.
-     * 
+     *
      * @return Connection The connection to work on. Any statement that is
      *         created will have a default timeout of 60 seconds. It is
      *         recommended that a timeout is used in any case, in order to avoid

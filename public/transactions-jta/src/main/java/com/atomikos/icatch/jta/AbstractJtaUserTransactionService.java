@@ -25,9 +25,6 @@
 
 package com.atomikos.icatch.jta;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import javax.transaction.TransactionManager;
 
 import com.atomikos.datasource.xa.AcceptAllXATransactionalResource;
@@ -39,21 +36,17 @@ import com.atomikos.icatch.config.imp.AbstractUserTransactionServiceFactory;
 import com.atomikos.icatch.system.Configuration;
 
 public abstract class AbstractJtaUserTransactionService extends
-		AbstractUserTransactionService 
+		AbstractUserTransactionService
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(AbstractJtaUserTransactionService.class);
 
-	public AbstractJtaUserTransactionService() 
+	public AbstractJtaUserTransactionService()
 	{
 		super();
 	}
 
-	public void init ( TSInitInfo info ) throws SysException 
+	public void init ( TSInitInfo info ) throws SysException
 	{
-		
+
 		super.init ( info );
         String autoRegisterProperty = getTrimmedProperty (
                 AbstractUserTransactionServiceFactory.AUTOMATIC_RESOURCE_REGISTRATION_PROPERTY_NAME, info
@@ -67,13 +60,13 @@ public abstract class AbstractJtaUserTransactionService extends
         }
 	}
 
-	public void shutdown ( boolean force ) throws IllegalStateException 
+	public void shutdown ( boolean force ) throws IllegalStateException
 	{
 		super.shutdown(force);
         TransactionManagerImp.installTransactionManager ( null, false );
         UserTransactionServerImp.getSingleton ().shutdown ();
 	}
-	
+
     /**
      * @see UserTransactionService
      */

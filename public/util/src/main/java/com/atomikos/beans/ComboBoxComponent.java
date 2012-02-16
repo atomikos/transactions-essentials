@@ -25,9 +25,6 @@
 
 package com.atomikos.beans;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -48,10 +45,6 @@ public class ComboBoxComponent
 extends AbstractPropertyEditorComponent
 implements ActionListener
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(ComboBoxComponent.class);
 
     private JComboBox comboBox_;
     //the dropdown list
@@ -89,17 +82,17 @@ implements ActionListener
 
         return panel_;
     }
-   
+
     public void actionPerformed ( ActionEvent e )
     {
-        Class wrapperClass = 
+        Class wrapperClass =
         PrimitiveClasses.getWrapperClass ( property_.getType() );
         try {
             if ( wrapperClass == null ) {
                 getPropertyEditor().setAsText ( ( String ) comboBox_.getSelectedItem() );
 
             }
-           
+
         }
         catch ( Exception err ) {
             err.printStackTrace();

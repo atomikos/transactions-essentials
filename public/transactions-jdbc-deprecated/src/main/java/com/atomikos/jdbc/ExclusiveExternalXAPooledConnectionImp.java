@@ -25,9 +25,6 @@
 
 package com.atomikos.jdbc;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.Enumeration;
@@ -44,8 +41,8 @@ import com.atomikos.icatch.TxState;
 import com.atomikos.icatch.system.Configuration;
 
 /**
- * 
- * 
+ *
+ *
  * A non-shared implementation of a pooled connection. Some DBs such as Oracle
  * or SQLServer deviate from the standard in the moment where an XAResource can
  * be reused. This has to be AFTER 2PC (contrary to standard). Instances of this
@@ -56,10 +53,6 @@ import com.atomikos.icatch.system.Configuration;
 public class ExclusiveExternalXAPooledConnectionImp extends
         ExternalXAPooledConnectionImp implements Synchronization
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(ExclusiveExternalXAPooledConnectionImp.class);
 
     private boolean afterCompletionDone_ = false;
 
@@ -134,7 +127,7 @@ public class ExclusiveExternalXAPooledConnectionImp extends
                 l.connectionClosed ( e2 );
             }
             afterCompletionDone_ = true;
-            
+
 
         }
 

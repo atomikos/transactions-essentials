@@ -25,8 +25,6 @@
 
 package com.atomikos.icatch;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
 
 
 /**
@@ -36,13 +34,9 @@ import com.atomikos.logging.Logger;
 
 public class HeurHazardException extends Exception
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(HeurHazardException.class);
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
 	protected HeuristicMessage[] msgs_=null;
 
 

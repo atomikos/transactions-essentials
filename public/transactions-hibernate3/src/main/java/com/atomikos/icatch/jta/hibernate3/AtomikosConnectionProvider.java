@@ -25,9 +25,6 @@
 
 package com.atomikos.icatch.jta.hibernate3;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Iterator;
@@ -43,6 +40,8 @@ import com.atomikos.jdbc.AbstractDataSourceBean;
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import com.atomikos.jdbc.AtomikosSQLException;
 import com.atomikos.jdbc.nonxa.AtomikosNonXADataSourceBean;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 
 /**
  * Atomikos-specific ConnectionProvider implementation that can

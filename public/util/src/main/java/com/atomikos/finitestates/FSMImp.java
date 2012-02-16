@@ -25,20 +25,17 @@
 
 package com.atomikos.finitestates;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.util.Enumeration;
 import java.util.Hashtable;
 
 /**
- * 
+ *
  *
  * Implementation of a finite state machine. The following
  * consistency is provided:
  * <ul>
  * <li>getState returns a snapshot (state may change continuously)</li>
- * <li>FSMPreEnterListeners have the guarantee that getState() returns the same 
+ * <li>FSMPreEnterListeners have the guarantee that getState() returns the same
  * value each time during the <b>preEnter</b> notification.</li>
  * <li>FSMEnterListeners have <b>no guarantee</b> that the getState() method will
  * return the state that was entered - this state may have changed since.</li>
@@ -46,16 +43,12 @@ import java.util.Hashtable;
  *
  */
 
-public class FSMImp implements FSM 
+public class FSMImp implements FSM
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(FSMImp.class);
 
     private Object state_ = null;
     //the current state
-    
+
     private Hashtable enterlisteners_ = null;
     //the enter listeners
 
@@ -70,11 +63,11 @@ public class FSMImp implements FSM
 
     private TransitionTable transitiontable_ = null;
     //records the legal transitions
-    
+
     private Object eventsource_ = null;
-    
+
     private Object stateLatch_;
-    
+
 
     /**
      *Constructor.
@@ -85,12 +78,12 @@ public class FSMImp implements FSM
      *@param initialstate The initial state of the FSM.
      */
 
-    public FSMImp ( TransitionTable transitiontable , Object initialstate ) 
+    public FSMImp ( TransitionTable transitiontable , Object initialstate )
     {
         this ( null, transitiontable, initialstate );
         eventsource_ = this;
     }
-    
+
     /**
      *Creates a new instance with a given event source.
      *Useful for cases where finite state machine behaviour is modelled
@@ -100,8 +93,8 @@ public class FSMImp implements FSM
      *@param transitiontable The transitiontable for state changes.
      *@param initialstate The initial state of the FSM.
      */
-     
-    public FSMImp ( Object eventsource, TransitionTable transitiontable, 
+
+    public FSMImp ( Object eventsource, TransitionTable transitiontable,
                     Object initialstate )
     {
         transitiontable_ = transitiontable;
@@ -122,7 +115,7 @@ public class FSMImp implements FSM
      *@param state The state for which the listener wants to be notified.
      */
 
-    protected synchronized  void addEnterListener(Hashtable listeners, 
+    protected synchronized  void addEnterListener(Hashtable listeners,
 			      Object lstnr,
 			      Object state)
     {
@@ -149,7 +142,7 @@ public class FSMImp implements FSM
 				 Object to)
     {
         Hashtable lstnrs = ( Hashtable ) listeners.get(from);
-        if (lstnrs == null) 
+        if (lstnrs == null)
 	  lstnrs = new Hashtable();
         Hashtable tolstnrs = (Hashtable ) lstnrs.get(to);
         if (tolstnrs == null)
@@ -168,26 +161,26 @@ public class FSMImp implements FSM
      *@param pre True iff before entering.
      */
 
-    protected void notifyListeners(Hashtable listeners, Object state, 
+    protected void notifyListeners(Hashtable listeners, Object state,
 			     boolean pre)
     {
         Hashtable lstnrs = null;
         FSMEnterEvent event = new FSMEnterEvent (eventsource_, state);
         synchronized ( this ) {
-            
+
             lstnrs= (Hashtable) listeners.get ( state );
-            if ( lstnrs == null ) 
+            if ( lstnrs == null )
                 	return;
             //clone to avoid concurrency effects outside synch block
             //during iteration hereafter
             lstnrs = ( Hashtable ) lstnrs.clone();
         }
-        
+
         //notify OUTSIDE SYNCH to minimize deadlocks
         Enumeration enumm=lstnrs.keys();
         while (enumm.hasMoreElements()) {
             	Object listener=enumm.nextElement();
-            	if ( pre && ( listener instanceof FSMPreEnterListener )) 
+            	if ( pre && ( listener instanceof FSMPreEnterListener ))
             	    ((FSMPreEnterListener) listener).preEnter (event);
             	else if (!pre && (listener instanceof FSMEnterListener))
             	    ((FSMEnterListener) listener).entered ( event );
@@ -211,18 +204,18 @@ public class FSMImp implements FSM
         Hashtable  tolstnrs = null;
         synchronized ( this ) {
             lstnrs = ( Hashtable ) listeners.get( from );
-            if ( lstnrs == null ) 
+            if ( lstnrs == null )
                 return;
             tolstnrs = ( Hashtable ) lstnrs.get( to );
             if ( tolstnrs == null )
                 return;
-            
-            //clone to avoid concurrency effects 
+
+            //clone to avoid concurrency effects
             //during iteration outside synch block
             lstnrs = ( Hashtable ) lstnrs.clone();
             tolstnrs = ( Hashtable ) tolstnrs.clone();
         }
-        
+
         //iterator outside synch to avoid deadlocks
         Enumeration enumm =  tolstnrs.keys();
         while ( enumm.hasMoreElements() ) {
@@ -234,9 +227,9 @@ public class FSMImp implements FSM
                 ((FSMTransitionListener) listener).transitionPerformed(event);
             }
         }
-        
+
     }
-    
+
     /**
      *@see com.atomikos.finitestates.FSM
      */
@@ -252,7 +245,7 @@ public class FSMImp implements FSM
     	}
         return ret;
     }
-    
+
     private void setStateObject ( Object state )
     {
     	//synchronize on stateLatch ONLY to make sure that getState
@@ -261,13 +254,13 @@ public class FSMImp implements FSM
     		this.state_ = state;
     	}
     }
-    
-     
+
+
     /**
      *@see com.atomikos.finitestates.StateMutable
      */
-    
-    public void setState(Object state) 
+
+    public void setState(Object state)
         throws IllegalStateException
     {
     		Object oldstate = null;
@@ -285,43 +278,43 @@ public class FSMImp implements FSM
         notifyListeners(transitionlisteners_ , oldstate, state, false);
     }
 
-     
+
     /**
      *@see com.atomikos.finitestates.FSMEnterEventSource
      */
 
-    public void addFSMEnterListener(FSMEnterListener lstnr, Object state) 
+    public void addFSMEnterListener(FSMEnterListener lstnr, Object state)
     {
         addEnterListener(enterlisteners_ , lstnr , state);
-       
+
     }
 
-     
+
     /**
      *@see com.atomikos.finitestates.FSMPreEnterEventSource
      */
 
-    public void addFSMPreEnterListener(FSMPreEnterListener lstnr, 
+    public void addFSMPreEnterListener(FSMPreEnterListener lstnr,
 			         Object state)
     {
         addEnterListener(preenterlisteners_ , lstnr , state);
     }
- 
+
     /**
      *@see com.atomikos.finitestates.FSMTransitionEventSource
      */
-    
+
 
     public void addFSMTransitionListener(FSMTransitionListener lstnr,
 				 Object from, Object to)
-    { 
+    {
         addTransitionListener ( transitionlisteners_ , lstnr , from , to );
     }
- 
+
     /**
      *@see com.atomikos.finitestates.FSMPreTransitionEventSource
      */
-    
+
     public void addFSMPreTransitionListener(FSMPreTransitionListener lstnr,
 				    Object from, Object to)
     {
@@ -329,8 +322,8 @@ public class FSMImp implements FSM
     }
 
 
-   
-  
+
+
 
 }
 

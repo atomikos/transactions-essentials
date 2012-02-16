@@ -25,24 +25,17 @@
 
 package com.atomikos.jms;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.beans.PropertyDescriptor;
 import java.beans.SimpleBeanInfo;
 
 /**
- * 
- * 
+ *
+ *
  * A bean descriptor that tells GUI wizards which properties to edit.
  */
 
 public class QueueConnectionFactoryBeanBeanInfo extends SimpleBeanInfo
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(QueueConnectionFactoryBeanBeanInfo.class);
 
     public PropertyDescriptor[] getPropertyDescriptors ()
     {
@@ -64,7 +57,7 @@ public class QueueConnectionFactoryBeanBeanInfo extends SimpleBeanInfo
             ret[1] = new PropertyDescriptor ( "xaFactoryJndiName", clazz );
             ret[1].setShortDescription ( "JNDI name of XA factory" );
             ret[1].setHidden ( false );
-            
+
             ret[2] = new PropertyDescriptor ( "xaQueueConnectionFactory", clazz );
             ret[2].setHidden ( true );
 

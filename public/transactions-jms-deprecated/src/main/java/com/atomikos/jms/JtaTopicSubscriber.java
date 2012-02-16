@@ -25,9 +25,6 @@
 
 package com.atomikos.jms;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import javax.jms.JMSException;
 import javax.jms.Topic;
 import javax.jms.TopicSubscriber;
@@ -36,23 +33,19 @@ import javax.transaction.xa.XAResource;
 import com.atomikos.datasource.TransactionalResource;
 
 /**
- * 
- * 
+ *
+ *
  * A topic subscriber implementation.
  *<p>
  * Topic functionality in this product was sponsored by <a href="http://www.webtide.com">Webtide</a>.
  */
 
 
-class JtaTopicSubscriber 
+class JtaTopicSubscriber
 extends DefaultJtaMessageConsumer
-implements HeuristicTopicSubscriber 
+implements HeuristicTopicSubscriber
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(JtaTopicSubscriber.class);
-	
+
 	JtaTopicSubscriber ( TopicSubscriber subscriber ,
 			TransactionalResource res ,
             XAResource xares )
@@ -65,18 +58,18 @@ implements HeuristicTopicSubscriber
 	{
 		return ( TopicSubscriber ) getMessageConsumer();
 	}
-	
-	public Topic getTopic() throws JMSException 
+
+	public Topic getTopic() throws JMSException
 	{
 		return getTopicSubscriber().getTopic();
 	}
 
-	public boolean getNoLocal() throws JMSException 
+	public boolean getNoLocal() throws JMSException
 	{
 		//TODO check if this needs to be ignored
 		return getTopicSubscriber().getNoLocal();
 	}
 
-	
+
 
 }

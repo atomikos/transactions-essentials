@@ -28,13 +28,13 @@
  */
 package com.atomikos.util;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.net.URL;
 import java.util.List;
+
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 
 /**
  * A helper class for class loading.

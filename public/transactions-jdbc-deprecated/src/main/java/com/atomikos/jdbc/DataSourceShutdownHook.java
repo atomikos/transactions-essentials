@@ -25,31 +25,25 @@
 
 package com.atomikos.jdbc;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
 
 
 /**
- * 
- * 
- * 
- * 
- * 
+ *
+ *
+ *
+ *
+ *
  * A shutdown hook for closing the JtaDataSourceImp. This class is useful for
  * cases where application-level shutdown is impractical.
  */
 public class DataSourceShutdownHook extends Thread
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(DataSourceShutdownHook.class);
 
     JtaDataSourceImp ds_;
 
     /**
      * Create a new instance for a given datasource.
-     * 
+     *
      * @param ds
      *            The datasource, which will be closed at shutdown.
      */

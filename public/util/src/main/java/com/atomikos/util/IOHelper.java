@@ -25,9 +25,6 @@
 
 package com.atomikos.util;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,10 +40,6 @@ import java.io.OutputStream;
  */
 public class IOHelper
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(IOHelper.class);
 
 		/**
 	 * Copy every byte from the source to the output.

@@ -25,9 +25,6 @@
 
 package com.atomikos.util;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -53,11 +50,7 @@ import javax.naming.spi.ObjectFactory;
 
 public class SerializableObjectFactory implements ObjectFactory
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(SerializableObjectFactory.class);
-	
+
 	static Reference createReference ( Serializable object , String factoryClassName )
 	throws NamingException
 	{
@@ -75,33 +68,33 @@ public class SerializableObjectFactory implements ObjectFactory
         {
             throw new NamingException ( e.getMessage() );
         }
-		
+
 		handle = new BinaryRefAddr ( "com.atomikos.serializable" , bout.toByteArray() );
 		ret = new Reference ( object.getClass().getName() , handle ,
 			factoryClassName , null );
 		return ret;
 	}
-	
+
 	/**
 	 * Create a reference for the given (Serializable) object.
-	 * 
+	 *
 	 * @param object The object to create a reference for.
 	 * @return Reference The reference that can be bound
 	 * in JNDI and used along with this factory class to
 	 * reconstruct the original object.
 	 * @exception NamingException On failure.
 	 */
-	
+
 	public static Reference createReference ( Serializable object )
 	throws NamingException
 	{
 		return createReference ( object , SerializableObjectFactory.class.getName() );
 	}
-	
+
     /**
      * @see javax.naming.spi.ObjectFactory#getObjectInstance(java.lang.Object, javax.naming.Name, javax.naming.Context, java.util.Hashtable)
      */
-    
+
     public Object getObjectInstance(
 		Object obj, Name name,
 		Context nameCtx,
@@ -136,7 +129,7 @@ public class SerializableObjectFactory implements ObjectFactory
         		in.close();
         	}
         }
-        
+
         return ret;
     }
 

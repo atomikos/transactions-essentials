@@ -34,25 +34,19 @@
 
 package com.atomikos.icatch;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
 
 
 /**
- * An exception signaling that some participants 
+ * An exception signaling that some participants
  * have committed whereas others performed a rollback.
  */
 
 public class HeurMixedException extends Exception
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(HeurMixedException.class);
 
     protected HeuristicMessage[] aborts_=null, commits_=null, msgs_=null;
 
- 
+
     public HeurMixedException (HeuristicMessage[] msgs)
     {
         super("Heuristic Exception");
@@ -66,7 +60,7 @@ public class HeurMixedException extends Exception
         aborts_=aborts;
         commits_=commits;
     }
-    
+
     /**
      *
      * @return HeuristicMessage[] The list of application-level messages for those participants that did rollback, or null if none.
@@ -81,7 +75,7 @@ public class HeurMixedException extends Exception
      * @return HeuristicMessage[] The list of messages describing the work at those participants that committed, or null if none.
      *
      */
-    
+
     public HeuristicMessage[] getHeuristicCommitMessages()
     {
         return commits_;
@@ -95,10 +89,10 @@ public class HeurMixedException extends Exception
 
     public HeuristicMessage[] getHeuristicMessages()
     {
-    	if (msgs_!=null) 
+    	if (msgs_!=null)
     		return msgs_;
 
-    	if (aborts_==null) 
+    	if (aborts_==null)
     		return getHeuristicCommitMessages();
     	else if (commits_==null)
     		return getHeuristicRollbackMessages();
@@ -116,5 +110,5 @@ public class HeurMixedException extends Exception
     	return msgs;
     }
 
-    
+
 }

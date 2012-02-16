@@ -25,8 +25,6 @@
 
 package com.atomikos.icatch;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
 
 
 /**
@@ -35,15 +33,11 @@ import com.atomikos.logging.Logger;
 
 public class StringHeuristicMessage implements HeuristicMessage
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(StringHeuristicMessage.class);
-    
+
     static final long serialVersionUID = -6967918138714056401L;
-    
+
     protected String string_=null;
-    
+
        public StringHeuristicMessage(String string)
     {
         string_=string;

@@ -25,32 +25,25 @@
 
 package com.atomikos.jms;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import javax.jms.Destination;
 import javax.jms.Queue;
 
 /**
- * 
- * 
- * 
+ *
+ *
+ *
  * A factory for QueueSenderSession instances, allowing a number of sessions to
  * share the same setup configuration. Changes to the factory properties will
  * not affect any previously created sessions.
- * 
- * 
+ *
+ *
  */
 public class QueueSenderSessionFactory
 extends MessageProducerSessionFactory
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(QueueSenderSessionFactory.class);
-	
+
 	private QueueConnectionFactoryBean queueConnectionFactoryBean;
-	
+
     /**
      * @return
      */
@@ -110,7 +103,7 @@ extends MessageProducerSessionFactory
     /**
      * Create a new instance with the current properties. Any later property
      * changes will NOT affect the created instance.
-     * 
+     *
      * @return
      */
     public QueueSenderSession createQueueSenderSession ()
@@ -127,7 +120,7 @@ extends MessageProducerSessionFactory
         return ret;
     }
 
-	protected MessageProducerSession createMessageProducerSession() 
+	protected MessageProducerSession createMessageProducerSession()
 	{
 		return createQueueSenderSession();
 	}

@@ -25,8 +25,6 @@
 
 package com.atomikos.icatch.imp.thread;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
 
 /**
  * A simple way of interacting with the different versions

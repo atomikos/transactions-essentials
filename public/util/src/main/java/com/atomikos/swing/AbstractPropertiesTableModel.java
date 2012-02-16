@@ -182,9 +182,6 @@
 
 package com.atomikos.swing;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.util.Vector;
 
 import javax.swing.table.AbstractTableModel;
@@ -199,30 +196,26 @@ import javax.swing.table.TableModel;
  *Subclasses need to override the getValueAt method.
  */
 
-public abstract class AbstractPropertiesTableModel 
+public abstract class AbstractPropertiesTableModel
 extends AbstractTableModel
 implements PropertiesTableModel
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(AbstractPropertiesTableModel.class);
 
     private Vector data_;
     private String[] columnNames_;
-    
+
     /**
-     *Creates a new instance for a given data set and a 
+     *Creates a new instance for a given data set and a
      *number of column names.
      *
      *@param data The data; each element in the vector is a row.
      *@param columnNames The column names to use.
      *The size determines the number of columns.
      */
-     
+
     public AbstractPropertiesTableModel ( Vector data , String[] columnNames )
     {
-        data_ = data; 
+        data_ = data;
         columnNames_ = columnNames;
     }
 
@@ -230,41 +223,41 @@ implements PropertiesTableModel
    {
 	return data_;
    }
-    
+
     /**
      *@see PropertiesTableModel
      */
-     
-    public TableModel getTableModel () 
+
+    public TableModel getTableModel ()
     {
-        return this; 
+        return this;
     }
-    
-     
+
+
     public int getRowCount()
     {
         return data_.size();
     }
-    
-  
+
+
     public int getColumnCount()
     {
-        return columnNames_.length; 
+        return columnNames_.length;
     }
-     
+
     public abstract Object getValueAt ( int row, int column );
- 
-    
+
+
     public String getColumnName ( int col )
     {
        return columnNames_[col];
     }
-    
+
     public boolean isCellEditable ( int row, int col )
     {
-        return false; 
+        return false;
     }
-    
+
     /**
      *@see PropertiesTableModel
      */
@@ -273,24 +266,24 @@ implements PropertiesTableModel
     {
         fireTableRowsDeleted ( row, row );
     }
-    
+
     /**
      *@see PropertiesTableModel
      */
-     
+
     public void refresh()
     {
-        fireTableRowsUpdated ( 0, data_.size() ); 
+        fireTableRowsUpdated ( 0, data_.size() );
     }
-    
+
     /**
      *@see PropertiesTableModel
      */
-    
+
     public void rowInserted ()
     {
         fireTableRowsInserted ( 0, data_.size() );
     }
-  
+
 }
 

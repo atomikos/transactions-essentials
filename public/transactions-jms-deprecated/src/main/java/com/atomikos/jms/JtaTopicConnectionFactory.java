@@ -25,9 +25,6 @@
 
 package com.atomikos.jms;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.util.HashMap;
 
 import javax.jms.Connection;
@@ -46,8 +43,8 @@ import com.atomikos.datasource.xa.XidFactory;
 import com.atomikos.datasource.xa.jms.JmsTransactionalResource;
 
 /**
- * 
- * 
+ *
+ *
  * A connection factory that couples JMS topic sends/receives to JTA
  * transactions. Use this class only if you need to do explicit resource
  * registration with the transaction service (i.e., when the underlying
@@ -70,18 +67,14 @@ import com.atomikos.datasource.xa.jms.JmsTransactionalResource;
  *com.atomikos.icatch.UserTransactionService uts = new com.atomikos.icatch.UserTransactionServiceImp();<br>
  *uts.registerResource ( resource );<br>
  *</code>
- * 
+ *
  * <p>
  * Topic functionality in this product was sponsored by <a href="http://www.webtide.com">Webtide</a>.
  */
 
 public class JtaTopicConnectionFactory implements TopicConnectionFactory,
-		Referenceable 
+		Referenceable
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(JtaTopicConnectionFactory.class);
 
     private static HashMap nameToFactory_ = new HashMap ();
     // for JNDI lookup: maps name to instance
@@ -93,7 +86,7 @@ public class JtaTopicConnectionFactory implements TopicConnectionFactory,
 
     /**
      * Create a reference for the given resource.
-     * 
+     *
      * @param uniqueName
      * @return
      */
@@ -111,7 +104,7 @@ public class JtaTopicConnectionFactory implements TopicConnectionFactory,
     /**
      * Helper method to get an instance with given name. JNDI Object Factories
      * can use this to retrieve an instance that was previously bound.
-     * 
+     *
      * @param name
      *            The name of the connection factory.
      * @return JtaTopicConnectionFactory The factory, null if not there.
@@ -151,7 +144,7 @@ public class JtaTopicConnectionFactory implements TopicConnectionFactory,
 
     /**
      * Add an instance to the map, so that it can be found by name.
-     * 
+     *
      * @param name
      *            The name to map on.
      * @param instance
@@ -167,7 +160,7 @@ public class JtaTopicConnectionFactory implements TopicConnectionFactory,
 
     /**
      * Remove a map entry for the given name.
-     * 
+     *
      * @param name
      *            The name to unmap.
      */
@@ -181,7 +174,7 @@ public class JtaTopicConnectionFactory implements TopicConnectionFactory,
     /**
      * Create a new instance with a given JMS vendor-supplied xa connection
      * factory.
-     * 
+     *
      * @param resourceName
      *            The unique name for the transactional resource that will be
      *            created.
@@ -201,7 +194,7 @@ public class JtaTopicConnectionFactory implements TopicConnectionFactory,
     /**
      * Create a new instance with a given JMS vendor-supplied xa connection
      * factory, and a specific XidFactory.
-     * 
+     *
      * @param resourceName
      *            The unique name for the transactional resource that will be
      *            created.
@@ -221,7 +214,7 @@ public class JtaTopicConnectionFactory implements TopicConnectionFactory,
 
     /**
      * Gets the transactional resource created during initialization.
-     * 
+     *
      * @return JmsTransactionalResource The resource. This should be added to
      *         the transaction service's recoverable resources.
      */
@@ -233,9 +226,9 @@ public class JtaTopicConnectionFactory implements TopicConnectionFactory,
 
     /**
      * Creates a default topic connection.
-     * 
+     *
      */
-	public TopicConnection createTopicConnection() throws JMSException 
+	public TopicConnection createTopicConnection() throws JMSException
 	{
 		XATopicConnection tc = factory_.createXATopicConnection();
 		return new JtaTopicConnection ( tc , res_ );
@@ -245,7 +238,7 @@ public class JtaTopicConnectionFactory implements TopicConnectionFactory,
 	 * Creates a topic connection for the given user and password.
 	 */
 	public TopicConnection createTopicConnection ( String userName , String password )
-			throws JMSException 
+			throws JMSException
 	{
 		XATopicConnection tc = factory_.createXATopicConnection ( userName , password );
 		return new JtaTopicConnection ( tc , res_ );
@@ -254,7 +247,7 @@ public class JtaTopicConnectionFactory implements TopicConnectionFactory,
 	/**
 	 * Creates a default connection.
 	 */
-	public Connection createConnection() throws JMSException 
+	public Connection createConnection() throws JMSException
 	{
 		return createTopicConnection();
 	}
@@ -267,10 +260,10 @@ public class JtaTopicConnectionFactory implements TopicConnectionFactory,
 		return createTopicConnection ( userName , password );
 	}
 
-	
-	public Reference getReference() throws NamingException 
+
+	public Reference getReference() throws NamingException
 	{
-		return createReference ( res_.getName() ); 
+		return createReference ( res_.getName() );
 	}
 
 

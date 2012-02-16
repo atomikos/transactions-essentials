@@ -25,9 +25,6 @@
 
 package com.atomikos.jms.extra;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.io.Serializable;
 
 import javax.jms.Destination;
@@ -35,12 +32,8 @@ import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
 
-class SendObjectMessageCallback extends AbstractSendMessageCallback 
+class SendObjectMessageCallback extends AbstractSendMessageCallback
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(SendObjectMessageCallback.class);
 
 	private Serializable content;
 
@@ -51,7 +44,7 @@ class SendObjectMessageCallback extends AbstractSendMessageCallback
 		this.content = content;
 	}
 
-	public void doInJmsSession ( Session session ) throws JMSException 
+	public void doInJmsSession ( Session session ) throws JMSException
 	{
 		ObjectMessage msg = session.createObjectMessage ( content );
 		sendMessage ( msg , session );

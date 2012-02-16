@@ -25,45 +25,38 @@
 
 package com.atomikos.jms;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import javax.jms.Destination;
 import javax.jms.Topic;
 
 /**
- * 
- * 
+ *
+ *
  * A factory for TopicPublisherSession objects.
  *
  * <p>
  * Topic functionality in this product was sponsored by <a href="http://www.webtide.com">Webtide</a>.
  */
-public class TopicPublisherSessionFactory 
-extends MessageProducerSessionFactory 
+public class TopicPublisherSessionFactory
+extends MessageProducerSessionFactory
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(TopicPublisherSessionFactory.class);
-	
+
 	private TopicConnectionFactoryBean factory;
-	
+
 	public TopicPublisherSessionFactory()
-	{		
+	{
 		super();
 	}
-	
+
 	/**
 	 * Sets the topic connection factory to use (required).
 	 * @param factory
 	 */
-	public void setTopicConnectionFactoryBean ( 
+	public void setTopicConnectionFactoryBean (
 			TopicConnectionFactoryBean factory )
 	{
 		this.factory = factory;
 	}
-	
+
 	/**
 	 * Gets the topic connection factory.
 	 * @return
@@ -72,7 +65,7 @@ extends MessageProducerSessionFactory
 	{
 		return factory;
 	}
-	
+
 	/**
 	 * Sets the topic to send to (required).
 	 * @param topic
@@ -81,7 +74,7 @@ extends MessageProducerSessionFactory
 	{
 		setDestination  ( topic );
 	}
-	
+
 	/**
 	 * Gets the topic to send to.
 	 * @return
@@ -90,7 +83,7 @@ extends MessageProducerSessionFactory
 	{
 		return ( Topic ) getDestination();
 	}
-	
+
 	/**
 	 * Sets the topic to reply to (optional).
 	 * @param topic
@@ -99,7 +92,7 @@ extends MessageProducerSessionFactory
 	{
 		setReplyToDestination ( topic );
 	}
-	
+
 	/**
 	 * Gets the topic to reply to (if any).
 	 * @return Null if no topic was set or
@@ -115,8 +108,8 @@ extends MessageProducerSessionFactory
 		}
 		return ret;
 	}
-	
-	
+
+
 	/**
 	 * Creates a new topic publisher session.
 	 * @return
@@ -131,11 +124,11 @@ extends MessageProducerSessionFactory
 	    ret.setTopicConnectionFactoryBean ( factory );
 	        ret.setReplyToDestination ( getReplyToDestination() );
 	        ret.setTimeToLive ( getTimeToLive() );
-	        ret.setUser ( getUser() );		
+	        ret.setUser ( getUser() );
 		return ret;
 	}
 
-	protected MessageProducerSession createMessageProducerSession() 
+	protected MessageProducerSession createMessageProducerSession()
 	{
 		return createTopicPublisherSession();
 	}

@@ -25,9 +25,6 @@
 
 package com.atomikos.persistence.imp;
 
-import com.atomikos.logging.LoggerFactory;
-import com.atomikos.logging.Logger;
-
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -43,20 +40,16 @@ import com.atomikos.persistence.StateRecoveryManager;
 /**
  * A volatile recovery manager (one that doesn't support persistent logging and
  * hence doesn't allow recovery after a crash or restart).
- * 
+ *
  */
 
 public class VolatileStateRecoveryManager implements StateRecoveryManager,
         FSMPreEnterListener
 {
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.createLogger(VolatileStateRecoveryManager.class);
 
     private Map idToElementMap;
 
- 
+
     public VolatileStateRecoveryManager ()
     {
         idToElementMap = new HashMap ();
@@ -106,12 +99,12 @@ public class VolatileStateRecoveryManager implements StateRecoveryManager,
 	        	StateObjectImage simg = new StateObjectImage ( img );
 	        Object[] finalstates = source.getFinalStates ();
 	        boolean delete = false;
-	
+
 	        for ( int i = 0; i < finalstates.length; i++ ) {
 	            if ( state.equals ( finalstates[i] ) )
 	                delete = true;
 	        }
-	
+
 	        if ( !delete )
 	            idToElementMap.put ( simg.getId (), simg );
 	        else
