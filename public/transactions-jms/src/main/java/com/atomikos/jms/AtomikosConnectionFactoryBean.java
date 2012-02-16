@@ -216,6 +216,9 @@ Referenceable, Serializable {
 	/**
 	 * Sets both the min and max size of the pool. Optional.
 	 * 
+	 * Overrides any minPoolSize or maxPoolSize that you might
+	 * have set before!
+	 * 
 	 * @param minAndMaxSize
 	 */
 	
