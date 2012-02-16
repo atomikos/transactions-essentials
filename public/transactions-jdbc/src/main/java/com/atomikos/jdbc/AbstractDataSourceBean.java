@@ -124,7 +124,9 @@ implements HeuristicDataSource, ConnectionPoolProperties, Referenceable, Seriali
 	}
 
 	/**
-	 * Sets both the minimal and maximal pool size. Required if the maxPoolSize is not set. 
+	 * Sets both the minimal and maximal pool size. 
+	 * Required if the maxPoolSize is not set. Overrides any minPoolSize
+	 * or maxPoolSize settings you might have configured before!
 	 */
 	public void setPoolSize(int poolSize) {
 		this.minPoolSize = poolSize; 
