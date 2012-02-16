@@ -25,7 +25,6 @@
 
 package com.atomikos.icatch.imp;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Dictionary;
@@ -35,7 +34,6 @@ import java.util.Iterator;
 import java.util.Stack;
 import java.util.Vector;
 
-import com.atomikos.diagnostics.Console;
 import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeurMixedException;
@@ -377,34 +375,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
             return committed_.booleanValue ();
     }
 
-    /**
-     * Print a message to the console.
-     *
-     * @param message
-     *            The message to print.
-     */
 
-    protected void printMsg ( String message )
-    {
-        try {
-            Console console = coordinator_.getConsole ();
-            if ( console != null )
-                console.println ( message );
-        } catch ( IOException io ) {
-        }
-    }
-
-    protected void printMsg ( String msg , int level )
-    {
-        Console console = coordinator_.getConsole ();
-        if ( console != null ) {
-            try {
-                console.println ( msg, level );
-            } catch ( IOException ioerr ) {
-
-            }
-        }
-    }
 
     /**
      * Sets the table of readonly participants.

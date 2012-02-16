@@ -28,7 +28,6 @@ package com.atomikos.icatch.imp;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
-import com.atomikos.diagnostics.Console;
 import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeurMixedException;
@@ -38,6 +37,8 @@ import com.atomikos.icatch.Participant;
 import com.atomikos.icatch.RollbackException;
 import com.atomikos.icatch.SysException;
 import com.atomikos.icatch.TxState;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 
 /**
  *
@@ -47,6 +48,7 @@ import com.atomikos.icatch.TxState;
 
 class IndoubtStateHandler extends CoordinatorStateHandler
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(IndoubtStateHandler.class);
 
 	private static final long serialVersionUID = 7541858185410144702L;
 
@@ -135,10 +137,10 @@ class IndoubtStateHandler extends CoordinatorStateHandler
                     // abort
                     // if it receives a replay during preparing)
                     if ( getCoordinator ().getSuperiorRecoveryCoordinator () != null ) {
-                        printMsg (
-                                "Requesting replayCompletion on behalf of coordinator "
-                                        + getCoordinator ().getCoordinatorId (),
-                                Console.INFO );
+                    	if(LOGGER.isInfoEnabled()){
+                    		LOGGER.logInfo("Requesting replayCompletion on behalf of coordinator "
+                                    + getCoordinator ().getCoordinatorId ());
+                    	}
 
                         getCoordinator ().getSuperiorRecoveryCoordinator ()
                                 .replayCompletion ( getCoordinator () );
@@ -164,7 +166,8 @@ class IndoubtStateHandler extends CoordinatorStateHandler
                     rollback ( true, true );
             } // else
         } catch ( Exception e ) {
-            printMsg ( "Error in timeout of INDOUBT state: " + e.getMessage () );
+        	LOGGER.logWarning("Error in timeout of INDOUBT state: " + e.getMessage () );
+
         }
     }
 

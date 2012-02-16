@@ -98,7 +98,7 @@ class ActiveStateHandler extends CoordinatorStateHandler
                 // in case of 1PC!!!
                 if ( getCoordinator ().getState ().equals ( getState () ) ) {
 
-                    printMsg ( "Rollback of timedout ACTIVE coordinator !" );
+                    LOGGER.logWarning( "Rollback of timedout ACTIVE coordinator !" );
                     boolean indoubt = getCoordinator().isRecoverableWhileActive().booleanValue();
                     //treat activities (recoverable) as indoubts to make sure that anomalies
                     //with early prepare etc. are treated as heuristics
@@ -106,7 +106,7 @@ class ActiveStateHandler extends CoordinatorStateHandler
                 }
             }
         } catch ( Exception e ) {
-            printMsg ( "Error in timeout of ACTIVE state: " + e.getMessage ()
+            LOGGER.logInfo( "Error in timeout of ACTIVE state: " + e.getMessage ()
                     + " for coordinator " + getCoordinator ().getCoordinatorId () );
         }
     }

@@ -25,11 +25,9 @@
 
 package com.atomikos.icatch.imp;
 
-import java.io.IOException;
 import java.util.Iterator;
 import java.util.Vector;
 
-import com.atomikos.diagnostics.Console;
 import com.atomikos.finitestates.FSM;
 import com.atomikos.finitestates.FSMEnterEvent;
 import com.atomikos.finitestates.FSMEnterListener;
@@ -58,8 +56,8 @@ import com.atomikos.timing.AlarmTimerListener;
 import com.atomikos.timing.PooledAlarmTimer;
 
 /**
- * 
- * 
+ *
+ *
  * Implementation of termination logic.
  */
 
@@ -82,8 +80,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     // active txs
     // NOTE : a timer tick equals one wakeup of timer thread.
 
-    private Console console_ = null;
-    // diagnostics
+
 
     // private RecoveryManager recmgr_ = null;
     // for recoverability
@@ -114,7 +111,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 
     private FSM fsm_ = null;
     // for safe state changes; ONLY STATE must be logged!
-    
+
     private boolean recoverableWhileActive_;
 
     private boolean heuristicCommit_ = true;
@@ -134,7 +131,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 
     private CoordinatorStateHandler stateHandler_;
     // The state handler object to delegate 2PC methods to
-    
+
     private boolean single_threaded_2pc_;
     // should two-phase commit happen in the same thread?
     // if false then commit will be done in parallel for # resources
@@ -147,15 +144,15 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
      */
 
     protected CoordinatorImp ( String root , boolean heuristic_commit ,
-            Console console , boolean checkorphans )
+        boolean checkorphans )
     {
         root_ = root;
         fsm_ = new FSMImp ( this, new TransactionTransitionTable (),
                 TxState.ACTIVE );
         heuristicCommit_ = heuristic_commit;
-        console_ = console;
+
         setStateHandler ( new ActiveStateHandler ( this ) );
-        startThreads ( DEFAULT_TIMEOUT, console );
+        startThreads ( DEFAULT_TIMEOUT );
         // actives_ = 0;
         // timeout_ = DEFAULT_TIMEOUT;
         checkSiblings_ = checkorphans;
@@ -169,7 +166,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 
     /**
      * Constructor.
-     * 
+     *
      * @param root
      *            The root tid.
      * @param coord
@@ -190,7 +187,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
      */
 
     protected CoordinatorImp ( String root , RecoveryCoordinator coord ,
-            Console console , boolean heuristic_commit ,
+             boolean heuristic_commit ,
             long timeout , boolean checkorphans , boolean single_threaded_2pc )
     {
         root_ = root;
@@ -200,7 +197,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
         fsm_ = new FSMImp ( this, new TransactionTransitionTable (),
                 TxState.ACTIVE );
         heuristicCommit_ = heuristic_commit;
-        console_ = console;
+
         recoverableWhileActive_ = false;
         coordinator_ = coord;
         if ( timeout > DEFAULT_TIMEOUT ) {
@@ -214,7 +211,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 
         setStateHandler ( new ActiveStateHandler ( this ) );
         // actives_ = 0;
-        startThreads ( DEFAULT_TIMEOUT, console );
+        startThreads ( DEFAULT_TIMEOUT );
         checkSiblings_ = checkorphans;
 
         fsm_.addFSMPreEnterListener ( this, TxState.TERMINATED );
@@ -227,7 +224,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 
     /**
      * Constructor.
-     * 
+     *
      * @param root
      *            The root String for this one.
      * @param console
@@ -241,9 +238,9 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
      */
 
     public CoordinatorImp ( String root , RecoveryCoordinator coord ,
-            Console console , boolean heuristic_commit , boolean checkorphans )
+             boolean heuristic_commit , boolean checkorphans )
     {
-        this ( root , coord , console , heuristic_commit ,
+        this ( root , coord ,  heuristic_commit ,
                 DEFAULT_TIMEOUT , checkorphans , false );
     }
 
@@ -262,7 +259,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
         checkSiblings_ = true;
         recoverableWhileActive_ = false;
         single_threaded_2pc_ = false;
-        
+
         fsm_.addFSMPreEnterListener ( this, TxState.TERMINATED );
         fsm_.addFSMPreEnterListener ( this, TxState.HEUR_COMMITTED );
         fsm_.addFSMPreEnterListener ( this, TxState.HEUR_ABORTED );
@@ -271,49 +268,8 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 
     }
 
-    /**
-     * Tries to print a msg to console.
-     * 
-     * @param msg
-     *            The message.
-     */
 
-    private void printMsg ( String msg )
-    {
-        if ( console_ != null ) {
-            try {
-                console_.println ( msg );
-            } catch ( IOException ioerr ) {
 
-            }
-        } else {
-        	//null on recovery
-        	LOGGER.logWarning ( msg );
-        }
-    }
-
-    private void printMsg ( String msg , int level )
-    {
-        if ( console_ != null ) {
-            try {
-                console_.println ( msg, level );
-            } catch ( IOException ioerr ) {
-
-            }
-        } else {
-        	//null on recovery
-        	switch ( level ) {
-        		case Console.DEBUG: 
-        			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( msg ); 
-        			break;
-        		case Console.INFO: 
-        			if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( msg ); 
-        			break;
-        		default: LOGGER.logWarning ( msg );
-        	}
-        }
-    }
-    
     boolean prefersSingleThreaded2PC()
     {
     		return single_threaded_2pc_;
@@ -339,7 +295,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     /**
      * Set the state handler. This method should always be preferred over
      * calling setState directly.
-     * 
+     *
      * @param stateHandler
      *            The next state handler.
      */
@@ -367,12 +323,8 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     {
         return participants_;
     }
-    
 
-    Console getConsole ()
-    {
-        return console_;
-    }
+
 
     boolean prefersHeuristicCommit ()
     {
@@ -398,7 +350,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     {
         return checkSiblings_;
     }
-    
+
     public Boolean isRecoverableWhileActive()
     {
         return new Boolean ( recoverableWhileActive_ );
@@ -407,7 +359,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     /**
      * Gets the heuristic messages for all participants that are in the given
      * heuristic state
-     * 
+     *
      * @param heuristicState
      *            The heuristic state, or the terminated state.
      * @return HeuristicMessage[] The heuristic messages of all participants in
@@ -423,7 +375,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 
     /**
      * Test if the transaction was committed or not.
-     * 
+     *
      * @return boolean True iff committed.
      */
 
@@ -434,7 +386,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 
     /**
      * Get the heuristic info for the message round.
-     * 
+     *
      * @return HeuristicMessages[] The heuristic messages, or an empty array if
      *         none.
      */
@@ -465,15 +417,14 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     /**
      * Start threads, propagator and timer logic. Needed on construction AND by
      * replay request events: timers have stopped by then!
-     * 
+     *
      * @param timeout
      *            The timeout for the thread wakeup interval.
      * @param console
      *            The console, null if none.
      */
 
-    protected void startThreads ( long timeout ,
-            Console console )
+    protected void startThreads ( long timeout )
     {
     	   //System.out.println ( "Starting thread for coordinator " + getCoordinatorId() + " with timeout " + timeout );
 
@@ -497,7 +448,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 
     /**
      * Submit timer to system thread executor.
-     * 
+     *
      * @param timer Timer to execute, must not be null
      */
     private void submitTimer(AlarmTimer timer) {
@@ -614,7 +565,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     		if ( !getState ().equals ( TxState.ACTIVE ) )
     			throw new IllegalStateException (
     					getCoordinatorId() +
-    					" is no longer active but in state " + 
+    					" is no longer active but in state " +
     					getState ().toString () );
 
     		//FIRST add participant, THEN set state to support active recovery
@@ -625,7 +576,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 //  		next, make sure that aftercompletion notification is done.
     		setState ( TxState.ACTIVE );
     	}
-    	
+
         // incActiveSiblings();
 
         return this;
@@ -648,7 +599,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
             UnsupportedOperationException, SysException
 
     {
-    	
+
     	synchronized ( fsm_ ) {
     		// if (getState().equals(TxState.MARKED_ABORT))
     		// throw new RollbackException();
@@ -702,7 +653,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
                 || state.equals ( TxState.HEUR_MIXED ) ) {
 
             if ( !state.equals ( TxState.TERMINATED ) )
-                printMsg ( "Local heuristic termination of coordinator "
+            	LOGGER.logWarning ( "Local heuristic termination of coordinator "
                         + root_ + " with state " + getState () );
             else
                 dispose ();
@@ -731,15 +682,17 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 
     public boolean recover () throws SysException
     {
-    	
-    	 if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug (  "starting recover() for coordinator: " + getCoordinatorId () );
+
+    	 if ( LOGGER.isDebugEnabled() ){
+    		 LOGGER.logDebug (  "starting recover() for coordinator: " + getCoordinatorId () );
+    	 }
      //   printMsg ( "starting recover() for coordinator: " + getCoordinatorId (),
      //           Console.DEBUG );
-        boolean allOK = true;      
-        
+        boolean allOK = true;
+
         // return false only if NOT allOK and indoubt
         boolean ret;
-        
+
 		synchronized ( fsm_ ) {
 			// cf case 61686 and case 62217: avoid concurrent enlists while recovering
 			Iterator parts = getParticipants().iterator();
@@ -755,10 +708,10 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 				} catch (Exception e) {
 					// happens if XA connection could not be gotten
 					// or other problems
-					printMsg("Error in recovering participant");
+					LOGGER.logWarning("Error in recovering participant");
 					StackTraceElement[] infos = e.getStackTrace();
 					for (int i = 0; i < infos.length; i++) {
-						printMsg(infos[i].toString());
+						LOGGER.logWarning(infos[i].toString());
 					}
 					// do NOT throw any exception: tolerate this to
 					// let the coordinator do the rest?
@@ -772,9 +725,9 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 		} // synchronized
 
         // ONLY NOW start threads and so on
-        startThreads ( DEFAULT_TIMEOUT, console_ );
+        startThreads ( DEFAULT_TIMEOUT );
 
-        
+
         if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug (   "recover() done for coordinator: " + getCoordinatorId () );
       //  printMsg ( "recover() done for coordinator: " + getCoordinatorId (),
       //          Console.DEBUG );
@@ -833,13 +786,13 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
         synchronized ( fsm_ ) {
         	ret = stateHandler_.prepare ();
         	if ( ret == Participant.READ_ONLY ) {
-        		
+
         		 if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug (  "prepare() of Coordinator  " + getCoordinatorId ()
          				+ " returning READONLY" );
         	//	printMsg ( "prepare() of Coordinator  " + getCoordinatorId ()
         	//			+ " returning READONLY", Console.DEBUG );
         	} else {
-        		
+
         		 if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "prepare() of Coordinator  " + getCoordinatorId ()
          				+ " returning YES vote");
  //       		printMsg ( "prepare() of Coordinator  " + getCoordinatorId ()
@@ -893,7 +846,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 
         // here, we are certain that no RECURSIVE call is going on,
         // so we can safely lock this instance.
-        
+
         synchronized ( fsm_ ) {
         	return stateHandler_.rollback ();
         }
@@ -919,7 +872,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
             SysException, HeurRollbackException, HeurHazardException,
             java.lang.IllegalStateException, RollbackException
     {
-    	HeuristicMessage[] ret = null;    	
+    	HeuristicMessage[] ret = null;
     	synchronized ( fsm_ ) {
     		ret = stateHandler_.commit ( true, false );
     	}
@@ -939,9 +892,11 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     public Boolean replayCompletion ( Participant participant )
             throws IllegalStateException
     {
-        printMsg ( "replayCompletion ( " + participant
-                + " ) received by coordinator " + getCoordinatorId ()
-                + " for participant " + participant.toString (), Console.INFO );
+    	if(LOGGER.isInfoEnabled()){
+    		LOGGER.logInfo("replayCompletion ( " + participant
+                    + " ) received by coordinator " + getCoordinatorId ()
+                    + " for participant " + participant.toString ());
+    	}
         Boolean ret = null;
         synchronized ( fsm_ ) {
         	ret = stateHandler_.replayCompletion ( participant );
@@ -964,7 +919,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
         CoordinatorLogImage img = (CoordinatorLogImage) image;
 
         root_ = img.root_;
-        
+
         participants_ = img.participants_;
         coordinator_ = img.coordinator_;
         heuristicCommit_ = img.heuristicCommit_;
@@ -1024,16 +979,16 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 
     	CoordinatorLogImage ret = null;
     	synchronized ( fsm_ ) {
-    		
+
     		if ( !recoverableWhileActive_ &&
     				( state.equals ( TxState.ACTIVE ) ||
-    			      ( coordinator_ == null && state.equals ( TxState.IN_DOUBT ) )     
+    			      ( coordinator_ == null && state.equals ( TxState.IN_DOUBT ) )
     				    //see case 23693: don't log prepared state for roots
-    			    ) 
+    			    )
     		    ) {
     				//merely return null to avoid logging overhead
     				ret = null;
-    			
+
     		}
     		else {
     			TxState imgstate = (TxState) state;
@@ -1052,7 +1007,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     			}
     		}
     	}
-    	
+
         return ret;
     }
 
@@ -1068,14 +1023,14 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
         // when immediate shutdown leaves active coordinator threads
         // behind, because the forced log write on COMMIT will prevent
         // pending coordinators' commit decisions if the log service is down!
-        
+
         Object[] ret = { TxState.ACTIVE , TxState.IN_DOUBT, TxState.COMMITTING,
                 TxState.HEUR_COMMITTED, TxState.HEUR_ABORTED,
                 TxState.HEUR_HAZARD, TxState.HEUR_MIXED };
-        
-        //note: active state is recoverable, but if feature is disabled then 
+
+        //note: active state is recoverable, but if feature is disabled then
         //a null image will be returned to avoid log overhead
-        
+
 
         return ret;
 
@@ -1106,7 +1061,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
         	    //System.out.println ( "Timeout in state: " + stateHandler_.getState() );
             stateHandler_.onTimeout ();
         } catch ( Exception e ) {
-            printMsg ( "Exception on timeout of coordinator " + root_ + ": "
+            LOGGER.logWarning( "Exception on timeout of coordinator " + root_ + ": "
                     + e.getMessage () );
         }
     }
@@ -1136,7 +1091,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 
     /**
      * Terminate the work, on behalf of Terminator.
-     * 
+     *
      * @param commit
      *            True iff commit termination is asked.
      */
@@ -1178,7 +1133,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     public void setRecoverableWhileActive () throws UnsupportedOperationException
     {
         recoverableWhileActive_ = true;
-        
+
     }
 
 

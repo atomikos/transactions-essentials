@@ -33,7 +33,6 @@ import java.util.Stack;
 import java.util.Vector;
 
 import com.atomikos.datasource.RecoverableResource;
-import com.atomikos.diagnostics.Console;
 import com.atomikos.finitestates.FSMEnterEvent;
 import com.atomikos.finitestates.FSMEnterListener;
 import com.atomikos.icatch.CompositeCoordinator;
@@ -104,8 +103,6 @@ public class TransactionServiceImp implements TransactionService,
     private boolean initialized_ = false;
     // true asa initialize was called.
 
-    private Console console_;
-    // the console to log to
 
     private LogControl control_;
     // for admin tool
@@ -410,7 +407,7 @@ public class TransactionServiceImp implements TransactionService,
                 // forced OTS mode; we do NEVER check orphans in this case
                 checkOrphans = false;
             }
-            cc = new CoordinatorImp ( root, adaptor, console_,
+            cc = new CoordinatorImp ( root, adaptor,
                     heuristic_commit, timeout,
                     checkOrphans , single_threaded_2pc_ );
 
@@ -610,8 +607,8 @@ public class TransactionServiceImp implements TransactionService,
                 while ( it.hasNext () ) {
                     CoordinatorImp coord = (CoordinatorImp) it.next ();
                     try {
-                        if ( !coord.recover () && console_ != null )
-                            console_.println ( "Coordinator not recoverable: "
+                        if ( !coord.recover () && LOGGER.isInfoEnabled() )
+                        	LOGGER.logInfo ( "Coordinator not recoverable: "
                                     + coord.getCoordinatorId () );
                     } catch ( Exception e ) {
                         // ADDED FOR TOMCAT RELEASE
