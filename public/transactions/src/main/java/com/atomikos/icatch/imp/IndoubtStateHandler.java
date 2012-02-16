@@ -48,7 +48,9 @@ import com.atomikos.icatch.TxState;
 class IndoubtStateHandler extends CoordinatorStateHandler
 {
 
-    private int inquiries_;
+	private static final long serialVersionUID = 7541858185410144702L;
+
+	private int inquiries_;
     // how many timeout events have happened?
     // if max allowed -> take heuristic decision
 
