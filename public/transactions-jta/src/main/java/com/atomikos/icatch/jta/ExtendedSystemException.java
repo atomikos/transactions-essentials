@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.jta;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.util.Enumeration;
 import java.util.Stack;
 
@@ -36,6 +39,11 @@ import javax.transaction.SystemException;
 
 public class ExtendedSystemException extends SystemException
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(ExtendedSystemException.class);
+
     private Stack errors_;
 
     public ExtendedSystemException ( String msg , Stack errors )

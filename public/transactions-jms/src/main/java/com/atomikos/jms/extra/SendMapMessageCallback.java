@@ -25,6 +25,9 @@
 
 package com.atomikos.jms.extra;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.util.Iterator;
 import java.util.Map;
 
@@ -34,6 +37,10 @@ import javax.jms.MapMessage;
 import javax.jms.Session;
 
 class SendMapMessageCallback extends AbstractSendMessageCallback {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(SendMapMessageCallback.class);
 
 	private Map content;
 	

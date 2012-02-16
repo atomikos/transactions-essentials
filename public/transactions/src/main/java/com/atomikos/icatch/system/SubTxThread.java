@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.system;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import com.atomikos.icatch.CompositeTransaction;
 import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.Propagation;
@@ -43,6 +46,11 @@ import com.atomikos.icatch.SysException;
 
 public class SubTxThread extends Thread
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(SubTxThread.class);
+
     private SubTxCode myCode;
     private Waiter myWaiter;
     private Exception myException;

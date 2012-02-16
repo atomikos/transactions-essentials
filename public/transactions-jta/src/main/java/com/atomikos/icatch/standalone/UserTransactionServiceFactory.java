@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.standalone;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.net.UnknownHostException;
 import java.util.Properties;
 
@@ -42,6 +45,10 @@ import com.atomikos.icatch.config.imp.AbstractUserTransactionServiceFactory;
 public final class UserTransactionServiceFactory extends AbstractUserTransactionServiceFactory implements
         com.atomikos.icatch.config.UserTransactionServiceFactory
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(UserTransactionServiceFactory.class);
 
 
     static String getDefaultName ()

@@ -24,6 +24,10 @@
  */
 
 package com.atomikos.beans;
+
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,6 +41,11 @@ import java.util.Map;
 
 public final class PrimitiveClasses
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(PrimitiveClasses.class);
+
     private static Map map_ = new HashMap();
     //maps primitive classes to wrapper classes
 

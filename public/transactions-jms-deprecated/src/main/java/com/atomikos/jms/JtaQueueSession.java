@@ -25,6 +25,9 @@
 
 package com.atomikos.jms;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import javax.jms.JMSException;
 import javax.jms.Queue;
 import javax.jms.QueueReceiver;
@@ -48,6 +51,10 @@ class JtaQueueSession
 extends DefaultJtaSession
 implements QueueSession
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(JtaQueueSession.class);
    
     JtaQueueSession ( XAQueueSession session , TransactionalResource res ,
             XAResource xares )

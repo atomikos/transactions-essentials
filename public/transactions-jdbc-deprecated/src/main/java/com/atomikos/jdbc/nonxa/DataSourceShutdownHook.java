@@ -25,6 +25,9 @@
 
 package com.atomikos.jdbc.nonxa;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 
 /**
  * 
@@ -36,6 +39,10 @@ package com.atomikos.jdbc.nonxa;
  */
 public class DataSourceShutdownHook extends Thread
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(DataSourceShutdownHook.class);
 
     NonXADataSourceImp ds_;
 

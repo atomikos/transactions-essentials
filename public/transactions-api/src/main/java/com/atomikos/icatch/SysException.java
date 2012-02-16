@@ -24,6 +24,10 @@
  */
 
 package com.atomikos.icatch;
+
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -35,6 +39,10 @@ import java.util.Stack;
 
 public class SysException extends RuntimeException
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(SysException.class);
 
 	private static final long serialVersionUID = -9183281406145817016L;
 

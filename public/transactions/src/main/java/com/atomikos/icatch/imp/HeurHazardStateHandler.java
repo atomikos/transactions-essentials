@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.imp;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Stack;
@@ -49,6 +52,11 @@ import com.atomikos.icatch.imp.thread.InterruptedExceptionHelper;
 
 class HeurHazardStateHandler extends CoordinatorStateHandler
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(HeurHazardStateHandler.class);
+
     private Vector hazards_;
 
     HeurHazardStateHandler ( CoordinatorImp coordinator )

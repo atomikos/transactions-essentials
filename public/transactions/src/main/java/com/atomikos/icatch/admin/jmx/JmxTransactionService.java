@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.admin.jmx;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,6 +53,10 @@ import com.atomikos.icatch.system.Configuration;
 public class JmxTransactionService implements JmxTransactionServiceMBean,
         MBeanRegistration
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(JmxTransactionService.class);
 
     private MBeanServer server;
     // the server, to register TransactionMBean instances

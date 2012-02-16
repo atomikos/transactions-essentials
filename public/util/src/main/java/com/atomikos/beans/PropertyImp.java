@@ -25,6 +25,9 @@
 
 package com.atomikos.beans;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.beans.PropertyDescriptor;
 import java.beans.PropertyEditor;
 import java.beans.PropertyEditorManager;
@@ -40,6 +43,11 @@ import java.lang.reflect.Method;
 class PropertyImp
 implements Property
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(PropertyImp.class);
+
       private PropertyDescriptor descriptor_;
       
       private Object bean_;

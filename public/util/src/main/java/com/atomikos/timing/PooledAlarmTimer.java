@@ -25,6 +25,9 @@
 
 package com.atomikos.timing;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -35,6 +38,10 @@ import java.util.List;
  * @author Lars J. Nilsson
  */
 public final class PooledAlarmTimer implements AlarmTimer {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(PooledAlarmTimer.class);
 
 	private final List listeners;
 	private final long timeout;

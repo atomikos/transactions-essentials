@@ -25,6 +25,9 @@
 
 package com.atomikos.datasource;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.util.Stack;
 
 /**
@@ -34,6 +37,10 @@ import java.util.Stack;
 
 public class ResourceException extends com.atomikos.icatch.SysException
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(ResourceException.class);
     
     public ResourceException(String msg){
         super(msg);

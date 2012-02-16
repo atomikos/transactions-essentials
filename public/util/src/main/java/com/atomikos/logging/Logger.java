@@ -18,4 +18,5 @@ public interface Logger {
 
 	boolean isInfoEnabled();
 
+
 }

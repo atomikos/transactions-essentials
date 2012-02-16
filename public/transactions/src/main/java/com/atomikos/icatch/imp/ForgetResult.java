@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.imp;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 /**
  * 
  * 
@@ -33,6 +36,10 @@ package com.atomikos.icatch.imp;
 
 class ForgetResult extends Result
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(ForgetResult.class);
 
     protected boolean analyzed_;
 

@@ -25,6 +25,9 @@
 
 package com.atomikos.util;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -45,6 +48,10 @@ import java.io.IOException;
 
 public class VersionedFile 
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(VersionedFile.class);
 	
 	private String baseDir;
 	private String suffix;

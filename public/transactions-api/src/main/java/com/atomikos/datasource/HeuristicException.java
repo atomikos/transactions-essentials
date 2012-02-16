@@ -24,10 +24,18 @@
  */
 
 package com.atomikos.datasource;
+
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import com.atomikos.icatch.HeuristicMessage;
 
 public class HeuristicException extends ResourceException
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(HeuristicException.class);
 
 	private static final long serialVersionUID = 1L;
 	

@@ -25,6 +25,9 @@
 
 package com.atomikos.util;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.io.Serializable;
 import java.util.Hashtable;
 
@@ -48,6 +51,10 @@ import javax.naming.spi.ObjectFactory;
 
 public class IntraVmObjectFactory implements ObjectFactory 
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(IntraVmObjectFactory.class);
 
 	private static final String NAME_REF_ADDRESS_TYPE = "uniqueResourceName";
 	

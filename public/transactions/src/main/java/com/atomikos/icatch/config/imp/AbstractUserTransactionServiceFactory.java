@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.config.imp;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 
 import javax.naming.Context;
 
@@ -39,6 +42,11 @@ import com.atomikos.icatch.config.UserTransactionServiceFactory;
 public abstract class AbstractUserTransactionServiceFactory implements
 		UserTransactionServiceFactory 
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(AbstractUserTransactionServiceFactory.class);
+
 //	/**
 //	 * The name of the property that specifies whether or not a client
 //	 * transaction manager can be trusted to terminate heuristic problems.

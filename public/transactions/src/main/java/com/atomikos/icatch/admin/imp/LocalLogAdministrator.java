@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.admin.imp;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -54,6 +57,10 @@ import com.atomikos.icatch.config.UserTransactionService;
 
 public class LocalLogAdministrator implements ActionListener, LogAdministrator
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(LocalLogAdministrator.class);
 
     private JFrame frame_;
     // the frame for displaying

@@ -24,6 +24,10 @@
  */
 
 package com.atomikos.beans;
+
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.awt.Component;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyEditor;
@@ -40,6 +44,11 @@ import java.beans.PropertyEditor;
 class EditorImp
 implements Editor
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(EditorImp.class);
+
     private PropertyEditor editor_;
     //the property editor for GUI editing,
     //null if none

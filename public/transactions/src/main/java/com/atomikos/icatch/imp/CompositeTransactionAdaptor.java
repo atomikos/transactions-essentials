@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.imp;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.util.Properties;
 import java.util.Stack;
 
@@ -44,6 +47,10 @@ import com.atomikos.icatch.SysException;
 public class CompositeTransactionAdaptor extends AbstractCompositeTransaction
         implements CompositeCoordinator
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(CompositeTransactionAdaptor.class);
 
     /**
 	 * 

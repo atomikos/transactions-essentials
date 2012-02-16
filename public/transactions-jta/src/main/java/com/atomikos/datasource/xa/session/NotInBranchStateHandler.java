@@ -25,6 +25,9 @@
 
 package com.atomikos.datasource.xa.session;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import javax.transaction.xa.XAResource;
 
 import com.atomikos.datasource.xa.XATransactionalResource;
@@ -42,6 +45,10 @@ import com.atomikos.icatch.jta.TransactionManagerImp;
 
 class NotInBranchStateHandler extends TransactionContextStateHandler 
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(NotInBranchStateHandler.class);
 
 	
 	NotInBranchStateHandler ( XATransactionalResource resource , XAResource xaResource ) 

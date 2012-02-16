@@ -83,6 +83,9 @@
 
 package com.atomikos.jms;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Queue;
@@ -102,6 +105,10 @@ import com.atomikos.icatch.StringHeuristicMessage;
 class JtaQueueSender extends DefaultJtaMessageProducer 
 implements HeuristicQueueSender
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(JtaQueueSender.class);
 
   
     /**

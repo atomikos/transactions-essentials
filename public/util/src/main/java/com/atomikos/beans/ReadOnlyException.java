@@ -25,6 +25,9 @@
 
 package com.atomikos.beans;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
  /**
   *
   *
@@ -35,6 +38,10 @@ package com.atomikos.beans;
 public class ReadOnlyException 
 extends Exception
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(ReadOnlyException.class);
  
 	private static final long serialVersionUID = 246767479746061509L;
 

@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.imp;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.util.Dictionary;
 
 import com.atomikos.icatch.HeurCommitException;
@@ -39,6 +42,10 @@ import com.atomikos.icatch.SysException;
 
 
 public class ReadOnlyParticipant implements Participant {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(ReadOnlyParticipant.class);
 
 	/**
 	 * 

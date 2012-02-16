@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.imp;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.util.Stack;
 
 import com.atomikos.icatch.CompositeTransaction;
@@ -39,6 +42,10 @@ import com.atomikos.icatch.RecoveryCoordinator;
 
 public class PropagationImp implements Propagation
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(PropagationImp.class);
 
     /**
      * Create a new instance. This method replaces the lowest ancestor by an

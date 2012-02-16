@@ -25,6 +25,9 @@
 
 package com.atomikos.datasource.xa.jmx;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.io.Serializable;
 
 import javax.management.ObjectName;
@@ -41,6 +44,11 @@ import javax.management.ObjectName;
  */
 public class XAResourceConfig implements Serializable
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(XAResourceConfig.class);
+
 	private static final long serialVersionUID = -2778887014312506596L;
 
 	private boolean acceptAllXAResources;

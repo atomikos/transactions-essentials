@@ -25,6 +25,9 @@
 
 package com.atomikos.swing;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
  /**
   *
   *

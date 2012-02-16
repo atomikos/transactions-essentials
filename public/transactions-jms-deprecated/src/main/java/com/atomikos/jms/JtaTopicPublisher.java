@@ -25,6 +25,9 @@
 
 package com.atomikos.jms;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Topic;
@@ -48,6 +51,10 @@ class JtaTopicPublisher
 extends DefaultJtaMessageProducer
 implements HeuristicTopicPublisher 
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(JtaTopicPublisher.class);
    
 
     /**

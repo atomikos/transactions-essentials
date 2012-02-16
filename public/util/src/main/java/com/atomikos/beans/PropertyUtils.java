@@ -25,6 +25,9 @@
 
 package com.atomikos.beans;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -45,6 +48,10 @@ import java.util.Set;
  */
 public class PropertyUtils 
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(PropertyUtils.class);
 	
 	/**
 	 * Gets all implemented interfaces of a class. 

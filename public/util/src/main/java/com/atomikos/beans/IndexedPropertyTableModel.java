@@ -24,6 +24,10 @@
  */
 
 package com.atomikos.beans;
+
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.util.Vector;
 
 import javax.swing.table.AbstractTableModel;
@@ -41,6 +45,11 @@ class IndexedPropertyTableModel
 extends AbstractTableModel
 implements PropertiesTableModel
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(IndexedPropertyTableModel.class);
+
     private Vector data_;
     
     private String header_;

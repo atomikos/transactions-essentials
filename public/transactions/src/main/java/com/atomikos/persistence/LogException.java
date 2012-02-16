@@ -25,9 +25,17 @@
 
 package com.atomikos.persistence;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 
 public class LogException extends Exception
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(LogException.class);
+
     protected java.util.Stack errors_ = null;
 
     public LogException ()

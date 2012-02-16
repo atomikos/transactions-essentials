@@ -25,6 +25,9 @@
 
 package com.atomikos.datasource.xa;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import javax.transaction.xa.Xid;
 
 /**
@@ -40,6 +43,10 @@ import javax.transaction.xa.Xid;
  */
 public abstract class AbstractXidFactory implements XidFactory
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(AbstractXidFactory.class);
 
    private static final int MAX_LENGTH_OF_COUNTER = 8;
 //default scope for testing issue 10086

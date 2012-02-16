@@ -24,6 +24,10 @@
  */
 
 package com.atomikos.beans;
+
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.awt.Component;
 import java.beans.PropertyEditor;
 
@@ -36,6 +40,11 @@ import java.beans.PropertyEditor;
 public abstract class AbstractPropertyEditorComponent
 implements PropertyEditorComponent
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(AbstractPropertyEditorComponent.class);
+
     private PropertyEditor editor_;
     //the editor to set/get values from
     

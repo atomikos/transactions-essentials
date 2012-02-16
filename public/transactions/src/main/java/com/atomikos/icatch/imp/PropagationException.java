@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.imp;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 /**
  * 
  * 
@@ -34,6 +37,11 @@ package com.atomikos.icatch.imp;
 
 class PropagationException extends java.io.IOException
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(PropagationException.class);
+
     protected boolean transient_ = false;
     // default is fatal
 

@@ -25,6 +25,9 @@
 
 package com.atomikos.jms;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import javax.jms.Destination;
 import javax.jms.Topic;
 
@@ -39,6 +42,10 @@ import javax.jms.Topic;
 public class TopicPublisherSessionFactory 
 extends MessageProducerSessionFactory 
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(TopicPublisherSessionFactory.class);
 	
 	private TopicConnectionFactoryBean factory;
 	

@@ -25,6 +25,9 @@
 
 package com.atomikos.datasource.xa.session;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
  /**
   * 
   * 
@@ -40,6 +43,10 @@ package com.atomikos.datasource.xa.session;
 public class InvalidSessionHandleStateException 
 extends Exception 
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(InvalidSessionHandleStateException.class);
 	
 	InvalidSessionHandleStateException ( String msg ) 
 	{

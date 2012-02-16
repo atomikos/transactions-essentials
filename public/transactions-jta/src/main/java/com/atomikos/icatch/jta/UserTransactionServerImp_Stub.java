@@ -25,10 +25,18 @@
 
 package com.atomikos.icatch.jta;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 public final class UserTransactionServerImp_Stub extends
         java.rmi.server.RemoteStub implements
         com.atomikos.icatch.jta.UserTransactionServer
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(UserTransactionServerImp_Stub.class);
+
     private static final java.rmi.server.Operation[] operations = {
             new java.rmi.server.Operation ( "java.lang.String begin(int)" ),
             new java.rmi.server.Operation ( "void commit(java.lang.String)" ),

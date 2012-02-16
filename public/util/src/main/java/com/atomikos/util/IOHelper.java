@@ -24,21 +24,29 @@
  */
 
 package com.atomikos.util;
+
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
- * 
- * 
- * 
- * 
+ *
+ *
+ *
+ *
  *
  * A helper class for common IO tasks.
  */
 public class IOHelper
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(IOHelper.class);
 
 		/**
 	 * Copy every byte from the source to the output.
@@ -46,11 +54,11 @@ public class IOHelper
 	 * @param out The output stream.
 	 * @throws IOException On IO errors.
 	 */
-	
+
 	public static void copyBytes ( InputStream in , OutputStream out )
 	throws IOException
 	{
-		
+
 		byte[] buffer = new byte[1024];
 		int read = in.read ( buffer );
 		while ( read >= 0 ) {
@@ -58,52 +66,52 @@ public class IOHelper
 			read = in.read ( buffer );
 		}
 	}
-	
+
 	/**
 	 * Gets the relative path of a file wrt one of its parent directories.
-	 * 
+	 *
 	 * @param fromFolder The parent directory
 	 * @param toFile The file
 	 * @return String The relative path
 	 * @throws IOException On error, for instance if toFile is not in fromFolder
 	 */
-	
+
 	public static String getRelativePath ( File fromFolder , File toFile )
 	throws IOException
 	{
-		
+
 		String basePath = fromFolder.getAbsolutePath();
 		String filePath = toFile.getAbsolutePath();
-		if ( ! filePath.startsWith ( basePath )) 
-			throw new IOException ( 
+		if ( ! filePath.startsWith ( basePath ))
+			throw new IOException (
 			"The specified file is not within the folder.");
 		return filePath.substring ( basePath.length() + 1 );
-	
+
 	}
-	
-	
+
+
 	/**
-	 * Get the difference path of a file wrt a folder. 
+	 * Get the difference path of a file wrt a folder.
 	 * @param fromFolder The folder.
 	 * @param toFile The file. This file should be contained in the parent
 	 * of fromFolder!
 	 * @return String The path from the parent of fromFolder to toFile.
 	 * @throws IOException
 	 */
-	
+
 	public static String getDifferencePath ( File fromFolder , File toFile )
 	throws IOException
 	{
 		String commonParentPath = fromFolder.getParentFile().getAbsolutePath();
 		String filePath = toFile.getAbsolutePath();
-		if ( ! filePath.startsWith ( commonParentPath )) 
+		if ( ! filePath.startsWith ( commonParentPath ))
 			throw new IOException (
 			"The file should be contained in the parent directory of the stage folder.");
-		
+
 		return filePath.substring ( commonParentPath.length() +1 );
-		
+
 	}
-	
+
 	/**
 	 * Recursively create the path to the given file if it does not exist.
 	 * @param file The file to create. All nonexistent parent folders will also
@@ -112,7 +120,7 @@ public class IOHelper
 	 * @return boolean True if success.
 	 * @throws IOException
 	 */
-	
+
 	public static boolean createPathTo ( File file , boolean isDirectory )
 	throws IOException
 	{
@@ -126,21 +134,21 @@ public class IOHelper
 		//System.out.println ( "createPathTo ( " + file + " , " + isDirectory + " )");
 		return ret;
 	}
-	
+
 	/**
 	 * Recursively delete the contents of the given folder.
 	 * @param folder The folder to delete.
 	 * @return boolean True if success.
 	 * @throws IOException
 	 */
-	
+
 	public static boolean deleteContents ( File folder )
 	throws IOException
 	{
 		boolean deleted = true;
-		if ( ! folder.isDirectory() ) 
+		if ( ! folder.isDirectory() )
 			throw new IOException ( "Not a directory");
-		
+
 		File[] contents = folder.listFiles();
 		for ( int i = 0 ; i < contents.length ; i++ ) {
 			if ( contents[i].isDirectory() ) {

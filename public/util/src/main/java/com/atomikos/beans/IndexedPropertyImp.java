@@ -24,6 +24,10 @@
  */
 
 package com.atomikos.beans;
+
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.beans.IndexedPropertyDescriptor;
 import java.lang.reflect.Method;
  
@@ -37,6 +41,11 @@ class IndexedPropertyImp
 extends PropertyImp
 implements IndexedProperty
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(IndexedPropertyImp.class);
+
     private IndexedPropertyDescriptor descriptor_;
     
     /** 

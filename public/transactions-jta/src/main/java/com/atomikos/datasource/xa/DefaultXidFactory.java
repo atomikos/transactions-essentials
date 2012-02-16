@@ -25,6 +25,9 @@
 
 package com.atomikos.datasource.xa;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 
 /**
  * 
@@ -35,6 +38,10 @@ package com.atomikos.datasource.xa;
 public class DefaultXidFactory extends AbstractXidFactory implements
         java.io.Serializable
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(DefaultXidFactory.class);
 
 	/**
 	 * 

@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.jta;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import javax.transaction.TransactionManager;
 
 import com.atomikos.datasource.xa.AcceptAllXATransactionalResource;
@@ -38,6 +41,10 @@ import com.atomikos.icatch.system.Configuration;
 public abstract class AbstractJtaUserTransactionService extends
 		AbstractUserTransactionService 
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(AbstractJtaUserTransactionService.class);
 
 	public AbstractJtaUserTransactionService() 
 	{

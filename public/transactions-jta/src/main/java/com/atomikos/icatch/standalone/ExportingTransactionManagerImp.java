@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.standalone;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.util.Stack;
 
 import com.atomikos.icatch.CompositeTransaction;
@@ -44,6 +47,11 @@ import com.atomikos.icatch.system.Configuration;
 
 class ExportingTransactionManagerImp implements ExportingTransactionManager
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(ExportingTransactionManagerImp.class);
+
     /**
      * @see ExportingTransactionManager
      */

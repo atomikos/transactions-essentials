@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 /**
  * Represents the per-server work done
  * as part of the same global (root) transaction scope.

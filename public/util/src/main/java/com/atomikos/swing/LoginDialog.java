@@ -25,6 +25,9 @@
 
 package com.atomikos.swing;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.awt.GridLayout;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -47,6 +50,10 @@ import javax.swing.JTextField;
 
 public class LoginDialog extends JDialog 
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(LoginDialog.class);
     
     private JTextField name_;
     private JPasswordField passwd_;

@@ -24,6 +24,10 @@
  */
 
 package com.atomikos.beans;
+
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -55,6 +59,11 @@ import javax.swing.JScrollPane;
 public class BeanWizard
 implements PropertyChangeListener
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(BeanWizard.class);
+
     /**
      *Filter the given properties to contain only those to be managed
      *by a GUI editor.

@@ -25,6 +25,9 @@
 
 package com.atomikos.jms;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import javax.jms.JMSException;
 import javax.jms.Queue;
 import javax.jms.QueueReceiver;
@@ -42,6 +45,10 @@ class JtaQueueReceiver
 extends DefaultJtaMessageConsumer
 implements HeuristicQueueReceiver
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(JtaQueueReceiver.class);
   
 
     JtaQueueReceiver ( QueueReceiver receiver , TransactionalResource res ,

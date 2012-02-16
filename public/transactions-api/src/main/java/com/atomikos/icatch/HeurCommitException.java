@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 
 /**
  * Exception signaling heuristic commit.
@@ -32,6 +35,10 @@ package com.atomikos.icatch;
 
 public class HeurCommitException extends Exception
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(HeurCommitException.class);
     
 	private static final long serialVersionUID = 1L;
 	

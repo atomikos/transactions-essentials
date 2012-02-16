@@ -25,6 +25,9 @@
 
 package com.atomikos.jdbc;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -62,6 +65,10 @@ import com.atomikos.icatch.system.Configuration;
 public class JtaDataSourceImp implements HeuristicDataSource,
         ConnectionEventListener, Referenceable, ConnectionPoolDataSource
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(JtaDataSourceImp.class);
 
     private static Map nameToDataSource_ = new HashMap ();
 

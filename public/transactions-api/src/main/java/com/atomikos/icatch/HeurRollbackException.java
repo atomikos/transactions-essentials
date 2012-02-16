@@ -27,6 +27,9 @@
 
 package com.atomikos.icatch;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 
 /**
  * An exception signaling that the transaction's work has been rolled back heuristically.
@@ -34,6 +37,11 @@ package com.atomikos.icatch;
 
 public class HeurRollbackException extends Exception
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(HeurRollbackException.class);
+
     protected HeuristicMessage[] msgs_=null;
 
     public HeurRollbackException(HeuristicMessage[] msgs)

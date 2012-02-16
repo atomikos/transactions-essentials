@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.imp;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.util.Hashtable;
 
 import com.atomikos.finitestates.TransitionTable;
@@ -38,6 +41,11 @@ import com.atomikos.icatch.TxState;
 
 class TransactionTransitionTable implements TransitionTable
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(TransactionTransitionTable.class);
+
     protected Hashtable transitions;
 
     protected static Hashtable defaultTransitions;

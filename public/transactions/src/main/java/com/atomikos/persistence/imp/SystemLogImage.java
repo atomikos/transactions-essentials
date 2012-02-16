@@ -25,6 +25,9 @@
 
 package com.atomikos.persistence.imp;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
@@ -41,6 +44,11 @@ import com.atomikos.persistence.Recoverable;
 
 class SystemLogImage implements Recoverable, Externalizable
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(SystemLogImage.class);
+
     // Force-set the serial version ID to make sure that log
     // data can be read.
     static final long serialVersionUID = 4153546869295179306L;

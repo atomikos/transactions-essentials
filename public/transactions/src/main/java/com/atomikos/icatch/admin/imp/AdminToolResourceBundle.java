@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.admin.imp;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.util.ListResourceBundle;
 
 /**
@@ -36,6 +39,11 @@ import java.util.ListResourceBundle;
 
 public class AdminToolResourceBundle extends ListResourceBundle
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(AdminToolResourceBundle.class);
+
     private static final Object[][] contents_ = {
             { "mainMenuName", "Main" },
             { "showActiveTransactionsMenuItemName", "Show Active Transactions" },

@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.admin.imp;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import com.atomikos.icatch.HeuristicMessage;
 
 /**
@@ -35,6 +38,11 @@ import com.atomikos.icatch.HeuristicMessage;
 
 class StateDescriptor
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(StateDescriptor.class);
+
     /**
      * The object denoting the state.
      */

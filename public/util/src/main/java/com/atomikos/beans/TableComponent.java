@@ -24,6 +24,10 @@
  */
 
 package com.atomikos.beans;
+
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.awt.Component;
 import java.util.Vector;
 
@@ -46,6 +50,11 @@ public class TableComponent
 extends AbstractPropertyEditorComponent
 implements PropertyListener
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(TableComponent.class);
+
     private Vector data_;
     //the underlying data for the table view
   

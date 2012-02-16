@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.jta.hibernate3;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Iterator;
@@ -33,8 +36,6 @@ import java.util.Properties;
 
 import org.hibernate.HibernateException;
 import org.hibernate.connection.ConnectionProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.atomikos.beans.PropertyException;
 import com.atomikos.beans.PropertyUtils;
@@ -60,25 +61,28 @@ import com.atomikos.jdbc.nonxa.AtomikosNonXADataSourceBean;
  * Add a <b>hibernate.connection.atomikos.nonxa=true</b> property if you want
  * to configure a {@link AtomikosNonXADataSourceBean} instead.
  * </p>
- * 
+ *
  * <p>
- * NOTE: if you use the Hibernate XML config mechanism, 
+ * NOTE: if you use the Hibernate XML config mechanism,
  * then the prefix should be <b>connection.atomikos</b> instead (without hibernate prefix).
  * </p>
- * 
+ *
  * @author Ludovic Orban
  */
 public class AtomikosConnectionProvider implements ConnectionProvider {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger LOGGER = LoggerFactory.createLogger(AtomikosConnectionProvider.class);
 
-	private static final Logger log = LoggerFactory.getLogger( AtomikosConnectionProvider.class );
 
 	private static final String PROPERTIES_PREFIX = "hibernate.connection.atomikos.";
 	private static final String PROPERTY_NONXA = "hibernate.connection.atomikos.nonxa";
-	
-	
+
+
 	private AbstractDataSourceBean dataSource = null;
 
-	
+
 	public void close() throws HibernateException {
 		if (dataSource != null)
 			dataSource.close();
@@ -93,23 +97,23 @@ public class AtomikosConnectionProvider implements ConnectionProvider {
 		if (dataSource != null) {
 			return;
 		}
-		
+
 		if ("true".equalsIgnoreCase(props.getProperty(PROPERTY_NONXA))) {
 			dataSource = new AtomikosNonXADataSourceBean();
 		}
 		else {
 			dataSource = new AtomikosDataSourceBean();
 		}
-		
+
 		Properties atomikosProperties = filterOutHibernateProperties(props);
-		log.info("configuring AtomikosConnectionProvider with properties: " + atomikosProperties);
-		
+		LOGGER.logInfo("configuring AtomikosConnectionProvider with properties: " + atomikosProperties);
+
 		try {
 			PropertyUtils.setProperties(dataSource, atomikosProperties);
 		} catch (PropertyException ex) {
 			throw new HibernateException("cannot create Atomikos DataSource", ex);
 		}
-		
+
 		try {
 			dataSource.init();
 		} catch (AtomikosSQLException ex) {
@@ -119,13 +123,13 @@ public class AtomikosConnectionProvider implements ConnectionProvider {
 
 	private Properties filterOutHibernateProperties(Properties props) {
 		Properties atomikosProperties = new Properties();
-		
+
 		Iterator it = props.entrySet().iterator();
 		while (it.hasNext()) {
 			Map.Entry entry = (Map.Entry) it.next();
 			String key = (String) entry.getKey();
 			String value = (String) entry.getValue();
-			
+
 			if (key.startsWith(PROPERTIES_PREFIX) && !key.equals(PROPERTY_NONXA)) {
 				atomikosProperties.setProperty(key.substring(PROPERTIES_PREFIX.length()), value);
 			}

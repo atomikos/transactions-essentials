@@ -25,6 +25,9 @@
 
 package com.atomikos.jdbc;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.io.PrintWriter;
 import java.sql.SQLException;
 
@@ -45,6 +48,11 @@ import com.atomikos.datasource.xa.jdbc.JdbcTransactionalResource;
 // @todo TEST NEW USER AND PASSWD SETS ON TXRESOURCE!!!
 public class XAConnectionFactory implements ConnectionFactory
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(XAConnectionFactory.class);
+
     private String userName_;
 
     private String passwd_;

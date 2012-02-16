@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.imp;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -44,6 +47,10 @@ import com.atomikos.icatch.SysException;
 
 public class ExtentImp implements Extent
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(ExtentImp.class);
     
 	private static final long serialVersionUID = -1010453448007350422L;
 	

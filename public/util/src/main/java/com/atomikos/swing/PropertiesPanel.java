@@ -24,6 +24,10 @@
  */
 
 package com.atomikos.swing;
+
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -51,6 +55,11 @@ import javax.swing.event.ListSelectionListener;
   
   public class PropertiesPanel implements ActionListener
   {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(PropertiesPanel.class);
+
       private static final int NONE_SELECTED = -1;
       //indicates that no rows are selected
       

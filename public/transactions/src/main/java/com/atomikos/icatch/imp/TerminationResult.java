@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.imp;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Stack;
@@ -45,6 +48,10 @@ import com.atomikos.icatch.TxState;
 
 class TerminationResult extends Result
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(TerminationResult.class);
 
     protected boolean analyzed_;
     // true if all answers processed

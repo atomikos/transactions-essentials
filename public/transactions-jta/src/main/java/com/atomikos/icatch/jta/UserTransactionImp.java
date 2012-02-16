@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.jta;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.io.Serializable;
 
 import javax.naming.NamingException;
@@ -54,6 +57,11 @@ import com.atomikos.util.SerializableObjectFactory;
 public class UserTransactionImp implements UserTransaction, Serializable,
         Referenceable
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(UserTransactionImp.class);
+
     private transient TransactionManager txmgr_;
 
     /**

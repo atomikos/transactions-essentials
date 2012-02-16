@@ -25,11 +25,18 @@
 
 package com.atomikos.datasource.pool;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
  /**
   * Exception signaling pool exhaustion.
   *
   */
 public class PoolExhaustedException extends ConnectionPoolException {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(PoolExhaustedException.class);
 
 
 	private static final long serialVersionUID = 7266245068986719051L;

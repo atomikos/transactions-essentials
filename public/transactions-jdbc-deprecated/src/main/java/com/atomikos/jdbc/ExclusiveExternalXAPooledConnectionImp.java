@@ -25,6 +25,9 @@
 
 package com.atomikos.jdbc;
 
+import com.atomikos.logging.LoggerFactory;
+import com.atomikos.logging.Logger;
+
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.Enumeration;
@@ -53,6 +56,10 @@ import com.atomikos.icatch.system.Configuration;
 public class ExclusiveExternalXAPooledConnectionImp extends
         ExternalXAPooledConnectionImp implements Synchronization
 {
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.createLogger(ExclusiveExternalXAPooledConnectionImp.class);
 
     private boolean afterCompletionDone_ = false;
 
