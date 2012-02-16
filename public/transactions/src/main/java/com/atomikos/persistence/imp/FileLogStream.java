@@ -38,20 +38,22 @@ import java.util.Enumeration;
 import java.util.Stack;
 import java.util.Vector;
 
-import com.atomikos.diagnostics.Console;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 import com.atomikos.persistence.LogException;
 import com.atomikos.persistence.LogStream;
 import com.atomikos.util.VersionedFile;
 
 /**
- * 
- * 
+ *
+ *
  * A file implementation of a LogStream.
  */
 
 public class FileLogStream implements LogStream
 {
-  
+	private static final Logger LOGGER = LoggerFactory.createLogger(FileLogStream.class);
+
 
     private FileOutputStream output_;
     // keeps track of the latest output stream returned
@@ -63,8 +65,6 @@ public class FileLogStream implements LogStream
     private boolean simulateCrash_;
     // for testing
 
-    private Console console_;
-    // for output
 
     private boolean corrupt_;
     // true if checkpoint; second call of recover
@@ -72,13 +72,13 @@ public class FileLogStream implements LogStream
     // especially since checkpoint failed.
 
     private VersionedFile file_;
-    
-    public FileLogStream ( String baseDir , String baseName , Console console )
+
+    public FileLogStream ( String baseDir , String baseName  )
             throws IOException
     {
         file_ = new VersionedFile ( baseDir , baseName , ".log" );
         simulateCrash_ = false;
-        console_ = console;
+
         corrupt_ = false;
     }
 
@@ -90,8 +90,9 @@ public class FileLogStream implements LogStream
         try {
             if ( file_ != null ) {
 	             file_.close();
-                 if ( console_ != null )
-                        console_.println ( "Logfile closed: " + file_.getCurrentVersionFileName() );
+	             if(LOGGER.isInfoEnabled()){
+	            	 LOGGER.logInfo("Logfile closed: " + file_.getCurrentVersionFileName());
+	             }
             }
             output_ = null;
             ooutput_ = null;
@@ -103,7 +104,7 @@ public class FileLogStream implements LogStream
 
     /**
      * Makes write checkpoint crash before old file delete.
-     * 
+     *
      * For debugging only.
      */
 
@@ -112,10 +113,10 @@ public class FileLogStream implements LogStream
         simulateCrash_ = true;
     }
 
-   
+
     public synchronized Vector recover () throws LogException
     {
-       
+
         if ( corrupt_ )
             throw new LogException ( "Instance might be corrupted" );
 
@@ -125,14 +126,15 @@ public class FileLogStream implements LogStream
 
         try {
             FileInputStream f = file_.openLastValidVersionForReading();
-      
+
             in = f;
 
             ObjectInputStream ins = new ObjectInputStream ( in );
             int count = 0;
-            if ( console_ != null ) {
-                console_.println ( "Starting read of logfile " + file_.getCurrentVersionFileName() );
+            if(LOGGER.isInfoEnabled()){
+            	LOGGER.logInfo("Starting read of logfile " + file_.getCurrentVersionFileName());
             }
+
             while ( in.available () > 0 ) {
                 // if crashed, then unproper closing might cause endless
                 // blocking!
@@ -142,14 +144,12 @@ public class FileLogStream implements LogStream
 
                 ret.addElement ( nxt );
                 if ( count % 10 == 0 ) {
-                    if ( console_ != null )
-                        console_.print ( "." );
+                    LOGGER.logInfo(".");
                 }
 
             }
-            if ( console_ != null ) {
-                console_.println ( "Done read of logfile" );
-            }
+            LOGGER.logInfo("Done read of logfile");
+
         } catch ( java.io.EOFException unexpectedEOF ) {
             // ignore, since this happens if log was not closed properly
             // due to crash
@@ -216,7 +216,7 @@ public class FileLogStream implements LogStream
             	corrupt_ = true;
             	throw new LogException ( "Old file could not be deleted" );
             }
-            
+
             try {
             	file_.discardBackupVersion();
             } catch ( IOException errorOnDelete ) {
@@ -228,8 +228,8 @@ public class FileLogStream implements LogStream
             errors.push ( e );
             throw new LogException ( "Error during checkpointing", errors );
         }
-        
-       
+
+
 
     }
 
@@ -262,7 +262,7 @@ public class FileLogStream implements LogStream
         }
     }
 
-	public long getSize() throws LogException 
+	public long getSize() throws LogException
 	{
 		return file_.getSize();
 	}

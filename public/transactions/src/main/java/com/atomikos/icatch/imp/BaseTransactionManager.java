@@ -29,7 +29,6 @@ import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Stack;
 
-import com.atomikos.diagnostics.Console;
 import com.atomikos.icatch.CompositeTransaction;
 import com.atomikos.icatch.CompositeTransactionManager;
 import com.atomikos.icatch.Participant;
@@ -37,11 +36,12 @@ import com.atomikos.icatch.Propagation;
 import com.atomikos.icatch.SubTxAwareParticipant;
 import com.atomikos.icatch.SysException;
 import com.atomikos.icatch.TxState;
-import com.atomikos.icatch.system.Configuration;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 
 /**
- * 
- * 
+ *
+ *
  * Abstract TM class, to be extended for different communication layers. For
  * instance, transactional RMI could be one extension, JTS another one.
  */
@@ -49,9 +49,10 @@ import com.atomikos.icatch.system.Configuration;
 public class BaseTransactionManager implements CompositeTransactionManager,
         SubTxAwareParticipant
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(BaseTransactionManager.class);
 
     /**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = -552994279460833505L;
 	private Hashtable threadtotxmap_ = null;
@@ -69,7 +70,7 @@ public class BaseTransactionManager implements CompositeTransactionManager,
 
     /**
      * Constructor.
-     * 
+     *
      */
 
     protected BaseTransactionManager ()
@@ -79,23 +80,7 @@ public class BaseTransactionManager implements CompositeTransactionManager,
         initialized_ = false;
     }
 
-    /**
-     * Print a message to the console, with the given level of detail.
-     * 
-     * @param msg
-     * @param level
-     */
-    protected void printMsg ( String msg , int level )
-    {
-        try {
-            Console console = Configuration.getConsole ();
-            if ( console != null ) {
-                console.println ( msg, level );
-            }
-        } catch ( Exception e ) {
-            // ignore
-        }
-    }
+
 
     /**
      * Get the thread associated with a given transaction.
@@ -113,7 +98,7 @@ public class BaseTransactionManager implements CompositeTransactionManager,
 
     /**
      * Remove mappings for given thread.
-     * 
+     *
      * @return Stack The tx stack that was for current thread.
      */
 
@@ -131,7 +116,7 @@ public class BaseTransactionManager implements CompositeTransactionManager,
 
     /**
      * Set mappings for current thread.
-     * 
+     *
      * @param ct
      *            The transaction to map to. Also sets the coordinator mapping
      *            by getting ct's coordinator.
@@ -142,7 +127,7 @@ public class BaseTransactionManager implements CompositeTransactionManager,
     {
         //case 21806: callbacks to ct to be made outside synchronized block
     	ct.addSubTxAwareParticipant ( this ); //step 1
-        
+
         synchronized ( threadtotxmap_ ) {
         	//between step 1 and here, intermediate timeout/rollback of the ct
         	//may have happened; make sure to check or we add a thread mapping
@@ -166,13 +151,13 @@ public class BaseTransactionManager implements CompositeTransactionManager,
     	//case 21806: callbacks to ct to be made outside synchronized block
     	CompositeTransaction tx = (CompositeTransaction) stack.peek ();
     	tx.addSubTxAwareParticipant ( this ); //step 1
-    	
+
         synchronized ( threadtotxmap_ ) {
         	//between step 1 and here, intermediate timeout/rollback of the ct
         	//may have happened; make sure to check or we add a thread mapping
         	//that will never be removed!
         	Object state = tx.getState();
-        	
+
         	if ( TxState.ACTIVE.equals ( state ) || TxState.MARKED_ABORT.equals ( state ) ) {
         		//also resume for marked abort - see case 26398
         		Stack txs = (Stack) threadtotxmap_.get ( thread );
@@ -204,7 +189,7 @@ public class BaseTransactionManager implements CompositeTransactionManager,
 
     /**
      * Initialize the TM.
-     * 
+     *
      * @param service
      *            The tx service to use. As part of this method, the service
      *            will also be initialized.
@@ -221,7 +206,7 @@ public class BaseTransactionManager implements CompositeTransactionManager,
     /**
      * Get the participant for the given root. Needed for recovery of JCA
      * inbound transactions.
-     * 
+     *
      * @param root
      * @return The participant.
      */
@@ -233,7 +218,7 @@ public class BaseTransactionManager implements CompositeTransactionManager,
     /**
      * Called if a tx is ended successfully. In order to remove the tx from the
      * mapping.
-     * 
+     *
      * @see SubTxAwareParticipant
      */
 
@@ -244,7 +229,7 @@ public class BaseTransactionManager implements CompositeTransactionManager,
 
     /**
      * Called if a tx is ended with failure. In order to remove tx from mapping.
-     * 
+     *
      * @see SubTxAwareParticipant
      */
 
@@ -266,11 +251,16 @@ public class BaseTransactionManager implements CompositeTransactionManager,
         CompositeTransaction ct = null;
         ct = getCurrentTx ();
         if ( ct != null ) {
-            printMsg ( "getCompositeTransaction()  returning instance with id "
-                    + ct.getTid (), Console.DEBUG );
-        } else
-            printMsg ( "getCompositeTransaction() returning NULL!",
-                    Console.DEBUG );
+        	if(LOGGER.isDebugEnabled()){
+            	LOGGER.logDebug("getCompositeTransaction()  returning instance with id "
+                        + ct.getTid ());
+        	}
+        } else{
+        	if(LOGGER.isDebugEnabled()){
+        		LOGGER.logDebug("getCompositeTransaction() returning NULL!");
+        	}
+        }
+
         return ct;
     }
 
@@ -283,23 +273,26 @@ public class BaseTransactionManager implements CompositeTransactionManager,
     {
         CompositeTransaction ret = service_.getCompositeTransaction ( tid );
         if ( ret != null ) {
-            printMsg ( "getCompositeTransaction ( " + tid
-                    + " ) returning instance with tid " + ret.getTid (),
-                    Console.DEBUG );
+        	if(LOGGER.isDebugEnabled()){
+        		LOGGER.logDebug("getCompositeTransaction ( " + tid
+                    + " ) returning instance with tid " + ret.getTid ());
+        	}
         } else {
-            printMsg ( "getCompositeTransaction ( " + tid
-                    + " ) returning NULL!", Console.DEBUG );
+        	if(LOGGER.isDebugEnabled()){
+        		LOGGER.logDebug( "getCompositeTransaction ( " + tid
+                    + " ) returning NULL!");
+        	}
         }
         return ret;
     }
 
-   
+
 
 
     /**
      * Recreate a composite transaction based on an imported context. Needed by
      * the application's communication layer.
-     * 
+     *
      * @param context
      *            The propagationcontext.
      * @param orphancheck
@@ -307,7 +300,7 @@ public class BaseTransactionManager implements CompositeTransactionManager,
      *            behavior applies.
      * @param heur_commit
      *            True for heuristic commit, false for heuristic rollback.
-     * 
+     *
      * @return CompositeTransaction The recreated local instance.
      * @exception SysException
      *                Failure.
@@ -318,12 +311,11 @@ public class BaseTransactionManager implements CompositeTransactionManager,
             throws SysException
     {
         CompositeTransaction ct = null;
-        
-        
+
+
         ct = getCurrentTx();
         if ( ct != null ) {
-            String msg = "Recreating a transaction with existing transaction: " + ct.getTid();
-            printMsg ( msg , Console.WARN );
+            LOGGER.logWarning("Recreating a transaction with existing transaction: " + ct.getTid());
             //FOLLOWING DISABLED BECAUSE IT MAKES TESTS FAIL
             //throw new IllegalStateException ( msg );
         }
@@ -347,12 +339,14 @@ public class BaseTransactionManager implements CompositeTransactionManager,
 
         CompositeTransaction ret = getCurrentTx ();
         if ( ret != null ) {
-            printMsg ( "suspend() for transaction " + ret.getTid (),
-                    Console.INFO );
+        	if(LOGGER.isInfoEnabled()){
+        		LOGGER.logInfo("suspend() for transaction " + ret.getTid ());
+        	}
             removeThreadMappings ( thread );
         } else {
-            printMsg ( "suspend() called without a transaction context",
-                    Console.INFO );
+        	if(LOGGER.isInfoEnabled()){
+        		LOGGER.logInfo("suspend() called without a transaction context");
+        	}
         }
         return ret;
 
@@ -391,14 +385,14 @@ public class BaseTransactionManager implements CompositeTransactionManager,
         ancestors.push ( ct );
 
         restoreThreadMappings ( ancestors, thread );
-        printMsg (
-                "resume ( " + ct + " ) done for transaction " + ct.getTid (),
-                Console.INFO );
+        if(LOGGER.isInfoEnabled()){
+        	LOGGER.logInfo("resume ( " + ct + " ) done for transaction " + ct.getTid ());
+        }
     }
 
     /**
      * Shut down the server in a clean way.
-     * 
+     *
      * @param force
      *            If true, shutdown will not wait for possibly indoubt txs to
      *            finish. Calling shutdown with force being true implies that
@@ -407,7 +401,7 @@ public class BaseTransactionManager implements CompositeTransactionManager,
      *            remaining active transactions will NOT be able to finish,
      *            because the recovery manager will be shutdown by that time.
      *            New transactions will not be allowed.
-     * 
+     *
      * @exception SysException
      *                For unexpected errors.
      * @exception IllegalStateException
@@ -430,7 +424,7 @@ public class BaseTransactionManager implements CompositeTransactionManager,
      * Removes the tx associated with calling thread. Restores context to the
      * last locally started parent, if any. Does nothing if no thread found or
      * if ct null.
-     * 
+     *
      * @param ct
      *            The transaction to remove.
      */
@@ -456,7 +450,7 @@ public class BaseTransactionManager implements CompositeTransactionManager,
     /**
      * @see CompositeTransactionManager
      */
-    
+
     public CompositeTransaction createCompositeTransaction ( long timeout ) throws SysException
     {
         Stack errors = new Stack ();
@@ -467,13 +461,14 @@ public class BaseTransactionManager implements CompositeTransactionManager,
         if ( ct == null ) {
 
             ret = service_.createCompositeTransaction ( timeout );
-            printMsg ( "createCompositeTransaction ( " + timeout + " ): "
-                    + "created new ROOT transaction with id " + ret.getTid (),
-                    Console.INFO );
-        } else {           
-            
-            printMsg ( "createCompositeTransaction ( " + timeout + " )",
-                    Console.INFO );
+            if(LOGGER.isInfoEnabled()){
+            	LOGGER.logInfo("createCompositeTransaction ( " + timeout + " ): "
+                    + "created new ROOT transaction with id " + ret.getTid ());
+            }
+        } else {
+        	 if(LOGGER.isInfoEnabled()){
+        		 LOGGER.logInfo("createCompositeTransaction ( " + timeout + " )");
+        	 }
             // let CT implementation do the details of logging
             ret = ct.getTransactionControl ().createSubTransaction ();
 

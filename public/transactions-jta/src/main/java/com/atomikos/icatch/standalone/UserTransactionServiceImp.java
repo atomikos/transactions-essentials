@@ -38,9 +38,6 @@ import java.util.Stack;
 import javax.naming.Context;
 import javax.transaction.UserTransaction;
 
-import com.atomikos.diagnostics.Console;
-import com.atomikos.diagnostics.RotatingFileConsole;
-import com.atomikos.diagnostics.Slf4jConsole;
 import com.atomikos.icatch.ExportingTransactionManager;
 import com.atomikos.icatch.ImportingTransactionManager;
 import com.atomikos.icatch.SysException;
@@ -49,7 +46,6 @@ import com.atomikos.icatch.admin.imp.LocalLogAdministrator;
 import com.atomikos.icatch.config.TSInitInfo;
 import com.atomikos.icatch.config.TSMetaData;
 import com.atomikos.icatch.config.UserTransactionService;
-import com.atomikos.icatch.config.imp.AbstractUserTransactionService;
 import com.atomikos.icatch.config.imp.AbstractUserTransactionServiceFactory;
 import com.atomikos.icatch.config.imp.TSInitInfoImp;
 import com.atomikos.icatch.config.imp.TSMetaDataImp;
@@ -70,8 +66,8 @@ import com.atomikos.persistence.imp.StreamObjectLog;
 import com.atomikos.persistence.imp.VolatileStateRecoveryManager;
 
 /**
- * 
- * 
+ *
+ *
  * A standalone implementation of the UserTransactionManager interface.
  */
 
@@ -91,7 +87,7 @@ class UserTransactionServiceImp extends AbstractJtaUserTransactionService
 
     private File lockfile_ = null;
     // the lockfile to guard against double startup
-	
+
 	private FileOutputStream lockfilestream_ = null;
     private FileLock lock_ = null;
 
@@ -107,7 +103,7 @@ class UserTransactionServiceImp extends AbstractJtaUserTransactionService
 
     private Properties properties_;
 
-   
+
 
     UserTransactionServiceImp ( Properties properties )
     {
@@ -142,7 +138,7 @@ class UserTransactionServiceImp extends AbstractJtaUserTransactionService
 
     /**
      * Get the properties supplied at init time.
-     * 
+     *
      * @return Properties The properties.
      */
 
@@ -154,7 +150,7 @@ class UserTransactionServiceImp extends AbstractJtaUserTransactionService
 
     /**
      * Creates a default TM instance.
-     * 
+     *
      * @param p
      *            The properties to use.
      * @return StandAloneTransactionManager The default instance.
@@ -168,7 +164,7 @@ class UserTransactionServiceImp extends AbstractJtaUserTransactionService
             throws IOException, FileNotFoundException
     {
         StandAloneTransactionManager ret = null;
-
+/*
         String consoleDir = AbstractUserTransactionService.getTrimmedProperty (
                 AbstractUserTransactionServiceFactory.OUTPUT_DIR_PROPERTY_NAME, p );
         consoleDir = findOrCreateFolder ( consoleDir );
@@ -199,7 +195,7 @@ class UserTransactionServiceImp extends AbstractJtaUserTransactionService
         console.setLevel ( level );
 
         Configuration.addConsole ( console );
-        
+
         try {
 			Class.forName("org.slf4j.Logger");
         	Slf4jConsole slf4jConsole = new Slf4jConsole();
@@ -207,21 +203,20 @@ class UserTransactionServiceImp extends AbstractJtaUserTransactionService
         	Configuration.addConsole ( slf4jConsole );
         } catch (ClassNotFoundException ex) {
         	if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug("cannot load SLF4J, skipping this console", ex);
-		}
-
+		}*/
 
         String logname = getTrimmedProperty (
                 AbstractUserTransactionServiceFactory.LOG_BASE_NAME_PROPERTY_NAME, p );
         String logdir = getTrimmedProperty (
                 AbstractUserTransactionServiceFactory.LOG_BASE_DIR_PROPERTY_NAME, p );
         logdir = findOrCreateFolder ( logdir );
-        
+
         String recoveryPrefs = getTrimmedProperty (
                 AbstractUserTransactionServiceFactory.ENABLE_LOGGING_PROPERTY_NAME, p );
         boolean enableRecovery = true;
         if ( "false".equals ( recoveryPrefs ) )
             enableRecovery = false;
-        
+
         String threadedCommitPrefs = getTrimmedProperty ( AbstractUserTransactionServiceFactory.THREADED_2PC_PROPERTY_NAME , p );
         boolean threadedCommit = true;
         if ( "false".equals( threadedCommitPrefs )) threadedCommit = false;
@@ -255,9 +250,9 @@ class UserTransactionServiceImp extends AbstractJtaUserTransactionService
                 AbstractUserTransactionServiceFactory.MAX_ACTIVES_PROPERTY_NAME, p ) )).intValue ();
         long chckpt = (new Long ( getTrimmedProperty (
                 AbstractUserTransactionServiceFactory.CHECKPOINT_INTERVAL_PROPERTY_NAME, p ) )).longValue ();
-        FileLogStream logstream = new FileLogStream ( logdir, logname, console );
-        StreamObjectLog slog = new StreamObjectLog ( logstream, chckpt, console );
-        
+        FileLogStream logstream = new FileLogStream ( logdir, logname );
+        StreamObjectLog slog = new StreamObjectLog ( logstream, chckpt );
+
         StateRecoveryManager recmgr = null;
         if ( enableRecovery )
             recmgr = new StateRecoveryManagerImp ( slog );
@@ -277,7 +272,7 @@ class UserTransactionServiceImp extends AbstractJtaUserTransactionService
         	defaultTimeout = 10;
         }
 
-        
+
         TransactionManagerImp.setDefaultTimeout(defaultTimeout);
 
 
@@ -286,9 +281,9 @@ class UserTransactionServiceImp extends AbstractJtaUserTransactionService
         if ( name == null || name.equals ( "" ) )
             throw new SysException (
                     "Property not set: com.atomikos.icatch.tm_unique_name" );
-        ret = new StandAloneTransactionManager ( name, recmgr, console,
+        ret = new StandAloneTransactionManager ( name, recmgr,
                 logdir, maxTimeout, max, !threadedCommit );
-        
+
         // set default serial mode for JTA txs.
         if ( new Boolean ( getTrimmedProperty (
                 UserTransactionServiceFactory.SERIAL_JTA_TRANSACTIONS_PROPERTY_NAME, p ) )
@@ -337,7 +332,7 @@ class UserTransactionServiceImp extends AbstractJtaUserTransactionService
                     LocalLogAdministrator ladmin = (LocalLogAdministrator) admin;
                     ladmin.init ( this );
                 }
-               
+
 
             }
 
@@ -387,7 +382,7 @@ class UserTransactionServiceImp extends AbstractJtaUserTransactionService
         if ( tm == null )
             return;
 
-       
+
 
         try {
             tm.shutdown ( force );
@@ -399,7 +394,7 @@ class UserTransactionServiceImp extends AbstractJtaUserTransactionService
             }
             // delegate to superclass to ensure resources are delisted.
             super.shutdown ( force );
-			
+
 			 try {
             	if ( lock_ != null ) {
             		lock_.release();
@@ -413,7 +408,7 @@ class UserTransactionServiceImp extends AbstractJtaUserTransactionService
             } finally {
             	lock_ = null;
             }
-			
+
             if ( lockfile_ != null ) {
                 lockfile_.delete ();
                 lockfile_ = null;
@@ -468,7 +463,7 @@ class UserTransactionServiceImp extends AbstractJtaUserTransactionService
     public TSMetaData getTSMetaData ()
     {
 
-        
+
         return new TSMetaDataImp ( JTA.version, VERSION
                 , PRODUCT_NAME, false, false );
     }

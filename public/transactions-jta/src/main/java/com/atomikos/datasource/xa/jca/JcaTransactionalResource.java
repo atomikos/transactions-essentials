@@ -34,20 +34,22 @@ import javax.transaction.xa.XAResource;
 import com.atomikos.datasource.ResourceException;
 import com.atomikos.datasource.xa.XATransactionalResource;
 import com.atomikos.datasource.xa.XidFactory;
-import com.atomikos.diagnostics.Console;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 
 /**
- * 
- * 
- * 
- * 
- * 
+ *
+ *
+ *
+ *
+ *
  * A TransactionalResource that works with the JCA architecture.
- * 
+ *
  */
 
 public class JcaTransactionalResource extends XATransactionalResource
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(JcaTransactionalResource.class);
 
     private ManagedConnectionFactory mcf;
 
@@ -84,8 +86,10 @@ public class JcaTransactionalResource extends XATransactionalResource
      */
     protected XAResource refreshXAConnection () throws ResourceException
     {
-        printMsg ( "refreshXAConnection() for resource: " + getName (),
-                Console.INFO );
+    	if(LOGGER.isInfoEnabled()){
+    		LOGGER.logInfo("refreshXAConnection() for resource: " + getName ());
+    	}
+
         XAResource ret = null;
         if ( connection != null ) {
             try {
@@ -98,7 +102,8 @@ public class JcaTransactionalResource extends XATransactionalResource
         }
 
         try {
-            printMsg ( "about to block for new connection...", Console.INFO );
+
+        	LOGGER.logInfo( "about to block for new connection...");
             // System.out.println ( "ABOUT TO BLOCK FOR NEW CONNECTION");
             connection = mcf.createManagedConnection ( null, null );
 
@@ -108,21 +113,24 @@ public class JcaTransactionalResource extends XATransactionalResource
             connection = null;
         } finally {
             // System.out.println ( "BLOCKING DONE");
-            printMsg ( "blocking done.", Console.INFO );
+        	if(LOGGER.isInfoEnabled()){
+        		LOGGER.logInfo("blocking done.");
+        	}
         }
 
         try {
             if ( connection != null )
                 ret = connection.getXAResource ();
         } catch ( javax.resource.ResourceException e ) {
-            printMsg ( "error getting XAResource: " + e.getMessage (),
-                    Console.WARN );
+        	LOGGER.logWarning("error getting XAResource: " + e.getMessage ());
             Stack errors = new Stack ();
             errors.push ( e );
             throw new ResourceException ( "Error in getting XA resource",
                     errors );
         }
-        printMsg ( "refreshXAConnection() done.", Console.INFO );
+
+       LOGGER.logInfo("refreshXAConnection() done.");
+
         // System.out.println ( "DONE REFRESHXACONNECTION FOR RESOURCE: " +
         // getName() );
 

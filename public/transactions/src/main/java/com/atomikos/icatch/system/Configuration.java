@@ -521,7 +521,7 @@ public final class Configuration
      * @return Console The console for the configuration.
      */
 
-    public static Console getConsole ()
+    private static Console getConsole ()
     {
         return console_;
     }

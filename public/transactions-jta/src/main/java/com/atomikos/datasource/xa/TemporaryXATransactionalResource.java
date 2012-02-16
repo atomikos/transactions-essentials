@@ -29,14 +29,15 @@ import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
 
 import com.atomikos.datasource.ResourceException;
-import com.atomikos.diagnostics.Console;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 
 /**
- * 
- * 
- * 
- * 
- * 
+ *
+ *
+ *
+ *
+ *
  * A class for temporary resources. This is useful for configurations that don't
  * register any XATransactionalResources in advance (zero setup). These cases
  * require a dynamic and temporary XATransactionalResource to be added. This
@@ -46,11 +47,13 @@ import com.atomikos.diagnostics.Console;
 
 public class TemporaryXATransactionalResource extends XATransactionalResource
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(TemporaryXATransactionalResource.class);
+
 	/**
 	 * Max length in bytes of the resource name
 	 */
 	private static final int MAX_BYTES = 45;
-	
+
 	/**
 	 * Truncates name to fit in 45 bytes
 	 * @param name
@@ -81,11 +84,10 @@ public class TemporaryXATransactionalResource extends XATransactionalResource
 
         try {
             if ( !xares.isSameRM ( xares ) )
-                printMsg ( "XAResource " + xares + " of class "
+            	LOGGER.logWarning("XAResource " + xares + " of class "
                         + xares.getClass ().getName ()
                         + " does not correctly implement isSameRM(): "
-                        + "use explicit resource registration to save memory.",
-                        Console.WARN );
+                        + "use explicit resource registration to save memory.");
         } catch ( XAException e ) {
             // ignore: this is vanilla code anyway
         }

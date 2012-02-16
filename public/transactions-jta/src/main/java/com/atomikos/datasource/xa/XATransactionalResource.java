@@ -38,12 +38,10 @@ import com.atomikos.datasource.RecoverableResource;
 import com.atomikos.datasource.ResourceException;
 import com.atomikos.datasource.ResourceTransaction;
 import com.atomikos.datasource.TransactionalResource;
-import com.atomikos.diagnostics.Console;
 import com.atomikos.icatch.CompositeTransaction;
 import com.atomikos.icatch.Participant;
 import com.atomikos.icatch.RecoveryService;
 import com.atomikos.icatch.SysException;
-import com.atomikos.icatch.system.Configuration;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 import com.atomikos.persistence.StateRecoveryManager;
@@ -177,17 +175,6 @@ public abstract class XATransactionalResource implements TransactionalResource
     public XidFactory getXidFactory ()
     {
         return xidFact_;
-    }
-
-    protected void printMsg ( String msg , int level )
-    {
-        try {
-            Console console = Configuration.getConsole ();
-            if ( console != null ) {
-                console.println ( msg, level );
-            }
-        } catch ( Exception ignore ) {
-        }
     }
 
     void removeSiblingMap ( String root )
@@ -580,8 +567,10 @@ public abstract class XATransactionalResource implements TransactionalResource
         // if ( branchIdentifier_ == null ) throw new ResourceException (
         // "Recovery service not set for resource " + getName() );
 
-        printMsg ( "recovery initiated for resource " + getName ()
-                + " with branchIdentifier " + branchIdentifier_, Console.DEBUG );
+        if(LOGGER.isDebugEnabled()){
+        	LOGGER.logDebug( "recovery initiated for resource " + getName ()
+                    + " with branchIdentifier " + branchIdentifier_);
+        }
 
         do {
             try {
@@ -589,7 +578,7 @@ public abstract class XATransactionalResource implements TransactionalResource
             } catch ( NullPointerException ora ) {
         		//Typical for Oracle without XA setup
             		if ( getXAResource ().getClass ().getName ().toLowerCase ().indexOf ( "oracle" ) >= 0 ) {
-            			printMsg ( "ORACLE NOT CONFIGURED FOR XA? PLEASE CONTACT YOUR DBA TO FIX THIS..." , Console.WARN );
+            			LOGGER.logWarning("ORACLE NOT CONFIGURED FOR XA? PLEASE CONTACT YOUR DBA TO FIX THIS...");
             		}
             		throw ora;
 
@@ -617,8 +606,10 @@ public abstract class XATransactionalResource implements TransactionalResource
                     if ( !recoveredXids.contains ( xid ) ) {
                         // a new xid is returned -> we can not be in a
                         // recovery loop -> go on
-                        printMsg ( "Resource " + servername_
-                                + " inspecting XID: " + xid, Console.INFO );
+                    	if(LOGGER.isInfoEnabled()){
+                    		LOGGER.logInfo("Resource " + servername_
+                                    + " inspecting XID: " + xid);
+                    	}
                         recoveredXids.addElement ( xid );
                         done = false;
                         // only really 'recover' this xid if it is from
@@ -627,13 +618,16 @@ public abstract class XATransactionalResource implements TransactionalResource
                                 .getBranchQualifier () );
                         if ( branch.startsWith ( branchIdentifier_ ) ) {
                             recoveryMap_.put ( xid, new Object () );
-                            printMsg ( "Resource " + servername_
-                                    + " recovering XID: " + xid, Console.INFO );
+                            if(LOGGER.isInfoEnabled()){
+                            	LOGGER.logInfo("Resource " + servername_
+                                        + " recovering XID: " + xid);
+                            }
                         } else {
-                            printMsg ( "Resource " + servername_ + ": XID "
-                                    + xid + " with branch " + branch
-                                    + " is not under my responsibility",
-                                    Console.INFO );
+                        	if(LOGGER.isInfoEnabled()){
+                        		LOGGER.logInfo("Resource " + servername_ + ": XID "
+                                        + xid + " with branch " + branch
+                                        + " is not under my responsibility");
+                        	}
                         }
                     }
                 }
@@ -678,8 +672,10 @@ public abstract class XATransactionalResource implements TransactionalResource
             try {
                 xaresource.rollback ( xid );
                 // getXAResource().rollback ( xid );
-                printMsg ( "XAResource.rollback ( " + xid + " ) called "
-                        + "on resource " + servername_, Console.INFO );
+                if(LOGGER.isInfoEnabled()){
+                	LOGGER.logInfo("XAResource.rollback ( " + xid + " ) called "
+                            + "on resource " + servername_);
+                }
             } catch ( XAException xaerr ) {
                 // here, an indoubt tx might remain in resource; we do nothing
                 // to prevent this and leave it to admin tools
@@ -689,8 +685,9 @@ public abstract class XATransactionalResource implements TransactionalResource
         // ADDED: to enable repeated recovery calls
         recoveryMap_ = null;
 
-        printMsg ( "endRecovery() done for resource " + getName (),
-                Console.DEBUG );
+        if(LOGGER.isDebugEnabled()){
+        	LOGGER.logDebug("endRecovery() done for resource " + getName ());
+        }
     }
 
     /**

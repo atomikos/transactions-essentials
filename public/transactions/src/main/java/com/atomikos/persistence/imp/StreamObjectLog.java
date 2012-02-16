@@ -30,17 +30,16 @@ import java.util.Hashtable;
 import java.util.Stack;
 import java.util.Vector;
 
-import com.atomikos.diagnostics.Console;
 import com.atomikos.persistence.LogException;
 import com.atomikos.persistence.LogStream;
 import com.atomikos.persistence.ObjectLog;
 import com.atomikos.persistence.Recoverable;
 
 /**
- * 
+ *
  * implementation. It keeps on growing, and only does a checkpoint on restart.
- * 
- * 
+ *
+ *
  */
 
 public class StreamObjectLog implements ObjectLog
@@ -53,7 +52,6 @@ public class StreamObjectLog implements ObjectLog
     protected boolean panic_ = false;
     // if true: flush methods generate exception
     // set by writeCheckpoint
-    protected Console console_;
     // for diagnostics
 
     private long count_;
@@ -70,7 +68,7 @@ public class StreamObjectLog implements ObjectLog
     /**
      * Constructor. Builds a new StreamObjectLog with the given logstream and
      * the specified maximum number of entries.
-     * 
+     *
      * @param logstream
      *            The underlying logstream. This stream should be reserved for
      *            this instance! Upon close, the underlying stream will also be
@@ -79,15 +77,13 @@ public class StreamObjectLog implements ObjectLog
      *            How many flush() calls between two checkpoints?
      * @param console
      *            For output of feedback.
-     * 
+     *
      */
 
-    public StreamObjectLog ( LogStream logstream , long checkpointInterval ,
-            Console console )
+    public StreamObjectLog ( LogStream logstream , long checkpointInterval )
     {
         logstream_ = logstream;
         size_ = 0;
-        console_ = console;
         logTable_ = new Hashtable ();
         maxCount_ = checkpointInterval;
         count_ = 0;
@@ -146,7 +142,7 @@ public class StreamObjectLog implements ObjectLog
                             // duplicate deletes are possible because a
                             // terminator entry may be written more than once
 
-                            logTable_.remove ( entry.getId () ); 
+                            logTable_.remove ( entry.getId () );
 
                             size_--;
 

@@ -15,8 +15,8 @@
             <artifactId>transactions</artifactId>
             <version>3.8.0-SNAPSHOT</version>
         </dependency>
-        <!--should not be necessary here...-->
-        <dependency>
+        <!--Why com.atomikos.datasource.xa.jms.JmsTransactionalResource is not in transaction JMS ?-->
+       <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-jms_1.1_spec</artifactId>
             <version>1.1.1</version>

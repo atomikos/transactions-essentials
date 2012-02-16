@@ -35,15 +35,17 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 
-import com.atomikos.diagnostics.Console;
 import com.atomikos.icatch.jta.UserTransactionImp;
 import com.atomikos.icatch.jta.UserTransactionManager;
-import com.atomikos.icatch.system.Configuration;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 
 /**
  * @author pascalleclercq When transactions-osgi bundle starts It register theses Impl in the service registry.
  */
 public class AtomikosActivator implements BundleActivator {
+	private static final Logger LOGGER = LoggerFactory.createLogger(AtomikosActivator.class);
+
 	private UserTransactionManager utm;
 	private ServiceRegistration utmRegistration;
 	private ServiceRegistration userTransactionRegistration;
@@ -64,7 +66,7 @@ public class AtomikosActivator implements BundleActivator {
 			utmProps.put("osgi.jndi.service.name", "AtomikosV3");
 			userTransactionRegistration = context.registerService(UserTransaction.class.getName(), userTransaction, utmProps);
 		} catch (Exception e) {
-			Configuration.getConsole().print(e.getMessage(), Console.WARN);
+			LOGGER.logWarning(e.getMessage(), e);
 		}
 	}
 
@@ -74,7 +76,7 @@ public class AtomikosActivator implements BundleActivator {
 				utmRegistration.unregister();
 				utmRegistration = null;
 			}
-			
+
 			if (utm != null) {
 				utm.close();
 			}
@@ -84,7 +86,7 @@ public class AtomikosActivator implements BundleActivator {
 			}
 
 		} catch (Exception e) {
-			Configuration.getConsole().print(e.getMessage(), Console.WARN);
+			LOGGER.logWarning(e.getMessage(), e);
 		}
 
 	}

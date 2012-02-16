@@ -28,7 +28,6 @@ package com.atomikos.icatch.standalone;
 import java.util.Properties;
 
 import com.atomikos.datasource.xa.XID;
-import com.atomikos.diagnostics.Console;
 import com.atomikos.icatch.Extent;
 import com.atomikos.icatch.RollbackException;
 import com.atomikos.icatch.SysException;
@@ -40,8 +39,8 @@ import com.atomikos.persistence.StateRecoveryManager;
 import com.atomikos.util.UniqueIdMgr;
 
 /**
- * 
- * 
+ *
+ *
  * A standalone TM implementation. No import or export supported.
  */
 
@@ -55,7 +54,7 @@ class StandAloneTransactionManager extends BaseTransactionManager
 
     /**
      * Create a new instance.
-     * 
+     *
      * @param tmName
      *            The unique name for the transaction manager.
      * @param srecmgr
@@ -68,13 +67,13 @@ class StandAloneTransactionManager extends BaseTransactionManager
      *            The max timeout value.
      * @param maxActives
      *            The max no of active txs, or negative if not applicable.
-     * @param single_threaded_2pc 
+     * @param single_threaded_2pc
      *            Whether 2PC commit should happen in the same thread that started the tx.
      */
 
     StandAloneTransactionManager ( String tmName ,
-            StateRecoveryManager srecmgr , Console console ,
-            String outputDirPath , long maxTimeout , int maxActives , 
+            StateRecoveryManager srecmgr ,
+            String outputDirPath , long maxTimeout , int maxActives ,
             boolean single_threaded_2pc )
     {
         super ();
@@ -87,7 +86,7 @@ class StandAloneTransactionManager extends BaseTransactionManager
         	LOGGER.logWarning ( msg );
         	throw new SysException(msg);
         }
-        service_ = new TransactionServiceImp ( tmName, srecmgr, idmgr, console,
+        service_ = new TransactionServiceImp ( tmName, srecmgr, idmgr,
                 maxTimeout, maxActives , single_threaded_2pc );
     }
 

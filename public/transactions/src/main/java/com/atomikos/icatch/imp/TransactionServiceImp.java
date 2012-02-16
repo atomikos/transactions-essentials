@@ -153,9 +153,9 @@ public class TransactionServiceImp implements TransactionService,
 
     public TransactionServiceImp ( String name ,
             StateRecoveryManager recoverymanager , UniqueIdMgr tidmgr ,
-            Console console , long maxtimeout , int maxActives , boolean single_threaded_2pc )
+            long maxtimeout , int maxActives , boolean single_threaded_2pc )
     {
-        this ( name , recoverymanager , tidmgr , console , maxtimeout , true ,
+        this ( name , recoverymanager , tidmgr  , maxtimeout , true ,
                 maxActives , single_threaded_2pc );
     }
 
@@ -186,7 +186,7 @@ public class TransactionServiceImp implements TransactionService,
 
     public TransactionServiceImp ( String name ,
             StateRecoveryManager recoverymanager , UniqueIdMgr tidmgr ,
-            Console console , long maxtimeout , boolean checkorphans ,
+             long maxtimeout , boolean checkorphans ,
             int maxActives , boolean single_threaded_2pc )
     {
         maxActives_ = maxActives;
@@ -206,7 +206,7 @@ public class TransactionServiceImp implements TransactionService,
         for ( int i = 0; i < NUMLATCHES; i++ ) {
             rootlatches_[i] = new Object ();
         }
-        console_ = console;
+
         maxTimeout_ = maxtimeout;
         name_ = name;
         listeners_ = new Vector ();

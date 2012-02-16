@@ -27,7 +27,6 @@ package com.atomikos.icatch.imp;
 
 import java.util.Stack;
 
-import com.atomikos.diagnostics.Console;
 import com.atomikos.finitestates.FSMEnterEvent;
 import com.atomikos.finitestates.FSMEnterListener;
 import com.atomikos.icatch.CompositeCoordinator;
@@ -45,19 +44,21 @@ import com.atomikos.icatch.Synchronization;
 import com.atomikos.icatch.SysException;
 import com.atomikos.icatch.TransactionControl;
 import com.atomikos.icatch.TxState;
-import com.atomikos.icatch.system.Configuration;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 
 /**
- * 
- * 
+ *
+ *
  * A complete composite transaction implementation for use in LOCAL VM.
- * 
+ *
  */
 
-public class CompositeTransactionImp 
+public class CompositeTransactionImp
 extends AbstractCompositeTransaction implements
         TransactionControl, FSMEnterListener
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(CompositeTransactionImp.class);
 
     protected CoordinatorImp coordinator_ = null;
     // the coordinator for this invocation
@@ -85,7 +86,7 @@ extends AbstractCompositeTransaction implements
 
     /**
      * Constructor.
-     * 
+     *
      * @param txservice
      *            The Transaction Service this is for.
      * @param lineage
@@ -124,18 +125,18 @@ extends AbstractCompositeTransaction implements
     {
         stateHandler_ = handler;
     }
-    
+
     synchronized void localTestAndSetTransactionStateHandler ( TransactionStateHandler expected , TransactionStateHandler newHandler )
     {
     	if ( stateHandler_ != expected ) throw new IllegalStateException ( "State is no longer " + expected.getState() + " but " + newHandler.getState()  );
     	localSetTransactionStateHandler( newHandler );
     }
 
-    synchronized TransactionStateHandler localGetTransactionStateHandler() 
+    synchronized TransactionStateHandler localGetTransactionStateHandler()
     {
     	return stateHandler_;
     }
-    
+
     boolean isLocalRoot ()
     {
         return localRoot_;
@@ -151,22 +152,12 @@ extends AbstractCompositeTransaction implements
         return coordinator_;
     }
 
-    //    
+    //
     // Stack getParticipants()
     // {
     // return stateHandler_.getParticipants();
     // }
 
-    private void printMsg ( String msg , int level )
-    {
-        try {
-            Console console = Configuration.getConsole ();
-            if ( console != null ) {
-                console.println ( msg, level );
-            }
-        } catch ( Exception ignore ) {
-        }
-    }
 
     /**
      * @see CompositeTransaction.
@@ -203,7 +194,7 @@ extends AbstractCompositeTransaction implements
 
     }
 
-    // 
+    //
     // CompositeTransaction createSubTransaction ( String tid )
     // {
     // return stateHandler_.createSubTransaction ( tid );
@@ -217,9 +208,11 @@ extends AbstractCompositeTransaction implements
             IllegalStateException
     {
         CompositeTransaction ret = localGetTransactionStateHandler().createSubTransaction ();
-        printMsg ( "createSubTransaction(): created new SUBTRANSACTION "
-                + ret.getTid () + " for existing transaction " + getTid (),
-                Console.INFO );
+        if(LOGGER.isInfoEnabled()){
+        	LOGGER.logInfo("createSubTransaction(): created new SUBTRANSACTION "
+                    + ret.getTid () + " for existing transaction " + getTid ());
+        }
+
         return ret;
     }
 
@@ -233,8 +226,10 @@ extends AbstractCompositeTransaction implements
     {
 
         RecoveryCoordinator ret = localGetTransactionStateHandler().addParticipant ( participant );
-        printMsg ( "addParticipant ( " + participant + " ) for transaction "
-                + getTid (), Console.INFO );
+        if(LOGGER.isInfoEnabled()){
+        	LOGGER.logInfo("addParticipant ( " + participant + " ) for transaction "
+                    + getTid ());
+        }
         return ret;
     }
 
@@ -246,8 +241,10 @@ extends AbstractCompositeTransaction implements
             IllegalStateException, UnsupportedOperationException, SysException
     {
     	localGetTransactionStateHandler().registerSynchronization ( sync );
-    	 printMsg ( "registerSynchronization ( " + sync + " ) for transaction "
-                 + getTid (), Console.INFO );
+    	if(LOGGER.isInfoEnabled()){
+    		LOGGER.logInfo("registerSynchronization ( " + sync + " ) for transaction "
+                    + getTid ());
+    	}
     }
 
     /**
@@ -267,9 +264,10 @@ extends AbstractCompositeTransaction implements
     protected void doRollback () throws java.lang.IllegalStateException,
             SysException
     {
-
     	localGetTransactionStateHandler().rollbackWithStateCheck ();
-        printMsg ( "rollback() done of transaction " + getTid (), Console.INFO );
+    	if(LOGGER.isInfoEnabled()){
+    		LOGGER.logInfo("rollback() done of transaction " + getTid ());
+    	}
 
     }
 
@@ -305,7 +303,7 @@ extends AbstractCompositeTransaction implements
      * by Terminator implementation only! NOTE: this does NOT commit the
      * participants, but rather only marks the (sub)transaction as being
      * ELIGIBLE FOR PREPARE IN 2PC.
-     * 
+     *
      * @exception IllegalStateException
      *                If no longer active.
      * @exception SysException
@@ -317,10 +315,9 @@ extends AbstractCompositeTransaction implements
     {
 
     	localGetTransactionStateHandler().commit ();
-        printMsg (
-                "commit() done (by application) of transaction " + getTid (),
-                Console.INFO );
-
+    	if(LOGGER.isInfoEnabled()){
+    		LOGGER.logInfo("commit() done (by application) of transaction " + getTid ());
+    	}
     }
 
     /**
@@ -342,10 +339,10 @@ extends AbstractCompositeTransaction implements
             extent_ = new ExtentImp ();
     		return extent_;
 
-        
+
     }
-    
-   
+
+
 
     /**
      * @see TransactionControl.
@@ -354,9 +351,11 @@ extends AbstractCompositeTransaction implements
     public void setRollbackOnly ()
     {
     	localGetTransactionStateHandler().setRollbackOnly ();
-        printMsg ( "setRollbackOnly() called for transaction " + getTid (),
-                Console.INFO );
-       
+    	if(LOGGER.isInfoEnabled()){
+    		LOGGER.logInfo("setRollbackOnly() called for transaction " + getTid ());
+    	}
+
+
     }
 
     /**
@@ -401,12 +400,12 @@ extends AbstractCompositeTransaction implements
     /**
      * @see com.atomikos.finitestates.FSMEnterListener#preEnter(com.atomikos.finitestates.FSMEnterEvent)
      */
-    public void entered ( FSMEnterEvent event ) 
+    public void entered ( FSMEnterEvent event )
     {
         // if the state of this subtx is still active then
         // we have a timedout subtx, meaning it has to be
         // rolled back
-    	
+
         if ( getState ().equals ( TxState.ACTIVE )
                 || getState ().equals ( TxState.MARKED_ABORT ) ) {
             try {
@@ -424,15 +423,15 @@ extends AbstractCompositeTransaction implements
             } catch ( Exception e ) {
                 // ignore
             }
-        } 
+        }
 
     }
 
-	
-
-	
 
 
-	
+
+
+
+
 
 }
