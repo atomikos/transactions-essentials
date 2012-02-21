@@ -77,8 +77,22 @@ public abstract class AbstractJmsSenderTemplate
 	
 	protected abstract void afterUseWithoutErrors ( Connection c , Session s ) throws JMSException;
 	
-	protected abstract void destroy ( Connection c , Session s ) throws JMSException;
-	
+	protected void destroy ( Connection c , Session s)
+	throws JMSException {
+
+		try {
+			if ( s != null ) s.close();
+		} catch ( JMSException warn ) {
+			Configuration.logWarning ( this + ": error closing session" , warn);
+		}
+
+		try {
+			if ( c != null ) c.close();
+		} catch ( JMSException warn ) {
+			Configuration.logWarning ( this + ": error closing connection" , warn);
+		}
+
+	}	
 	protected synchronized Connection refreshConnection() throws JMSException {
 		Connection connection = null;
 	    if ( getDestinationName() == null )

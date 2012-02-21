@@ -80,44 +80,24 @@ public class ConcurrentJmsSenderTemplate extends AbstractJmsSenderTemplate
 	}
 
 
-	protected void afterUseWithoutErrors ( Session session ) throws JMSException 
-	{
-		//close session
-		session.close();	
-	}
 
 
-
-	protected void destroy(Connection c, Session s)
-			throws JMSException {
-		//close anyway - let pooling do its work!
-		afterUseWithoutErrors ( c , s );
-		
-	}
-
-
-
-	protected void afterUseWithoutErrors ( Connection c , Session s)
-			throws JMSException {
-		
-		try {
-			if ( s != null ) s.close();
-		} catch ( JMSException warn ) {
-			Configuration.logWarning ( this + ": error closing session" , warn);
-		}
-		
-		try {
-			if ( c != null ) c.close();
-		} catch ( JMSException warn ) {
-			Configuration.logWarning ( this + ": error closing connection" , warn);
-		}
-		
-	}
+	
 
 
 
 	protected Connection getOrReuseConnection() throws JMSException {
 		return refreshConnection();
+	}
+
+
+
+	@Override
+	protected void afterUseWithoutErrors(Connection c, Session s)
+			throws JMSException {
+		// close anyway: pooling will do the reuse
+		destroy(c,s);
+		
 	}
 
 
