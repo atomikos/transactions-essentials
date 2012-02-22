@@ -532,7 +532,8 @@ class MessageConsumerSession
 
 	                    tm.begin ();
 	                    // wait for at most half of the tx timeout
-	                    msg = receiver.receive ( getTransactionTimeout() * 1000 / 2 );
+	                    // cf case 83599: use separate timeout for receive to speedup shutdown
+	                    msg = receiver.receive ( getReceiveTimeout() * 1000 );
 
 	                    try {
 
@@ -718,5 +719,14 @@ class MessageConsumerSession
 
 	public void setClientID(String clientID) {
 		this.clientID = clientID;
+	}
+	
+	/**
+	 * Gets the receive timeout in seconds.
+	 * 
+	 * @return
+	 */
+	public int getReceiveTimeout() {
+		return properties.getReceiveTimeout();
 	}
 }
