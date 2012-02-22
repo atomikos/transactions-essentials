@@ -81,22 +81,7 @@ public class SingleThreadedJmsSenderTemplate extends AbstractJmsSenderTemplate
 		//do nothing here: reuse session next time
 	}
 
-	protected void destroy ( Connection c, Session s )
-			throws JMSException {
-		try {
-			s.close();
-		} catch ( JMSException warn ) {
-			LOGGER.logWarning ( this + ": error closing session" , warn);
-		}
-		
-		try {
-			c.close();
-		} catch ( JMSException warn ) {
-			LOGGER.logWarning ( this + ": error closing connection" , warn);
-		}
-		session = null;
-		connection = null;
-	}
+
 
 	protected void afterUseWithoutErrors ( Connection c, Session s )
 			throws JMSException {

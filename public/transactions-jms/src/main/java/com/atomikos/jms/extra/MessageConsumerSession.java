@@ -434,22 +434,30 @@ class MessageConsumerSession
 	        {
 	            try {
 					if ( session != null ) {
+				
+						if ( threadWillStop ) {
 
-						if ( threadWillStop && subscriberName != null && properties.getUnsubscribeOnClose() ) {
 							try {
 								LOGGER.logWarning ( "MessageConsumerSession: unsubscribing " + subscriberName + "...");
 								if ( Thread.currentThread() != this ) {
-									//see case 62452: wait for listener thread to exit so the subscriber is no longer in use
-									if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( "MessageConsumerSession: waiting for listener thread to finish..." );
-									this.join ( getTransactionTimeout() * 1000 );
-									if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "MessageConsumerSession: waiting done." );
+
+									//see case 62452 and 80464: wait for listener thread to exit so the subscriber is no longer in use
+									if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( "MessageConsumerSession: waiting for listener thread to finish..." );
+									this.join();
+									if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "MessageConsumerSession: waiting done." );
+
 								}
-								if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( "MessageConsumerSession: unsubscribing " + subscriberName + "..." );
-								session.unsubscribe ( subscriberName );
-								if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "MessageConsumerSession: unsubscribed.");
+
+								if (subscriberName != null && properties.getUnsubscribeOnClose()) {
+									Configuration.logWarning ( "MessageConsumerSession: unsubscribing " + subscriberName + "...");
+									session.unsubscribe ( subscriberName );
+								}
+
 							} catch ( JMSException e ) {
-								 if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo (
-					                    "MessageConsumerSession: Error unsubscribing on JMS session",
+
+								 if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo (
+					                    "MessageConsumerSession: Error closing on JMS session",
+
 					                    e );
 					            if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( "MessageConsumerSession: linked exception is " , e.getLinkedException() );
 							}
@@ -533,7 +541,8 @@ class MessageConsumerSession
 
 	                    tm.begin ();
 	                    // wait for at most half of the tx timeout
-	                    msg = receiver.receive ( getTransactionTimeout() * 1000 / 2 );
+	                    // cf case 83599: use separate timeout for receive to speedup shutdown
+	                    msg = receiver.receive ( getReceiveTimeout() * 1000 );
 
 	                    try {
 
@@ -730,5 +739,14 @@ class MessageConsumerSession
 
 	public void setClientID(String clientID) {
 		this.clientID = clientID;
+	}
+	
+	/**
+	 * Gets the receive timeout in seconds.
+	 * 
+	 * @return
+	 */
+	public int getReceiveTimeout() {
+		return properties.getReceiveTimeout();
 	}
 }

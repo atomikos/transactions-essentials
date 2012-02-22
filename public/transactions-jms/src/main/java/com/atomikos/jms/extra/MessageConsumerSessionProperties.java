@@ -40,4 +40,6 @@ interface MessageConsumerSessionProperties
 	
 	public boolean getUnsubscribeOnClose();
 	
+	public int getReceiveTimeout();
+	
 }

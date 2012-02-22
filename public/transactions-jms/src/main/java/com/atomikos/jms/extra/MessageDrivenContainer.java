@@ -90,6 +90,8 @@ implements MessageConsumerSessionProperties
 	private boolean unsubscribeOnClose;
 	private String clientID;
 	
+	private int receiveTimeout;
+	
 	public MessageDrivenContainer()
 	{
 		sessions = new ArrayList ();
@@ -111,6 +113,8 @@ implements MessageConsumerSessionProperties
 	public void setClientID ( String clientID ) {
 		this.clientID = clientID;
 	}
+	
+	
 	
 	/**
 	 * Sets the connection factory to use. Required.
@@ -252,11 +256,11 @@ implements MessageConsumerSessionProperties
 	/**
 	 * Set the transaction timeout in seconds (optional).
 	 * 
-	 * @param i
+	 * @param seconds
 	 */
-	public void setTransactionTimeout ( int i ) 
+	public void setTransactionTimeout ( int seconds ) 
 	{
-	    transactionTimeout = i;
+	    transactionTimeout = seconds;
 	}
 
 	/**
@@ -433,6 +437,8 @@ implements MessageConsumerSessionProperties
 	 * calling this method will notify the listener by calling its onMessage
 	 * method with a null argument (and also without transaction context).
 	 * 
+	 * This method will wait for all active receive operations to unblock, which may take
+	 * up to <b>receiveTimeout</b> seconds per active thread.
 	 */
 	public void stop() 
 	{
@@ -489,6 +495,33 @@ implements MessageConsumerSessionProperties
 	public boolean getUnsubscribeOnClose()
 	{
 		return unsubscribeOnClose;
+	}
+	
+
+	/**
+	 * Gets the receive timeout in seconds.
+	 * 
+	 * @return
+	 */
+	public int getReceiveTimeout() {
+		int ret = receiveTimeout;
+		if ( ret <=0 ) ret = getTransactionTimeout()/2;
+		return ret;
+	}
+
+	
+	/**
+	 * Sets the receive timeout in seconds, 
+	 * i.e. the number of seconds to wait for incoming messages in the message listener thread's event loop.
+	 *  
+	 * This property is optional and defaults to half the transactionTimeout, but typically this should be lower 
+	 * because the time required to shutdown (stop) this container will be bound by this value multiplied by 
+	 * the number of threads (as indicated by <b>poolSize</b>).
+	 * 
+	 * @param seconds
+	 */
+	public void setReceiveTimeout(int seconds) {
+		this.receiveTimeout = seconds;	
 	}
 
 }
