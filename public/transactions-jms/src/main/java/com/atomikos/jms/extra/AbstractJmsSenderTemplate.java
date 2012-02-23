@@ -324,6 +324,7 @@ public abstract class AbstractJmsSenderTemplate
 	    	AtomikosTransactionRequiredJMSException.throwAtomikosTransactionRequiredJMSException ( msg );
 	
 	    } catch ( JMSException e ) {
+	    	e.printStackTrace();
 	    	destroy ( conn , session );
 	        String msg = this + ": error in sending JMS message";
 	        AtomikosJMSException.throwAtomikosJMSException( msg , e );
