@@ -66,6 +66,7 @@ public abstract class AbstractUserTransactionServiceFactory implements
 
 
 	/**
+	 * @deprecated use a standard logger API now...
 	 * The name of the property that specifies the filename to use for console
 	 * log files.
 	 *
@@ -89,6 +90,7 @@ public abstract class AbstractUserTransactionServiceFactory implements
 	public static final String LOG_BASE_DIR_PROPERTY_NAME = "com.atomikos.icatch.log_base_dir";
 
 	/**
+	 * @deprecated use a standard logger API now...
 	 * The name of the property that specifies the console log level. Should be
 	 * one of: WARN, INFO or DEBUG.
 	 *
@@ -183,6 +185,7 @@ public abstract class AbstractUserTransactionServiceFactory implements
 	public static final String ENABLE_LOGGING_PROPERTY_NAME = "com.atomikos.icatch.enable_logging";
 
 	/**
+	 * @deprecated use a standard logger API now...
 	 * The name of the property indicating the max size in bytes of the console
 	 * log files. Negative means unlimited.
 	 *
@@ -191,6 +194,7 @@ public abstract class AbstractUserTransactionServiceFactory implements
 	public static final String CONSOLE_FILE_LIMIT_PROPERTY_NAME = "com.atomikos.icatch.console_file_limit";
 
 	/**
+	 * @deprecated use a standard logger API now...
 	 * The name of the property indicating the number of rotating console log
 	 * files.
 	 *
