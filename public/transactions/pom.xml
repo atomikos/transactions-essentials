@@ -8,22 +8,12 @@
 	</parent>
 	<artifactId>transactions</artifactId>
 	<name>Transactions Core</name>
-	<build>
-		<resources>
-			<resource>
-				<directory>src/main/resources</directory>
-				<filtering>true</filtering>
-			</resource>
-		</resources>
 
-	</build>
 	<dependencies>
-
 		<dependency>
 			<groupId>com.atomikos</groupId>
 			<artifactId>transactions-api</artifactId>
 			<version>3.8.0-SNAPSHOT</version>
 		</dependency>
-
 	</dependencies>
 </project>

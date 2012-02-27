@@ -26,15 +26,11 @@
 
 package com.atomikos.icatch.system;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Properties;
 import java.util.Vector;
 
 import com.atomikos.datasource.RecoverableResource;
@@ -48,7 +44,6 @@ import com.atomikos.icatch.admin.LogAdministrator;
 import com.atomikos.icatch.admin.LogControl;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
-import com.atomikos.util.ClassLoadingHelper;
 
 /**
  *
@@ -92,25 +87,7 @@ public final class Configuration
     private static Vector tsListenersList_ = new Vector ();
 
     private static List shutdownHooks_ = new ArrayList();
-//
-//    public static String getVersion() {
-//    	String ret = "UNKNOWN";
-//    	Properties props = new Properties();
-//    	URL propertyFileUrl = ClassLoadingHelper.loadResourceFromClasspath ( Configuration.class , "module.properties" );
-//    	if ( propertyFileUrl != null ) {
-//    		InputStream in;
-//			try {
-//				in = propertyFileUrl.openStream();
-//				props.load ( in );
-//	    		in.close();
-//			} catch (IOException e) {
-//				LOGGER.logWarning ( "Could not determine runtime version" , e );
-//			}
-//    		String version = props.getProperty ( "product.version" );
-//    		if ( version != null ) ret = version;
-//    	}
-//    	return ret;
-//	}
+
 
 	private static void purgeResources ()
     {
