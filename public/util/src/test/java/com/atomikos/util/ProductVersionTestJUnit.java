@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-public class UtilTest  {
+public class ProductVersionTestJUnit  {
 
 	@Test
 	public void checkAtomikosVersion() {
