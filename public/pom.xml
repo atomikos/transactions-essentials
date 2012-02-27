@@ -4,11 +4,11 @@
 	<parent>
 		<groupId>com.atomikos</groupId>
 		<artifactId>atomikos-parent</artifactId>
-		<version>3.7.1</version>
+		<version>3.7.2-SNAPSHOT</version>
 	</parent>
 	<groupId>com.atomikos</groupId>
 	<artifactId>ate</artifactId>
-	<version>3.7.1</version>
+	<version>3.7.2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Atomikos Transactions Essentials</name>
 
