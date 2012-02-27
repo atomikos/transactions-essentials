@@ -96,5 +96,12 @@ public class SingleThreadedJmsSenderTemplate extends AbstractJmsSenderTemplate
 		}
 		return connection;
 	}
+	
+	@Override
+	public void destroy ( Connection c , Session s ) throws JMSException {
+		super.destroy(c,s);
+		this.connection = null;
+		this.session = null;
+	}	
 
 }
