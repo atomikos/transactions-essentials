@@ -162,10 +162,11 @@ public class AtomikosXAPooledConnection extends AbstractXPooledConnection
 		boolean ret = false;
 		
 		CompositeTransactionManager tm = Configuration.getCompositeTransactionManager();
-		
-		CompositeTransaction current = tm.getCompositeTransaction();
-		if ( ( current != null ) && ( current.getProperty ( TransactionManagerImp.JTA_PROPERTY_NAME) != null )) {
-			ret = sessionHandleState.isInactiveInTransaction(current);
+		if ( tm != null ) { //null for non-JTA use where recycling is pointless anyway
+			CompositeTransaction current = tm.getCompositeTransaction();
+			if ( ( current != null ) && ( current.getProperty ( TransactionManagerImp.JTA_PROPERTY_NAME) != null )) {
+				ret = sessionHandleState.isInactiveInTransaction(current);
+			}
 		}
 		
 		return ret;
