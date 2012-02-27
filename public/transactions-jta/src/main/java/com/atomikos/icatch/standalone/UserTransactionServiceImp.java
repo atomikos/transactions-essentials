@@ -164,46 +164,6 @@ class UserTransactionServiceImp extends AbstractJtaUserTransactionService
             throws IOException, FileNotFoundException
     {
         StandAloneTransactionManager ret = null;
-/*
-        String consoleDir = AbstractUserTransactionService.getTrimmedProperty (
-                AbstractUserTransactionServiceFactory.OUTPUT_DIR_PROPERTY_NAME, p );
-        consoleDir = findOrCreateFolder ( consoleDir );
-        // System.err.println ( "ConsoleDir found to be: " + consoleDir );
-        String consolePath = consoleDir
-                + getTrimmedProperty ( AbstractUserTransactionServiceFactory.CONSOLE_FILE_NAME_PROPERTY_NAME,
-                        p );
-        // OutputStream out = new FileOutputStream ( consolePath , true );
-        // PrintStream ps = new PrintStream ( out );
-        // PrintStreamConsole console = new PrintStreamConsole ( ps );
-
-        String limitString = getTrimmedProperty (
-                AbstractUserTransactionServiceFactory.CONSOLE_FILE_LIMIT_PROPERTY_NAME, p );
-        String countString = getTrimmedProperty (
-                AbstractUserTransactionServiceFactory.CONSOLE_FILE_COUNT_PROPERTY_NAME, p );
-        int limit = Integer.parseInt ( limitString );
-        int count = Integer.parseInt ( countString );
-        RotatingFileConsole console = new RotatingFileConsole ( consolePath,
-                limit, count );
-
-        String logLevel = getTrimmedProperty (
-                AbstractUserTransactionServiceFactory.CONSOLE_LOG_LEVEL_PROPERTY_NAME, p );
-        int level = Console.WARN;
-        if ( "INFO".equalsIgnoreCase ( logLevel ) )
-            level = Console.INFO;
-        else if ( "DEBUG".equalsIgnoreCase ( logLevel ) )
-            level = Console.DEBUG;
-        console.setLevel ( level );
-
-        Configuration.addConsole ( console );
-
-        try {
-			Class.forName("org.slf4j.Logger");
-        	Slf4jConsole slf4jConsole = new Slf4jConsole();
-        	slf4jConsole.setLevel ( level );
-        	Configuration.addConsole ( slf4jConsole );
-        } catch (ClassNotFoundException ex) {
-        	if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug("cannot load SLF4J, skipping this console", ex);
-		}*/
 
         String logname = getTrimmedProperty (
                 AbstractUserTransactionServiceFactory.LOG_BASE_NAME_PROPERTY_NAME, p );
