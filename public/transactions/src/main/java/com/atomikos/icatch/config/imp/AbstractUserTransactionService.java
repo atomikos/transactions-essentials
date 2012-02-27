@@ -45,7 +45,7 @@ import com.atomikos.icatch.system.Configuration;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 import com.atomikos.util.IOHelper;
-
+import static com.atomikos.util.Atomikos.VERSION;
 /**
  *
  *
@@ -63,7 +63,7 @@ public abstract class AbstractUserTransactionService implements
 
 	private static void echoProperties ( Properties properties )
     {
-		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( "USING core version: " + Configuration.getVersion() );
+		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( "USING core version: " + VERSION );
         if ( properties != null ) {
             Enumeration names = properties.propertyNames ();
             while ( names.hasMoreElements () ) {

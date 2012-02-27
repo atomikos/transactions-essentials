@@ -92,25 +92,25 @@ public final class Configuration
     private static Vector tsListenersList_ = new Vector ();
 
     private static List shutdownHooks_ = new ArrayList();
-
-    public static String getVersion() {
-    	String ret = "UNKNOWN";
-    	Properties props = new Properties();
-    	URL propertyFileUrl = ClassLoadingHelper.loadResourceFromClasspath ( Configuration.class , "module.properties" );
-    	if ( propertyFileUrl != null ) {
-    		InputStream in;
-			try {
-				in = propertyFileUrl.openStream();
-				props.load ( in );
-	    		in.close();
-			} catch (IOException e) {
-				LOGGER.logWarning ( "Could not determine runtime version" , e );
-			}
-    		String version = props.getProperty ( "product.version" );
-    		if ( version != null ) ret = version;
-    	}
-    	return ret;
-	}
+//
+//    public static String getVersion() {
+//    	String ret = "UNKNOWN";
+//    	Properties props = new Properties();
+//    	URL propertyFileUrl = ClassLoadingHelper.loadResourceFromClasspath ( Configuration.class , "module.properties" );
+//    	if ( propertyFileUrl != null ) {
+//    		InputStream in;
+//			try {
+//				in = propertyFileUrl.openStream();
+//				props.load ( in );
+//	    		in.close();
+//			} catch (IOException e) {
+//				LOGGER.logWarning ( "Could not determine runtime version" , e );
+//			}
+//    		String version = props.getProperty ( "product.version" );
+//    		if ( version != null ) ret = version;
+//    	}
+//    	return ret;
+//	}
 
 	private static void purgeResources ()
     {

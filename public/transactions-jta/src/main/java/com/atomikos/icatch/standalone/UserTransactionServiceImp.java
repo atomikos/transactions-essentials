@@ -64,6 +64,7 @@ import com.atomikos.persistence.imp.FileLogStream;
 import com.atomikos.persistence.imp.StateRecoveryManagerImp;
 import com.atomikos.persistence.imp.StreamObjectLog;
 import com.atomikos.persistence.imp.VolatileStateRecoveryManager;
+import static com.atomikos.util.Atomikos.VERSION;
 
 /**
  *
@@ -78,8 +79,6 @@ class UserTransactionServiceImp extends AbstractJtaUserTransactionService
     private static final String PRODUCT_NAME = "TransactionsEssentials";
     // the product name as it should be in the license.
 
-
-    private static final String VERSION = Configuration.getVersion();
     // the current release number to be checked in license
 
     // private StandAloneTransactionManager tm_ = null;
@@ -424,8 +423,7 @@ class UserTransactionServiceImp extends AbstractJtaUserTransactionService
     {
 
 
-        return new TSMetaDataImp ( JTA.version, VERSION
-                , PRODUCT_NAME, false, false );
+        return new TSMetaDataImp ( JTA.version, VERSION, PRODUCT_NAME, false, false );
     }
 
     /**
