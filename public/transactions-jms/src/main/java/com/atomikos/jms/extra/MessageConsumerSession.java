@@ -434,7 +434,7 @@ class MessageConsumerSession
 	        {
 	            try {
 					if ( session != null ) {
-				
+
 						if ( threadWillStop ) {
 
 							try {
@@ -442,20 +442,20 @@ class MessageConsumerSession
 								if ( Thread.currentThread() != this ) {
 
 									//see case 62452 and 80464: wait for listener thread to exit so the subscriber is no longer in use
-									if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo ( "MessageConsumerSession: waiting for listener thread to finish..." );
+									if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( "MessageConsumerSession: waiting for listener thread to finish..." );
 									this.join();
-									if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "MessageConsumerSession: waiting done." );
+									if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "MessageConsumerSession: waiting done." );
 
 								}
 
 								if (subscriberName != null && properties.getUnsubscribeOnClose()) {
-									Configuration.logWarning ( "MessageConsumerSession: unsubscribing " + subscriberName + "...");
+									LOGGER.logWarning ( "MessageConsumerSession: unsubscribing " + subscriberName + "...");
 									session.unsubscribe ( subscriberName );
 								}
 
 							} catch ( JMSException e ) {
 
-								 if ( Configuration.isInfoLoggingEnabled() ) Configuration.logInfo (
+								 if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo (
 					                    "MessageConsumerSession: Error closing on JMS session",
 
 					                    e );
@@ -740,10 +740,10 @@ class MessageConsumerSession
 	public void setClientID(String clientID) {
 		this.clientID = clientID;
 	}
-	
+
 	/**
 	 * Gets the receive timeout in seconds.
-	 * 
+	 *
 	 * @return
 	 */
 	public int getReceiveTimeout() {
