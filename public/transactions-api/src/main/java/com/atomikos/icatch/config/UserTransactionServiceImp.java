@@ -45,6 +45,8 @@ import com.atomikos.icatch.ImportingTransactionManager;
 import com.atomikos.icatch.SysException;
 import com.atomikos.icatch.TSListener;
 import com.atomikos.icatch.admin.LogAdministrator;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 import com.atomikos.util.ClassLoadingHelper;
 
 /**
@@ -63,6 +65,8 @@ import com.atomikos.util.ClassLoadingHelper;
 public class UserTransactionServiceImp
         implements java.io.Serializable , UserTransactionService
 {
+	
+	private static final Logger LOGGER = LoggerFactory.createLogger(UserTransactionServiceImp.class);
 
 	private static final long serialVersionUID = -3374591336514451887L;
 
@@ -89,9 +93,7 @@ public class UserTransactionServiceImp
     public static final String FILE_PATH_PROPERTY_NAME = "com.atomikos.icatch.file";
     
     /**
-     * The name of the system property to disable printing 'Using init file...' messages
-     * to System.err - if this system property to an arbitrary value then no such message
-     * will be shown on System.err during startup.
+     * The name of the system property to disable printing 'Using init file...' messages.
      */
     
     public static final String HIDE_INIT_FILE_PATH_PROPERTY_NAME = "com.atomikos.icatch.hide_init_file_path";
@@ -159,14 +161,6 @@ public class UserTransactionServiceImp
          
          return result;
      }
-
-
-     private static void logToStdErr ( String msg ) 
-     {
- 		if ( System.getProperty ( HIDE_INIT_FILE_PATH_PROPERTY_NAME ) == null ) {
- 			System.err.println ( msg );
- 		}
- 	}
  
     
     private static Properties mergeProperties ( Properties first, Properties defaults )
@@ -213,13 +207,13 @@ public class UserTransactionServiceImp
               String filename = System.getProperty ( FILE_PATH_PROPERTY_NAME );
               if ( filename == null ) {
                   filename = DEFAULT_PROPERTIES_FILE_NAME;
-                  logToStdErr ( "No properties path set - looking for " +
+                  LOGGER.logWarning ( "No properties path set - looking for " +
                        DEFAULT_PROPERTIES_FILE_NAME +
                        " in classpath..." );
 				   url = findPropertiesFileInClasspath ( filename );
 				   if ( url == null ) {
 					   filename = PRE_3_0_DEFAULT_PROPERTIES_FILE_NAME;
-		               logToStdErr ( DEFAULT_PROPERTIES_FILE_NAME + " not found - looking for " +
+		               LOGGER.logWarning ( DEFAULT_PROPERTIES_FILE_NAME + " not found - looking for " +
 		                       PRE_3_0_DEFAULT_PROPERTIES_FILE_NAME +
 		                       " in classpath..." );
 					   url = findPropertiesFileInClasspath ( filename );
@@ -243,7 +237,7 @@ public class UserTransactionServiceImp
                   
                   
                   if ( url == null ) throw new IOException();
-                  logToStdErr ( "Using init file: " + url.getPath() );
+                  LOGGER.logWarning ( "Using init file: " + url.getPath() );
                   InputStream in = url.openStream();
                   p.load ( in );
                   in.close();
@@ -251,8 +245,7 @@ public class UserTransactionServiceImp
               catch ( IOException io ) {
               	 //io.printStackTrace();
               	 String msg = "Failed to open transactions properties file - using default values";
-              	 //LOGGER.logWarning ( msg , io );
-                 logToStdErr ( msg );
+                 LOGGER.logWarning ( msg );
                  //use the default standalone service
                  p.setProperty ( "com.atomikos.icatch.service" ,
                                  "com.atomikos.icatch.standalone.UserTransactionServiceFactory" );
