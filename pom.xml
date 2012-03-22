@@ -199,10 +199,6 @@
 
 	</dependencies>
 	<!-- "modules" must correspond to file system hierarchy -->
-	<modules>
-		<module>public</module>
-		<module>private</module>
-	</modules>
 	<!--TODO prevent tests execution during the build -->
 	<profiles>
 		<profile>
