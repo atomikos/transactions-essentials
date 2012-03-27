@@ -269,7 +269,7 @@ public class BaseTransactionManager implements CompositeTransactionManager,
             printMsg ( "getCompositeTransaction()  returning instance with id "
                     + ct.getTid (), Console.DEBUG );
         } else
-            printMsg ( "getCompositeTransaction() returning NULL!",
+            printMsg ( "getCompositeTransaction() returning null",
                     Console.DEBUG );
         return ct;
     }
@@ -288,7 +288,7 @@ public class BaseTransactionManager implements CompositeTransactionManager,
                     Console.DEBUG );
         } else {
             printMsg ( "getCompositeTransaction ( " + tid
-                    + " ) returning NULL!", Console.DEBUG );
+                    + " ) returning null", Console.DEBUG );
         }
         return ret;
     }
