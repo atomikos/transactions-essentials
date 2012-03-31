@@ -89,12 +89,17 @@ class ActiveStateHandler extends CoordinatorStateHandler
                 // otherwise, a COMMITTING tx could be rolled back
                 // in case of 1PC!!!
                 if ( getCoordinator ().getState ().equals ( getState () ) ) {
-
-                    printMsg ( "Rollback of timedout ACTIVE coordinator !" );
-                    boolean indoubt = getCoordinator().isRecoverableWhileActive().booleanValue();
-                    //treat activities (recoverable) as indoubts to make sure that anomalies
-                    //with early prepare etc. are treated as heuristics
-                    super.rollback ( indoubt , false );
+                	if ( getCoordinator().prefersSingleThreaded2PC() ) {
+                		//cf case 71748
+                		printMsg ( "Timeout/setRollbackOnly of ACTIVE coordinator !" );
+                		getCoordinator().setRollbackOnly();
+                	} else {
+                		printMsg ( "Rollback of timedout ACTIVE coordinator !" );
+                		boolean indoubt = getCoordinator().isRecoverableWhileActive().booleanValue();
+                		//treat activities (recoverable) as indoubts to make sure that anomalies
+                		//with early prepare etc. are treated as heuristics
+                		super.rollback ( indoubt , false );
+                	}
                 }
             }
         } catch ( Exception e ) {

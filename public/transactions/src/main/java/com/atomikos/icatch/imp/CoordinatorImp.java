@@ -45,6 +45,7 @@ import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.Participant;
 import com.atomikos.icatch.RecoveryCoordinator;
 import com.atomikos.icatch.RollbackException;
+import com.atomikos.icatch.StringHeuristicMessage;
 import com.atomikos.icatch.Synchronization;
 import com.atomikos.icatch.SysException;
 import com.atomikos.icatch.TxState;
@@ -1177,6 +1178,24 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     {
         recoverableWhileActive_ = true;
         
+    }
+    
+    void setRollbackOnly() {
+    	
+    	StringHeuristicMessage msg = new StringHeuristicMessage (
+    	"setRollbackOnly" );
+    	RollbackOnlyParticipant p = new RollbackOnlyParticipant ( msg );
+
+    	try {
+    		addParticipant ( p );
+    	} catch ( IllegalStateException alreadyTerminated ) {
+    		//happens in rollback after timeout - see case 27857
+    		//ignore but log
+    		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "Error during setRollbackOnly" , alreadyTerminated );
+    	} catch ( RollbackException e ) {
+    		//ignore: corresponds to desired outcome
+    		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "Error during setRollbackOnly" , e );
+        }
     }
 
 
