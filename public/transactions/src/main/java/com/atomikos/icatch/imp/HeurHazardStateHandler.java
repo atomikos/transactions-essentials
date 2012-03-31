@@ -100,7 +100,9 @@ class HeurHazardStateHandler extends CoordinatorStateHandler
     {
         // this state can only be reached through COMMITTING or ABORTING
         // so getCommitted can not be null
-        boolean committed = getCommitted ().booleanValue ();
+        // or it can be: cf case 72990
+    	Boolean commitDecided = getCommitted();
+        boolean committed = false;
         
         addAllForReplay ( hazards_ ); 
 
@@ -108,7 +110,8 @@ class HeurHazardStateHandler extends CoordinatorStateHandler
         // intermediate recovery calls
         Stack replayStack = getReplayStack ();
         boolean replay = false;
-        if ( !replayStack.empty () ) {
+        if ( !replayStack.empty ()  && commitDecided != null ) {
+        	committed = commitDecided.booleanValue ();
         	replay = true;
             int count = replayStack.size ();
             TerminationResult result = new TerminationResult ( count );
