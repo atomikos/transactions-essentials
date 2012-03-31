@@ -155,9 +155,8 @@ class AtomikosPooledJmsConnection extends AbstractXPooledConnection implements S
 			if ( ( current != null ) && ( current.getProperty ( TransactionManagerImp.JTA_PROPERTY_NAME) != null )) {
 				DynamicProxy dproxy = ( DynamicProxy ) currentProxy;
 				AtomikosJmsConnectionProxy proxy = (AtomikosJmsConnectionProxy) dproxy.getInvocationHandler();
-				//recycle if either inactive in this tx, OR if active (since a new session will be created anyway, and 
-				//concurrent sessions are allowed on the same underlying connection!
-				ret = proxy.isInactiveInTransaction(current) || proxy.isInTransaction( current );
+				//recycle only if inactive in this tx - i.e., if proxy was closed!
+				ret = proxy.isInactiveInTransaction(current);
 			}
 		}
 		
