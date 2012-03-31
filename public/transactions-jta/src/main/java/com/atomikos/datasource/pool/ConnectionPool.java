@@ -245,6 +245,11 @@ public class ConnectionPool implements XPooledConnectionEventListener
 			Configuration.logWarning ( this + ": destroying pool..." );
 			for ( int i=0 ; i < connections.size() ; i++ ) {
 				XPooledConnection xpc = ( XPooledConnection ) connections.get(i);
+				if ( !xpc.isAvailable() ) {
+					Configuration.logWarning ( this + ": connection is still in use: " + xpc +
+					" - please check your shutdown sequence to avoid heuristic termination " +
+					"of ongoing transactions!" );
+				}
 				xpc.destroy();
 			}
 			connections = null;
