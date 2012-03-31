@@ -512,8 +512,16 @@ class MessageConsumerSession
 	                try {
 	                    Message msg = null;
 
-	                    if ( receiver == null )
-	                        receiver = refreshJmsResources ();
+	                    if ( receiver == null ) {
+	                    	try {	
+	                    		receiver = refreshJmsResources ();
+	                    	} catch ( JMSException connectionGone ) {
+	                    		Configuration.logWarning ( "Error refreshing JMS connection" , connectionGone );
+	                    		// wait a while to avoid OutOfMemoryError with MQSeries
+	                    		// cf case 73406
+	                    		Thread.sleep ( getTransactionTimeout() * 1000 / 4 );
+	                    	}
+	                    }
 
 	                    tm.setTransactionTimeout ( getTransactionTimeout() );
 
