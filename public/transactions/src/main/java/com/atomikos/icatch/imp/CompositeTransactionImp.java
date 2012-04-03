@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2012 Atomikos <info@atomikos.com>
  *
  * This code ("Atomikos TransactionsEssentials"), by itself,
  * is being distributed under the
@@ -49,8 +49,7 @@ import com.atomikos.logging.LoggerFactory;
 
 /**
  *
- *
- * A complete composite transaction implementation for use in LOCAL VM.
+ * A complete composite transaction implementation for use in the local VM.
  *
  */
 
@@ -109,12 +108,7 @@ extends AbstractCompositeTransaction implements
         super ( tid , lineage , serial );
         coordinator_ = coordinator;
         txservice_ = txservice;
-        // state_ = TxState.ACTIVE; // SUBTX ABORT
-        // remoteParticipants_ = new Hashtable();
-
         extent_ = null;
-        // coordinator_.incActiveSiblings(); COORD
-
         localRoot_ = true;
         stateHandler_ = new TxActiveStateHandler ( this );
         coordinator.addFSMEnterListener ( this, TxState.TERMINATED );
@@ -152,12 +146,6 @@ extends AbstractCompositeTransaction implements
         return coordinator_;
     }
 
-    //
-    // Stack getParticipants()
-    // {
-    // return stateHandler_.getParticipants();
-    // }
-
 
     /**
      * @see CompositeTransaction.
@@ -187,18 +175,11 @@ extends AbstractCompositeTransaction implements
         if ( !isRoot () )
             throw new IllegalStateException ( "setSerial() not allowed:"
                     + " not root tx." );
-        // if context_ not null: remote calls might exist,
-        // and hence changing serial mode not allowed.
 
         serial_ = true;
 
     }
 
-    //
-    // CompositeTransaction createSubTransaction ( String tid )
-    // {
-    // return stateHandler_.createSubTransaction ( tid );
-    // }
 
     /**
      * @see TransactionControl.
@@ -222,7 +203,6 @@ extends AbstractCompositeTransaction implements
 
     public RecoveryCoordinator addParticipant ( Participant participant )
             throws SysException, java.lang.IllegalStateException
-    // RollbackException
     {
 
         RecoveryCoordinator ret = localGetTransactionStateHandler().addParticipant ( participant );
@@ -338,8 +318,6 @@ extends AbstractCompositeTransaction implements
     		if ( extent_ == null )
             extent_ = new ExtentImp ();
     		return extent_;
-
-
     }
 
 
@@ -366,7 +344,6 @@ extends AbstractCompositeTransaction implements
             RollbackException
     {
         getTerminator ().commit ();
-
     }
 
 
@@ -377,16 +354,7 @@ extends AbstractCompositeTransaction implements
     public void rollback () throws IllegalStateException, SysException
     {
         getTerminator ().rollback ();
-
     }
-
-    //
-    //
-    //
-    // IMPLEMENTATION OF STATEFUL
-    //
-    //
-    //
 
     /**
      * @see com.atomikos.finitestates.Stateful.
@@ -426,12 +394,6 @@ extends AbstractCompositeTransaction implements
         }
 
     }
-
-
-
-
-
-
 
 
 }

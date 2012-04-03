@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2012 Atomikos <info@atomikos.com>
  *
  * This code ("Atomikos TransactionsEssentials"), by itself,
  * is being distributed under the
@@ -54,19 +54,10 @@ public abstract class AbstractCompositeTransaction implements CompositeTransacti
         java.io.Serializable
 {
 
-    /**
-	 *
-	 */
 	private static final long serialVersionUID = 3522422565305065464L;
 
-	private static void fail () throws UnsupportedOperationException
-    {
-        throw new UnsupportedOperationException (
-                "This functionality is not available for this instance" );
-    }
 
     protected Stack lineage_;
-    // lineage is the ancestor info.
 
     protected String tid_;
 
@@ -144,7 +135,6 @@ public abstract class AbstractCompositeTransaction implements CompositeTransacti
 
     public boolean isLocal ()
     {
-        // defaults to false.
         return false;
     }
 
@@ -155,7 +145,6 @@ public abstract class AbstractCompositeTransaction implements CompositeTransacti
     public TransactionControl getTransactionControl ()
             throws UnsupportedOperationException
     {
-        // return null to make test work
         return null;
     }
 
@@ -167,7 +156,7 @@ public abstract class AbstractCompositeTransaction implements CompositeTransacti
             throws SysException, java.lang.IllegalStateException
 
     {
-        throw new UnsupportedOperationException ( "addParticipant" );
+    	throw new UnsupportedOperationException();
     }
 
     /**
@@ -177,7 +166,7 @@ public abstract class AbstractCompositeTransaction implements CompositeTransacti
     public void registerSynchronization ( Synchronization sync )
             throws IllegalStateException, UnsupportedOperationException, SysException
     {
-        throw new UnsupportedOperationException ( "registerSynchronization" );
+    	throw new UnsupportedOperationException();
     }
 
     /**
@@ -256,14 +245,6 @@ public abstract class AbstractCompositeTransaction implements CompositeTransacti
     }
 
 
-
-    // ***************************************************************
-    //
-    // Below is default error behaviour
-    //
-    // ***************************************************************
-
-
     public int hashCode()
     {
     	int ret = 0;
@@ -300,7 +281,7 @@ public abstract class AbstractCompositeTransaction implements CompositeTransacti
     public CompositeCoordinator getCompositeCoordinator () throws SysException,
             UnsupportedOperationException
     {
-        throw new UnsupportedOperationException ( "Not implemented: class for testing " );
+    	throw new UnsupportedOperationException();
     }
 
     /**
@@ -311,7 +292,7 @@ public abstract class AbstractCompositeTransaction implements CompositeTransacti
             throws SysException, UnsupportedOperationException,
             java.lang.IllegalStateException
     {
-        throw new UnsupportedOperationException ( "addSubTxAwareParticipant" );
+        throw new UnsupportedOperationException ();
     }
 
     /**
@@ -320,8 +301,7 @@ public abstract class AbstractCompositeTransaction implements CompositeTransacti
     public CompositeTransaction createSubTransaction () throws SysException,
             IllegalStateException
     {
-        fail ();
-        return null;
+    	 throw new UnsupportedOperationException();
     }
 
     /**
@@ -329,7 +309,7 @@ public abstract class AbstractCompositeTransaction implements CompositeTransacti
      */
     public void setSerial () throws IllegalStateException, SysException
     {
-        fail ();
+    	throw new UnsupportedOperationException();
 
     }
 
@@ -348,8 +328,7 @@ public abstract class AbstractCompositeTransaction implements CompositeTransacti
      */
     public Extent getExtent ()
     {
-        fail ();
-        return null;
+    	throw new UnsupportedOperationException();
     }
 
     /**
@@ -357,8 +336,7 @@ public abstract class AbstractCompositeTransaction implements CompositeTransacti
      */
     public long getTimeout ()
     {
-        fail ();
-        return 0;
+    	throw new UnsupportedOperationException();
     }
 
     /**
@@ -366,7 +344,7 @@ public abstract class AbstractCompositeTransaction implements CompositeTransacti
      */
     public void setRollbackOnly ()
     {
-        fail ();
+    	throw new UnsupportedOperationException();
 
     }
 
@@ -377,7 +355,7 @@ public abstract class AbstractCompositeTransaction implements CompositeTransacti
             HeurHazardException, SysException, SecurityException,
             RollbackException
     {
-        fail ();
+    	throw new UnsupportedOperationException();
 
     }
 
@@ -389,7 +367,7 @@ public abstract class AbstractCompositeTransaction implements CompositeTransacti
 
     public void rollback () throws IllegalStateException, SysException
     {
-        fail ();
+    	throw new UnsupportedOperationException();
 
     }
 
@@ -411,22 +389,13 @@ public abstract class AbstractCompositeTransaction implements CompositeTransacti
     }
 
 
-
-    //
-    //
-    //
-    // IMPLEMENTATION OF STATEFUL
-    //
-    //
-    //
-
     /**
      * @see com.atomikos.finitestates.Stateful.
      */
 
     public Object getState ()
     {
-        throw new UnsupportedOperationException ( "getState" );
+    	throw new UnsupportedOperationException();
     }
 
 }
