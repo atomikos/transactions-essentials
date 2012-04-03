@@ -53,7 +53,6 @@ class TerminationResult extends Result
     // where to put heuristic problems
 
     protected Hashtable possiblyIndoubts_;
-
     // for hazard exceptions
 
     /**

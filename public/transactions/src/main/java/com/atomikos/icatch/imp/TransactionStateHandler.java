@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2012 Atomikos <info@atomikos.com>
  *
  * This code ("Atomikos TransactionsEssentials"), by itself,
  * is being distributed under the
@@ -220,14 +220,11 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
 
     }
 
-    // REMEMBER: don't synchronize the commit method, because it causes
-    // deadlocks
+    // REMEMBER: don't synchronize the commit method, because it causes deadlocks
     // (since this method also indirectly locks the coordinator and the FSM)
     // This deadlock happens in particular when application commit interleaves
-    // with
-    // timeout-driven rollback (during preEnter, the rollback of this same
-    // handler
-    // is invoked)
+    // with timeout-driven rollback (during preEnter, the rollback of this same
+    // handler is invoked)
     protected void commit () throws SysException,
             java.lang.IllegalStateException, RollbackException
     {
@@ -237,17 +234,12 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
         //prevent concurrent rollback due to timeout
         ct_.localTestAndSetTransactionStateHandler ( this , new TxTerminatingStateHandler ( true , ct_ , this ) );
         
-        // first: check if local root; if so: add all local participants
-        // of all COMMITTED local subtxs to the coordinator.
         // NOTE: this MUST be out of the synch block, since the coordinator
         // is accessed in synch mode and hence can cause deadlocks.
         // ALSO NOTE: this must be done BEFORE calling notifications
         // to make sure that active recovery works for early prepares 
         if ( ct_.isLocalRoot () ) {
 
-        	// add the tag as a summary heuristic to the coordinator.
-        	// note: the same coordinator may have multiple tags
-        	// from different local roots!
         	ct_.getCoordinatorImp ().addTag ( ct_.tag_ );
 
         	Enumeration enumm = ct_.getExtent ().getParticipants ().elements ();
@@ -350,7 +342,6 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
         addParticipant ( part );
 
       
-        // decrement count of active subtxs
         localDecSubTxCount();
     }
 

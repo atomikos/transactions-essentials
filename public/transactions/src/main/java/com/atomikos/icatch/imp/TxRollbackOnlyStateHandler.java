@@ -69,14 +69,6 @@ class TxRollbackOnlyStateHandler extends TransactionStateHandler
         throw new IllegalStateException ( "Transaction is marked for rollback" );
     }
 
-    // COMMENTED OUT TO MAKE SETROLLBACKONLY WORK HERE TOO
-    // SHOULD BE NO PROBLEM SINCE ROLLBACK IS STILL GOING TO COME
-
-    // protected RecoveryCoordinator addParticipant ( Participant participant )
-    // throws SysException, java.lang.IllegalStateException
-    // {
-    // throw new IllegalStateException ( "Transaction is marked for rollback");
-    // }
 
     protected void commit () throws SysException,
             java.lang.IllegalStateException, RollbackException

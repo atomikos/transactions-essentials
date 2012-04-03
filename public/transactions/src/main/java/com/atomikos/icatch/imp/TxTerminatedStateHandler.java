@@ -61,14 +61,11 @@ class TxTerminatedStateHandler extends TransactionStateHandler
     protected RecoveryCoordinator addParticipant ( Participant participant )
             throws SysException, java.lang.IllegalStateException
     {
-        // CHANGED TO ALLOW RESUME OF TIMEDOUT TXS IN JBOSS
-        // IF ROLLBACK THEN
-        // JUST ACCEPT THE OPERATION, BUT CALL ROLLBACK
-        // IMMEDIATELY
 
         if ( !commit_ ) {
-            // accept the participant, but call rollback
-            // immediately
+        	// can happen after resuming a timedout transaction;
+            // accept the participant, but call rollback immediately
+        	// cf JBoss
             try {
                 participant.rollback ();
             } catch ( Exception ignore ) {
@@ -116,19 +113,14 @@ class TxTerminatedStateHandler extends TransactionStateHandler
 
     protected Object getState ()
     {
-        if ( commit_ )
-            return getCT ().getCoordinatorImp ().getState ();
-        else
-            return TxState.MARKED_ABORT;
-
-        // note: we do NOT return coordinator state for rollback, since
-        // a SUBtransaction's rollback does not necessarily mean that the
-        // coordinator (global) work will rollback, so the coordinator
-        // may still be ACTIVE or even COMMITTED!!!
-        // Because we have no rolled back state, we return marked abort.
-        // This should be indistinguishible for the client: a later rollback
-        // will fail, but that will seem like an intermediate timeout rollback
-        // of the
-        // transaction service
+        if ( commit_ ) return getCT ().getCoordinatorImp ().getState ();
+        else {
+        	// Because we have no rolled back state, we return marked abort.
+            // This should be indistinguishable for the client: a later rollback
+            // will fail, but that will seem like an intermediate timeout rollback
+            // of the transaction service
+        	return TxState.MARKED_ABORT;
+        }
+        
     }
 }

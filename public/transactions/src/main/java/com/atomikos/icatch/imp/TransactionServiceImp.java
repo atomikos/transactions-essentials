@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2012 Atomikos <info@atomikos.com>
  *
  * This code ("Atomikos TransactionsEssentials"), by itself,
  * is being distributed under the
@@ -413,8 +413,7 @@ public class TransactionServiceImp implements TransactionService,
 
             recoverymanager_.register ( cc );
 
-            // now, add to root map, since we are sure there are not too
-            // many active txs
+            // now, add to root map, since we are sure there are not too many active txs
             synchronized ( getLatch ( root.intern () ) ) {
                 roottocoordinatormap_.put ( root.intern (), cc );
             }
@@ -437,15 +436,6 @@ public class TransactionServiceImp implements TransactionService,
         Hashtable forgetStates = new Hashtable ();
         // forgetStates are those that lead to a removal of the coordinator
         // such that it only exists in the log but no longer in CM
-
-        // heuristic states are NO LONGER reason for removal:
-        // this can lead to multiple instances of SAME coordinator
-        // which causes inconsistent outcomes!
-
-        // forgetStates.put ( TxState.HEUR_HAZARD , new Object() );
-        // forgetStates.put ( TxState.HEUR_MIXED , new Object() );
-        // forgetStates.put ( TxState.HEUR_ABORTED , new Object() );
-        // forgetStates.put ( TxState.HEUR_COMMITTED , new Object() );
 
         forgetStates.put ( TxState.TERMINATED, new Object () );
 
@@ -549,8 +539,6 @@ public class TransactionServiceImp implements TransactionService,
                             coord );
                 }
                 startlistening ( coord );
-
-                // for swapping out after indoubt resolved.
             }
         } catch ( Exception e ) {
             LOGGER.logWarning ( "Error in recoverCoordinators", e );
@@ -573,13 +561,7 @@ public class TransactionServiceImp implements TransactionService,
     public void recover ()
     {
 
-        // MAKE SURE THAT THE RECOVERY SERVICE IS SET OR PRESUMED ABORT
-        // WILL BE WRONG
-        if ( Configuration.getTransactionService () == null ) {
-            Configuration.installTransactionService ( this );
-            Configuration.installRecoveryService ( this );
-
-        }
+        prepareConfigurationForPresumedAbortIfNecessary();
 
         //call listeners here: pending listeners may have been installed
         //by the installation step above
@@ -593,13 +575,10 @@ public class TransactionServiceImp implements TransactionService,
         synchronized ( recoveryWaiter_ ) {
             // recovery MUST be synchronized to avoid erroneous presumed abort
             // if two different threads interleave!!!
-            // for instance: if thread1 starts recovery, but thread2 ends it
-            // first, then
+            // for instance: if thread1 starts recovery, but thread2 ends it first, then
             // thread1's endRecovery will REscan the resources in the middle of
-            // its
-            // recovery scan! this leads to erroneous presumed aborts (since
-            // recovery
-            // of the first half of the coordinators is no longer considered)
+            // its recovery scan! this leads to erroneous presumed aborts (since
+            // recovery of the first half of the coordinators is no longer considered)
 
             try {
                 Vector coordinators = getCoordinatorImpVector ();
@@ -615,8 +594,7 @@ public class TransactionServiceImp implements TransactionService,
                         // this coordinator is not recoverable, for instance
                         // because one of the
                         // resource in unreachable. Make sure that this does not
-                        // crash
-                        // the TM so don't throw anything here.
+                        // crash the TM so don't throw anything here.
                         LOGGER.logWarning (
                                 "Coordinator not recoverable: "
                                         + coord.getCoordinatorId (), e );
@@ -624,10 +602,7 @@ public class TransactionServiceImp implements TransactionService,
                     }
                 }
 
-                // next, notify all registered resources that recovery is done:
-                // any non-collected restxs should be aborted at this time
                 Enumeration reslist = Configuration.getResources ();
-
                 while ( reslist.hasMoreElements () ) {
                     RecoverableResource res = (RecoverableResource) reslist
                             .nextElement ();
@@ -653,6 +628,14 @@ public class TransactionServiceImp implements TransactionService,
         }// end synchronized
 
     }
+
+	private void prepareConfigurationForPresumedAbortIfNecessary() {
+		if ( Configuration.getTransactionService () == null ) {
+            Configuration.installTransactionService ( this );
+            Configuration.installRecoveryService ( this );
+
+        }
+	}
 
     /**
      * Get a LogControl for the service.
@@ -730,15 +713,11 @@ public class TransactionServiceImp implements TransactionService,
         }
         recoverCoordinators ();
 
-        //initialized is now set in recover()
-        //initialized_ = true;
-
         shuttingDown_ = false;
         control_ = new LogControlImp ( this );
-        // call recovery already, to make sure that the
-        // RMI participants can start inquiring and replay
+        
+        recover(); //ensure that remote participants can start inquiring and replay
 
-        recover ();
         notifyListeners ( true, false );
     }
 
@@ -821,7 +800,7 @@ public class TransactionServiceImp implements TransactionService,
         CoordinatorImp ccParent = (CoordinatorImp) parent
                 .getCompositeCoordinator ();
         // create NEW coordinator for subtx, with most of the parent settings
-        //but without orphan checks since subtxs have no orphans
+        // but without orphan checks since subtxs have no orphans
         CoordinatorImp cc = createCC ( null, tid, false ,
                 ccParent.prefersHeuristicCommit (), parent.getTimeout () );
         if ( ccParent.isRecoverableWhileActive() != null &&
@@ -919,30 +898,23 @@ public class TransactionServiceImp implements TransactionService,
             // to enter this method will do the following. Don't do
             // it twice.
 
-            // notify all remaining coordinators to stop threads
-            // needed in case of force!
-
             Enumeration enumm = roottocoordinatormap_.keys ();
             while ( enumm.hasMoreElements () ) {
                 String tid = (String) enumm.nextElement ();
-                LOGGER
-                        .logDebug ( "Transaction Service: Stopping thread for root "
+                LOGGER.logDebug ( "Transaction Service: Stopping thread for root "
                                 + tid + "..." );
                 CoordinatorImp c = (CoordinatorImp) roottocoordinatormap_
                         .get ( tid );
-                if ( c != null ) {
-                		//null if intermediate termination while in enumm
-                		c.dispose ();
+                if ( c != null ) { //null if intermediate termination while in enumm
+                		c.dispose (); //needed for forced shutdown
                 }
-                LOGGER
-                        .logDebug ( "Transaction Service: Thread stopped." );
+                LOGGER.logDebug ( "Transaction Service: Thread stopped." );
             }
 
         } // if wasShuttingDown
 
         synchronized ( shutdownWaiter_ ) {
-        	LOGGER
-                    .logDebug ( "Transaction Service: Shutdown acquired lock on waiter." );
+        	LOGGER.logDebug ( "Transaction Service: Shutdown acquired lock on waiter." );
             wasShuttingDown = shuttingDown_;
             shuttingDown_ = true;
 
@@ -954,12 +926,9 @@ public class TransactionServiceImp implements TransactionService,
             // instances that have been swapped out, hence who
             // can not be indoubt.
 
-            // System.err.println ( "Transaction Service: Checking for existing
-            // txs..." );
             while ( !roottocoordinatormap_.isEmpty () && !force ) {
                 try {
-                	LOGGER
-                            .logWarning ( "Transaction Service: Waiting for non-terminated coordinators..." );
+                	LOGGER.logWarning ( "Transaction Service: Waiting for non-terminated coordinators..." );
                     //wait for max timeout to let actives finish
                     shutdownWaiter_.wait ( maxTimeout_ );
                     //PURGE to avoid issue 10079
@@ -994,11 +963,7 @@ public class TransactionServiceImp implements TransactionService,
                 // it twice.
 
                 try {
-                    // System.err.println ( "Transaction Service: Closing
-                    // logs..." );
                     recoverymanager_.close ();
-                    // System.err.println ( "Transaction Service: Logs Closed."
-                    // );
                 } catch ( LogException le ) {
                     errors.push ( le );
                     le.printStackTrace();
@@ -1023,9 +988,7 @@ public class TransactionServiceImp implements TransactionService,
                 shutdown ( true );
 
         } catch ( Exception e ) {
-            System.err.println ( "Error in GC of TransactionServiceImp" );
-            System.err.println ( e.getMessage () );
-            e.printStackTrace ();
+            LOGGER.logWarning( "Error in GC of TransactionServiceImp" , e );
         } finally {
             super.finalize ();
         }

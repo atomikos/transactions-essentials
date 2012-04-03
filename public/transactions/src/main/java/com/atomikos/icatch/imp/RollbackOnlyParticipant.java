@@ -46,7 +46,6 @@ public class RollbackOnlyParticipant implements Participant
 {
 
     private StringHeuristicMessage msg_;
-
     // the message to return in exception
 
     public RollbackOnlyParticipant ( StringHeuristicMessage msg )

@@ -34,7 +34,7 @@ import com.atomikos.icatch.Participant;
 /**
  *
  *
- * A rollback message implemenation.
+ * A rollback message implementation.
  */
 
 class RollbackMessage extends PropagationMessage
@@ -44,7 +44,6 @@ class RollbackMessage extends PropagationMessage
     // no of retries so far
 
     protected boolean indoubt_ = false;
-
     // true if participant can be indoubt.
 
     public RollbackMessage ( Participant participant , Result result ,
@@ -73,7 +72,6 @@ class RollbackMessage extends PropagationMessage
             msgs = part.rollback ();
 
         } catch ( HeurCommitException heurc ) {
-            // System.err.println ( "RollbackMessage: heur commit detected" );
             throw new PropagationException ( heurc, false );
         } catch ( HeurMixedException heurm ) {
             throw new PropagationException ( heurm, false );

@@ -64,7 +64,6 @@ abstract class Result
     // for heuristic messages of normal participants
 
     protected Vector errmsgvector_ = new Vector ();
-
     // for heuristic messages of heuristic participants
 
     /**
