@@ -809,7 +809,7 @@ public class TransactionServiceImp implements TransactionService,
             cc.setRecoverableWhileActive();
         }
         ret = createCT ( tid, cc, lineage, parent.isSerial () );
-        ret.localRoot_ = false;
+        ret.noLocalAncestors_ = false;
         return ret;
 
     }

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2012 Atomikos <info@atomikos.com>
  *
  * This code ("Atomikos TransactionsEssentials"), by itself,
  * is being distributed under the
@@ -43,16 +43,12 @@ import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 
 /**
- *
- *
  * A state handler for the active coordinator state.
  */
 
 class ActiveStateHandler extends CoordinatorStateHandler
 {
-	/**
-	 *
-	 */
+
 	private static final long serialVersionUID = -80097456886481668L;
 
 	private static final Logger LOGGER = LoggerFactory.createLogger(ActiveStateHandler.class);
@@ -70,11 +66,6 @@ class ActiveStateHandler extends CoordinatorStateHandler
         rollbackTicks_ = 0;
     }
 
-//    ActiveStateHandler ( CoordinatorStateHandler previous )
-//    {
-//        super ( previous );
-//        rollbackTicks_ = 0;
-//    }
 
     protected long getRollbackTicks ()
     {
@@ -129,10 +120,7 @@ class ActiveStateHandler extends CoordinatorStateHandler
         Vector participants = getCoordinator ().getParticipants ();
         CoordinatorStateHandler nextStateHandler = null;
 
-        if ( getCoordinator ().checkSiblings ()
-                && globalSiblingCount_ != getCoordinator ()
-                        .getLocalSiblingCount () ) {
-            // NO COMMIT ALLOWED: ORPHANS!!!!
+        if ( orphansExist() ) {
             try {
                 if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Orphans detected: "
                         + getCoordinator ().getLocalSiblingCount () + " vs "
@@ -148,7 +136,7 @@ class ActiveStateHandler extends CoordinatorStateHandler
 
         try {
         	try {
-        		getCoordinator ().setState ( TxState.PREPARING );
+        		getCoordinator().setState ( TxState.PREPARING );
         	} catch ( RuntimeException error ) {
         		//See case 23334
         		String msg = "Error in preparing: " + error.getMessage() + " - rolling back instead";
@@ -167,67 +155,32 @@ class ActiveStateHandler extends CoordinatorStateHandler
             while ( enumm.hasMoreElements () ) {
                 Participant p = (Participant) enumm.nextElement ();
                 PrepareMessage pm = new PrepareMessage ( p, result );
-                if ( getCascadeList () != null && p.getURI () != null ) { // null
-                                                                            // for
-                                                                            // OTS
-                                                                            // case?
-                    Integer sibnum = (Integer) getCascadeList ().get (
-                            p.getURI () );
-                    if ( sibnum != null ) // null for local participant!
+                if ( getCascadeList () != null && p.getURI () != null ) { //null for OTS
+                    Integer sibnum = (Integer) getCascadeList ().get ( p.getURI () );
+                    if ( sibnum != null ) { // null for local participant!
                         p.setGlobalSiblingCount ( sibnum.intValue () );
+                    }
                     p.setCascadeList ( getCascadeList () );
                 }
 
                 getPropagator ().submitPropagationMessage ( pm );
-                // this will trigger sending the message
             } // while
 
-            // now wait for all replies and act accordingly
             result.waitForReplies ();
 
             boolean voteOK = result.allYes ();
             setReadOnlyTable ( result.getReadOnlyTable () );
-            // indoubttable_ = result.getIndoubtTable();
             allReadOnly = result.allReadOnly ();
 
             if ( !voteOK ) {
-                // addErrorMessages(result.getMessages());
 
                 int res = result.getResult ();
-                // FOLLOWING CODE REMOVED:
-                // DURING PREPARE, NO CONTRACTS ARE BROKEN
-                // IF PREPARE FAILS. the only danger is that
-                // some servers vote yes and remain indoubt,
-                // but that is a heuristic case at these
-                // remote sites, but not locally.
-                // indeed, locally there is no uncertainty
-                // about the outcome, because we will
-                // roll back and vote no!
-                // THEREFORE, WE CAN FORGET ABOUT ANY
-                // INDOUBT SERVERS; IF THEY INQUIRE, WE WILL
-                // SAY ABORTED.
-
-                // if (res == Result.HEUR_MIXED) {
-                // rollback ( true );
-                // throw new HeurMixedException(getHeuristicMessages());
-                // }
-                // else if (res == Result.HEUR_COMMIT) {
-                // commit ( true, false );
-                // throw new HeurCommitException(getHeuristicMessages());
-                // }
-                // else if (res == Result.HEUR_HAZARD) {
-                // rollback ( true );
-                // throw new HeurMixedException(getHeuristicMessages());
-                // }
-                // else {
-
-                // resolve indoubt situations and return NO vote.
+               
                 try {
                     rollback ( true, false );
                 } catch ( HeurCommitException hc ) {
-                    // can not happen:
-                    // heuristic commit means that ALL subordinate work
-                    // as been committed heuristically.
+                    // should not happen:
+                    // means that ALL subordinate work committed heuristically.
                     // this is impossible since it assumes that ALL
                     // participants voted YES in the first place,
                     // which contradicts the fact that we are dealing with
@@ -237,37 +190,37 @@ class ActiveStateHandler extends CoordinatorStateHandler
                             + hc.getMessage (), errors );
                 }
                 throw new RollbackException ( "Prepare: " + "NO vote" );
-
-                // } //else
-            } // if (!voteOK)
+             
+            }
         } catch ( RuntimeException runerr ) {
             errors.push ( runerr );
-            throw new SysException ( "Error in prepare: "
-                    + runerr.getMessage (), errors );
+            throw new SysException ( "Error in prepare: " + runerr.getMessage (), errors );
         } catch ( InterruptedException err ) {
         	// cf bug 67457
 			InterruptedExceptionHelper.handleInterruptedException ( err );
             errors.push ( err );
-            throw new SysException ( "Error in prepare: " + err.getMessage (),
-                    errors );
+            throw new SysException ( "Error in prepare: " + err.getMessage (), errors );
         }
         // here we are if all yes.
         if ( allReadOnly ) {
             nextStateHandler = new TerminatedStateHandler ( this );
             getCoordinator ().setStateHandler ( nextStateHandler );
             ret = Participant.READ_ONLY;
-            // System.err.println ( "Prepare: returning readonly" );
         } else {
             nextStateHandler = new IndoubtStateHandler ( this );
             getCoordinator ().setStateHandler ( nextStateHandler );
             ret = Participant.READ_ONLY + 1;
-            // System.err.println ( "Prepare: returning not readonly" );
         }
 
         return ret;
     }
 
-    protected HeuristicMessage[] commit ( boolean onePhase )
+    private boolean orphansExist() {
+		return getCoordinator().checkSiblings() && globalSiblingCount_ != getCoordinator ().getLocalSiblingCount();
+	}
+
+
+	protected HeuristicMessage[] commit ( boolean onePhase )
             throws HeurRollbackException, HeurMixedException,
             HeurHazardException, java.lang.IllegalStateException,
             RollbackException, SysException
@@ -289,10 +242,8 @@ class ActiveStateHandler extends CoordinatorStateHandler
             setGlobalSiblingCount ( 1 );
             prepareResult = prepare ();
             // make sure to only do 2PC commit if NOT read only
-            if ( prepareResult == Participant.READ_ONLY )
-                result = getHeuristicMessages ();
-            else
-                result = commit ( false, false );
+            if ( prepareResult == Participant.READ_ONLY ) result = getHeuristicMessages ();
+            else result = commit ( false, false );
         } else {
             result = commit ( false, true );
         }

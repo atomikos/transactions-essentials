@@ -40,10 +40,8 @@ import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 
 /**
- *
- *
  * Abstract TM class, to be extended for different communication layers. For
- * instance, transactional RMI could be one extension, JTS another one.
+ * instance, transacted RMI could be one extension, JTS another one.
  */
 
 public class BaseTransactionManager implements CompositeTransactionManager,
@@ -51,10 +49,8 @@ public class BaseTransactionManager implements CompositeTransactionManager,
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(BaseTransactionManager.class);
 
-    /**
-	 *
-	 */
 	private static final long serialVersionUID = -552994279460833505L;
+	
 	private Hashtable threadtotxmap_ = null;
     // maps threads to composite transactions
 
@@ -68,10 +64,6 @@ public class BaseTransactionManager implements CompositeTransactionManager,
 
     // true asa init called
 
-    /**
-     * Constructor.
-     *
-     */
 
     protected BaseTransactionManager ()
     {
@@ -161,9 +153,7 @@ public class BaseTransactionManager implements CompositeTransactionManager,
         	if ( TxState.ACTIVE.equals ( state ) || TxState.MARKED_ABORT.equals ( state ) ) {
         		//also resume for marked abort - see case 26398
         		Stack txs = (Stack) threadtotxmap_.get ( thread );
-        		if ( txs != null )
-        			throw new IllegalStateException (
-        					"Thread already has subtx stack" );
+        		if ( txs != null ) throw new IllegalStateException ("Thread already has subtx stack" );
         		threadtotxmap_.put ( thread, stack );
         		txtothreadmap_.put ( tx, thread );
         	}
@@ -183,9 +173,6 @@ public class BaseTransactionManager implements CompositeTransactionManager,
         }
     }
 
-    // protected abstract CompositeTransaction createProxy (
-    // CompositeTransaction ct )
-    // throws SysException;
 
     /**
      * Initialize the TM.
@@ -316,8 +303,6 @@ public class BaseTransactionManager implements CompositeTransactionManager,
         ct = getCurrentTx();
         if ( ct != null ) {
             LOGGER.logWarning("Recreating a transaction with existing transaction: " + ct.getTid());
-            //FOLLOWING DISABLED BECAUSE IT MAKES TESTS FAIL
-            //throw new IllegalStateException ( msg );
         }
         ct = service_.recreateCompositeTransaction ( context, orphancheck,
                 heur_commit );
@@ -332,16 +317,16 @@ public class BaseTransactionManager implements CompositeTransactionManager,
 
     public CompositeTransaction suspend () throws SysException
     {
-        Thread thread = Thread.currentThread ();
-        // Stack ret = null;
-        if ( !initialized_ )
-            throw new IllegalStateException ( "Not initialized" );
+    	if ( !initialized_ ) throw new IllegalStateException ( "Not initialized" );
+       
+    	
 
         CompositeTransaction ret = getCurrentTx ();
         if ( ret != null ) {
         	if(LOGGER.isInfoEnabled()){
         		LOGGER.logInfo("suspend() for transaction " + ret.getTid ());
         	}
+        	Thread thread = Thread.currentThread();   
             removeThreadMappings ( thread );
         } else {
         	if(LOGGER.isInfoEnabled()){
@@ -359,13 +344,11 @@ public class BaseTransactionManager implements CompositeTransactionManager,
     public void resume ( CompositeTransaction ct )
             throws IllegalStateException, SysException
     {
-        Thread thread = Thread.currentThread ();
+        
 
         if ( !initialized_ )
             throw new IllegalStateException ( "Not initialized" );
 
-        // CHANGED: restore ancestor stack by inspecting the lineage:
-        // the LOCAL ancestors are part of the stack
         Stack ancestors = new Stack ();
         Stack tmp = new Stack ();
         Stack lineage = (Stack) ct.getLineage ().clone ();
@@ -377,17 +360,15 @@ public class BaseTransactionManager implements CompositeTransactionManager,
             else
                 tmp.push ( parent );
         }
-        // now, reverse order of tmp
         while ( !tmp.isEmpty () ) {
             ancestors.push ( tmp.pop () );
         }
-        // lastly, make sure that the ct itself is also in the stack.
         ancestors.push ( ct );
 
+        Thread thread = Thread.currentThread ();
         restoreThreadMappings ( ancestors, thread );
-        if(LOGGER.isInfoEnabled()){
-        	LOGGER.logInfo("resume ( " + ct + " ) done for transaction " + ct.getTid ());
-        }
+        if(LOGGER.isInfoEnabled()) LOGGER.logInfo("resume ( " + ct + " ) done for transaction " + ct.getTid ());
+        
     }
 
     /**
@@ -431,18 +412,15 @@ public class BaseTransactionManager implements CompositeTransactionManager,
 
     private void removeTransaction ( CompositeTransaction ct )
     {
-        if ( ct == null )
-            return;
+        if ( ct == null ) return;
 
         Thread thread = getThread ( ct );
-        if ( thread == null )
-            return;
+        if ( thread == null ) return;
 
         Stack mappings = removeThreadMappings ( thread );
         if ( mappings != null && !mappings.empty () ) {
             mappings.pop ();
-            if ( !mappings.empty () )
-                restoreThreadMappings ( mappings, thread );
+            if ( !mappings.empty () ) restoreThreadMappings ( mappings, thread );
         }
 
     }
@@ -453,26 +431,22 @@ public class BaseTransactionManager implements CompositeTransactionManager,
 
     public CompositeTransaction createCompositeTransaction ( long timeout ) throws SysException
     {
-        Stack errors = new Stack ();
+        Stack errors = new Stack();
         CompositeTransaction ct = null , ret = null;
-        Thread thread = Thread.currentThread ();
-
+        
         ct = getCurrentTx ();
         if ( ct == null ) {
-
             ret = service_.createCompositeTransaction ( timeout );
             if(LOGGER.isInfoEnabled()){
             	LOGGER.logInfo("createCompositeTransaction ( " + timeout + " ): "
                     + "created new ROOT transaction with id " + ret.getTid ());
             }
         } else {
-        	 if(LOGGER.isInfoEnabled()){
-        		 LOGGER.logInfo("createCompositeTransaction ( " + timeout + " )");
-        	 }
-            // let CT implementation do the details of logging
+        	 if(LOGGER.isInfoEnabled()) LOGGER.logInfo("createCompositeTransaction ( " + timeout + " )");
             ret = ct.getTransactionControl ().createSubTransaction ();
 
         }
+        Thread thread = Thread.currentThread ();
         setThreadMappings ( ret, thread );
 
         return ret;

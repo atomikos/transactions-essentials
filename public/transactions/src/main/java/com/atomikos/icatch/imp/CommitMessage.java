@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2012 Atomikos <info@atomikos.com>
  *
  * This code ("Atomikos TransactionsEssentials"), by itself,
  * is being distributed under the
@@ -35,8 +35,6 @@ import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 
 /**
- * 
- * 
  * A commit message implemenation.
  */
 
@@ -47,9 +45,7 @@ class CommitMessage extends PropagationMessage
     protected boolean onephase_ = false;
 
     protected int retrycount_ = 0;
-
-    // no of tries retry is done
-
+    
     public CommitMessage ( Participant participant , Result result ,
             boolean onephase )
     {
@@ -87,8 +83,7 @@ class CommitMessage extends PropagationMessage
             // of participant proxies.
             String msg = "Unexpected error in commit";
             LOGGER.logWarning ( msg, e );
-            HeurHazardException heurh = new HeurHazardException ( part
-                    .getHeuristicMessages () );
+            HeurHazardException heurh = new HeurHazardException ( part.getHeuristicMessages () );
             throw new PropagationException ( heurh, true );
         }
     }

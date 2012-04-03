@@ -60,16 +60,12 @@ extends AbstractCompositeTransaction implements
 	private static final Logger LOGGER = LoggerFactory.createLogger(CompositeTransactionImp.class);
 
     protected CoordinatorImp coordinator_ = null;
-    // the coordinator for this invocation
 
     protected TransactionServiceImp txservice_;
-    // the tx service we are working for
 
     protected Extent extent_ = null;
-    // information about remote participants on behalf of this tx.
 
-    protected boolean localRoot_;
-    // true iff LOCALLY there are no ancestor txs
+    protected boolean noLocalAncestors_;
 
     private TransactionStateHandler stateHandler_;
 
@@ -109,7 +105,7 @@ extends AbstractCompositeTransaction implements
         coordinator_ = coordinator;
         txservice_ = txservice;
         extent_ = null;
-        localRoot_ = true;
+        noLocalAncestors_ = true;
         stateHandler_ = new TxActiveStateHandler ( this );
         coordinator.addFSMEnterListener ( this, TxState.TERMINATED );
 
@@ -133,7 +129,7 @@ extends AbstractCompositeTransaction implements
 
     boolean isLocalRoot ()
     {
-        return localRoot_;
+        return noLocalAncestors_;
     }
 
     TransactionServiceImp getTransactionService ()
@@ -172,12 +168,8 @@ extends AbstractCompositeTransaction implements
     public synchronized void setSerial () throws IllegalStateException,
             SysException
     {
-        if ( !isRoot () )
-            throw new IllegalStateException ( "setSerial() not allowed:"
-                    + " not root tx." );
-
+        if ( !isRoot () ) throw new IllegalStateException ( "Not a root tx." );
         serial_ = true;
-
     }
 
 

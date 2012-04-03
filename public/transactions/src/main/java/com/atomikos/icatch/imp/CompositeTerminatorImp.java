@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2012 Atomikos <info@atomikos.com>
  *
  * This code ("Atomikos TransactionsEssentials"), by itself,
  * is being distributed under the
@@ -38,8 +38,6 @@ import com.atomikos.icatch.TransactionControl;
 import com.atomikos.icatch.TransactionService;
 
 /**
- *
- *
  * A terminator implementation.
  */
 
@@ -74,22 +72,13 @@ class CompositeTerminatorImp implements CompositeTerminator
             HeurHazardException, SysException, java.lang.SecurityException,
             RollbackException
     {
-    		Stack errors = new Stack ();
-        TransactionControl control = transaction_.getTransactionControl ();
+    	Stack errors = new Stack ();
 
         transaction_.doCommit ();
-
-        // SET SIBLING INFO: NEEDED FOR
-        // INCOMING 1PC REQUEST FROM
-        // REMOTE CLIENT
-        Dictionary cascadelist = control.getExtent ().getRemoteParticipants ();
-        coordinator_.setGlobalSiblingCount ( coordinator_
-                .getLocalSiblingCount () );
-        coordinator_.setCascadeList ( cascadelist );
-
+        setSiblingInfoForIncoming1pcRequestFromRemoteClient();
+        
         if ( transaction_.isRoot () ) {
             try {
-
                 coordinator_.terminate ( true );
             }
 
@@ -113,6 +102,15 @@ class CompositeTerminatorImp implements CompositeTerminator
     }
 
 
+	private void setSiblingInfoForIncoming1pcRequestFromRemoteClient() {
+		TransactionControl control = transaction_.getTransactionControl();
+		Dictionary cascadelist = control.getExtent ().getRemoteParticipants ();
+        coordinator_.setGlobalSiblingCount ( coordinator_
+                .getLocalSiblingCount () );
+        coordinator_.setCascadeList ( cascadelist );
+	}
+
+
 
     /**
      * @see CompositeTerminator
@@ -129,8 +127,7 @@ class CompositeTerminatorImp implements CompositeTerminator
                 coordinator_.terminate ( false );
             } catch ( Exception e ) {
                 errors.push ( e );
-                throw new SysException ( "Unexpected error in rollback: "
-                        + e.getMessage (), errors );
+                throw new SysException ( "Unexpected error in rollback: " + e.getMessage (), errors );
             }
     }
 

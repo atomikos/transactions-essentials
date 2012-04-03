@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2012 Atomikos <info@atomikos.com>
  *
  * This code ("Atomikos TransactionsEssentials"), by itself,
  * is being distributed under the
@@ -35,9 +35,7 @@ import com.atomikos.icatch.RecoveryCoordinator;
 import com.atomikos.icatch.SysException;
 
 /**
- *
- *
- * A composite transaction adaptor for interposition on an imported instance.
+ * A composite transaction adaptor for inter-position on an imported instance.
  * This allows substitution of the recovery coordinator adaptor.
  */
 
@@ -45,19 +43,13 @@ public class CompositeTransactionAdaptor extends AbstractCompositeTransaction
         implements CompositeCoordinator
 {
 
-    /**
-	 *
-	 */
 	private static final long serialVersionUID = 6361601412982044104L;
 
-	private RecoveryCoordinator adaptor_;
-    // the adaptor to use for replay requests
+	private RecoveryCoordinator adaptorForReplayRequests_; 
 
     private String root_;
 
     private Boolean isRecoverableWhileActive_;
-
-    // the root TID
 
     /**
      * Create a new instance.
@@ -77,13 +69,13 @@ public class CompositeTransactionAdaptor extends AbstractCompositeTransaction
             boolean serial , RecoveryCoordinator adaptor , Boolean isRecoverableWhileActive )
     {
         super ( tid , (Stack) lineage.clone () , serial  );
-        adaptor_ = adaptor;
-        Stack tmp = (Stack) lineage.clone ();
+        adaptorForReplayRequests_ = adaptor;
+        Stack tmp = (Stack) lineage.clone();
         CompositeTransaction parent = null;
         while ( !tmp.empty () ) {
-            parent = (CompositeTransaction) tmp.pop ();
+            parent = (CompositeTransaction) tmp.pop();
         }
-        root_ = parent.getTid ();
+        root_ = parent.getTid();
         isRecoverableWhileActive_ = isRecoverableWhileActive;
     }
 
@@ -116,7 +108,7 @@ public class CompositeTransactionAdaptor extends AbstractCompositeTransaction
             RecoveryCoordinator adaptor , Properties properties )
     {
         super ( root , null , serial );
-        adaptor_ = adaptor;
+        adaptorForReplayRequests_ = adaptor;
         root_ = root;
         if ( properties != null ) properties_ =  ( Properties ) properties.clone();
     }
@@ -154,7 +146,7 @@ public class CompositeTransactionAdaptor extends AbstractCompositeTransaction
 
     public RecoveryCoordinator getRecoveryCoordinator ()
     {
-        return adaptor_;
+        return adaptorForReplayRequests_;
     }
 
     public Boolean isRecoverableWhileActive ()

@@ -38,8 +38,6 @@ import com.atomikos.icatch.TxState;
 import com.atomikos.icatch.admin.AdminTransaction;
 
 /**
- *
- *
  * A default implementation of the AdminTransaction. For local VM use only.
  */
 
@@ -47,7 +45,6 @@ class AdminTransactionImp implements AdminTransaction
 {
 
     private CoordinatorImp coord_;
-
     // the wrapped coordinator
 
     /**
@@ -219,8 +216,7 @@ class AdminTransactionImp implements AdminTransaction
             // and 1PC txs are not in the log?!
             Stack errors = new Stack ();
             errors.push ( rb );
-            throw new SysException ( "Error in forced commit: "
-                    + rb.getMessage (), errors );
+            throw new SysException ( "Error in forced commit: " + rb.getMessage (), errors );
         }
     }
 
