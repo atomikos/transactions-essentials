@@ -137,20 +137,26 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
         boolean checkorphans )
     {
         root_ = root;
-        fsm_ = new FSMImp ( this, new TransactionTransitionTable (),
-                TxState.ACTIVE );
+        
+        initFsm(TxState.ACTIVE);
+        
         heuristicCommit_ = heuristic_commit;
 
         setStateHandler ( new ActiveStateHandler ( this ) );
         startThreads ( DEFAULT_TIMEOUT );
         checkSiblings_ = checkorphans;
+        single_threaded_2pc_ = false;
+    }
+
+	private void initFsm(TxState initialState) {
+		fsm_ = new FSMImp ( this, new TransactionTransitionTable (),
+                initialState );
         fsm_.addFSMPreEnterListener ( this, TxState.TERMINATED );
         fsm_.addFSMPreEnterListener ( this, TxState.HEUR_COMMITTED );
         fsm_.addFSMPreEnterListener ( this, TxState.HEUR_ABORTED );
         fsm_.addFSMPreEnterListener ( this, TxState.HEUR_MIXED );
         fsm_.addFSMPreEnterListener ( this, TxState.HEUR_HAZARD );
-        single_threaded_2pc_ = false;
-    }
+	}
 
     /**
      * Constructor.
@@ -180,8 +186,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     {
         root_ = root;
         single_threaded_2pc_ = single_threaded_2pc;
-        fsm_ = new FSMImp ( this, new TransactionTransitionTable (),
-                TxState.ACTIVE );
+	    initFsm(TxState.ACTIVE );
         heuristicCommit_ = heuristic_commit;
 
         recoverableWhileActive_ = false;
@@ -198,11 +203,6 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
         startThreads ( DEFAULT_TIMEOUT );
         checkSiblings_ = checkorphans;
 
-        fsm_.addFSMPreEnterListener ( this, TxState.TERMINATED );
-        fsm_.addFSMPreEnterListener ( this, TxState.HEUR_COMMITTED );
-        fsm_.addFSMPreEnterListener ( this, TxState.HEUR_ABORTED );
-        fsm_.addFSMPreEnterListener ( this, TxState.HEUR_MIXED );
-        fsm_.addFSMPreEnterListener ( this, TxState.HEUR_HAZARD );
 
     }
 
@@ -235,19 +235,13 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     public CoordinatorImp ()
     {
 
-        fsm_ = new FSMImp ( this, new TransactionTransitionTable (),
-                TxState.ACTIVE );
+    	initFsm(TxState.ACTIVE );
         heuristicCommit_ = false;
 
         checkSiblings_ = true;
         recoverableWhileActive_ = false;
         single_threaded_2pc_ = false;
 
-        fsm_.addFSMPreEnterListener ( this, TxState.TERMINATED );
-        fsm_.addFSMPreEnterListener ( this, TxState.HEUR_COMMITTED );
-        fsm_.addFSMPreEnterListener ( this, TxState.HEUR_ABORTED );
-        fsm_.addFSMPreEnterListener ( this, TxState.HEUR_MIXED );
-        fsm_.addFSMPreEnterListener ( this, TxState.HEUR_HAZARD );
 
     }
 
@@ -811,19 +805,13 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
         heuristicCommit_ = img.heuristicCommit_;
         maxIndoubtTicks_ = img.maxInquiries_;
         maxRollbackTicks_ = img.maxInquiries_;
-        // timeout_ = img.timeout_;
         recoverableWhileActive_ = img.activity_;
         if ( recoverableWhileActive_ ) {
             checkSiblings_ = img.checkSiblings_;
             localSiblingCount_ = img.localSiblingCount_;
         }
 
-        fsm_ = new FSMImp ( this, new TransactionTransitionTable (), img.state_ );
-        fsm_.addFSMPreEnterListener ( this, TxState.TERMINATED );
-        fsm_.addFSMPreEnterListener ( this, TxState.HEUR_COMMITTED );
-        fsm_.addFSMPreEnterListener ( this, TxState.HEUR_ABORTED );
-        fsm_.addFSMPreEnterListener ( this, TxState.HEUR_MIXED );
-        fsm_.addFSMPreEnterListener ( this, TxState.HEUR_HAZARD );
+	    initFsm(img.state_);
 
         stateHandler_ = img.stateHandler_;
         if ( img.state_.equals ( TxState.COMMITTING )
@@ -909,11 +897,10 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
         // NOTE:: active state is recoverable, but if feature is disabled then
         // a null image will be returned to avoid log overhead
 
-        Object[] ret = { TxState.ACTIVE , TxState.IN_DOUBT, TxState.COMMITTING,
+        return new Object[] { TxState.ACTIVE , TxState.IN_DOUBT, TxState.COMMITTING,
                 TxState.HEUR_COMMITTED, TxState.HEUR_ABORTED,
                 TxState.HEUR_HAZARD, TxState.HEUR_MIXED };
 
-        return ret;
 
     }
 
@@ -923,8 +910,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 
     public Object[] getFinalStates ()
     {
-        Object[] ret = { TxState.TERMINATED };
-        return ret;
+        return new Object[] { TxState.TERMINATED };
     }
 
     /**
