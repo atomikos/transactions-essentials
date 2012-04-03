@@ -150,11 +150,8 @@ class TerminationResult extends Result
                     heurmixed = (heurmixed || heuraborts || heurhazards);
                     heuristicparticipants_.put ( reply.getParticipant (),
                             TxState.HEUR_COMMITTED );
-                    // System.err.println ( "TerminationResult: processing heur
-                    // commit" );
 
                 } else if ( err instanceof HeurRollbackException ) {
-                    // System.err.println ( "TerminationResult: heuristic rb" );
                     heuraborts = true;
                     heurmixed = (heurmixed || heurcommits || heurhazards);
                     HeurRollbackException hr = (HeurRollbackException) err;
@@ -163,8 +160,6 @@ class TerminationResult extends Result
                             TxState.HEUR_ABORTED );
 
                 } else {
-                    // heur hazard or not; the conclusion is the same
-                    // System.err.println ( "TerminationResult: heuristic hh" );
 
                     heurhazards = true;
                     heurmixed = (heurmixed || heuraborts || heurcommits);
@@ -194,9 +189,6 @@ class TerminationResult extends Result
 
         } // while
 
-        // System.err.println ( heuristicparticipants_.size() + " heuristic
-        // participants in result of size " + replies.size() );
-
         if ( rolledback )
             result_ = ROLLBACK;
         else if ( heurmixed || heuraborts
@@ -206,9 +198,8 @@ class TerminationResult extends Result
             result_ = HEUR_MIXED;
         else if ( heurhazards ) {
             // heur hazard BEFORE heur abort or commit!
-            // see OTS definitions: hazard ASA some unknown, but ALL KNOWN ARE
-            // COMMIT
-            // OR ALL ARE ABORT
+            // see OTS definitions: hazard ASA some unknown, 
+        	// but ALL KNOWN ARE COMMIT OR ALL ARE ABORT
             result_ = HEUR_HAZARD;
         } else if ( heuraborts ) {
             result_ = HEUR_ROLLBACK;
@@ -217,11 +208,8 @@ class TerminationResult extends Result
 
         } else if ( heurcommits ) {
             // here, there can be no heur aborts as well, since mixed would have
-            // fitted.
-            // no hazards either, since hazards would have fitted.
+            // fitted. no hazards either, since hazards would have fitted.
             result_ = HEUR_COMMIT;
-            // System.err.println ( "TerminationResult.analyze: result is heur
-            // commit" );
 
         } else if ( allOK )
             result_ = ALL_OK;

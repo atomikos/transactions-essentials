@@ -40,9 +40,7 @@ import com.atomikos.icatch.SysException;
 
 public class ReadOnlyParticipant implements Participant {
 
-	/**
-	 *
-	 */
+
 	//force set UID for backward log compatibility
 	private static final long serialVersionUID = -2141189205744565090L;
 
