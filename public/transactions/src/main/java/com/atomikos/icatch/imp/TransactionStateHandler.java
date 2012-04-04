@@ -47,8 +47,6 @@ import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 
 /**
- * 
- * 
  * The state pattern applied to the CompositeTransaction classes.
  */
 
@@ -57,10 +55,6 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
 	private static final Logger LOGGER = LoggerFactory.createLogger(TransactionStateHandler.class);
 
     private int subtxs_;
-
-    // REMOVED: one coordinator per subtransaction
-    // so coordinator can hold all participants
-    // private Stack participants_;
 
     private Stack synchronizations_;
 
@@ -73,7 +67,6 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
         ct_ = ct;
         subtxs_ = 0;
         subtxawares_ = new ArrayList ();
-        // participants_ = new Stack();
         synchronizations_ = new Stack ();
     }
 
@@ -81,7 +74,6 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
             TransactionStateHandler handler )
     {
         subtxs_ = handler.getSubTransactionCount ();
-        // participants_ = handler.getParticipants();
         synchronizations_ = handler.getSynchronizations ();
         subtxawares_ = handler.getSubtxawares ();
         ct_ = ct;
@@ -116,7 +108,6 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
     protected CompositeTransaction createSubTransaction ()
             throws SysException, IllegalStateException
     {
-        // argument is not null on test!
         CompositeTransaction ct = null;
         ct = ct_.getTransactionService ().createSubTransaction ( ct_ );
         // we want to be notified of subtx commit for handling extents
@@ -250,10 +241,6 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
         	}
         }
 
-
-
-        // @todo move this to AFTER syncs were notified, to avoid pending
-        // thread associations?
         if ( subtxs_ > 0 )
         	throw new IllegalStateException (
         			"active subtransactions exist" );
@@ -279,14 +266,12 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
         }
 
         if ( ct_.getState().equals ( TxState.MARKED_ABORT ) ) {
-        	//happens if synchronization has called setRollbackOnly
-        	//-> rollback and throw error
+        	//happens if synchronization has called setRollbackOnly -> rollback and throw error
         	rollback();
         	throw new RollbackException ( "The transaction was set to rollback only" );
         }
 
-        // for loop to make sure that new registrations are possible
-        // during callback
+        // for loop to make sure that new registrations are possible during callback
         for ( int i = 0; i < subtxawares_.size (); i++ ) {
         	SubTxAwareParticipant subtxaware = (SubTxAwareParticipant) subtxawares_
         	.get ( i );
@@ -296,8 +281,7 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
         }
 
         // change state handler to avoid other, concurrent modifications
-        // after we
-        // leave the synchronized block
+        // after we leave the synchronized block
         ct_.localSetTransactionStateHandler ( new TxTerminatedStateHandler (
         		ct_, this, true ) );
 
@@ -332,15 +316,8 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
         Extent target = ct_.getExtent ();
         target.add ( toAdd );
 
-        // next: all LOCAL participants of the child subtx must be added to
-        // the 2PC set.
-        // Stack participants = ct.getParticipants ();
-        // addParticipants ( participants );
-
-        SubTransactionCoordinatorParticipant part = new SubTransactionCoordinatorParticipant (
-                ct.getCoordinatorImp () );
+        SubTransactionCoordinatorParticipant part = new SubTransactionCoordinatorParticipant ( ct.getCoordinatorImp () );
         addParticipant ( part );
-
       
         localDecSubTxCount();
     }

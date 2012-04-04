@@ -59,7 +59,6 @@ public class SubTransactionCoordinatorParticipant implements Participant
     // buffer messages in case recovery fails
 
     private boolean prepareCalled;
-
     // if true: heuristics on failure of rollback
 
     public SubTransactionCoordinatorParticipant (
@@ -166,9 +165,7 @@ public class SubTransactionCoordinatorParticipant implements Participant
      */
     public void forget ()
     {
-        if ( subordinateCoordinator != null )
-            subordinateCoordinator.forget ();
-
+        if ( subordinateCoordinator != null ) subordinateCoordinator.forget ();
     }
 
     /**
