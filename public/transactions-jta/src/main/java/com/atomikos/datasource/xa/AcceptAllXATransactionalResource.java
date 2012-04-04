@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2012 Atomikos <info@atomikos.com>
  *
  * This code ("Atomikos TransactionsEssentials"), by itself,
  * is being distributed under the
@@ -94,12 +94,6 @@ public class AcceptAllXATransactionalResource extends XATransactionalResource
         // nothing to do
     }
 
-
-//    REMOVED: THIS METHOD IS OBSOLETE (ISSUE 10040)
-//    public boolean recoverParticipant ( Participant p )
-//    {
-//        return false;
-//    }
 
 
 }

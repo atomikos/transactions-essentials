@@ -32,8 +32,6 @@ import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
 
 /**
- *
- *
  * A wrapper for an XAResource that enables logging to a PrintWriter.
  */
 
@@ -44,7 +42,6 @@ public class LoggingXAResource implements XAResource
     // where to log to
 
     private XAResource xares_;
-
     // the wrapped resource
 
     /**

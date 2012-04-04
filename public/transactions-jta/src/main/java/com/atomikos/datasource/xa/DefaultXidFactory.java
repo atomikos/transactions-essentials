@@ -28,8 +28,6 @@ package com.atomikos.datasource.xa;
 
 
 /**
- *
- *
  * A default Xid factory.
  */
 
@@ -37,9 +35,7 @@ public class DefaultXidFactory extends AbstractXidFactory implements
         java.io.Serializable
 {
 
-	/**
-	 *
-	 */
+
 	private static final long serialVersionUID = -8667085263366123575L;
 
 
