@@ -57,8 +57,6 @@ import com.atomikos.persistence.StateRecoveryManager;
 import com.atomikos.util.UniqueIdMgr;
 
 /**
- *
- *
  * General implementation of Transaction Service.
  */
 
