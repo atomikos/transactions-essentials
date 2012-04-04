@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2012 Atomikos <info@atomikos.com>
  *
  * This code ("Atomikos TransactionsEssentials"), by itself,
  * is being distributed under the
@@ -35,10 +35,6 @@ package com.atomikos.icatch.imp;
 class ForgetResult extends Result
 {
 
-    protected boolean analyzed_;
-
-    // true if all answers processed
-
     /**
      * Constructor.
      *
@@ -49,7 +45,6 @@ class ForgetResult extends Result
     public ForgetResult ( int count )
     {
         super ( count );
-        analyzed_ = false;
 
     }
 

@@ -32,8 +32,6 @@ import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.Participant;
 
 /**
- *
- *
  * A rollback message implementation.
  */
 
@@ -81,10 +79,8 @@ class RollbackMessage extends PropagationMessage
             // only retry if might be indoubt. Otherwise ignore.
             if ( indoubt_ ) {
                 // here, participant might be indoubt!
-                // fill in exact heuristic msgs by using buffered effect
-                // of proxies
-                HeurHazardException heurh = new HeurHazardException ( part
-                        .getHeuristicMessages () );
+                // fill in exact heuristic msgs by using buffered effect of proxies
+                HeurHazardException heurh = new HeurHazardException ( part.getHeuristicMessages () );
                 throw new PropagationException ( heurh, true );
             }
         }

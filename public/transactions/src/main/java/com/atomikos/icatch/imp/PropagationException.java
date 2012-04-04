@@ -37,10 +37,8 @@ class PropagationException extends java.io.IOException
 {
 
     protected boolean transient_ = false;
-    // default is fatal
 
     protected Exception detail_ = null;
-
     // wrapped exception
 
     /**

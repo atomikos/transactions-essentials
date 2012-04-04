@@ -28,8 +28,6 @@ package com.atomikos.icatch.imp;
 import com.atomikos.icatch.Participant;
 
 /**
- *
- *
  * A forget message implemenation.
  */
 

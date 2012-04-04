@@ -29,8 +29,6 @@ import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.Participant;
 
 /**
- *
- *
  * A PropagationMessage is used for propagation of 2pc communication.
  */
 
@@ -51,7 +49,6 @@ abstract class PropagationMessage
     // increased on every retry
 
     protected Result result_ = null;
-
     // The Result object for this message
 
     /**

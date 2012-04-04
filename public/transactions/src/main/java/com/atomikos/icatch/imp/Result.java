@@ -194,6 +194,13 @@ abstract class Result
 
         return ret;
     }
+    
+    private boolean ignoreReply ( Reply reply ) {
+    	// retried messages are not counted in result
+        // and duplicate entries per participant neither
+        // otherwise duplicates arise if a participant sends replay
+    	return reply.isRetried () || repliedlist_.containsKey ( reply.getParticipant () );
+    }
 
     /**
      * Add a reply to the result.
@@ -204,18 +211,12 @@ abstract class Result
 
     public synchronized void addReply ( Reply reply )
     {
-        if ( reply.isRetried ()
-                || repliedlist_.containsKey ( reply.getParticipant () ) )
-            return;
-        // retried messages are not counted in result
-        // and duplicate entries per participant neither
-        // NOTE otherwise duplicates could happen if a participant sends a
-        // replay
-
-        repliedlist_.put ( reply.getParticipant (), new Object () );
-        replies_.push ( reply );
-        messagecount_--;
-        notifyAll ();
+        if ( !ignoreReply(reply) ) {
+        	repliedlist_.put ( reply.getParticipant (), new Object () );
+        	replies_.push ( reply );
+        	messagecount_--;
+        	notifyAll ();
+        }
     }
 
     /**
@@ -244,12 +245,7 @@ abstract class Result
 
     synchronized void waitForReplies () throws InterruptedException
     {
-
-        while ( messagecount_ > 0 ) {
-            wait ();
-
-        }
-
+        while ( messagecount_ > 0 ) wait ();
     }
 
 }

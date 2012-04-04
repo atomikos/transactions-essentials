@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2012 Atomikos <info@atomikos.com>
  *
  * This code ("Atomikos TransactionsEssentials"), by itself,
  * is being distributed under the
@@ -28,9 +28,7 @@ package com.atomikos.icatch.imp;
 import com.atomikos.icatch.Participant;
 
 /**
- *
- *
- * A reply for propagationmessages.
+ * A reply for propagation messages.
  */
 
 class Reply

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2012 Atomikos <info@atomikos.com>
  *
  * This code ("Atomikos TransactionsEssentials"), by itself,
  * is being distributed under the
@@ -30,8 +30,6 @@ import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 
 /**
- * 
- * 
  * A propagator sends PropagationMessages to participants.
  */
 
@@ -88,18 +86,15 @@ class Propagator
         			do {
         				tryAgain = msg.submit();
         				if ( tryAgain  ) {
-        					//wait a little before retrying
-        					Thread.sleep ( RETRY_INTERVAL );
-                         if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Propagator: retrying "
-                                            + "message: " + msg );
+        				  //wait a little before retrying
+        				  Thread.sleep ( RETRY_INTERVAL );
+                          if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Propagator: retrying " + "message: " + msg );
         				}
         			} while ( tryAgain );
         		}
         		catch ( Exception e ) {
-        			LOGGER.logWarning ( "ERROR in propagator: "
-                            + e.getMessage ()
-                            + (msg != null ? " while sending message: " + msg : "")
-                            , e );
+        			LOGGER.logWarning ( "ERROR in propagator: " + e.getMessage () +
+                            (msg != null ? " while sending message: " + msg : "") , e );
         		}
     		}
     	

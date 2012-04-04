@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2012 Atomikos <info@atomikos.com>
  *
  * This code ("Atomikos TransactionsEssentials"), by itself,
  * is being distributed under the
@@ -32,9 +32,7 @@ import com.atomikos.icatch.RollbackException;
 import com.atomikos.icatch.StringHeuristicMessage;
 
 /**
- *
- *
- * A prepare message implemenation.
+ * A prepare message implementation.
  */
 
 class PrepareMessage extends PropagationMessage

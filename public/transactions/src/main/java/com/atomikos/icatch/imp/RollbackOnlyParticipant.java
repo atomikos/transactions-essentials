@@ -36,8 +36,6 @@ import com.atomikos.icatch.StringHeuristicMessage;
 import com.atomikos.icatch.SysException;
 
 /**
- *
- *
  * A participant to add in case setRollbackOnly is called. This participant will
  * never allow commit.
  */
@@ -141,7 +139,6 @@ public class RollbackOnlyParticipant implements Participant
      */
     public String getURI ()
     {
-
         return null;
     }
 

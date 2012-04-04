@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2012 Atomikos <info@atomikos.com>
  *
  * This code ("Atomikos TransactionsEssentials"), by itself,
  * is being distributed under the
@@ -39,9 +39,6 @@ import com.atomikos.icatch.TransactionService;
 import com.atomikos.icatch.system.Configuration;
 
 /**
- *
- *
- *
  * A participant for registering a subtx coordinator as a subordinate in 2PC of
  * the parent transaction coordinator.
  */
@@ -179,9 +176,10 @@ public class SubTransactionCoordinatorParticipant implements Participant
      */
     public HeuristicMessage[] getHeuristicMessages ()
     {
-        if ( subordinateCoordinator != null )
+        if ( subordinateCoordinator != null ) { //null if recovery failed
             msgs = subordinateCoordinator.getHeuristicMessages ();
-        // subordinate is null if recovery failed
+        }
+       
         return msgs;
     }
 

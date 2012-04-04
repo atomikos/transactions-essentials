@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2012 Atomikos <info@atomikos.com>
  *
  * This code ("Atomikos TransactionsEssentials"), by itself,
  * is being distributed under the
@@ -35,8 +35,6 @@ import com.atomikos.icatch.SysException;
 import com.atomikos.icatch.TxState;
 
 /**
- *
- *
  * A state handler for the heuristic committed coordinator state.
  */
 
@@ -82,8 +80,7 @@ class HeurCommittedStateHandler extends CoordinatorStateHandler
             RollbackException, SysException
     {
 
-        // heur outcome same as global outcome
-        // ->terminated state
+        // heur outcome same as global outcome ->terminated state
         TerminatedStateHandler termStateHandler = new TerminatedStateHandler (
                 this );
         getCoordinator ().setStateHandler ( termStateHandler );

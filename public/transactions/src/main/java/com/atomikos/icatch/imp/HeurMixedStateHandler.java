@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2012 Atomikos <info@atomikos.com>
  *
  * This code ("Atomikos TransactionsEssentials"), by itself,
  * is being distributed under the
@@ -40,9 +40,7 @@ import com.atomikos.icatch.SysException;
 import com.atomikos.icatch.TxState;
 import com.atomikos.icatch.imp.thread.InterruptedExceptionHelper;
 
-/**
- *
- *
+/** 
  * A state handler for the heuristic mixed coordinator state.
  */
 
@@ -119,10 +117,8 @@ class HeurMixedStateHandler extends CoordinatorStateHandler
                             this );
                     getCoordinator ().setStateHandler ( termStateHandler );
                 } else if ( replay ) {
-                    // set state to heuristic again, to
-                    // notify logging of swapout.
+                    // set state to heuristic again, to notify logging of swapout.
                 	// only do this if replay was true, i.e. if there could be changes
-
                     getCoordinator ().setStateHandler ( this );
                 }
 

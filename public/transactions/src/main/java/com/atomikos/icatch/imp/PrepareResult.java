@@ -35,8 +35,6 @@ import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeurMixedException;
 
 /**
- *
- *
  * A result for prepare messages.
  */
 

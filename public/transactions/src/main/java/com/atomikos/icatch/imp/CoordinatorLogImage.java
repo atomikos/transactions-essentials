@@ -206,9 +206,7 @@ class CoordinatorLogImage implements ObjectImage
     public Recoverable restore ()
     {
         CoordinatorImp coord = new CoordinatorImp ();
-
         coord.restore ( this );
-
         return coord;
     }
 

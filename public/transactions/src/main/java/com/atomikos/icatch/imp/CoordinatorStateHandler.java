@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2012 Atomikos <info@atomikos.com>
  *
  * This code ("Atomikos TransactionsEssentials"), by itself,
  * is being distributed under the
@@ -48,8 +48,6 @@ import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 
 /**
- *
- *
  * Application of the state pattern to the transaction coordinator: each
  * important state has a handler and this class is the superclass that holds
  * common logic.
@@ -61,9 +59,7 @@ import com.atomikos.logging.LoggerFactory;
 
 abstract class CoordinatorStateHandler implements Serializable, Cloneable
 {
-	/**
-	 *
-	 */
+	
 	private static final long serialVersionUID = 5510459174124363958L;
 
 	private static final Logger LOGGER = LoggerFactory.createLogger(CoordinatorStateHandler.class);
@@ -91,7 +87,6 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
     // The participants to cascade prepare to
 
     private Hashtable heuristicMap_;
-
     // Where heuristic states are mapped to participants in that state
 
     /**
@@ -167,21 +162,17 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
 
             Stack hazStack = (Stack) heuristicMap_.get ( TxState.HEUR_HAZARD );
             Stack mixStack = (Stack) heuristicMap_.get ( TxState.HEUR_MIXED );
-            Stack comStack = (Stack) heuristicMap_
-                    .get ( TxState.HEUR_COMMITTED );
+            Stack comStack = (Stack) heuristicMap_.get ( TxState.HEUR_COMMITTED );
             Stack abStack = (Stack) heuristicMap_.get ( TxState.HEUR_ABORTED );
             Stack termStack = (Stack) heuristicMap_.get ( TxState.TERMINATED );
 
             clone.heuristicMap_.put ( TxState.HEUR_HAZARD, hazStack.clone () );
             clone.heuristicMap_.put ( TxState.HEUR_MIXED, mixStack.clone () );
-            clone.heuristicMap_
-                    .put ( TxState.HEUR_COMMITTED, comStack.clone () );
+            clone.heuristicMap_.put ( TxState.HEUR_COMMITTED, comStack.clone () );
             clone.heuristicMap_.put ( TxState.HEUR_ABORTED, abStack.clone () );
             clone.heuristicMap_.put ( TxState.TERMINATED, termStack.clone () );
         } catch ( CloneNotSupportedException e ) {
-            throw new RuntimeException (
-                    "CoordinatorStateHandler: clone failure :"
-                            + e.getMessage () );
+            throw new RuntimeException ("CoordinatorStateHandler: clone failure :" + e.getMessage () );
         }
 
         return clone;
@@ -223,7 +214,6 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
             Participant next = (Participant) parts.nextElement ();
             Object state = participants.get ( next );
             addToHeuristicMap ( next, state );
-            // System.err.println ( "Adding to heuristic map: state " + state );
         }
     }
 
@@ -397,10 +387,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
 
     protected void activate ()
     {
-        // stopThreads removed to make activate idempotent
-        // required for new recovery!
-        // if ( propagator_ != null ) propagator_.stopThreads();
-    	    boolean threaded = !coordinator_.prefersSingleThreaded2PC();
+    	boolean threaded = !coordinator_.prefersSingleThreaded2PC();
         if ( propagator_ == null )
             propagator_ = new Propagator ( threaded );
     }
@@ -426,7 +413,6 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
 
     protected void dispose ()
     {
-    	    //notifying threads is no longer required since 3.2
         propagator_ = null;
     }
 
@@ -441,11 +427,10 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
     protected Boolean replayCompletion ( Participant participant )
             throws IllegalStateException
     {
-        // check added to make recovery idempotent
-        // as from the official 2.0 release
-        if ( !replayStack_.contains ( participant ) )
+        if ( !replayStack_.contains ( participant ) ) {
+        	// check needed to be idempotent
             replayStack_.push ( participant );
-
+        }
         return committed_;
     }
 
@@ -516,7 +501,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
             HeurHazardException, java.lang.IllegalStateException,
             RollbackException, SysException;
 
-    /*
+    /**
      * The corresponding 2PC method is delegated hereto. Subclasses should
      * override this, and may use the auxiliary rollback method provided by this
      * class (in addition to their state-specific preconditions).
@@ -584,14 +569,12 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
                     // multiple participants that are not visible here!
 
                     if ( onePhase && cascadeList_ != null ) { // null for OTS
-                                                                // case?
                         Integer sibnum = (Integer) cascadeList_.get ( p );
                         if ( sibnum != null ) // null for local participant!
                             p.setGlobalSiblingCount ( sibnum.intValue () );
                         p.setCascadeList ( cascadeList_ );
                     }
                     propagator_.submitPropagationMessage ( cm );
-                    // this will trigger sending the message
                 }
             } // while
 
@@ -627,10 +610,8 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
                     nextStateHandler = new HeurAbortedStateHandler ( this );
                     coordinator_.setStateHandler ( nextStateHandler );
                     // Here, we do NOT need to add extra information, since ALL
-                    // participants
-                    // agreed to rollback. Therefore, we need not worry about
-                    // who aborted
-                    // and who committed.
+                    // participants agreed to rollback. 
+                    // Therefore, we need not worry about who aborted and who committed.
                     throw new HeurRollbackException ( getHeuristicMessages () );
 
                 }
@@ -656,10 +637,8 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
                 // all OK
                 if ( heuristic ) {
                     nextStateHandler = new HeurCommittedStateHandler ( this );
-                    // again, here we do NOT need to preserve extra
-                    // per-participant
-                    // state mappings, since ALL participants were heur.
-                    // committed.
+                    // again, here we do NOT need to preserve extra per-participant
+                    // state mappings, since ALL participants were heur. committed.
                 } else
                     nextStateHandler = new TerminatedStateHandler ( this );
 
@@ -667,16 +646,14 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
             }
         } catch ( RuntimeException runerr ) {
             errors.push ( runerr );
-            throw new SysException (
-                    "Error in commit: " + runerr.getMessage (), errors );
+            throw new SysException ( "Error in commit: " + runerr.getMessage (), errors );
         }
 
         catch ( InterruptedException intr ) {
         	// cf bug 67457
 			InterruptedExceptionHelper.handleInterruptedException ( intr );
             errors.push ( intr );
-            throw new SysException ( "Error in commit" + intr.getMessage (),
-                    errors );
+            throw new SysException ( "Error in commit" + intr.getMessage (), errors );
         }
 
         return getHeuristicMessages ();
@@ -697,8 +674,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
             boolean heuristic ) throws HeurCommitException, HeurMixedException,
             SysException, HeurHazardException, java.lang.IllegalStateException
     {
-        // propagate ONLY IF participants are NOT readonly!
-
+       
         Stack errors = new Stack ();
         CoordinatorStateHandler nextStateHandler = null;
         try {
@@ -714,8 +690,6 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
 
             TerminationResult rollbackresult = new TerminationResult ( count );
 
-            // start messages
-
             Enumeration enumm = participants.elements ();
             while ( enumm.hasMoreElements () ) {
                 Participant p = (Participant) enumm.nextElement ();
@@ -723,16 +697,14 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
                     RollbackMessage rm = new RollbackMessage ( p,
                             rollbackresult, indoubt );
                     propagator_.submitPropagationMessage ( rm );
-                    // this will trigger sending the message
                 }
-            } // while
+            } 
 
             rollbackresult.waitForReplies ();
             int res = rollbackresult.getResult ();
 
             // check results, but we only care if we are indoubt.
             // otherwise, we don't mind any remaining indoubts.
-
             if ( indoubt && res != TerminationResult.ALL_OK ) {
 
                 if ( res == TerminationResult.HEUR_MIXED ) {
@@ -756,8 +728,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
                     nextStateHandler = new HeurCommittedStateHandler ( this );
                     coordinator_.setStateHandler ( nextStateHandler );
                     // NO extra per-participant state mappings, since ALL
-                    // participants
-                    // are heuristically committed.
+                    // participants are heuristically committed.
                     throw new HeurCommitException ( getHeuristicMessages () );
 
                 }
@@ -775,8 +746,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
                             addToHeuristicMap ( p, TxState.TERMINATED );
                         }
                     }
-                    nextStateHandler = new HeurHazardStateHandler ( this,
-                            hazards );
+                    nextStateHandler = new HeurHazardStateHandler ( this, hazards );
                     coordinator_.setStateHandler ( nextStateHandler );
                     throw new HeurHazardException ( getHeuristicMessages () );
                 }
@@ -787,8 +757,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
                 if ( heuristic ) {
                     nextStateHandler = new HeurAbortedStateHandler ( this );
                     // NO per-participant state mapping needed, since ALL agree
-                    // on same
-                    // heuristic outcome.
+                    // on same heuristic outcome.
                 } else
                     nextStateHandler = new TerminatedStateHandler ( this );
 
@@ -799,19 +768,14 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
 
         catch ( RuntimeException runerr ) {
             errors.push ( runerr );
-            throw new SysException ( "Error in rollback: "
-                    + runerr.getMessage (), errors );
+            throw new SysException ( "Error in rollback: " + runerr.getMessage (), errors );
         }
 
         catch ( InterruptedException e ) {
         	// cf bug 67457
 			InterruptedExceptionHelper.handleInterruptedException ( e );
             errors.push ( e );
-            throw new SysException ( "Error in rollback: " + e.getMessage (),
-                    errors );
-        } finally {
-            // System.err.println ( "Exiting CoordinatorStateHandler.rollback"
-            // );
+            throw new SysException ( "Error in rollback: " + e.getMessage (), errors );
         }
 
         return getHeuristicMessages ();
@@ -823,7 +787,6 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
         // NOTE: no need to add synchronized -> don't
         // do it, you never know if recursion happens here
 
-        // start messages
         // NOTE: this is of secondary importance; failures are not
         // problematic since forget is mainly for log efficiency.
         // Therefore, this does not affect the final TERMINATED state
@@ -834,7 +797,6 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
         CoordinatorStateHandler nextStateHandler = null;
 
         Vector participants = coordinator_.getParticipants ();
-        // @todo CHECK IN TRMI RELEASE BRANCH if forget might block!
         int count = (participants.size () - readOnlyTable_.size ());
         Enumeration enumm = participants.elements ();
         ForgetResult result = new ForgetResult ( count );
@@ -843,16 +805,11 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
             if ( !readOnlyTable_.containsKey ( p ) ) {
                 ForgetMessage fm = new ForgetMessage ( p, result );
                 propagator_.submitPropagationMessage ( fm );
-                // this will trigger sending the message
             }
 
         }
         try {
-            // System.out.println ( "Coordinator state handler: waiting for
-            // replies...");
             result.waitForReplies ();
-            // System.out.println ( "Coordinator state handler: replies
-            // gotten");
         } catch ( InterruptedException inter ) {
         	// cf bug 67457
 			InterruptedExceptionHelper.handleInterruptedException ( inter );

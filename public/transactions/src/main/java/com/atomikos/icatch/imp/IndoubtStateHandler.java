@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2012 Atomikos <info@atomikos.com>
  *
  * This code ("Atomikos TransactionsEssentials"), by itself,
  * is being distributed under the
@@ -41,8 +41,6 @@ import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 
 /**
- *
- *
  * A state handler for the indoubt coordinator state.
  */
 
@@ -57,7 +55,6 @@ class IndoubtStateHandler extends CoordinatorStateHandler
     // if max allowed -> take heuristic decision
 
     private boolean recovered_;
-
     // useful in the case of a non-recovered ROOT, which needs to
     // timeout to a heuristic state since the client terminator
     // will not receive the outcome!
@@ -82,9 +79,7 @@ class IndoubtStateHandler extends CoordinatorStateHandler
 
         if ( getCoordinator ().getState ().equals ( TxState.COMMITTING ) ) {
             // A coordinator that is still in this state might not have notified
-            // all its
-            // participants -> make sure replay happens
-
+            // all its participants -> make sure replay happens
             Enumeration enumm = getCoordinator ().getParticipants ().elements ();
             Hashtable hazards = new Hashtable ();
             while ( enumm.hasMoreElements () ) {
@@ -97,8 +92,7 @@ class IndoubtStateHandler extends CoordinatorStateHandler
             HeurHazardStateHandler hazardStateHandler = new HeurHazardStateHandler (
                     this, hazards );
             // set state to hazard AFTER having added all heuristic info,
-            // otherwise
-            // this info will NOT be in the log image!
+            // otherwise this info will NOT be in the log image!
             getCoordinator ().setStateHandler ( hazardStateHandler );
 
             // propagate recover notification to next state
@@ -121,8 +115,7 @@ class IndoubtStateHandler extends CoordinatorStateHandler
         // otherwise, a COMMITTING tx could be rolled back if it
         // times out in between (i.e. a commit can come in while
         // this state handler gets a timeout event and rolls back)
-        if ( !getCoordinator ().getState ().equals ( getState () ) )
-            return;
+        if ( !getCoordinator ().getState ().equals ( getState () ) )  return;
 
         try {
 
@@ -130,27 +123,23 @@ class IndoubtStateHandler extends CoordinatorStateHandler
 
                 inquiries_++;
                 if ( inquiries_ >= getCoordinator ().getMaxIndoubtTicks () / 2 ) {
-                    // only ask for replay if half of timeout ticks has passed,
-                    // to avoid hitting the coordinator with replays from the
-                    // start!
-                    // this is needed for WS-T compliance (WS-T coordinator will
-                    // abort
-                    // if it receives a replay during preparing)
+                    // WS-AT compliance: only ask for replay if half of timeout ticks has passed,
+                    // to avoid hitting the coordinator with replays from the start
+                	// (WS-T coordinator will abort if it receives a replay during preparing)
                     if ( getCoordinator ().getSuperiorRecoveryCoordinator () != null ) {
                     	if(LOGGER.isInfoEnabled()){
                     		LOGGER.logInfo("Requesting replayCompletion on behalf of coordinator "
                                     + getCoordinator ().getCoordinatorId ());
                     	}
 
-                        getCoordinator ().getSuperiorRecoveryCoordinator ()
-                                .replayCompletion ( getCoordinator () );
+                        getCoordinator().getSuperiorRecoveryCoordinator().
+                        replayCompletion ( getCoordinator () );
                     }
                 }
             } else {
                 if ( getCoordinator ().getSuperiorRecoveryCoordinator () == null ) {
 
-                    // root tx, where terminator did not issue commit
-                    // after prepare -> decide abort.
+                    // root tx, where terminator did not issue commit after prepare -> decide abort.
                     // NOTE: if not recovered then this is a heuristic decision
                     // because the decision needs to be detectable
                     // by the client terminator.
@@ -179,14 +168,10 @@ class IndoubtStateHandler extends CoordinatorStateHandler
             java.lang.IllegalStateException, HeurHazardException,
             HeurMixedException, SysException
     {
-        // we need to reply the same to prepare (cf WS-T)!
-        // -> change this to return NOT readonly
-        // throw new IllegalStateException ( "Prepare received for INDOUBT" );
-
         // if we have a repeated prepare in this state, then the
         // first prepare must have been a YET vote, otherwise we
-        // would not be Indoubt!!! -> repeat the same vote
-        // (required for WS-T)
+        // would not be in-doubt! -> repeat the same vote
+        // (required for WS-AT)
         return Participant.READ_ONLY + 1;
     }
 

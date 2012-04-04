@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2012 Atomikos <info@atomikos.com>
  *
  * This code ("Atomikos TransactionsEssentials"), by itself,
  * is being distributed under the
@@ -33,8 +33,6 @@ import com.atomikos.icatch.admin.AdminTransaction;
 import com.atomikos.icatch.admin.LogControl;
 
 /**
- *
- *
  * A default implementation of LogControl.
  */
 

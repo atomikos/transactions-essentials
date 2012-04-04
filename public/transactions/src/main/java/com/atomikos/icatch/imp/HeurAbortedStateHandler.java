@@ -35,8 +35,6 @@ import com.atomikos.icatch.SysException;
 import com.atomikos.icatch.TxState;
 
 /**
- *
- *
  * A state handler for the heuristic abort coordinator state.
  */
 
@@ -90,9 +88,7 @@ class HeurAbortedStateHandler extends CoordinatorStateHandler
             HeurHazardException, java.lang.IllegalStateException
     {
 
-        // if global rollback coincides with heuristic outcome
-        // -> terminated
-
+        // if global rollback coincides with heuristic outcome -> terminated
         TerminatedStateHandler termStateHandler = new TerminatedStateHandler (
                 this );
         getCoordinator ().setStateHandler ( termStateHandler );

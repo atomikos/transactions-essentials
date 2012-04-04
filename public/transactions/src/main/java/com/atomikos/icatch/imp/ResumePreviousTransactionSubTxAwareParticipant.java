@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2012 Atomikos <info@atomikos.com>
  *
  * This code ("Atomikos TransactionsEssentials"), by itself,
  * is being distributed under the
@@ -33,9 +33,6 @@ import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 
 /**
- * 
- * 
- *
  * A subtx aware participant that resumes a previous 
  * transaction upon termination of the (sub)transaction
  * it is registered with. 
@@ -76,13 +73,11 @@ public class ResumePreviousTransactionSubTxAwareParticipant implements
     public void committed ( CompositeTransaction tx )
     {
         resume();
-
     }
 
     public void rolledback ( CompositeTransaction tx )
     {
         resume();
-
     }
 
 }

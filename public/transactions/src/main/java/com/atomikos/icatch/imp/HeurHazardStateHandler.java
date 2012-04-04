@@ -42,8 +42,6 @@ import com.atomikos.icatch.TxState;
 import com.atomikos.icatch.imp.thread.InterruptedExceptionHelper;
 
 /**
- *
- *
  * A state handler for the heuristic hazard coordinator state.
  */
 
@@ -127,12 +125,7 @@ class HeurHazardStateHandler extends CoordinatorStateHandler
             }
             try {
                 result.waitForReplies ();
-
-                // remove OK replies from hazards_ list and change state if
-                // hazard_ is empty.
-
                 Stack replies = result.getReplies ();
-
                 Enumeration enumm = replies.elements ();
                 while ( enumm.hasMoreElements () ) {
                     Reply reply = (Reply) enumm.nextElement ();

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2012 Atomikos <info@atomikos.com>
  *
  * This code ("Atomikos TransactionsEssentials"), by itself,
  * is being distributed under the
@@ -35,8 +35,6 @@ import com.atomikos.icatch.Participant;
 import com.atomikos.icatch.SysException;
 
 /**
- *
- *
  * The extent carries the information about the 'size' of a propagation after it
  * returns: the indirectly invoked servers, and the orphan detection information
  * for those.
@@ -49,7 +47,6 @@ public class ExtentImp implements Extent
 
 	private Hashtable participants_ = null;
     private boolean queried_ = false;
-    // protected Participant participant_ = null;
 
     private Stack directs_;
 
@@ -84,8 +81,7 @@ public class ExtentImp implements Extent
             // NOTE: this will replace the old participant, and if
             // it is a proxy then the buffered heuristic msgs will
             // also be replaced. This loses info if multiple PARALLEL calls
-            // went to the same FIRST-ORDER server
-            // (i.e., directly invoked).
+            // went to the same FIRST-ORDER server (i.e., directly invoked).
             // Never mind, though: it is considered bad practice
             // to execute parallel calls if they might act on the same
             // data. This is the case if they go to the same directly
@@ -124,7 +120,6 @@ public class ExtentImp implements Extent
         table.put ( participant.getURI (), new Integer ( count ) );
         addRemoteParticipants ( table );
         directs_.push ( participant );
-        // participant_ = participant;
     }
 
     /**
@@ -134,8 +129,7 @@ public class ExtentImp implements Extent
     public synchronized void add ( Extent extent )
             throws IllegalStateException, SysException
     {
-        if ( queried_ )
-            throw new IllegalStateException ( "Adding extent no longer allowed" );
+        if ( queried_ )  throw new IllegalStateException ( "Adding extent no longer allowed" );
         addRemoteParticipants ( extent.getRemoteParticipants () );
         Enumeration enumm = extent.getParticipants ().elements ();
         while ( enumm.hasMoreElements () ) {
@@ -144,14 +138,5 @@ public class ExtentImp implements Extent
         }
     }
 
-    // /**
-    // *@see Extent
-    // */
-    //
-    // public synchronized Participant getParticipant()
-    // throws SysException
-    // {
-    // return participant_;
-    // }
 
 }
