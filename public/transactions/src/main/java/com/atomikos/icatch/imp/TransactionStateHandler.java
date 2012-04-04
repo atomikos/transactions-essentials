@@ -159,8 +159,7 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
     	 Stack errors = new Stack ();
 
          for ( int i = 0; i < subtxawares_.size (); i++ ) {
-         	SubTxAwareParticipant subtxaware = (SubTxAwareParticipant) subtxawares_
-         	.get ( i );
+         	SubTxAwareParticipant subtxaware = (SubTxAwareParticipant) subtxawares_.get ( i );
          	subtxaware.rolledback ( ct_ );
          	// NOTE: this can NOT be done by coordinator imp.,
          	// since that one will not know which tx is locally done!
@@ -181,8 +180,7 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
 
 
 
-         ct_.localSetTransactionStateHandler ( new TxTerminatedStateHandler (
-         		ct_, this, false ) );
+         ct_.localSetTransactionStateHandler ( new TxTerminatedStateHandler ( ct_, this, false ) );
 
 
          // rollback coordinator outside SYNCH block to avoid deadlocks
@@ -298,8 +296,7 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
         try {
         	addParticipant ( p );
         } catch ( IllegalStateException alreadyTerminated ) {
-            //happens in rollback after timeout - see case 27857
-        	//ignore but log
+            //happens in rollback after timeout - see case 27857: ignore but log
         	if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Error during setRollbackOnly" , alreadyTerminated );
         }
         synchronized ( this ) {
