@@ -134,8 +134,7 @@ public class FileLogStream implements LogStream
             }
 
             while ( in.available () > 0 ) {
-                // if crashed, then unproper closing might cause endless
-                // blocking!
+                // if crashed, then unproper closing might cause endless blocking!
                 // therefore, we check if avaible first.
                 count++;
                 Object nxt = ins.readObject ();
@@ -149,26 +148,23 @@ public class FileLogStream implements LogStream
             LOGGER.logInfo("Done read of logfile");
 
         } catch ( java.io.EOFException unexpectedEOF ) {
-            // ignore, since this happens if log was not closed properly
-            // due to crash
+        	LOGGER.logDebug("Unexpected EOF - logfile not closed properly last time?" , unexpectedEOF);
         	// merely return what was read so far...
         } catch ( StreamCorruptedException unexpectedEOF ) {
-            // ignore, since this happens if log was not closed properly
-            // due to crash
+        	LOGGER.logDebug("Unexpected EOF - logfile not closed properly last time?" , unexpectedEOF);
         	// merely return what was read so far...
         } catch ( ObjectStreamException unexpectedEOF ) {
-            // ignore, since this happens if log was not closed properly
-            // due to crash
+        	LOGGER.logDebug("Unexpected EOF - logfile not closed properly last time?" , unexpectedEOF);
         	// merely return what was read so far...
         } catch ( FileNotFoundException firstStart ) {
         	// the file could not be opened for reading;
         	// merely return the default empty vector
         } catch ( Exception e ) {
-            System.err.println ( e.getMessage () );
-            System.err.println ( e.getClass ().getName () );
+        	String msg =  "Error in recover";
+        	LOGGER.logWarning(msg,e);
             e.printStackTrace ();
             errors.push ( e );
-            throw new LogException ( "Error in recover", errors );
+            throw new LogException ( msg , errors );
         } finally {
             try {
                 if ( in != null )

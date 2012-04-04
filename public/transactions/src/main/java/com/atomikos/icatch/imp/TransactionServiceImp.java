@@ -590,11 +590,7 @@ public class TransactionServiceImp implements TransactionService,
                         	LOGGER.logInfo ( "Coordinator not recoverable: "
                                     + coord.getCoordinatorId () );
                     } catch ( Exception e ) {
-                        // ADDED FOR TOMCAT RELEASE
-                        // this coordinator is not recoverable, for instance
-                        // because one of the
-                        // resource in unreachable. Make sure that this does not
-                        // crash the TM so don't throw anything here.
+                       // ignore (to avoid VM exit) but log
                         LOGGER.logWarning (
                                 "Coordinator not recoverable: "
                                         + coord.getCoordinatorId (), e );
@@ -610,9 +606,7 @@ public class TransactionServiceImp implements TransactionService,
                         res.endRecovery ();
                     } catch ( Exception error ) {
                         LOGGER.logWarning ( "ERROR IN RECOVERY", error );
-                        // CONTINUE PROCESSING: JUST BECAUSE ONE RESOURCE
-                        // DOES BAD THINGS DOESN'T MEAN EVERYONE MUST STAY
-                        // IN DOUBT
+                        // continue processing to avoid indoubts for other resources
                     }
                 }
             } catch ( Exception e ) {
@@ -890,9 +884,9 @@ public class TransactionServiceImp implements TransactionService,
         if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Transaction Service: Entering shutdown ( "
                 + force + " )..." );
 
-        // FOLLOWING MOVED OUT OF SYNCH BLOCK TO HERE TO AVOID DEADLOCK ON
-        // IMMEDIATE SHUTDOWN WITH INTERLEAVING ENTERED NOTIFICATION OF
-        // TERMINATING COORDINATOR STATEHANDLER
+        // following moved out of synch block to avoid deadlock on immediate
+        // shutdown with interleaving entered notification of a terminating
+        // coordinator state-handler
         if ( !wasShuttingDown && force ) {
             // If we were already shutting down, then the FIRST thread
             // to enter this method will do the following. Don't do
@@ -954,14 +948,12 @@ public class TransactionServiceImp implements TransactionService,
                             + inter.getMessage (), errors );
                 }
             }
-            // System.err.println ( "Transaction Service: Check Done." );
             notifyListeners ( false, true );
             initialized_ = false;
             if ( !wasShuttingDown ) {
                 // If we were already shutting down, then the FIRST thread
                 // to enter this method will do the following. Don't do
                 // it twice.
-
                 try {
                     recoverymanager_.close ();
                 } catch ( LogException le ) {
@@ -970,12 +962,10 @@ public class TransactionServiceImp implements TransactionService,
                     throw new SysException ( "Error in shutdown: "
                             + le.getMessage (), errors );
                 }
-                // recoverymanager_ = null;
-                // removed because repeated start/shutdown will fail cause of
-                // this.
-            } // if wasShuttingDown
+              
+            } 
 
-        }// synch shutdownWaiter
+        }
 
         notifyListeners ( false, false );
     }
@@ -984,9 +974,7 @@ public class TransactionServiceImp implements TransactionService,
     {
 
         try {
-            if ( !shuttingDown_ && initialized_ )
-                shutdown ( true );
-
+            if ( !shuttingDown_ && initialized_ ) shutdown ( true );
         } catch ( Exception e ) {
             LOGGER.logWarning( "Error in GC of TransactionServiceImp" , e );
         } finally {
@@ -1010,19 +998,16 @@ public class TransactionServiceImp implements TransactionService,
 
     public CompositeTransaction createCompositeTransaction ( long timeout ) throws SysException
     {
-        if ( !initialized_ )
-            throw new IllegalStateException ( "Not initialized" );
+        if ( !initialized_ ) throw new IllegalStateException ( "Not initialized" );
 
         if ( maxActives_ >= 0 && tidtotxmap_.size () >= maxActives_ )
-            throw new IllegalStateException (
-                    "Max number of active transactions reached:" + maxActives_ );
+            throw new IllegalStateException ( "Max number of active transactions reached:" + maxActives_ );
 
         String tid = tidmgr_.get ();
         Stack lineage = new Stack ();
         // create a CC with heuristic preference set to false,
         // since it does not really matter anyway (since we are
-        // creating a ROOT!)
-
+        // creating a root)
         CoordinatorImp cc = createCC ( null, tid, true, false, timeout );
         CompositeTransaction ct = createCT ( tid, cc, lineage, false );
         return ct;

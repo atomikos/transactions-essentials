@@ -32,8 +32,6 @@ import java.util.Vector;
 import com.atomikos.icatch.HeuristicMessage;
 
 /**
- *
- *
  * A Result is responsible for collecting the replies of a PropagationMessage.
  */
 
