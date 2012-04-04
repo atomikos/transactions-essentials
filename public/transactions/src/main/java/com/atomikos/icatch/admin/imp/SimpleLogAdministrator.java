@@ -29,11 +29,6 @@ import com.atomikos.icatch.admin.LogAdministrator;
 import com.atomikos.icatch.admin.LogControl;
 
 /**
- *
- *
- *
- *
- *
  * A simple log administrator that can be used for different UI technologies.
  */
 

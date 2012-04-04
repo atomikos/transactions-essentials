@@ -91,8 +91,6 @@ public abstract class AbstractUserTransactionService implements
         ret = p.getProperty ( name );
         if ( ret != null )
             ret = ret.trim ();
-        // System.err.println ( "getTrimmedProperty ( " + name + " ) returning:
-        // " + ret );
         return ret;
     }
 
@@ -144,14 +142,10 @@ public abstract class AbstractUserTransactionService implements
     protected static String findOrCreateFolder ( String path )
     {
         File ret = new File ( "." );
-        // current dir is default to return
-        // System.out.println ( "Creating path: " + path );
         if ( path != null ) {
             File tmp = new File ( path );
             if ( tmp.exists () ) {
                 if ( tmp.isDirectory () ) {
-                    // System.err.println ( "Using existing directory: " + path
-                    // );
                     ret = tmp;
                 } else {
                     // if exists but not a directory: use default
@@ -176,12 +170,10 @@ public abstract class AbstractUserTransactionService implements
         String result = ret.getAbsolutePath ();
         if ( !result.endsWith ( File.separator ) )
             result = result + File.separator;
-        // System.out.println ( "Returning path: " + result );
         return result;
     }
 
     private TSInitInfo info_;
-
     // the info object, needed at shutdown to remove resources
     // so that re-init calls work fine.
 
@@ -218,7 +210,7 @@ public abstract class AbstractUserTransactionService implements
          	   //(re)init so they can be ignored here (if force mode)
 
                 if ( !force ) {
-                	   //log to System.err because console file
+                   //log to System.err because console file
              	   //is closed already!!!
              	   String msg = "WARNING: error closing resource: " +
              	   			re.getMessage ();
@@ -230,7 +222,6 @@ public abstract class AbstractUserTransactionService implements
             }
 
         }
-       // Configuration.removeConsoles ();
         Enumeration logAdmins = Configuration.getLogAdministrators ();
         while ( logAdmins.hasMoreElements () ) {
             LogAdministrator admin = (LogAdministrator) logAdmins
@@ -265,7 +256,6 @@ public abstract class AbstractUserTransactionService implements
 
     public void init ( TSInitInfo info ) throws SysException
     {
-        // inspector_ = info.getTmAdminTool();
         info_ = info;
 
         // NOTE: adding resources is no longer done here,

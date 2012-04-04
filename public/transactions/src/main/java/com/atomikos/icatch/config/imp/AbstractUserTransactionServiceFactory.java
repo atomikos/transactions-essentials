@@ -39,13 +39,6 @@ public abstract class AbstractUserTransactionServiceFactory implements
 		UserTransactionServiceFactory
 {
 
-//	/**
-//	 * The name of the property that specifies whether or not a client
-//	 * transaction manager can be trusted to terminate heuristic problems.
-//	 *
-//	 * Expands to {@value}.
-//	 */
-//	public static final String TRUST_CLIENT_TM_PROPERTY_NAME = "com.atomikos.icatch.trust_client_tm";
 
 	/**
 	 * The name of the property that indicates whether JTA transactions are to
@@ -202,36 +195,6 @@ public abstract class AbstractUserTransactionServiceFactory implements
 	 */
 	public static final String CONSOLE_FILE_COUNT_PROPERTY_NAME = "com.atomikos.icatch.console_file_count";
 
-//	/**
-//	 * The name of the property indicating what SOAP commit protocols to enable.
-//	 *
-//	 * Expands to {@value}.
-//	 */
-//	public static final String SOAP_COMMIT_PROTOCOLS_PROPERTY_NAME = "com.atomikos.icatch.soap_commit_protocols";
-//
-//	/**
-//	 * The name of the property indicating the number of SOAP request threads
-//	 * (for processing incoming SOAP 2PC requests).
-//	 *
-//	 * Expands to {@value}.
-//	 */
-//	public static final String SOAP_REQUEST_THREADS_PROPERTY_NAME = "com.atomikos.icatch.soap_request_threads";
-//
-//	/**
-//	 * The name of the property indicating the SOAP host address where this
-//	 * transaction manager is listening.
-//	 *
-//	 * Expands to {@value}.
-//	 */
-//	public static final String SOAP_HOST_ADDRESS_PROPERTY_NAME = "com.atomikos.icatch.soap_host_address";
-//
-//	/**
-//	 * The name of the property indicating what TCP port the SOAP service is
-//	 * listening on.
-//	 *
-//	 * Expands to {@value}.
-//	 */
-//	public static final String SOAP_PORT_PROPERTY_NAME = "com.atomikos.icatch.soap_port";
 
 	/**
 	 * The name of the property specifying whether two-phase commit should be done concurrently with threads.

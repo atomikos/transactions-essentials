@@ -88,7 +88,6 @@ class AdminTool implements PropertyListener, ListSelectionListener
     // that listens on the state list on transaction inspection
 
     private ResourceBundle messages_;
-
     // locale-specific text
 
     /**

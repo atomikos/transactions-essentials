@@ -42,7 +42,6 @@ public class Waiter
     private int abortCount;
     // the number of aborted threads after waitForAll returns.
     private boolean noneActive;
-
     // for serial mode: true if a subtx is active.
 
     public Waiter ()

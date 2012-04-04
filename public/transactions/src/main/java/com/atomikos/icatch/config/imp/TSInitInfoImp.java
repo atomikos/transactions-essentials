@@ -34,8 +34,7 @@ import com.atomikos.icatch.config.TSInitInfo;
 import com.atomikos.icatch.system.Configuration;
 
 /**
- *
- * implementation of TSInitInfo.
+ * Implementation of TSInitInfo.
  */
 
 public class TSInitInfoImp implements TSInitInfo

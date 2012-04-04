@@ -123,22 +123,6 @@ public class LocalLogAdministrator implements ActionListener, LogAdministrator
         // size of background logo
         frame_.setSize ( defaultSize );
 
-        // try {
-        // //URL url = new URL ( "http://www.atomikos.com/Logo.GIF" );
-        // //ImageIcon img = new ImageIcon ( url );
-        // InputStream in = getClass().getResourceAsStream ( "Logo.GIF" );
-        // BufferedInputStream bin = new BufferedInputStream ( in );
-        // byte[] bytes = new byte [ bin.available() ];
-        // bin.read ( bytes );
-        // ImageIcon img = new ImageIcon ( bytes );
-        // JLabel label = new JLabel ( img );
-        // frame_.getContentPane().add ( label );
-        //
-        // }
-        // catch ( Exception e ) {
-        // e.printStackTrace();
-        // }
-
         frame_.setVisible ( true );
     }
 

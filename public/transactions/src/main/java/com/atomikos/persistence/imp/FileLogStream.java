@@ -45,8 +45,6 @@ import com.atomikos.persistence.LogStream;
 import com.atomikos.util.VersionedFile;
 
 /**
- *
- *
  * A file implementation of a LogStream.
  */
 
