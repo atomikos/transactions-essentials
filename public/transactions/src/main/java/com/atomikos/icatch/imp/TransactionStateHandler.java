@@ -161,29 +161,20 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
          for ( int i = 0; i < subtxawares_.size (); i++ ) {
          	SubTxAwareParticipant subtxaware = (SubTxAwareParticipant) subtxawares_.get ( i );
          	subtxaware.rolledback ( ct_ );
-         	// NOTE: this can NOT be done by coordinator imp.,
-         	// since that one will not know which tx is locally done!
          }
 
-         // Added (bug discovered by MM):
-         // rollback extent participants too!
          Enumeration enumm = null;
          Extent extent = ct_.getExtent ();
          if ( extent != null ) {
          	enumm = extent.getParticipants ().elements ();
          	while ( enumm.hasMoreElements () ) {
          		Participant part = (Participant) enumm.nextElement ();
-         		// participants_.push ( part );
          		addParticipant ( part );
          	}
          }
 
-
-
          ct_.localSetTransactionStateHandler ( new TxTerminatedStateHandler ( ct_, this, false ) );
 
-
-         // rollback coordinator outside SYNCH block to avoid deadlocks
          try {
              ct_.getCoordinatorImp ().rollback ();
          } catch ( HeurCommitException e ) {
@@ -209,7 +200,7 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
 
     }
 
-    // REMEMBER: don't synchronize the commit method, because it causes deadlocks
+    // IMPORTANT: don't synchronize the commit method, because it causes deadlocks
     // (since this method also indirectly locks the coordinator and the FSM)
     // This deadlock happens in particular when application commit interleaves
     // with timeout-driven rollback (during preEnter, the rollback of this same
@@ -222,10 +213,8 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
         
         //prevent concurrent rollback due to timeout
         ct_.localTestAndSetTransactionStateHandler ( this , new TxTerminatingStateHandler ( true , ct_ , this ) );
-        
-        // NOTE: this MUST be out of the synch block, since the coordinator
-        // is accessed in synch mode and hence can cause deadlocks.
-        // ALSO NOTE: this must be done BEFORE calling notifications
+
+        // NOTE: this must be done BEFORE calling notifications
         // to make sure that active recovery works for early prepares 
         if ( ct_.isLocalRoot () ) {
 
@@ -264,24 +253,18 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
         }
 
         if ( ct_.getState().equals ( TxState.MARKED_ABORT ) ) {
-        	//happens if synchronization has called setRollbackOnly -> rollback and throw error
+        	//happens if synchronization has called setRollbackOnly
         	rollback();
         	throw new RollbackException ( "The transaction was set to rollback only" );
         }
 
         // for loop to make sure that new registrations are possible during callback
         for ( int i = 0; i < subtxawares_.size (); i++ ) {
-        	SubTxAwareParticipant subtxaware = (SubTxAwareParticipant) subtxawares_
-        	.get ( i );
+        	SubTxAwareParticipant subtxaware = (SubTxAwareParticipant) subtxawares_.get ( i );
         	subtxaware.committed ( ct_ );
-        	// NOTE: this can NOT be done by coordinator imp.,
-        	// since that one will not know which tx is locally done!
         }
 
-        // change state handler to avoid other, concurrent modifications
-        // after we leave the synchronized block
-        ct_.localSetTransactionStateHandler ( new TxTerminatedStateHandler (
-        		ct_, this, true ) );
+        ct_.localSetTransactionStateHandler ( new TxTerminatedStateHandler ( ct_, this, true ) );
 
 
 
@@ -289,19 +272,17 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
 
     protected void setRollbackOnly ()
     {
-        StringHeuristicMessage msg = new StringHeuristicMessage (
-                "Transaction.setRollbackOnly was called." );
+        StringHeuristicMessage msg = new StringHeuristicMessage ( "Transaction.setRollbackOnly was called." );
         RollbackOnlyParticipant p = new RollbackOnlyParticipant ( msg );
 
         try {
         	addParticipant ( p );
         } catch ( IllegalStateException alreadyTerminated ) {
             //happens in rollback after timeout - see case 27857: ignore but log
-        	if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Error during setRollbackOnly" , alreadyTerminated );
+        	if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Ignoring error during setRollbackOnly" , alreadyTerminated );
         }
         synchronized ( this ) {
-        	ct_.localSetTransactionStateHandler ( new TxRollbackOnlyStateHandler ( ct_,
-                this ) );
+        	ct_.localSetTransactionStateHandler ( new TxRollbackOnlyStateHandler ( ct_,this ) );
         }
 
     }
@@ -309,8 +290,8 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
     public void committed ( CompositeTransaction subtx )
     {
         CompositeTransactionImp ct = (CompositeTransactionImp) subtx;
-        Extent toAdd = subtx.getTransactionControl ().getExtent ();
-        Extent target = ct_.getExtent ();
+        Extent toAdd = subtx.getTransactionControl().getExtent();
+        Extent target = ct_.getExtent();
         target.add ( toAdd );
 
         SubTransactionCoordinatorParticipant part = new SubTransactionCoordinatorParticipant ( ct.getCoordinatorImp () );

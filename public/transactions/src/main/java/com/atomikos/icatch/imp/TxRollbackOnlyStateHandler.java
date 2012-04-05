@@ -33,8 +33,6 @@ import com.atomikos.icatch.SysException;
 import com.atomikos.icatch.TxState;
 
 /**
- *
- *
  * A rollback only state handler.
  */
 
@@ -50,22 +48,19 @@ class TxRollbackOnlyStateHandler extends TransactionStateHandler
     protected RecoveryCoordinator addParticipant ( Participant participant )
     throws SysException, java.lang.IllegalStateException
     {
-    	// see case 28843
-    	// accept the participant, but call rollback
-    	// immediately
+    	// see case 28843: accept the participant, but call rollback immediately
     	try {
-    		participant.rollback ();
+    		participant.rollback();
     	} catch ( Exception ignore ) {
     	}
 
-    	return getCT ().getCoordinatorImp ();
+    	return getCT().getCoordinatorImp();
     }
 
     protected CompositeTransaction createSubTransaction () throws SysException,
             IllegalStateException
     {
-        // creating a new subtx is not allowed to avoid that people
-        // keep adding work to that one.
+        // creating a new subtx is not allowed to avoid that people keep adding work to that one.
         throw new IllegalStateException ( "Transaction is marked for rollback" );
     }
 
@@ -73,11 +68,11 @@ class TxRollbackOnlyStateHandler extends TransactionStateHandler
     protected void commit () throws SysException,
             java.lang.IllegalStateException, RollbackException
     {
-        rollbackWithStateCheck ();
+        rollbackWithStateCheck();
         throw new RollbackException ( "Transaction set to rollback only" );
     }
 
-    protected Object getState ()
+    protected Object getState()
     {
         return TxState.MARKED_ABORT;
     }

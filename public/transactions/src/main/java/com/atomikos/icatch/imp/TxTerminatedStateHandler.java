@@ -35,8 +35,6 @@ import com.atomikos.icatch.SysException;
 import com.atomikos.icatch.TxState;
 
 /**
- *
- *
  * A transaction terminated state handler.
  */
 
@@ -67,7 +65,7 @@ class TxTerminatedStateHandler extends TransactionStateHandler
             // accept the participant, but call rollback immediately
         	// cf JBoss
             try {
-                participant.rollback ();
+                participant.rollback();
             } catch ( Exception ignore ) {
             }
         } else {
@@ -76,7 +74,7 @@ class TxTerminatedStateHandler extends TransactionStateHandler
             throw new IllegalStateException ( "Transaction no longer active" );
         }
 
-        return getCT ().getCoordinatorImp ();
+        return getCT().getCoordinatorImp();
     }
 
     protected void registerSynchronization ( Synchronization sync )
@@ -94,7 +92,7 @@ class TxTerminatedStateHandler extends TransactionStateHandler
         else {
             // accept the participant, but call rollback immediately
             // needed to allow JBoss integration for marked aborts
-            subtxaware.rolledback ( getCT () );
+            subtxaware.rolledback ( getCT() );
         }
     }
 
@@ -111,9 +109,9 @@ class TxTerminatedStateHandler extends TransactionStateHandler
         throw new IllegalStateException ( "Transaction no longer active" );
     }
 
-    protected Object getState ()
+    protected Object getState()
     {
-        if ( commit_ ) return getCT ().getCoordinatorImp ().getState ();
+        if ( commit_ ) return getCT().getCoordinatorImp().getState();
         else {
         	// Because we have no rolled back state, we return marked abort.
             // This should be indistinguishable for the client: a later rollback

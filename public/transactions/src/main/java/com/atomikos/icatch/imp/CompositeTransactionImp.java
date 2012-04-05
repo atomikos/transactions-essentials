@@ -48,9 +48,7 @@ import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 
 /**
- *
  * A complete composite transaction implementation for use in the local VM.
- *
  */
 
 public class CompositeTransactionImp
@@ -335,7 +333,7 @@ extends AbstractCompositeTransaction implements
             HeurHazardException, SysException, SecurityException,
             RollbackException
     {
-        getTerminator ().commit ();
+        getTerminator().commit();
     }
 
 
@@ -345,7 +343,7 @@ extends AbstractCompositeTransaction implements
      */
     public void rollback () throws IllegalStateException, SysException
     {
-        getTerminator ().rollback ();
+        getTerminator().rollback();
     }
 
     /**
@@ -360,28 +358,24 @@ extends AbstractCompositeTransaction implements
     /**
      * @see com.atomikos.finitestates.FSMEnterListener#preEnter(com.atomikos.finitestates.FSMEnterEvent)
      */
-    public void entered ( FSMEnterEvent event )
+    public void entered ( FSMEnterEvent coordinatorTerminatedEvent )
     {
-        // if the state of this subtx is still active then
-        // we have a timedout subtx, meaning it has to be
-        // rolled back
-
-        if ( getState ().equals ( TxState.ACTIVE )
-                || getState ().equals ( TxState.MARKED_ABORT ) ) {
+        if ( getState ().equals ( TxState.ACTIVE ) || getState ().equals ( TxState.MARKED_ABORT ) ) {
+        	// our coordinator terminated and we did not -> coordinator must have seen a timeout/abort 
             try {
             	boolean recoverableWhileActive = false;
             	Boolean pref = coordinator_.isRecoverableWhileActive();
             	if ( pref != null ) recoverableWhileActive = pref.booleanValue();
             	if ( !recoverableWhileActive && !( stateHandler_ instanceof TxTerminatedStateHandler ) ) {
-            		//see case 27857: keep tx context for thread
-            		//note: check for TxTerminatedStateHandler differentiates regular rollback from timeout/rollback !!!
-            		setRollbackOnly();
+            		// note: check for TxTerminatedStateHandler differentiates regular rollback from timeout/rollback !!!           		          		
+            		setRollbackOnly(); // see case 27857: keep tx context for thread on timeout
             	} else  {
-            		rollback ();
+            		rollback();
             	}
 
             } catch ( Exception e ) {
-                // ignore
+                // ignore but log
+            	LOGGER.logDebug("Ignoring error during event callback",e);
             }
         }
 
