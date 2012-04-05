@@ -31,6 +31,8 @@ import com.atomikos.icatch.RecoveryCoordinator;
 import com.atomikos.icatch.RollbackException;
 import com.atomikos.icatch.SysException;
 import com.atomikos.icatch.TxState;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 
 /**
  * A rollback only state handler.
@@ -38,6 +40,7 @@ import com.atomikos.icatch.TxState;
 
 class TxRollbackOnlyStateHandler extends TransactionStateHandler
 {
+	private static final Logger LOGGER = LoggerFactory.createLogger(TxRollbackOnlyStateHandler.class);
 
     protected TxRollbackOnlyStateHandler ( CompositeTransactionImp ct ,
             TransactionStateHandler handler )
@@ -52,6 +55,7 @@ class TxRollbackOnlyStateHandler extends TransactionStateHandler
     	try {
     		participant.rollback();
     	} catch ( Exception ignore ) {
+    		LOGGER.logDebug("Ignoring exception on participant rollback",ignore);
     	}
 
     	return getCT().getCoordinatorImp();

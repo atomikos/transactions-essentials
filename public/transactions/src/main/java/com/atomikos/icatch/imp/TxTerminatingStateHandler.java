@@ -122,9 +122,7 @@ class TxTerminatingStateHandler extends TransactionStateHandler
 		if ( committing ) {
 			//happens legally if synchronizations call this method!
 			super.setRollbackOnly();
-		}
-
-		//else ignore: already rolling back; this is consistent with what is asked
+		} //else ignore: already rolling back; this is consistent with what is asked
 	}
 
 }

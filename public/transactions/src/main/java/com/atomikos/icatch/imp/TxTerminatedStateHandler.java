@@ -70,7 +70,7 @@ class TxTerminatedStateHandler extends TransactionStateHandler
             try {
                 participant.rollback();
             } catch ( Exception ignore ) {
-            	LOGGER.logDebug("Ignoring error on rollback",ignore);
+            	LOGGER.logDebug("Ignoring error on participant rollback",ignore);
             }
         } else {
             // transaction already committed, possibly with 2PC
