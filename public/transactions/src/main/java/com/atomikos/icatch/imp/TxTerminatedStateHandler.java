@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2012 Atomikos <info@atomikos.com>
  *
  * This code ("Atomikos TransactionsEssentials"), by itself,
  * is being distributed under the
@@ -33,6 +33,8 @@ import com.atomikos.icatch.SubTxAwareParticipant;
 import com.atomikos.icatch.Synchronization;
 import com.atomikos.icatch.SysException;
 import com.atomikos.icatch.TxState;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 
 /**
  * A transaction terminated state handler.
@@ -40,6 +42,7 @@ import com.atomikos.icatch.TxState;
 
 class TxTerminatedStateHandler extends TransactionStateHandler
 {
+	private static Logger LOGGER = LoggerFactory.createLogger(TxTerminatedStateHandler.class);
 
     private boolean commit_;
 
@@ -67,6 +70,7 @@ class TxTerminatedStateHandler extends TransactionStateHandler
             try {
                 participant.rollback();
             } catch ( Exception ignore ) {
+            	LOGGER.logDebug("Ignoring error on rollback",ignore);
             }
         } else {
             // transaction already committed, possibly with 2PC
@@ -96,8 +100,7 @@ class TxTerminatedStateHandler extends TransactionStateHandler
         }
     }
 
-    protected void rollbackWithStateCheck () throws java.lang.IllegalStateException,
-            SysException
+    protected void rollbackWithStateCheck () throws java.lang.IllegalStateException, SysException
 
     {
         throw new IllegalStateException ( "Transaction no longer active" );

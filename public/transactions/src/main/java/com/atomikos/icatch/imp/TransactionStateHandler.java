@@ -168,7 +168,7 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
          if ( extent != null ) {
          	enumm = extent.getParticipants ().elements ();
          	while ( enumm.hasMoreElements () ) {
-         		Participant part = (Participant) enumm.nextElement ();
+         		Participant part = (Participant) enumm.nextElement();
          		addParticipant ( part );
          	}
          }
@@ -176,7 +176,7 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
          ct_.localSetTransactionStateHandler ( new TxTerminatedStateHandler ( ct_, this, false ) );
 
          try {
-             ct_.getCoordinatorImp ().rollback ();
+             ct_.getCoordinatorImp().rollback();
          } catch ( HeurCommitException e ) {
              errors.push ( e );
              throw new SysException ( "Unexpected error in rollback", errors );
@@ -192,10 +192,8 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
     protected void rollbackWithStateCheck () throws java.lang.IllegalStateException,
             SysException
     {
-
         //prevent concurrent commits - relevant if this is a timeout thread
         ct_.localTestAndSetTransactionStateHandler ( this , new TxTerminatingStateHandler ( false , ct_ , this ) );
-
         rollback();
 
     }
@@ -228,9 +226,7 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
         	}
         }
 
-        if ( subtxs_ > 0 )
-        	throw new IllegalStateException (
-        			"active subtransactions exist" );
+        if ( subtxs_ > 0 ) throw new IllegalStateException ( "Active subtransactions exist" );
 
         // BEFORE calling SubTxAwares, make sure that synchronizations
         // are called. This is because the calling thread must still be
@@ -246,14 +242,14 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
         	try {
         		sync.beforeCompletion ();
         	} catch ( RuntimeException error ) {
-        		//see case 24246: rollback only
+        		// see case 24246: rollback only
         		setRollbackOnly();
         		LOGGER.logWarning ( "Unexpected error in beforeCompletion: " , error );
         	}
         }
 
         if ( ct_.getState().equals ( TxState.MARKED_ABORT ) ) {
-        	//happens if synchronization has called setRollbackOnly
+        	// happens if synchronization has called setRollbackOnly
         	rollback();
         	throw new RollbackException ( "The transaction was set to rollback only" );
         }
@@ -294,7 +290,7 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
         Extent target = ct_.getExtent();
         target.add ( toAdd );
 
-        SubTransactionCoordinatorParticipant part = new SubTransactionCoordinatorParticipant ( ct.getCoordinatorImp () );
+        SubTransactionCoordinatorParticipant part = new SubTransactionCoordinatorParticipant ( ct.getCoordinatorImp() );
         addParticipant ( part );
       
         localDecSubTxCount();
@@ -305,42 +301,34 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
         localDecSubTxCount();
     }
 
-    protected abstract Object getState ();
+    protected abstract Object getState();
 
 
-    /**
-     * @return List The subtx awares
-     */
-    protected List getSubtxawares ()
+    protected List getSubtxawares()
     {
         return subtxawares_;
     }
 
-    protected CompositeTransactionImp getCT ()
+    protected CompositeTransactionImp getCT()
     {
         return ct_;
     }
 
-    /**
-     * @return int The subtx count
-     */
-    protected int getSubTransactionCount ()
+
+    protected int getSubTransactionCount()
     {
         return localGetSubTxCount();
     }
 
-    /**
-     * @return Stack The synchronizations
-     */
-    protected Stack getSynchronizations ()
+    protected Stack getSynchronizations()
     {
         return synchronizations_;
     }
 
     protected void addSynchronizations ( Stack synchronizations )
     {
-        while ( !synchronizations.empty () ) {
-            Synchronization next = (Synchronization) synchronizations.pop ();
+        while ( !synchronizations.empty() ) {
+            Synchronization next = (Synchronization) synchronizations.pop();
             localPushSynchronization ( next );
         }
     }
