@@ -72,14 +72,15 @@ class HeurMixedStateHandler extends CoordinatorStateHandler
 
         // this state can only be reached through COMMITTING or ABORTING
         // so getCommitted can not be null
-        boolean committed = getCommitted ().booleanValue ();
-
+    	Boolean commitDecided = getCommitted();
+        
         //replay does remove -> re-add hazards each time
         addAllForReplay ( hazards_.keySet() );
 
         Stack replayStack = getReplayStack ();
         boolean replay = false;
-        if ( !replayStack.empty () ) {
+        if ( !replayStack.empty ()  && commitDecided != null ) {
+        	boolean committed = commitDecided.booleanValue ();
         	replay = true;
             int count = replayStack.size ();
             TerminationResult result = new TerminationResult ( count );

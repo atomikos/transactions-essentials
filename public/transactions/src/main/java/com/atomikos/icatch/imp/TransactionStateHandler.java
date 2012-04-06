@@ -268,15 +268,7 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
 
     protected void setRollbackOnly ()
     {
-        StringHeuristicMessage msg = new StringHeuristicMessage ( "Transaction.setRollbackOnly was called." );
-        RollbackOnlyParticipant p = new RollbackOnlyParticipant ( msg );
-
-        try {
-        	addParticipant ( p );
-        } catch ( IllegalStateException alreadyTerminated ) {
-            //happens in rollback after timeout - see case 27857: ignore but log
-        	if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Ignoring error during setRollbackOnly" , alreadyTerminated );
-        }
+    	ct_.getCoordinatorImp().setRollbackOnly();
         synchronized ( this ) {
         	ct_.localSetTransactionStateHandler ( new TxRollbackOnlyStateHandler ( ct_,this ) );
         }

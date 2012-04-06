@@ -423,6 +423,8 @@ public abstract class AbstractJmsSenderTemplate
 	 * @throws JMSException
 	 */
 	public void sendTextMessage(String content) throws JMSException {
+		retrieveDestinationIfNecessary();
+		retrieveReplyToDestinationIfNecessary();
 		SendTextMessageCallback cb = new SendTextMessageCallback ( content , getDestination() , getReplyToDestination() , getDeliveryMode() , getPriority() , getTimeToLive() );
 		executeCallback ( cb );
 	}
@@ -435,6 +437,8 @@ public abstract class AbstractJmsSenderTemplate
 	 * @throws JMSException
 	 */
 	public void sendMapMessage(Map content) throws JMSException {
+		retrieveDestinationIfNecessary();
+		retrieveReplyToDestinationIfNecessary();
 		SendMapMessageCallback cb = new SendMapMessageCallback ( content , getDestination() , getReplyToDestination() , getDeliveryMode() , getPriority() , getTimeToLive() );
 		executeCallback ( cb );
 	}
@@ -446,6 +450,8 @@ public abstract class AbstractJmsSenderTemplate
 	 * @throws JMSException
 	 */
 	public void sendObjectMessage(Serializable content) throws JMSException {
+		retrieveDestinationIfNecessary();
+		retrieveReplyToDestinationIfNecessary();
 		SendObjectMessageCallback cb = new SendObjectMessageCallback ( content , getDestination() , getReplyToDestination() , getDeliveryMode() , getPriority() , getTimeToLive() );
 		executeCallback ( cb );
 	}
@@ -457,6 +463,8 @@ public abstract class AbstractJmsSenderTemplate
 	 * @throws JMSException
 	 */
 	public void sendBytesMessage(byte[] content) throws JMSException {
+		retrieveDestinationIfNecessary();
+		retrieveReplyToDestinationIfNecessary();
 		SendBytesMessageCallback cb = new SendBytesMessageCallback ( content , getDestination() , getReplyToDestination() , getDeliveryMode() , getPriority() , getTimeToLive() );
 		executeCallback ( cb );
 	}

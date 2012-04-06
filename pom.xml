@@ -232,7 +232,7 @@
 	<!--TODO prevent tests execution during the build -->
 	<profiles>
 		<profile>
-			<id>default</id>
+			<id>all</id>
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>

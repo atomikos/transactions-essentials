@@ -267,7 +267,7 @@ public class BaseTransactionManager implements CompositeTransactionManager,
         } else {
         	if(LOGGER.isDebugEnabled()){
         		LOGGER.logDebug( "getCompositeTransaction ( " + tid
-                    + " ) returning NULL!");
+                    + " ) returning null");
         	}
         }
         return ret;
