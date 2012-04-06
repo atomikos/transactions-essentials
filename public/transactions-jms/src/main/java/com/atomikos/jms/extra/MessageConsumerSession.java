@@ -522,10 +522,10 @@ class MessageConsumerSession
 	                    Message msg = null;
 
 	                    while ( receiver == null ) {
-	                    	try {	
+	                    	try {
 	                    		receiver = refreshJmsResources ();
 	                    	} catch ( JMSException connectionGone ) {
-	                    		Configuration.logWarning ( "Error refreshing JMS connection" , connectionGone );
+	                    		LOGGER.logWarning ( "Error refreshing JMS connection" , connectionGone );
 	                    		closeJmsResources(false);
 	                    		// wait a while to avoid OutOfMemoryError with MQSeries
 	                    		// cf case 73406
