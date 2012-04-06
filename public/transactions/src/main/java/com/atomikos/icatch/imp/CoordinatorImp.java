@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2012 Atomikos <info@atomikos.com>
  *
  * This code ("Atomikos TransactionsEssentials"), by itself,
  * is being distributed under the
@@ -998,10 +998,10 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     	} catch ( IllegalStateException alreadyTerminated ) {
     		//happens in rollback after timeout - see case 27857
     		//ignore but log
-    		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "Error during setRollbackOnly" , alreadyTerminated );
+    		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Error during setRollbackOnly" , alreadyTerminated );
     	} catch ( RollbackException e ) {
     		//ignore: corresponds to desired outcome
-    		if ( Configuration.isDebugLoggingEnabled() ) Configuration.logDebug ( "Error during setRollbackOnly" , e );
+    		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Error during setRollbackOnly" , e );
         }
     }
 
