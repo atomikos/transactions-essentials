@@ -4,11 +4,11 @@
 	<parent>
 		<groupId>com.atomikos</groupId>
 		<artifactId>ate</artifactId>
-		<version>3.7.2</version>
+		<version>3.7.3-SNAPSHOT</version>
 	</parent>
 	<groupId>com.atomikos</groupId>
 	<artifactId>atomikos-util</artifactId>
-	<version>3.7.2</version>
+	<version>3.7.3-SNAPSHOT</version>
 	<name>Atomikos Util</name>
 	<dependencies>
 		<dependency>
