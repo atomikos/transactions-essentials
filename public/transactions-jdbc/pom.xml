@@ -4,18 +4,18 @@
     <parent>
         <groupId>com.atomikos</groupId>
         <artifactId>ate</artifactId>
-        <version>3.7.2-SNAPSHOT</version>
+        <version>3.7.2</version>
     </parent>
     <groupId>com.atomikos</groupId>
     <artifactId>transactions-jdbc</artifactId>
-    <version>3.7.2-SNAPSHOT</version>
+    <version>3.7.2</version>
     <name>Transactions JDBC</name>
    
     <dependencies>
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>transactions-jta</artifactId>
-            <version>3.7.2-SNAPSHOT</version>
+            <version>3.7.2</version>
         </dependency>
     </dependencies>
 </project>
