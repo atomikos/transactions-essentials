@@ -102,6 +102,8 @@ public abstract class XATransactionalResource implements TransactionalResource
 
     // the unique name that is used for all our XID branches
 
+    private static final String MAX_LONG_STR = String.valueOf(Long.MAX_VALUE);
+    private static final int MAX_LONG_LEN = MAX_LONG_STR.getBytes().length;
     /**
      * Construct a new instance with a default XidFactory.
      *
@@ -116,12 +118,12 @@ public abstract class XATransactionalResource implements TransactionalResource
         servername_ = servername;
         siblingmappers_ = new Hashtable ();
         // name should be less than 64 for xid compatibility
-        String maxLong = "" + Long.MAX_VALUE;
+
         //branch id is server name + long value!
-        String testName = servername + maxLong;
-        if ( testName.getBytes ().length > 64 )
+
+        if ( servername.getBytes ().length > (64- MAX_LONG_LEN) )
             throw new RuntimeException (
-                    "Max length of resource name exceeded: should be less than " + ( 64 - maxLong.getBytes().length ) );
+                    "Max length of resource name exceeded: should be less than " + ( 64 - MAX_LONG_LEN ) );
         xidFact_ = new DefaultXidFactory ();
         closed_ = false;
         weakCompare_ = false;

@@ -26,6 +26,7 @@
 		<module>transactions-osgi</module>
 		<module>transactions-hibernate2</module>
 		<module>transactions-hibernate3</module>
+		<module>transactions-eclipselink</module>
 	</modules>
 
 

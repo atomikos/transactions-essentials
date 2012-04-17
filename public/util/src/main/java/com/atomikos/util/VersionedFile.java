@@ -108,7 +108,8 @@ public class VersionedFile
         int startpos = getBaseName().length ();
         String suffix = name.substring ( startpos, lastpos );
         try {
-			ret = (new Long ( suffix )).longValue ();
+
+			ret = Long.valueOf( suffix );
 		} catch ( NumberFormatException e ) {
 			IllegalArgumentException err = new IllegalArgumentException ( "Error extracting version from file: " + name );
 			err.initCause ( e );
