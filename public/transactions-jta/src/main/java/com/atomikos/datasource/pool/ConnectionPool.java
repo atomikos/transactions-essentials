@@ -92,7 +92,9 @@ public class ConnectionPool implements XPooledConnectionEventListener
 			}
 		});
 		TaskManager.getInstance().executeTask ( maintenanceTimer );
-
+		if ( properties != null ){
+			name = properties.getUniqueResourceName();
+		}
 	}
 
 	private Reapable recycleConnectionIfPossible ( HeuristicMessage hmsg ) throws Exception
@@ -326,10 +328,13 @@ public class ConnectionPool implements XPooledConnectionEventListener
 		this.notify();
 
 	}
-
+	String name = "";
 	public String toString() {
-		String name = "";
-		if ( properties != null ) name = properties.getUniqueResourceName();
+
+
+
+
+
 		return "atomikos connection pool '" + name + "'";
 	}
 
