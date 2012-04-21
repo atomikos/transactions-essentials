@@ -182,7 +182,8 @@ class UserTransactionServiceImp extends AbstractJtaUserTransactionService
 
         // make sure that no other instance is running with the same log
         // by setting a lock file
-        lockfile_ = new File ( logdir + logname + ".lck" );
+        lockfile_ = new File(logdir,logname + ".lck");
+        //lockfile_ = new File ( logdir + logname + ".lck" );
 
         if ( enableRecovery ) {
         	 //ISSUE 10077: don't complain about lock file if no logging
