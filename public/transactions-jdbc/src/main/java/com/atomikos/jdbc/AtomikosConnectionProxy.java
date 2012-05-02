@@ -79,7 +79,8 @@ class AtomikosConnectionProxy extends AbstractConnectionProxy
 	{
 		if(toString==null){
 			StringBuffer ret = new StringBuffer();
-			ret.append ( "atomikos connection proxy for " + delegate );
+			ret.append ( "atomikos connection proxy for ");
+			ret.append (delegate);
 			toString= ret.toString();
 		}
 		return toString;
