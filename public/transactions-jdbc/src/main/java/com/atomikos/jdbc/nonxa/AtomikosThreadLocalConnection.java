@@ -435,7 +435,8 @@ implements JtaAwareNonXaConnection
 	public String toString()
 	{
 		StringBuffer ret = new StringBuffer();
-		ret.append ( "atomikos non-xa connection proxy for " + wrapped );
+		ret.append ( "atomikos non-xa connection proxy for ");
+		ret.append(wrapped);
 		return ret.toString();
 	}
 
