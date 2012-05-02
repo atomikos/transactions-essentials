@@ -150,7 +150,7 @@ public abstract class AbstractUserTransactionService implements
                 } else {
                     // if exists but not a directory: use default
                     String msg = path + " is not a directory - using default";
-                    System.err.println ( msg );
+                    LOGGER.logWarning( msg );
                 }
             } else {
                 // file does not exist; attempt to create
@@ -159,10 +159,10 @@ public abstract class AbstractUserTransactionService implements
                     if ( IOHelper.createPathTo ( tmp, true ) ) {
                         ret = tmp;
                     } else {
-                        System.err.println ( msg );
+                    	LOGGER.logWarning ( msg );
                     }
                 } catch ( IOException e ) {
-                    System.err.println ( msg );
+                	LOGGER.logWarning ( msg );
                 }
             }
         }
@@ -214,7 +214,7 @@ public abstract class AbstractUserTransactionService implements
              	   //is closed already!!!
              	   String msg = "WARNING: error closing resource: " +
              	   			re.getMessage ();
-                	   System.err.println ( msg );
+             	   	   LOGGER.logWarning ( msg );
                 	   re.printStackTrace();
                 }
 
