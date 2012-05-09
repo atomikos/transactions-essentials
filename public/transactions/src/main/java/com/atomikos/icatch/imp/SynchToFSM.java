@@ -42,17 +42,20 @@ class SynchToFSM implements FSMEnterListener
 
     private Synchronization synch_;
 
-    private boolean needsNotificationOfDecision_;
+    private boolean aftercompletion_;
 
-    private boolean needsNotificationOfTermination_;
+    private boolean termination_;
 
+    // to avoid that listeners (e.g. pooled connections)
+    // add themselves to the pool twice. This would be
+    // very dangerous!
 
     SynchToFSM ( Synchronization s )
     {
-        super();
+        super ();
         synch_ = s;
-        needsNotificationOfDecision_ = true;
-        needsNotificationOfTermination_ = true;
+        aftercompletion_ = false;
+        termination_ = false;
     }
     
     private void doAfterCompletion ( TxState state ) 
@@ -69,28 +72,37 @@ class SynchToFSM implements FSMEnterListener
     {
     	
         if ( e != null ) {
-        	if ( needsNotificationOfDecision_ ) { 
-        		if ( e.getState ().equals ( TxState.COMMITTING ) ) {
-        			doAfterCompletion ( TxState.COMMITTING );
-        		} else if ( e.getState ().equals ( TxState.ABORTING ) ) {
-        			doAfterCompletion ( TxState.ABORTING );
-        		}
-        		needsNotificationOfDecision_ = false;
-        	} else if ( needsNotificationOfTermination_ ) { 
-        		if ( e.getState ().equals ( TxState.TERMINATED )) {
-        			doAfterCompletion ( TxState.TERMINATED );
-        			needsNotificationOfDecision_ = false;
-        		} else if ( e.getState ().equals ( TxState.HEUR_MIXED )) {
-        			doAfterCompletion ( TxState.HEUR_MIXED );
-        		} else if ( e.getState ().equals ( TxState.HEUR_ABORTED )) {
-        			doAfterCompletion ( TxState.HEUR_ABORTED );
-        		} else if ( e.getState ().equals ( TxState.HEUR_HAZARD )) {
-        			doAfterCompletion ( TxState.HEUR_HAZARD );
-        		} else if ( e.getState ().equals ( TxState.HEUR_COMMITTED )) {
-        			doAfterCompletion ( TxState.HEUR_COMMITTED );
-        		}
-        		needsNotificationOfTermination_ = false;
-        	}
-        }
+            if ( e.getState ().equals ( TxState.COMMITTING )
+                    && (!aftercompletion_) ) {
+                doAfterCompletion ( TxState.COMMITTING );
+                aftercompletion_ = true;
+            } else if ( e.getState ().equals ( TxState.ABORTING )
+                    && (!aftercompletion_) ) {
+            	doAfterCompletion ( TxState.ABORTING );
+                aftercompletion_ = true;
+            } else if ( e.getState ().equals ( TxState.TERMINATED )
+                    && !termination_ ) {
+            	doAfterCompletion ( TxState.TERMINATED );
+                aftercompletion_ = true;
+                termination_ = true;
+            } else if ( e.getState ().equals ( TxState.HEUR_MIXED )
+                    && !termination_ ) {
+            	doAfterCompletion ( TxState.HEUR_MIXED );
+                termination_ = true;
+
+            } else if ( e.getState ().equals ( TxState.HEUR_ABORTED )
+                    && !termination_ ) {
+            	doAfterCompletion ( TxState.HEUR_ABORTED );
+                termination_ = true;
+            } else if ( e.getState ().equals ( TxState.HEUR_HAZARD )
+                    && !termination_ ) {
+            	doAfterCompletion ( TxState.HEUR_HAZARD );
+                termination_ = true;
+            } else if ( e.getState ().equals ( TxState.HEUR_COMMITTED )
+                    && !termination_ ) {
+            	doAfterCompletion ( TxState.HEUR_COMMITTED );
+                termination_ = true;
+            }
+        }// if
     }
 }
