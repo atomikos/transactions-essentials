@@ -89,7 +89,6 @@ class SynchToFSM implements FSMEnterListener
                     && !termination_ ) {
             	doAfterCompletion ( TxState.HEUR_MIXED );
                 termination_ = true;
-
             } else if ( e.getState ().equals ( TxState.HEUR_ABORTED )
                     && !termination_ ) {
             	doAfterCompletion ( TxState.HEUR_ABORTED );
