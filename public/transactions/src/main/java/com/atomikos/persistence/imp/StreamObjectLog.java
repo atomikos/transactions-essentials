@@ -40,9 +40,8 @@ public class StreamObjectLog implements ObjectLog
 {
 	private static final Logger LOG = LoggerFactory.createLogger(StreamObjectLog.class);
 	
-    protected LogStream logstream_;
-    protected Hashtable contentForNextCheckpoint_;
-    protected long size_;
+    private LogStream logstream_;
+    private Hashtable contentForNextCheckpoint_;
     private boolean initialized_ = false;
     private long flushesSinceLastCheckpoint_;
     private long maxFlushesBetweenCheckpoints_;
@@ -50,7 +49,6 @@ public class StreamObjectLog implements ObjectLog
     public StreamObjectLog ( LogStream logstream , long maxFlushesBetweenCheckpoints )
     {
         logstream_ = logstream;
-        size_ = 0;
         contentForNextCheckpoint_ = new Hashtable ();
         maxFlushesBetweenCheckpoints_ = maxFlushesBetweenCheckpoints;
         flushesSinceLastCheckpoint_ = 0;
@@ -167,16 +165,12 @@ public class StreamObjectLog implements ObjectLog
     }
 
 	private void rememberImageForNextCheckpoint(SystemLogImage img) {
-		if ( !contentForNextCheckpoint_.containsKey ( img.getId () ) ) {
-		    size_++;
-		}
 		contentForNextCheckpoint_.put ( img.getId (), img );
 	}
 
 	private void discardThisAndPriorImagesForNextCheckpoint(SystemLogImage img) {
 		if ( contentForNextCheckpoint_.containsKey ( img.getId () ) ) {
 		    contentForNextCheckpoint_.remove ( img.getId () );
-		    size_--;
 		}
 	}
     
