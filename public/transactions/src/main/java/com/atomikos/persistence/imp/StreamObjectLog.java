@@ -58,17 +58,23 @@ public class StreamObjectLog implements ObjectLog
 
     private synchronized void flushAndWriteCheckpointIfThresholdReached(SystemLogImage img, boolean shouldSync) throws LogException
     {
-    	logstream_.flushObject ( img , shouldSync );
+    	flushImage(img, shouldSync);
         flushesSinceLastCheckpoint_++;
         if ( flushesSinceLastCheckpoint_ >= maxFlushesBetweenCheckpoints_ ) {
             forceWriteCheckpoint();
         }
+    }
+
+	private void flushImage(SystemLogImage img, boolean shouldSync)
+			throws LogException {
+		logstream_.flushObject ( img , shouldSync );
+		// cf case 85463: also update what we checkpoint
         if ( img.isForgettable() ) {
             discardThisAndPriorImagesForNextCheckpoint(img);
         } else {
             rememberImageForNextCheckpoint(img);
         }
-    }
+	}
 
     /**
      * @see ObjectLog
