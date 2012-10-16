@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2012 Atomikos <info@atomikos.com>
  *
  * This code ("Atomikos TransactionsEssentials"), by itself,
  * is being distributed under the
@@ -27,81 +27,47 @@ package com.atomikos.persistence.imp;
 
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Stack;
 import java.util.Vector;
 
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 import com.atomikos.persistence.LogException;
 import com.atomikos.persistence.LogStream;
 import com.atomikos.persistence.ObjectLog;
 import com.atomikos.persistence.Recoverable;
 
-/**
- *
- * implementation. It keeps on growing, and only does a checkpoint on restart.
- *
- *
- */
-
 public class StreamObjectLog implements ObjectLog
 {
+	private static final Logger LOG = LoggerFactory.createLogger(StreamObjectLog.class);
+	
     protected LogStream logstream_;
-    protected Hashtable logTable_;
-
+    protected Hashtable contentForNextCheckpoint_;
     protected long size_;
     private boolean initialized_ = false;
-    protected boolean panic_ = false;
-    // if true: flush methods generate exception
-    // set by writeCheckpoint
-    // for diagnostics
+    private long flushesSinceLastCheckpoint_;
+    private long maxFlushesBetweenCheckpoints_;
 
-    private long count_;
-    // how many flushes since last checkpoint?
-
-    private long maxCount_;
-    // how many is max count until next checkpoint?
-
-    private StreamObjectLog ()
-    {
-        // not to be called
-    }
-
-    /**
-     * Constructor. Builds a new StreamObjectLog with the given logstream and
-     * the specified maximum number of entries.
-     *
-     * @param logstream
-     *            The underlying logstream. This stream should be reserved for
-     *            this instance! Upon close, the underlying stream will also be
-     *            closed.
-     * @param checkpointInterval
-     *            How many flush() calls between two checkpoints?
-     * @param console
-     *            For output of feedback.
-     *
-     */
-
-    public StreamObjectLog ( LogStream logstream , long checkpointInterval )
+    public StreamObjectLog ( LogStream logstream , long maxFlushesBetweenCheckpoints )
     {
         logstream_ = logstream;
         size_ = 0;
-        logTable_ = new Hashtable ();
-        maxCount_ = checkpointInterval;
-        count_ = 0;
+        contentForNextCheckpoint_ = new Hashtable ();
+        maxFlushesBetweenCheckpoints_ = maxFlushesBetweenCheckpoints;
+        flushesSinceLastCheckpoint_ = 0;
     }
 
-    /**
-     * Checks if count limit is reached, writes checkpoint if so.
-     */
-
-    private synchronized void writeCheckpoint () throws LogException
+    private synchronized void flushAndWriteCheckpointIfThresholdReached(SystemLogImage img, boolean shouldSync) throws LogException
     {
-
-        count_++;
-        if ( count_ >= maxCount_ ) {
-            logstream_.writeCheckpoint ( logTable_.elements () );
-            count_ = 0;
+    	logstream_.flushObject ( img , shouldSync );
+        flushesSinceLastCheckpoint_++;
+        if ( flushesSinceLastCheckpoint_ >= maxFlushesBetweenCheckpoints_ ) {
+            forceWriteCheckpoint();
         }
-
+        if ( img.isForgettable() ) {
+            discardThisAndPriorImagesForNextCheckpoint(img);
+        } else {
+            rememberImageForNextCheckpoint(img);
+        }
     }
 
     /**
@@ -110,92 +76,65 @@ public class StreamObjectLog implements ObjectLog
 
     public synchronized void init () throws LogException
     {
-        Stack errors = new Stack ();
-        Vector recovered = null;
-
-        if ( initialized_ )
-            return;
+        if (initialized_) return;
 
         try {
-            recovered = logstream_.recover ();
-
-            if ( recovered != null ) {
-
-                Enumeration entries = recovered.elements ();
-                while ( entries.hasMoreElements () ) {
-                    SystemLogImage entry = (SystemLogImage) entries
-                            .nextElement ();
-
-                    if ( entry.getId () != null ) {
-
-                        if ( !entry.isForgettable () ) {
-                            if ( !logTable_.containsKey ( entry.getId () ) )
-                                size_++;
-
-                            // this replaces previous entries of this tid
-                            logTable_.put ( entry.getId (), entry );
-
-                        } else if ( logTable_.containsKey ( entry.getId () ) ) {
-
-                            // condition needed for duplicate deletes
-                            // otherwise size will not be right.
-                            // duplicate deletes are possible because a
-                            // terminator entry may be written more than once
-
-                            logTable_.remove ( entry.getId () );
-
-                            size_--;
-
-                        }
-
-                    } // if
-                } // while
-            } // if
-
-        } // try
-        catch ( LogException le ) {
-            throw le;
-        } catch ( Exception e ) {
-
-            // bad exit condition
-            errors.push ( e );
-            throw new LogException ( e.getMessage (), errors );
-
-        }// catch
-
+            recoverFromUnderlyingLogStream();
+        } 
+        catch ( Exception e ) {
+        	logAsWarningAndRethrowAsLogException("Unexpected error during init",e,false);
+        }
         finally {
             initialized_ = true;
+            forceWriteCheckpoint();
         }
-
-        // write checkpoint, so that instance will work with new file.
-        // ONLY done if init worked OK!
-        // After this, fout_ is ready for flush
-
-        logstream_.writeCheckpoint ( logTable_.elements () );
+        
     }
+
+	private void logAsWarningAndRethrowAsLogException(String msg, Exception e, boolean forceCheckpoint)
+			throws LogException {
+		LOG.logWarning(msg , e);
+		if (forceCheckpoint) forceWriteCheckpoint();
+		if (e instanceof LogException) throw (LogException) e;
+		else throw new LogException (msg);
+	}
+
+	private void recoverFromUnderlyingLogStream() throws LogException {
+		Vector recovered = logstream_.recover ();
+		if ( recovered != null ) {
+		    Enumeration entries = recovered.elements ();
+		    while ( entries.hasMoreElements () ) {
+		        SystemLogImage entry = (SystemLogImage) entries.nextElement ();
+		        if ( entry.getId () != null ) {
+		            if ( !entry.isForgettable () ) rememberImageForNextCheckpoint(entry);
+		            else discardThisAndPriorImagesForNextCheckpoint(entry);
+		        }
+		    } 
+		}
+	}
+
+	private void forceWriteCheckpoint()
+			throws LogException {
+		logstream_.writeCheckpoint ( contentForNextCheckpoint_.elements () );
+        flushesSinceLastCheckpoint_ = 0;
+	}
 
     /**
      * @see ObjectLog
      */
 
     public synchronized Vector recover () throws LogException
-    {
-        Stack errors = new Stack ();
-        Vector hist = new Vector ();
-
-        if ( !initialized_ )
-            throw new LogException ( "Not initialized" );
-        Enumeration enumm = logTable_.elements ();
-
+    {  
+        if ( !initialized_ ) throw new LogException ( "Not initialized" );
+        
+        Vector ret = new Vector ();   
+        Enumeration enumm = contentForNextCheckpoint_.elements ();
         while ( enumm.hasMoreElements () ) {
             SystemLogImage next = (SystemLogImage) enumm.nextElement ();
-
-            hist.addElement ( next.getObjectImage ().restore () );
-        }// while
-
-        return hist;
-
-    }// recover
+            ret.addElement ( next.getObjectImage().restore() );
+        }
+        return ret;
+    }
 
     /**
      * @see ObjectLog
@@ -203,77 +142,38 @@ public class StreamObjectLog implements ObjectLog
 
     public synchronized void flush ( Recoverable rec ) throws LogException
     {
-        if ( rec == null )
-            return;
-
+        if ( rec == null ) return;
+        
         SystemLogImage simg = new SystemLogImage ( rec, false );
         flush ( simg , true );
-
     }
 
     protected synchronized void flush ( SystemLogImage img , boolean shouldSync )
             throws LogException
     {
-        Stack errors = new Stack ();
-
-        if ( img == null )
-            return;
-
-        // test if last checkpoint was written ok.
-        if ( panic_ )
-            throw new LogException ( "StreamObjectLog: PANIC" );
-
+        if ( img == null ) return;
+        
         try {
-
-            try {
-                logstream_.flushObject ( img , shouldSync );
-                writeCheckpoint ();
-                // fout_.flush();
-            } catch ( LogException ioerr ) {
-                ioerr.printStackTrace ();
-                errors.push ( ioerr );
-                // make sure that logfile remains in consistent state by
-                // checkpointing
-                try {
-                    logstream_.writeCheckpoint ( logTable_.elements () );
-                } catch ( Exception e ) {
-                    errors.push ( e );
-                }
-                throw new LogException ( ioerr.getMessage (), errors );
-            }
-
-            // replace/add local tid status in logTable_.
-            // for Checkpointing!
-
-            if ( img.isForgettable () ) {
-                if ( logTable_.containsKey ( img.getId () ) ) {
-                    // to avoid that logTable_ keeps growing!
-                    logTable_.remove ( img.getId () );
-                    size_--;
-                }
-
-            } else {
-                if ( !logTable_.containsKey ( img.getId () ) ) {
-                    size_++;
-                }
-                logTable_.put ( img.getId (), img );
-
-            }
-
-        }// try
-        catch ( LogException le ) {
-            System.err.println ( "Error in StreamObjectLog.flush() "
-                    + le.getMessage () );
-            throw le;
+        	flushAndWriteCheckpointIfThresholdReached(img,shouldSync);
         } catch ( Exception e ) {
-
-            System.err.println ( "Error in StreamObjectLog.flush() "
-                    + e.getMessage () );
-
-            errors.push ( e );
-            throw new LogException ( e.getMessage (), errors );
-        }// catch
+        	logAsWarningAndRethrowAsLogException("Unexpected error during flush", e ,true);
+        } 
     }
+
+	private void rememberImageForNextCheckpoint(SystemLogImage img) {
+		if ( !contentForNextCheckpoint_.containsKey ( img.getId () ) ) {
+		    size_++;
+		}
+		contentForNextCheckpoint_.put ( img.getId (), img );
+	}
+
+	private void discardThisAndPriorImagesForNextCheckpoint(SystemLogImage img) {
+		if ( contentForNextCheckpoint_.containsKey ( img.getId () ) ) {
+		    contentForNextCheckpoint_.remove ( img.getId () );
+		    size_--;
+		}
+	}
+    
 
     /**
      * @see ObjectLog
@@ -281,9 +181,9 @@ public class StreamObjectLog implements ObjectLog
 
     public synchronized Recoverable recover ( Object id ) throws LogException
     {
-        if ( !logTable_.containsKey ( id ) )
-            return null;
-        SystemLogImage simg = (SystemLogImage) logTable_.get ( id );
+        if ( !contentForNextCheckpoint_.containsKey ( id ) ) return null;
+        
+        SystemLogImage simg = (SystemLogImage) contentForNextCheckpoint_.get ( id );
         return simg.getObjectImage ().restore ();
 
     }
@@ -294,7 +194,7 @@ public class StreamObjectLog implements ObjectLog
 
     public synchronized void delete ( Object id ) throws LogException
     {
-        SystemLogImage previous = (SystemLogImage) logTable_.get ( id );
+        SystemLogImage previous = (SystemLogImage) contentForNextCheckpoint_.get ( id );
         if ( previous == null ) {
             // all actives are in table -> if not there: already deleted
             return;
@@ -310,21 +210,19 @@ public class StreamObjectLog implements ObjectLog
 
     public synchronized void close () throws LogException
     {
-        Stack errors = new Stack ();
         try {
-            if ( logstream_ != null ) {
-                logstream_.close ();
-            }
-            initialized_ = false;
-            // so logstream will be read on re-init ( restart of client TM )
-
+            closeUnderlyingLogStream();
         } catch ( LogException le ) {
-            throw le;
-        } catch ( Exception e ) {
-        	e.printStackTrace();
-            errors.push ( e );
-            throw new LogException ( e.getMessage (), errors );
+            logAsWarningAndRethrowAsLogException("Unexpected error during close", le, false);
+        } finally {
+        	 initialized_ = false; // to allow re-init on restart of TM
         }
     }
+
+	private void closeUnderlyingLogStream() throws LogException {
+		if ( logstream_ != null ) {
+		    logstream_.close ();
+		}
+	}
 
 }
