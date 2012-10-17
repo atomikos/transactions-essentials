@@ -100,7 +100,7 @@ public class StreamObjectLog implements ObjectLog
 		LOG.logWarning(msg , e);
 		if (forceCheckpoint) forceWriteCheckpoint();
 		if (e instanceof LogException) throw (LogException) e;
-		else throw new LogException (msg);
+		else throw new LogException (msg,e);
 	}
 
 	private void recoverFromUnderlyingLogStream() throws LogException {

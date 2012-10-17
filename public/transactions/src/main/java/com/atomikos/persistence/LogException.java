@@ -25,6 +25,8 @@
 
 package com.atomikos.persistence;
 
+import java.util.Stack;
+
 
 
 public class LogException extends Exception
@@ -42,19 +44,35 @@ public class LogException extends Exception
         super ( s );
     }
 
-    public LogException ( String s , java.util.Stack errors )
+    /**
+     * @deprecated 
+     * @param s
+     * @param errors
+     */
+    @Deprecated public LogException ( String s , java.util.Stack errors )
     {
         super ( s );
         errors_ = (java.util.Stack) errors.clone ();
     }
 
-    public LogException ( java.util.Stack errors )
+    /**
+     * @deprecated 
+     * 
+     * @param errors
+     */
+    @Deprecated public LogException ( java.util.Stack errors )
     {
         super ();
         errors_ = (java.util.Stack) errors.clone ();
     }
 
-    public java.util.Stack getErrors ()
+    public LogException(String msg, Exception e) {
+		super(msg,e);
+		errors_ = new Stack();
+		errors_.push(e);
+    }
+
+	public java.util.Stack getErrors ()
     {
         return errors_;
     }
