@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2012 Atomikos <info@atomikos.com>
  *
  * This code ("Atomikos TransactionsEssentials"), by itself,
  * is being distributed under the
@@ -27,7 +27,9 @@ package com.atomikos.persistence;
 
 import java.util.Stack;
 
-
+/**
+ * Exception signaling (fatal) errors during logging of recoverable state.
+ */
 
 public class LogException extends Exception
 {
