@@ -46,37 +46,12 @@ public class LogException extends Exception
         super ( s );
     }
 
-    /**
-     * @deprecated 
-     * @param s
-     * @param errors
-     */
-    @Deprecated public LogException ( String s , java.util.Stack errors )
-    {
-        super ( s );
-        errors_ = (java.util.Stack) errors.clone ();
-    }
-
-    /**
-     * @deprecated 
-     * 
-     * @param errors
-     */
-    @Deprecated public LogException ( java.util.Stack errors )
-    {
-        super ();
-        errors_ = (java.util.Stack) errors.clone ();
-    }
-
+ 
     public LogException(String msg, Exception e) {
 		super(msg,e);
 		errors_ = new Stack();
 		errors_.push(e);
     }
 
-	public java.util.Stack getErrors ()
-    {
-        return errors_;
-    }
 
 }

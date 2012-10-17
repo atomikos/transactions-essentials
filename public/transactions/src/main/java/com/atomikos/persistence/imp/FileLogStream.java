@@ -35,7 +35,6 @@ import java.io.ObjectOutputStream;
 import java.io.ObjectStreamException;
 import java.io.StreamCorruptedException;
 import java.util.Enumeration;
-import java.util.Stack;
 import java.util.Vector;
 
 import com.atomikos.logging.Logger;
@@ -82,7 +81,6 @@ public class FileLogStream implements LogStream
 
     private void closeOutput () throws LogException
     {
-        Stack errors = new Stack ();
 
         // try to close the previous output stream, if any.
         try {
@@ -95,8 +93,7 @@ public class FileLogStream implements LogStream
             output_ = null;
             ooutput_ = null;
         } catch ( IOException e ) {
-            errors = new Stack ();
-            throw new LogException ( "Error closing previous output", errors );
+            throw new LogException ( "Error closing previous output", e );
         }
     }
 
@@ -118,7 +115,6 @@ public class FileLogStream implements LogStream
         if ( corrupt_ )
             throw new LogException ( "Instance might be corrupted" );
 
-        Stack errors = new Stack ();
         Vector ret = new Vector ();
         InputStream in = null;
 
@@ -163,16 +159,14 @@ public class FileLogStream implements LogStream
         	String msg =  "Error in recover";
         	LOGGER.logWarning(msg,e);
             e.printStackTrace ();
-            errors.push ( e );
-            throw new LogException ( msg , errors );
+            throw new LogException ( msg , e );
         } finally {
             try {
                 if ( in != null )
                     in.close ();
 
             } catch ( IOException io ) {
-                errors.push ( io );
-                throw new LogException ( "Error in recover", errors );
+                throw new LogException ( "Error in recover", io );
             }
         }
 
@@ -182,7 +176,6 @@ public class FileLogStream implements LogStream
     public synchronized void writeCheckpoint ( Enumeration elements )
             throws LogException
     {
-        Stack errors = new Stack ();
 
         // first, make sure that any pending output stream handles
         // in the client are invalidated
@@ -219,8 +212,7 @@ public class FileLogStream implements LogStream
                  throw new LogException ( "Old file could not be deleted" );
             }
         } catch ( Exception e ) {
-            errors.push ( e );
-            throw new LogException ( "Error during checkpointing", errors );
+            throw new LogException ( "Error during checkpointing", e );
         }
 
 
@@ -237,8 +229,7 @@ public class FileLogStream implements LogStream
             ooutput_.flush ();
             if (shouldSync) output_.getFD ().sync ();
         } catch ( IOException e ) {
-            Stack errors = new Stack ();
-            throw new LogException ( e.getMessage (), errors );
+            throw new LogException ( e.getMessage (), e );
         }
     }
 

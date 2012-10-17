@@ -8,7 +8,7 @@ public class LogExceptionTestJUnit extends TestCase {
 	
 	public void testDefault() {
 		e = new LogException();
-		assertNull ( e.getErrors() );
+		assertNull ( e.getCause() );
 		assertNull ( e.getMessage() );
 	}
 	
@@ -16,23 +16,14 @@ public class LogExceptionTestJUnit extends TestCase {
 		String msg = "bla";
 		e = new LogException ( msg );
 		assertEquals ( msg , e.getMessage() );
-		assertNull ( e.getErrors() );
+		assertNull ( e.getCause() );
 	}
 	
-	public void testWithStack() {
-		java.util.Stack s = new java.util.Stack();
-		e = new LogException ( s );
-		assertNull ( e.getMessage() );
-		assertNotNull ( e.getErrors() );
-	}
-	
-	public void testWithStackAndString() {
-		java.util.Stack s = new java.util.Stack();
+	public void testWithCauseAndString() {
+		Exception cause = new Exception();
 		String msg = "bla";
-		e = new LogException ( msg , s );
+		e = new LogException ( msg , cause );
 		assertEquals ( msg , e.getMessage());
-		assertNotNull ( e.getErrors() );
+		assertSame ( cause,  e.getCause() );
 	}
-	
-	
 }
