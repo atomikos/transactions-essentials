@@ -230,7 +230,6 @@
 
 	</dependencies>
 
-
 	<!--TODO prevent tests execution during the build -->
 	<profiles>
 		<profile>
