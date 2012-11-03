@@ -42,8 +42,7 @@ import com.atomikos.logging.LoggerFactory;
  *
  */
 
-public class ClassLoadingHelper
-{
+public class ClassLoadingHelper {
 	/**
 	 * Logger for this class
 	 */
@@ -52,33 +51,32 @@ public class ClassLoadingHelper
 	/**
 	 * Creates a new dynamic proxy instance for the given delegate.
 	 *
-	 * @param classLoadersToTry The class loaders to try, in the specified list order.
-	 * @param interfaces The interfaces to add to the returned proxy.
-	 * @param delegate The underlying object that will receive the calls on the proxy.
+	 * @param classLoadersToTry
+	 *            The class loaders to try, in the specified list order.
+	 * @param interfaces
+	 *            The interfaces to add to the returned proxy.
+	 * @param delegate
+	 *            The underlying object that will receive the calls on the proxy.
 	 * @return The proxy.
 	 *
-	 * @exception IllegalArgumentException If any of the interfaces involved could
-	 * not be loaded.
+	 * @exception IllegalArgumentException
+	 *                If any of the interfaces involved could not be loaded.
 	 */
 
-	private static Object newProxyInstance (
-			List classLoadersToTry , Class[] interfaces , InvocationHandler delegate )
-		 	throws IllegalArgumentException
-	{
-
+	private static Object newProxyInstance(List classLoadersToTry, Class[] interfaces, InvocationHandler delegate) throws IllegalArgumentException {
 
 		Object ret = null;
-		ClassLoader cl = ( ClassLoader ) classLoadersToTry.get ( 0 );
-		List remainingClassLoaders = classLoadersToTry.subList ( 1, classLoadersToTry.size() );
+		ClassLoader cl = (ClassLoader) classLoadersToTry.get(0);
+		List remainingClassLoaders = classLoadersToTry.subList(1, classLoadersToTry.size());
 
 		try {
-			return Proxy.newProxyInstance ( cl , interfaces , delegate );
-		} catch ( IllegalArgumentException someClassNotFound ) {
-			if ( remainingClassLoaders.size() > 0 ) {
-				//try with remaining class loaders
-				ret = newProxyInstance ( remainingClassLoaders , interfaces , delegate );
+			return Proxy.newProxyInstance(cl, interfaces, delegate);
+		} catch (IllegalArgumentException someClassNotFound) {
+			if (remainingClassLoaders.size() > 0) {
+				// try with remaining class loaders
+				ret = newProxyInstance(remainingClassLoaders, interfaces, delegate);
 			} else {
-				//rethrow to caller
+				// rethrow to caller
 				throw someClassNotFound;
 			}
 		}
@@ -89,43 +87,45 @@ public class ClassLoadingHelper
 	/**
 	 * Creates a new dynamic proxy instance for the given delegate.
 	 *
-	 * @param classLoadersToTry The class loaders to try, in the specified list order.
-	 * @param minimumSetOfInterfaces The minimum set of interfaces required, if not all interface classes were found.
-	 * @param interfaces The interfaces to add to the returned proxy.
-	 * @param delegate The underlying object that will receive the calls on the proxy.
+	 * @param classLoadersToTry
+	 *            The class loaders to try, in the specified list order.
+	 * @param minimumSetOfInterfaces
+	 *            The minimum set of interfaces required, if not all interface classes were found.
+	 * @param interfaces
+	 *            The interfaces to add to the returned proxy.
+	 * @param delegate
+	 *            The underlying object that will receive the calls on the proxy.
 	 * @return The proxy.
 	 *
-	 * @exception IllegalArgumentException If any of the interfaces involved could
-	 * not be loaded.
+	 * @exception IllegalArgumentException
+	 *                If any of the interfaces involved could not be loaded.
 	 */
 
-	public static Object newProxyInstance ( List classLoadersToTry , Class[] minimumSetOfInterfaces , Class[] interfaces , InvocationHandler delegate )
- 	throws IllegalArgumentException
- 	{
+	public static Object newProxyInstance(List classLoadersToTry, Class[] minimumSetOfInterfaces, Class[] interfaces, InvocationHandler delegate) throws IllegalArgumentException {
 		Object ret = null;
 		try {
 			ret = newProxyInstance(classLoadersToTry, interfaces, delegate);
-		} catch ( IllegalArgumentException someClassNotFound ) {
+		} catch (IllegalArgumentException someClassNotFound) {
 			LOGGER.logWarning("could not create Atomikos proxy with all requested interfaces - trying again with minimum set of interfaces");
-			ret = newProxyInstance ( classLoadersToTry , minimumSetOfInterfaces , delegate );
+			ret = newProxyInstance(classLoadersToTry, minimumSetOfInterfaces, delegate);
 		}
 		return ret;
- 	}
+	}
 
 	/**
 	 * Loads a class with the given name.
 	 *
 	 * @param className
 	 * @return The class object
-	 * @throws ClassNotFoundException If not found
+	 * @throws ClassNotFoundException
+	 *             If not found
 	 */
-	public static Class loadClass ( String className ) throws ClassNotFoundException
-	{
+	public static Class loadClass(String className) throws ClassNotFoundException {
 		Class clazz = null;
 		try {
-			clazz = Thread.currentThread().getContextClassLoader().loadClass( className );
-		} catch ( ClassNotFoundException nf ) {
-			clazz = Class.forName ( className );
+			clazz = Thread.currentThread().getContextClassLoader().loadClass(className);
+		} catch (ClassNotFoundException nf) {
+			clazz = Class.forName(className);
 		}
 		return clazz;
 	}
@@ -133,19 +133,42 @@ public class ClassLoadingHelper
 	/**
 	 * Attempts to load a given resource from the classpath.
 	 *
-	 * @param clazz The class to use as reference re classpath.
-	 * @param resourceName The name of the resource
+	 * @param clazz
+	 *            The class to use as reference re classpath.
+	 * @param resourceName
+	 *            The name of the resource
 	 * @return The URL to the resource, or null if not found.
 	 */
-	public static URL loadResourceFromClasspath ( Class clazz , String resourceName )
-	{
+	public static URL loadResourceFromClasspath(Class clazz, String resourceName) {
 		URL ret = null;
 		// first try from package scope
-		ret = clazz.getResource ( resourceName );
-		if ( ret == null ) {
+		ret = clazz.getResource(resourceName);
+		if (ret == null) {
 			// not found in package -> try from absolute path
-			ret = clazz.getResource ( "/" + resourceName );
+			ret = clazz.getResource("/" + resourceName);
 		}
 		return ret;
+	}
+
+	public static Object newInstance(String className) {
+		try {
+			Class clazz = ClassLoadingHelper.loadClass(className);
+			// ???
+			// Constructor[] contructors= clazz.getDeclaredConstructors();
+			// contructors[0].setAccessible(true);
+
+			return clazz.newInstance();
+
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 }
