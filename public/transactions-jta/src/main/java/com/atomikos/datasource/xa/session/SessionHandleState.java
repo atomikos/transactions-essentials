@@ -125,7 +125,7 @@ public class SessionHandleState
 			Iterator it = allContexts.iterator();
 			while ( it.hasNext() ) {
 				TransactionContext b = ( TransactionContext ) it.next();
-				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": delegeting session close to " + b ) ;
+				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": delegating session close to " + b ) ;
 				b.sessionClosed();
 			}
 			closed = true;
