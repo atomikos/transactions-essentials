@@ -30,73 +30,84 @@ import java.util.Enumeration;
 import java.util.Vector;
 
 /**
-*
-*
-*A state implementation for a distributed transaction system.
-*/
+ *
+ *
+ * A state implementation for a distributed transaction system.
+ */
 
-public class TxState implements java.io.Serializable
-{
+public class TxState implements java.io.Serializable {
 
-    //force UID for backward log compatibilty
-    static final long serialVersionUID = 648321112075712930L;
+	// force UID for backward log compatibilty
+	static final long serialVersionUID = 648321112075712930L;
 
-    // public static final TxState INIT = new TxState("INIT");
-    //initialized only
-    public static final TxState ACTIVE = new TxState("ACTIVE");
-    //tx is doing stuff
-    public static final TxState MARKED_ABORT = new TxState("MARKED_ABORT");
-    //for local subtransactions: indicates that the local parent tx should not commit
-    public static final TxState LOCALLY_DONE = new TxState("LOCALLY_DONE");
-    //tx is locally finished (if compensatable: preliminary committed
-    public static final TxState PREPARING = new TxState("PREPARING");
-    //waiting for votes in 2PC prepare phase
-    public static final TxState IN_DOUBT = new TxState("IN_DOUBT");
-    //in-doubt
-    public static final TxState ABORTING = new TxState("ABORTING");
-    //in process of aborting
-    public static final TxState COMMITTING  =  new TxState("COMMITTING");
-    //in process of committing
+	// public static final TxState INIT = new TxState("INIT");
+	// initialized only
+	public static final TxState ACTIVE = new TxState("ACTIVE");
+	// tx is doing stuff
+	public static final TxState MARKED_ABORT = new TxState("MARKED_ABORT");
+	// for local subtransactions: indicates that the local parent tx should not commit
+	public static final TxState LOCALLY_DONE = new TxState("LOCALLY_DONE");
+	// tx is locally finished (if compensatable: preliminary committed
+	public static final TxState PREPARING = new TxState("PREPARING");
+	// waiting for votes in 2PC prepare phase
+	public static final TxState IN_DOUBT = new TxState("IN_DOUBT");
+	// in-doubt
+	public static final TxState ABORTING = new TxState("ABORTING");
+	// in process of aborting
+	public static final TxState COMMITTING = new TxState("COMMITTING");
+	// in process of committing
 
-    public static final TxState SUSPENDED = new TxState("SUSPENDED");
+	public static final TxState SUSPENDED = new TxState("SUSPENDED");
 
+	public static final TxState HEUR_COMMITTED = new TxState("HEUR_COMMITTED");
+	public static final TxState HEUR_ABORTED = new TxState("HEUR_ABORTED");
+	public static final TxState HEUR_MIXED = new TxState("HEUR_MIXED");
+	public static final TxState HEUR_HAZARD = new TxState("HEUR_HAZARD");
 
-    public static final TxState HEUR_COMMITTED = new TxState("HEUR_COMMITTED");
-    public static final TxState HEUR_ABORTED = new TxState("HEUR_ABORTED");
-    public static final TxState HEUR_MIXED = new TxState("HEUR_MIXED");
-    public static final TxState HEUR_HAZARD = new TxState("HEUR_HAZARD");
+	public static final TxState TERMINATED = new TxState("TERMINATED");
+	// all done with, can be forgotten about
 
-    public static final TxState TERMINATED = new TxState("TERMINATED");
-    //all done with, can be forgotten about
+	private static Enumeration elements;
 
-    public static Enumeration getStates()
-    {
+	public static Enumeration getStates() {
+		if (elements == null) {
+			Vector v = new Vector();
+			Class myClass = TxState.class;
+			Field[] fields = myClass.getFields();
+			for (int i = 0; i < fields.length; i++) {
+				try {
+					v.addElement(fields[i].get(null));
+				} catch (Exception e) {
+				}
+			}// for
 
-        Vector v = new Vector();
-        Class myClass = TxState.class;
-        Field[] fields = myClass.getFields();
-        for ( int i = 0 ; i < fields.length ; i++ ) {
-	  try {
-	      v.addElement(fields[i].get(null));
-	  }
-	  catch (Exception e) {}
-        }//for
+			elements = v.elements();
 
-        return v.elements();
-    }
+		}
+		return elements;
+	}
 
+	public static TxState valueOf(String state) {
 
+		while (elements.hasMoreElements()) {
+			TxState txState = (TxState) elements.nextElement();
+			if(txState.myName.equals(state)){
+				return txState;
+			}
+		}
+		//not found....
+		return null;
+	}
 
-    private final String myName;
+	private final String myName;
 
+	private TxState(final String s) {
+		myName = s;
+	}
 
-
-    private TxState(final String s){
-        myName = s;
-    }
-    public String toString(){
-    	return myName;
-    }
+	public String toString() {
+		return myName;
+	}
 
 	public int hashCode() {
 		return myName.hashCode();
@@ -105,36 +116,33 @@ public class TxState implements java.io.Serializable
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-//		if (obj == null)
-//			return false;
+		// if (obj == null)
+		// return false;
 		if (getClass() != obj.getClass())
 			return false;
 		TxState other = (TxState) obj;
 		return myName.equals(other.myName);
-//		if (myName == null) {
-//			if (other.myName != null)
-//				return false;
-//		} else if (!myName.equals(other.myName))
-//			return false;
-//		return true;
+		// if (myName == null) {
+		// if (other.myName != null)
+		// return false;
+		// } else if (!myName.equals(other.myName))
+		// return false;
+		// return true;
 	}
 
-
-
-//
-//    public boolean equals ( Object o )
-//    {
-//        if ( o == null || !(o instanceof TxState) )
-//	  return false;
-//        TxState state = (TxState ) o;
-//        return state.toString().equals(toString());
-//    }
-//
-//    public int hashCode()
-//    {
-//        return myName.hashCode();
-//    }
-//
-
+	//
+	// public boolean equals ( Object o )
+	// {
+	// if ( o == null || !(o instanceof TxState) )
+	// return false;
+	// TxState state = (TxState ) o;
+	// return state.toString().equals(toString());
+	// }
+	//
+	// public int hashCode()
+	// {
+	// return myName.hashCode();
+	// }
+	//
 
 }
