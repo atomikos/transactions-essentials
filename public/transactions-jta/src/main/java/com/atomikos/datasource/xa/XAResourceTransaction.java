@@ -389,14 +389,7 @@ public class XAResourceTransaction implements ResourceTransaction,
         return tid_;
     }
 
-    /**
-     * @see ResourceTransaction.
-     */
 
-    // public TransactionalResource getResource()
-    // {
-    // return resource_;
-    // }
     /**
      * @see ResourceTransaction.
      */
@@ -404,7 +397,7 @@ public class XAResourceTransaction implements ResourceTransaction,
     public void addCompensationContext ( java.util.Dictionary context )
             throws IllegalStateException
     {
-        // throw new RuntimeException("Not supported: addCompensationContext");
+
     }
 
     /**

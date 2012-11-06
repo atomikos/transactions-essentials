@@ -105,36 +105,14 @@ public class TxState implements java.io.Serializable
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-//		if (obj == null)
-//			return false;
 		if (getClass() != obj.getClass())
 			return false;
 		TxState other = (TxState) obj;
 		return myName.equals(other.myName);
-//		if (myName == null) {
-//			if (other.myName != null)
-//				return false;
-//		} else if (!myName.equals(other.myName))
-//			return false;
-//		return true;
+
 	}
 
 
-
-//
-//    public boolean equals ( Object o )
-//    {
-//        if ( o == null || !(o instanceof TxState) )
-//	  return false;
-//        TxState state = (TxState ) o;
-//        return state.toString().equals(toString());
-//    }
-//
-//    public int hashCode()
-//    {
-//        return myName.hashCode();
-//    }
-//
 
 
 }
