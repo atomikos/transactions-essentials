@@ -88,7 +88,7 @@ public class StateObjectImage implements Recoverable, ObjectImage, DataSerializa
 
 	public void writeData(DataOutput out) throws IOException {
 		out.writeUTF(img_.getClass().getName());
-
+		((DataSerializable)img_).writeData(out);
 	}
 
 	public void readData(DataInput in) throws IOException {

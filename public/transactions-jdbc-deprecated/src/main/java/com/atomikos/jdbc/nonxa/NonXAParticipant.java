@@ -25,10 +25,15 @@
 
 package com.atomikos.jdbc.nonxa;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Dictionary;
+import java.util.Iterator;
 
+import com.atomikos.icatch.DataSerializable;
 import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeurMixedException;
@@ -42,20 +47,20 @@ import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 
 /**
- * 
- * 
- * 
+ *
+ *
+ *
  * A participant for non-XA interactions. Instances are NOT recoverable in the
  * sense that commit/rollback will fail after prepare. This is an implicit
  * limitation of non-XA transactions and we want this to be made explicit in the
  * transaction logs.
- * 
- * 
- * 
- * 
+ *
+ *
+ *
+ *
  */
 
-class NonXAParticipant implements Participant, Serializable
+class NonXAParticipant implements Participant, Serializable,DataSerializable
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(NonXAParticipant.class);
 
@@ -110,7 +115,7 @@ class NonXAParticipant implements Participant, Serializable
 
     /*
      * $
-     * 
+     *
      * @see com.atomikos.icatch.Participant#prepare()
      */
     public int prepare () throws RollbackException, HeurHazardException,
@@ -191,5 +196,25 @@ class NonXAParticipant implements Participant, Serializable
     {
         heuristicMessages.add ( msg );
     }
+
+	public void writeData(DataOutput out) throws IOException {
+		out.writeBoolean(recovered);
+		out.writeInt(heuristicMessages.size());
+		for (Iterator iterator = heuristicMessages.iterator(); iterator.hasNext();) {
+			HeuristicMessage heuristicMessage = (HeuristicMessage) iterator.next();
+			out.writeUTF(heuristicMessage.toString());
+		}
+	}
+
+	public void readData(DataInput in) throws IOException {
+		recovered=in.readBoolean();
+		int nbMessages=in.readInt();
+		heuristicMessages=new ArrayList(nbMessages);
+		for (int i = 0; i < nbMessages; i++) {
+			heuristicMessages.add(new StringHeuristicMessage(in.readUTF()));
+
+		}
+
+	}
 
 }

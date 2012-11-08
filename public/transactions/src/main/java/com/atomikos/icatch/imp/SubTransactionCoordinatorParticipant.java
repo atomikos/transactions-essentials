@@ -25,8 +25,12 @@
 
 package com.atomikos.icatch.imp;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 import java.util.Dictionary;
 
+import com.atomikos.icatch.DataSerializable;
 import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeurMixedException;
@@ -34,6 +38,7 @@ import com.atomikos.icatch.HeurRollbackException;
 import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.Participant;
 import com.atomikos.icatch.RollbackException;
+import com.atomikos.icatch.StringHeuristicMessage;
 import com.atomikos.icatch.SysException;
 import com.atomikos.icatch.TransactionService;
 import com.atomikos.icatch.system.Configuration;
@@ -43,7 +48,7 @@ import com.atomikos.icatch.system.Configuration;
  * the parent transaction coordinator.
  */
 
-public class SubTransactionCoordinatorParticipant implements Participant
+public class SubTransactionCoordinatorParticipant implements Participant,DataSerializable
 {
 
     private static final long serialVersionUID = -321213151844934630L;
@@ -176,8 +181,28 @@ public class SubTransactionCoordinatorParticipant implements Participant
         if ( subordinateCoordinator != null ) { //null if recovery failed
             msgs = subordinateCoordinator.getHeuristicMessages ();
         }
-       
+
         return msgs;
     }
+
+	public void writeData(DataOutput out) throws IOException {
+		out.writeUTF(subordinateId);
+		out.writeInt(msgs.length);
+		for (int i = 0; i < msgs.length; i++) {
+			out.writeUTF(msgs[i].toString());
+		}
+		out.writeBoolean(prepareCalled);
+	}
+
+	public void readData(DataInput in) throws IOException {
+		subordinateId=in.readUTF();
+		int size=in.readInt();
+		msgs=new HeuristicMessage[size];
+
+		for (int i = 0; i < msgs.length; i++) {
+			msgs[i]=new StringHeuristicMessage(in.readUTF());
+		}
+		prepareCalled=in.readBoolean();
+	}
 
 }

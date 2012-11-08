@@ -25,8 +25,12 @@
 
 package com.atomikos.icatch.imp;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 import java.util.Dictionary;
 
+import com.atomikos.icatch.DataSerializable;
 import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeurMixedException;
@@ -38,7 +42,7 @@ import com.atomikos.icatch.StringHeuristicMessage;
 import com.atomikos.icatch.SysException;
 
 
-public class ReadOnlyParticipant implements Participant {
+public class ReadOnlyParticipant implements Participant,DataSerializable {
 
 
 	//force set UID for backward log compatibility
@@ -49,6 +53,10 @@ public class ReadOnlyParticipant implements Participant {
 	//keep coordinator ID for equality
 	private final String coordinatorId;
 
+
+	public ReadOnlyParticipant() {
+		coordinatorId=null;
+	}
 	public ReadOnlyParticipant ( CoordinatorImp coordinator )
 	{
 		this.coordinatorId = coordinator.getCoordinatorId();
@@ -116,6 +124,16 @@ public class ReadOnlyParticipant implements Participant {
 		int ret = 1;
 		if ( coordinatorId != null ) ret = coordinatorId.hashCode();
 		return ret;
+	}
+
+	public void writeData(DataOutput out) throws IOException {
+		// TODO ????
+
+	}
+
+	public void readData(DataInput in) throws IOException {
+		// TODO ????
+
 	}
 
 

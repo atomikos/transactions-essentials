@@ -67,11 +67,11 @@ public class TxState implements java.io.Serializable {
 	public static final TxState TERMINATED = new TxState("TERMINATED");
 	// all done with, can be forgotten about
 
-	private static Enumeration elements;
 
+	private static Vector v;
 	public static Enumeration getStates() {
-		if (elements == null) {
-			Vector v = new Vector();
+		if (v == null) {
+			 v = new Vector();
 			Class myClass = TxState.class;
 			Field[] fields = myClass.getFields();
 			for (int i = 0; i < fields.length; i++) {
@@ -81,22 +81,24 @@ public class TxState implements java.io.Serializable {
 				}
 			}// for
 
-			elements = v.elements();
-
 		}
-		return elements;
+		return v.elements();
 	}
 
 	public static TxState valueOf(String state) {
-
+		if(v==null){
+			getStates();
+		}
+		Enumeration elements=v.elements();
 		while (elements.hasMoreElements()) {
 			TxState txState = (TxState) elements.nextElement();
 			if(txState.myName.equals(state)){
 				return txState;
 			}
 		}
+		System.out.println(elements);
 		//not found....
-		return null;
+		throw new IllegalArgumentException(state);
 	}
 
 	private final String myName;
