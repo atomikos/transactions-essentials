@@ -212,7 +212,10 @@ public class AtomikosNonXAParticipant implements Participant, Serializable,DataS
 
     void addHeuristicMessage ( HeuristicMessage msg )
     {
-        heuristicMessages.add ( msg );
+    	if(msg!=null){
+    		heuristicMessages.add ( msg );
+    	}
+
     }
 
 	public void setReadOnly ( boolean readOnly )
@@ -236,7 +239,6 @@ public class AtomikosNonXAParticipant implements Participant, Serializable,DataS
 		heuristicMessages=new ArrayList(nbMessages);
 		for (int i = 0; i < nbMessages; i++) {
 			heuristicMessages.add(new StringHeuristicMessage(in.readUTF()));
-
 		}
 
 	}
