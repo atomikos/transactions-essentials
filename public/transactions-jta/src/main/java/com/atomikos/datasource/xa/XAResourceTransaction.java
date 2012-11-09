@@ -419,7 +419,10 @@ public class XAResourceTransaction implements ResourceTransaction,
     public void addHeuristicMessage ( HeuristicMessage mesg )
             throws IllegalStateException
     {
-        heuristicMessages_.addElement ( mesg );
+    	if(mesg!=null && mesg.toString()!=null){
+    		heuristicMessages_.addElement ( mesg );
+    	}
+
     }
 
     /**
@@ -1049,14 +1052,7 @@ public class XAResourceTransaction implements ResourceTransaction,
 	        out.writeInt(heuristicMessages_.size());
 	        for (Iterator iterator = heuristicMessages_.iterator(); iterator.hasNext();) {
 				HeuristicMessage heuristicMessage = (HeuristicMessage) iterator.next();
-
-				if(heuristicMessage.toString()!=null){
-					out.writeUTF(heuristicMessage.toString());
-				} else {
-					//why is It possible ????
-					out.writeUTF("");
-				}
-
+				out.writeUTF(heuristicMessage.toString());
 			}
 	        out.writeUTF ( resourcename_ );
 
