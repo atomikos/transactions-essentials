@@ -234,7 +234,7 @@ public class CoordinatorLogImage implements ObjectImage,DataSerializable
         }
         out.writeBoolean ( heuristicCommit_ );
         out.writeLong ( maxInquiries_ );
-        out.writeUTF(stateHandler_.getClass().getName());
+       	out.writeUTF(stateHandler_.getState().toString());
        // ((DataSerializable) stateHandler_).writeData(out);
         //instead of: out.writeObject ( stateHandler_.clone () );
         out.writeBoolean ( activity_ );
