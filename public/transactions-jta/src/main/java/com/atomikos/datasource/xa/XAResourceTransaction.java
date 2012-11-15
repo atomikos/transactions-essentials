@@ -25,6 +25,8 @@
 
 package com.atomikos.datasource.xa;
 
+import java.io.DataInput;
+import java.io.DataOutput;
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
@@ -32,6 +34,7 @@ import java.io.ObjectOutput;
 import java.io.OptionalDataException;
 import java.io.Serializable;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Stack;
 import java.util.Vector;
 
@@ -43,6 +46,7 @@ import com.atomikos.datasource.RecoverableResource;
 import com.atomikos.datasource.ResourceException;
 import com.atomikos.datasource.ResourceTransaction;
 import com.atomikos.icatch.CompositeTransaction;
+import com.atomikos.icatch.DataSerializable;
 import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeurMixedException;
@@ -57,6 +61,7 @@ import com.atomikos.icatch.TxState;
 import com.atomikos.icatch.system.Configuration;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
+import com.atomikos.util.ClassLoadingHelper;
 
 /**
  *
@@ -65,7 +70,7 @@ import com.atomikos.logging.LoggerFactory;
  */
 
 public class XAResourceTransaction implements ResourceTransaction,
-        Externalizable, Participant
+        Externalizable, Participant, DataSerializable
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(XAResourceTransaction.class);
 
@@ -407,7 +412,10 @@ public class XAResourceTransaction implements ResourceTransaction,
     public void addHeuristicMessage ( HeuristicMessage mesg )
             throws IllegalStateException
     {
-        heuristicMessages_.addElement ( mesg );
+    	if(mesg!=null && mesg.toString()!=null){
+    		heuristicMessages_.addElement ( mesg );
+    	}
+
     }
 
     /**
@@ -1024,6 +1032,54 @@ public class XAResourceTransaction implements ResourceTransaction,
 	XAResource getXAResource()
 	{
 		return xaresource_;
+	}
+
+	public void writeData(DataOutput out) throws IOException {
+		 //TODO : ???  out.writeUTF( xid_. );
+	        out.writeUTF ( tid_ );
+	        out.writeUTF ( root_ );
+	        out.writeUTF ( state_.toString() );
+	        // CLONE vector to ensure it gets re-written!
+	        //out.writeObject ( heuristicMessages_.clone () );
+
+	        out.writeInt(heuristicMessages_.size());
+	        for (Iterator iterator = heuristicMessages_.iterator(); iterator.hasNext();) {
+				HeuristicMessage heuristicMessage = (HeuristicMessage) iterator.next();
+				out.writeUTF(heuristicMessage.toString());
+			}
+	        out.writeUTF ( resourcename_ );
+
+
+	        if ( xaresource_ instanceof Serializable ) {
+	            // cf case 59238
+	            out.writeBoolean( true );
+	            byte[] bytes =  ClassLoadingHelper.toByteArray((Serializable)xaresource_);
+	            out.writeInt(bytes.length);
+	            out.write(bytes);
+	        } else {
+	            out.writeBoolean ( false );
+	        }
+
+	}
+
+	public void readData(DataInput in) throws IOException {
+		//xid_ ???
+		tid_=in.readUTF();
+		root_=in.readUTF();
+		state_=TxState.valueOf(in.readUTF());
+		int nbMessages= in.readInt();
+		heuristicMessages_=new Vector(nbMessages);
+		for (int i = 0; i < nbMessages; i++) {
+			heuristicMessages_.add(new StringHeuristicMessage(in.readUTF()));
+		}
+		resourcename_=in.readUTF();
+		boolean xaresourceSerializable=in.readBoolean();
+		if(xaresourceSerializable){
+			int size=in.readInt();
+			byte[] bytes=new byte[size];
+			in.readFully(bytes);
+			xaresource_=(XAResource)ClassLoadingHelper.toObject(bytes);
+		}
 	}
 
 }

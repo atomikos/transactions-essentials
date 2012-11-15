@@ -25,10 +25,15 @@
 
 package com.atomikos.jdbc.nonxa;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Dictionary;
+import java.util.Iterator;
 
+import com.atomikos.icatch.DataSerializable;
 import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeurMixedException;
@@ -42,24 +47,24 @@ import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 
 /**
- * 
- * 
- * 
+ *
+ *
+ *
  * A participant for non-XA interactions. Instances are NOT recoverable in the
  * sense that commit/rollback will fail after prepare. This is an implicit
  * limitation of non-XA transactions and we want this to be made explicit in the
  * transaction logs.
- * 
- * 
- * 
- * 
+ *
+ *
+ *
+ *
  */
 
-class AtomikosNonXAParticipant implements Participant, Serializable
+public class AtomikosNonXAParticipant implements Participant, Serializable,DataSerializable
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(AtomikosNonXAParticipant.class);
-    
-	
+
+
 
 	private static final long serialVersionUID = -771461092384746954L;
 
@@ -67,6 +72,8 @@ class AtomikosNonXAParticipant implements Participant, Serializable
 
     private ArrayList heuristicMessages;
 
+    public AtomikosNonXAParticipant() {
+	}
     private transient JtaAwareNonXaConnection connection;
 
     // not null iff not recovered
@@ -75,7 +82,7 @@ class AtomikosNonXAParticipant implements Participant, Serializable
     {
         heuristicMessages = new ArrayList ();
         this.connection = connection;
-        heuristicMessages.add ( new StringHeuristicMessage ( "Non-XA resource '" + name + 
+        heuristicMessages.add ( new StringHeuristicMessage ( "Non-XA resource '" + name +
                 "': warning: this resource does not support two-phase commit" ) );
     }
 
@@ -110,8 +117,8 @@ class AtomikosNonXAParticipant implements Participant, Serializable
     }
 
     /*
-     * 
-     * 
+     *
+     *
      * @see com.atomikos.icatch.Participant#prepare()
      */
     public int prepare () throws RollbackException, HeurHazardException,
@@ -144,13 +151,13 @@ class AtomikosNonXAParticipant implements Participant, Serializable
                  throw new HeurMixedException ( getHeuristicMessages () );
              }
         }
-        
-       
+
+
 
         return getHeuristicMessages ();
     }
 
-    private boolean isRecovered() 
+    private boolean isRecovered()
     {
 		return connection == null;
 	}
@@ -205,12 +212,35 @@ class AtomikosNonXAParticipant implements Participant, Serializable
 
     void addHeuristicMessage ( HeuristicMessage msg )
     {
-        heuristicMessages.add ( msg );
+    	if(msg!=null){
+    		heuristicMessages.add ( msg );
+    	}
+
     }
 
-	public void setReadOnly ( boolean readOnly ) 
+	public void setReadOnly ( boolean readOnly )
 	{
 		this.readOnly = readOnly;
+	}
+
+	public void writeData(DataOutput out) throws IOException {
+		out.writeBoolean(readOnly);
+		out.writeInt(heuristicMessages.size());
+		for (Iterator iterator = heuristicMessages.iterator(); iterator.hasNext();) {
+			HeuristicMessage heuristicMessage = (HeuristicMessage) iterator.next();
+			out.writeUTF(heuristicMessage.toString());
+		}
+
+	}
+
+	public void readData(DataInput in) throws IOException {
+		readOnly=in.readBoolean();
+		int nbMessages=in.readInt();
+		heuristicMessages=new ArrayList(nbMessages);
+		for (int i = 0; i < nbMessages; i++) {
+			heuristicMessages.add(new StringHeuristicMessage(in.readUTF()));
+		}
+
 	}
 
 }

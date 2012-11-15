@@ -28,10 +28,20 @@
  */
 package com.atomikos.util;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.net.URL;
 import java.util.List;
+
+import javax.transaction.xa.XAResource;
 
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
@@ -171,4 +181,44 @@ public class ClassLoadingHelper {
 		}
 		return null;
 	}
+
+	public static byte[] toByteArray(Serializable obj) throws IOException {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream(512);
+		serialize(obj, baos);
+		return baos.toByteArray();
+	}
+
+	private static void serialize(Serializable obj, OutputStream outputStream) throws IOException {
+		// stream closed in the finally
+		ObjectOutputStream out = new ObjectOutputStream(outputStream);
+		out.writeObject(obj);
+	}
+
+	public static Object toObject(byte[] bytes) {
+		ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+		return deserialize(bais);
+	}
+
+
+	private static Object deserialize(InputStream inputStream) {
+		ObjectInputStream in = null;
+		try {
+		         // stream closed in the finally
+	            in = new ObjectInputStream(inputStream);
+	            return in.readObject();
+
+		  } catch (ClassNotFoundException ex) {
+			  throw new RuntimeException(ex);
+		  } catch (IOException ex) {
+			  throw new RuntimeException(ex);
+		  } finally {
+		         try {
+		              if (in != null) {
+		                in.close();
+		              }
+		           } catch (IOException ex) {
+		               // ignore close exception
+		           }
+		       }
+		  }
 }

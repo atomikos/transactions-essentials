@@ -25,16 +25,20 @@
 
 package com.atomikos.icatch.imp;
 
+import java.io.DataInput;
+import java.io.DataOutput;
 import java.io.IOException;
 import java.io.InvalidClassException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.Vector;
 
+import com.atomikos.icatch.DataSerializable;
 import com.atomikos.icatch.RecoveryCoordinator;
 import com.atomikos.icatch.TxState;
 import com.atomikos.persistence.ObjectImage;
 import com.atomikos.persistence.Recoverable;
+import com.atomikos.util.ClassLoadingHelper;
 
 /**
  *
@@ -42,7 +46,7 @@ import com.atomikos.persistence.Recoverable;
  * A log image for CoordinatorImp instances.
  */
 
-class CoordinatorLogImage implements ObjectImage
+public class CoordinatorLogImage implements ObjectImage,DataSerializable
 {
 
     // force serial version UID for backward log compatibility
@@ -209,5 +213,91 @@ class CoordinatorLogImage implements ObjectImage
         coord.restore ( this );
         return coord;
     }
+
+	public void writeData(DataOutput out) throws IOException {
+        out.writeUTF ( root_ );
+        out.writeUTF ( state_.toString() );
+        //instead of: out.writeObject ( participants_.clone () );
+        out.writeInt(participants_.size());
+
+        for (Object participant : participants_) {
+        	out.writeUTF(participant.getClass().getName());
+        	((DataSerializable)participant).writeData(out);
+		}
+        //
+        if ( coordinator_ == null )
+            out.writeBoolean ( false );
+        else {
+            out.writeBoolean ( true );
+          //FIXME: TODO:
+          //  out.writeObject ( coordinator_ );
+        }
+        out.writeBoolean ( heuristicCommit_ );
+        out.writeLong ( maxInquiries_ );
+       	out.writeUTF(stateHandler_.getState().toString());
+       // ((DataSerializable) stateHandler_).writeData(out);
+        //instead of: out.writeObject ( stateHandler_.clone () );
+        out.writeBoolean ( activity_ );
+        if ( activity_ ) {
+            out.writeInt ( localSiblingCount_ );
+            out.writeBoolean ( checkSiblings_ );
+        }
+        out.writeBoolean ( single_threaded_2pc_ );
+
+	}
+
+	public void readData(DataInput in) throws IOException {
+
+        try {
+
+			root_ = (String) in.readUTF();
+			String str=in.readUTF();
+			state_ = TxState.valueOf(str);
+			//intead of: participants_ = (Vector) in.readObject ();
+			int size=in.readInt();
+			for (int i = 0; i < size; i++) {
+				DataSerializable participant=(DataSerializable)ClassLoadingHelper.newInstance(in.readUTF());
+				participant.readData(in);
+			}
+			//
+			boolean readcoord = in.readBoolean ();
+			if ( readcoord ){
+				//Usefull when RecoveryCoordinator is CompositeCoordinator ????
+				//FIXME: TODO: coordinator_ = (RecoveryCoordinator) in.readObject ();
+			}
+
+			heuristicCommit_ = in.readBoolean ();
+			maxInquiries_ = in.readLong ();
+			//instead of: stateHandler_ = (CoordinatorStateHandler) in.readObject ();
+
+			if (TxState.ACTIVE.equals(state_)){
+				stateHandler_=new ActiveStateHandler((CoordinatorImp)coordinator_);
+			} else if (TxState.HEUR_ABORTED.equals(state_)){
+				stateHandler_=new HeurAbortedStateHandler((CoordinatorImp)coordinator_);
+			} else if (TxState.HEUR_COMMITTED.equals(state_)){
+				stateHandler_=new HeurCommittedStateHandler((CoordinatorImp)coordinator_);
+			} else if (TxState.HEUR_HAZARD.equals(state_)){
+				stateHandler_=new HeurHazardStateHandler((CoordinatorImp)coordinator_);
+			} else if (TxState.HEUR_MIXED.equals(state_)){
+				stateHandler_=new HeurMixedStateHandler((CoordinatorImp)coordinator_);
+			} else if (TxState.IN_DOUBT.equals(state_)){
+				stateHandler_=new IndoubtStateHandler((CoordinatorImp)coordinator_);
+			} else if (TxState.TERMINATED.equals(state_)){
+				stateHandler_=new TerminatedStateHandler((CoordinatorImp)coordinator_);
+			}
+
+			activity_ = in.readBoolean();
+			if ( activity_ ) {
+			    localSiblingCount_ = in.readInt();
+			    checkSiblings_ = in.readBoolean();
+			}
+			single_threaded_2pc_ = in.readBoolean();
+		} catch (InvalidClassException ex) {
+			// fix for 22174
+			throw (IOException) new IOException ( "Object of class " + ex.classname + " in transaction log" +
+					" not compatible with version found in classpath" ).initCause(ex);
+		}
+
+	}
 
 }

@@ -27,12 +27,10 @@ package com.atomikos.persistence.dataserializable;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.ObjectStreamException;
 import java.io.RandomAccessFile;
 import java.io.StreamCorruptedException;
 import java.util.Enumeration;
-import java.util.Stack;
 import java.util.Vector;
 
 import com.atomikos.icatch.DataSerializable;
@@ -116,27 +114,20 @@ public class FileLogStream implements LogStream
 
 
         Vector<SystemLogImage> ret = new Vector<SystemLogImage> ();
-        InputStream in = null;
 
         try {
         	RandomAccessFile f = file_.openLastValidVersionForReading();
 
-            //in = f;
-
-           // ObjectInputStream ins = new ObjectInputStream ( in );
             int count = 0;
             if(LOGGER.isInfoEnabled()){
             	LOGGER.logInfo("Starting read of logfile " + file_.getCurrentVersionFileName());
             }
 
-
             while ( f.length() > f.getChannel().position()) {
-
                 // if crashed, then unproper closing might cause endless blocking!
                 // therefore, we check if avaible first.
                 count++;
 //                Object nxt = ins.readObject ();
-
                 SystemLogImage systemLogImage= new SystemLogImage();
                 systemLogImage.readData(f);
                 ret.addElement ( systemLogImage );
@@ -163,13 +154,6 @@ public class FileLogStream implements LogStream
         	String msg =  "Error in recover";
         	LOGGER.logWarning(msg,e);
             throw new LogException ( msg , e );
-        } finally {
-            try {
-                if ( in != null )
-                    in.close ();
-            } catch ( IOException io ) {
-                throw new LogException ( "Error in recover", io );
-            }
         }
 
         return ret;
@@ -178,8 +162,6 @@ public class FileLogStream implements LogStream
     public synchronized void writeCheckpoint ( Enumeration elements )
             throws LogException
     {
-        Stack<Exception> errors = new Stack<Exception> ();
-
         // first, make sure that any pending output stream handles
         // in the client are invalidated
         closeOutput ();
@@ -193,10 +175,8 @@ public class FileLogStream implements LogStream
             while ( elements != null && elements.hasMoreElements () ) {
             	DataSerializable next = (DataSerializable)elements.nextElement ();
             	next.writeData(output_);
-                //ooutput_.writeObject ( next );
             }
-            //ooutput_.flush ();
-            //output_.flush ();
+
             output_.getFD ().sync ();
             // NOTE: we do NOT close the object output, since the client
             // will probably want to write more!
@@ -216,8 +196,6 @@ public class FileLogStream implements LogStream
                  throw new LogException ( "Old file could not be deleted" );
             }
         } catch ( Exception e ) {
-        	e.printStackTrace();
-            errors.push ( e );
             throw new LogException ( "Error during checkpointing", e );
         }
 
@@ -227,16 +205,9 @@ public class FileLogStream implements LogStream
 
     public synchronized void flushObject ( Object o, boolean shouldSync ) throws LogException
     {
-//        if ( ooutput_ == null )
-//            throw new LogException ( "Not Initialized or already closed" );
         try {
-DataSerializable oo= (DataSerializable)o;
+        	DataSerializable oo= (DataSerializable)o;
         	oo.writeData(output_);
-            //ooutput_.writeObject ( o );
-
-
-            //output_.flush ();
-           // ooutput_.flush ();
             if (shouldSync) output_.getFD ().sync ();
         } catch ( IOException e ) {
 
