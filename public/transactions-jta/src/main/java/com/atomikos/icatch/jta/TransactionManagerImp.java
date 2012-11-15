@@ -50,9 +50,7 @@ import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 
 /**
- * 
- * 
- * The JTA transaction manager implementation.
+ * The main JTA transaction manager singleton.
  */
 
 public class TransactionManagerImp implements TransactionManager,
@@ -69,47 +67,24 @@ public class TransactionManagerImp implements TransactionManager,
      * value then a JTA transaction is assumed by this class.
      * This property is used for detecting incompatible existing transactions:
      * if a transaction exists without this property then the <b>begin</b> method
-     * will fail.
+     * will suspend it (and resume afterwards).
      */
     public static final String JTA_PROPERTY_NAME = "com.atomikos.icatch.jta.transaction";
 
-    private static TransactionManagerImp singleton_ = null;
-    // the singleton instance.
+    private static TransactionManagerImp singleton = null;
 
-    private static int defaultTimeout;
-    // the default timeout in secs
+    private static int defaultTimeoutInSecondsForNewTransactions;
 
-    // public static final int MAX_TIMEOUT = 60;
-    // more than 60 secs is not allowed.
+    private static boolean jtaTransactionsAreSerialByDefault = false;
 
-    // public static final boolean HEURISTIC_COMMIT = true;
-    // // default policy for heuristic decisions.
+    private int timeoutInSecondsForNewTransactions;
 
-    private static boolean default_serial = false;
-    // txs created through JTA are default not serial
-    // can be set by setDefaultSerial
+    private Hashtable jtaTransactionToCoreTransactionMap;
 
-    private int timeout_;
-    // timeout for new txs, in seconds
+    private CompositeTransactionManager compositeTransactionManager;
 
-    private Hashtable txmap_;
-    // all active txs are here, to avoid having different
-    // TransactionImp wrappers for the same ct!
-    // This is needed because the TransactionImp contains some
-    // state information concerning JTA-specific state of the ct.
-    // Hence, multiple getTransaction() calls should return the SAME
-    // TransactionImp instance if called consecutively. The map
-    // makes sure this can be done.
+    private boolean enableAutomatRegistrationOfUnknownXAResources;
 
-    private CompositeTransactionManager ctm_;
-    // the wrapped instance.
-
-    private int count_;
-    // how may invocations of setTimeout?
-
-    private boolean automaticResourceRegistration_;
-
-    // should uknown resources be added as a temporary resource?
     
     private static final void raiseNoTransaction() 
     {
@@ -127,19 +102,19 @@ public class TransactionManagerImp implements TransactionManager,
     }
 
     /**
-     * Set the default serial mode for new txs.
+     * Sets the default serial mode for new txs.
      * 
-     * @param serial
+     * @param value
      *            If true, then new txs will be set to serial mode.
      */
 
-    public static void setDefaultSerial ( boolean serial )
+    public static void setDefaultSerial ( boolean value )
     {
-        default_serial = serial;
+        jtaTransactionsAreSerialByDefault = value;
     }
 
     /**
-     * Get the default mode for new txs.
+     * Gets the default mode for new txs.
      * 
      * @return boolean If true, then new txs started through here will be in
      *         serial mode.
@@ -147,18 +122,18 @@ public class TransactionManagerImp implements TransactionManager,
 
     public static boolean getDefaultSerial ()
     {
-        return default_serial;
+        return jtaTransactionsAreSerialByDefault;
     }
     
     /**
      * Set the default transaction timeout value.
      * 
-     * @param defaultTimeoutValue
+     * @param defaultTimeoutValueInSeconds
      * 				the default transaction timeout value in seconds.
      */
-	public static void setDefaultTimeout ( int defaultTimeoutValue )
+	public static void setDefaultTimeout ( int defaultTimeoutValueInSeconds )
 	{
-		defaultTimeout = defaultTimeoutValue;
+		defaultTimeoutInSecondsForNewTransactions = defaultTimeoutValueInSeconds;
 	}
 	
 	/**
@@ -168,7 +143,7 @@ public class TransactionManagerImp implements TransactionManager,
 	 */
 	public static int getDefaultTimeout ()
 	{
-		return defaultTimeout;
+		return defaultTimeoutInSecondsForNewTransactions;
 	}
 
 
@@ -188,55 +163,46 @@ public class TransactionManagerImp implements TransactionManager,
             CompositeTransactionManager ctm ,
             boolean automaticResourceRegistration )
     {
-
-        if ( ctm == null )
-            singleton_ = null;
-        else
-            singleton_ = new TransactionManagerImp ( ctm,
-                    automaticResourceRegistration );
+    	if ( ctm != null ) {
+    		 singleton = new TransactionManagerImp ( ctm,
+                     automaticResourceRegistration );
+    	} else  {
+    		singleton = null;
+    	}         
 
     }
 
     /**
-     * Get the installed transaction manager, if any.
+     * Gets the installed transaction manager, if any.
      * 
      * @return TransactionManager The installed instance, null if none.
      */
 
     public static TransactionManager getTransactionManager ()
     {
-        return singleton_;
+        return singleton;
     }
-
-    /**
-     * Private constructor, to enforce Singleton pattern.
-     * 
-     * @param ctm
-     *            The composite tm to wrap.
-     * @param automaticResourceRegistration
-     */
 
     private TransactionManagerImp ( CompositeTransactionManager ctm ,
             boolean automaticResourceRegistration )
     {
-        ctm_ = ctm;
-        count_ = 0;
-        timeout_ = defaultTimeout;
-        txmap_ = new Hashtable ();
-        automaticResourceRegistration_ = automaticResourceRegistration;
+        compositeTransactionManager = ctm;
+        timeoutInSecondsForNewTransactions = defaultTimeoutInSecondsForNewTransactions;
+        jtaTransactionToCoreTransactionMap = new Hashtable ();
+        enableAutomatRegistrationOfUnknownXAResources = automaticResourceRegistration;
     }
 
     private void addToMap ( String tid , TransactionImp tx )
     {
-        synchronized ( txmap_ ) {
-            txmap_.put ( tid.toString (), tx );
+        synchronized ( jtaTransactionToCoreTransactionMap ) {
+            jtaTransactionToCoreTransactionMap.put ( tid.toString (), tx );
         }
     }
 
     private void removeFromMap ( String tid )
     {
-        synchronized ( txmap_ ) {
-            txmap_.remove ( tid.toString () );
+        synchronized ( jtaTransactionToCoreTransactionMap ) {
+            jtaTransactionToCoreTransactionMap.remove ( tid.toString () );
         }
     }
 
@@ -244,40 +210,33 @@ public class TransactionManagerImp implements TransactionManager,
     {
     	CompositeTransaction ct = null;
     	 try {
-             ct = ctm_.getCompositeTransaction ();
+             ct = compositeTransactionManager.getCompositeTransaction ();
          } catch ( SysException se ) {
          	String msg = "Error while retrieving the transaction for the calling thread";
          	LOGGER.logWarning( msg , se);
-            throw new ExtendedSystemException ( msg , se
-                     .getErrors () );
+            throw new ExtendedSystemException ( msg , se.getErrors () );
          }
          return ct;
     }
     
     /**
-     * Get any previous instance representing tid. Needed for consistently
-     * returning the same tx handle to client.
-     * 
-     * @param tid
-     *            The tid to look for
      * @return TransactionImp The previous instance, or null.
      */
 
     TransactionImp getPreviousInstance ( String tid )
     {
-        synchronized ( txmap_ ) {
-            if ( txmap_.containsKey ( tid.toString () ) )
-                return (TransactionImp) txmap_.get ( tid.toString () );
-            else
-                return null;
+    	TransactionImp ret = null;
+        synchronized ( jtaTransactionToCoreTransactionMap ) {
+            if ( jtaTransactionToCoreTransactionMap.containsKey ( tid.toString () ) ) {
+                ret = (TransactionImp) jtaTransactionToCoreTransactionMap.get ( tid.toString () );
+            } 
         }
+        return ret;
     }
 
     /**
-     * Retrieve an existing tx with given tid
+     * Gets any previous transaction with the given identifier.
      * 
-     * @param tid
-     *            The tid of the tx.
      * @return Transaction The instance, or null if not found.
      */
 
@@ -287,20 +246,14 @@ public class TransactionManagerImp implements TransactionManager,
     }
 
     /**
-     * Create a new transaction and associate it with the current thread. If the
+     * Creates a new transaction and associate it with the current thread. If the
      * current thread already has a transaction, then a local subtransaction
-     * will be created. NOTE: the default behaviour of JTA-created
-     * subtransactions is blocking. That is: if two of them access the same
-     * data, one of the will block. The purpose is to allow safe parallellism in
-     * the application. Allowing multiple subtransactions to access the same
-     * data has the effect of losing fault tolerance, due to the required XA
-     * mappings of JTA. In the native Atomikos mode, this behaviour can be
-     * tuned, however.
+     * will be created. 
      */
 
     public void begin () throws NotSupportedException, SystemException
     {
-        begin ( timeout_ );
+        begin ( timeoutInSecondsForNewTransactions );
     }
 
     /**
@@ -314,16 +267,16 @@ public class TransactionManagerImp implements TransactionManager,
         CompositeTransaction ct = null;
         ResumePreviousTransactionSubTxAwareParticipant resumeParticipant = null;
         
-        ct = ctm_.getCompositeTransaction();
+        ct = compositeTransactionManager.getCompositeTransaction();
         if ( ct != null && ct.getProperty (  JTA_PROPERTY_NAME ) == null ) {
             LOGGER.logWarning ( "JTA: temporarily suspending incompatible transaction: " + ct.getTid() +
                     " (will be resumed after JTA transaction ends)" );
-            ct = ctm_.suspend();
+            ct = compositeTransactionManager.suspend();
             resumeParticipant = new ResumePreviousTransactionSubTxAwareParticipant ( ct );
         }
         
         try {
-            ct = ctm_.createCompositeTransaction ( ( ( long ) timeout ) * 1000 );
+            ct = compositeTransactionManager.createCompositeTransaction ( ( ( long ) timeout ) * 1000 );
             if ( resumeParticipant != null ) ct.addSubTxAwareParticipant ( resumeParticipant );
             if ( ct.isRoot () && getDefaultSerial () )
                 ct.getTransactionControl ().setSerial ();
@@ -334,11 +287,7 @@ public class TransactionManagerImp implements TransactionManager,
             throw new ExtendedSystemException ( msg , se
                     .getErrors () );
         }
-        // a new tx can not be in the map yet.
-        // next, we put it there.
-        tx = new TransactionImp ( ct, automaticResourceRegistration_ );
-        addToMap ( ct.getTid (), tx );
-        ct.addSubTxAwareParticipant ( this );
+        tx = recreateImportedCompositeTransactionAsJtaTransaction(ct);
     }
 
     /**
@@ -347,42 +296,46 @@ public class TransactionManagerImp implements TransactionManager,
 
     public Transaction getTransaction () throws SystemException
     {
-
         TransactionImp ret = null;
         CompositeTransaction ct = null;
-        ct = getCompositeTransaction();
-
-        if ( ct == null || ct.getProperty (  JTA_PROPERTY_NAME ) == null ) // no tx for thread yet
-            ret = null;
-        else {
-            // since tx was created by begin(), it should be in map
-            // note: only active txs are relevant, since setRollbackOnly
-            // may have been called already
+        
+        ct = getCompositeTransaction();       
+        if ( isJtaTransaction(ct) ) {
             ret = getPreviousInstance ( ct.getTid () );
-            if ( ret == null && ct.getState ().equals ( TxState.ACTIVE ) ) {
-                // happens for JTS imported txs
-                ret = new TransactionImp ( ct, automaticResourceRegistration_ );
-                addToMap ( ct.getTid (), ret );
-                ct.addSubTxAwareParticipant ( this );
+            if ( ret == null ) {
+                ret = recreateImportedCompositeTransactionAsJtaTransaction(ct);
             }
-
         }
         return ret;
     }
 
-    /**
+	private TransactionImp recreateImportedCompositeTransactionAsJtaTransaction(
+			CompositeTransaction ct) {
+		TransactionImp ret = null;
+		if (ct.getState ().equals ( TxState.ACTIVE )) { // setRollbackOnly may have been called!
+			ret = new TransactionImp ( ct, enableAutomatRegistrationOfUnknownXAResources );
+			addToMap ( ct.getTid (), ret );
+			ct.addSubTxAwareParticipant ( this );
+		}
+		return ret;
+	}
+
+    private boolean isJtaTransaction(CompositeTransaction ct) {
+		boolean ret = false;
+		if ( ct.getProperty( JTA_PROPERTY_NAME ) != null) ret = true;
+		return ret;
+	}
+
+	/**
      * @see javax.transaction.TransactionManager
      */
 
     public void setTransactionTimeout ( int seconds ) throws SystemException
     {
-        // if ( seconds < MAX_TIMEOUT )
-
-        // changed to conform to the JTA specs
         if ( seconds > 0 ) {
-            timeout_ = seconds;
+            timeoutInSecondsForNewTransactions = seconds;
         } else if ( seconds == 0 ) {
-            timeout_ = defaultTimeout;
+            timeoutInSecondsForNewTransactions = defaultTimeoutInSecondsForNewTransactions;
         } else {
         	String msg = "setTransactionTimeout: value must be >= 0";
         	LOGGER.logWarning( msg );
@@ -393,22 +346,21 @@ public class TransactionManagerImp implements TransactionManager,
 
     public int getTransactionTimeout ()
     {
-        return timeout_;
+        return timeoutInSecondsForNewTransactions;
     }
 
     /**
      * @see javax.transaction.TransactionManager
      */
 
-    public Transaction suspend () throws SystemException
+    public Transaction suspend() throws SystemException
     {
-        // make sure imported txs can be suspended...
-        getTransaction ();
+        getTransaction(); // make sure imported txs can be suspended...
 
         TransactionImp ret = null;
         CompositeTransaction ct = null;
         try {
-            ct = ctm_.suspend ();
+            ct = compositeTransactionManager.suspend();
         } catch ( SysException se ) {
         	String msg = "Unexpected error while suspending the existing transaction for the current thread";
         	LOGGER.logWarning( msg , se );
@@ -416,11 +368,9 @@ public class TransactionManagerImp implements TransactionManager,
                     .getErrors () );
         }
         if ( ct != null ) {
-
             ret = getPreviousInstance ( ct.getTid () );
             if ( ret != null ) {
-            	// cf case 61305: suspend any enlisted XAResource instances
-            	ret.suspendEnlistedXaResources();
+            	ret.suspendEnlistedXaResources(); // cf case 61305
             }
         }
 
@@ -442,7 +392,7 @@ public class TransactionManagerImp implements TransactionManager,
 
         TransactionImp tximp = (TransactionImp) tobj;
         try {
-            ctm_.resume ( tximp.getCT () );
+            compositeTransactionManager.resume ( tximp.getCT () );
         } catch ( SysException se ) {
         	String msg = "Unexpected error while resuming the transaction in the calling thread";
         	LOGGER.logWarning( msg , se );
@@ -456,12 +406,12 @@ public class TransactionManagerImp implements TransactionManager,
      * @see javax.transaction.TransactionManager
      */
 
-    public int getStatus () throws SystemException
+    public int getStatus() throws SystemException
     {
         int ret = Status.STATUS_NO_TRANSACTION;
 
-        // make sure imported txs can be supported...
-        getTransaction ();
+        
+        getTransaction(); //make sure imported txs can be supported...
 
         TransactionImp tx = null;
         CompositeTransaction ct = getCompositeTransaction();
@@ -489,14 +439,14 @@ public class TransactionManagerImp implements TransactionManager,
         TransactionImp tx = null;
         CompositeTransaction ct = null;
 
-        // make sure imported txs can be supported...
-        getTransaction ();
+        
+        getTransaction(); // make sure imported txs can be supported...
 
         ct = getCompositeTransaction();
 
-        if ( ct == null ) // no tx for thread yet
+        if ( ct == null ) {
             raiseNoTransaction();
-        else {
+        } else {
             tx = getPreviousInstance ( ct.getTid () );
             tx.commit ();
         }
@@ -512,13 +462,13 @@ public class TransactionManagerImp implements TransactionManager,
         TransactionImp tx = null;
         CompositeTransaction ct = null;
 
-        // make sure imported txs can be supported...
-        getTransaction ();
+        
+        getTransaction(); // make sure imported txs can be supported...
 
         ct = getCompositeTransaction();
-
-        if ( ct == null ) // no tx for thread yet
+        if ( ct == null ) {
             raiseNoTransaction();
+        }
         else {
             tx = getPreviousInstance ( ct.getTid () );
             tx.rollback ();
@@ -533,10 +483,10 @@ public class TransactionManagerImp implements TransactionManager,
             SystemException
     {
         Stack errors = new Stack ();
-        // make sure imported txs can be supported...
-        Transaction tx = getTransaction ();
-        if ( tx == null )
-            raiseNoTransaction();
+        
+        Transaction tx = getTransaction(); // make sure imported txs can be supported...
+        if ( tx == null ) raiseNoTransaction();
+        
         try {
             tx.setRollbackOnly ();
 
@@ -560,7 +510,6 @@ public class TransactionManagerImp implements TransactionManager,
 
     public void committed ( CompositeTransaction tx )
     {
-        // remove for GC!
         removeFromMap ( tx.getTid () );
     }
 
@@ -570,7 +519,6 @@ public class TransactionManagerImp implements TransactionManager,
 
     public void rolledback ( CompositeTransaction tx )
     {
-        // remove for GC!
         removeFromMap ( tx.getTid () );
     }
 
