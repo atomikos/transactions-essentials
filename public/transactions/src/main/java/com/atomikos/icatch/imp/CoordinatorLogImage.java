@@ -224,6 +224,7 @@ public class CoordinatorLogImage implements ObjectImage,DataSerializable
 		out.writeLong(maxInquiries_);
 
 		out.writeUTF(stateHandler_.getState().toString());
+		out.writeBoolean(stateHandler_.isCommitted());
 		// ((DataSerializable) stateHandler_).writeData(out);
 		// instead of: out.writeObject ( stateHandler_.clone () );
 
@@ -267,7 +268,7 @@ public class CoordinatorLogImage implements ObjectImage,DataSerializable
 			// instead of: stateHandler_ = (CoordinatorStateHandler) in.readObject ();
 
 			TxState txState = TxState.valueOf(in.readUTF());
-
+			boolean commited=in.readBoolean();
 
 			activity_ = in.readBoolean();
 			if (activity_) {
@@ -279,6 +280,8 @@ public class CoordinatorLogImage implements ObjectImage,DataSerializable
 			if(hasCoordinator){
 				//TODO ?
 			}
+			
+			
 			if (TxState.ACTIVE.equals(txState)) {
 				stateHandler_ = new ActiveStateHandler((CoordinatorImp) coordinator_);
 			} else if (TxState.HEUR_ABORTED.equals(txState)) {
@@ -294,6 +297,10 @@ public class CoordinatorLogImage implements ObjectImage,DataSerializable
 			} else if (TxState.TERMINATED.equals(txState)) {
 				stateHandler_ = new TerminatedStateHandler((CoordinatorImp) coordinator_);
 			}
+			if(commited){
+				stateHandler_.setCommitted();
+			}
+
 			boolean initialized = in.readBoolean();
 			if (initialized) {
 				participants_=new Vector();
