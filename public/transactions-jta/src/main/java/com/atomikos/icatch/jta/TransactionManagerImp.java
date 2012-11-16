@@ -322,7 +322,7 @@ public class TransactionManagerImp implements TransactionManager,
 
     private boolean isJtaTransaction(CompositeTransaction ct) {
 		boolean ret = false;
-		if ( ct.getProperty( JTA_PROPERTY_NAME ) != null) ret = true;
+		if (ct !=null && ct.getProperty( JTA_PROPERTY_NAME ) != null) ret = true;
 		return ret;
 	}
 
@@ -486,8 +486,9 @@ public class TransactionManagerImp implements TransactionManager,
         
         Transaction tx = getTransaction(); // make sure imported txs can be supported...
         if ( tx == null ) raiseNoTransaction();
-        
-        try {
+
+              
+try {
             tx.setRollbackOnly ();
 
         } catch ( SecurityException se ) {
