@@ -46,158 +46,174 @@ import com.atomikos.util.ClassLoadingHelper;
  * A log image for CoordinatorImp instances.
  */
 
-public class CoordinatorLogImage implements ObjectImage, DataSerializable {
+public class CoordinatorLogImage implements ObjectImage,DataSerializable
+{
 
-	// force serial version UID for backward log compatibility
-	static final long serialVersionUID = 3404629869531420208L;
+    // force serial version UID for backward log compatibility
+    static final long serialVersionUID = 3404629869531420208L;
 
-	String root_;
+    String root_;
 
-	TxState state_;
+    TxState state_;
 
-	boolean heuristicCommit_;
-	// what to do on timeout of indoubt: commit or not
+    boolean heuristicCommit_;
+    // what to do on timeout of indoubt: commit or not
 
-	Vector participants_;
-	// all participants known for this coordinator.
+    Vector participants_;
+    // all participants known for this coordinator.
 
-	RecoveryCoordinator coordinator_;
-	// the recovery coordinator; null if root.
+    RecoveryCoordinator coordinator_;
+    // the recovery coordinator; null if root.
 
-	long maxInquiries_;
-	// max no of indoubt inquiries before heuristic
+    long maxInquiries_;
+    // max no of indoubt inquiries before heuristic
 
-	CoordinatorStateHandler stateHandler_;
+    CoordinatorStateHandler stateHandler_;
 
-	boolean activity_;
-	// activity or not
+    boolean activity_;
+    //activity or not
 
-	int localSiblingCount_;
-	// for activity: active state to recover
+    int localSiblingCount_;
+    //for activity: active state to recover
 
-	boolean checkSiblings_;
-	// for activity: active state to recover
+    boolean checkSiblings_;
+    //for activity: active state to recover
 
-	boolean single_threaded_2pc_;
+    boolean single_threaded_2pc_;
+    //2PC without threads desired?
 
-	// 2PC without threads desired?
+    /**
+     * Required by Externalizable interface.
+     */
 
-	/**
-	 * Required by Externalizable interface.
-	 */
+    public CoordinatorLogImage ()
+    {
 
-	public CoordinatorLogImage() {
+    }
 
-	}
+    /**
+     * Constructor for non-activities.
+     *
+     * @param root
+     * @param state
+     * @param participants
+     * @param coordinator
+     * @param commit_on_heuristic
+     * @param maxinquiries
+     * @param stateHandler
+     * @param single_threaded_2pc
+     */
+    public CoordinatorLogImage ( String root , TxState state ,
+            Vector participants , RecoveryCoordinator coordinator ,
+            boolean commit_on_heuristic , long maxinquiries ,
+            CoordinatorStateHandler stateHandler , boolean single_threaded_2pc )
+    {
+        root_ = root;
+        state_ = state;
+        participants_ = participants;
+        coordinator_ = coordinator;
+        heuristicCommit_ = commit_on_heuristic;
+        maxInquiries_ = maxinquiries;
+        stateHandler_ = stateHandler;
+        activity_ = false;
+        localSiblingCount_ = 0;
+        checkSiblings_ = false;
+        single_threaded_2pc_ = single_threaded_2pc;
+    }
 
-	/**
-	 * Constructor for non-activities.
-	 *
-	 * @param root
-	 * @param state
-	 * @param participants
-	 * @param coordinator
-	 * @param commit_on_heuristic
-	 * @param maxinquiries
-	 * @param stateHandler
-	 * @param single_threaded_2pc
-	 */
-	public CoordinatorLogImage(String root, TxState state, Vector participants, RecoveryCoordinator coordinator, boolean commit_on_heuristic, long maxinquiries, CoordinatorStateHandler stateHandler,
-			boolean single_threaded_2pc) {
-		root_ = root;
-		state_ = state;
-		participants_ = participants;
-		coordinator_ = coordinator;
-		heuristicCommit_ = commit_on_heuristic;
-		maxInquiries_ = maxinquiries;
-		stateHandler_ = stateHandler;
-		activity_ = false;
-		localSiblingCount_ = 0;
-		checkSiblings_ = false;
-		single_threaded_2pc_ = single_threaded_2pc;
-	}
+    /**
+     * Constructor for activities in active state.
+     *
+     * @param root
+     * @param state
+     * @param participants
+     * @param coordinator
+     * @param commit_on_heuristic
+     * @param maxinquiries
+     * @param stateHandler
+     * @param localSiblingCount
+     * @param checkSiblings
+     * @param single_threaded_2pc
+     */
+    public CoordinatorLogImage ( String root , TxState state ,
+            Vector participants , RecoveryCoordinator coordinator ,
+            boolean commit_on_heuristic , long maxinquiries ,
+            CoordinatorStateHandler stateHandler , int localSiblingCount ,
+            boolean checkSiblings , boolean single_threaded_2pc
 
-	/**
-	 * Constructor for activities in active state.
-	 *
-	 * @param root
-	 * @param state
-	 * @param participants
-	 * @param coordinator
-	 * @param commit_on_heuristic
-	 * @param maxinquiries
-	 * @param stateHandler
-	 * @param localSiblingCount
-	 * @param checkSiblings
-	 * @param single_threaded_2pc
-	 */
-	public CoordinatorLogImage(String root, TxState state, Vector participants, RecoveryCoordinator coordinator, boolean commit_on_heuristic, long maxinquiries, CoordinatorStateHandler stateHandler,
-			int localSiblingCount, boolean checkSiblings, boolean single_threaded_2pc
+            )
+    {
+        this ( root , state , participants , coordinator , commit_on_heuristic ,
+                maxinquiries , stateHandler , single_threaded_2pc );
+        activity_ = true;
+        localSiblingCount_ = localSiblingCount;
+        checkSiblings_ = checkSiblings;
+    }
 
-	) {
-		this(root, state, participants, coordinator, commit_on_heuristic, maxinquiries, stateHandler, single_threaded_2pc);
-		activity_ = true;
-		localSiblingCount_ = localSiblingCount;
-		checkSiblings_ = checkSiblings;
-	}
+    public Object getId ()
+    {
+        return root_;
+    }
 
-	public Object getId() {
-		return root_;
-	}
+    public void writeExternal ( ObjectOutput out ) throws IOException
+    {
+        // make sure to CLONE all objects, to avoid that
+        // subsequent calls do NOT re-write the objects
+        // (SERIALIZATION!)
+        out.writeObject ( root_ );
+        out.writeObject ( state_ );
+        out.writeObject ( participants_.clone () );
+        if ( coordinator_ == null )
+            out.writeBoolean ( false );
+        else {
+            out.writeBoolean ( true );
+            out.writeObject ( coordinator_ );
+        }
+        out.writeBoolean ( heuristicCommit_ );
+        out.writeLong ( maxInquiries_ );
+        out.writeObject ( stateHandler_.clone () );
+        out.writeBoolean ( activity_ );
+        if ( activity_ ) {
+            out.writeInt ( localSiblingCount_ );
+            out.writeBoolean ( checkSiblings_ );
+        }
+        out.writeBoolean ( single_threaded_2pc_ );
 
-	public void writeExternal(ObjectOutput out) throws IOException {
-		// make sure to CLONE all objects, to avoid that
-		// subsequent calls do NOT re-write the objects
-		// (SERIALIZATION!)
-		out.writeObject(root_);
-		out.writeObject(state_);
-		out.writeObject(participants_.clone());
-		if (coordinator_ == null)
-			out.writeBoolean(false);
-		else {
-			out.writeBoolean(true);
-			out.writeObject(coordinator_);
-		}
-		out.writeBoolean(heuristicCommit_);
-		out.writeLong(maxInquiries_);
-		out.writeObject(stateHandler_.clone());
-		out.writeBoolean(activity_);
-		if (activity_) {
-			out.writeInt(localSiblingCount_);
-			out.writeBoolean(checkSiblings_);
-		}
-		out.writeBoolean(single_threaded_2pc_);
+    }
 
-	}
-
-	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-		try {
-			root_ = (String) in.readObject();
-			state_ = (TxState) in.readObject();
-			participants_ = (Vector) in.readObject();
-			boolean readcoord = in.readBoolean();
-			if (readcoord)
-				coordinator_ = (RecoveryCoordinator) in.readObject();
-			heuristicCommit_ = in.readBoolean();
-			maxInquiries_ = in.readLong();
-			stateHandler_ = (CoordinatorStateHandler) in.readObject();
+    public void readExternal ( ObjectInput in ) throws IOException,
+            ClassNotFoundException
+    {
+        try {
+			root_ = (String) in.readObject ();
+			state_ = (TxState) in.readObject ();
+			participants_ = (Vector) in.readObject ();
+			boolean readcoord = in.readBoolean ();
+			if ( readcoord )
+			    coordinator_ = (RecoveryCoordinator) in.readObject ();
+			heuristicCommit_ = in.readBoolean ();
+			maxInquiries_ = in.readLong ();
+			stateHandler_ = (CoordinatorStateHandler) in.readObject ();
 			activity_ = in.readBoolean();
-			if (activity_) {
-				localSiblingCount_ = in.readInt();
-				checkSiblings_ = in.readBoolean();
+			if ( activity_ ) {
+			    localSiblingCount_ = in.readInt();
+			    checkSiblings_ = in.readBoolean();
 			}
 			single_threaded_2pc_ = in.readBoolean();
 		} catch (InvalidClassException ex) {
 			// fix for 22174
-			throw (IOException) new IOException("Object of class " + ex.classname + " in transaction log" + " not compatible with version found in classpath").initCause(ex);
+			throw (IOException) new IOException ( "Object of class " + ex.classname + " in transaction log" +
+					" not compatible with version found in classpath" ).initCause(ex);
 		}
-	}
+    }
 
-	public Recoverable restore() {
-		CoordinatorImp coord = new CoordinatorImp();
-		coord.restore(this);
-		return coord;
-	}
+    public Recoverable restore ()
+    {
+        CoordinatorImp coord = new CoordinatorImp ();
+        coord.restore ( this );
+        return coord;
+    }
+
 
 	public void writeData(DataOutput out) throws IOException {
 
