@@ -226,7 +226,7 @@ public class TransactionManagerImp implements TransactionManager,
 		if ( isJtaTransaction(ct) ) {
              TransactionImp jtaTransaction = getJtaTransactionWithId ( ct.getTid () );
              if ( jtaTransaction == null ) {
-                 recreateImportedCompositeTransactionAsJtaTransaction(ct);
+                 recreateCompositeTransactionAsJtaTransaction(ct);
              }
          }
 	}
@@ -275,7 +275,6 @@ public class TransactionManagerImp implements TransactionManager,
     public void begin ( int timeout ) throws NotSupportedException,
             SystemException
     {
-        TransactionImp tx = null;
         CompositeTransaction ct = null;
         ResumePreviousTransactionSubTxAwareParticipant resumeParticipant = null;
         
@@ -299,7 +298,7 @@ public class TransactionManagerImp implements TransactionManager,
             throw new ExtendedSystemException ( msg , se
                     .getErrors () );
         }
-        tx = recreateImportedCompositeTransactionAsJtaTransaction(ct);
+        recreateCompositeTransactionAsJtaTransaction(ct);
     }
 
     /**
@@ -314,7 +313,7 @@ public class TransactionManagerImp implements TransactionManager,
         return ret;
     }
 
-	private TransactionImp recreateImportedCompositeTransactionAsJtaTransaction(
+	private TransactionImp recreateCompositeTransactionAsJtaTransaction(
 			CompositeTransaction ct) {
 		TransactionImp ret = null;
 		if (ct.getState ().equals ( TxState.ACTIVE )) { // setRollbackOnly may have been called!
