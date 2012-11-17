@@ -217,14 +217,25 @@ public class TransactionManagerImp implements TransactionManager,
          	LOGGER.logWarning( msg , se);
             throw new ExtendedSystemException ( msg , se.getErrors () );
          }
+    	 establishJtaTransactionContextIfNecessary(ct);
          return ct;
     }
+
+	private void establishJtaTransactionContextIfNecessary(
+			CompositeTransaction ct) {
+		if ( isJtaTransaction(ct) ) {
+             TransactionImp jtaTransaction = getJtaTransactionWithId ( ct.getTid () );
+             if ( jtaTransaction == null ) {
+                 recreateImportedCompositeTransactionAsJtaTransaction(ct);
+             }
+         }
+	}
     
     /**
-     * @return TransactionImp The previous instance, or null.
+     * @return TransactionImp The relevant instance, or null.
      */
 
-    TransactionImp getPreviousInstance ( String tid )
+    TransactionImp getJtaTransactionWithId ( String tid )
     {
     	TransactionImp ret = null;
         synchronized ( jtaTransactionToCoreTransactionMap ) {
@@ -243,7 +254,7 @@ public class TransactionManagerImp implements TransactionManager,
 
     public Transaction getTransaction ( String tid )
     {
-        return getPreviousInstance ( tid );
+        return getJtaTransactionWithId ( tid );
     }
 
     /**
@@ -297,16 +308,9 @@ public class TransactionManagerImp implements TransactionManager,
 
     public Transaction getTransaction () throws SystemException
     {
-        TransactionImp ret = null;
-        CompositeTransaction ct = null;
-        
-        ct = getCompositeTransaction();       
-        if ( isJtaTransaction(ct) ) {
-            ret = getPreviousInstance ( ct.getTid () );
-            if ( ret == null ) {
-                ret = recreateImportedCompositeTransactionAsJtaTransaction(ct);
-            }
-        }
+        TransactionImp ret = null;        
+        CompositeTransaction ct = getCompositeTransaction();
+        ret = getJtaTransactionWithId ( ct.getTid () );
         return ret;
     }
 
@@ -369,7 +373,7 @@ public class TransactionManagerImp implements TransactionManager,
                     .getErrors () );
         }
         if ( ct != null ) {
-            ret = getPreviousInstance ( ct.getTid () );
+            ret = getJtaTransactionWithId ( ct.getTid () );
             if ( ret != null ) {
             	ret.suspendEnlistedXaResources(); // cf case 61305
             }
@@ -409,21 +413,13 @@ public class TransactionManagerImp implements TransactionManager,
 
     public int getStatus() throws SystemException
     {
-        int ret = Status.STATUS_NO_TRANSACTION;
-
-        
-        getTransaction(); //make sure imported txs can be supported...
-
-        TransactionImp tx = null;
-        CompositeTransaction ct = getCompositeTransaction();
-
-        if ( ct == null ) // no tx for thread yet
+        int ret = Status.STATUS_NO_TRANSACTION;       
+        Transaction tx = getTransaction();
+        if ( tx == null ) {
             ret = Status.STATUS_NO_TRANSACTION;
-        else {
-            tx = getPreviousInstance ( ct.getTid () );
+        } else {
             ret = tx.getStatus ();
         }
-
         return ret;
     }
 
@@ -437,20 +433,9 @@ public class TransactionManagerImp implements TransactionManager,
             javax.transaction.SystemException, java.lang.IllegalStateException,
             java.lang.SecurityException
     {
-        TransactionImp tx = null;
-        CompositeTransaction ct = null;
-
-        
-        getTransaction(); // make sure imported txs can be supported...
-
-        ct = getCompositeTransaction();
-
-        if ( ct == null ) {
-            raiseNoTransaction();
-        } else {
-            tx = getPreviousInstance ( ct.getTid () );
-            tx.commit ();
-        }
+        Transaction tx = getTransaction();
+        if ( tx == null ) raiseNoTransaction();
+        tx.commit();
     }
 
     /**
@@ -460,20 +445,10 @@ public class TransactionManagerImp implements TransactionManager,
     public void rollback () throws IllegalStateException, SystemException,
             SecurityException
     {
-        TransactionImp tx = null;
-        CompositeTransaction ct = null;
-
-        
-        getTransaction(); // make sure imported txs can be supported...
-
-        ct = getCompositeTransaction();
-        if ( ct == null ) {
-            raiseNoTransaction();
-        }
-        else {
-            tx = getPreviousInstance ( ct.getTid () );
-            tx.rollback ();
-        }
+        Transaction tx = getTransaction();
+        if ( tx == null ) raiseNoTransaction();
+        tx.rollback();
+       
     }
 
     /**
@@ -487,9 +462,8 @@ public class TransactionManagerImp implements TransactionManager,
         
         Transaction tx = getTransaction(); // make sure imported txs can be supported...
         if ( tx == null ) raiseNoTransaction();
-
               
-try {
+        try {
             tx.setRollbackOnly ();
 
         } catch ( SecurityException se ) {
