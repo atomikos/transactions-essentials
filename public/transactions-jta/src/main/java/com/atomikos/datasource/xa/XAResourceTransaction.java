@@ -179,14 +179,11 @@ public class XAResourceTransaction implements ResourceTransaction,
 
     private transient XAResource xaresource_;
 
-    //protected transient CompositeCoordinator coordinator_;
-
     private transient CompositeTransaction transaction_;
 
     private Vector heuristicMessages_;
 
     private transient boolean enlisted_;
-    // true as soon as registered with XAResource.
 
     private transient int timeout_;
 
@@ -202,16 +199,8 @@ public class XAResourceTransaction implements ResourceTransaction,
     {
         setResource ( resource );
         transaction_ = transaction;
-        // FOLLOWING COMMENTED OUT:
-        // setXAResource is called anyhow, and that is
-        // the best way to avoid connection limitations
-        // such as in MQSeries
-        // xaresource_ = resource.getXAResource();
-        // re-added xaresource_ setting here, because for JMS
-        // there is no threading and no thread-surpassing
-        // reuse -> we can use the same and set it here.
+       
         TransactionControl control = transaction.getTransactionControl ();
-        // null for some testing programs
         if ( control != null ) {
             timeout_ = (int) transaction.getTransactionControl ().getTimeout () / 1000;
 
@@ -221,13 +210,10 @@ public class XAResourceTransaction implements ResourceTransaction,
         root_ = root;
         resourcename_ = resource.getName ();
         setXid_( resource_.createXid ( tid_ ));
-        // xid_ = resource_.getXidFactory().createXid ( tid_ ,
-        // resource.getName() );
         setState ( TxState.ACTIVE );
         heuristicMessages_ = new Vector ();
         isXaSuspended_ = false;
         enlisted_ = false;
-        // add default heuristic message
         addHeuristicMessage ( new StringHeuristicMessage ( "XA resource '"
                 + resource.getName () + "' accessed with Xid '" + xidToHexString  + "'" ) );
     }
@@ -267,7 +253,6 @@ public class XAResourceTransaction implements ResourceTransaction,
 
 	protected void testOrRefreshXAResourceFor2PC () throws XAException
     {
-        // check if connection has not timed out
         try {
 
         	//fix for case 31209: refresh entire XAConnection on heur hazard
@@ -319,17 +304,7 @@ public class XAResourceTransaction implements ResourceTransaction,
 		err.errorCode = XAException.XAER_RMFAIL;
 		throw err;
 	}
-//
-//    protected void printMsg ( String msg , int level )
-//    {
-//        try {
-//            Console console = Configuration.getConsole ();
-//            if ( console != null ) {
-//                console.println ( msg, level );
-//            }
-//        } catch ( Exception ignore ) {
-//        }
-//    }
+
 
     /**
      * Needed for garbage collection of res tx instances: if no new siblings can
@@ -539,17 +514,13 @@ public class XAResourceTransaction implements ResourceTransaction,
         	return false;
         }
 
-        // check all available resources to see if we can fully recover
-        // our transient but necessary properties.
 
         Enumeration resources = Configuration.getResources ();
-
-        // changed while condition: removed: "&& !recovered"
-        // because the redesigned recovery needs to report
-        // this participant to EVERY recoverable resource:
+        
+        // Report this participant to EVERY recoverable resource:
         // recovered XIDs can be shared in two resources
         // if they connect to the same back-end RM
-        // (remember: now we use the TM name for the branch!)
+        // (remember: we use the TM name for the branch!)
         // If so, each resource needs to know that the XID
         // can be recovered, or endRecovery in one of them
         // will incorrectly rollback
@@ -567,7 +538,6 @@ public class XAResourceTransaction implements ResourceTransaction,
         	// cf case 59238
         	recovered = true;
         }
-
         enlisted_ = true;
         return recovered;
     }

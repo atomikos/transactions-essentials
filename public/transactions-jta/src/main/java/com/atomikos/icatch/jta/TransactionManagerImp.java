@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2012 Atomikos <info@atomikos.com>
  *
  * This code ("Atomikos TransactionsEssentials"), by itself,
  * is being distributed under the
@@ -498,12 +498,6 @@ public class TransactionManagerImp implements TransactionManager,
         }
     }
 
-    //
-    //
-    // IMPLEMENTATION OF SUBTXAWARE
-    //
-    //
-
     /**
      * @see com.atomikos.icatch.SubTxAwareParticipant
      */
@@ -521,13 +515,7 @@ public class TransactionManagerImp implements TransactionManager,
     {
         removeFromMap ( tx.getTid () );
     }
-
-    //
-    //
-    // IMPLEMENTATION OF REFERENCEABLE
-    //
-    //
-
+    
     /**
      * @see javax.naming.Referenceable#getReference()
      */

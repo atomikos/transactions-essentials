@@ -86,32 +86,16 @@ class TransactionImp implements Transaction
 
     protected CompositeTransaction ct_;
 
-    protected Map xaresToTxMap_;
-
-    // maps xaresources to restxs, needed for xasuspend/xaresume
-    // INVARIANT: this map contains only restxs that are isActive() or
-    // isXaSuspended!!!
-
-    protected Stack suspendstack_;
-
-    // after suspend, resume must be able to
-    // supply the proper stack of local parent txs
+    protected Map<XAResourceKey,XAResourceTransaction> xaResourceToResourceTransactionMap_;
 
     protected boolean autoRegistration_;
 
-    // true if an unknown XAResource should be accepted
-    // and recovered
 
     TransactionImp ( CompositeTransaction ct , boolean autoRegistration )
     {
-        ct_ = ct;
+        this.ct_ = ct;
         autoRegistration_ = autoRegistration;
-        xaresToTxMap_ = new HashMap ();
-    }
-
-    void setSuspendedStack ( Stack suspendstack )
-    {
-        suspendstack_ = suspendstack;
+        xaResourceToResourceTransactionMap_ = new HashMap<XAResourceKey,XAResourceTransaction>();
     }
 
     CompositeTransaction getCT ()
@@ -119,35 +103,31 @@ class TransactionImp implements Transaction
         return ct_;
     }
 
-    Stack getSuspendedStack ()
-    {
-        return suspendstack_;
-    }
-
-
-
-    // MM patch: synchronized to allow threaded access
     private synchronized void addXAResourceTransaction (
             XAResourceTransaction restx , XAResource xares )
     {
-        xaresToTxMap_.put ( new XAResourceKey ( xares ), restx );
+    	assertActiveOrSuspended(restx);
+        xaResourceToResourceTransactionMap_.put ( new XAResourceKey ( xares ), restx );
     }
 
-    // MM patch: synchronized to allow threaded access
-    private synchronized XAResourceTransaction findXAResourceTransaction (
+    private void assertActiveOrSuspended(XAResourceTransaction restx) {
+		if (!(restx.isActive()||restx.isXaSuspended())) {
+			LOGGER.logWarning("Unexpected resource transaction state for " + restx );
+		}
+	}
+
+	private synchronized XAResourceTransaction findXAResourceTransaction (
             XAResource xares )
     {
         XAResourceTransaction ret = null;
-        ret = (XAResourceTransaction) xaresToTxMap_.get ( new XAResourceKey (
-                xares ) );
+        ret = xaResourceToResourceTransactionMap_.get ( new XAResourceKey ( xares ) );
 
         return ret;
     }
 
-    // MM patch: synchronized to allow threaded access
     private synchronized void removeXAResourceTransaction ( XAResource xares )
     {
-        xaresToTxMap_.remove ( new XAResourceKey ( xares ) );
+        xaResourceToResourceTransactionMap_.remove ( new XAResourceKey ( xares ) );
     }
 
     /**
@@ -259,7 +239,6 @@ class TransactionImp implements Transaction
             javax.transaction.SystemException, IllegalStateException
     {
         TransactionalResource res = null;
-        XATransactionalResource xatxres = null;
         XAResourceTransaction restx = null;
         Stack errors = new Stack ();
 
@@ -269,14 +248,11 @@ class TransactionImp implements Transaction
             throw new javax.transaction.RollbackException ( msg );
         }
 
-        // if this xares was suspended then it will still be in the map
-        XAResourceTransaction active = findXAResourceTransaction ( xares );
+        XAResourceTransaction suspendedXAResourceTransaction = findXAResourceTransaction ( xares );
 
-        if ( active != null ) {
+        if ( suspendedXAResourceTransaction != null ) {
 
-            // following violates XA state tables
-            // and the invariant of the xaresToTxMap table
-            if ( !active.isXaSuspended () ) {
+            if ( !suspendedXAResourceTransaction.isXaSuspended () ) {
             	String msg = "The given XAResource instance is being enlisted a second time without delist in between?";
             	LOGGER.logWarning ( msg );
                 throw new IllegalStateException ( msg );
@@ -286,9 +262,8 @@ class TransactionImp implements Transaction
             // since the TMRESUME must be called on the SAME XAResource
             // INSTANCE, and lookup also works on the instance level
             try {
-                // ADDED: resume should also refresh the xaresource
-                active.setXAResource ( xares );
-                active.xaResume ();
+                suspendedXAResourceTransaction.setXAResource ( xares );
+                suspendedXAResourceTransaction.xaResume ();
             } catch ( XAException xaerr ) {
                 if ( (XAException.XA_RBBASE <= xaerr.errorCode)
                         && (xaerr.errorCode <= XAException.XA_RBEND) )
@@ -355,17 +330,13 @@ class TransactionImp implements Transaction
 			XAResource xares ) {
 		TransactionalResource ret = null;
 		XATransactionalResource xatxres;
+		
 		Enumeration enumm = Configuration.getResources ();
-
         while ( enumm.hasMoreElements () ) {
-            RecoverableResource rres = (RecoverableResource) enumm
-                    .nextElement ();
+            RecoverableResource rres = (RecoverableResource) enumm.nextElement ();
             if ( rres instanceof XATransactionalResource ) {
                 xatxres = (XATransactionalResource) rres;
-
-                if ( xatxres.usesXAResource ( xares ) )
-                    ret = xatxres;
-
+                if ( xatxres.usesXAResource ( xares ) ) ret = xatxres;
             }
 
         }
@@ -456,8 +427,7 @@ class TransactionImp implements Transaction
 
     public boolean equals ( Object o )
     {
-        if ( o == null || !(o instanceof TransactionImp) )
-            return false;
+        if ( o == null || !(o instanceof TransactionImp) ) return false;
         TransactionImp other = (TransactionImp) o;
         return ct_.isSameTransaction ( other.ct_ );
     }
@@ -481,7 +451,7 @@ class TransactionImp implements Transaction
 	void suspendEnlistedXaResources() throws ExtendedSystemException
 	{
 		// cf case 61305
-		Iterator xaResourceTransactions = xaresToTxMap_.values().iterator();
+		Iterator xaResourceTransactions = xaResourceToResourceTransactionMap_.values().iterator();
 		while ( xaResourceTransactions.hasNext() ) {
 			XAResourceTransaction resTx = (XAResourceTransaction) xaResourceTransactions.next();
 			try {
