@@ -88,16 +88,18 @@ public class SystemLogImage implements Recoverable, DataSerializable{
 
 
     public void writeData(DataOutput out) throws IOException {
-		out.writeUTF(recoverable_.getClass().getName());
+    	out.writeBoolean ( forgettable_ );
+    	out.writeUTF(recoverable_.getClass().getName());
 		((DataSerializable)recoverable_).writeData(out);
-		out.writeBoolean ( forgettable_ );
+
 	}
 
 	public void readData(DataInput in) throws IOException {
+			forgettable_=in.readBoolean();
 			String className=in.readUTF();
 			recoverable_ = (Recoverable)ClassLoadingHelper.newInstance(className);
 			((DataSerializable)recoverable_).readData(in);
-			forgettable_=in.readBoolean();
+
 	}
 
 

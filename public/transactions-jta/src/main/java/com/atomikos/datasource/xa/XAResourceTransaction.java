@@ -1005,52 +1005,56 @@ public class XAResourceTransaction implements ResourceTransaction,
 	}
 
 	public void writeData(DataOutput out) throws IOException {
-		 //TODO : ???  out.writeUTF( xid_. );
-	        out.writeUTF ( tid_ );
-	        out.writeUTF ( root_ );
-	        out.writeUTF ( state_.toString() );
-	        // CLONE vector to ensure it gets re-written!
-	        //out.writeObject ( heuristicMessages_.clone () );
+		// TODO : ??? out.writeUTF( xid_. );
+		out.writeUTF(new String(xid_.getBranchQualifier()));
+		out.writeUTF(tid_);
+		out.writeUTF(root_);
+		out.writeUTF(state_.toString());
+		// CLONE vector to ensure it gets re-written!
+		// out.writeObject ( heuristicMessages_.clone () );
 
-	        out.writeInt(heuristicMessages_.size());
-	        for (Iterator iterator = heuristicMessages_.iterator(); iterator.hasNext();) {
-				HeuristicMessage heuristicMessage = (HeuristicMessage) iterator.next();
-				out.writeUTF(heuristicMessage.toString());
-			}
-	        out.writeUTF ( resourcename_ );
+		out.writeInt(heuristicMessages_.size());
+		for (Iterator iterator = heuristicMessages_.iterator(); iterator.hasNext();) {
+			HeuristicMessage heuristicMessage = (HeuristicMessage) iterator.next();
+			out.writeUTF(heuristicMessage.toString());
+		}
+		out.writeUTF(resourcename_);
 
-
-	        if ( xaresource_ instanceof Serializable ) {
-	            // cf case 59238
-	            out.writeBoolean( true );
-	            byte[] bytes =  ClassLoadingHelper.toByteArray((Serializable)xaresource_);
-	            out.writeInt(bytes.length);
-	            out.write(bytes);
-	        } else {
-	            out.writeBoolean ( false );
-	        }
+		if (xaresource_ instanceof Serializable) {
+			// cf case 59238
+			out.writeBoolean(true);
+			byte[] bytes = ClassLoadingHelper.toByteArray((Serializable) xaresource_);
+			out.writeInt(bytes.length);
+			out.write(bytes);
+		} else {
+			out.writeBoolean(false);
+		}
 
 	}
 
 	public void readData(DataInput in) throws IOException {
-		//xid_ ???
-		tid_=in.readUTF();
-		root_=in.readUTF();
-		state_=TxState.valueOf(in.readUTF());
-		int nbMessages= in.readInt();
-		heuristicMessages_=new Vector(nbMessages);
+		// xid_ ???
+
+		String branchQualifier = in.readUTF();
+		tid_ = in.readUTF();
+		setXid_(new XID(tid_, branchQualifier));
+
+		root_ = in.readUTF();
+		state_ = TxState.valueOf(in.readUTF());
+		int nbMessages = in.readInt();
+		heuristicMessages_ = new Vector(nbMessages);
 		for (int i = 0; i < nbMessages; i++) {
 			heuristicMessages_.add(new StringHeuristicMessage(in.readUTF()));
 		}
-		resourcename_=in.readUTF();
-		boolean xaresourceSerializable=in.readBoolean();
-		if(xaresourceSerializable){
-			int size=in.readInt();
-			byte[] bytes=new byte[size];
+		resourcename_ = in.readUTF();
+
+		boolean xaresourceSerializable = in.readBoolean();
+		if (xaresourceSerializable) {
+			int size = in.readInt();
+			byte[] bytes = new byte[size];
 			in.readFully(bytes);
-			xaresource_=(XAResource)ClassLoadingHelper.toObject(bytes);
+			xaresource_ = (XAResource) ClassLoadingHelper.toObject(bytes);
 		}
 	}
 
 }
-
