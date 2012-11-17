@@ -25,7 +25,8 @@
 
 package com.atomikos.icatch.jta;
 
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Stack;
 
 import javax.naming.NamingException;
@@ -79,7 +80,7 @@ public class TransactionManagerImp implements TransactionManager,
 
     private int timeoutInSecondsForNewTransactions;
 
-    private Hashtable jtaTransactionToCoreTransactionMap;
+    private Map<String, TransactionImp> jtaTransactionToCoreTransactionMap;
 
     private CompositeTransactionManager compositeTransactionManager;
 
@@ -188,7 +189,7 @@ public class TransactionManagerImp implements TransactionManager,
     {
         compositeTransactionManager = ctm;
         timeoutInSecondsForNewTransactions = defaultTimeoutInSecondsForNewTransactions;
-        jtaTransactionToCoreTransactionMap = new Hashtable ();
+        jtaTransactionToCoreTransactionMap = new HashMap<String, TransactionImp>();
         enableAutomatRegistrationOfUnknownXAResources = automaticResourceRegistration;
     }
 
@@ -202,7 +203,7 @@ public class TransactionManagerImp implements TransactionManager,
     private void removeFromMap ( String tid )
     {
         synchronized ( jtaTransactionToCoreTransactionMap ) {
-            jtaTransactionToCoreTransactionMap.remove ( tid.toString () );
+            jtaTransactionToCoreTransactionMap.remove ( tid );
         }
     }
 
