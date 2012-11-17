@@ -359,10 +359,17 @@ public class TransactionManagerImp implements TransactionManager,
 
     public Transaction suspend() throws SystemException
     {
-        getTransaction(); // make sure imported txs can be suspended...
+        TransactionImp ret = (TransactionImp) getTransaction();   
+        if ( ret != null ) {
+        	suspendUnderlyingCompositeTransaction(); 
+        	ret.suspendEnlistedXaResources(); // cf case 61305
+        }
+        return ret;
+    }
 
-        TransactionImp ret = null;
-        CompositeTransaction ct = null;
+	private void suspendUnderlyingCompositeTransaction()
+			throws ExtendedSystemException {
+		CompositeTransaction ct = null;
         try {
             ct = compositeTransactionManager.suspend();
         } catch ( SysException se ) {
@@ -371,15 +378,7 @@ public class TransactionManagerImp implements TransactionManager,
             throw new ExtendedSystemException ( msg , se
                     .getErrors () );
         }
-        if ( ct != null ) {
-            ret = getJtaTransactionWithId ( ct.getTid () );
-            if ( ret != null ) {
-            	ret.suspendEnlistedXaResources(); // cf case 61305
-            }
-        }
-
-        return ret;
-    }
+	}
 
     /**
      * @see javax.transaction.TransactionManager
