@@ -54,9 +54,7 @@ import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 
 /**
- *
- *
- * An adaptor for the javax transaction interface.
+ * Implementation of the javax.transaction.Transaction interface.
  */
 
 class TransactionImp implements Transaction
@@ -105,8 +103,7 @@ class TransactionImp implements Transaction
 
     private synchronized void addXAResourceTransaction (
             XAResourceTransaction restx , XAResource xares )
-    {
-    	assertActiveOrSuspended(restx);
+    {   	
         xaResourceToResourceTransactionMap_.put ( new XAResourceKey ( xares ), restx );
     }
 
@@ -121,7 +118,7 @@ class TransactionImp implements Transaction
     {
         XAResourceTransaction ret = null;
         ret = xaResourceToResourceTransactionMap_.get ( new XAResourceKey ( xares ) );
-
+        assertActiveOrSuspended(ret);
         return ret;
     }
 
@@ -208,8 +205,6 @@ class TransactionImp implements Transaction
 
     public void rollback () throws IllegalStateException, SystemException
     {
-
-
         try {
             ct_.rollback ();
         } catch ( SysException se ) {
@@ -303,7 +298,6 @@ class TransactionImp implements Transaction
                 restx.setXAResource ( xares );
                 restx.resume ();
             } catch ( ResourceException re ) {
-                // re.printStackTrace();
                 Stack nested = re.getErrors ();
                 if ( !nested.empty ()
                         && (nested.peek () instanceof XAException) ) {
