@@ -118,7 +118,7 @@ class TransactionImp implements Transaction
     {
         XAResourceTransaction ret = null;
         ret = xaResourceToResourceTransactionMap_.get ( new XAResourceKey ( xares ) );
-        assertActiveOrSuspended(ret);
+        if (ret != null) assertActiveOrSuspended(ret);
         return ret;
     }
 
