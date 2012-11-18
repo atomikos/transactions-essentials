@@ -25,6 +25,11 @@
 
 package com.atomikos.icatch.imp;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+
+import com.atomikos.icatch.DataSerializable;
 import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeurMixedException;
@@ -40,7 +45,7 @@ import com.atomikos.icatch.SysException;
  * never allow commit.
  */
 
-public class RollbackOnlyParticipant implements Participant
+public class RollbackOnlyParticipant implements Participant,DataSerializable
 {
 
     private StringHeuristicMessage msg_;
@@ -141,5 +146,15 @@ public class RollbackOnlyParticipant implements Participant
     {
         return null;
     }
+
+	public void writeData(DataOutput out) throws IOException {
+		out.writeUTF(msg_.toString());
+		
+	}
+
+	public void readData(DataInput in) throws IOException {
+		msg_=new StringHeuristicMessage(in.readUTF());
+		
+	}
 
 }
