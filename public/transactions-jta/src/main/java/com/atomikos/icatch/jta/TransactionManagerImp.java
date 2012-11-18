@@ -458,7 +458,7 @@ public class TransactionManagerImp implements TransactionManager,
     {
         Stack errors = new Stack ();
         
-        Transaction tx = getTransaction(); // make sure imported txs can be supported...
+        Transaction tx = getTransaction(); 
         if ( tx == null ) raiseNoTransaction();
               
         try {
