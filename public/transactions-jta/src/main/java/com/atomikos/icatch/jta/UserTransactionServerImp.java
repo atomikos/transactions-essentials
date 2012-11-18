@@ -281,7 +281,7 @@ public class UserTransactionServerImp implements UserTransactionServer
             HeuristicRollbackException, SecurityException,
             IllegalStateException, SystemException
     {
-        Transaction tx = tm_.getPreviousInstance ( tid );
+        Transaction tx = tm_.getJtaTransactionWithId(tid);
         if ( tx == null ) {
             throw new javax.transaction.RollbackException (
                     "Transaction not found: " + tid );
@@ -296,7 +296,7 @@ public class UserTransactionServerImp implements UserTransactionServer
     public void rollback ( String tid ) throws RemoteException,
             IllegalStateException, SecurityException, SystemException
     {
-        Transaction tx = tm_.getPreviousInstance ( tid );
+        Transaction tx = tm_.getJtaTransactionWithId(tid);
         if ( tx != null ) {
             tx.rollback ();
         }
@@ -309,7 +309,7 @@ public class UserTransactionServerImp implements UserTransactionServer
     public void setRollbackOnly ( String tid ) throws RemoteException,
             java.lang.IllegalStateException, SystemException
     {
-        Transaction tx = tm_.getPreviousInstance ( tid );
+        Transaction tx = tm_.getJtaTransactionWithId(tid);
         if ( tx != null ) {
             tx.setRollbackOnly ();
         }
@@ -322,7 +322,7 @@ public class UserTransactionServerImp implements UserTransactionServer
     public int getStatus ( String tid ) throws RemoteException, SystemException
     {
         int ret = Status.STATUS_NO_TRANSACTION;
-        Transaction tx = tm_.getPreviousInstance ( tid );
+        Transaction tx = tm_.getJtaTransactionWithId(tid);
         if ( tx != null ) {
             ret = tx.getStatus ();
         }
