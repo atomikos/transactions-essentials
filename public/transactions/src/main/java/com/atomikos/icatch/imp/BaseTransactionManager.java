@@ -25,7 +25,8 @@
 
 package com.atomikos.icatch.imp;
 
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Stack;
 
@@ -48,27 +49,18 @@ public class BaseTransactionManager implements CompositeTransactionManager,
         SubTxAwareParticipant
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(BaseTransactionManager.class);
-
 	private static final long serialVersionUID = -552994279460833505L;
 	
-	private Hashtable threadtotxmap_ = null;
-    // maps threads to composite transactions
-
-    private Hashtable txtothreadmap_ = null;
-    // inverse map: txs to threads
-
+	private Map<Thread, Stack<CompositeTransaction>> threadtotxmap_ = null;
+    private Map<CompositeTransaction, Thread> txtothreadmap_ = null;
     private TransactionServiceImp service_;
-    // the tx service to use.
-
     private boolean initialized_;
-
-    // true asa init called
 
 
     protected BaseTransactionManager ()
     {
-        threadtotxmap_ = new Hashtable ();
-        txtothreadmap_ = new Hashtable ();
+        threadtotxmap_ = new HashMap<Thread, Stack<CompositeTransaction>> ();
+        txtothreadmap_ = new HashMap<CompositeTransaction, Thread> ();
         initialized_ = false;
     }
 
