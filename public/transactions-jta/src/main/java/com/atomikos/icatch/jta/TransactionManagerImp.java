@@ -309,7 +309,7 @@ public class TransactionManagerImp implements TransactionManager,
     {
         TransactionImp ret = null;        
         CompositeTransaction ct = getCompositeTransaction();
-        ret = getJtaTransactionWithId ( ct.getTid () );
+        if ( ct != null) ret = getJtaTransactionWithId ( ct.getTid () );
         return ret;
     }
 
