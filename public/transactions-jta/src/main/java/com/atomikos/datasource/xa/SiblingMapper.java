@@ -55,51 +55,55 @@ class SiblingMapper
         root_ = root;
     }
 
+    /* 
+     * if resource uses weak compare mode then
+     * do NOT reuse restx instances, since the
+     * TMJOIN flag may fail if multiple resource mgrs
+     * for the same vendor are in use.
+     * the same holds for acceptsAllXAResources
+     * also, in order to allow concurrent enlistings
+     * for the same XAResource, we need to return
+     * a new restx if the one found is still active
+     */
+    
+    private boolean canBeReused(XAResourceTransaction restx) {
+    	boolean ret = false;
+    	ret = !(restx == null || 
+    			res_.usesWeakCompare() || 
+    			res_.acceptsAllXAResources () ||
+    			restx.isActive());
+    	return ret;
+    }
+    
+    private XAResourceTransaction findSiblingXAResourceTransactionToReuse(CompositeTransaction ct) {
+    	XAResourceTransaction ret = null;
+    	Enumeration enumm = siblings_.elements();
+    	while ( ret == null && enumm.hasMoreElements() ) {
+    		XAResourceTransaction candidate = (XAResourceTransaction) enumm.nextElement ();
+    		if (canBeReused(candidate) && ct.isSerial()) ret = candidate;
+    	}
+    	return ret;
+    }
+    
     protected ResourceTransaction map ( CompositeTransaction ct )
             throws ResourceException, IllegalStateException
     {
         Stack errors = new Stack ();
         XAResourceTransaction last = null;
         try {
-            // check if previous map exists for the SAME sibling ct.
-            last = (XAResourceTransaction) siblings_.get ( ct );
-            if ( last == null || res_.usesWeakCompare ()
-                    || res_.acceptsAllXAResources () || last.isActive () ) {
-
-                // try to reuse another sibling's restx, but only if serial!
-                Enumeration enumm = siblings_.elements ();
-                if ( enumm.hasMoreElements () )
-                    last = (XAResourceTransaction) enumm.nextElement ();
-
-                if ( last == null || !ct.isSerial () || res_.usesWeakCompare ()
-                        || res_.acceptsAllXAResources () || last.isActive () ) {
-
-                    // if resource uses weak compare mode then
-                    // do NOT reuse restx instances, since the
-                    // TMJOIN flag may fail if multiple resource mgrs
-                    // for the same vendor are in use.
-                    // the same holds for acceptsAllXAResources
-                    // also, in order to allow concurrent enlistings
-                    // for the same XAResource, we need to return
-                    // a new restx if the one found is still active
-
+            last = (XAResourceTransaction) siblings_.get(ct);
+            if ( !canBeReused(last) ) {
+                last = findSiblingXAResourceTransactionToReuse(ct);
+                if ( last == null ) {
                     last = new XAResourceTransaction ( res_, ct , root_ );
-
-                    // coord.addParticipant ( last ); //SUBTX ABORT
                     siblings_.put ( ct, last );
                 }
-
             }
-        }
-
-        catch ( Exception e ) {
+        } catch ( Exception e ) {
             errors.push ( e );
-            throw new ResourceException ( "ResourceTransaction map failure",
-                    errors );
+            throw new ResourceException ( "ResourceTransaction map failure", errors );
         }
-
         ct.addParticipant ( last );
-
         return last;
     }
 }
