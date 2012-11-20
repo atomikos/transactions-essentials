@@ -454,8 +454,24 @@ class TransactionImp implements Transaction
 			} catch (XAException e) {
 				Stack errors = new Stack();
 				errors.push ( e );
-	            throw new ExtendedSystemException ( "Error in delisting the given XAResource", errors );
+	            throw new ExtendedSystemException ( "Error in suspending the given XAResource", errors );
 			}
 		}
+	}
+
+	public void resumeEnlistedXaReources() throws ExtendedSystemException 
+	{
+		Iterator xaResourceTransactions = xaResourceToResourceTransactionMap_.values().iterator();
+		while ( xaResourceTransactions.hasNext() ) {
+			XAResourceTransaction resTx = (XAResourceTransaction) xaResourceTransactions.next();
+			try {
+				resTx.xaResume();
+				xaResourceTransactions.remove();
+			} catch (XAException e) {
+				Stack errors = new Stack();
+				errors.push ( e );
+	            throw new ExtendedSystemException ( "Error in resuming the given XAResource", errors );
+			}
+		}	
 	}
 }

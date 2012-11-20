@@ -399,9 +399,9 @@ public class TransactionManagerImp implements TransactionManager,
         } catch ( SysException se ) {
         	String msg = "Unexpected error while resuming the transaction in the calling thread";
         	LOGGER.logWarning( msg , se );
-            throw new ExtendedSystemException (  msg , se
-                    .getErrors () );
+            throw new ExtendedSystemException(msg , se.getErrors());
         }
+        tximp.resumeEnlistedXaReources();
 
     }
 
