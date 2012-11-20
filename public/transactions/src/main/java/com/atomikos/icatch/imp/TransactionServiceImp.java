@@ -949,9 +949,11 @@ public class TransactionServiceImp implements TransactionService,
     {
         if ( !initialized_ ) throw new IllegalStateException ( "Not initialized" );
 
-        if ( maxNumberOfActiveTransactions_ >= 0 && tidToTransactionMap_.size () >= maxNumberOfActiveTransactions_ )
+        if ( maxNumberOfActiveTransactions_ >= 0 && 
+             tidToTransactionMap_.size () >= maxNumberOfActiveTransactions_ ) {
             throw new IllegalStateException ( "Max number of active transactions reached:" + maxNumberOfActiveTransactions_ );
-
+        }
+        
         String tid = tidmgr_.get ();
         Stack lineage = new Stack ();
         // create a CC with heuristic preference set to false,
