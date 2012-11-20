@@ -44,22 +44,10 @@ import com.atomikos.datasource.xa.XidFactory;
 
 public class JdbcTransactionalResource extends XATransactionalResource
 {
-
     private XADataSource xads_;
-
-    // where to get new connections
-
     private XAConnection conn_;
-
-    // the last connection used.
-
-    private String user_;
-
-    // the user; empty string if not set
-
-    private String password_;
-
-    // the password, empty string if not set
+    private String user_; // null if not set
+    private String password_; // null if not set
     /**
      * Constructs a new instance with a given name and XADataSource.
      *
@@ -71,10 +59,9 @@ public class JdbcTransactionalResource extends XATransactionalResource
 
     public JdbcTransactionalResource ( String serverName , XADataSource xads )
     {
-        super ( serverName );
+        super(serverName);
         xads_ = xads;
-        if ( xads_ == null )
-            throw new RuntimeException ( "Null XADataSource argument" );
+        if (xads_ == null) throw new NullPointerException("XADataSource must not be null");
         conn_ = null;
     }
 
