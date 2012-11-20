@@ -169,7 +169,7 @@ class IndoubtStateHandler extends CoordinatorStateHandler
             HeurMixedException, SysException
     {
         // if we have a repeated prepare in this state, then the
-        // first prepare must have been a YET vote, otherwise we
+        // first prepare must have been a YES vote, otherwise we
         // would not be in-doubt! -> repeat the same vote
         // (required for WS-AT)
         return Participant.READ_ONLY + 1;

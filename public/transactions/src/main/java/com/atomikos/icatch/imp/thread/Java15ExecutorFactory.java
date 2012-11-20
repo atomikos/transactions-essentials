@@ -120,11 +120,13 @@ class Java15ExecutorFactory implements ExecutorFactory
 	{
 		Class cl = null;
 		cl = safeLoad(name);
-		if(cl == null) {
+		if (cl == null) {
 			cl = safeContextLoad(name);
 		}
-		if(cl == null)
+		
+		if (cl == null) {
 			throw new ClassNotFoundException("Class '" + name + "' not found");
+		}
 		return cl;
 	}
 
