@@ -189,7 +189,6 @@ class IndoubtStateHandler extends CoordinatorStateHandler
             throws HeurCommitException, HeurMixedException, SysException,
             HeurHazardException, java.lang.IllegalStateException
     {
-
         return rollback ( true, false );
     }
 

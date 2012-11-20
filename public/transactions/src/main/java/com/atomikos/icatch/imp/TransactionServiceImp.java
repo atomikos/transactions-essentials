@@ -64,68 +64,29 @@ public class TransactionServiceImp implements TransactionService,
         FSMEnterListener, SubTxAwareParticipant, RecoveryService
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(TransactionServiceImp.class);
-
     private static final int NUMLATCHES = 97;
-    // a number of latches to lock on a per-root basis
-    // this is the size of a hash array of latch objects
-
-
+    
     private long maxTimeout_;
-    // timeout for new or import txs must be lower
-
-    private Object[] rootlatches_ = null;
-    // for latching on a per-root basis
-
-    private Hashtable tidtotxmap_ = null;
-    // maps tid to tx instance
-
-    private Hashtable roottocoordinatormap_ = null;
-    // maps root tid to composite coordinator instances
-
-    private boolean shuttingDown_ = false;
-    // true asa shutdown called.
-    // new txs should not be started
-
-    private Object shutdownWaiter_;
-    // for coordinating shutdown / start of new coordinators
-
-    private Object recoveryWaiter_;
-    // for synchronizing recovery scans
-
+    private Object[] rootLatches_ = null;
+    private Hashtable tidToTransactionMap_ = null;
+    private Hashtable rootToCoordinatorMap_ = null;
+    private boolean shutdownInProgress_ = false;
+    private Object shutdownSynchronizer_;
+    private Object recoverySynchronizer_;
     private UniqueIdMgr tidmgr_ = null;
-    // for creating new Strings
-
     private StateRecoveryManager recoverymanager_ = null;
-    // recovery manager responsible for saving states
-
     private boolean initialized_ = false;
-    // true asa initialize was called.
-
-
     private LogControl control_;
-    // for admin tool
-
     private boolean otsOverride_;
     // true for forced compatibility with OTS;
     // in that case no creation preferences are taken into account
     // concerning orphan checks
 
-    private Vector listeners_;
-    // the TSListener objects.
-    private int maxActives_;
-    // the max number of active transactions, or -1 if unlimited
-
-    private String name_;
-
-    // the unique name of this TS, needed for recovery
-    // of the resources, and for supplying to each
-    // resource to constructs XIDs with
-
-    private Properties properties_;
-    //the properties used to initialize the system
-
+    private Vector tsListeners_;
+    private int maxNumberOfActiveTransactions_;
+    private String tmUniqueName_;
+    private Properties initProperties_;
     private boolean single_threaded_2pc_;
-    //should 2PC happen in the same thread as the application code?
 
     /**
      * Create a new instance, with orphan checking set.
@@ -184,27 +145,25 @@ public class TransactionServiceImp implements TransactionService,
              long maxtimeout , boolean checkorphans ,
             int maxActives , boolean single_threaded_2pc )
     {
-        maxActives_ = maxActives;
-        if ( !checkorphans )
-            otsOverride_ = true;
-        else
-            otsOverride_ = false;
+        maxNumberOfActiveTransactions_ = maxActives;
+        if ( !checkorphans ) otsOverride_ = true;
+        else otsOverride_ = false;
 
         initialized_ = false;
         recoverymanager_ = recoverymanager;
         tidmgr_ = tidmgr;
-        tidtotxmap_ = new Hashtable ();
-        shutdownWaiter_ = new Object ();
-        recoveryWaiter_ = new Object ();
-        roottocoordinatormap_ = new Hashtable ();
-        rootlatches_ = new Object[NUMLATCHES];
-        for ( int i = 0; i < NUMLATCHES; i++ ) {
-            rootlatches_[i] = new Object ();
+        tidToTransactionMap_ = new Hashtable();
+        shutdownSynchronizer_ = new Object();
+        recoverySynchronizer_ = new Object();
+        rootToCoordinatorMap_ = new Hashtable();
+        rootLatches_ = new Object[NUMLATCHES];
+        for (int i = 0; i < NUMLATCHES; i++) {
+            rootLatches_[i] = new Object();
         }
 
         maxTimeout_ = maxtimeout;
-        name_ = name;
-        listeners_ = new Vector ();
+        tmUniqueName_ = name;
+        tsListeners_ = new Vector();
         single_threaded_2pc_ = single_threaded_2pc;
     }
 
@@ -217,8 +176,7 @@ public class TransactionServiceImp implements TransactionService,
 
     protected Object getLatch ( String root )
     {
-        return rootlatches_[Math.abs ( root.toString ().hashCode ()
-                % NUMLATCHES )];
+        return rootLatches_[Math.abs ( root.toString().hashCode() % NUMLATCHES )];
     }
 
     /**
@@ -235,13 +193,11 @@ public class TransactionServiceImp implements TransactionService,
     void setTidToTx ( String tid , CompositeTransaction ct )
             throws IllegalStateException
     {
-        synchronized ( tidtotxmap_ ) {
-            if ( tidtotxmap_.containsKey ( tid.intern () ) )
+        synchronized ( tidToTransactionMap_ ) {
+            if ( tidToTransactionMap_.containsKey ( tid.intern () ) )
                 throw new IllegalStateException ( "Already mapped: " + tid );
-            tidtotxmap_.put ( tid.intern (), ct );
-            // at the same time, start listening for removal,
-            // to allow GC of hashtable contents
-            ct.addSubTxAwareParticipant ( this );
+            tidToTransactionMap_.put ( tid.intern (), ct );
+            ct.addSubTxAwareParticipant(this); // for GC purposes
         }
     }
 
@@ -256,7 +212,7 @@ public class TransactionServiceImp implements TransactionService,
     Vector getCoordinatorImpVector ()
     {
         Vector ret = new Vector ();
-        Enumeration tids = roottocoordinatormap_.keys ();
+        Enumeration tids = rootToCoordinatorMap_.keys ();
         while ( tids.hasMoreElements () ) {
             String next = (String) tids.nextElement ();
             CoordinatorImp c = getCoordinatorImp ( next );
@@ -283,12 +239,12 @@ public class TransactionServiceImp implements TransactionService,
     private void notifyListeners ( boolean init , boolean before )
     {
 
-        Enumeration enumm = listeners_.elements ();
+        Enumeration enumm = tsListeners_.elements ();
         while ( enumm.hasMoreElements () ) {
             TSListener l = (TSListener) enumm.nextElement ();
             try {
 	            if ( init ) {
-	                l.init ( before , properties_ );
+	                l.init ( before , initProperties_ );
 	            } else {
 	                l.shutdown ( before );
 	            }
@@ -310,15 +266,15 @@ public class TransactionServiceImp implements TransactionService,
     private void removeCoordinator ( CompositeCoordinator coord )
     {
 
-        synchronized ( shutdownWaiter_ ) {
+        synchronized ( shutdownSynchronizer_ ) {
             synchronized ( getLatch ( coord.getCoordinatorId ().intern () ) ) {
 
-                roottocoordinatormap_.remove ( coord.getCoordinatorId ().intern () );
+                rootToCoordinatorMap_.remove ( coord.getCoordinatorId ().intern () );
             }
 
             // notify any waiting threads for shutdown
-            if ( roottocoordinatormap_.isEmpty () )
-                shutdownWaiter_.notifyAll ();
+            if ( rootToCoordinatorMap_.isEmpty () )
+                shutdownSynchronizer_.notifyAll ();
         }
     }
 
@@ -335,7 +291,7 @@ public class TransactionServiceImp implements TransactionService,
     {
         if ( ct == null )
             return;
-        tidtotxmap_.remove ( ct.getTid ().intern () );
+        tidToTransactionMap_.remove ( ct.getTid ().intern () );
 
     }
 
@@ -393,12 +349,10 @@ public class TransactionServiceImp implements TransactionService,
             		AbstractUserTransactionServiceFactory.MAX_TIMEOUT_PROPERTY_NAME + " - truncating to: " + maxTimeout_ );
         }
 
-        // synch for coordinator with :
-        // no new coordinators started if shutting down.
-        synchronized ( shutdownWaiter_ ) {
+        synchronized ( shutdownSynchronizer_ ) {
             // check if shutting down -> do not allow new coordinator objects
             // to be added, so that shutdown will eventually succeed.
-            if ( shuttingDown_ )
+            if ( shutdownInProgress_ )
                 throw new IllegalStateException ( "Server is shutting down..." );
 
             if ( otsOverride_ ) {
@@ -413,10 +367,10 @@ public class TransactionServiceImp implements TransactionService,
 
             // now, add to root map, since we are sure there are not too many active txs
             synchronized ( getLatch ( root.intern () ) ) {
-                roottocoordinatormap_.put ( root.intern (), cc );
+                rootToCoordinatorMap_.put ( root.intern (), cc );
             }
             startlistening ( cc );
-        }// synch shutdownWaiter
+        }
 
         return cc;
     }
@@ -464,15 +418,15 @@ public class TransactionServiceImp implements TransactionService,
             throw new IllegalStateException ( "Not initialized" );
 
         CoordinatorImp cc = null;
-        synchronized ( shutdownWaiter_ ) {
-            // Synch on shutdownwaiter first to avoid
+        synchronized ( shutdownSynchronizer_ ) {
+            // Synch on shutdownSynchronizer_ first to avoid
             // deadlock, even if we don't seem to need it here
 
             synchronized ( getLatch ( root ) ) {
-                cc = (CoordinatorImp) roottocoordinatormap_.get ( root
+                cc = (CoordinatorImp) rootToCoordinatorMap_.get ( root
                         .intern () );
                 if ( cc == null ) {
-                    // swapped out coordinator already, OR NONEXISTENT!
+                    // swapped out already, or non-existing?
                     try {
                         cc = (CoordinatorImp) recoverymanager_.recover ( root );
                     } catch ( LogException le ) {
@@ -483,7 +437,7 @@ public class TransactionServiceImp implements TransactionService,
                     }
                     if ( cc != null ) {
                         startlistening ( cc );
-                        roottocoordinatormap_.put ( root.intern (), cc );
+                        rootToCoordinatorMap_.put ( root.intern (), cc );
                     }
                 }
             }
@@ -533,7 +487,7 @@ public class TransactionServiceImp implements TransactionService,
             while ( enumm.hasMoreElements () ) {
                 CoordinatorImp coord = (CoordinatorImp) enumm.nextElement ();
                 synchronized ( getLatch ( coord.getCoordinatorId ().intern () ) ) {
-                    roottocoordinatormap_.put ( coord.getCoordinatorId ().intern (),
+                    rootToCoordinatorMap_.put ( coord.getCoordinatorId ().intern (),
                             coord );
                 }
                 startlistening ( coord );
@@ -549,7 +503,7 @@ public class TransactionServiceImp implements TransactionService,
 
     public String getName ()
     {
-        return name_;
+        return tmUniqueName_;
     }
 
     /**
@@ -570,7 +524,7 @@ public class TransactionServiceImp implements TransactionService,
         		initialized_ = true;
         }
 
-        synchronized ( recoveryWaiter_ ) {
+        synchronized ( recoverySynchronizer_ ) {
             // recovery MUST be synchronized to avoid erroneous presumed abort
             // if two different threads interleave!!!
             // for instance: if thread1 starts recovery, but thread2 ends it first, then
@@ -617,7 +571,7 @@ public class TransactionServiceImp implements TransactionService,
                         + e.getMessage (), errors );
             }
 
-        }// end synchronized
+        }
 
     }
 
@@ -664,12 +618,12 @@ public class TransactionServiceImp implements TransactionService,
         // during recovery, and recovery happens inside
         // init!
 
-    		if ( ! listeners_.contains ( listener ) ) {
-	        listeners_.addElement ( listener );
-	        if ( initialized_ ) {
-	            listener.init ( false , properties_ );
-	        }
-	        if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug (  "Added TSListener: " + listener );
+    		if ( ! tsListeners_.contains ( listener ) ) {
+    			tsListeners_.addElement ( listener );
+    			if ( initialized_ ) {
+    				listener.init ( false , initProperties_ );
+    			}
+    			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug (  "Added TSListener: " + listener );
     		}
 
 
@@ -682,7 +636,7 @@ public class TransactionServiceImp implements TransactionService,
     public void removeTSListener ( TSListener listener )
     {
 
-        listeners_.removeElement ( listener );
+        tsListeners_.removeElement ( listener );
         if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug  ( "Removed TSListener: " + listener );
 
     }
@@ -694,7 +648,7 @@ public class TransactionServiceImp implements TransactionService,
     public synchronized void init ( Properties properties ) throws SysException
     {
         Stack errors = new Stack ();
-        this.properties_ = properties;
+        this.initProperties_ = properties;
 
         try {
             recoverymanager_.init ();
@@ -705,7 +659,7 @@ public class TransactionServiceImp implements TransactionService,
         }
         recoverCoordinators ();
 
-        shuttingDown_ = false;
+        shutdownInProgress_ = false;
         control_ = new LogControlImp ( this );
         
         recover(); //ensure that remote participants can start inquiring and replay
@@ -730,10 +684,7 @@ public class TransactionServiceImp implements TransactionService,
     {
         CoordinatorImp cc = (CoordinatorImp) event.getSource ();
         Object state = event.getState ();
-
-        // in all cases, allow GC to cleanup instance
-
-        removeCoordinator ( cc );
+        removeCoordinator(cc);
     }
 
     /**
@@ -768,8 +719,8 @@ public class TransactionServiceImp implements TransactionService,
     {
         CompositeTransaction ret = null;
 
-        synchronized ( tidtotxmap_ ) {
-            ret = (CompositeTransaction) tidtotxmap_.get ( tid.intern () );
+        synchronized ( tidToTransactionMap_ ) {
+            ret = (CompositeTransaction) tidToTransactionMap_.get ( tid.intern () );
         }
 
         return ret;
@@ -817,9 +768,9 @@ public class TransactionServiceImp implements TransactionService,
         if ( !initialized_ )
             throw new IllegalStateException ( "Not initialized" );
 
-        if ( maxActives_ >= 0 && tidtotxmap_.size () >= maxActives_ )
+        if ( maxNumberOfActiveTransactions_ >= 0 && tidToTransactionMap_.size () >= maxNumberOfActiveTransactions_ )
             throw new IllegalStateException (
-                    "Max number of active transactions reached:" + maxActives_ );
+                    "Max number of active transactions reached:" + maxNumberOfActiveTransactions_ );
 
         Stack errors = new Stack ();
         CoordinatorImp cc = null;
@@ -846,7 +797,7 @@ public class TransactionServiceImp implements TransactionService,
 
             CompositeTransaction parent = (CompositeTransaction) lineage
                     .peek ();
-            synchronized ( shutdownWaiter_ ) {
+            synchronized ( shutdownSynchronizer_ ) {
                 synchronized ( getLatch ( root.getTid () ) ) {
                     cc = getCoordinatorImp ( root.getTid () );
                     if ( cc == null ) {
@@ -890,12 +841,12 @@ public class TransactionServiceImp implements TransactionService,
             // to enter this method will do the following. Don't do
             // it twice.
 
-            Enumeration enumm = roottocoordinatormap_.keys ();
+            Enumeration enumm = rootToCoordinatorMap_.keys ();
             while ( enumm.hasMoreElements () ) {
                 String tid = (String) enumm.nextElement ();
                 LOGGER.logDebug ( "Transaction Service: Stopping thread for root "
                                 + tid + "..." );
-                CoordinatorImp c = (CoordinatorImp) roottocoordinatormap_
+                CoordinatorImp c = (CoordinatorImp) rootToCoordinatorMap_
                         .get ( tid );
                 if ( c != null ) { //null if intermediate termination while in enumm
                 		c.dispose (); //needed for forced shutdown
@@ -905,10 +856,10 @@ public class TransactionServiceImp implements TransactionService,
 
         } // if wasShuttingDown
 
-        synchronized ( shutdownWaiter_ ) {
+        synchronized ( shutdownSynchronizer_ ) {
         	LOGGER.logDebug ( "Transaction Service: Shutdown acquired lock on waiter." );
-            wasShuttingDown = shuttingDown_;
-            shuttingDown_ = true;
+            wasShuttingDown = shutdownInProgress_;
+            shutdownInProgress_ = true;
 
             // check for active coordinators (who might be indoubt)
             // NOTE: should be thread safe, since createCC
@@ -918,22 +869,22 @@ public class TransactionServiceImp implements TransactionService,
             // instances that have been swapped out, hence who
             // can not be indoubt.
 
-            while ( !roottocoordinatormap_.isEmpty () && !force ) {
+            while ( !rootToCoordinatorMap_.isEmpty () && !force ) {
                 try {
                 	LOGGER.logWarning ( "Transaction Service: Waiting for non-terminated coordinators..." );
                     //wait for max timeout to let actives finish
-                    shutdownWaiter_.wait ( maxTimeout_ );
+                    shutdownSynchronizer_.wait ( maxTimeout_ );
                     //PURGE to avoid issue 10079
                     //use a clone to avoid concurrency interference
                     if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Transaction Service: Purging coordinators for shutdown..." );
-                    Hashtable clone = ( Hashtable ) roottocoordinatormap_.clone();
+                    Hashtable clone = ( Hashtable ) rootToCoordinatorMap_.clone();
                     Enumeration coordinatorIds = clone.keys();
                     while ( coordinatorIds.hasMoreElements() ) {
                     		String id = ( String ) coordinatorIds.nextElement();
                     		CoordinatorImp c = ( CoordinatorImp ) clone.get ( id );
                     		if ( TxState.TERMINATED.equals ( c.getState() ) ) {
                     			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Transaction Service: removing terminated coordinator: " + id );
-                    			roottocoordinatormap_.remove ( id );
+                    			rootToCoordinatorMap_.remove ( id );
                     		}
                     }
                     //contine the loop: if not empty then wait again
@@ -972,7 +923,7 @@ public class TransactionServiceImp implements TransactionService,
     {
 
         try {
-            if ( !shuttingDown_ && initialized_ ) shutdown ( true );
+            if ( !shutdownInProgress_ && initialized_ ) shutdown ( true );
         } catch ( Exception e ) {
             LOGGER.logWarning( "Error in GC of TransactionServiceImp" , e );
         } finally {
@@ -998,8 +949,8 @@ public class TransactionServiceImp implements TransactionService,
     {
         if ( !initialized_ ) throw new IllegalStateException ( "Not initialized" );
 
-        if ( maxActives_ >= 0 && tidtotxmap_.size () >= maxActives_ )
-            throw new IllegalStateException ( "Max number of active transactions reached:" + maxActives_ );
+        if ( maxNumberOfActiveTransactions_ >= 0 && tidToTransactionMap_.size () >= maxNumberOfActiveTransactions_ )
+            throw new IllegalStateException ( "Max number of active transactions reached:" + maxNumberOfActiveTransactions_ );
 
         String tid = tidmgr_.get ();
         Stack lineage = new Stack ();
