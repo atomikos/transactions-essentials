@@ -459,7 +459,7 @@ class TransactionImp implements Transaction
 		}
 	}
 
-	public void resumeEnlistedXaReources() throws ExtendedSystemException 
+	void resumeEnlistedXaReources() throws ExtendedSystemException 
 	{
 		Iterator xaResourceTransactions = xaResourceToResourceTransactionMap_.values().iterator();
 		while ( xaResourceTransactions.hasNext() ) {
