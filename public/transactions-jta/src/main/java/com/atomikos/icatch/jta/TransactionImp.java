@@ -179,8 +179,6 @@ class TransactionImp implements Transaction
             javax.transaction.HeuristicRollbackException,
             javax.transaction.SystemException, java.lang.SecurityException
     {
-
-
         try {
             ct_.commit ();
         } catch ( HeurHazardException hh ) {
@@ -196,7 +194,10 @@ class TransactionImp implements Transaction
         } catch ( com.atomikos.icatch.RollbackException rb ) {
         	//see case 29708: all statements have been closed
         	String msg = rb.getMessage ();
-        	rethrowAsJtaRollbackException ( msg , rb );        }
+        	Throwable cause = rb.getCause();
+        	if (cause == null) cause = rb;
+        	rethrowAsJtaRollbackException (msg , cause);        
+        }
     }
 
     /**

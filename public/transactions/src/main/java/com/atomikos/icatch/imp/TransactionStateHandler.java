@@ -253,9 +253,7 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
         if ( ct_.getState().equals ( TxState.MARKED_ABORT ) ) {
         	// happens if synchronization has called setRollbackOnly
         	rollback();
-        	RollbackException rbe = new RollbackException ( "The transaction was set to rollback only" );
-        	rbe.initCause(cause);
-        	throw rbe;
+        	throw new RollbackException ( "The transaction was set to rollback only" , cause );
         }
 
         // for loop to make sure that new registrations are possible during callback
