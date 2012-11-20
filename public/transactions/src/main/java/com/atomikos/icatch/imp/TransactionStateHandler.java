@@ -203,25 +203,25 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
     // This deadlock happens in particular when application commit interleaves
     // with timeout-driven rollback (during preEnter, the rollback of this same
     // handler is invoked)
-    protected void commit () throws SysException,
+    protected void commit() throws SysException,
             java.lang.IllegalStateException, RollbackException
     {
         Stack participants = null;
         Stack synchronizations = null;
         
         //prevent concurrent rollback due to timeout
-        ct_.localTestAndSetTransactionStateHandler ( this , new TxTerminatingStateHandler ( true , ct_ , this ) );
+        ct_.localTestAndSetTransactionStateHandler(this , new TxTerminatingStateHandler(true , ct_ , this));
 
         // NOTE: this must be done BEFORE calling notifications
         // to make sure that active recovery works for early prepares 
-        if ( ct_.isLocalRoot () ) {
+        if ( ct_.isLocalRoot() ) {
 
-        	ct_.getCoordinatorImp ().addTag ( ct_.tag_ );
+        	ct_.getCoordinatorImp().addTag(ct_.tag_);
 
-        	Enumeration enumm = ct_.getExtent ().getParticipants ().elements ();
+        	Enumeration enumm = ct_.getExtent().getParticipants().elements();
         	while ( enumm.hasMoreElements () ) {
-        		Participant part = (Participant) enumm.nextElement ();
-        		addParticipant ( part );
+        		Participant part = (Participant) enumm.nextElement();
+        		addParticipant(part);
 
         	}
         }
