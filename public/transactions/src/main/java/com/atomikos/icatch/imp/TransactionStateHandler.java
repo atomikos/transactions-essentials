@@ -236,6 +236,7 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
         // also makes sure that the tx can still get new Participants
         // from beforeCompletion work being done! This is required.
         Synchronization sync = null;
+        Throwable cause = null;
         Enumeration enumm = synchronizations_.elements ();
         while ( enumm.hasMoreElements () ) {
         	sync = (Synchronization) enumm.nextElement ();
@@ -244,6 +245,7 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
         	} catch ( RuntimeException error ) {
         		// see case 24246: rollback only
         		setRollbackOnly();
+        		cause = error;
         		LOGGER.logWarning ( "Unexpected error in beforeCompletion: " , error );
         	}
         }
@@ -251,7 +253,9 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
         if ( ct_.getState().equals ( TxState.MARKED_ABORT ) ) {
         	// happens if synchronization has called setRollbackOnly
         	rollback();
-        	throw new RollbackException ( "The transaction was set to rollback only" );
+        	RollbackException rbe = new RollbackException ( "The transaction was set to rollback only" );
+        	rbe.initCause(cause);
+        	throw rbe;
         }
 
         // for loop to make sure that new registrations are possible during callback
