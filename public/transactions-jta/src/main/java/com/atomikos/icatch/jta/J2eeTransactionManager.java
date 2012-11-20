@@ -55,11 +55,11 @@ implements TransactionManager, Serializable, Referenceable, UserTransaction
 
 	private transient TransactionManagerImp tm;
 
-    private void checkSetup () throws SystemException
+    private void checkSetup() throws SystemException
     {
         tm = (TransactionManagerImp) TransactionManagerImp.getTransactionManager ();
-        if ( tm == null ) {
-            throw new RuntimeException ( "Transaction Service not running?" );
+        if (tm == null) {
+            throw new RuntimeException("Transaction Service not running?");
         }
     }
 
@@ -76,7 +76,7 @@ implements TransactionManager, Serializable, Referenceable, UserTransaction
     /**
      * @see javax.transaction.TransactionManager#commit()
      */
-    public void commit () throws RollbackException, HeuristicMixedException,
+    public void commit() throws RollbackException, HeuristicMixedException,
             HeuristicRollbackException, SecurityException,
             IllegalStateException, SystemException
     {
