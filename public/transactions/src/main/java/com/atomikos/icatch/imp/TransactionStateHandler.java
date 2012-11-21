@@ -295,7 +295,7 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
     protected abstract Object getState();
 
 
-    protected List getSubtxawares()
+    protected List<SubTxAwareParticipant> getSubtxawares()
     {
         return subtxawares_;
     }
@@ -316,10 +316,10 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
         return synchronizations_;
     }
 
-    protected void addSynchronizations ( List<?> synchronizations )
+    protected void addSynchronizations ( List<Synchronization> synchronizations )
     {
         while ( !synchronizations.isEmpty() ) {
-            Synchronization next = (Synchronization) synchronizations.remove(0);
+            Synchronization next = synchronizations.remove(0);
             localPushSynchronization ( next );
         }
     }
