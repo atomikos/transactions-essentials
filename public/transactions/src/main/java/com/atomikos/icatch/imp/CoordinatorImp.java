@@ -25,7 +25,9 @@
 
 package com.atomikos.icatch.imp;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 
 import com.atomikos.finitestates.FSM;
@@ -130,6 +132,8 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     // as the one that started the tx
     // see BugzID 20653
 
+	private transient List<Synchronization> synchronizations;
+
     /**
      * Constructor for testing only.
      */
@@ -147,6 +151,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
         startThreads ( DEFAULT_TIMEOUT );
         checkSiblings_ = checkorphans;
         single_threaded_2pc_ = false;
+        synchronizations = new ArrayList<Synchronization>();
     }
 
 	private void initFsm(TxState initialState) {
@@ -203,7 +208,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
         setStateHandler ( new ActiveStateHandler ( this ) );
         startThreads ( DEFAULT_TIMEOUT );
         checkSiblings_ = checkorphans;
-
+        synchronizations = new ArrayList<Synchronization>();
 
     }
 
@@ -242,7 +247,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
         checkSiblings_ = true;
         recoverableWhileActive_ = false;
         single_threaded_2pc_ = false;
-
+        synchronizations = new ArrayList<Synchronization>();
 
     }
 
@@ -536,6 +541,8 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 
     	synchronized ( fsm_ ) {
 
+    		rememberSychronizationForAfterCompletionOnOnePhaseCommitWithRollback(sync);
+    		
     		if ( !getState ().equals ( TxState.ACTIVE ) )
     			throw new IllegalStateException ( "wrong state: " + getState () );
 
@@ -559,7 +566,20 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     }
 
  
-    /**
+    private void rememberSychronizationForAfterCompletionOnOnePhaseCommitWithRollback(
+			Synchronization sync) {
+		getSynchronizations().add(sync);
+		
+	}
+
+	private List<Synchronization> getSynchronizations() {
+		synchronized(fsm_) {
+			if (synchronizations == null) synchronizations = new ArrayList<Synchronization>();
+			return synchronizations;
+		}
+	}
+
+	/**
      * @see FSMPreEnterListener.
      */
 

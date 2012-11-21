@@ -134,7 +134,7 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
     {
         if ( sync != null ) {
             try {
-                ct_.getCoordinatorImp ().registerSynchronization ( sync );
+                ct_.getCoordinatorImp().registerSynchronization(sync);
             } catch ( RollbackException e ) {
                 throw new IllegalStateException (
                         "Transaction already rolled back" );
