@@ -540,42 +540,29 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     {
 
     	synchronized ( fsm_ ) {
-
-    		rememberSychronizationForAfterCompletionOnOnePhaseCommitWithRollback(sync);
-    		
     		if ( !getState ().equals ( TxState.ACTIVE ) )
-    			throw new IllegalStateException ( "wrong state: " + getState () );
-
-    		//register readonly participant to force 2PC: fixes bug 10035
-    		ReadOnlyParticipant rop = new ReadOnlyParticipant ( this );
-    		addParticipant ( rop );
-
-    		SynchToFSM wrapper = new SynchToFSM ( sync );
-    		addFSMEnterListener ( wrapper, TxState.COMMITTING );
-    		addFSMEnterListener ( wrapper, TxState.ABORTING );
-    		addFSMEnterListener ( wrapper, TxState.TERMINATED );
-    		// otherwise, readonly participants do not trigger notification!
-
-    		// next, listen on all heur states as well, to make sure that
-    		// connections get notified at end of 2pc (Oracle!)
-    		addFSMEnterListener ( wrapper, TxState.HEUR_MIXED );
-    		addFSMEnterListener ( wrapper, TxState.HEUR_ABORTED );
-    		addFSMEnterListener ( wrapper, TxState.HEUR_HAZARD );
-    		addFSMEnterListener ( wrapper, TxState.HEUR_COMMITTED );
+    			throw new IllegalStateException ( "wrong state: " + getState () );   		
+    		rememberSychronizationForAfterCompletion(sync);
     	}
     }
 
  
-    private void rememberSychronizationForAfterCompletionOnOnePhaseCommitWithRollback(
-			Synchronization sync) {
-		getSynchronizations().add(sync);
-		
+    private void rememberSychronizationForAfterCompletion(Synchronization sync) {
+		getSynchronizations().add(sync);		
 	}
 
 	private List<Synchronization> getSynchronizations() {
 		synchronized(fsm_) {
 			if (synchronizations == null) synchronizations = new ArrayList<Synchronization>();
 			return synchronizations;
+		}
+	}
+	
+	private void notifySynchronizationsAfterCompletion(TxState... successiveStates) {
+		for ( TxState state : successiveStates ) {
+			for (Synchronization s : getSynchronizations()) {
+				s.afterCompletion(state);
+			}
 		}
 	}
 
@@ -729,10 +716,24 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
             HeurHazardException, java.lang.IllegalStateException,
             RollbackException, SysException
     {
-
     	HeuristicMessage[] ret = null;
     	synchronized ( fsm_ ) {
-    		ret = stateHandler_.commit ( onePhase );
+    		try {
+				ret = stateHandler_.commit(onePhase);
+				notifySynchronizationsAfterCompletion(TxState.COMMITTING, TxState.TERMINATED);
+			} catch (RollbackException rb) {
+				notifySynchronizationsAfterCompletion(TxState.ABORTING,TxState.TERMINATED);
+				throw rb;
+			} catch (HeurMixedException hm) {
+				notifySynchronizationsAfterCompletion(TxState.COMMITTING, TxState.TERMINATED);
+				throw hm;
+			} catch (HeurHazardException hh) {
+				notifySynchronizationsAfterCompletion(TxState.COMMITTING, TxState.TERMINATED);
+				throw hh;
+			} catch (HeurRollbackException hr) {
+				notifySynchronizationsAfterCompletion(TxState.ABORTING, TxState.TERMINATED);
+				throw hr;
+			}
     	}
     	return ret;
     }
@@ -746,6 +747,8 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
             java.lang.IllegalStateException
     {
 
+    	HeuristicMessage[] ret = null;
+    	
         if ( getState ().equals ( TxState.ABORTING ) ) {
             // this method is ONLY called for EXTERNAL events -> by remote coordinators
             // therefore, state aborting means either a recursive
@@ -764,8 +767,21 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
         // so we can safely lock this instance.
 
         synchronized ( fsm_ ) {
-        	return stateHandler_.rollback ();
+        	try {
+            	ret = stateHandler_.rollback ();
+            	notifySynchronizationsAfterCompletion(TxState.ABORTING, TxState.TERMINATED);
+        	} catch (HeurCommitException hc) {
+        		notifySynchronizationsAfterCompletion(TxState.COMMITTING, TxState.TERMINATED);
+        		throw hc;
+        	} catch (HeurMixedException hm) {
+        		notifySynchronizationsAfterCompletion(TxState.ABORTING, TxState.TERMINATED);
+        		throw hm;
+        	} catch (HeurHazardException hh) {
+        		notifySynchronizationsAfterCompletion(TxState.ABORTING,TxState.TERMINATED);
+        		throw hh;
+        	}
         }
+        return ret;
     }
 
 
@@ -775,8 +791,20 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     {
     	HeuristicMessage[] ret = null;
         synchronized ( fsm_ ) {
-        	ret = stateHandler_.rollback ( true, true );
-        }
+        	try {
+				ret = stateHandler_.rollback ( true, true );
+				notifySynchronizationsAfterCompletion(TxState.ABORTING, TxState.TERMINATED);
+			} catch (HeurCommitException hc) {
+        		notifySynchronizationsAfterCompletion(TxState.COMMITTING, TxState.TERMINATED);
+        		throw hc;
+        	} catch (HeurMixedException hm) {
+        		notifySynchronizationsAfterCompletion(TxState.ABORTING, TxState.TERMINATED);
+        		throw hm;
+        	} catch (HeurHazardException hh) {
+        		notifySynchronizationsAfterCompletion(TxState.ABORTING,TxState.TERMINATED);
+        		throw hh;
+        	}
+        } 
         return ret;
     }
 
@@ -786,7 +814,22 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     {
     	HeuristicMessage[] ret = null;
     	synchronized ( fsm_ ) {
-    		ret = stateHandler_.commit ( true, false );
+    		try {
+    			ret = stateHandler_.commit ( true, false );
+    			notifySynchronizationsAfterCompletion(TxState.COMMITTING, TxState.TERMINATED);
+    		} catch (RollbackException rb) {
+    			notifySynchronizationsAfterCompletion(TxState.ABORTING,TxState.TERMINATED);
+    			throw rb;
+    		} catch (HeurMixedException hm) {
+    			notifySynchronizationsAfterCompletion(TxState.COMMITTING, TxState.TERMINATED);
+    			throw hm;
+    		} catch (HeurHazardException hh) {
+    			notifySynchronizationsAfterCompletion(TxState.COMMITTING, TxState.TERMINATED);
+    			throw hh;
+    		} catch (HeurRollbackException hr) {
+    			notifySynchronizationsAfterCompletion(TxState.ABORTING, TxState.TERMINATED);
+    			throw hr;
+    		}
     	}
     	return ret;
     }
