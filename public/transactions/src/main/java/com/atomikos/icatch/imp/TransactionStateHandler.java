@@ -54,13 +54,10 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
 	private static final Logger LOGGER = LoggerFactory.createLogger(TransactionStateHandler.class);
 
     private int subtxs_;
-
     private Stack synchronizations_;
-
     private List subtxawares_;
-
     private CompositeTransactionImp ct_;
-
+    
     protected TransactionStateHandler ( CompositeTransactionImp ct )
     {
         ct_ = ct;
