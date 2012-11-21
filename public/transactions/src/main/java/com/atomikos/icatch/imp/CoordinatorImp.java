@@ -526,7 +526,11 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 	private void notifySynchronizationsAfterCompletion(TxState... successiveStates) {
 		for ( TxState state : successiveStates ) {
 			for (Synchronization s : getSynchronizations()) {
-				s.afterCompletion(state);
+				try {
+					s.afterCompletion(state);
+				} catch (Throwable t) {
+					LOGGER.logWarning("Unexpected error in afterCompletion", t);
+				}
 			}
 		}
 	}
@@ -1022,6 +1026,22 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Error during setRollbackOnly" , e );
         }
     }
+
+	public Object getStateWithTwoPhaseCommitDecision() {
+		Object ret = getState();
+		if (TxState.TERMINATED.equals(getState())) {
+			if (isCommitted()) ret = TxState.COMMITTED;
+			else ret = TxState.ABORTED;
+		} else if (TxState.HEUR_ABORTED.equals(getState())) {
+			ret = TxState.ABORTED;
+		} else if (TxState.HEUR_COMMITTED.equals(getState())) {
+			ret = TxState.COMMITTED;
+		} else if (TxState.HEUR_HAZARD.equals(getState())) {
+			if (isCommitted()) ret = TxState.COMMITTING;
+			else ret = TxState.ABORTING;
+		}
+		return ret;
+	}
 
 
 }

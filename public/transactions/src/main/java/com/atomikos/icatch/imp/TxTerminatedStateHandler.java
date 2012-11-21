@@ -114,7 +114,7 @@ class TxTerminatedStateHandler extends TransactionStateHandler
 
     protected Object getState()
     {
-        if ( commit_ ) return getCT().getCoordinatorImp().getState();
+        if ( commit_ ) return getCT().getCoordinatorImp().getStateWithTwoPhaseCommitDecision();
         else {
         	// Because we have no rolled back state, we return marked abort.
             // This should be indistinguishable for the client: a later rollback

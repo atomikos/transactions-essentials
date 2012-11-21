@@ -189,6 +189,7 @@ class AtomikosConnectionProxy extends AbstractConnectionProxy
 		if ( ret == null ) LOGGER.logWarning ( this + ": WARNING: transaction manager not running?" );
 		return ret;
 	}
+	
 
 	/**
 	 * Enlist if necessary

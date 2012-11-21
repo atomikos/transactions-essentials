@@ -14,7 +14,7 @@ public class TxStateTestJUnit extends TestCase {
 			states.nextElement();
 			count++;
 		}
-		assertEquals ( count , 13 );
+		assertEquals ( 15 , count );
 	}
 
 }

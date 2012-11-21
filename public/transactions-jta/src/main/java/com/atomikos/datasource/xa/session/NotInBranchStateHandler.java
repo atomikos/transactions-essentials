@@ -52,7 +52,6 @@ class NotInBranchStateHandler extends TransactionContextStateHandler
 	{
 		TransactionContextStateHandler ret = null;
 		if ( ct != null && ct.getProperty ( TransactionManagerImp.JTA_PROPERTY_NAME ) != null ) {
-
 			if ( TxState.MARKED_ABORT.equals ( ct.getState() ) ) {
 				//see case 27857
 				throw new InvalidSessionHandleStateException (
@@ -67,6 +66,7 @@ class NotInBranchStateHandler extends TransactionContextStateHandler
 		}
 		return ret;
 	}
+
 
 	TransactionContextStateHandler sessionClosed()
 	{

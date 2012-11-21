@@ -154,7 +154,6 @@ class TransactionImp implements Transaction
     public int getStatus()
     {
         TxState state = (TxState) ct_.getState();
-
         if (state.equals(TxState.IN_DOUBT))
             return Status.STATUS_PREPARED;
         else if (state.equals(TxState.PREPARING))
@@ -163,6 +162,14 @@ class TransactionImp implements Transaction
             return Status.STATUS_ACTIVE;
         else if (state.equals(TxState.MARKED_ABORT))
             return Status.STATUS_MARKED_ROLLBACK;
+        else if (state.equals(TxState.COMMITTING))
+        	return Status.STATUS_COMMITTING;
+        else if (state.equals(TxState.ABORTING))
+        	return Status.STATUS_ROLLING_BACK;
+        else if (state.equals(TxState.COMMITTED))
+        	return Status.STATUS_COMMITTED;
+        else if (state.equals(TxState.ABORTED))
+        	return Status.STATUS_ROLLEDBACK;
         else
             // other cases are either very short or irrelevant to user?
             return Status.STATUS_UNKNOWN;
@@ -236,13 +243,24 @@ class TransactionImp implements Transaction
     {
         TransactionalResource res = null;
         XAResourceTransaction restx = null;
-        Stack errors = new Stack ();
+        Stack errors = new Stack();
 
-        if ( getStatus () == Status.STATUS_MARKED_ROLLBACK ) {
-        	String msg =  "Transaction is already marked for rollback - enlisting more resources is useless.";
-        	LOGGER.logWarning ( msg );
-            throw new javax.transaction.RollbackException ( msg );
+        int status = getStatus();
+        switch (status) {
+        	case Status.STATUS_MARKED_ROLLBACK:
+        	case Status.STATUS_ROLLEDBACK:
+        	case Status.STATUS_ROLLING_BACK:
+        		String msg =  "Transaction rollback - enlisting more resources is useless.";
+            	LOGGER.logWarning ( msg );
+                throw new javax.transaction.RollbackException ( msg );
+        	case Status.STATUS_COMMITTED:
+        	case Status.STATUS_PREPARED:
+        	case Status.STATUS_UNKNOWN:
+        		msg =  "Enlisting more resources is no longer permitted: transaction is in state " + ct_.getState();
+            	LOGGER.logWarning ( msg );
+                throw new IllegalStateException ( msg );
         }
+      
 
         XAResourceTransaction suspendedXAResourceTransaction = findXAResourceTransaction ( xares );
 
@@ -340,7 +358,7 @@ class TransactionImp implements Transaction
 
             synchronized ( Configuration.class ) {
             	// synchronized to avoid case 61740
-
+            	
             	ret = new TemporaryXATransactionalResource(xares);
             	// cf case 61740: check for concurrent additions before this synch block was entered
             	if ( Configuration.getResource ( ret.getName() ) == null ) {

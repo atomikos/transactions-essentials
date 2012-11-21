@@ -25,7 +25,6 @@
 
 package com.atomikos.icatch;
 
-import org.mockito.asm.tree.IntInsnNode;
 
 
 /**

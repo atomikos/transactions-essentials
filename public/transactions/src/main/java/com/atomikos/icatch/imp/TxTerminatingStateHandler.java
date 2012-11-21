@@ -68,9 +68,8 @@ class TxTerminatingStateHandler extends TransactionStateHandler
 
 	protected Object getState()
 	{
-		//return active: we are merely a substate for avoiding concurrency
-		//problems between app-level commit and timeout-rollback
-		return TxState.ACTIVE;
+		if (committing) return TxState.COMMITTING;
+		else return TxState.ABORTING;
 	}
 
 	protected RecoveryCoordinator addParticipant ( Participant p )

@@ -32,6 +32,7 @@ import com.atomikos.datasource.xa.XAResourceTransaction;
 import com.atomikos.datasource.xa.XATransactionalResource;
 import com.atomikos.icatch.CompositeTransaction;
 import com.atomikos.icatch.HeuristicMessage;
+import com.atomikos.icatch.TxState;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 
@@ -87,6 +88,10 @@ class BranchEnlistedStateHandler extends TransactionContextStateHandler
 			String msg = "The connection/session object is already enlisted in a (different) transaction.";
 			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( msg );
 			throw new UnexpectedTransactionContextException();
+		} else if (TxState.MARKED_ABORT.equals(currentTx.getState())) {
+			throw new InvalidSessionHandleStateException (
+					"Transaction is marked for rollback only or has timed out"
+				);
 		}
 		
 		//tx context is still the same -> no change in state required
