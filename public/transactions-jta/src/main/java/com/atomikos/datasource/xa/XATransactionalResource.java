@@ -517,20 +517,7 @@ public abstract class XATransactionalResource implements TransactionalResource
         }
 
         do {
-            try {
-                recoveredlist = getXAResource ().recover ( flags );
-            } catch ( NullPointerException ora ) {
-        		//Typical for Oracle without XA setup
-            		if ( getXAResource ().getClass ().getName ().toLowerCase ().indexOf ( "oracle" ) >= 0 ) {
-            			LOGGER.logWarning("ORACLE NOT CONFIGURED FOR XA? PLEASE CONTACT YOUR DBA TO FIX THIS...");
-            		}
-            		throw ora;
-
-            } catch ( XAException xaerr ) {
-                LOGGER.logWarning ( "Error in recovery", xaerr );
-                errors.push ( xaerr );
-                throw new ResourceException ( "Error in recovery", errors );
-            }
+            recoveredlist = recoverXidsFromXAResource(flags, errors);
             flags = XAResource.TMNOFLAGS;
             done = (recoveredlist == null || recoveredlist.length == 0);
             if ( !done ) {
@@ -540,28 +527,23 @@ public abstract class XATransactionalResource implements TransactionalResource
                 // LOOP (ALWAYS RETURNS SAME RECOVER
                 // SET). IF A NEW SET OF XIDS IS RETURNED
                 // THEN done WILL BE RESET TO FALSE
-
                 done = true;
-                for ( int i = 0; i < recoveredlist.length; i++ ) {
-
-                    Xid xid = wrapWithOurOwnXidToHaveCorrectEqualsAndHashCode ( recoveredlist[i] );
-
+                
+                for ( Xid vendorXid : recoveredlist ) {
+                    Xid xid = wrapWithOurOwnXidToHaveCorrectEqualsAndHashCode ( vendorXid );
                     if ( !recoveredXids.contains ( xid ) ) {
                         // a new xid is returned -> we can not be in a recovery loop -> go on
                     	if(LOGGER.isInfoEnabled()){
-                    		LOGGER.logInfo("Resource " + servername_
-                                    + " inspecting XID: " + xid);
+                    		LOGGER.logInfo("Resource " + servername_ + " inspecting XID: " + xid);
                     	}
                         recoveredXids.addElement ( xid );
                         done = false;
                         // only really 'recover' this xid if it is ours
-                        String branch = new String ( recoveredlist[i]
-                                .getBranchQualifier () );
+                        String branch = new String ( vendorXid.getBranchQualifier () );
                         if ( branch.startsWith ( branchIdentifier_ ) ) {
                             recoveredXidMap_.put ( xid, new Object () );
                             if(LOGGER.isInfoEnabled()){
-                            	LOGGER.logInfo("Resource " + servername_
-                                        + " recovering XID: " + xid);
+                            	LOGGER.logInfo("Resource " + servername_ + " recovering XID: " + xid);
                             }
                         } else {
                         	if(LOGGER.isInfoEnabled()){
@@ -578,6 +560,25 @@ public abstract class XATransactionalResource implements TransactionalResource
         recoveredXids = null; // for GC
 
     }
+
+	private Xid[] recoverXidsFromXAResource(int flags, Stack errors) {
+		Xid[] recoveredlist = null;
+		try {
+		    recoveredlist = getXAResource().recover(flags);
+		} catch ( NullPointerException ora ) {
+			//Typical for Oracle without XA setup
+				if ( getXAResource ().getClass ().getName ().toLowerCase ().indexOf ( "oracle" ) >= 0 ) {
+					LOGGER.logWarning("ORACLE NOT CONFIGURED FOR XA? PLEASE CONTACT YOUR DBA TO FIX THIS...");
+				}
+				throw ora;
+
+		} catch ( XAException xaerr ) {
+		    LOGGER.logWarning ( "Error in recovery", xaerr );
+		    errors.push ( xaerr );
+		    throw new ResourceException ( "Error in recovery", errors );
+		}
+		return recoveredlist;
+	}
 
     private Xid wrapWithOurOwnXidToHaveCorrectEqualsAndHashCode(Xid xid) {
 		return new XID(xid);
