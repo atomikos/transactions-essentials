@@ -131,13 +131,13 @@ class TransactionImp implements Transaction
      * @see javax.transaction.Transaction
      */
 
-    public void registerSynchronization ( javax.transaction.Synchronization s )
+    public void registerSynchronization(javax.transaction.Synchronization s)
             throws java.lang.IllegalStateException,
             javax.transaction.SystemException
     {
         try {
-            Sync2Sync adaptor = new Sync2Sync ( s );
-            ct_.registerSynchronization ( adaptor );
+            Sync2Sync adaptor = new Sync2Sync(s);
+            ct_.registerSynchronization(adaptor);
         } catch ( SysException se ) {
         	String msg = "Unexpected error during registerSynchronization";
         	LOGGER.logWarning ( msg , se );
@@ -151,17 +151,17 @@ class TransactionImp implements Transaction
      * @see javax.transaction.Transaction
      */
 
-    public int getStatus ()
+    public int getStatus()
     {
-        TxState state = (TxState) ct_.getState ();
+        TxState state = (TxState) ct_.getState();
 
-        if ( state.equals ( TxState.IN_DOUBT ) )
+        if (state.equals(TxState.IN_DOUBT))
             return Status.STATUS_PREPARED;
-        else if ( state.equals ( TxState.PREPARING ) )
+        else if (state.equals(TxState.PREPARING))
             return Status.STATUS_PREPARING;
-        else if ( state.equals ( TxState.ACTIVE ) )
+        else if (state.equals(TxState.ACTIVE))
             return Status.STATUS_ACTIVE;
-        else if ( state.equals ( TxState.MARKED_ABORT ) )
+        else if (state.equals(TxState.MARKED_ABORT))
             return Status.STATUS_MARKED_ROLLBACK;
         else
             // other cases are either very short or irrelevant to user?
@@ -174,13 +174,13 @@ class TransactionImp implements Transaction
      * @see javax.transaction.Transaction.
      */
 
-    public void commit () throws javax.transaction.RollbackException,
+    public void commit() throws javax.transaction.RollbackException,
             javax.transaction.HeuristicMixedException,
             javax.transaction.HeuristicRollbackException,
             javax.transaction.SystemException, java.lang.SecurityException
     {
         try {
-            ct_.commit ();
+            ct_.commit();
         } catch ( HeurHazardException hh ) {
             rethrowAsJtaHeuristicMixedException ( hh.getMessage () , hh );
         } catch ( HeurRollbackException hr ) {
@@ -204,10 +204,10 @@ class TransactionImp implements Transaction
      * @see javax.transaction.Transaction.
      */
 
-    public void rollback () throws IllegalStateException, SystemException
+    public void rollback() throws IllegalStateException, SystemException
     {
         try {
-            ct_.rollback ();
+            ct_.rollback();
         } catch ( SysException se ) {
         	LOGGER.logWarning ( se.getMessage() , se );
             throw new ExtendedSystemException ( se.getMessage (), se
@@ -220,17 +220,17 @@ class TransactionImp implements Transaction
      * @see javax.transaction.Transaction.
      */
 
-    public void setRollbackOnly () throws IllegalStateException,
+    public void setRollbackOnly() throws IllegalStateException,
             SystemException
     {
-        ct_.setRollbackOnly ();
+        ct_.setRollbackOnly();
     }
 
     /**
      * @see javax.transaction.Transaction.
      */
 
-    public boolean enlistResource ( XAResource xares )
+    public boolean enlistResource(XAResource xares)
             throws javax.transaction.RollbackException,
             javax.transaction.SystemException, IllegalStateException
     {

@@ -152,7 +152,6 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
 
     public Object clone ()
     {
-
         CoordinatorStateHandler clone = null;
         try {
             clone = (CoordinatorStateHandler) super.clone ();
