@@ -54,9 +54,7 @@ import com.atomikos.persistence.StateRecoveryManager;
  * For a particular XA data source, it is necessary to implement the
  * refreshXAConnection method, because in general there is no standard way of
  * getting XAResource instances. Therefore, this class is agnostic about it.
- */
-
-/*
+ *
  * It is assumed that there is at most one instance per (root transaction,
  * server) combination. Otherwise, siblings can not be mapped to the same
  * ResourceTransaction! This instance is responsible for mapping siblings to
