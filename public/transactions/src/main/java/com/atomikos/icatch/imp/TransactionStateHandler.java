@@ -27,6 +27,7 @@ package com.atomikos.icatch.imp;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
 
@@ -54,24 +55,24 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
 	private static final Logger LOGGER = LoggerFactory.createLogger(TransactionStateHandler.class);
 
     private int subtxs_;
-    private Stack synchronizations_;
-    private List subtxawares_;
+    private List<Synchronization> synchronizations_;
+    private List<SubTxAwareParticipant> subtxawares_;
     private CompositeTransactionImp ct_;
     
     protected TransactionStateHandler ( CompositeTransactionImp ct )
     {
         ct_ = ct;
         subtxs_ = 0;
-        subtxawares_ = new ArrayList ();
-        synchronizations_ = new Stack ();
+        subtxawares_ = new ArrayList<SubTxAwareParticipant>();
+        synchronizations_ = new ArrayList<Synchronization>();
     }
 
     protected TransactionStateHandler ( CompositeTransactionImp ct ,
             TransactionStateHandler handler )
     {
-        subtxs_ = handler.getSubTransactionCount ();
-        synchronizations_ = handler.getSynchronizations ();
-        subtxawares_ = handler.getSubtxawares ();
+        subtxs_ = handler.getSubTransactionCount();
+        synchronizations_ = handler.getSynchronizations();
+        subtxawares_ = handler.getSubtxawares();
         ct_ = ct;
 
     }
@@ -93,7 +94,7 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
     
     private synchronized void localPushSynchronization ( Synchronization sync ) 
     {
-    	synchronizations_.push ( sync );
+    	synchronizations_.add ( sync );
     }
     
     private synchronized void localAddSubTxAwareParticipant ( SubTxAwareParticipant p )
@@ -233,9 +234,9 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
         // from beforeCompletion work being done! This is required.
         Synchronization sync = null;
         Throwable cause = null;
-        Enumeration enumm = synchronizations_.elements ();
-        while ( enumm.hasMoreElements () ) {
-        	sync = (Synchronization) enumm.nextElement ();
+        Iterator it = synchronizations_.iterator();
+        while ( it.hasNext() ) {
+        	sync = (Synchronization) it.next();
         	try {
         		sync.beforeCompletion ();
         	} catch ( RuntimeException error ) {
@@ -310,15 +311,15 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
         return localGetSubTxCount();
     }
 
-    protected Stack getSynchronizations()
+    protected List<Synchronization> getSynchronizations()
     {
         return synchronizations_;
     }
 
-    protected void addSynchronizations ( Stack synchronizations )
+    protected void addSynchronizations ( List<?> synchronizations )
     {
-        while ( !synchronizations.empty() ) {
-            Synchronization next = (Synchronization) synchronizations.pop();
+        while ( !synchronizations.isEmpty() ) {
+            Synchronization next = (Synchronization) synchronizations.remove(0);
             localPushSynchronization ( next );
         }
     }
