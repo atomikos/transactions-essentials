@@ -291,8 +291,7 @@ public abstract class XATransactionalResource implements TransactionalResource
             return true;
 
         XAResource xaresource = getXAResource ();
-        if ( xaresource == null )
-            return false;
+        if (xaresource == null) return false;
         // if no connection could be gotten
 
         boolean ret = false;
@@ -313,12 +312,10 @@ public abstract class XATransactionalResource implements TransactionalResource
                 } else if ( usesWeakCompare () ) {
                     // In weak compare mode, it does not matter if the resource
                     // says it is different. The fact that the implementation is
-                    // the
-                    // same is enough. Needed for SONICMQ and others.
+                    // the same is enough. Needed for SONICMQ and others.
                     ret = true;
                 } else {
-                	LOGGER
-                            .logDebug ( "XAResources claim to be different: "
+                	LOGGER.logDebug ( "XAResources claim to be different: "
                                     + xares + " and " + xaresource );
                 }
             } catch ( XAException xe ) {
@@ -341,8 +338,7 @@ public abstract class XATransactionalResource implements TransactionalResource
     {
         // null on first invocation
         if ( needsRefresh () ) {
-        	LOGGER
-                    .logDebug ( servername_ + ": refreshing XAResource..." );
+        	LOGGER.logDebug ( servername_ + ": refreshing XAResource..." );
             xares_ = refreshXAConnection ();
             LOGGER.logInfo ( servername_ + ": refreshed XAResource" );
         }
