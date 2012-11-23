@@ -30,6 +30,8 @@ import java.io.IOException;
 import java.io.ObjectStreamException;
 import java.io.RandomAccessFile;
 import java.io.StreamCorruptedException;
+import java.io.SyncFailedException;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Vector;
 
@@ -43,194 +45,206 @@ import com.atomikos.persistence.LogStream;
  * A file implementation of a LogStream.
  */
 
-public class FileLogStream implements LogStream
-{
+public class FileLogStream implements LogStream {
 	private static final Logger LOGGER = LoggerFactory.createLogger(FileLogStream.class);
 
+	private RandomAccessFile output_;
+	// keeps track of the latest output stream returned
+	// from writeCheckpoint, so that it can be closed ( invalidated )
+	// if necessary.
 
-    private RandomAccessFile output_;
-    // keeps track of the latest output stream returned
-    // from writeCheckpoint, so that it can be closed ( invalidated )
-    // if necessary.
+	// private ObjectOutputStream ooutput_;
 
-  //  private ObjectOutputStream ooutput_;
+	private boolean simulateCrash_;
+	// for testing
 
-    private boolean simulateCrash_;
-    // for testing
+	private boolean corrupt_;
+	// true if checkpoint; second call of recover
+	// not allowed, otherwise suffix_ will be wrong
+	// especially since checkpoint failed.
 
+	private VersionedFile file_;
 
-    private boolean corrupt_;
-    // true if checkpoint; second call of recover
-    // not allowed, otherwise suffix_ will be wrong
-    // especially since checkpoint failed.
+	public FileLogStream(String baseDir, String baseName) throws IOException {
+		file_ = new VersionedFile(baseDir, baseName, ".log");
+		simulateCrash_ = false;
 
-    private VersionedFile file_;
+		corrupt_ = false;
+	}
 
-    public FileLogStream ( String baseDir , String baseName  )
-            throws IOException
-    {
-        file_ = new VersionedFile ( baseDir , baseName , ".log" );
-        simulateCrash_ = false;
+	private void closeOutput() throws LogException {
 
-        corrupt_ = false;
-    }
+		// try to close the previous output stream, if any.
+		try {
+			if (file_ != null) {
+				file_.close();
+				if (LOGGER.isInfoEnabled()) {
+					LOGGER.logInfo("Logfile closed: " + file_.getCurrentVersionFileName());
+				}
+			}
+			output_ = null;
+			// ooutput_ = null;
+		} catch (IOException e) {
 
-    private void closeOutput () throws LogException
-    {
+			throw new LogException("Error closing previous output", e);
+		}
+	}
 
-        // try to close the previous output stream, if any.
-        try {
-            if ( file_ != null ) {
-	             file_.close();
-	             if(LOGGER.isInfoEnabled()){
-	            	 LOGGER.logInfo("Logfile closed: " + file_.getCurrentVersionFileName());
-	             }
-            }
-            output_ = null;
-            //ooutput_ = null;
-        } catch ( IOException e ) {
+	/**
+	 * Makes write checkpoint crash before old file delete.
+	 * 
+	 * For debugging only.
+	 */
 
-            throw new LogException ( "Error closing previous output", e );
-        }
-    }
+	void setCrashMode() {
+		simulateCrash_ = true;
+	}
 
-    /**
-     * Makes write checkpoint crash before old file delete.
-     *
-     * For debugging only.
-     */
+	public Vector recover() throws LogException {
 
-    void setCrashMode ()
-    {
-        simulateCrash_ = true;
-    }
+		if (corrupt_)
+			throw new LogException("Instance might be corrupted");
 
+		Vector<SystemLogImage> ret = new Vector<SystemLogImage>();
 
-    public synchronized Vector recover () throws LogException
-    {
+		try {
+			RandomAccessFile f = file_.openLastValidVersionForReading();
 
-        if ( corrupt_ )
-            throw new LogException ( "Instance might be corrupted" );
+			int count = 0;
+			if (LOGGER.isInfoEnabled()) {
+				LOGGER.logInfo("Starting read of logfile " + file_.getCurrentVersionFileName());
+			}
+			
+			while (f.length() > f.getChannel().position()) {
+				// if crashed, then unproper closing might cause endless blocking!
+				// therefore, we check if avaible first.
+				count++;
+				
+				SystemLogImage systemLogImage = new SystemLogImage();
 
+				systemLogImage.readData(f);
+				ret.addElement(systemLogImage);
+				if (count % 10 == 0) {
+					LOGGER.logInfo(".");
+				}
 
-        Vector<SystemLogImage> ret = new Vector<SystemLogImage> ();
+			}
+			LOGGER.logInfo("Done read of logfile");
 
-        try {
-        	RandomAccessFile f = file_.openLastValidVersionForReading();
+		} catch (java.io.EOFException unexpectedEOF) {
+			LOGGER.logDebug("Unexpected EOF - logfile not closed properly last time?", unexpectedEOF);
+			// merely return what was read so far...
+		} catch (StreamCorruptedException unexpectedEOF) {
+			LOGGER.logDebug("Unexpected EOF - logfile not closed properly last time?", unexpectedEOF);
+			// merely return what was read so far...
+		} catch (ObjectStreamException unexpectedEOF) {
+			LOGGER.logDebug("Unexpected EOF - logfile not closed properly last time?", unexpectedEOF);
+			// merely return what was read so far...
+		} catch (FileNotFoundException firstStart) {
+			// the file could not be opened for reading;
+			// merely return the default empty vector
+		} catch (Exception e) {
+			String msg = "Error in recover";
+			LOGGER.logWarning(msg, e);
+			throw new LogException(msg, e);
+		}
 
-            int count = 0;
-            if(LOGGER.isInfoEnabled()){
-            	LOGGER.logInfo("Starting read of logfile " + file_.getCurrentVersionFileName());
-            }
+		return ret;
+	}
 
-            while ( f.length() > f.getChannel().position()) {
-                // if crashed, then unproper closing might cause endless blocking!
-                // therefore, we check if avaible first.
-                count++;
-//                Object nxt = ins.readObject ();
-                SystemLogImage systemLogImage= new SystemLogImage();
-                systemLogImage.readData(f);
-                ret.addElement ( systemLogImage );
-                if ( count % 10 == 0 ) {
-                    LOGGER.logInfo(".");
-                }
+	public void writeCheckpoint(Enumeration elements) throws LogException {
+		long start =System.currentTimeMillis();
+		synchronized (file_) {
+			// first, make sure that any pending output stream handles
+			// in the client are invalidated
+			closeOutput();
 
-            }
-            LOGGER.logInfo("Done read of logfile");
+			try {
+				// open the new output file
+				// NOTE: after restart, any previous and failed checkpoint files
+				// will be overwritten here. That is perfectly OK.
+				output_ = file_.openNewVersionForWriting();
+				final DataByteArrayOutputStream dataByteArrayOutputStream = getOrCreate();
+				while (elements != null && elements.hasMoreElements()) {
+					DataSerializable next = (DataSerializable) elements.nextElement();
+					dataByteArrayOutputStream.restart();
+					next.writeData(dataByteArrayOutputStream);
+					output_.write(dataByteArrayOutputStream.getContent());
+				}
 
-        } catch ( java.io.EOFException unexpectedEOF ) {
-        	LOGGER.logDebug("Unexpected EOF - logfile not closed properly last time?" , unexpectedEOF);
-        	// merely return what was read so far...
-        } catch ( StreamCorruptedException unexpectedEOF ) {
-        	LOGGER.logDebug("Unexpected EOF - logfile not closed properly last time?" , unexpectedEOF);
-        	// merely return what was read so far...
-        } catch ( ObjectStreamException unexpectedEOF ) {
-        	LOGGER.logDebug("Unexpected EOF - logfile not closed properly last time?" , unexpectedEOF);
-        	// merely return what was read so far...
-        } catch ( FileNotFoundException firstStart ) {
-        	// the file could not be opened for reading;
-        	// merely return the default empty vector
-        } catch ( Exception e ) {
-        	String msg =  "Error in recover";
-        	LOGGER.logWarning(msg,e);
-            throw new LogException ( msg , e );
-        }
+				output_.getFD().sync();
+				// NOTE: we do NOT close the object output, since the client
+				// will probably want to write more!
+				// Thus, we return the open stream to the client.
+				// Any closing will be done later, during cleanup if necessary.
 
-        return ret;
-    }
+				if (simulateCrash_) {
+					corrupt_ = true;
+					throw new LogException("Old file could not be deleted");
+				}
 
-    public synchronized void writeCheckpoint ( Enumeration elements )
-            throws LogException
-    {
-        // first, make sure that any pending output stream handles
-        // in the client are invalidated
-        closeOutput ();
+				try {
+					file_.discardBackupVersion();
+				} catch (IOException errorOnDelete) {
+					corrupt_ = true;
+					// should restart
+					throw new LogException("Old file could not be deleted");
+				}
+			} catch (Exception e) {
+				throw new LogException("Error during checkpointing", e);
+			}
 
-        try {
-            // open the new output file
-            // NOTE: after restart, any previous and failed checkpoint files
-            // will be overwritten here. That is perfectly OK.
-            output_ = file_.openNewVersionForWriting();
-           // ooutput_ = new ObjectOutputStream ( output_ );
-            while ( elements != null && elements.hasMoreElements () ) {
-            	DataSerializable next = (DataSerializable)elements.nextElement ();
-            	next.writeData(output_);
-            }
+		}
+		System.err.println("writeCheckpoint "+(System.currentTimeMillis()-start));
+	}
 
-            output_.getFD ().sync ();
-            // NOTE: we do NOT close the object output, since the client
-            // will probably want to write more!
-            // Thus, we return the open stream to the client.
-            // Any closing will be done later, during cleanup if necessary.
+	public void flushObject(Object o, boolean shouldSync) throws LogException {
 
-            if ( simulateCrash_ ) {
-            	corrupt_ = true;
-            	throw new LogException ( "Old file could not be deleted" );
-            }
+		//long start = System.currentTimeMillis();
+		try {
+			final DataByteArrayOutputStream dataByteArrayOutputStream = getOrCreate();
+			DataSerializable oo = (DataSerializable) o;
+			oo.writeData(dataByteArrayOutputStream);
+			dataByteArrayOutputStream.close();
+			// take care of checkpoint...
+			synchronized (file_) {
+				output_.write(dataByteArrayOutputStream.getContent());
+			}
+			if (shouldSync) 	output_.getFD().sync();
+		} catch (IOException e) {
 
-            try {
-            	file_.discardBackupVersion();
-            } catch ( IOException errorOnDelete ) {
-            	 corrupt_ = true;
-                 // should restart
-                 throw new LogException ( "Old file could not be deleted" );
-            }
-        } catch ( Exception e ) {
-            throw new LogException ( "Error during checkpointing", e );
-        }
+			throw new LogException(e.getMessage(), e);
+		}
+		//System.err.println("flushObject: " +(System.currentTimeMillis()-start));
+	}
 
+	private static final ThreadLocal<DataByteArrayOutputStream> dataByteArrayOutputStreams= new ThreadLocal<DataByteArrayOutputStream>();
+	private DataByteArrayOutputStream getOrCreate() {
+		
+		DataByteArrayOutputStream dataByteArrayOutputStream=dataByteArrayOutputStreams.get();
+		if(dataByteArrayOutputStream==null){
+			dataByteArrayOutputStream= new DataByteArrayOutputStream();
+			dataByteArrayOutputStreams.set(dataByteArrayOutputStream);
+		} else {
+			dataByteArrayOutputStream.restart();
+		}
+		
+		return dataByteArrayOutputStream;
+	}
 
+	public synchronized void close() throws LogException {
+		closeOutput();
+	}
 
-    }
+	public void finalize() throws Throwable {
+		try {
+			close();
+		} finally {
+			super.finalize();
+		}
+	}
 
-    public synchronized void flushObject ( Object o, boolean shouldSync ) throws LogException
-    {
-        try {
-        	DataSerializable oo= (DataSerializable)o;
-        	oo.writeData(output_);
-            if (shouldSync) output_.getFD ().sync ();
-        } catch ( IOException e ) {
-
-            throw new LogException ( e.getMessage (), e );
-        }
-    }
-
-    public synchronized void close () throws LogException
-    {
-        closeOutput ();
-    }
-
-    public void finalize () throws Throwable
-    {
-        try {
-            close ();
-        } finally {
-            super.finalize ();
-        }
-    }
-
-	public long getSize() throws LogException
-	{
+	public long getSize() throws LogException {
 		return file_.getSize();
 	}
 }

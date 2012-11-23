@@ -28,7 +28,7 @@ public class StreamObjectLog implements ObjectLog{
         flushesSinceLastCheckpoint_ = 0;
     }
 
-    private synchronized void flushAndWriteCheckpointIfThresholdReached(SystemLogImage img, boolean shouldSync) throws LogException
+    private  void flushAndWriteCheckpointIfThresholdReached(SystemLogImage img, boolean shouldSync) throws LogException
     {
     	flushImage(img, shouldSync);
         flushesSinceLastCheckpoint_++;
@@ -101,10 +101,12 @@ public class StreamObjectLog implements ObjectLog{
      * @see ObjectLog
      */
 
-    public synchronized Vector recover () throws LogException
+    public  Vector recover () throws LogException
     {
-        if ( !initialized_ ) throw new LogException ( "Not initialized" );
-
+       // if ( !initialized_ ) throw new LogException ( "Not initialized" );
+    	 if ( !initialized_ ){
+    		 init();
+    	 }
         Vector ret = new Vector ();
         Enumeration enumm = contentForNextCheckpoint_.elements ();
         while ( enumm.hasMoreElements () ) {
@@ -118,7 +120,7 @@ public class StreamObjectLog implements ObjectLog{
      * @see ObjectLog
      */
 
-    public synchronized void flush ( Recoverable rec ) throws LogException
+    public  void flush ( Recoverable rec ) throws LogException
     {
         if ( rec == null ) return;
 
@@ -126,7 +128,7 @@ public class StreamObjectLog implements ObjectLog{
         flush ( simg , true );
     }
 
-    protected synchronized void flush ( SystemLogImage img , boolean shouldSync )
+    protected  void flush ( SystemLogImage img , boolean shouldSync )
             throws LogException
     {
         if ( img == null ) return;
@@ -153,7 +155,7 @@ public class StreamObjectLog implements ObjectLog{
      * @see ObjectLog
      */
 
-    public synchronized Recoverable recover ( Object id ) throws LogException
+    public  Recoverable recover ( Object id ) throws LogException
     {
         if ( !contentForNextCheckpoint_.containsKey ( id ) ) return null;
 
@@ -166,7 +168,7 @@ public class StreamObjectLog implements ObjectLog{
      * @see ObjectLog
      */
 
-    public synchronized void delete ( Object id ) throws LogException
+    public  void delete ( Object id ) throws LogException
     {
         SystemLogImage previous = (SystemLogImage) contentForNextCheckpoint_.get ( id );
         if ( previous == null ) {
