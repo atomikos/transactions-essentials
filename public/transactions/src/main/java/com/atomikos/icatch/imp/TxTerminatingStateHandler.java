@@ -68,8 +68,7 @@ class TxTerminatingStateHandler extends TransactionStateHandler
 
 	protected Object getState()
 	{
-		if (committing) return TxState.COMMITTING;
-		else return TxState.ABORTING;
+		return TxState.ACTIVE;
 	}
 
 	protected RecoveryCoordinator addParticipant ( Participant p )

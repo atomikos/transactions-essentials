@@ -55,7 +55,7 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
 	private static final Logger LOGGER = LoggerFactory.createLogger(TransactionStateHandler.class);
 
     private int subtxs_;
-    private List<Synchronization> synchronizations_;
+    private Stack<Synchronization> synchronizations_;
     private List<SubTxAwareParticipant> subtxawares_;
     private CompositeTransactionImp ct_;
     
@@ -64,7 +64,7 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
         ct_ = ct;
         subtxs_ = 0;
         subtxawares_ = new ArrayList<SubTxAwareParticipant>();
-        synchronizations_ = new ArrayList<Synchronization>();
+        synchronizations_ = new Stack<Synchronization>();
     }
 
     protected TransactionStateHandler ( CompositeTransactionImp ct ,
@@ -94,7 +94,17 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
     
     private synchronized void localPushSynchronization ( Synchronization sync ) 
     {
-    	synchronizations_.add ( sync );
+    	synchronizations_.push ( sync );
+    }
+    
+    /**
+     * Should be called instead of iterator: commit can add more synchronizations
+     * so an iterator would give ConcurrentModificationException!
+     */
+    private Synchronization localPopSynchronization() {
+    	Synchronization ret = null;
+    	if (!synchronizations_.isEmpty()) ret = synchronizations_.pop();
+    	return ret;
     }
     
     private synchronized void localAddSubTxAwareParticipant ( SubTxAwareParticipant p )
@@ -233,19 +243,7 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
         // also makes sure that the tx can still get new Participants
         // from beforeCompletion work being done! This is required.
         Synchronization sync = null;
-        Throwable cause = null;
-        Iterator it = synchronizations_.iterator();
-        while ( it.hasNext() ) {
-        	sync = (Synchronization) it.next();
-        	try {
-        		sync.beforeCompletion ();
-        	} catch ( RuntimeException error ) {
-        		// see case 24246: rollback only
-        		setRollbackOnly();
-        		cause = error;
-        		LOGGER.logWarning ( "Unexpected error in beforeCompletion: " , error );
-        	}
-        }
+        Throwable cause = notifyBeforeCompletion();
 
         if ( ct_.getState().equals ( TxState.MARKED_ABORT ) ) {
         	// happens if synchronization has called setRollbackOnly
@@ -264,6 +262,23 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
 
 
     }
+
+	private Throwable notifyBeforeCompletion() {
+		Throwable cause = null;
+		Synchronization sync = localPopSynchronization();
+        while ( sync != null ) {
+        	try {
+        		sync.beforeCompletion ();
+        	} catch ( RuntimeException error ) {
+        		// see case 24246: rollback only
+        		setRollbackOnly();
+        		cause = error;
+        		LOGGER.logWarning ( "Unexpected error in beforeCompletion: " , error );
+        	}
+        	sync = localPopSynchronization();
+        }
+		return cause;
+	}
 
     protected void setRollbackOnly ()
     {
@@ -311,15 +326,15 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
         return localGetSubTxCount();
     }
 
-    protected List<Synchronization> getSynchronizations()
+    protected Stack<Synchronization> getSynchronizations()
     {
         return synchronizations_;
     }
 
-    protected void addSynchronizations ( List<Synchronization> synchronizations )
+    protected void addSynchronizations ( Stack<Synchronization> synchronizations )
     {
         while ( !synchronizations.isEmpty() ) {
-            Synchronization next = synchronizations.remove(0);
+            Synchronization next = synchronizations.pop();
             localPushSynchronization ( next );
         }
     }
