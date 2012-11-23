@@ -153,15 +153,10 @@ public class XAResourceTransaction implements ResourceTransaction,
     }
 
     private String tid_ , root_;
-
     private boolean isXaSuspended_;
-
     private TxState state_;
-
     private String resourcename_;
-
     private transient Xid xid_;
-
     private transient String xidToHexString;
 	private transient String toString;
 
@@ -173,36 +168,24 @@ public class XAResourceTransaction implements ResourceTransaction,
 	}
 
 	private transient XATransactionalResource resource_;
-
     private transient XAResource xaresource_;
-
-    private transient CompositeTransaction transaction_;
-
-    private Vector heuristicMessages_;
-
+    private Vector<HeuristicMessage> heuristicMessages_;
     private transient boolean enlisted_;
-
     private transient int timeout_;
-
-
 
     public XAResourceTransaction ()
     {
         // needed for externalization mechanism
     }
 
-    XAResourceTransaction ( XATransactionalResource resource ,
-            CompositeTransaction transaction , String root )
+    XAResourceTransaction(XATransactionalResource resource, CompositeTransaction transaction, String root)
     {
         setResource ( resource );
-        transaction_ = transaction;
-       
         TransactionControl control = transaction.getTransactionControl ();
         if ( control != null ) {
             timeout_ = (int) transaction.getTransactionControl ().getTimeout () / 1000;
 
         }
-
         tid_ = transaction.getTid ();
         root_ = root;
         resourcename_ = resource.getName ();
