@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2012 Atomikos <info@atomikos.com>
  *
  * This code ("Atomikos TransactionsEssentials"), by itself,
  * is being distributed under the
@@ -54,9 +54,7 @@ import com.atomikos.persistence.StateRecoveryManager;
  * For a particular XA data source, it is necessary to implement the
  * refreshXAConnection method, because in general there is no standard way of
  * getting XAResource instances. Therefore, this class is agnostic about it.
- */
-
-/*
+ *
  * It is assumed that there is at most one instance per (root transaction,
  * server) combination. Otherwise, siblings can not be mapped to the same
  * ResourceTransaction! This instance is responsible for mapping siblings to
@@ -68,23 +66,11 @@ public abstract class XATransactionalResource implements TransactionalResource
 	private static final Logger LOGGER = LoggerFactory.createLogger(XATransactionalResource.class);
 
     protected XAResource xares_;
-    // the xa resource for which txs are created.
-
     protected String servername_;
-    // needed for recovery: our xids' branchqualifiers start with this.
-
-    protected Hashtable recoveryMap_;
-    // contains all recovered Xid instances, for recovering Restxs.
-
-    protected Hashtable siblingmappers_;
-    // maps root
-
+    protected Hashtable recoveredXidMap_;
+    protected Hashtable rootTransactionToSiblingMapperMap_;
     protected XidFactory xidFact_;
-    // factory for creating Xid objects: some databases
-    // required their own XID instance format.
-
     private boolean closed_;
-    // true ASA close called.
 
     private boolean weakCompare_;
     // if true: do NOT delegate usesXAResource calls
@@ -100,8 +86,6 @@ public abstract class XATransactionalResource implements TransactionalResource
 
     private String branchIdentifier_;
 
-    // the unique name that is used for all our XID branches
-
     private static final String MAX_LONG_STR = String.valueOf(Long.MAX_VALUE);
     private static final int MAX_LONG_LEN = MAX_LONG_STR.getBytes().length;
     /**
@@ -116,7 +100,7 @@ public abstract class XATransactionalResource implements TransactionalResource
     {
 
         servername_ = servername;
-        siblingmappers_ = new Hashtable ();
+        rootTransactionToSiblingMapperMap_ = new Hashtable ();
         // name should be less than 64 for xid compatibility
 
         //branch id is server name + long value!
@@ -181,20 +165,20 @@ public abstract class XATransactionalResource implements TransactionalResource
 
     void removeSiblingMap ( String root )
     {
-        synchronized ( siblingmappers_ ) {
-            siblingmappers_.remove ( root );
+        synchronized ( rootTransactionToSiblingMapperMap_ ) {
+            rootTransactionToSiblingMapperMap_.remove ( root );
         }
 
     }
 
     SiblingMapper getSiblingMap ( String root )
     {
-        synchronized ( siblingmappers_ ) {
-            if ( siblingmappers_.containsKey ( root ) )
-                return (SiblingMapper) siblingmappers_.get ( root );
+        synchronized ( rootTransactionToSiblingMapperMap_ ) {
+            if ( rootTransactionToSiblingMapperMap_.containsKey ( root ) )
+                return (SiblingMapper) rootTransactionToSiblingMapperMap_.get ( root );
             else {
                 SiblingMapper map = new SiblingMapper ( this , root );
-                siblingmappers_.put ( root, map );
+                rootTransactionToSiblingMapperMap_.put ( root, map );
                 return map;
             }
         }
@@ -249,11 +233,6 @@ public abstract class XATransactionalResource implements TransactionalResource
     public void useWeakCompare ( boolean weakCompare )
     {
         weakCompare_ = weakCompare;
-        // FOLLOWING COMMENTED OUT TO ALLOW JMX ONLINE CONFIG
-        // if ( recoveryMap_ != null )
-        // throw new IllegalStateException (
-        // "useWeakCompare should not be called after recovery was done" );
-        // weakCompare_ = weakCompare;
     }
 
     /**
@@ -310,8 +289,7 @@ public abstract class XATransactionalResource implements TransactionalResource
             return true;
 
         XAResource xaresource = getXAResource ();
-        if ( xaresource == null )
-            return false;
+        if (xaresource == null) return false;
         // if no connection could be gotten
 
         boolean ret = false;
@@ -332,12 +310,10 @@ public abstract class XATransactionalResource implements TransactionalResource
                 } else if ( usesWeakCompare () ) {
                     // In weak compare mode, it does not matter if the resource
                     // says it is different. The fact that the implementation is
-                    // the
-                    // same is enough. Needed for SONICMQ and others.
+                    // the same is enough. Needed for SONICMQ and others.
                     ret = true;
                 } else {
-                	LOGGER
-                            .logDebug ( "XAResources claim to be different: "
+                	LOGGER.logDebug ( "XAResources claim to be different: "
                                     + xares + " and " + xaresource );
                 }
             } catch ( XAException xe ) {
@@ -360,24 +336,11 @@ public abstract class XATransactionalResource implements TransactionalResource
     {
         // null on first invocation
         if ( needsRefresh () ) {
-        	LOGGER
-                    .logDebug ( servername_ + ": refreshing XAResource..." );
+        	LOGGER.logDebug ( servername_ + ": refreshing XAResource..." );
             xares_ = refreshXAConnection ();
             LOGGER.logInfo ( servername_ + ": refreshed XAResource" );
         }
 
-        // first, check if connection has not timed out
-        // try {
-        // //we should be the same as ourselves!
-        // //NOTE: xares_ is null if no connection could be gotten
-        // //in that case we just return null
-        // //otherwise, test the xaresource liveness
-        // if ( xares_ != null ) xares_.isSameRM ( xares_ );
-        // }
-        // catch ( XAException xa ) {
-        // //timed out?
-        // xares_ = refreshXAConnection();
-        // }
         return xares_;
     }
 
@@ -388,30 +351,18 @@ public abstract class XATransactionalResource implements TransactionalResource
     public ResourceTransaction getResourceTransaction ( CompositeTransaction ct )
             throws ResourceException, IllegalStateException
     {
-        if ( closed_ )
-            throw new IllegalStateException (
-                    "XATransactionResource already closed" );
+        if ( closed_ ) throw new IllegalStateException("XATransactionResource already closed");
 
-        // because instances are created on a per-root basis, here we can assume
-        // that the last used ResourceTransaction was for a sibling!
-        if ( ct == null )
-            return null; // happens in create method of beans
+        if ( ct == null ) return null; // happens in create method of beans?
 
-
-        // String root = ct.getCompositeCoordinator().getRootTid();
-
-        // CHANGED FOR 3.0: Take TOPMOST root ID, since local subtxs have
-        // different root ID
         Stack lineage = ct.getLineage ();
         String root = null;
-        if ( lineage == null || lineage.isEmpty () )
-            root = ct.getTid ();
+        if (lineage == null || lineage.isEmpty ()) root = ct.getTid ();
         else {
             Stack tmp = (Stack) lineage.clone ();
-            while ( !tmp.isEmpty () ) {
-                CompositeTransaction next = (CompositeTransaction) tmp.pop ();
-                if ( next.isRoot () )
-                    root = next.getTid ();
+            while ( !tmp.isEmpty() ) {
+                CompositeTransaction next = (CompositeTransaction) tmp.pop();
+                if (next.isRoot()) root = next.getTid ();
             }
         }
         return (getSiblingMap ( root )).map ( ct );
@@ -420,12 +371,8 @@ public abstract class XATransactionalResource implements TransactionalResource
 
     private StateRecoveryManager getRecoveryManager () throws ResourceException
     {
-        if ( closed_ )
-            throw new IllegalStateException (
-                    "XATransactionResource already closed" );
-
-        // for XA resources, there is no compensation and hence
-        // no internal recovery manager.
+        if (closed_) throw new IllegalStateException("XATransactionResource already closed");
+       
         return null;
     }
 
@@ -468,12 +415,14 @@ public abstract class XATransactionalResource implements TransactionalResource
     public boolean isSameRM ( RecoverableResource res )
             throws ResourceException
     {
-        if ( res == null || !(res instanceof XATransactionalResource) )
-            return false;
+        if ( res == null || !(res instanceof XATransactionalResource) ) {
+        	return false;
+        }
 
         XATransactionalResource xatxres = (XATransactionalResource) res;
-        if ( xatxres.servername_ == null || servername_ == null )
+        if ( xatxres.servername_ == null || servername_ == null ) {
             return false;
+        }
 
         return xatxres.servername_.equals ( servername_ );
     }
@@ -486,18 +435,13 @@ public abstract class XATransactionalResource implements TransactionalResource
             throws ResourceException
     {
 
-        // null during testing
         if ( recoveryService != null ) {
             if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Installing recovery service on resource "
                     + getName () );
             branchIdentifier_ = recoveryService.getName ();
-
             recoveryService.recover ();
         }
 
-        // DON'T call endRecovery here, since the TM
-        // will do this (otherwise, only this resource
-        // will know).
     }
 
     /**
@@ -516,7 +460,7 @@ public abstract class XATransactionalResource implements TransactionalResource
             throw new ResourceException ( "Wrong argument class: "
                     + participant.getClass ().getName () );
         XAResource xaresource = getXAResource ();
-        // if no connection then we can't recover the participant
+        
         if ( xaresource == null ) {
             LOGGER.logWarning ( "XATransactionalResource " + getName() +
                 ": XAResource is NULL!" );
@@ -526,10 +470,9 @@ public abstract class XATransactionalResource implements TransactionalResource
 
         XAResourceTransaction xarestx = (XAResourceTransaction) participant;
 
-        if ( recoveryMap_ == null )
-            recover ();
+        if (recoveredXidMap_ == null) recover ();
 
-        if ( !recoveryMap_.containsKey ( xarestx.getXid() ) ) {
+        if ( !recoveredXidMap_.containsKey ( xarestx.getXid() ) ) {
         	//TAKE CARE: if multiple resources 'recover' the same Xid from the same backend
         	//then this will be a problem here: endRecovery will rollback a transaction
         	//as per presumed abort!
@@ -540,9 +483,10 @@ public abstract class XATransactionalResource implements TransactionalResource
         //this happens if VM exits between XA commit and log flush
         //-> should lead to NOTA in commit
         //see case 21552
-        if ( recovered || getName().equals ( xarestx.getResourceName() ) )
+        if (recovered || getName().equals (xarestx.getResourceName())) {
         		xarestx.setRecoveredXAResource ( getXAResource () );
-        recoveryMap_.remove ( xarestx.getXid() );
+        }
+        recoveredXidMap_.remove ( xarestx.getXid() );
         return recovered;
     }
 
@@ -556,7 +500,7 @@ public abstract class XATransactionalResource implements TransactionalResource
 
     protected void recover () throws ResourceException
     {
-        recoveryMap_ = new Hashtable ();
+        recoveredXidMap_ = new Hashtable ();
         Xid[] recoveredlist = null;
         int flags = XAResource.TMSTARTRSCAN;
         boolean done = false;
@@ -566,8 +510,6 @@ public abstract class XATransactionalResource implements TransactionalResource
         // to check if a scan returns duplicate results
         // this is needed for oracle8.1.7
 
-        // if ( branchIdentifier_ == null ) throw new ResourceException (
-        // "Recovery service not set for resource " + getName() );
 
         if(LOGGER.isDebugEnabled()){
         	LOGGER.logDebug( "recovery initiated for resource " + getName ()
@@ -575,20 +517,7 @@ public abstract class XATransactionalResource implements TransactionalResource
         }
 
         do {
-            try {
-                recoveredlist = getXAResource ().recover ( flags );
-            } catch ( NullPointerException ora ) {
-        		//Typical for Oracle without XA setup
-            		if ( getXAResource ().getClass ().getName ().toLowerCase ().indexOf ( "oracle" ) >= 0 ) {
-            			LOGGER.logWarning("ORACLE NOT CONFIGURED FOR XA? PLEASE CONTACT YOUR DBA TO FIX THIS...");
-            		}
-            		throw ora;
-
-            } catch ( XAException xaerr ) {
-                LOGGER.logWarning ( "Error in recovery", xaerr );
-                errors.push ( xaerr );
-                throw new ResourceException ( "Error in recovery", errors );
-            }
+            recoveredlist = recoverXidsFromXAResource(flags, errors);
             flags = XAResource.TMNOFLAGS;
             done = (recoveredlist == null || recoveredlist.length == 0);
             if ( !done ) {
@@ -598,31 +527,23 @@ public abstract class XATransactionalResource implements TransactionalResource
                 // LOOP (ALWAYS RETURNS SAME RECOVER
                 // SET). IF A NEW SET OF XIDS IS RETURNED
                 // THEN done WILL BE RESET TO FALSE
-
                 done = true;
-                for ( int i = 0; i < recoveredlist.length; i++ ) {
-
-                    Xid xid = new XID ( recoveredlist[i] );
-                    // our own XID implements equals and hashCode properly
-
+                
+                for ( Xid vendorXid : recoveredlist ) {
+                    Xid xid = wrapWithOurOwnXidToHaveCorrectEqualsAndHashCode ( vendorXid );
                     if ( !recoveredXids.contains ( xid ) ) {
-                        // a new xid is returned -> we can not be in a
-                        // recovery loop -> go on
+                        // a new xid is returned -> we can not be in a recovery loop -> go on
                     	if(LOGGER.isInfoEnabled()){
-                    		LOGGER.logInfo("Resource " + servername_
-                                    + " inspecting XID: " + xid);
+                    		LOGGER.logInfo("Resource " + servername_ + " inspecting XID: " + xid);
                     	}
                         recoveredXids.addElement ( xid );
                         done = false;
-                        // only really 'recover' this xid if it is from
-                        // this server
-                        String branch = new String ( recoveredlist[i]
-                                .getBranchQualifier () );
+                        // only really 'recover' this xid if it is ours
+                        String branch = new String ( vendorXid.getBranchQualifier () );
                         if ( branch.startsWith ( branchIdentifier_ ) ) {
-                            recoveryMap_.put ( xid, new Object () );
+                            recoveredXidMap_.put ( xid, new Object () );
                             if(LOGGER.isInfoEnabled()){
-                            	LOGGER.logInfo("Resource " + servername_
-                                        + " recovering XID: " + xid);
+                            	LOGGER.logInfo("Resource " + servername_ + " recovering XID: " + xid);
                             }
                         } else {
                         	if(LOGGER.isInfoEnabled()){
@@ -636,20 +557,40 @@ public abstract class XATransactionalResource implements TransactionalResource
             }
         } while ( !done );
 
-        // allow early GC of recovered Xid list
-        recoveredXids = null;
+        recoveredXids = null; // for GC
 
     }
 
-    /**
+	private Xid[] recoverXidsFromXAResource(int flags, Stack errors) {
+		Xid[] recoveredlist = null;
+		try {
+		    recoveredlist = getXAResource().recover(flags);
+		} catch ( NullPointerException ora ) {
+			//Typical for Oracle without XA setup
+				if ( getXAResource ().getClass ().getName ().toLowerCase ().indexOf ( "oracle" ) >= 0 ) {
+					LOGGER.logWarning("ORACLE NOT CONFIGURED FOR XA? PLEASE CONTACT YOUR DBA TO FIX THIS...");
+				}
+				throw ora;
+
+		} catch ( XAException xaerr ) {
+		    LOGGER.logWarning ( "Error in recovery", xaerr );
+		    errors.push ( xaerr );
+		    throw new ResourceException ( "Error in recovery", errors );
+		}
+		return recoveredlist;
+	}
+
+    private Xid wrapWithOurOwnXidToHaveCorrectEqualsAndHashCode(Xid xid) {
+		return new XID(xid);
+	}
+
+	/**
      * @see TransactionalResource.
      */
 
     public void endRecovery () throws ResourceException
     {
-        if ( closed_ )
-            throw new IllegalStateException (
-                    "XATransactionResource already closed" );
+        if ( closed_ ) throw new IllegalStateException ( "XATransactionResource already closed" );
 
         XAResource xaresource = getXAResource ();
         // if xaresource is null then we can't do rollback
@@ -658,22 +599,19 @@ public abstract class XATransactionalResource implements TransactionalResource
         // in the database, not in the TM. The DB
         // administrator can rollback those manually without
         // anything else
-        if ( xaresource == null )
-            return;
+        if (xaresource == null) return;
 
         // recovery map is null if no logged coordinators existed
         // in that case, make sure that possible indoubts (of
         // VOTING ergo non-recoverable coordinators)
         // are recovered now. Otherwise, they will not be rolled back.
-        if ( recoveryMap_ == null )
-            recover ();
+        if (recoveredXidMap_ == null) recover ();
 
-        Enumeration toAbortList = recoveryMap_.keys ();
+        Enumeration toAbortList = recoveredXidMap_.keys ();
         while ( toAbortList.hasMoreElements () ) {
             XID xid = (XID) toAbortList.nextElement ();
             try {
                 xaresource.rollback ( xid );
-                // getXAResource().rollback ( xid );
                 if(LOGGER.isInfoEnabled()){
                 	LOGGER.logInfo("XAResource.rollback ( " + xid + " ) called "
                             + "on resource " + servername_);
@@ -684,8 +622,7 @@ public abstract class XATransactionalResource implements TransactionalResource
             }
         }
 
-        // ADDED: to enable repeated recovery calls
-        recoveryMap_ = null;
+        recoveredXidMap_ = null; // to enable repeated recovery calls
 
         if(LOGGER.isDebugEnabled()){
         	LOGGER.logDebug("endRecovery() done for resource " + getName ());
@@ -697,7 +634,7 @@ public abstract class XATransactionalResource implements TransactionalResource
      *
      * @param factory
      */
-    public void setXidFactory ( XidFactory factory )
+    public void setXidFactory(XidFactory factory)
     {
         xidFact_ = factory;
 
@@ -712,9 +649,9 @@ public abstract class XATransactionalResource implements TransactionalResource
      *         that connects to the same EIS.
      */
 
-    protected Xid createXid ( String tid )
+    protected Xid createXid(String tid)
     {
-        return getXidFactory ().createXid ( tid, branchIdentifier_ );
+        return getXidFactory().createXid (tid , branchIdentifier_);
     }
 
 }

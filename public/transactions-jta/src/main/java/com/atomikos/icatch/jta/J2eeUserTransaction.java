@@ -55,7 +55,7 @@ public class J2eeUserTransaction implements UserTransaction, Serializable,
 
 	private transient TransactionManager txmgr_;
 
-    public J2eeUserTransaction ()
+    public J2eeUserTransaction()
     {
     }
 
@@ -64,62 +64,52 @@ public class J2eeUserTransaction implements UserTransaction, Serializable,
      * into JNDI already requires that TM is running.
      */
 
-    private void checkSetup ()
+    private void checkSetup()
     {
-
-        // REMOVED FOLLOWING IF CHECK: DON'T CACHE THE TXMGR TO MAKE INSTANCES
-        // RESILIENT TO RESTART IN TOMCAT. OTHERWISE, CLIENT APPS SEE THEIR
-        // USERTX REFERENCES INVALIDATED AND THIS IS INTOLERABLE
-        // if ( txmgr_ == null ) {
-        // txmgr_ = TransactionManagerImp.getTransactionManager();
-
         txmgr_ = TransactionManagerImp.getTransactionManager ();
-
-        if ( txmgr_ == null )
-            throw new RuntimeException ( "Transaction Service Not Running?" );
-        // }
+        if (txmgr_ == null) throw new RuntimeException ( "Transaction Service Not Running?" );
     }
 
     /**
      * @see javax.transaction.UserTransaction
      */
 
-    public void begin () throws NotSupportedException, SystemException
+    public void begin() throws NotSupportedException, SystemException
     {
-        checkSetup ();
-        txmgr_.begin ();
+        checkSetup();
+        txmgr_.begin();
     }
 
     /**
      * @see javax.transaction.UserTransaction
      */
 
-    public void commit () throws javax.transaction.RollbackException,
+    public void commit() throws javax.transaction.RollbackException,
             javax.transaction.HeuristicMixedException,
             javax.transaction.HeuristicRollbackException,
             javax.transaction.SystemException, java.lang.IllegalStateException,
             java.lang.SecurityException
     {
-        checkSetup ();
-        txmgr_.commit ();
+        checkSetup();
+        txmgr_.commit();
     }
 
     /**
      * @see javax.transaction.UserTransaction
      */
 
-    public void rollback () throws IllegalStateException, SystemException,
+    public void rollback() throws IllegalStateException, SystemException,
             SecurityException
     {
-        checkSetup ();
-        txmgr_.rollback ();
+        checkSetup();
+        txmgr_.rollback();
     }
 
     /**
      * @see javax.transaction.UserTransaction
      */
 
-    public void setRollbackOnly () throws IllegalStateException,
+    public void setRollbackOnly() throws IllegalStateException,
             SystemException
     {
         checkSetup ();
@@ -130,20 +120,20 @@ public class J2eeUserTransaction implements UserTransaction, Serializable,
      * @see javax.transaction.UserTransaction
      */
 
-    public int getStatus () throws SystemException
+    public int getStatus() throws SystemException
     {
-        checkSetup ();
-        return txmgr_.getStatus ();
+        checkSetup();
+        return txmgr_.getStatus();
     }
 
     /**
      * @see javax.transaction.UserTransaction
      */
 
-    public void setTransactionTimeout ( int seconds ) throws SystemException
+    public void setTransactionTimeout(int seconds) throws SystemException
     {
-        checkSetup ();
-        txmgr_.setTransactionTimeout ( seconds );
+        checkSetup();
+        txmgr_.setTransactionTimeout(seconds);
     }
 
     //
@@ -152,8 +142,8 @@ public class J2eeUserTransaction implements UserTransaction, Serializable,
     //
     //
 
-    public Reference getReference () throws NamingException
+    public Reference getReference() throws NamingException
     {
-        return SerializableObjectFactory.createReference ( this );
+        return SerializableObjectFactory.createReference(this);
     }
 }

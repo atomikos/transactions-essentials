@@ -37,37 +37,28 @@ import java.util.Vector;
 
 public class TxState implements java.io.Serializable {
 
-	// force UID for backward log compatibilty
 	static final long serialVersionUID = 648321112075712930L;
-
-	// public static final TxState INIT = new TxState("INIT");
-	// initialized only
+	
 	public static final TxState ACTIVE = new TxState("ACTIVE");
-	// tx is doing stuff
 	public static final TxState MARKED_ABORT = new TxState("MARKED_ABORT");
-	// for local subtransactions: indicates that the local parent tx should not commit
 	public static final TxState LOCALLY_DONE = new TxState("LOCALLY_DONE");
-	// tx is locally finished (if compensatable: preliminary committed
 	public static final TxState PREPARING = new TxState("PREPARING");
-	// waiting for votes in 2PC prepare phase
 	public static final TxState IN_DOUBT = new TxState("IN_DOUBT");
-	// in-doubt
 	public static final TxState ABORTING = new TxState("ABORTING");
-	// in process of aborting
 	public static final TxState COMMITTING = new TxState("COMMITTING");
-	// in process of committing
-
 	public static final TxState SUSPENDED = new TxState("SUSPENDED");
-
 	public static final TxState HEUR_COMMITTED = new TxState("HEUR_COMMITTED");
 	public static final TxState HEUR_ABORTED = new TxState("HEUR_ABORTED");
 	public static final TxState HEUR_MIXED = new TxState("HEUR_MIXED");
 	public static final TxState HEUR_HAZARD = new TxState("HEUR_HAZARD");
-
 	public static final TxState TERMINATED = new TxState("TERMINATED");
-	// all done with, can be forgotten about
-
-
+	
+	/*
+	 * Virtual "substates" of TERMINATED to return to the application if needed.
+	 */
+	public static final TxState COMMITTED = new TxState ("COMMITTED");
+	public static final TxState ABORTED = new TxState ("ABORTED");
+	
 	private static Vector v;
 	public static Enumeration getStates() {
 		if (v == null) {

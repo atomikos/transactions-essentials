@@ -146,13 +146,33 @@ class IndoubtStateHandler extends CoordinatorStateHandler
                     // otherwise, state would be TERMINATED, and a late
                     // commit from terminator would return OK -> BAD!
 
-                    rollback ( true, !recovered_ );
+                    rollbackWithAfterCompletionNotification(new RollbackCallback() {
+						public HeuristicMessage[] doRollback()
+								throws HeurCommitException,
+								HeurMixedException, SysException,
+								HeurHazardException, IllegalStateException {
+							return rollbackFromWithinCallback(true,!recovered_);
+						}});
                 }
                 // heuristic decision
-                else if ( getCoordinator ().prefersHeuristicCommit () )
-                    commit ( true, false );
-                else
-                    rollback ( true, true );
+                else if ( getCoordinator ().prefersHeuristicCommit () ) {
+                	commitWithAfterCompletionNotification ( new CommitCallback() {
+                		public HeuristicMessage[] doCommit()
+                				throws HeurRollbackException, HeurMixedException,
+                				HeurHazardException, IllegalStateException,
+                				RollbackException, SysException {
+                			return commitFromWithinCallback ( true, false );
+                		}          	
+                	});
+                } else { 
+                	rollbackWithAfterCompletionNotification(new RollbackCallback() {
+						public HeuristicMessage[] doRollback()
+								throws HeurCommitException,
+								HeurMixedException, SysException,
+								HeurHazardException, IllegalStateException {
+							return rollbackFromWithinCallback(true,true);
+						}});
+                }
             } // else
         } catch ( Exception e ) {
         	LOGGER.logWarning("Error in timeout of INDOUBT state: " + e.getMessage () );
@@ -169,7 +189,7 @@ class IndoubtStateHandler extends CoordinatorStateHandler
             HeurMixedException, SysException
     {
         // if we have a repeated prepare in this state, then the
-        // first prepare must have been a YET vote, otherwise we
+        // first prepare must have been a YES vote, otherwise we
         // would not be in-doubt! -> repeat the same vote
         // (required for WS-AT)
         return Participant.READ_ONLY + 1;
@@ -181,7 +201,14 @@ class IndoubtStateHandler extends CoordinatorStateHandler
             RollbackException, SysException
     {
 
-        return commit ( false, false );
+        return commitWithAfterCompletionNotification ( new CommitCallback() {
+    		public HeuristicMessage[] doCommit()
+    				throws HeurRollbackException, HeurMixedException,
+    				HeurHazardException, IllegalStateException,
+    				RollbackException, SysException {
+    			return commitFromWithinCallback ( false, false );
+    		}          	
+    	});
 
     }
 
@@ -189,8 +216,13 @@ class IndoubtStateHandler extends CoordinatorStateHandler
             throws HeurCommitException, HeurMixedException, SysException,
             HeurHazardException, java.lang.IllegalStateException
     {
-
-        return rollback ( true, false );
+        return rollbackWithAfterCompletionNotification(new RollbackCallback() {
+			public HeuristicMessage[] doRollback()
+					throws HeurCommitException,
+					HeurMixedException, SysException,
+					HeurHazardException, IllegalStateException {
+				return rollbackFromWithinCallback(true,false);
+			}});
     }
 
 }

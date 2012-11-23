@@ -56,6 +56,7 @@ class Sync2Sync implements com.atomikos.icatch.Synchronization
         sync_.beforeCompletion ();
         // reset flag to allow reuse of sync objects!
         committed_ = null;
+        LOGGER.logInfo("beforeCompletion() called on Synchronization: " + sync_.toString());
     }
 
     public void afterCompletion ( Object state )
@@ -64,21 +65,18 @@ class Sync2Sync implements com.atomikos.icatch.Synchronization
             if ( committed_ == null ) {
                 // happens on readonly vote -> outcome not known!
                 sync_.afterCompletion ( Status.STATUS_UNKNOWN );
-                LOGGER
-                        .logInfo ( "afterCompletion ( STATUS_UNKNOWN ) called "
+                LOGGER.logInfo ( "afterCompletion ( STATUS_UNKNOWN ) called "
                                 + " on Synchronization: " + sync_.toString () );
             } else {
                 boolean commit = committed_.booleanValue ();
                 if ( commit ) {
                     sync_.afterCompletion ( Status.STATUS_COMMITTED );
-                    LOGGER
-                            .logInfo ( "afterCompletion ( STATUS_COMMITTED ) called "
+                    LOGGER.logInfo ( "afterCompletion ( STATUS_COMMITTED ) called "
                                     + " on Synchronization: "
                                     + sync_.toString () );
                 } else {
                     sync_.afterCompletion ( Status.STATUS_ROLLEDBACK );
-                    LOGGER
-                            .logInfo ( "afterCompletion ( STATUS_ROLLEDBACK ) called "
+                    LOGGER.logInfo ( "afterCompletion ( STATUS_ROLLEDBACK ) called "
                                     + " on Synchronization: "
                                     + sync_.toString () );
                 }

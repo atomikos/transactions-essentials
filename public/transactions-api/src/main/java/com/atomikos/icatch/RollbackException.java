@@ -26,6 +26,7 @@
 package com.atomikos.icatch;
 
 
+
 /**
  * An exception indicating that a transaction has already been rolled back.
  */
@@ -35,13 +36,17 @@ package com.atomikos.icatch;
 
 	private static final long serialVersionUID = 1L;
 
-	public RollbackException ( String msg )
+	public RollbackException(String msg)
     {
       super (msg);
     }
 
-    public RollbackException ( )
+	public RollbackException(String msg, Throwable cause) {
+		super(msg,cause);
+	}
+	
+    public RollbackException()
     {
-      super ();
+      super();
     }
  }

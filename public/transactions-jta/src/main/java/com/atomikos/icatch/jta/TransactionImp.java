@@ -131,13 +131,13 @@ class TransactionImp implements Transaction
      * @see javax.transaction.Transaction
      */
 
-    public void registerSynchronization ( javax.transaction.Synchronization s )
+    public void registerSynchronization(javax.transaction.Synchronization s)
             throws java.lang.IllegalStateException,
             javax.transaction.SystemException
     {
         try {
-            Sync2Sync adaptor = new Sync2Sync ( s );
-            ct_.registerSynchronization ( adaptor );
+            Sync2Sync adaptor = new Sync2Sync(s);
+            ct_.registerSynchronization(adaptor);
         } catch ( SysException se ) {
         	String msg = "Unexpected error during registerSynchronization";
         	LOGGER.logWarning ( msg , se );
@@ -151,18 +151,25 @@ class TransactionImp implements Transaction
      * @see javax.transaction.Transaction
      */
 
-    public int getStatus ()
+    public int getStatus()
     {
-        TxState state = (TxState) ct_.getState ();
-
-        if ( state.equals ( TxState.IN_DOUBT ) )
+        TxState state = (TxState) ct_.getState();
+        if (state.equals(TxState.IN_DOUBT))
             return Status.STATUS_PREPARED;
-        else if ( state.equals ( TxState.PREPARING ) )
+        else if (state.equals(TxState.PREPARING))
             return Status.STATUS_PREPARING;
-        else if ( state.equals ( TxState.ACTIVE ) )
+        else if (state.equals(TxState.ACTIVE))
             return Status.STATUS_ACTIVE;
-        else if ( state.equals ( TxState.MARKED_ABORT ) )
+        else if (state.equals(TxState.MARKED_ABORT))
             return Status.STATUS_MARKED_ROLLBACK;
+        else if (state.equals(TxState.COMMITTING))
+        	return Status.STATUS_COMMITTING;
+        else if (state.equals(TxState.ABORTING))
+        	return Status.STATUS_ROLLING_BACK;
+        else if (state.equals(TxState.COMMITTED))
+        	return Status.STATUS_COMMITTED;
+        else if (state.equals(TxState.ABORTED))
+        	return Status.STATUS_ROLLEDBACK;
         else
             // other cases are either very short or irrelevant to user?
             return Status.STATUS_UNKNOWN;
@@ -174,15 +181,13 @@ class TransactionImp implements Transaction
      * @see javax.transaction.Transaction.
      */
 
-    public void commit () throws javax.transaction.RollbackException,
+    public void commit() throws javax.transaction.RollbackException,
             javax.transaction.HeuristicMixedException,
             javax.transaction.HeuristicRollbackException,
             javax.transaction.SystemException, java.lang.SecurityException
     {
-
-
         try {
-            ct_.commit ();
+            ct_.commit();
         } catch ( HeurHazardException hh ) {
             rethrowAsJtaHeuristicMixedException ( hh.getMessage () , hh );
         } catch ( HeurRollbackException hr ) {
@@ -196,17 +201,20 @@ class TransactionImp implements Transaction
         } catch ( com.atomikos.icatch.RollbackException rb ) {
         	//see case 29708: all statements have been closed
         	String msg = rb.getMessage ();
-        	rethrowAsJtaRollbackException ( msg , rb );        }
+        	Throwable cause = rb.getCause();
+        	if (cause == null) cause = rb;
+        	rethrowAsJtaRollbackException (msg , cause);        
+        }
     }
 
     /**
      * @see javax.transaction.Transaction.
      */
 
-    public void rollback () throws IllegalStateException, SystemException
+    public void rollback() throws IllegalStateException, SystemException
     {
         try {
-            ct_.rollback ();
+            ct_.rollback();
         } catch ( SysException se ) {
         	LOGGER.logWarning ( se.getMessage() , se );
             throw new ExtendedSystemException ( se.getMessage (), se
@@ -219,29 +227,40 @@ class TransactionImp implements Transaction
      * @see javax.transaction.Transaction.
      */
 
-    public void setRollbackOnly () throws IllegalStateException,
+    public void setRollbackOnly() throws IllegalStateException,
             SystemException
     {
-        ct_.setRollbackOnly ();
+        ct_.setRollbackOnly();
     }
 
     /**
      * @see javax.transaction.Transaction.
      */
 
-    public boolean enlistResource ( XAResource xares )
+    public boolean enlistResource(XAResource xares)
             throws javax.transaction.RollbackException,
             javax.transaction.SystemException, IllegalStateException
     {
         TransactionalResource res = null;
         XAResourceTransaction restx = null;
-        Stack errors = new Stack ();
+        Stack errors = new Stack();
 
-        if ( getStatus () == Status.STATUS_MARKED_ROLLBACK ) {
-        	String msg =  "Transaction is already marked for rollback - enlisting more resources is useless.";
-        	LOGGER.logWarning ( msg );
-            throw new javax.transaction.RollbackException ( msg );
+        int status = getStatus();
+        switch (status) {
+        	case Status.STATUS_MARKED_ROLLBACK:
+        	case Status.STATUS_ROLLEDBACK:
+        	case Status.STATUS_ROLLING_BACK:
+        		String msg =  "Transaction rollback - enlisting more resources is useless.";
+            	LOGGER.logWarning ( msg );
+                throw new javax.transaction.RollbackException ( msg );
+        	case Status.STATUS_COMMITTED:
+        	case Status.STATUS_PREPARED:
+        	case Status.STATUS_UNKNOWN:
+        		msg =  "Enlisting more resources is no longer permitted: transaction is in state " + ct_.getState();
+            	LOGGER.logWarning ( msg );
+                throw new IllegalStateException ( msg );
         }
+      
 
         XAResourceTransaction suspendedXAResourceTransaction = findXAResourceTransaction ( xares );
 
@@ -339,7 +358,7 @@ class TransactionImp implements Transaction
 
             synchronized ( Configuration.class ) {
             	// synchronized to avoid case 61740
-
+            	
             	ret = new TemporaryXATransactionalResource(xares);
             	// cf case 61740: check for concurrent additions before this synch block was entered
             	if ( Configuration.getResource ( ret.getName() ) == null ) {
@@ -453,8 +472,24 @@ class TransactionImp implements Transaction
 			} catch (XAException e) {
 				Stack errors = new Stack();
 				errors.push ( e );
-	            throw new ExtendedSystemException ( "Error in delisting the given XAResource", errors );
+	            throw new ExtendedSystemException ( "Error in suspending the given XAResource", errors );
 			}
 		}
+	}
+
+	void resumeEnlistedXaReources() throws ExtendedSystemException 
+	{
+		Iterator xaResourceTransactions = xaResourceToResourceTransactionMap_.values().iterator();
+		while ( xaResourceTransactions.hasNext() ) {
+			XAResourceTransaction resTx = (XAResourceTransaction) xaResourceTransactions.next();
+			try {
+				resTx.xaResume();
+				xaResourceTransactions.remove();
+			} catch (XAException e) {
+				Stack errors = new Stack();
+				errors.push ( e );
+	            throw new ExtendedSystemException ( "Error in resuming the given XAResource", errors );
+			}
+		}	
 	}
 }

@@ -66,10 +66,11 @@ class TxTerminatingStateHandler extends TransactionStateHandler
 			throw new IllegalStateException ( "Transaction is rolling back - adding a new participant is not allowed" );
 	}
 
+	/**
+	 * @return ACTIVE or JPA implementations like EclipseJPA will not attempt to flush changes before commit!
+	 */
 	protected Object getState()
 	{
-		//return active: we are merely a substate for avoiding concurrency
-		//problems between app-level commit and timeout-rollback
 		return TxState.ACTIVE;
 	}
 

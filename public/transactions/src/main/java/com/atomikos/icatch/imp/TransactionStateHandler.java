@@ -38,7 +38,6 @@ import com.atomikos.icatch.HeurMixedException;
 import com.atomikos.icatch.Participant;
 import com.atomikos.icatch.RecoveryCoordinator;
 import com.atomikos.icatch.RollbackException;
-import com.atomikos.icatch.StringHeuristicMessage;
 import com.atomikos.icatch.SubTxAwareParticipant;
 import com.atomikos.icatch.Synchronization;
 import com.atomikos.icatch.SysException;
@@ -55,27 +54,24 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
 	private static final Logger LOGGER = LoggerFactory.createLogger(TransactionStateHandler.class);
 
     private int subtxs_;
-
-    private Stack synchronizations_;
-
-    private List subtxawares_;
-
+    private Stack<Synchronization> synchronizations_;
+    private List<SubTxAwareParticipant> subtxawares_;
     private CompositeTransactionImp ct_;
-
+    
     protected TransactionStateHandler ( CompositeTransactionImp ct )
     {
         ct_ = ct;
         subtxs_ = 0;
-        subtxawares_ = new ArrayList ();
-        synchronizations_ = new Stack ();
+        subtxawares_ = new ArrayList<SubTxAwareParticipant>();
+        synchronizations_ = new Stack<Synchronization>();
     }
 
     protected TransactionStateHandler ( CompositeTransactionImp ct ,
             TransactionStateHandler handler )
     {
-        subtxs_ = handler.getSubTransactionCount ();
-        synchronizations_ = handler.getSynchronizations ();
-        subtxawares_ = handler.getSubtxawares ();
+        subtxs_ = handler.getSubTransactionCount();
+        synchronizations_ = handler.getSynchronizations();
+        subtxawares_ = handler.getSubtxawares();
         ct_ = ct;
 
     }
@@ -98,6 +94,16 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
     private synchronized void localPushSynchronization ( Synchronization sync ) 
     {
     	synchronizations_.push ( sync );
+    }
+    
+    /**
+     * Should be called instead of iterator: commit can add more synchronizations
+     * so an iterator would give ConcurrentModificationException!
+     */
+    private Synchronization localPopSynchronization() {
+    	Synchronization ret = null;
+    	if (!synchronizations_.isEmpty()) ret = synchronizations_.pop();
+    	return ret;
     }
     
     private synchronized void localAddSubTxAwareParticipant ( SubTxAwareParticipant p )
@@ -137,7 +143,7 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
     {
         if ( sync != null ) {
             try {
-                ct_.getCoordinatorImp ().registerSynchronization ( sync );
+                ct_.getCoordinatorImp().registerSynchronization(sync);
             } catch ( RollbackException e ) {
                 throw new IllegalStateException (
                         "Transaction already rolled back" );
@@ -203,25 +209,25 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
     // This deadlock happens in particular when application commit interleaves
     // with timeout-driven rollback (during preEnter, the rollback of this same
     // handler is invoked)
-    protected void commit () throws SysException,
+    protected void commit() throws SysException,
             java.lang.IllegalStateException, RollbackException
     {
         Stack participants = null;
         Stack synchronizations = null;
         
         //prevent concurrent rollback due to timeout
-        ct_.localTestAndSetTransactionStateHandler ( this , new TxTerminatingStateHandler ( true , ct_ , this ) );
+        ct_.localTestAndSetTransactionStateHandler(this , new TxTerminatingStateHandler(true , ct_ , this));
 
         // NOTE: this must be done BEFORE calling notifications
         // to make sure that active recovery works for early prepares 
-        if ( ct_.isLocalRoot () ) {
+        if ( ct_.isLocalRoot() ) {
 
-        	ct_.getCoordinatorImp ().addTag ( ct_.tag_ );
+        	ct_.getCoordinatorImp().addTag(ct_.tag_);
 
-        	Enumeration enumm = ct_.getExtent ().getParticipants ().elements ();
+        	Enumeration enumm = ct_.getExtent().getParticipants().elements();
         	while ( enumm.hasMoreElements () ) {
-        		Participant part = (Participant) enumm.nextElement ();
-        		addParticipant ( part );
+        		Participant part = (Participant) enumm.nextElement();
+        		addParticipant(part);
 
         	}
         }
@@ -236,22 +242,12 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
         // also makes sure that the tx can still get new Participants
         // from beforeCompletion work being done! This is required.
         Synchronization sync = null;
-        Enumeration enumm = synchronizations_.elements ();
-        while ( enumm.hasMoreElements () ) {
-        	sync = (Synchronization) enumm.nextElement ();
-        	try {
-        		sync.beforeCompletion ();
-        	} catch ( RuntimeException error ) {
-        		// see case 24246: rollback only
-        		setRollbackOnly();
-        		LOGGER.logWarning ( "Unexpected error in beforeCompletion: " , error );
-        	}
-        }
+        Throwable cause = notifyBeforeCompletion();
 
         if ( ct_.getState().equals ( TxState.MARKED_ABORT ) ) {
         	// happens if synchronization has called setRollbackOnly
         	rollback();
-        	throw new RollbackException ( "The transaction was set to rollback only" );
+        	throw new RollbackException ( "The transaction was set to rollback only" , cause );
         }
 
         // for loop to make sure that new registrations are possible during callback
@@ -265,6 +261,23 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
 
 
     }
+
+	private Throwable notifyBeforeCompletion() {
+		Throwable cause = null;
+		Synchronization sync = localPopSynchronization();
+        while ( sync != null ) {
+        	try {
+        		sync.beforeCompletion ();
+        	} catch ( RuntimeException error ) {
+        		// see case 24246: rollback only
+        		setRollbackOnly();
+        		cause = error;
+        		LOGGER.logWarning ( "Unexpected error in beforeCompletion: " , error );
+        	}
+        	sync = localPopSynchronization();
+        }
+		return cause;
+	}
 
     protected void setRollbackOnly ()
     {
@@ -296,7 +309,7 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
     protected abstract Object getState();
 
 
-    protected List getSubtxawares()
+    protected List<SubTxAwareParticipant> getSubtxawares()
     {
         return subtxawares_;
     }
@@ -312,15 +325,15 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
         return localGetSubTxCount();
     }
 
-    protected Stack getSynchronizations()
+    protected Stack<Synchronization> getSynchronizations()
     {
         return synchronizations_;
     }
 
-    protected void addSynchronizations ( Stack synchronizations )
+    protected void addSynchronizations ( Stack<Synchronization> synchronizations )
     {
-        while ( !synchronizations.empty() ) {
-            Synchronization next = (Synchronization) synchronizations.pop();
+        while ( !synchronizations.isEmpty() ) {
+            Synchronization next = synchronizations.pop();
             localPushSynchronization ( next );
         }
     }

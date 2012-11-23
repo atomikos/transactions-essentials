@@ -94,10 +94,16 @@ class ActiveStateHandler extends CoordinatorStateHandler
                 		getCoordinator().setRollbackOnly();
                 	} else {
                 		LOGGER.logWarning ( "Rollback of timedout ACTIVE coordinator !" );
-                		boolean indoubt = getCoordinator().isRecoverableWhileActive().booleanValue();
+                		final boolean indoubt = getCoordinator().isRecoverableWhileActive().booleanValue();
                 		//treat activities (recoverable) as indoubts to make sure that anomalies
                 		//with early prepare etc. are treated as heuristics
-                		super.rollback ( indoubt , false );
+                		rollbackWithAfterCompletionNotification(new RollbackCallback() {
+							public HeuristicMessage[] doRollback()
+									throws HeurCommitException,
+									HeurMixedException, SysException,
+									HeurHazardException, IllegalStateException {
+								return rollbackFromWithinCallback(indoubt,false);
+							}});
                 	}
                 }
             }
@@ -130,7 +136,13 @@ class ActiveStateHandler extends CoordinatorStateHandler
                 if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Orphans detected: "
                         + getCoordinator ().getLocalSiblingCount () + " vs "
                         + globalSiblingCount_ + " - forcing rollback." );
-                super.rollback ( getCoordinator().isRecoverableWhileActive().booleanValue() , false );
+                rollbackWithAfterCompletionNotification(new RollbackCallback() {
+					public HeuristicMessage[] doRollback()
+							throws HeurCommitException,
+							HeurMixedException, SysException,
+							HeurHazardException, IllegalStateException {
+						return rollbackFromWithinCallback(getCoordinator().isRecoverableWhileActive().booleanValue(),false);
+					}});
 
             } catch ( HeurCommitException hc ) {
                 throw new HeurMixedException ( hc.getHeuristicMessages() );
@@ -147,7 +159,13 @@ class ActiveStateHandler extends CoordinatorStateHandler
         		String msg = "Error in preparing: " + error.getMessage() + " - rolling back instead";
         		LOGGER.logWarning ( msg , error );
         		try {
-					super.rollback ( getCoordinator().isRecoverableWhileActive().booleanValue() , false );
+					rollbackWithAfterCompletionNotification(new RollbackCallback() {
+						public HeuristicMessage[] doRollback()
+								throws HeurCommitException,
+								HeurMixedException, SysException,
+								HeurHazardException, IllegalStateException {
+							return rollbackFromWithinCallback(getCoordinator().isRecoverableWhileActive().booleanValue(),false);
+						}});
 					throw new RollbackException ( msg );
         		} catch ( HeurCommitException e ) {
 					LOGGER.logWarning ( "Illegal heuristic commit during rollback before prepare:" + e );
@@ -182,7 +200,13 @@ class ActiveStateHandler extends CoordinatorStateHandler
                 int res = result.getResult ();
                
                 try {
-                    rollback ( true, false );
+                    rollbackWithAfterCompletionNotification(new RollbackCallback() {
+						public HeuristicMessage[] doRollback()
+								throws HeurCommitException,
+								HeurMixedException, SysException,
+								HeurHazardException, IllegalStateException {
+							return rollbackFromWithinCallback(true,false);
+						}});
                 } catch ( HeurCommitException hc ) {
                     // should not happen:
                     // means that ALL subordinate work committed heuristically.
@@ -248,9 +272,25 @@ class ActiveStateHandler extends CoordinatorStateHandler
             prepareResult = prepare ();
             // make sure to only do 2PC commit if NOT read only
             if ( prepareResult == Participant.READ_ONLY ) result = getHeuristicMessages ();
-            else result = commit ( false, false );
+            else {
+            	result = commitWithAfterCompletionNotification ( new CommitCallback() {
+            		public HeuristicMessage[] doCommit()
+            				throws HeurRollbackException, HeurMixedException,
+            				HeurHazardException, IllegalStateException,
+            				RollbackException, SysException {
+            			return commitFromWithinCallback ( false, false );
+            		}          	
+            	});
+            }
         } else {
-            result = commit ( false, true );
+        	result = commitWithAfterCompletionNotification ( new CommitCallback() {
+        		public HeuristicMessage[] doCommit()
+        				throws HeurRollbackException, HeurMixedException,
+        				HeurHazardException, IllegalStateException,
+        				RollbackException, SysException {
+        			return commitFromWithinCallback ( false, true );
+        		}          	
+        	});
         }
         return result;
 
@@ -261,7 +301,13 @@ class ActiveStateHandler extends CoordinatorStateHandler
             HeurHazardException, java.lang.IllegalStateException
     {
 
-        return rollback ( getCoordinator().isRecoverableWhileActive().booleanValue() , false );
+        return rollbackWithAfterCompletionNotification(new RollbackCallback() {
+			public HeuristicMessage[] doRollback()
+					throws HeurCommitException,
+					HeurMixedException, SysException,
+					HeurHazardException, IllegalStateException {
+				return rollbackFromWithinCallback(getCoordinator().isRecoverableWhileActive().booleanValue(),false);
+			}});
     }
 
     protected Boolean replayCompletion ( Participant participant )

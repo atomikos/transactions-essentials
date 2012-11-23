@@ -25,7 +25,9 @@
 
 package com.atomikos.icatch.imp;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 
 import com.atomikos.finitestates.FSM;
@@ -68,67 +70,34 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(CoordinatorImp.class);
 
-    static long DEFAULT_TIMEOUT = 150;
-    // how many millisec until timer thread wakes up
+    static long DEFAULT_MILLIS_BETWEEN_TIMER_WAKEUPS = 150;
     // SHOULD NOT BE BIG, otherwise lots of sleeping threads -> OUT OF MEMORY!
-
-    private static final int MAX_INDOUBT_TICKS = 30;
-    // max number of timeout ticks for indoubts.
-
-    private static final int MAX_ROLLBACK_TICKS = 30;
-    // max number of timer 'ticks' before rollback of active txs
-    // NOTE : a timer tick equals one wakeup of timer thread.
+    
+    private static final int MAX_NUMBER_OF_TIMEOUT_TICKS_FOR_INDOUBTS = 30;
+    private static final int MAX_NUMBER_OF_TIMEOUT_TICKS_BEFORE_ROLLBACK_OF_ACTIVES = 30;
 
     private int localSiblingCount_ = 0;
-    // no of siblings seen by resource.
-
     private AlarmTimer timer_ = null;
-    // timer to wait on
-
     private boolean checkSiblings_ = true;
-    // false for OTS txs
 
-    //
-    // BELOW ARE NON-TRANSIENT INSTANCE VARS
-    //
-
-    private long maxIndoubtTicks_ = MAX_INDOUBT_TICKS;
-    // max no of indoubt timeout ticks before heuristic
-
-    private long maxRollbackTicks_ = MAX_ROLLBACK_TICKS;
-    // max no of rollback ticks before rollback
+    private long maxNumberOfTimeoutTicksBeforeHeuristicDecision_ = MAX_NUMBER_OF_TIMEOUT_TICKS_FOR_INDOUBTS;
+    private long maxNumberOfTimeoutTicksBeforeRollback_ = MAX_NUMBER_OF_TIMEOUT_TICKS_BEFORE_ROLLBACK_OF_ACTIVES;
 
     private String root_ = null;
-
     private FSM fsm_ = null;
-    // for safe state changes; ONLY STATE must be logged!
-
     private boolean recoverableWhileActive_;
-
-    private boolean heuristicCommit_ = true;
-    // what to do on timeout of indoubt: commit or not
-
-    private Vector participants_ = new Vector ();
-    // all participants known for this coordinator.
-
-    private RecoveryCoordinator coordinator_ = null;
-    // the recovery coordinator; null if root.
-
-    private Vector tags_ = new Vector ();
+    private boolean heuristicMeansCommit_ = true;
+    private Vector participants_ = new Vector();
+    private RecoveryCoordinator superiorCoordinator_ = null; 
+    private Vector tags_ = new Vector();
     // the tags of all incoming txs
     // does NOT have to be logged: the contents are
     // retrieved BEFORE prepare (in Participant proxy),
     // at return time of the call.
 
     private CoordinatorStateHandler stateHandler_;
-    // The state handler object to delegate 2PC methods to
-
     private boolean single_threaded_2pc_;
-    // should two-phase commit happen in the same thread?
-    // if false then commit will be done in parallel for # resources
-    // if true then commit/rollback will be in the same thread
-    // as the one that started the tx
-    // see BugzID 20653
+	private transient List<Synchronization> synchronizations;
 
     /**
      * Constructor for testing only.
@@ -141,12 +110,13 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
         
         initFsm(TxState.ACTIVE);
         
-        heuristicCommit_ = heuristic_commit;
+        heuristicMeansCommit_ = heuristic_commit;
 
         setStateHandler ( new ActiveStateHandler ( this ) );
-        startThreads ( DEFAULT_TIMEOUT );
+        startThreads ( DEFAULT_MILLIS_BETWEEN_TIMER_WAKEUPS );
         checkSiblings_ = checkorphans;
         single_threaded_2pc_ = false;
+        synchronizations = new ArrayList<Synchronization>();
     }
 
 	private void initFsm(TxState initialState) {
@@ -188,22 +158,22 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
         root_ = root;
         single_threaded_2pc_ = single_threaded_2pc;
 	    initFsm(TxState.ACTIVE );
-        heuristicCommit_ = heuristic_commit;
+        heuristicMeansCommit_ = heuristic_commit;
 
         recoverableWhileActive_ = false;
-        coordinator_ = coord;
-        if ( timeout > DEFAULT_TIMEOUT ) {
+        superiorCoordinator_ = coord;
+        if ( timeout > DEFAULT_MILLIS_BETWEEN_TIMER_WAKEUPS ) {
             // If timeout is smaller than the default timeout, then
             // there is no need to re-adjust the next two fields
             // since the defaults will be used.
-            maxIndoubtTicks_ = timeout / DEFAULT_TIMEOUT;
-            maxRollbackTicks_ = maxIndoubtTicks_;
+            maxNumberOfTimeoutTicksBeforeHeuristicDecision_ = timeout / DEFAULT_MILLIS_BETWEEN_TIMER_WAKEUPS;
+            maxNumberOfTimeoutTicksBeforeRollback_ = maxNumberOfTimeoutTicksBeforeHeuristicDecision_;
         }
 
         setStateHandler ( new ActiveStateHandler ( this ) );
-        startThreads ( DEFAULT_TIMEOUT );
+        startThreads ( DEFAULT_MILLIS_BETWEEN_TIMER_WAKEUPS );
         checkSiblings_ = checkorphans;
-
+        synchronizations = new ArrayList<Synchronization>();
 
     }
 
@@ -226,7 +196,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
              boolean heuristic_commit , boolean checkorphans )
     {
         this ( root , coord ,  heuristic_commit ,
-                DEFAULT_TIMEOUT , checkorphans , false );
+                DEFAULT_MILLIS_BETWEEN_TIMER_WAKEUPS , checkorphans , false );
     }
 
     /**
@@ -237,12 +207,12 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     {
 
     	initFsm(TxState.ACTIVE );
-        heuristicCommit_ = false;
+        heuristicMeansCommit_ = false;
 
         checkSiblings_ = true;
         recoverableWhileActive_ = false;
         single_threaded_2pc_ = false;
-
+        synchronizations = new ArrayList<Synchronization>();
 
     }
 
@@ -289,7 +259,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 
     RecoveryCoordinator getSuperiorRecoveryCoordinator ()
     {
-        return coordinator_;
+        return superiorCoordinator_;
     }
 
     Vector getParticipants ()
@@ -300,7 +270,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 
     boolean prefersHeuristicCommit ()
     {
-        return heuristicCommit_;
+        return heuristicMeansCommit_;
     }
 
     int getLocalSiblingCount ()
@@ -310,12 +280,12 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 
     long getMaxIndoubtTicks ()
     {
-        return maxIndoubtTicks_;
+        return maxNumberOfTimeoutTicksBeforeHeuristicDecision_;
     }
 
     long getMaxRollbackTicks ()
     {
-        return maxRollbackTicks_;
+        return maxNumberOfTimeoutTicksBeforeRollback_;
     }
 
     boolean checkSiblings ()
@@ -417,8 +387,8 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 
 	protected long getTimeOut ()
     {
-        return (maxRollbackTicks_ - stateHandler_.getRollbackTicks ())
-                * DEFAULT_TIMEOUT;
+        return (maxNumberOfTimeoutTicksBeforeRollback_ - stateHandler_.getRollbackTicks ())
+                * DEFAULT_MILLIS_BETWEEN_TIMER_WAKEUPS;
     }
 
    
@@ -535,31 +505,37 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     {
 
     	synchronized ( fsm_ ) {
-
     		if ( !getState ().equals ( TxState.ACTIVE ) )
-    			throw new IllegalStateException ( "wrong state: " + getState () );
-
-    		//register readonly participant to force 2PC: fixes bug 10035
-    		ReadOnlyParticipant rop = new ReadOnlyParticipant ( this );
-    		addParticipant ( rop );
-
-    		SynchToFSM wrapper = new SynchToFSM ( sync );
-    		addFSMEnterListener ( wrapper, TxState.COMMITTING );
-    		addFSMEnterListener ( wrapper, TxState.ABORTING );
-    		addFSMEnterListener ( wrapper, TxState.TERMINATED );
-    		// otherwise, readonly participants do not trigger notification!
-
-    		// next, listen on all heur states as well, to make sure that
-    		// connections get notified at end of 2pc (Oracle!)
-    		addFSMEnterListener ( wrapper, TxState.HEUR_MIXED );
-    		addFSMEnterListener ( wrapper, TxState.HEUR_ABORTED );
-    		addFSMEnterListener ( wrapper, TxState.HEUR_HAZARD );
-    		addFSMEnterListener ( wrapper, TxState.HEUR_COMMITTED );
+    			throw new IllegalStateException ( "wrong state: " + getState () );   		
+    		rememberSychronizationForAfterCompletion(sync);
     	}
     }
 
  
-    /**
+    private void rememberSychronizationForAfterCompletion(Synchronization sync) {
+		getSynchronizations().add(sync);		
+	}
+
+	private List<Synchronization> getSynchronizations() {
+		synchronized(fsm_) {
+			if (synchronizations == null) synchronizations = new ArrayList<Synchronization>();
+			return synchronizations;
+		}
+	}
+	
+	void notifySynchronizationsAfterCompletion(TxState... successiveStates) {
+		for ( TxState state : successiveStates ) {
+			for (Synchronization s : getSynchronizations()) {
+				try {
+					s.afterCompletion(state);
+				} catch (Throwable t) {
+					LOGGER.logWarning("Unexpected error in afterCompletion", t);
+				}
+			}
+		}
+	}
+
+	/**
      * @see FSMPreEnterListener.
      */
 
@@ -630,7 +606,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 		} // synchronized
 
         // ONLY NOW start threads and so on
-        startThreads ( DEFAULT_TIMEOUT );
+        startThreads ( DEFAULT_MILLIS_BETWEEN_TIMER_WAKEUPS );
 
 
         if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug (   "recover() done for coordinator: " + getCoordinatorId () );
@@ -709,10 +685,9 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
             HeurHazardException, java.lang.IllegalStateException,
             RollbackException, SysException
     {
-
     	HeuristicMessage[] ret = null;
     	synchronized ( fsm_ ) {
-    		ret = stateHandler_.commit ( onePhase );
+    		ret = stateHandler_.commit(onePhase);
     	}
     	return ret;
     }
@@ -726,6 +701,8 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
             java.lang.IllegalStateException
     {
 
+    	HeuristicMessage[] ret = null;
+    	
         if ( getState ().equals ( TxState.ABORTING ) ) {
             // this method is ONLY called for EXTERNAL events -> by remote coordinators
             // therefore, state aborting means either a recursive
@@ -744,8 +721,9 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
         // so we can safely lock this instance.
 
         synchronized ( fsm_ ) {
-        	return stateHandler_.rollback ();
+        	ret = stateHandler_.rollback();
         }
+        return ret;
     }
 
 
@@ -755,8 +733,8 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     {
     	HeuristicMessage[] ret = null;
         synchronized ( fsm_ ) {
-        	ret = stateHandler_.rollback ( true, true );
-        }
+        	ret = stateHandler_.rollbackHeuristically();
+        } 
         return ret;
     }
 
@@ -766,7 +744,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     {
     	HeuristicMessage[] ret = null;
     	synchronized ( fsm_ ) {
-    		ret = stateHandler_.commit ( true, false );
+    		ret = stateHandler_.commitHeuristically();
     	}
     	return ret;
     }
@@ -802,10 +780,10 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
         root_ = img.root_;
 
         participants_ = img.participants_;
-        coordinator_ = img.coordinator_;
-        heuristicCommit_ = img.heuristicCommit_;
-        maxIndoubtTicks_ = img.maxInquiries_;
-        maxRollbackTicks_ = img.maxInquiries_;
+        superiorCoordinator_ = img.coordinator_;
+        heuristicMeansCommit_ = img.heuristicCommit_;
+        maxNumberOfTimeoutTicksBeforeHeuristicDecision_ = img.maxInquiries_;
+        maxNumberOfTimeoutTicksBeforeRollback_ = img.maxInquiries_;
         recoverableWhileActive_ = img.activity_;
         if ( recoverableWhileActive_ ) {
             checkSiblings_ = img.checkSiblings_;
@@ -856,7 +834,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 
     		if ( !recoverableWhileActive_ &&
     				( state.equals ( TxState.ACTIVE ) ||
-    			      ( coordinator_ == null && state.equals ( TxState.IN_DOUBT ) )
+    			      ( superiorCoordinator_ == null && state.equals ( TxState.IN_DOUBT ) )
     				    //see case 23693: don't log prepared state for roots
     			    )
     		    ) {
@@ -869,11 +847,11 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 
     			if ( recoverableWhileActive_ ) {
     				ret = new CoordinatorLogImage ( root_, imgstate, participants_,
-    						coordinator_, heuristicCommit_, maxIndoubtTicks_,
+    						superiorCoordinator_, heuristicMeansCommit_, maxNumberOfTimeoutTicksBeforeHeuristicDecision_,
     						stateHandler_, localSiblingCount_, checkSiblings_ , single_threaded_2pc_);
     			} else {
     				ret = new CoordinatorLogImage ( root_, imgstate, participants_,
-    						coordinator_, heuristicCommit_, maxIndoubtTicks_,
+    						superiorCoordinator_, heuristicMeansCommit_, maxNumberOfTimeoutTicksBeforeHeuristicDecision_,
     						stateHandler_ , single_threaded_2pc_ );
     			}
     		}
@@ -928,8 +906,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
         try {
             stateHandler_.onTimeout ();
         } catch ( Exception e ) {
-            LOGGER.logWarning( "Exception on timeout of coordinator " + root_ + ": "
-                    + e.getMessage () );
+            LOGGER.logWarning( "Exception on timeout of coordinator " + root_ , e );
         }
     }
 
@@ -937,16 +914,12 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     {
     	synchronized ( fsm_ ) {
     		if ( timer_ != null ) {
-    			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Coordinator " + getCoordinatorId ()
-    					+ " : stopping timer..." );
+    			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Coordinator " + getCoordinatorId() + " : stopping timer..." );
     			timer_.stop ();
     		}
-    		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Coordinator " + getCoordinatorId ()
-    				+ " : disposing statehandler " + stateHandler_.getState ()
-    				+ "..." );
+    		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Coordinator " + getCoordinatorId() + " : disposing statehandler " + stateHandler_.getState() + "..." );
     		stateHandler_.dispose ();
-    		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Coordinator " + getCoordinatorId ()
-    				+ " : disposed." );
+    		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Coordinator " + getCoordinatorId() + " : disposed." );
     	}
     }
 
@@ -962,8 +935,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
             HeurCommitException, HeurHazardException, RollbackException,
             IllegalStateException
 
-    {
-       
+    {    
     	synchronized ( fsm_ ) {
     		if ( commit ) {
     			if ( participants_.size () <= 1 ) {
@@ -977,18 +949,15 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     		} else {
     			rollback ();
     		}
-
     	}
     }
 
     public void setRecoverableWhileActive () throws UnsupportedOperationException
     {
         recoverableWhileActive_ = true;
-
     }
     
-    void setRollbackOnly() {
-    	
+    void setRollbackOnly() { 	
     	StringHeuristicMessage msg = new StringHeuristicMessage (
     	"setRollbackOnly" );
     	RollbackOnlyParticipant p = new RollbackOnlyParticipant ( msg );
@@ -996,14 +965,29 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     	try {
     		addParticipant ( p );
     	} catch ( IllegalStateException alreadyTerminated ) {
-    		//happens in rollback after timeout - see case 27857
-    		//ignore but log
+    		//happens in rollback after timeout - see case 27857; ignore but log
     		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Error during setRollbackOnly" , alreadyTerminated );
     	} catch ( RollbackException e ) {
     		//ignore: corresponds to desired outcome
     		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Error during setRollbackOnly" , e );
         }
     }
+
+	public Object getStateWithTwoPhaseCommitDecision() {
+		Object ret = getState();
+		if (TxState.TERMINATED.equals(getState())) {
+			if (isCommitted()) ret = TxState.COMMITTED;
+			else ret = TxState.ABORTED;
+		} else if (TxState.HEUR_ABORTED.equals(getState())) {
+			ret = TxState.ABORTED;
+		} else if (TxState.HEUR_COMMITTED.equals(getState())) {
+			ret = TxState.COMMITTED;
+		} else if (TxState.HEUR_HAZARD.equals(getState())) {
+			if (isCommitted()) ret = TxState.COMMITTING;
+			else ret = TxState.ABORTING;
+		}
+		return ret;
+	}
 
 
 }

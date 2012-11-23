@@ -45,4 +45,11 @@ public interface ObjectImage extends Externalizable, Identifiable
      */
 
     public Recoverable restore ();
+//    
+//    /**
+//     *
+//     * @return True iff the image requires immediate syncing. 
+//     */
+//    
+//    public boolean requiresSync();
 }
