@@ -74,7 +74,6 @@ public class XAResourceTransaction implements ResourceTransaction,
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(XAResourceTransaction.class);
 
-    // force-set version ID for backward log compatibility
     static final long serialVersionUID = -8227293322090019196L;
 
     protected static String interpretErrorCode ( String resourceName , String opCode , Xid xid , int errorCode ) {
@@ -156,12 +155,10 @@ public class XAResourceTransaction implements ResourceTransaction,
     private String tid_ , root_;
 
     private boolean isXaSuspended_;
-    // true iff XA suspended
 
     private TxState state_;
 
     private String resourcename_;
-    // the name of the resource, needed on recovery for determining xid branch
 
     private transient Xid xid_;
 
@@ -257,12 +254,8 @@ public class XAResourceTransaction implements ResourceTransaction,
 
         	//fix for case 31209: refresh entire XAConnection on heur hazard
         	if ( state_.equals ( TxState.HEUR_HAZARD ) ) forceRefreshXAConnection();
-        	else if ( xaresource_ != null ) {
-                // we should be the same as ourselves!
-                // NOTE: xares_ is null if no connection could be gotten
-                // in that case we just return true
-                // otherwise, test the xaresource liveness
-                xaresource_.isSameRM ( xaresource_ );
+        	else if ( xaresource_ != null ) { // null if connection failure
+                xaresource_.isSameRM ( xaresource_ ); // test xa connection for liveness
             }
         } catch ( XAException xa ) {
             // timed out?
@@ -270,8 +263,7 @@ public class XAResourceTransaction implements ResourceTransaction,
                     + ": XAResource needs refresh", xa );
 
             if ( resource_ == null ) {
-    			// cf bug 67951
-    			// happens on recovery without resource found
+    			// cf bug 67951 - happens on recovery without resource found
     			throwXAExceptionForUnavailableResource();
     		} else {
     			xaresource_ = resource_.getXAResource ();
@@ -284,8 +276,7 @@ public class XAResourceTransaction implements ResourceTransaction,
 	{
 		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( resourcename_ + ": forcing refresh of XAConnection..." );
 		if ( resource_ == null ) {
-			// cf bug 67951
-			// happens on recovery without resource found
+			// cf bug 67951 - happens on recovery without resource found
 			throwXAExceptionForUnavailableResource();
 		}
 
@@ -374,16 +365,6 @@ public class XAResourceTransaction implements ResourceTransaction,
      * @see ResourceTransaction.
      */
 
-    public void addCompensationContext ( java.util.Dictionary context )
-            throws IllegalStateException
-    {
-
-    }
-
-    /**
-     * @see ResourceTransaction.
-     */
-
     public void addHeuristicMessage ( HeuristicMessage mesg )
             throws IllegalStateException
     {
@@ -404,14 +385,6 @@ public class XAResourceTransaction implements ResourceTransaction,
 
     }
 
-    /**
-     * @see ResourceTransaction.
-     */
-
-    public java.util.Dictionary getCompensationContext ()
-    {
-        return null;
-    }
 
     /**
      * @see ResourceTransaction.
@@ -419,7 +392,6 @@ public class XAResourceTransaction implements ResourceTransaction,
 
     public synchronized void suspend () throws ResourceException
     {
-
         Stack errors = new Stack ();
 
         //BugzID: 20545
@@ -492,7 +464,7 @@ public class XAResourceTransaction implements ResourceTransaction,
     public void setCascadeList ( java.util.Dictionary allParticipants )
             throws SysException
     {
-        // nothing to be done for this.
+        // nothing to do: local participant
     }
 
     public Object getState ()
@@ -558,10 +530,10 @@ public class XAResourceTransaction implements ResourceTransaction,
     public synchronized void forget ()
     {
         terminateInResource ();
-        try {
-            if ( xaresource_ != null )
+        try { 
+            if ( xaresource_ != null ) { // null if recovery failed
                 xaresource_.forget ( xid_ );
-            // xaresource is null if recovery failed
+            }
         } catch ( Exception err ) {
         	LOGGER.logDebug ( "Error forgetting xid: " + xid_ , err );
             // we don't care here
@@ -580,9 +552,10 @@ public class XAResourceTransaction implements ResourceTransaction,
         Stack errors = new Stack ();
         terminateInResource ();
 
-        // ADDED: to tolerate non-delisting appservers
-        if ( TxState.ACTIVE.equals ( state_ ) )
+        if ( TxState.ACTIVE.equals ( state_ ) ) {
+        	// tolerate non-delisting apps/servers
             suspend ();
+        }
 
         // duplicate prepares can happen for siblings in serial subtxs!!!
         // in that case, the second prepare just returns READONLY
@@ -591,8 +564,7 @@ public class XAResourceTransaction implements ResourceTransaction,
         else if ( !state_.equals ( TxState.LOCALLY_DONE ) )
             throw new SysException ( "Wrong state for prepare: " + state_ );
         try {
-            // refresh xaresource for MQSeries: seems to close XAResource after
-            // suspend???
+            // refresh xaresource for MQSeries: seems to close XAResource after suspend???
             testOrRefreshXAResourceFor2PC ();
             if(LOGGER.isDebugEnabled()){
             	LOGGER.logDebug( "About to call prepare on XAResource instance: "
@@ -650,20 +622,18 @@ public class XAResourceTransaction implements ResourceTransaction,
             throw new HeurMixedException ( getHeuristicMessages () );
         if ( state_.equals ( TxState.HEUR_COMMITTED ) )
             throw new HeurCommitException ( getHeuristicMessages () );
-        if ( xaresource_ == null ) {
+        if ( xaresource_ == null ) { // if recover failed
         		LOGGER.logWarning ( "XAResourceTransaction " + getXid ()
                     + ": no XAResource to rollback - the required resource is probably not yet intialized?" );
             throw new HeurHazardException ( getHeuristicMessages () );
         }
 
-        // xaresource is null if recovery failed
 
         try {
             if ( state_.equals ( TxState.ACTIVE ) )// first suspend xid
                 suspend ();
 
-            // refresh xaresource for MQSeries: seems to close XAResource after
-            // suspend???
+            // refresh xaresource for MQSeries: seems to close XAResource after suspend???
             testOrRefreshXAResourceFor2PC ();
             if(LOGGER.isInfoEnabled()){
             	LOGGER.logInfo("XAResource.rollback ( " + xidToHexString  + " ) "
@@ -680,8 +650,7 @@ public class XAResourceTransaction implements ResourceTransaction,
         } catch ( XAException xaerr ) {
         	    String msg = interpretErrorCode ( resourcename_ , "rollback" , xid_ , xaerr.errorCode );
             if ( (XAException.XA_RBBASE <= xaerr.errorCode)
-                    && (xaerr.errorCode <= XAException.XA_RBEND) ) {
-                // do nothing, corresponds with semantics of rollback
+                    && (xaerr.errorCode <= XAException.XA_RBEND) ) { // do nothing, corresponds with semantics of rollback          
                 if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( msg );
             } else {
                 LOGGER.logWarning ( msg , xaerr );
@@ -711,8 +680,8 @@ public class XAResourceTransaction implements ResourceTransaction,
                 	switchToHeuristicState( "rollback", TxState.HEUR_HAZARD , xaerr );
                     errors.push ( xaerr );
                     throw new SysException ( msg , errors );
-                } // switch
-            } // else
+                } 
+            }
         }
         setState ( TxState.TERMINATED );
         return getHeuristicMessages ();
@@ -735,19 +704,17 @@ public class XAResourceTransaction implements ResourceTransaction,
             throw new HeurMixedException ( getHeuristicMessages () );
         if ( state_.equals ( TxState.HEUR_ABORTED ) )
             throw new HeurRollbackException ( getHeuristicMessages () );
-        if ( xaresource_ == null ) {
+        if ( xaresource_ == null ) { // null if recovery failed
             LOGGER.logWarning ( "XAResourceTransaction " + getXid ()
                     + ": no XAResource to commit - the required resource is probably not yet intialized?" );
             throw new HeurHazardException ( getHeuristicMessages () );
         }
 
-        // xaresource is null if recovery failed
-
-        // ADDED: to tolerate non-delisting appservers
         try {
 
-            if ( TxState.ACTIVE.equals ( state_ ) )
+            if ( TxState.ACTIVE.equals ( state_ ) ) { // tolerate non-delisting apps/servers
                 suspend ();
+            }
         } catch ( ResourceException re ) {
             // happens if already rolled back or something else;
             // in any case the transaction can be trusted to act
@@ -759,8 +726,7 @@ public class XAResourceTransaction implements ResourceTransaction,
                 .equals ( TxState.IN_DOUBT ) || state_.equals ( TxState.HEUR_HAZARD )) )
             throw new SysException ( "Wrong state for commit: " + state_ );
         try {
-            // refresh xaresource for MQSeries: seems to close XAResource after
-            // suspend???
+            // refresh xaresource for MQSeries: seems to close XAResource after suspend???
             testOrRefreshXAResourceFor2PC ();
             if(LOGGER.isInfoEnabled()){
             	LOGGER.logInfo("XAResource.commit ( " + xidToHexString + " , " + onePhase
@@ -808,8 +774,8 @@ public class XAResourceTransaction implements ResourceTransaction,
                 	switchToHeuristicState( "commit", TxState.HEUR_HAZARD , xaerr );
                     errors.push ( xaerr );
                     throw new SysException ( msg , errors );
-                } // switch
-            } // else
+                } 
+            } 
         }
         setState ( TxState.TERMINATED );
         return getHeuristicMessages ();
@@ -821,8 +787,8 @@ public class XAResourceTransaction implements ResourceTransaction,
 
     public boolean equals ( Object o )
     {
-    	if(this==o)
-    		return true;
+    	if (this==o) return true;
+    	
         // NOTE: basing equals on the xid means that if two
         // different instances for the same xid exist then these
         // will be considered the same, and a second will
@@ -835,8 +801,7 @@ public class XAResourceTransaction implements ResourceTransaction,
         // internal parallellism, having two invocations to the same
         // resource execute with the same xid is not a problem.
 
-        if ( o == null || !(o instanceof XAResourceTransaction) )
-            return false;
+        if (!(o instanceof XAResourceTransaction))  return false;
 
         XAResourceTransaction other = (XAResourceTransaction) o;
         return xid_.equals ( other.xid_ );
@@ -891,12 +856,8 @@ public class XAResourceTransaction implements ResourceTransaction,
 
     public void setXAResource ( XAResource xaresource )
     {
-
-
-    	if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this
-    			+ ": about to switch to XAResource " + xaresource );
+    	if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": about to switch to XAResource " + xaresource );
     	xaresource_ = xaresource;
-
     	try {
     		xaresource_.setTransactionTimeout ( timeout_ );
     	} catch ( XAException e ) {
@@ -904,11 +865,7 @@ public class XAResourceTransaction implements ResourceTransaction,
     		LOGGER.logWarning ( msg , e );
     		// we don't care
     	}
-
-    	if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "XAResourceTransaction " + getXid ()
-    			+ ": switched to XAResource " + xaresource );
-
-
+    	if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "XAResourceTransaction " + getXid() + ": switched to XAResource " + xaresource );
     }
 
     /**
@@ -917,9 +874,7 @@ public class XAResourceTransaction implements ResourceTransaction,
 
     public void xaSuspend () throws XAException
     {
-    	// cf case 61305: make XA suspend idempotent
-    	// so appserver suspends do not interfere with
-    	// our suspends (triggered by transaction suspend)
+    	// cf case 61305: make XA suspend idempotent so appserver suspends do not interfere with our suspends (triggered by transaction suspend)
     	if ( !isXaSuspended_ ) {
     		try {
     			if(LOGGER.isInfoEnabled()){
@@ -1010,16 +965,12 @@ public class XAResourceTransaction implements ResourceTransaction,
 		out.writeUTF(tid_);
 		out.writeUTF(root_);
 		out.writeUTF(state_.toString());
-		// CLONE vector to ensure it gets re-written!
-		// out.writeObject ( heuristicMessages_.clone () );
-
 		out.writeInt(heuristicMessages_.size());
 		for (Iterator iterator = heuristicMessages_.iterator(); iterator.hasNext();) {
 			HeuristicMessage heuristicMessage = (HeuristicMessage) iterator.next();
 			out.writeUTF(heuristicMessage.toString());
 		}
 		out.writeUTF(resourcename_);
-
 		if (xaresource_ instanceof Serializable) {
 			// cf case 59238
 			out.writeBoolean(true);
