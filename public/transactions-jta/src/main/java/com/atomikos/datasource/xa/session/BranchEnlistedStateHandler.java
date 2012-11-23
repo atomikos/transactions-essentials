@@ -88,11 +88,7 @@ class BranchEnlistedStateHandler extends TransactionContextStateHandler
 			String msg = "The connection/session object is already enlisted in a (different) transaction.";
 			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( msg );
 			throw new UnexpectedTransactionContextException();
-		} else if (TxState.MARKED_ABORT.equals(currentTx.getState())) {
-			throw new InvalidSessionHandleStateException (
-					"Transaction is marked for rollback only or has timed out"
-				);
-		}
+		} 
 		
 		//tx context is still the same -> no change in state required
 		return null;
