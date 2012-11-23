@@ -27,7 +27,6 @@ package com.atomikos.icatch.imp;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
 
