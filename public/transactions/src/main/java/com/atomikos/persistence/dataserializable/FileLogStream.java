@@ -30,8 +30,6 @@ import java.io.IOException;
 import java.io.ObjectStreamException;
 import java.io.RandomAccessFile;
 import java.io.StreamCorruptedException;
-import java.io.SyncFailedException;
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Vector;
 
@@ -153,7 +151,7 @@ public class FileLogStream implements LogStream {
 	}
 
 	public void writeCheckpoint(Enumeration elements) throws LogException {
-		long start =System.currentTimeMillis();
+		
 		synchronized (file_) {
 			// first, make sure that any pending output stream handles
 			// in the client are invalidated
@@ -195,7 +193,7 @@ public class FileLogStream implements LogStream {
 			}
 
 		}
-		System.err.println("writeCheckpoint "+(System.currentTimeMillis()-start));
+		
 	}
 
 	public void flushObject(Object o, boolean shouldSync) throws LogException {
