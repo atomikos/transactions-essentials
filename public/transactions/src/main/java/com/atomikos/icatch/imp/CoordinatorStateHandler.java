@@ -520,7 +520,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
      *            True iff one-phase commit.
      */
 
-    protected HeuristicMessage[] commit ( boolean heuristic ,
+    protected HeuristicMessage[] commitFromWithinCallback ( boolean heuristic ,
             boolean onePhase ) throws HeurRollbackException,
             HeurMixedException, HeurHazardException,
             java.lang.IllegalStateException, RollbackException, SysException
@@ -546,7 +546,13 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
         		String msg = "Error in committing: " + error.getMessage() + " - rolling back instead";
         		LOGGER.logWarning ( msg , error );
         		try {
-					rollback ( getCoordinator().isRecoverableWhileActive().booleanValue() , false );
+					rollbackWithAfterCompletionNotification(new RollbackCallback() {
+						public HeuristicMessage[] doRollback()
+								throws HeurCommitException,
+								HeurMixedException, SysException,
+								HeurHazardException, IllegalStateException {
+							return rollbackFromWithinCallback(getCoordinator().isRecoverableWhileActive().booleanValue(),false);
+						}});
 					throw new RollbackException ( msg );
         		} catch ( HeurCommitException e ) {
 					LOGGER.logWarning ( "Illegal heuristic commit during rollback:" + e );
@@ -669,7 +675,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
      *            True iff a heuristic commit should be done.
      */
 
-    protected HeuristicMessage[] rollback ( boolean indoubt ,
+    protected HeuristicMessage[] rollbackFromWithinCallback ( boolean indoubt ,
             boolean heuristic ) throws HeurCommitException, HeurMixedException,
             SysException, HeurHazardException, java.lang.IllegalStateException
     {
@@ -816,5 +822,74 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
         }
         nextStateHandler = new TerminatedStateHandler ( this );
         coordinator_.setStateHandler ( nextStateHandler );
+    }
+    
+    public HeuristicMessage[] rollbackWithAfterCompletionNotification(RollbackCallback cb) throws HeurCommitException,
+    HeurMixedException, SysException, HeurHazardException,
+    java.lang.IllegalStateException {
+		HeuristicMessage[] ret = null;
+		try {
+        	ret = cb.doRollback();
+        	coordinator_.notifySynchronizationsAfterCompletion(TxState.ABORTING, TxState.TERMINATED);
+    	} catch (HeurCommitException hc) {
+    		coordinator_.notifySynchronizationsAfterCompletion(TxState.COMMITTING, TxState.TERMINATED);
+    		throw hc;
+    	} catch (HeurMixedException hm) {
+    		coordinator_.notifySynchronizationsAfterCompletion(TxState.ABORTING, TxState.TERMINATED);
+    		throw hm;
+    	} catch (HeurHazardException hh) {
+    		coordinator_.notifySynchronizationsAfterCompletion(TxState.ABORTING,TxState.TERMINATED);
+    		throw hh;
+    	}
+		return ret;
+	}
+    
+    HeuristicMessage[] commitWithAfterCompletionNotification(CommitCallback cb) throws HeurRollbackException, HeurMixedException,
+    HeurHazardException, java.lang.IllegalStateException,
+    RollbackException, SysException {
+		HeuristicMessage[] ret = null;
+		try {
+			ret = cb.doCommit();
+			coordinator_.notifySynchronizationsAfterCompletion(TxState.COMMITTING,TxState.TERMINATED);
+		} catch (RollbackException rb) {
+			coordinator_.notifySynchronizationsAfterCompletion(TxState.ABORTING,TxState.TERMINATED);
+			throw rb;
+		} catch (HeurMixedException hm) {
+			coordinator_.notifySynchronizationsAfterCompletion(TxState.COMMITTING,TxState.TERMINATED);
+			throw hm;
+		} catch (HeurHazardException hh) {
+			coordinator_.notifySynchronizationsAfterCompletion(TxState.COMMITTING,TxState.TERMINATED);
+			throw hh;
+		} catch (HeurRollbackException hr) {
+			coordinator_.notifySynchronizationsAfterCompletion(TxState.ABORTING,TxState.TERMINATED);
+			throw hr;
+		}
+		return ret;
+    }
+    
+    public HeuristicMessage[] rollbackHeuristically ()
+            throws HeurCommitException, HeurMixedException, SysException,
+            HeurHazardException, java.lang.IllegalStateException
+    {
+    	return rollbackWithAfterCompletionNotification(new RollbackCallback() {		
+			public HeuristicMessage[] doRollback() throws HeurCommitException,
+					HeurMixedException, SysException, HeurHazardException,
+					IllegalStateException {
+				return rollbackFromWithinCallback(true, true);
+			}
+		});
+    }
+
+    public HeuristicMessage[] commitHeuristically () throws HeurMixedException,
+    SysException, HeurRollbackException, HeurHazardException,
+    java.lang.IllegalStateException, RollbackException
+    {
+    	return commitWithAfterCompletionNotification(new CommitCallback() {		
+			public HeuristicMessage[] doCommit() throws HeurRollbackException,
+					HeurMixedException, HeurHazardException, IllegalStateException,
+					RollbackException, SysException {
+				return commitFromWithinCallback(true,false);
+			}
+		});
     }
 }

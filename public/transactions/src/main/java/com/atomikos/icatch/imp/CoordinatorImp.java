@@ -523,7 +523,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 		}
 	}
 	
-	private void notifySynchronizationsAfterCompletion(TxState... successiveStates) {
+	void notifySynchronizationsAfterCompletion(TxState... successiveStates) {
 		for ( TxState state : successiveStates ) {
 			for (Synchronization s : getSynchronizations()) {
 				try {
@@ -687,22 +687,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     {
     	HeuristicMessage[] ret = null;
     	synchronized ( fsm_ ) {
-    		try {
-				ret = stateHandler_.commit(onePhase);
-				notifySynchronizationsAfterCompletion(TxState.COMMITTING, TxState.TERMINATED);
-			} catch (RollbackException rb) {
-				notifySynchronizationsAfterCompletion(TxState.ABORTING,TxState.TERMINATED);
-				throw rb;
-			} catch (HeurMixedException hm) {
-				notifySynchronizationsAfterCompletion(TxState.COMMITTING, TxState.TERMINATED);
-				throw hm;
-			} catch (HeurHazardException hh) {
-				notifySynchronizationsAfterCompletion(TxState.COMMITTING, TxState.TERMINATED);
-				throw hh;
-			} catch (HeurRollbackException hr) {
-				notifySynchronizationsAfterCompletion(TxState.ABORTING, TxState.TERMINATED);
-				throw hr;
-			}
+    		ret = stateHandler_.commit(onePhase);
     	}
     	return ret;
     }
@@ -736,19 +721,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
         // so we can safely lock this instance.
 
         synchronized ( fsm_ ) {
-        	try {
-            	ret = stateHandler_.rollback ();
-            	notifySynchronizationsAfterCompletion(TxState.ABORTING, TxState.TERMINATED);
-        	} catch (HeurCommitException hc) {
-        		notifySynchronizationsAfterCompletion(TxState.COMMITTING, TxState.TERMINATED);
-        		throw hc;
-        	} catch (HeurMixedException hm) {
-        		notifySynchronizationsAfterCompletion(TxState.ABORTING, TxState.TERMINATED);
-        		throw hm;
-        	} catch (HeurHazardException hh) {
-        		notifySynchronizationsAfterCompletion(TxState.ABORTING,TxState.TERMINATED);
-        		throw hh;
-        	}
+        	ret = stateHandler_.rollback();
         }
         return ret;
     }
@@ -760,19 +733,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     {
     	HeuristicMessage[] ret = null;
         synchronized ( fsm_ ) {
-        	try {
-				ret = stateHandler_.rollback ( true, true );
-				notifySynchronizationsAfterCompletion(TxState.ABORTING, TxState.TERMINATED);
-			} catch (HeurCommitException hc) {
-        		notifySynchronizationsAfterCompletion(TxState.COMMITTING, TxState.TERMINATED);
-        		throw hc;
-        	} catch (HeurMixedException hm) {
-        		notifySynchronizationsAfterCompletion(TxState.ABORTING, TxState.TERMINATED);
-        		throw hm;
-        	} catch (HeurHazardException hh) {
-        		notifySynchronizationsAfterCompletion(TxState.ABORTING,TxState.TERMINATED);
-        		throw hh;
-        	}
+        	ret = stateHandler_.rollbackHeuristically();
         } 
         return ret;
     }
@@ -783,22 +744,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     {
     	HeuristicMessage[] ret = null;
     	synchronized ( fsm_ ) {
-    		try {
-    			ret = stateHandler_.commit ( true, false );
-    			notifySynchronizationsAfterCompletion(TxState.COMMITTING, TxState.TERMINATED);
-    		} catch (RollbackException rb) {
-    			notifySynchronizationsAfterCompletion(TxState.ABORTING,TxState.TERMINATED);
-    			throw rb;
-    		} catch (HeurMixedException hm) {
-    			notifySynchronizationsAfterCompletion(TxState.COMMITTING, TxState.TERMINATED);
-    			throw hm;
-    		} catch (HeurHazardException hh) {
-    			notifySynchronizationsAfterCompletion(TxState.COMMITTING, TxState.TERMINATED);
-    			throw hh;
-    		} catch (HeurRollbackException hr) {
-    			notifySynchronizationsAfterCompletion(TxState.ABORTING, TxState.TERMINATED);
-    			throw hr;
-    		}
+    		ret = stateHandler_.commitHeuristically();
     	}
     	return ret;
     }
