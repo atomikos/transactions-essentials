@@ -65,17 +65,9 @@ abstract class Result
     protected Vector<HeuristicMessage> errmsgvector_ = new Vector<HeuristicMessage>();
     // for heuristic messages of heuristic participants
 
-    /**
-     * Constructor.
-     *
-     * @param messagecount
-     *            For synchronization: the number of replies that has to arrive
-     *            before the round is done.
-     */
-
-    public Result ( int messagecount )
+    public Result ( int numberOfRepliesToWaitFor )
     {
-        messagecount_ = messagecount;
+        messagecount_ = numberOfRepliesToWaitFor;
     }
 
     /**
@@ -89,7 +81,7 @@ abstract class Result
      *                If interrupted during wait.
      */
 
-    public int getResult () throws IllegalStateException, InterruptedException
+    public int getResult() throws IllegalStateException, InterruptedException
     {
         analyze ();
         return result_;

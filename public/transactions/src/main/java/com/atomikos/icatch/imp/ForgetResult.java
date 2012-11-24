@@ -25,26 +25,12 @@
 
 package com.atomikos.icatch.imp;
 
-
-/**
- *
- *
- * A result object for forget messages.
- */
-
 class ForgetResult extends Result
 {
 
-    /**
-     * Constructor.
-     *
-     * @param count
-     *            The number of messages to process.
-     */
-
-    public ForgetResult ( int count )
+    public ForgetResult ( int numberOfRepliesToWaitFor )
     {
-        super ( count );
+        super ( numberOfRepliesToWaitFor );
 
     }
 

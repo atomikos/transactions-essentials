@@ -40,14 +40,7 @@ class LogControlImp implements com.atomikos.icatch.admin.LogControl
 {
 
     private TransactionServiceImp service_;
-
-    /**
-     * Create a new instance.
-     *
-     * @param service
-     *            The transaction service to work with.
-     */
-
+    
     LogControlImp ( TransactionServiceImp service )
     {
         service_ = service;

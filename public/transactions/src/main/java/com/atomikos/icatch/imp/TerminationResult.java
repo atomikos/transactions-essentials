@@ -38,44 +38,22 @@ import com.atomikos.icatch.RollbackException;
 import com.atomikos.icatch.StringHeuristicMessage;
 import com.atomikos.icatch.TxState;
 
-/**
- *
- *
- * A result object for termination messages.
- */
 
 class TerminationResult extends Result
 {
-
-    protected boolean analyzed_;
-    // true if all answers processed
-
+    protected boolean allRepliesProcessed;
     protected Hashtable<Participant,TxState> heuristicparticipants_;
-    // where to put heuristic problems
-
     protected Hashtable<Participant,TxState> possiblyIndoubts_;
-    // for hazard exceptions
 
-    /**
-     * Constructor.
-     *
-     * @param count
-     *            The number of messages to process.
-     */
-
-    public TerminationResult ( int count )
+    public TerminationResult ( int numberOfRepliesToWaitFor )
     {
-        super ( count );
-        analyzed_ = false;
+        super ( numberOfRepliesToWaitFor );
+        allRepliesProcessed = false;
         heuristicparticipants_ = new Hashtable<Participant,TxState>();
         possiblyIndoubts_ = new Hashtable<Participant,TxState>();
     }
 
     /**
-     * Get the heuristic participants for this termination round.
-     *
-     * @return Hashtable The heuristic participants, each mapped to its
-     *         heuristic state object representation.
      * @exception IllegalStateException
      *                If not done yet.
      */
@@ -83,15 +61,12 @@ class TerminationResult extends Result
     public Hashtable<Participant,TxState> getHeuristicParticipants () throws IllegalStateException,
             InterruptedException
     {
-        analyze ();
-
+        analyze();
         return heuristicparticipants_;
     }
 
     /**
-     * To get a set of possibly indoubt participants: those with a hazard case.
-     *
-     * @return Hashtable The list of possibly indoubts.
+     * 
      * @exception IllegalStateException
      *                If comm. not done yet.
      */
@@ -107,21 +82,14 @@ class TerminationResult extends Result
             InterruptedException
 
     {
-        if ( analyzed_ )
-            return;
+        if (allRepliesProcessed) return;
 
-        boolean heurmixed = false;
-        // true asap heurmixed exceptions
-        boolean heuraborts = false;
-        // true asap heuraborts
-        boolean heurcommits = false;
-        // true asap heurcommits
-        boolean heurhazards = false;
-        // true asap heur hazards
-        boolean allOK = true;
-        // if still true at end -> no problems
-        boolean rolledback = false;
-        // if true at end -> 1PC and rolledback already
+        boolean atLeastOneHeuristicMixedException = false;
+        boolean atLeastOneHeuristicRollbackException = false;
+        boolean atLeastOneHeuristicCommitException = false;
+        boolean atLeastOneHeuristicHazardException = false;
+        boolean noFailedReplies = true;
+        boolean onePhaseCommitWithRollbackException = false;
 
         Stack<Reply> replies = getReplies();
         Enumeration<Reply> enumm = replies.elements ();
@@ -131,29 +99,27 @@ class TerminationResult extends Result
             Reply reply = (Reply) enumm.nextElement ();
 
             if ( reply.hasFailed () ) {
-
-                allOK = false;
+                noFailedReplies = false;
                 Exception err = reply.getException ();
                 if ( err instanceof RollbackException ) {
-                    // happens during 1pc if tx was rolled back already
-                    rolledback = true;
+                    onePhaseCommitWithRollbackException = true;
                 } else if ( err instanceof HeurMixedException ) {
-                    heurmixed = true;
+                    atLeastOneHeuristicMixedException = true;
                     HeurMixedException hm = (HeurMixedException) err;
                     addErrorMessages ( hm.getHeuristicMessages () );
                     heuristicparticipants_.put ( reply.getParticipant (),
                             TxState.HEUR_MIXED );
                 } else if ( err instanceof HeurCommitException ) {
-                    heurcommits = true;
+                    atLeastOneHeuristicCommitException = true;
                     HeurCommitException hc = (HeurCommitException) err;
                     addErrorMessages ( hc.getHeuristicMessages () );
-                    heurmixed = (heurmixed || heuraborts || heurhazards);
+                    atLeastOneHeuristicMixedException = (atLeastOneHeuristicMixedException || atLeastOneHeuristicRollbackException || atLeastOneHeuristicHazardException);
                     heuristicparticipants_.put ( reply.getParticipant (),
                             TxState.HEUR_COMMITTED );
 
                 } else if ( err instanceof HeurRollbackException ) {
-                    heuraborts = true;
-                    heurmixed = (heurmixed || heurcommits || heurhazards);
+                    atLeastOneHeuristicRollbackException = true;
+                    atLeastOneHeuristicMixedException = (atLeastOneHeuristicMixedException || atLeastOneHeuristicCommitException || atLeastOneHeuristicHazardException);
                     HeurRollbackException hr = (HeurRollbackException) err;
                     addErrorMessages ( hr.getHeuristicMessages () );
                     heuristicparticipants_.put ( reply.getParticipant (),
@@ -161,8 +127,8 @@ class TerminationResult extends Result
 
                 } else {
 
-                    heurhazards = true;
-                    heurmixed = (heurmixed || heuraborts || heurcommits);
+                    atLeastOneHeuristicHazardException = true;
+                    atLeastOneHeuristicMixedException = (atLeastOneHeuristicMixedException || atLeastOneHeuristicRollbackException || atLeastOneHeuristicCommitException);
                     HeuristicMessage heurmsg = new StringHeuristicMessage (
                             "No commit ACK from " + "participant "
                                     + reply.getParticipant () );
@@ -173,7 +139,7 @@ class TerminationResult extends Result
                             TxState.HEUR_HAZARD );
 
                 }
-            } // if failed reply
+            }
             else {
 
                 // if reply OK -> add messages anyway, for complete overview
@@ -181,40 +147,38 @@ class TerminationResult extends Result
                 // So that it can present an overview of what has been
                 // heuristically committed.
 
-                HeuristicMessage[] msgs = (HeuristicMessage[]) reply
-                        .getResponse ();
-                if ( msgs != null )
-                    addMessages ( msgs );
+                HeuristicMessage[] msgs = (HeuristicMessage[]) reply.getResponse ();
+                if ( msgs != null ) addMessages ( msgs );
             }
 
-        } // while
+        } 
 
-        if ( rolledback )
+        if ( onePhaseCommitWithRollbackException )
             result_ = ROLLBACK;
-        else if ( heurmixed || heuraborts
+        else if ( atLeastOneHeuristicMixedException || atLeastOneHeuristicRollbackException
                 && heuristicparticipants_.size () != replies.size ()
-                || heurcommits
+                || atLeastOneHeuristicCommitException
                 && heuristicparticipants_.size () != replies.size () )
             result_ = HEUR_MIXED;
-        else if ( heurhazards ) {
+        else if ( atLeastOneHeuristicHazardException ) {
             // heur hazard BEFORE heur abort or commit!
             // see OTS definitions: hazard ASA some unknown, 
         	// but ALL KNOWN ARE COMMIT OR ALL ARE ABORT
             result_ = HEUR_HAZARD;
-        } else if ( heuraborts ) {
+        } else if ( atLeastOneHeuristicRollbackException ) {
             result_ = HEUR_ROLLBACK;
             // here, there can be no heur commits as well, since otherwise mixed
             // would have fitted. Same for hazards.
 
-        } else if ( heurcommits ) {
+        } else if ( atLeastOneHeuristicCommitException ) {
             // here, there can be no heur aborts as well, since mixed would have
             // fitted. no hazards either, since hazards would have fitted.
             result_ = HEUR_COMMIT;
 
-        } else if ( allOK )
+        } else if ( noFailedReplies )
             result_ = ALL_OK;
 
-        analyzed_ = true;
+        allRepliesProcessed = true;
     }
 
 }
