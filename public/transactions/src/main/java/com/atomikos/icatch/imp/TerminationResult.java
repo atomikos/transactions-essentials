@@ -33,6 +33,7 @@ import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.HeurMixedException;
 import com.atomikos.icatch.HeurRollbackException;
 import com.atomikos.icatch.HeuristicMessage;
+import com.atomikos.icatch.Participant;
 import com.atomikos.icatch.RollbackException;
 import com.atomikos.icatch.StringHeuristicMessage;
 import com.atomikos.icatch.TxState;
@@ -49,10 +50,10 @@ class TerminationResult extends Result
     protected boolean analyzed_;
     // true if all answers processed
 
-    protected Hashtable heuristicparticipants_;
+    protected Hashtable<Participant,TxState> heuristicparticipants_;
     // where to put heuristic problems
 
-    protected Hashtable possiblyIndoubts_;
+    protected Hashtable<Participant,TxState> possiblyIndoubts_;
     // for hazard exceptions
 
     /**
@@ -66,8 +67,8 @@ class TerminationResult extends Result
     {
         super ( count );
         analyzed_ = false;
-        heuristicparticipants_ = new Hashtable ();
-        possiblyIndoubts_ = new Hashtable ();
+        heuristicparticipants_ = new Hashtable<Participant,TxState>();
+        possiblyIndoubts_ = new Hashtable<Participant,TxState>();
     }
 
     /**
@@ -79,7 +80,7 @@ class TerminationResult extends Result
      *                If not done yet.
      */
 
-    public Hashtable getHeuristicParticipants () throws IllegalStateException,
+    public Hashtable<Participant,TxState> getHeuristicParticipants () throws IllegalStateException,
             InterruptedException
     {
         analyze ();
@@ -95,7 +96,7 @@ class TerminationResult extends Result
      *                If comm. not done yet.
      */
 
-    public Hashtable getPossiblyIndoubts () throws IllegalStateException,
+    public Hashtable<Participant,TxState> getPossiblyIndoubts () throws IllegalStateException,
             InterruptedException
     {
         analyze ();
@@ -122,8 +123,8 @@ class TerminationResult extends Result
         boolean rolledback = false;
         // if true at end -> 1PC and rolledback already
 
-        Stack replies = getReplies ();
-        Enumeration enumm = replies.elements ();
+        Stack<Reply> replies = getReplies();
+        Enumeration<Reply> enumm = replies.elements ();
 
         while ( enumm.hasMoreElements () ) {
 

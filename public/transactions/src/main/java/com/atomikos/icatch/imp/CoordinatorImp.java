@@ -87,9 +87,9 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     private FSM fsm_ = null;
     private boolean recoverableWhileActive_;
     private boolean heuristicMeansCommit_ = true;
-    private Vector participants_ = new Vector();
+    private Vector<Participant> participants_ = new Vector<Participant>();
     private RecoveryCoordinator superiorCoordinator_ = null; 
-    private Vector tags_ = new Vector();
+    private Vector<HeuristicMessage> tags_ = new Vector<HeuristicMessage>();
     // the tags of all incoming txs
     // does NOT have to be logged: the contents are
     // retrieved BEFORE prepare (in Participant proxy),
@@ -262,7 +262,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
         return superiorCoordinator_;
     }
 
-    Vector getParticipants ()
+    Vector<Participant> getParticipants ()
     {
         return participants_;
     }

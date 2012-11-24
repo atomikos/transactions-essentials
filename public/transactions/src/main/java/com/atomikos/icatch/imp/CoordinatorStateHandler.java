@@ -77,13 +77,13 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
     private transient Propagator propagator_;
     // The propagator for propagation of messages
 
-    private transient Stack replayStack_;
+    private transient Stack<Participant> replayStack_;
     // where replay requests are queued
 
     private Boolean committed_;
     // True iff commit, False iff rollback, otherwise null
 
-    private transient Dictionary cascadeList_;
+    private transient Dictionary<Participant,Integer> cascadeList_;
     // The participants to cascade prepare to
 
     private Hashtable heuristicMap_;
@@ -100,7 +100,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
     protected CoordinatorStateHandler ( CoordinatorImp coordinator )
     {
         coordinator_ = coordinator;
-        replayStack_ = new Stack ();
+        replayStack_ = new Stack<Participant>();
         readOnlyTable_ = new Hashtable ();
         committed_ = null;
 
@@ -438,11 +438,11 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
      *
      * @param participants
      */
-    protected void addAllForReplay ( Collection participants )
+    protected void addAllForReplay ( Collection<Participant> participants )
     {
-    	Iterator it = participants.iterator();
+    	Iterator<Participant> it = participants.iterator();
     	while ( it.hasNext() ) {
-    		Participant p = ( Participant ) it.next();
+    		Participant p = it.next();
     		replayCompletion ( p );
     	}
     }
@@ -451,7 +451,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
      * The corresponding 2PC method is delegated hereto.
      */
 
-    protected void setCascadeList ( Dictionary allParticipants )
+    protected void setCascadeList ( Dictionary<Participant, Integer> allParticipants )
     {
         cascadeList_ = allParticipants;
     }
@@ -468,7 +468,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
     /**
      * Get the (non-pseudo) coordinator state to which this handler belongs.
      *
-     * @return Object The object that represents the corresponsding coordinator
+     * @return Object The object that represents the corresponding coordinator
      *         state.
      */
 
@@ -525,12 +525,12 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
             HeurMixedException, HeurHazardException,
             java.lang.IllegalStateException, RollbackException, SysException
     {
-        Stack errors = new Stack ();
+        Stack<Exception> errors = new Stack<Exception> ();
         CoordinatorStateHandler nextStateHandler = null;
 
         try {
 
-            Vector participants = coordinator_.getParticipants ();
+            Vector<Participant> participants = coordinator_.getParticipants();
             int count = (participants.size () - readOnlyTable_.size ());
             TerminationResult commitresult = new TerminationResult ( count );
 
@@ -556,9 +556,9 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
 
 
             // start messages
-            Enumeration enumm = participants.elements ();
+            Enumeration<Participant> enumm = participants.elements ();
             while ( enumm.hasMoreElements () ) {
-                Participant p = (Participant) enumm.nextElement ();
+                Participant p = enumm.nextElement ();
                 if ( !readOnlyTable_.containsKey ( p ) ) {
                     CommitMessage cm = new CommitMessage ( p, commitresult,
                             onePhase );

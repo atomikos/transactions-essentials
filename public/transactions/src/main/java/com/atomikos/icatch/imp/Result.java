@@ -30,6 +30,7 @@ import java.util.Stack;
 import java.util.Vector;
 
 import com.atomikos.icatch.HeuristicMessage;
+import com.atomikos.icatch.Participant;
 
 /**
  * A Result is responsible for collecting the replies of a PropagationMessage.
@@ -52,16 +53,16 @@ abstract class Result
     protected int messagecount_ = 0;
     // the number of outstanding messages
 
-    protected Stack replies_ = new Stack ();
+    protected Stack<Reply> replies_ = new Stack<Reply>();
     // the replies collected so far.
 
-    protected Hashtable repliedlist_ = new Hashtable ();
+    protected Hashtable<Participant,Object> repliedlist_ = new Hashtable<Participant,Object>();
     // per participant only one reply!
 
-    protected Vector msgvector_ = new Vector ();
+    protected Vector<HeuristicMessage> msgvector_ = new Vector<HeuristicMessage>();
     // for heuristic messages of normal participants
 
-    protected Vector errmsgvector_ = new Vector ();
+    protected Vector<HeuristicMessage> errmsgvector_ = new Vector<HeuristicMessage>();
     // for heuristic messages of heuristic participants
 
     /**
@@ -227,10 +228,10 @@ abstract class Result
      *                During waiting interrupt.
      */
 
-    public Stack getReplies () throws IllegalStateException,
+    public Stack<Reply> getReplies () throws IllegalStateException,
             InterruptedException
     {
-        waitForReplies ();
+        waitForReplies();
         return replies_;
     }
 
