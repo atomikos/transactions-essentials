@@ -33,7 +33,7 @@ import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.Participant;
 
 /**
- * A Result is responsible for collecting the replies of a PropagationMessage.
+ * A Result is responsible for collecting the replies of a termination round.
  */
 
 abstract class Result
@@ -83,7 +83,7 @@ abstract class Result
 
     public int getResult() throws IllegalStateException, InterruptedException
     {
-        analyze ();
+        calculateResultFromAllReplies();
         return result_;
     }
 
@@ -128,7 +128,7 @@ abstract class Result
      *                If interruption during result wait.
      */
 
-    protected abstract void analyze () throws IllegalStateException,
+    protected abstract void calculateResultFromAllReplies() throws IllegalStateException,
             InterruptedException;
 
     /**
@@ -146,10 +146,9 @@ abstract class Result
     public HeuristicMessage[] getMessages () throws IllegalStateException,
             InterruptedException
     {
-        analyze ();
+        calculateResultFromAllReplies();
 
-        if ( msgvector_.isEmpty () )
-            return null;
+        if ( msgvector_.isEmpty () ) return null;
 
         Object[] oarr = msgvector_.toArray ();
         HeuristicMessage[] ret = new HeuristicMessage[oarr.length];
@@ -173,7 +172,7 @@ abstract class Result
     public HeuristicMessage[] getErrorMessages () throws IllegalStateException,
             InterruptedException
     {
-        analyze ();
+        calculateResultFromAllReplies();
 
         if ( errmsgvector_.isEmpty () )
             return null;
@@ -206,7 +205,7 @@ abstract class Result
         	repliedlist_.put ( reply.getParticipant (), new Object () );
         	replies_.push ( reply );
         	messagecount_--;
-        	notifyAll ();
+        	notifyAll();
         }
     }
 
@@ -220,7 +219,7 @@ abstract class Result
      *                During waiting interrupt.
      */
 
-    public Stack<Reply> getReplies () throws IllegalStateException,
+    public Stack<Reply> getReplies() throws IllegalStateException,
             InterruptedException
     {
         waitForReplies();
@@ -234,9 +233,9 @@ abstract class Result
      *                If the wait is interrupted.
      */
 
-    synchronized void waitForReplies () throws InterruptedException
+    synchronized void waitForReplies() throws InterruptedException
     {
-        while ( messagecount_ > 0 ) wait ();
+        while ( messagecount_ > 0 ) wait();
     }
 
 }

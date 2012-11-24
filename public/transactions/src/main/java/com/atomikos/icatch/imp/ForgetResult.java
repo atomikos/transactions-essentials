@@ -34,7 +34,7 @@ class ForgetResult extends Result
 
     }
 
-    protected synchronized void analyze () throws IllegalStateException,
+    protected synchronized void calculateResultFromAllReplies() throws IllegalStateException,
             InterruptedException
 
     {

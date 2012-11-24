@@ -65,7 +65,7 @@ class PrepareResult extends Result
         super ( count );
     }
 
-    protected synchronized void analyze () throws IllegalStateException,
+    protected synchronized void calculateResultFromAllReplies () throws IllegalStateException,
             InterruptedException
     {
         if ( analyzed_ )
@@ -159,7 +159,7 @@ class PrepareResult extends Result
 
     public boolean allYes () throws InterruptedException
     {
-        analyze ();
+        calculateResultFromAllReplies ();
         return (result_ == ALL_OK || result_ == ALL_READONLY);
 
     }
@@ -174,7 +174,7 @@ class PrepareResult extends Result
 
     public boolean allReadOnly () throws InterruptedException
     {
-        analyze ();
+        calculateResultFromAllReplies ();
         return (result_ == ALL_READONLY);
     }
 
@@ -188,7 +188,7 @@ class PrepareResult extends Result
 
     public Hashtable getReadOnlyTable () throws InterruptedException
     {
-        analyze ();
+        calculateResultFromAllReplies ();
         return readonlytable_;
     }
 
@@ -203,7 +203,7 @@ class PrepareResult extends Result
 
     public Hashtable getIndoubtTable () throws InterruptedException
     {
-        analyze ();
+        calculateResultFromAllReplies ();
         return indoubts_;
     }
 

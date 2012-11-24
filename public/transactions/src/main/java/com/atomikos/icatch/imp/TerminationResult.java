@@ -61,7 +61,7 @@ class TerminationResult extends Result
     public Hashtable<Participant,TxState> getHeuristicParticipants () throws IllegalStateException,
             InterruptedException
     {
-        analyze();
+        calculateResultFromAllReplies();
         return heuristicparticipants_;
     }
 
@@ -74,11 +74,11 @@ class TerminationResult extends Result
     public Hashtable<Participant,TxState> getPossiblyIndoubts () throws IllegalStateException,
             InterruptedException
     {
-        analyze ();
+        calculateResultFromAllReplies ();
         return possiblyIndoubts_;
     }
 
-    protected synchronized void analyze () throws IllegalStateException,
+    protected synchronized void calculateResultFromAllReplies () throws IllegalStateException,
             InterruptedException
 
     {
