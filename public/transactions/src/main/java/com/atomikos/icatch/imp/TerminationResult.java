@@ -132,7 +132,7 @@ class TerminationResult extends Result
                     HeuristicMessage heurmsg = new StringHeuristicMessage (
                             "No commit ACK from " + "participant "
                                     + reply.getParticipant () );
-                    errmsgvector_.addElement ( heurmsg );
+                    heuristicMessagesOfHeuristicParticipants_.addElement ( heurmsg );
                     heuristicparticipants_.put ( reply.getParticipant (),
                             TxState.HEUR_HAZARD );
                     possiblyIndoubts_.put ( reply.getParticipant (),

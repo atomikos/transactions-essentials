@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2012 Atomikos <info@atomikos.com>
  *
  * This code ("Atomikos TransactionsEssentials"), by itself,
  * is being distributed under the
@@ -39,10 +39,6 @@ import com.atomikos.icatch.Participant;
 abstract class Result
 {
 
-    /**
-     * Result status codes. Set during analyze().
-     */
-
     public static final int ALL_OK = 0 , HEUR_HAZARD = 1 , HEUR_MIXED = 2 ,
             HEUR_ROLLBACK = 3 , HEUR_COMMIT = 4 , ALL_READONLY = 5 ,
             ROLLBACK = 6;
@@ -50,24 +46,15 @@ abstract class Result
     protected int result_ = -1;
     // should be set by analyze()
 
-    protected int messagecount_ = 0;
-    // the number of outstanding messages
-
+    protected int numberOfMissingReplies_ = 0;
     protected Stack<Reply> replies_ = new Stack<Reply>();
-    // the replies collected so far.
-
     protected Hashtable<Participant,Object> repliedlist_ = new Hashtable<Participant,Object>();
-    // per participant only one reply!
-
-    protected Vector<HeuristicMessage> msgvector_ = new Vector<HeuristicMessage>();
-    // for heuristic messages of normal participants
-
-    protected Vector<HeuristicMessage> errmsgvector_ = new Vector<HeuristicMessage>();
-    // for heuristic messages of heuristic participants
+    protected Vector<HeuristicMessage> heuristicMessagesOfNormalParticipants_ = new Vector<HeuristicMessage>();
+    protected Vector<HeuristicMessage> heuristicMessagesOfHeuristicParticipants_ = new Vector<HeuristicMessage>();
 
     public Result ( int numberOfRepliesToWaitFor )
     {
-        messagecount_ = numberOfRepliesToWaitFor;
+        numberOfMissingReplies_ = numberOfRepliesToWaitFor;
     }
 
     /**
@@ -95,11 +82,10 @@ abstract class Result
 
     protected synchronized void addMessages ( HeuristicMessage[] marr )
     {
-        if ( marr == null )
-            return;
-
+        if ( marr == null ) return;
+        
         for ( int i = 0; i < marr.length; i++ )
-            msgvector_.addElement ( marr[i] );
+            heuristicMessagesOfNormalParticipants_.addElement ( marr[i] );
     }
 
     /**
@@ -112,11 +98,10 @@ abstract class Result
 
     protected synchronized void addErrorMessages ( HeuristicMessage[] marr )
     {
-        if ( marr == null )
-            return;
-
+        if ( marr == null ) return;
+        
         for ( int i = 0; i < marr.length; i++ )
-            errmsgvector_.addElement ( marr[i] );
+            heuristicMessagesOfHeuristicParticipants_.addElement ( marr[i] );
     }
 
     /**
@@ -148,9 +133,9 @@ abstract class Result
     {
         calculateResultFromAllReplies();
 
-        if ( msgvector_.isEmpty () ) return null;
+        if ( heuristicMessagesOfNormalParticipants_.isEmpty () ) return null;
 
-        Object[] oarr = msgvector_.toArray ();
+        Object[] oarr = heuristicMessagesOfNormalParticipants_.toArray ();
         HeuristicMessage[] ret = new HeuristicMessage[oarr.length];
         for ( int i = 0; i < ret.length; i++ )
             ret[i] = (HeuristicMessage) oarr[i];
@@ -174,10 +159,10 @@ abstract class Result
     {
         calculateResultFromAllReplies();
 
-        if ( errmsgvector_.isEmpty () )
+        if ( heuristicMessagesOfHeuristicParticipants_.isEmpty () )
             return null;
 
-        Object[] oarr = errmsgvector_.toArray ();
+        Object[] oarr = heuristicMessagesOfHeuristicParticipants_.toArray ();
         HeuristicMessage[] ret = new HeuristicMessage[oarr.length];
         for ( int i = 0; i < ret.length; i++ )
             ret[i] = (HeuristicMessage) oarr[i];
@@ -189,7 +174,7 @@ abstract class Result
     	// retried messages are not counted in result
         // and duplicate entries per participant neither
         // otherwise duplicates arise if a participant sends replay
-    	return reply.isRetried () || repliedlist_.containsKey ( reply.getParticipant () );
+    	return reply.isRetried() || repliedlist_.containsKey(reply.getParticipant());
     }
 
     /**
@@ -199,12 +184,12 @@ abstract class Result
      *            The reply to add.
      */
 
-    public synchronized void addReply ( Reply reply )
+    public synchronized void addReply(Reply reply)
     {
         if ( !ignoreReply(reply) ) {
-        	repliedlist_.put ( reply.getParticipant (), new Object () );
-        	replies_.push ( reply );
-        	messagecount_--;
+        	repliedlist_.put(reply.getParticipant(),new Object());
+        	replies_.push(reply);
+        	numberOfMissingReplies_--;
         	notifyAll();
         }
     }
@@ -235,7 +220,7 @@ abstract class Result
 
     synchronized void waitForReplies() throws InterruptedException
     {
-        while ( messagecount_ > 0 ) wait();
+        while ( numberOfMissingReplies_ > 0 ) wait();
     }
 
 }
