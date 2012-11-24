@@ -546,13 +546,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
         		String msg = "Error in committing: " + error.getMessage() + " - rolling back instead";
         		LOGGER.logWarning ( msg , error );
         		try {
-					rollbackWithAfterCompletionNotification(new RollbackCallback() {
-						public HeuristicMessage[] doRollback()
-								throws HeurCommitException,
-								HeurMixedException, SysException,
-								HeurHazardException, IllegalStateException {
-							return rollbackFromWithinCallback(getCoordinator().isRecoverableWhileActive().booleanValue(),false);
-						}});
+					rollbackFromWithinCallback(getCoordinator().isRecoverableWhileActive().booleanValue(),false);
 					throw new RollbackException ( msg );
         		} catch ( HeurCommitException e ) {
 					LOGGER.logWarning ( "Illegal heuristic commit during rollback:" + e );
