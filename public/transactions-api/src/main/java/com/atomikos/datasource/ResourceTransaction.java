@@ -34,15 +34,8 @@ import com.atomikos.icatch.HeuristicMessage;
  
 public interface ResourceTransaction 
 {
-    
-    /**
-     *
-     * @return String A unique identifier, as determined by resource.
-     */
 
-    public java.lang.String getTid();
-   
-
+  
     /**
      * Adds heuristic resolution information.
      * @param mesg The heuristic message.
