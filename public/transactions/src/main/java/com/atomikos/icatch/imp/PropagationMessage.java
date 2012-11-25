@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2012 Atomikos <info@atomikos.com>
  *
  * This code ("Atomikos TransactionsEssentials"), by itself,
  * is being distributed under the
@@ -25,7 +25,6 @@
 
 package com.atomikos.icatch.imp;
 
-import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.Participant;
 
 /**
@@ -39,26 +38,11 @@ abstract class PropagationMessage
      * How many times is message re-sent if comm. failure?
      */
 
-    public static final int MAX_RETRIES = 5;
-    // how many times is message retried if failure
+    public static final int MAX_RETRIES_ON_COMM_FAILURE = 5;
 
     protected Participant participant_;
-    // to whom should it go?
-
     protected int retrycount_ = 0;
-    // increased on every retry
-
     protected Result result_ = null;
-    // The Result object for this message
-
-    /**
-     * Constructor.
-     *
-     * @param participant
-     *            The participant to send it to.
-     * @param result
-     *            The result object to report to after sending.
-     */
 
     public PropagationMessage ( Participant participant , Result result )
     {
@@ -66,28 +50,19 @@ abstract class PropagationMessage
         result_ = result;
     }
 
-    /**
-     * Getter method.
-     *
-     * @return Participant The participant for this one.
-     */
-
     public Participant getParticipant ()
     {
         return participant_;
     }
 
     /**
-     * Abstract method: send the message.
-     *
-     * @return Object Application dependent.
      * @exception PropagationException
-     *                If any. If the exception is transient, then the Propagator
+     *                If any. If the exception is transient, then this instance
      *                will retry calling send() until it succeeds. Otherwise, a
      *                failure is reported to the Result object.
      */
 
-    protected abstract Object send () throws PropagationException;
+    protected abstract Object send() throws PropagationException;
 
     /**
      * Called by system to process message. This will call the send() method and
@@ -103,7 +78,6 @@ abstract class PropagationMessage
         Exception exception = null;
         Object result = null;
         boolean retried = false;
-        boolean heurcommit = false;
 
         try {
             result = send ();
@@ -111,26 +85,17 @@ abstract class PropagationMessage
             failed = true;
             transienterr = e.isTransient ();
             exception = e.getDetail ();
-            if ( exception instanceof HeurCommitException )
-                heurcommit = true;
         } finally {
-
-            if ( failed && transienterr && retrycount_ < MAX_RETRIES ) {
+            if ( failed && transienterr && retrycount_ < MAX_RETRIES_ON_COMM_FAILURE ) {
                 retried = true;
                 retrycount_++;
             }
-
-            // the following line is only necessary if not retried,
-            // but removing it makes test fail.
-            // addReply checks for retried replies anyway, so leave it in.
-
             if ( result_ != null ) {
-
                 result_.addReply ( new Reply ( result, exception,
                         getParticipant (), retried ) );
             }
-            return retried;
         }
+        return retried;
     }
 
 }

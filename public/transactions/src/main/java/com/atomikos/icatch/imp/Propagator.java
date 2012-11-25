@@ -38,11 +38,9 @@ class Propagator
 	private static final Logger LOGGER = LoggerFactory.createLogger(Propagator.class);
 	
     static long RETRY_INTERVAL = 10000;
-    // how long do we wait for retriable messages
 
 
     private boolean threaded_ = true;
-    //a thread per message or not?
 
     
     Propagator ( boolean threaded )
@@ -50,13 +48,7 @@ class Propagator
     		threaded_ = threaded;
     }
 
-    /**
-     * Schedules a message for submit.
-     * 
-     * @param msg
-     *            The message to add.
-     */
-
+    
     public synchronized void submitPropagationMessage ( PropagationMessage msg )
     {
     		PropagatorThread t = new PropagatorThread ( msg );
