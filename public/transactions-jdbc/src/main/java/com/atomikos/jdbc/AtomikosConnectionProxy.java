@@ -157,7 +157,7 @@ class AtomikosConnectionProxy extends AbstractConnectionProxy
  		}
 		else {
 			try {
-				if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": calling " + methodName + "...");
+				if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": calling " + formatCallDetails(method,args) + "...");
 				ret = method.invoke(delegate, args);
 
 			} catch (Exception ex) {
@@ -175,6 +175,21 @@ class AtomikosConnectionProxy extends AbstractConnectionProxy
         return ret;
 	}
 
+
+	private String formatCallDetails(Method method, Object[] args) {
+		StringBuffer ret = new StringBuffer();
+		ret.append(method.getName());
+		if (args != null && args.length>0) {
+			ret.append("(");
+			int count = 0;
+			while (count < args.length) {
+				ret.append(args[count].toString());
+				if (count < args.length-1) ret.append(",");
+			}
+			ret.append(")");
+		}
+		return ret.toString();
+	}
 
 	private void reap() {
 		LOGGER.logWarning ( this + ": reaping - check if the application closes connections correctly, or increase the reapTimeout value");
