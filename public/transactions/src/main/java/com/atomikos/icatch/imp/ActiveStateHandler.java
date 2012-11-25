@@ -166,7 +166,7 @@ class ActiveStateHandler extends CoordinatorStateHandler
 								HeurHazardException, IllegalStateException {
 							return rollbackFromWithinCallback(getCoordinator().isRecoverableWhileActive().booleanValue(),false);
 						}});
-					throw new RollbackException ( msg );
+					throw new RollbackException ( msg , error);
         		} catch ( HeurCommitException e ) {
 					LOGGER.logWarning ( "Illegal heuristic commit during rollback before prepare:" + e );
 					throw new HeurMixedException ( e.getHeuristicMessages() );
