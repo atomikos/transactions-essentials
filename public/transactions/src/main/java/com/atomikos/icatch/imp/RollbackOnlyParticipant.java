@@ -39,6 +39,8 @@ import com.atomikos.icatch.Participant;
 import com.atomikos.icatch.RollbackException;
 import com.atomikos.icatch.StringHeuristicMessage;
 import com.atomikos.icatch.SysException;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 
 /**
  * A participant to add in case setRollbackOnly is called. This participant will
@@ -48,10 +50,12 @@ import com.atomikos.icatch.SysException;
 public class RollbackOnlyParticipant implements Participant,DataSerializable
 {
 
+	private static final Logger LOG = LoggerFactory.createLogger(RollbackOnlyParticipant.class);
+
     private StringHeuristicMessage msg_;
     // the message to return in exception
 
-    public RollbackOnlyParticipant ( StringHeuristicMessage msg )
+    RollbackOnlyParticipant ( StringHeuristicMessage msg )
     {
         msg_ = msg;
     }
@@ -62,8 +66,7 @@ public class RollbackOnlyParticipant implements Participant,DataSerializable
 
     public boolean recover () throws SysException
     {
-        // by default: does nothing
-        return true;
+        return false;
     }
 
     /**
@@ -73,7 +76,7 @@ public class RollbackOnlyParticipant implements Participant,DataSerializable
     public void setCascadeList ( java.util.Dictionary allParticipants )
             throws SysException
     {
-        // nothing by default
+        
     }
 
     /**
@@ -82,7 +85,16 @@ public class RollbackOnlyParticipant implements Participant,DataSerializable
 
     public void setGlobalSiblingCount ( int count )
     {
-        // default does nothing
+        
+    }
+
+    /**
+     * @see Participant
+     */
+
+    public String getURI ()
+    {
+        return null;
     }
 
     /**
@@ -104,9 +116,9 @@ public class RollbackOnlyParticipant implements Participant,DataSerializable
             throws HeurRollbackException, HeurHazardException,
             HeurMixedException, RollbackException, SysException
     {
-        // if onePhase then this method will be called;
-        // make sure rollback is indicated.
-        throw new RollbackException ( msg_.toString () );
+        if (onePhase) throw new RollbackException(msg_.toString());
+        else LOG.logWarning("Unexpected 2-phase commit: outcome should be rollback!");
+        return getHeuristicMessages();
     }
 
     /**
@@ -124,8 +136,7 @@ public class RollbackOnlyParticipant implements Participant,DataSerializable
      */
 
     public void forget ()
-    {
-        // nothing to do
+    {      
     }
 
     /**
@@ -137,14 +148,6 @@ public class RollbackOnlyParticipant implements Participant,DataSerializable
         HeuristicMessage[] ret = new HeuristicMessage[1];
         ret[0] = msg_;
         return ret;
-    }
-
-    /**
-     * @see com.atomikos.icatch.Participant#getURI()
-     */
-    public String getURI ()
-    {
-        return null;
     }
 
 	public void writeData(DataOutput out) throws IOException {

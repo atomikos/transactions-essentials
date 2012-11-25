@@ -31,7 +31,7 @@ public class RollbackOnlyParticipantTestJUnit extends TestCase {
 	
 	public void testRecover()
 	{
-		assertTrue ( p.recover() );
+		assertFalse ( p.recover() );
 	}
 	
 	public void testURI()
