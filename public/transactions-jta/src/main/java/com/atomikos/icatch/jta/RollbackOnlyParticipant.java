@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2012 Atomikos <info@atomikos.com>
  *
  * This code ("Atomikos TransactionsEssentials"), by itself,
  * is being distributed under the
@@ -34,6 +34,8 @@ import com.atomikos.icatch.Participant;
 import com.atomikos.icatch.RollbackException;
 import com.atomikos.icatch.StringHeuristicMessage;
 import com.atomikos.icatch.SysException;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 
 /**
  * A participant to add in case setRollbackOnly is called. This participant will
@@ -42,6 +44,8 @@ import com.atomikos.icatch.SysException;
 
 class RollbackOnlyParticipant implements Participant
 {
+	
+	private static final Logger LOG = LoggerFactory.createLogger(RollbackOnlyParticipant.class);
 
     private StringHeuristicMessage msg_;
     // the message to return in exception
@@ -57,8 +61,7 @@ class RollbackOnlyParticipant implements Participant
 
     public boolean recover () throws SysException
     {
-        // by default: does nothing
-        return true;
+        return false;
     }
 
     /**
@@ -68,7 +71,7 @@ class RollbackOnlyParticipant implements Participant
     public void setCascadeList ( java.util.Dictionary allParticipants )
             throws SysException
     {
-        // nothing by default
+        
     }
 
     /**
@@ -77,7 +80,7 @@ class RollbackOnlyParticipant implements Participant
 
     public void setGlobalSiblingCount ( int count )
     {
-        // default does nothing
+        
     }
 
     /**
@@ -108,9 +111,9 @@ class RollbackOnlyParticipant implements Participant
             throws HeurRollbackException, HeurHazardException,
             HeurMixedException, RollbackException, SysException
     {
-        // if onePhase then this method will be called;
-        // make sure rollback is indicated.
-        throw new RollbackException ( msg_.toString () );
+        if (onePhase) throw new RollbackException(msg_.toString());
+        else LOG.logWarning("Unexpected 2-phase commit: outcome should be rollback!");
+        return getHeuristicMessages();
     }
 
     /**
@@ -128,8 +131,7 @@ class RollbackOnlyParticipant implements Participant
      */
 
     public void forget ()
-    {
-        // nothing to do
+    {      
     }
 
     /**
