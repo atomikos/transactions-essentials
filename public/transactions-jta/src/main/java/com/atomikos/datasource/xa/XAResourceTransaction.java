@@ -236,12 +236,8 @@ public class XAResourceTransaction implements ResourceTransaction,
 	}
 
 	private static String byteArrayToHexString(byte[] byteArray) {
-		StringBuffer sb = new StringBuffer(2*byteArray.length);
-    	for (int i = 0; i < byteArray.length; i++) {
-    		String hexByte = Integer.toHexString(byteArray[i]);
-			sb.append(hexByte);
-		}
-    	return sb.toString().toUpperCase();
+		
+    	return StringUtils.getHexString(byteArray);
 	}
 
 	private void switchToHeuristicState ( String opCode , TxState state , XAException cause )
