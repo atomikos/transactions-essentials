@@ -181,10 +181,9 @@ class AtomikosConnectionProxy extends AbstractConnectionProxy
 		ret.append(method.getName());
 		if (args != null && args.length>0) {
 			ret.append("(");
-			int count = 0;
-			while (count < args.length) {
-				ret.append(args[count].toString());
-				if (count < args.length-1) ret.append(",");
+			for (int i = 0; i < args.length; i++) {
+				ret.append(args[i].toString());
+				if (i < args.length-1) ret.append(",");
 			}
 			ret.append(")");
 		}
