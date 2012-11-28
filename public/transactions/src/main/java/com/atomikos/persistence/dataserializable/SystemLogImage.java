@@ -89,15 +89,13 @@ public class SystemLogImage implements Recoverable, DataSerializable{
 
     public void writeData(DataOutput out) throws IOException {
     	out.writeBoolean ( forgettable_ );
-    	out.writeUTF(recoverable_.getClass().getName());
 		((DataSerializable)recoverable_).writeData(out);
 
 	}
 
 	public void readData(DataInput in) throws IOException {
 			forgettable_=in.readBoolean();
-			String className=in.readUTF();
-			recoverable_ = (Recoverable)ClassLoadingHelper.newInstance(className);
+			recoverable_ = new com.atomikos.persistence.dataserializable.StateObjectImage();
 			((DataSerializable)recoverable_).readData(in);
 
 	}

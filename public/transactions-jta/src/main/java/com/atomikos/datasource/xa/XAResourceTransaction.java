@@ -335,6 +335,14 @@ public class XAResourceTransaction implements ResourceTransaction,
     }
 
 
+    /**
+     * @see ResourceTransaction.
+     */
+
+    public String getTid ()
+    {
+        return tid_;
+    }
 
 
     /**
