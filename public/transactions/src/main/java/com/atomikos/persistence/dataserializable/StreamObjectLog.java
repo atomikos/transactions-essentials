@@ -1,3 +1,28 @@
+/**
+ * Copyright (C) 2000-2012 Atomikos <info@atomikos.com>
+ *
+ * This code ("Atomikos TransactionsEssentials"), by itself,
+ * is being distributed under the
+ * Apache License, Version 2.0 ("License"), a copy of which may be found at
+ * http://www.atomikos.com/licenses/apache-license-2.0.txt .
+ * You may not use this file except in compliance with the License.
+ *
+ * While the License grants certain patent license rights,
+ * those patent license rights only extend to the use of
+ * Atomikos TransactionsEssentials by itself.
+ *
+ * This code (Atomikos TransactionsEssentials) contains certain interfaces
+ * in package (namespace) com.atomikos.icatch
+ * (including com.atomikos.icatch.Participant) which, if implemented, may
+ * infringe one or more patents held by Atomikos.
+ * It should be appreciated that you may NOT implement such interfaces;
+ * licensing to implement these interfaces must be obtained separately from Atomikos.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ */
+
 package com.atomikos.persistence.dataserializable;
 
 import java.util.Enumeration;
@@ -28,7 +53,7 @@ public class StreamObjectLog implements ObjectLog{
         flushesSinceLastCheckpoint_ = 0;
     }
 
-    private  void flushAndWriteCheckpointIfThresholdReached(SystemLogImage img, boolean shouldSync) throws LogException
+    private synchronized void flushAndWriteCheckpointIfThresholdReached(SystemLogImage img, boolean shouldSync) throws LogException
     {
     	flushImage(img, shouldSync);
         flushesSinceLastCheckpoint_++;
@@ -37,7 +62,7 @@ public class StreamObjectLog implements ObjectLog{
         }
     }
 
-	private void flushImage(SystemLogImage img, boolean shouldSync)
+	private  void flushImage(SystemLogImage img, boolean shouldSync)
 			throws LogException {
 		logstream_.flushObject ( img , shouldSync );
 		// cf case 85463: also update what we checkpoint
@@ -101,7 +126,7 @@ public class StreamObjectLog implements ObjectLog{
      * @see ObjectLog
      */
 
-    public  Vector recover () throws LogException
+    public synchronized Vector recover () throws LogException
     {
        // if ( !initialized_ ) throw new LogException ( "Not initialized" );
     	 if ( !initialized_ ){
@@ -120,7 +145,7 @@ public class StreamObjectLog implements ObjectLog{
      * @see ObjectLog
      */
 
-    public  void flush ( Recoverable rec ) throws LogException
+    public synchronized void flush ( Recoverable rec ) throws LogException
     {
         if ( rec == null ) return;
 
@@ -128,7 +153,7 @@ public class StreamObjectLog implements ObjectLog{
         flush ( simg , true );
     }
 
-    protected  void flush ( SystemLogImage img , boolean shouldSync )
+    protected synchronized void flush ( SystemLogImage img , boolean shouldSync )
             throws LogException
     {
         if ( img == null ) return;
@@ -155,7 +180,7 @@ public class StreamObjectLog implements ObjectLog{
      * @see ObjectLog
      */
 
-    public  Recoverable recover ( Object id ) throws LogException
+    public synchronized Recoverable recover ( Object id ) throws LogException
     {
         if ( !contentForNextCheckpoint_.containsKey ( id ) ) return null;
 
@@ -168,7 +193,7 @@ public class StreamObjectLog implements ObjectLog{
      * @see ObjectLog
      */
 
-    public  void delete ( Object id ) throws LogException
+    public synchronized void delete ( Object id ) throws LogException
     {
         SystemLogImage previous = (SystemLogImage) contentForNextCheckpoint_.get ( id );
         if ( previous == null ) {

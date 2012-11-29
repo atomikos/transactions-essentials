@@ -945,16 +945,22 @@ public class XAResourceTransaction implements ResourceTransaction,
 
 	public void writeData(DataOutput out) throws IOException {
 		// TODO : ??? out.writeUTF( xid_. );
-		out.writeUTF(new String(xid_.getBranchQualifier()));
+		
+		byte[] data= ClassLoadingHelper.toByteArray((Serializable)xid_);
+		//out.writeUTF(new String(xid_.getBranchQualifier()));
+		out.writeInt(data.length);
+		out.write(data);
+		
 		out.writeUTF(tid_);
 		out.writeUTF(root_);
 		out.writeUTF(state_.toString());
+		out.writeUTF(resourcename_);
 		out.writeInt(heuristicMessages_.size());
 		for (Iterator iterator = heuristicMessages_.iterator(); iterator.hasNext();) {
 			HeuristicMessage heuristicMessage = (HeuristicMessage) iterator.next();
 			out.writeUTF(heuristicMessage.toString());
 		}
-		out.writeUTF(resourcename_);
+		
 		if (xaresource_ instanceof Serializable) {
 			// cf case 59238
 			out.writeBoolean(true);
@@ -970,18 +976,24 @@ public class XAResourceTransaction implements ResourceTransaction,
 	public void readData(DataInput in) throws IOException {
 		// xid_ ???
 
-		String branchQualifier = in.readUTF();
+		//String branchQualifier = in.readUTF();
+		int len = in.readInt();
+		byte[] data= new byte[len];
+		in.readFully(data);
+		xid_=(Xid)ClassLoadingHelper.toObject(data);
+		
 		tid_ = in.readUTF();
-		setXid_(new XID(tid_, branchQualifier));
+		setXid_(xid_);
 
 		root_ = in.readUTF();
 		state_ = TxState.valueOf(in.readUTF());
+		resourcename_ = in.readUTF();
 		int nbMessages = in.readInt();
 		heuristicMessages_ = new Vector(nbMessages);
 		for (int i = 0; i < nbMessages; i++) {
 			heuristicMessages_.add(new StringHeuristicMessage(in.readUTF()));
 		}
-		resourcename_ = in.readUTF();
+		
 
 		boolean xaresourceSerializable = in.readBoolean();
 		if (xaresourceSerializable) {

@@ -154,10 +154,11 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<redirectTestOutputToFile>true</redirectTestOutputToFile>
-					<argLine>-Xmx512m</argLine>
+					<argLine>-Xmx1024m -Xms256m</argLine>
 					<forkMode>always</forkMode>
 					<includes>
-						<include>**/*TestJUnit.java</include>
+						 <include>**/*TestJUnit.java</include> 
+						
 					</includes>
 					<!-- this conf is made to ensure that no file wil be created outside -->
 					<workingDirectory>${project.build.testOutputDirectory}</workingDirectory>

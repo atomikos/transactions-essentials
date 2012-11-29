@@ -162,7 +162,7 @@ public class FileLogStream implements LogStream {
 				// NOTE: after restart, any previous and failed checkpoint files
 				// will be overwritten here. That is perfectly OK.
 				output_ = file_.openNewVersionForWriting();
-				final DataByteArrayOutputStream dataByteArrayOutputStream = getOrCreate();
+				final DataByteArrayOutputStream dataByteArrayOutputStream = new DataByteArrayOutputStream();
 				while (elements != null && elements.hasMoreElements()) {
 					DataSerializable next = (DataSerializable) elements.nextElement();
 					dataByteArrayOutputStream.restart();
@@ -200,7 +200,7 @@ public class FileLogStream implements LogStream {
 
 		//long start = System.currentTimeMillis();
 		try {
-			final DataByteArrayOutputStream dataByteArrayOutputStream = getOrCreate();
+			final DataByteArrayOutputStream dataByteArrayOutputStream = new DataByteArrayOutputStream();
 			DataSerializable oo = (DataSerializable) o;
 			oo.writeData(dataByteArrayOutputStream);
 			dataByteArrayOutputStream.close();
@@ -216,19 +216,7 @@ public class FileLogStream implements LogStream {
 		//System.err.println("flushObject: " +(System.currentTimeMillis()-start));
 	}
 
-	private static final ThreadLocal<DataByteArrayOutputStream> dataByteArrayOutputStreams= new ThreadLocal<DataByteArrayOutputStream>();
-	private DataByteArrayOutputStream getOrCreate() {
-		
-		DataByteArrayOutputStream dataByteArrayOutputStream=dataByteArrayOutputStreams.get();
-		if(dataByteArrayOutputStream==null){
-			dataByteArrayOutputStream= new DataByteArrayOutputStream();
-			dataByteArrayOutputStreams.set(dataByteArrayOutputStream);
-		} else {
-			dataByteArrayOutputStream.restart();
-		}
-		
-		return dataByteArrayOutputStream;
-	}
+	
 
 	public synchronized void close() throws LogException {
 		closeOutput();
