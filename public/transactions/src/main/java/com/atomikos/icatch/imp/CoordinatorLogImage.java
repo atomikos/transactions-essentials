@@ -223,8 +223,14 @@ public class CoordinatorLogImage implements ObjectImage,DataSerializable
 		out.writeBoolean(heuristicCommit_);
 		out.writeLong(maxInquiries_);
 
-		out.writeUTF(stateHandler_.getState().toString());
-		out.writeBoolean(stateHandler_.isCommitted());
+//		out.writeUTF(stateHandler_.getState().toString());
+//		out.writeBoolean(stateHandler_.isCommitted());
+		
+		
+		byte[] data= ClassLoadingHelper.toByteArray(stateHandler_);
+		out.writeInt(data.length);
+		out.write(data);
+		
 		// ((DataSerializable) stateHandler_).writeData(out);
 		// instead of: out.writeObject ( stateHandler_.clone () );
 
@@ -260,16 +266,18 @@ public class CoordinatorLogImage implements ObjectImage,DataSerializable
 
 		try {
 
-			root_ = (String) in.readUTF();
+			root_ =  in.readUTF();
 			String state = in.readUTF();
 			state_ = TxState.valueOf(state);
 			heuristicCommit_ = in.readBoolean();
 			maxInquiries_ = in.readLong();
 			// instead of: stateHandler_ = (CoordinatorStateHandler) in.readObject ();
 
-			TxState txState = TxState.valueOf(in.readUTF());
-			boolean commited=in.readBoolean();
-
+//			TxState txState = TxState.valueOf(in.readUTF());
+//			boolean commited=in.readBoolean();
+			byte[] data=new byte[in.readInt()];
+			in.readFully(data);
+			stateHandler_=(CoordinatorStateHandler)ClassLoadingHelper.toObject(data);
 			activity_ = in.readBoolean();
 			if (activity_) {
 				localSiblingCount_ = in.readInt();
@@ -281,25 +289,25 @@ public class CoordinatorLogImage implements ObjectImage,DataSerializable
 				//TODO ?
 			}
 			
-			
-			if (TxState.ACTIVE.equals(txState)) {
-				stateHandler_ = new ActiveStateHandler((CoordinatorImp) coordinator_);
-			} else if (TxState.HEUR_ABORTED.equals(txState)) {
-				stateHandler_ = new HeurAbortedStateHandler((CoordinatorImp) coordinator_);
-			} else if (TxState.HEUR_COMMITTED.equals(txState)) {
-				stateHandler_ = new HeurCommittedStateHandler((CoordinatorImp) coordinator_);
-			} else if (TxState.HEUR_HAZARD.equals(txState)) {
-				stateHandler_ = new HeurHazardStateHandler((CoordinatorImp) coordinator_);
-			} else if (TxState.HEUR_MIXED.equals(txState)) {
-				stateHandler_ = new HeurMixedStateHandler((CoordinatorImp) coordinator_);
-			} else if (TxState.IN_DOUBT.equals(txState)) {
-				stateHandler_ = new IndoubtStateHandler((CoordinatorImp) coordinator_);
-			} else if (TxState.TERMINATED.equals(txState)) {
-				stateHandler_ = new TerminatedStateHandler((CoordinatorImp) coordinator_);
-			}
-			if(commited){
-				stateHandler_.setCommitted();
-			}
+//			
+//			if (TxState.ACTIVE.equals(txState)) {
+//				stateHandler_ = new ActiveStateHandler((CoordinatorImp) coordinator_);
+//			} else if (TxState.HEUR_ABORTED.equals(txState)) {
+//				stateHandler_ = new HeurAbortedStateHandler((CoordinatorImp) coordinator_);
+//			} else if (TxState.HEUR_COMMITTED.equals(txState)) {
+//				stateHandler_ = new HeurCommittedStateHandler((CoordinatorImp) coordinator_);
+//			} else if (TxState.HEUR_HAZARD.equals(txState)) {
+//				stateHandler_ = new HeurHazardStateHandler((CoordinatorImp) coordinator_);
+//			} else if (TxState.HEUR_MIXED.equals(txState)) {
+//				stateHandler_ = new HeurMixedStateHandler((CoordinatorImp) coordinator_);
+//			} else if (TxState.IN_DOUBT.equals(txState)) {
+//				stateHandler_ = new IndoubtStateHandler((CoordinatorImp) coordinator_);
+//			} else if (TxState.TERMINATED.equals(txState)) {
+//				stateHandler_ = new TerminatedStateHandler((CoordinatorImp) coordinator_);
+//			}
+//			if(commited){
+//				stateHandler_.setCommitted();
+//			}
 
 			boolean initialized = in.readBoolean();
 			if (initialized) {
@@ -312,7 +320,7 @@ public class CoordinatorLogImage implements ObjectImage,DataSerializable
 					participants_.add(participant);
 				}
 			}else{
-				participants_=new Vector();
+				participants_=null;
 			}
 
 		} catch (InvalidClassException ex) {
