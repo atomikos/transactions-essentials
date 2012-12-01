@@ -602,7 +602,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 				allOK = allOK && recoveredParticipant;
 			}
 			stateHandler_.recover(this);
-			ret = (!allOK && getState().equals(TxState.IN_DOUBT));
+			ret = !(!allOK && getState().equals(TxState.IN_DOUBT));
 		} // synchronized
 
         // ONLY NOW start threads and so on
