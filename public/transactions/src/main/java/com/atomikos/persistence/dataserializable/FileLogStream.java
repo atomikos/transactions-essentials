@@ -206,9 +206,11 @@ public class FileLogStream implements LogStream {
 			dataByteArrayOutputStream.close();
 			// take care of checkpoint...
 			synchronized (file_) {
-				output_.write(dataByteArrayOutputStream.getContent());
+				if(output_!=null){
+					output_.write(dataByteArrayOutputStream.getContent());	
+				}
 			}
-			if (shouldSync) 	output_.getFD().sync();
+			if (shouldSync && output_!=null) 	output_.getFD().sync();
 		} catch (IOException e) {
 
 			throw new LogException(e.getMessage(), e);

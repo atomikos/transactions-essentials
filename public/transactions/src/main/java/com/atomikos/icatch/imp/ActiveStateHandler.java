@@ -46,7 +46,7 @@ import com.atomikos.logging.LoggerFactory;
  * A state handler for the active coordinator state.
  */
 
-class ActiveStateHandler extends CoordinatorStateHandler
+public class ActiveStateHandler extends CoordinatorStateHandler
 {
 
 	private static final long serialVersionUID = -80097456886481668L;
@@ -59,6 +59,10 @@ class ActiveStateHandler extends CoordinatorStateHandler
 
     private int globalSiblingCount_;
 
+    
+    public ActiveStateHandler() {
+	
+	}
 
     ActiveStateHandler ( CoordinatorImp coordinator )
     {

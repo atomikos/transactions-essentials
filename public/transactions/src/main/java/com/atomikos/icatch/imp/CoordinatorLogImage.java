@@ -223,12 +223,8 @@ public class CoordinatorLogImage implements ObjectImage,DataSerializable
 		out.writeBoolean(heuristicCommit_);
 		out.writeLong(maxInquiries_);
 
-		
-		byte[] data= ClassLoadingHelper.toByteArray(stateHandler_);
-		out.writeInt(data.length);
-		out.write(data);
-		
-		// ((DataSerializable) stateHandler_).writeData(out);
+		out.writeUTF(stateHandler_.getClass().getName());
+		((DataSerializable) stateHandler_).writeData(out);
 		// instead of: out.writeObject ( stateHandler_.clone () );
 
 		out.writeBoolean(activity_);
@@ -251,6 +247,7 @@ public class CoordinatorLogImage implements ObjectImage,DataSerializable
 			out.writeInt(participants_.size());
 
 			for (Object participant : participants_) {
+				
 				out.writeUTF(participant.getClass().getName());
 				((DataSerializable) participant).writeData(out);
 			}
@@ -268,13 +265,11 @@ public class CoordinatorLogImage implements ObjectImage,DataSerializable
 			state_ = TxState.valueOf(state);
 			heuristicCommit_ = in.readBoolean();
 			maxInquiries_ = in.readLong();
-			// instead of: stateHandler_ = (CoordinatorStateHandler) in.readObject ();
 
-//			TxState txState = TxState.valueOf(in.readUTF());
-//			boolean commited=in.readBoolean();
-			byte[] data=new byte[in.readInt()];
-			in.readFully(data);
-			stateHandler_=(CoordinatorStateHandler)ClassLoadingHelper.toObject(data);
+			String stateHandlerClassName=in.readUTF();
+			
+			stateHandler_=(CoordinatorStateHandler) ClassLoadingHelper.newInstance(stateHandlerClassName);
+			stateHandler_.readData(in);
 			activity_ = in.readBoolean();
 			if (activity_) {
 				localSiblingCount_ = in.readInt();
@@ -285,26 +280,7 @@ public class CoordinatorLogImage implements ObjectImage,DataSerializable
 			if(hasCoordinator){
 				//TODO ?
 			}
-			
-//			
-//			if (TxState.ACTIVE.equals(txState)) {
-//				stateHandler_ = new ActiveStateHandler((CoordinatorImp) coordinator_);
-//			} else if (TxState.HEUR_ABORTED.equals(txState)) {
-//				stateHandler_ = new HeurAbortedStateHandler((CoordinatorImp) coordinator_);
-//			} else if (TxState.HEUR_COMMITTED.equals(txState)) {
-//				stateHandler_ = new HeurCommittedStateHandler((CoordinatorImp) coordinator_);
-//			} else if (TxState.HEUR_HAZARD.equals(txState)) {
-//				stateHandler_ = new HeurHazardStateHandler((CoordinatorImp) coordinator_);
-//			} else if (TxState.HEUR_MIXED.equals(txState)) {
-//				stateHandler_ = new HeurMixedStateHandler((CoordinatorImp) coordinator_);
-//			} else if (TxState.IN_DOUBT.equals(txState)) {
-//				stateHandler_ = new IndoubtStateHandler((CoordinatorImp) coordinator_);
-//			} else if (TxState.TERMINATED.equals(txState)) {
-//				stateHandler_ = new TerminatedStateHandler((CoordinatorImp) coordinator_);
-//			}
-//			if(commited){
-//				stateHandler_.setCommitted();
-//			}
+
 
 			boolean initialized = in.readBoolean();
 			if (initialized) {
@@ -312,12 +288,11 @@ public class CoordinatorLogImage implements ObjectImage,DataSerializable
 				// intead of: participants_ = (Vector) in.readObject ();
 				int size = in.readInt();
 				for (int i = 0; i < size; i++) {
-					DataSerializable participant = (DataSerializable) ClassLoadingHelper.newInstance(in.readUTF());
+					String participantClassName=in.readUTF();
+					DataSerializable participant = (DataSerializable) ClassLoadingHelper.newInstance(participantClassName);
 					participant.readData(in);
 					participants_.add(participant);
 				}
-			}else{
-				participants_=null;
 			}
 
 		} catch (InvalidClassException ex) {

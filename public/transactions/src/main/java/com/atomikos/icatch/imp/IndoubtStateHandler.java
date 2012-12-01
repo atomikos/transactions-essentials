@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.imp;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
@@ -44,7 +47,7 @@ import com.atomikos.logging.LoggerFactory;
  * A state handler for the indoubt coordinator state.
  */
 
-class IndoubtStateHandler extends CoordinatorStateHandler
+public class IndoubtStateHandler extends CoordinatorStateHandler
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(IndoubtStateHandler.class);
 
@@ -59,6 +62,11 @@ class IndoubtStateHandler extends CoordinatorStateHandler
     // timeout to a heuristic state since the client terminator
     // will not receive the outcome!
 
+    
+    public IndoubtStateHandler() {
+	
+	}
+    
     IndoubtStateHandler ( CoordinatorImp coordinator )
     {
         super ( coordinator );
@@ -225,4 +233,20 @@ class IndoubtStateHandler extends CoordinatorStateHandler
 			}});
     }
 
+    
+    @Override
+    public void writeData(DataOutput out) throws IOException {
+    
+    	super.writeData(out);
+    	out.writeInt(inquiries_);
+    	out.writeBoolean(recovered_);
+    }
+    
+    @Override
+    public void readData(DataInput in) throws IOException {
+    
+    	super.readData(in);
+    	inquiries_=in.readInt();
+    	recovered_=in.readBoolean();
+    }
 }
