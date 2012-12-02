@@ -485,6 +485,7 @@ public abstract class XATransactionalResource implements TransactionalResource
         //see case 21552
         if (recovered || getName().equals (xarestx.getResourceName())) {
         		xarestx.setRecoveredXAResource ( getXAResource () );
+        		xarestx.setResource(this);
         }
         recoveredXidMap_.remove ( xarestx.getXid() );
         return recovered;
