@@ -81,31 +81,42 @@ class SiblingMapper
 		return ret;
 	}
 
-	protected synchronized ResourceTransaction findOrCreateBranchForTransaction ( CompositeTransaction ct )
+	protected synchronized ResourceTransaction findOrCreateBranchForTransaction(CompositeTransaction ct)
             throws ResourceException, IllegalStateException
     {
-        Stack errors = new Stack();
-        XAResourceTransaction ret = null;
-        try {
-            ret = findPreviousBranchToJoin(ct);
-            if (ret == null) {
-                ret = findSiblingBranchToJoin(ct);
-                if ( ret == null ) {
-                    ret = createNewBranch(ct);
-                }
-            }
-        } catch ( Exception e ) {
-            errors.push ( e );
-            throw new ResourceException ( "ResourceTransaction map failure", errors );
-        }
-        ct.addParticipant ( ret );
+        XAResourceTransaction ret = findOrCreateBranchWithResourceException(ct);
+        ct.addParticipant(ret);
         return ret;
     }
+
+	private XAResourceTransaction findOrCreateBranchWithResourceException(CompositeTransaction ct) {
+		Stack errors = new Stack();
+        XAResourceTransaction ret = null;
+        try {
+            ret = findOrCreateBranch(ct);
+        } catch (Exception e) {
+            errors.push(e);
+            throw new ResourceException ( "Failed to get branch", errors );
+        }
+		return ret;
+	}
+
+	private XAResourceTransaction findOrCreateBranch(CompositeTransaction ct) {
+		XAResourceTransaction ret;
+		ret = findPreviousBranchToJoin(ct);
+		if (ret == null) {
+		    ret = findSiblingBranchToJoin(ct);
+		    if ( ret == null ) {
+		        ret = createNewBranch(ct);
+		    }
+		}
+		return ret;
+	}
 
 	private XAResourceTransaction createNewBranch(CompositeTransaction ct) {
 		XAResourceTransaction ret;
 		ret = new XAResourceTransaction ( res_, ct , root_ );
-		rememberSibling(ct, ret);
+		rememberBranch(ct, ret);
 		return ret;
 	}
 
@@ -122,13 +133,12 @@ class SiblingMapper
 		return Collections.unmodifiableList(ret);
 	}
 	
-	private void rememberSibling(CompositeTransaction ct,
-			XAResourceTransaction sibling) {
+	private void rememberBranch(CompositeTransaction ct, XAResourceTransaction branch) {
 		List<XAResourceTransaction> list = siblingsOfSameRoot_.get(ct);
 		if (list == null) {
 			list = new ArrayList<XAResourceTransaction>();
 			siblingsOfSameRoot_.put(ct,list);
 		}
-		list.add(sibling);
+		list.add(branch);
 	}
 }

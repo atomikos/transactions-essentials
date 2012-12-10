@@ -304,8 +304,7 @@ class TransactionImp implements Transaction
             }
 
             try {
-                restx = (XAResourceTransaction) res
-                        .getResourceTransaction ( ct_ );
+                restx = (XAResourceTransaction) res.getResourceTransaction ( ct_ );
 
                 // next, we MUST set the xa resource again,
                 // because ONLY the instance we got as argument
