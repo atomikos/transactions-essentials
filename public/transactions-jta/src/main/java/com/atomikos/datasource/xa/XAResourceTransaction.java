@@ -403,11 +403,9 @@ public class XAResourceTransaction implements ResourceTransaction,
     }
     
     boolean supportsTmJoin() {
-    	boolean ret = false;
-    	ret = !(resource_.usesWeakCompare() || 
+    	return !(resource_.usesWeakCompare() || 
     			resource_.acceptsAllXAResources () ||
     			isActive());
-    	return ret;
     }
 
     /**
