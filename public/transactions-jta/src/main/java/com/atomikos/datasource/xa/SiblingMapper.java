@@ -38,8 +38,7 @@ import com.atomikos.datasource.ResourceTransaction;
 import com.atomikos.icatch.CompositeTransaction;
 
 /**
- * A SiblingMapper encapsulates the mapping policy for assigning a
- * ResourceTransaction to a composite tx instance. 
+ * A SiblingMapper encapsulates the policies for creating or reusing XA branches.
  * 
  * Assumption: there is one instance per root transaction, per resource.
  */
