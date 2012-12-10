@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2012 Atomikos <info@atomikos.com>
  *
  * This code ("Atomikos TransactionsEssentials"), by itself,
  * is being distributed under the
@@ -25,8 +25,12 @@
 
 package com.atomikos.datasource.xa;
 
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 
 import com.atomikos.datasource.ResourceException;
@@ -34,76 +38,97 @@ import com.atomikos.datasource.ResourceTransaction;
 import com.atomikos.icatch.CompositeTransaction;
 
 /**
- *
- *
  * A SiblingMapper encapsulates the mapping policy for assigning a
- * ResourceTransaction to a composite tx instance.
+ * ResourceTransaction to a composite tx instance. 
+ * 
+ * Assumption: there is one instance per root transaction, per resource.
  */
 
 class SiblingMapper
 {
 
-    protected Hashtable siblings_;
+    protected Map<CompositeTransaction,List<XAResourceTransaction>> siblingsOfSameRoot_;
     protected XATransactionalResource res_;
 
     protected String root_ ;
 
     SiblingMapper ( XATransactionalResource res , String root )
     {
-        siblings_ = new Hashtable ();
+        siblingsOfSameRoot_ = new HashMap<CompositeTransaction,List<XAResourceTransaction>>();
         res_ = res;
         root_ = root;
     }
-
-    /* 
-     * if resource uses weak compare mode then
-     * do NOT reuse restx instances, since the
-     * TMJOIN flag may fail if multiple resource mgrs
-     * for the same vendor are in use.
-     * the same holds for acceptsAllXAResources
-     * also, in order to allow concurrent enlistings
-     * for the same XAResource, we need to return
-     * a new restx if the one found is still active
-     */
     
-    private boolean canBeReused(XAResourceTransaction restx) {
-    	boolean ret = false;
-    	ret = !(restx == null || 
-    			res_.usesWeakCompare() || 
-    			res_.acceptsAllXAResources () ||
-    			restx.isActive());
-    	return ret;
-    }
-    
-    private XAResourceTransaction findSiblingXAResourceTransactionToReuse(CompositeTransaction ct) {
+    private XAResourceTransaction findSiblingBranchToJoin(CompositeTransaction ct) {
     	XAResourceTransaction ret = null;
-    	Enumeration enumm = siblings_.elements();
-    	while ( ret == null && enumm.hasMoreElements() ) {
-    		XAResourceTransaction candidate = (XAResourceTransaction) enumm.nextElement ();
-    		if (canBeReused(candidate) && ct.isSerial()) ret = candidate;
+    	if (ct.isSerial()) {
+    		Iterator <List<XAResourceTransaction>> allSiblingLists = siblingsOfSameRoot_.values().iterator();
+    		while (ret == null && allSiblingLists.hasNext()) {
+    			List<XAResourceTransaction> siblings = allSiblingLists.next();
+    			ret = findJoinableBranchInList(siblings);
+    		}
     	}
     	return ret;
     }
     
-    protected ResourceTransaction map ( CompositeTransaction ct )
+    private XAResourceTransaction findJoinableBranchInList(List<XAResourceTransaction> siblings) {
+		XAResourceTransaction ret = null;
+		Iterator<XAResourceTransaction> it = siblings.iterator();
+		while (ret == null && it.hasNext()) {
+			XAResourceTransaction candidate = it.next();
+			if (candidate.supportsTmJoin()) ret = candidate;
+		}
+		return ret;
+	}
+
+	protected synchronized ResourceTransaction findOrCreateBranchForTransaction ( CompositeTransaction ct )
             throws ResourceException, IllegalStateException
     {
-        Stack errors = new Stack ();
-        XAResourceTransaction last = null;
+        Stack errors = new Stack();
+        XAResourceTransaction ret = null;
         try {
-            last = (XAResourceTransaction) siblings_.get(ct);
-            if ( !canBeReused(last) ) {
-                last = findSiblingXAResourceTransactionToReuse(ct);
-                if ( last == null ) {
-                    last = new XAResourceTransaction ( res_, ct , root_ );
-                    siblings_.put ( ct, last );
+            ret = findPreviousBranchToJoin(ct);
+            if (ret == null) {
+                ret = findSiblingBranchToJoin(ct);
+                if ( ret == null ) {
+                    ret = createNewBranch(ct);
                 }
             }
         } catch ( Exception e ) {
             errors.push ( e );
             throw new ResourceException ( "ResourceTransaction map failure", errors );
         }
-        ct.addParticipant ( last );
-        return last;
+        ct.addParticipant ( ret );
+        return ret;
     }
+
+	private XAResourceTransaction createNewBranch(CompositeTransaction ct) {
+		XAResourceTransaction ret;
+		ret = new XAResourceTransaction ( res_, ct , root_ );
+		rememberSibling(ct, ret);
+		return ret;
+	}
+
+	private XAResourceTransaction findPreviousBranchToJoin(CompositeTransaction ct) {
+		List<XAResourceTransaction> candidates = findSiblingsForTransaction(ct);
+		return findJoinableBranchInList(candidates);
+	}
+
+	private List<XAResourceTransaction> findSiblingsForTransaction(CompositeTransaction ct) {
+		List<XAResourceTransaction> ret = siblingsOfSameRoot_.get(ct);
+		if (ret == null) {
+			ret = new ArrayList<XAResourceTransaction>();
+		}
+		return Collections.unmodifiableList(ret);
+	}
+	
+	private void rememberSibling(CompositeTransaction ct,
+			XAResourceTransaction sibling) {
+		List<XAResourceTransaction> list = siblingsOfSameRoot_.get(ct);
+		if (list == null) {
+			list = new ArrayList<XAResourceTransaction>();
+			siblingsOfSameRoot_.put(ct,list);
+		}
+		list.add(sibling);
+	}
 }

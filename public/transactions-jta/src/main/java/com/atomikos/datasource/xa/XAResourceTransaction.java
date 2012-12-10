@@ -401,6 +401,14 @@ public class XAResourceTransaction implements ResourceTransaction,
 	        setState ( TxState.LOCALLY_DONE );
         }
     }
+    
+    boolean supportsTmJoin() {
+    	boolean ret = false;
+    	ret = !(resource_.usesWeakCompare() || 
+    			resource_.acceptsAllXAResources () ||
+    			isActive());
+    	return ret;
+    }
 
     /**
      * @see ResourceTransaction.

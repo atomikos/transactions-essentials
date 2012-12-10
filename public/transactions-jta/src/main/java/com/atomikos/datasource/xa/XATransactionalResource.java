@@ -365,7 +365,7 @@ public abstract class XATransactionalResource implements TransactionalResource
                 if (next.isRoot()) root = next.getTid ();
             }
         }
-        return (getSiblingMap ( root )).map ( ct );
+        return (getSiblingMap ( root )).findOrCreateBranchForTransaction ( ct );
 
     }
 
