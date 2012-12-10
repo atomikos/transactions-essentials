@@ -504,9 +504,9 @@ public abstract class XATransactionalResource implements TransactionalResource
         recoveredXidMap_ = new Hashtable ();
         Xid[] recoveredlist = null;
         int flags = XAResource.TMSTARTRSCAN;
-        boolean done = false;
+        boolean allXidsFromResourceHaveBeenRecovered = false;
         Stack errors = new Stack ();
-        Vector recoveredXids = new Vector ();
+        Vector recoveredXids = new Vector();
         // this vector contains ALL recovered Xids so far,
         // to check if a scan returns duplicate results
         // this is needed for oracle8.1.7
@@ -520,25 +520,18 @@ public abstract class XATransactionalResource implements TransactionalResource
         do {
             recoveredlist = recoverXidsFromXAResource(flags, errors);
             flags = XAResource.TMNOFLAGS;
-            done = (recoveredlist == null || recoveredlist.length == 0);
-            if ( !done ) {
-
-                // TEMPTATIVELY SET done TO TRUE
-                // TO TOLERATE ORACLE 8.1.7 INFINITE
-                // LOOP (ALWAYS RETURNS SAME RECOVER
-                // SET). IF A NEW SET OF XIDS IS RETURNED
-                // THEN done WILL BE RESET TO FALSE
-                done = true;
-                
+            allXidsFromResourceHaveBeenRecovered = (recoveredlist == null || recoveredlist.length == 0);
+            if ( !allXidsFromResourceHaveBeenRecovered ) {
+                allXidsFromResourceHaveBeenRecovered = true; //tentative: tolerate infinite loops of same Xids like in Oracle 8.1.7
                 for ( Xid vendorXid : recoveredlist ) {
                     Xid xid = wrapWithOurOwnXidToHaveCorrectEqualsAndHashCode ( vendorXid );
-                    if ( !recoveredXids.contains ( xid ) ) {
-                        // a new xid is returned -> we can not be in a recovery loop -> go on
+                    if (notAlreadyRecovered(recoveredXids, xid)) {
+                    	allXidsFromResourceHaveBeenRecovered = false;
                     	if(LOGGER.isInfoEnabled()){
                     		LOGGER.logInfo("Resource " + servername_ + " inspecting XID: " + xid);
                     	}
                         recoveredXids.addElement ( xid );
-                        done = false;
+                        
                         // only really 'recover' this xid if it is ours
                         String branch = new String ( vendorXid.getBranchQualifier () );
                         if ( branch.startsWith ( branchIdentifier_ ) ) {
@@ -548,19 +541,21 @@ public abstract class XATransactionalResource implements TransactionalResource
                             }
                         } else {
                         	if(LOGGER.isInfoEnabled()){
-                        		LOGGER.logInfo("Resource " + servername_ + ": XID "
-                                        + xid + " with branch " + branch
-                                        + " is not under my responsibility");
+                        		LOGGER.logInfo("Resource " + servername_ + ": XID " + xid + " with branch " + branch + " is not under my responsibility");
                         	}
                         }
                     }
                 }
             }
-        } while ( !done );
+        } while ( !allXidsFromResourceHaveBeenRecovered );
 
         recoveredXids = null; // for GC
 
     }
+
+	private boolean notAlreadyRecovered(Vector recoveredXids, Xid xid) {
+		return !recoveredXids.contains ( xid );
+	}
 
 	private Xid[] recoverXidsFromXAResource(int flags, Stack errors) {
 		Xid[] recoveredlist = null;
