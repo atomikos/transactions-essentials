@@ -105,7 +105,7 @@ class SiblingMapper
 		ret = findPreviousBranchToJoin(ct);
 		if (ret == null) {
 		    ret = findSiblingBranchToJoin(ct);
-		    if ( ret == null ) {
+		    if (ret == null) {
 		        ret = createNewBranch(ct);
 		    }
 		}
