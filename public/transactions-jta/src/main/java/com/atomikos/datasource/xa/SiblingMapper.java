@@ -114,7 +114,7 @@ class SiblingMapper
 
 	private XAResourceTransaction createNewBranch(CompositeTransaction ct) {
 		XAResourceTransaction ret;
-		ret = new XAResourceTransaction ( res_, ct , root_ );
+		ret = new XAResourceTransaction(res_, ct, root_);
 		rememberBranch(ct, ret);
 		return ret;
 	}
