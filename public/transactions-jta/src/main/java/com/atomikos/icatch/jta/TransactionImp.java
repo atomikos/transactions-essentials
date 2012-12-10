@@ -82,11 +82,11 @@ class TransactionImp implements Transaction
 		throw ret;
 	}
 
-    protected CompositeTransaction ct_;
+    private CompositeTransaction ct_;
 
-    protected Map<XAResourceKey,XAResourceTransaction> xaResourceToResourceTransactionMap_;
+    private Map<XAResourceKey,XAResourceTransaction> xaResourceToResourceTransactionMap_;
 
-    protected boolean autoRegistration_;
+    private boolean autoRegistration_;
 
 
     TransactionImp ( CompositeTransaction ct , boolean autoRegistration )
