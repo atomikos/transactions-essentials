@@ -137,8 +137,7 @@ public class JmsTransactionalResource extends XATransactionalResource
     {
         super.close ();
         try {
-            if ( conn_ != null )
-                conn_.close ();
+            if ( conn_ != null ) conn_.close ();
         } catch ( JMSException err ) {
             throw new ResourceException ( err.getMessage () );
         }
