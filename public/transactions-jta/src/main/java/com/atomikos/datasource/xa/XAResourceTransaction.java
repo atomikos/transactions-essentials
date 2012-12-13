@@ -170,7 +170,7 @@ public class XAResourceTransaction implements ResourceTransaction,
 	private transient XATransactionalResource resource_;
     private transient XAResource xaresource_;
     private Vector<HeuristicMessage> heuristicMessages_;
-    private transient boolean enlisted_;
+    private transient boolean knownInResource_;
     private transient int timeout_;
 
     public XAResourceTransaction ()
@@ -193,7 +193,7 @@ public class XAResourceTransaction implements ResourceTransaction,
         setState ( TxState.ACTIVE );
         heuristicMessages_ = new Vector ();
         isXaSuspended_ = false;
-        enlisted_ = false;
+        knownInResource_ = false;
         addHeuristicMessage ( new StringHeuristicMessage ( "XA resource '"
                 + resource.getName () + "' accessed with Xid '" + xidToHexString  + "'" ) );
     }
@@ -420,7 +420,7 @@ public class XAResourceTransaction implements ResourceTransaction,
         if ( state_.equals ( TxState.LOCALLY_DONE ) ) {// reused instance
             flag = XAResource.TMJOIN;
             logFlag = "XAResource.TMJOIN";
-        } else if ( !enlisted_ ) {// new instance
+        } else if ( !knownInResource_ ) {// new instance
             flag = XAResource.TMNOFLAGS;
             logFlag = "XAResource.TMNOFLAGS";
         } else
@@ -444,7 +444,7 @@ public class XAResourceTransaction implements ResourceTransaction,
                     errors );
         }
         setState ( TxState.ACTIVE );
-        enlisted_ = true;
+        knownInResource_ = true;
     }
 
     /**
@@ -476,33 +476,38 @@ public class XAResourceTransaction implements ResourceTransaction,
         	return false;
         }
 
+        recovered = tryRecoverWithEveryResourceToEnsureOurXidIsNotEndedByPresumedAbort();
 
-        Enumeration resources = Configuration.getResources ();
-        
-        // Report this participant to EVERY recoverable resource:
-        // recovered XIDs can be shared in two resources
-        // if they connect to the same back-end RM
-        // (remember: we use the TM name for the branch!)
-        // If so, each resource needs to know that the XID
-        // can be recovered, or endRecovery in one of them
-        // will incorrectly rollback
+        if ( !recovered && getXAResource() != null ) {
+        	// cf case 59238: support serializable XAResource
+        	recovered = true;
+        }
+        knownInResource_ = true;
+        return recovered;
+    }
 
+    /**
+     * Recovered XIDs can be shared in two resources
+     * if they connect to the same back-end RM
+     * (remember: we use the TM name for the branch!)
+     * So each resource needs to know that our Xid
+     * can be recovered, or endRecovery in one of them
+     * will incorrectly rollback.
+     * 
+     * @return True iff at least one resource was found that recovers this instance.
+     */
+	private boolean tryRecoverWithEveryResourceToEnsureOurXidIsNotEndedByPresumedAbort() {
+		boolean ret = false;		
+		Enumeration resources = Configuration.getResources ();
         while ( resources.hasMoreElements () ) {
-            RecoverableResource res = (RecoverableResource) resources
-                    .nextElement ();
+            RecoverableResource res = (RecoverableResource) resources.nextElement ();
             if ( res.recover ( this ) ) {
-                recovered = true;
+                ret = true;
             }
 
         }
-
-        if ( !recovered && getXAResource() != null ) {
-        	// cf case 59238
-        	recovered = true;
-        }
-        enlisted_ = true;
-        return recovered;
-    }
+		return ret;
+	}
 
     /**
      * @see Participant
@@ -603,7 +608,7 @@ public class XAResourceTransaction implements ResourceTransaction,
         Stack errors = new Stack ();
         terminateInResource ();
 
-        if ( !enlisted_ )
+        if ( !knownInResource_ )
             return null;
         if ( state_.equals ( TxState.TERMINATED ) )
             return getHeuristicMessages ();
@@ -620,8 +625,9 @@ public class XAResourceTransaction implements ResourceTransaction,
 
 
         try {
-            if ( state_.equals ( TxState.ACTIVE ) )// first suspend xid
+            if ( state_.equals ( TxState.ACTIVE ) ) { // first suspend xid
                 suspend ();
+            }
 
             // refresh xaresource for MQSeries: seems to close XAResource after suspend???
             testOrRefreshXAResourceFor2PC ();
