@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2012 Atomikos <info@atomikos.com>
  *
  * This code ("Atomikos TransactionsEssentials"), by itself,
  * is being distributed under the
@@ -33,11 +33,6 @@ import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 
 /**
- *
- *
- *
- *
- *
  * A class for temporary resources. This is useful for configurations that don't
  * register any XATransactionalResources in advance (zero setup). These cases
  * require a dynamic and temporary XATransactionalResource to be added. This
