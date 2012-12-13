@@ -60,8 +60,7 @@ public class JmsTransactionalResource extends XATransactionalResource
      *            The xa connection factory to use.
      */
 
-    public JmsTransactionalResource ( String name ,
-            XAConnectionFactory factory )
+    public JmsTransactionalResource ( String name , XAConnectionFactory factory )
     {
         super ( name );
         factory_ = factory;
