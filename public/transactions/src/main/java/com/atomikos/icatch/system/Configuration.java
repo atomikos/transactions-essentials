@@ -46,8 +46,6 @@ import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 
 /**
- *
- *
  * Configuration is a facade for the icatch transaction management facilities.
  * Allows the application server code to find the transaction manager, even if
  * the actual implementation varies over time.
