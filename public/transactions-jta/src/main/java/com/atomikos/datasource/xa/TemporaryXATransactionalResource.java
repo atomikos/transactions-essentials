@@ -99,8 +99,7 @@ public class TemporaryXATransactionalResource extends XATransactionalResource
     protected XAResource refreshXAConnection () throws ResourceException
     {
         // return the same instance at all times, since there is no connection
-        // factory
-        // for temporary resources
+        // factory for temporary resources
         return xares_;
     }
 

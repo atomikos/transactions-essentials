@@ -53,6 +53,7 @@ import com.atomikos.logging.LoggerFactory;
  * the actual implementation varies over time.
  */
 
+@SuppressWarnings("all")
 public final class Configuration
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(Configuration.class);
