@@ -450,39 +450,32 @@ public abstract class XATransactionalResource implements TransactionalResource
     public synchronized boolean recover ( Participant participant )
             throws ResourceException
     {
-    		boolean recovered = true;
-        if ( closed_ )
-            throw new IllegalStateException (
-                    "XATransactionResource already closed" );
-
-        if ( !(participant instanceof XAResourceTransaction) )
-            throw new ResourceException ( "Wrong argument class: "
-                    + participant.getClass ().getName () );
+    	boolean recovered = true;
+    	
+        if ( closed_ ){ 
+        	throw new IllegalStateException ("XATransactionResource already closed");
+        }
+        if ( !(participant instanceof XAResourceTransaction) ) {
+            throw new ResourceException ( "Wrong argument class: " + participant.getClass ().getName () );
+        }
+        
         XAResource xaresource = getXAResource ();
         
         if ( xaresource == null ) {
-            LOGGER.logWarning ( "XATransactionalResource " + getName() +
-                ": XAResource is NULL!" );
-
+            LOGGER.logWarning ( "XATransactionalResource " + getName() + ": XAResource is null" );
             return false;
         }
 
         XAResourceTransaction xarestx = (XAResourceTransaction) participant;
 
-        if (recoveredXidMap_ == null) recover ();
+        recoverXidsFromResourceIfNecessary();
 
         if ( !recoveredXidMap_.containsKey ( xarestx.getXid() ) ) {
-        	//TAKE CARE: if multiple resources 'recover' the same Xid from the same backend
-        	//then this will be a problem here: endRecovery will rollback a transaction
-        	//as per presumed abort!
             recovered = false;
         }
 
-        //also set xaresource if resource name is the same:
-        //this happens if VM exits between XA commit and log flush
-        //-> should lead to NOTA in commit
-        //see case 21552
-        if (recovered || getName().equals (xarestx.getResourceName())) {
+        if (recovered || 
+        	getName().equals (xarestx.getResourceName())) { //see case 21552
         		xarestx.setRecoveredXAResource ( getXAResource () );
         		xarestx.setResource(this);
         }
@@ -498,7 +491,7 @@ public abstract class XATransactionalResource implements TransactionalResource
      *                If a failure occurs.
      */
 
-    protected void recover () throws ResourceException
+    protected void recover() throws ResourceException
     {
         recoveredXidMap_ = new Hashtable ();
         Xid[] recoveredlist = null;
@@ -511,7 +504,7 @@ public abstract class XATransactionalResource implements TransactionalResource
         // this is needed for oracle8.1.7
         
         
-        if (recoveryService_ == null) throw new ResourceException("No recoveryService set yet!");
+        if (recoveryService_ == null) throw new IllegalStateException("No recoveryService set yet!");
 
         String branchIdentifier = recoveryService_.getName();
         
@@ -591,52 +584,49 @@ public abstract class XATransactionalResource implements TransactionalResource
     {
         if ( closed_ ) throw new IllegalStateException ( "XATransactionResource already closed" );
 
-        XAResource xaresource = getXAResource ();
-        // if xaresource is null then we can't do rollback
-        // this is acceptable, since the only xids that
-        // will be aborted are those who are ONLY indoubt
-        // in the database, not in the TM. The DB
-        // administrator can rollback those manually without
-        // anything else
-        if (xaresource == null) return;
+        if (getXAResource() != null) {
+        	recoverXidsFromResourceIfNecessary();       
+        	performPresumedAbortForRemainingXids();
+        }
+    	resetForNextRecoveryScan();
+        
+        if(LOGGER.isDebugEnabled()){
+        	LOGGER.logDebug("endRecovery() done for resource " + getName ());
+        }
+    }
 
-        // recovery map is null if no logged coordinators existed
-        // in that case, make sure that possible indoubts (of
-        // VOTING ergo non-recoverable coordinators)
-        // are recovered now. Otherwise, they will not be rolled back.
-        if (recoveredXidMap_ == null) recover ();
-
-        Enumeration toAbortList = recoveredXidMap_.keys ();
+	private void performPresumedAbortForRemainingXids() {
+		Enumeration toAbortList = recoveredXidMap_.keys ();
+		XAResource xaresource = getXAResource();
         while ( toAbortList.hasMoreElements () ) {
             XID xid = (XID) toAbortList.nextElement ();
             try {
                 xaresource.rollback ( xid );
                 if(LOGGER.isInfoEnabled()){
-                	LOGGER.logInfo("XAResource.rollback ( " + xid + " ) called "
-                            + "on resource " + servername_);
+                	LOGGER.logInfo("XAResource.rollback ( " + xid + " ) called " + "on resource " + servername_);
                 }
             } catch ( XAException xaerr ) {
                 // here, an indoubt tx might remain in resource; we do nothing
                 // to prevent this and leave it to admin tools
             }
         }
+	}
 
-        recoveredXidMap_ = null; // to enable repeated recovery calls
+	private void resetForNextRecoveryScan() {
+		recoveredXidMap_ = null;
+	}
 
-        if(LOGGER.isDebugEnabled()){
-        	LOGGER.logDebug("endRecovery() done for resource " + getName ());
-        }
-    }
+	private void recoverXidsFromResourceIfNecessary() {
+		if (recoveredXidMap_ == null) recover();
+	}
 
     /**
      * Set the XID factory, needed for online management tools.
      *
      * @param factory
      */
-    public void setXidFactory(XidFactory factory)
-    {
+    public void setXidFactory(XidFactory factory) {
         xidFact_ = factory;
-
     }
 
     /**
@@ -648,8 +638,7 @@ public abstract class XATransactionalResource implements TransactionalResource
      *         that connects to the same EIS.
      */
 
-    protected Xid createXid(String tid)
-    {
+    protected Xid createXid(String tid) {
     	if (recoveryService_ == null) throw new IllegalStateException("Not yet initialized");
     	String branchIdentifier = recoveryService_.getName();
         return getXidFactory().createXid (tid , branchIdentifier);

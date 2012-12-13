@@ -482,7 +482,7 @@ public class XAResourceTransaction implements ResourceTransaction,
         	// cf case 59238: support serializable XAResource
         	recovered = true;
         }
-        knownInResource_ = true;
+        if (recovered) knownInResource_ = true;
         return recovered;
     }
 
