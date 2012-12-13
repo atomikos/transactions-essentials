@@ -84,7 +84,7 @@ public abstract class XATransactionalResource implements TransactionalResource
     // or for cases where XAResource classes
     // are always non-compliant (like JBoss)
 
-    private String branchIdentifier_;
+    private RecoveryService recoveryService_;
 
     private static final String MAX_LONG_STR = String.valueOf(Long.MAX_VALUE);
     private static final int MAX_LONG_LEN = MAX_LONG_STR.getBytes().length;
@@ -112,7 +112,6 @@ public abstract class XATransactionalResource implements TransactionalResource
         closed_ = false;
         weakCompare_ = false;
         compareAlwaysTrue_ = false;
-        branchIdentifier_ = servername;
     }
 
     /**
@@ -438,7 +437,7 @@ public abstract class XATransactionalResource implements TransactionalResource
         if ( recoveryService != null ) {
             if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Installing recovery service on resource "
                     + getName () );
-            branchIdentifier_ = recoveryService.getName ();
+            this.recoveryService_ = recoveryService;
             recoveryService.recover ();
         }
 
@@ -510,11 +509,15 @@ public abstract class XATransactionalResource implements TransactionalResource
         // this vector contains ALL recovered Xids so far,
         // to check if a scan returns duplicate results
         // this is needed for oracle8.1.7
+        
+        
+        if (recoveryService_ == null) throw new ResourceException("No recoveryService set yet!");
 
-
+        String branchIdentifier = recoveryService_.getName();
+        
         if(LOGGER.isDebugEnabled()){
         	LOGGER.logDebug( "recovery initiated for resource " + getName ()
-                    + " with branchIdentifier " + branchIdentifier_);
+                    + " with branchIdentifier " + branchIdentifier);
         }
 
         do {
@@ -534,7 +537,7 @@ public abstract class XATransactionalResource implements TransactionalResource
                         
                         // only really 'recover' this xid if it is ours
                         String branch = new String ( vendorXid.getBranchQualifier () );
-                        if ( branch.startsWith ( branchIdentifier_ ) ) {
+                        if ( branch.startsWith ( branchIdentifier ) ) {
                             recoveredXidMap_.put ( xid, new Object () );
                             if(LOGGER.isInfoEnabled()){
                             	LOGGER.logInfo("Resource " + servername_ + " recovering XID: " + xid);
@@ -647,7 +650,9 @@ public abstract class XATransactionalResource implements TransactionalResource
 
     protected Xid createXid(String tid)
     {
-        return getXidFactory().createXid (tid , branchIdentifier_);
+    	if (recoveryService_ == null) throw new IllegalStateException("Not yet initialized");
+    	String branchIdentifier = recoveryService_.getName();
+        return getXidFactory().createXid (tid , branchIdentifier);
     }
 
 }
