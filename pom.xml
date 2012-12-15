@@ -208,6 +208,14 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		<extensions>
+                        <!-- Enabling the use of FTP -->
+                        <extension>
+                                <groupId>org.apache.maven.wagon</groupId>
+                                <artifactId>wagon-ftp</artifactId>
+                                <version>1.0-beta-6</version>
+                        </extension>
+                </extensions>
 	</build>
 
 	<dependencies>
@@ -243,12 +251,12 @@
 				<repository>
 					<id>internal.release.repo</id>
 					<name>Atomikos Internal Release Repository</name>
-					<url>http://atomikos.dyndns.org:8088/nexus/content/repositories/releases</url>
+					<url>ftp://repo.atomikos.com</url>
 				</repository>
 				<snapshotRepository>
 					<id>internal.snapshot.repo</id>
 					<name>Atomikos Internal Snapshot Repository</name>
-					<url>http://atomikos.dyndns.org:8088/nexus/content/repositories/snapshots/</url>
+					<url>ftp://repo.atomikos.com</url>
 				</snapshotRepository>
 			</distributionManagement>
 			<!-- "modules" must correspond to file system hierarchy -->
