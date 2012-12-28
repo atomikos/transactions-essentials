@@ -248,17 +248,18 @@
 				<activeByDefault>true</activeByDefault>
 			</activation>
 			<distributionManagement>
-				<repository>
-					<id>internal.release.repo</id>
-					<name>Atomikos Internal Release Repository</name>
-					<url>ftp://repo.atomikos.com</url>
-				</repository>
-				<snapshotRepository>
-					<id>internal.snapshot.repo</id>
-					<name>Atomikos Internal Snapshot Repository</name>
-					<url>ftp://repo.atomikos.com</url>
-				</snapshotRepository>
-			</distributionManagement>
+                                <repository>
+                                        <id>internal.release.repo</id>
+                                        <name>Atomikos Internal Release Repository</name>
+                                        <url>file://${user.home}/.m2/repository</url>
+                                </repository>
+                                <snapshotRepository>
+                                        <id>internal.snapshot.repo</id>
+                                        <name>Atomikos Internal Snapshot Repository</name>
+                                        <url>file://${user.home}/.m2/repository</url>
+                                </snapshotRepository>
+                        </distributionManagement>
+
 			<!-- "modules" must correspond to file system hierarchy -->
 			<modules>
 				<module>public</module>
