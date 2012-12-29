@@ -11,8 +11,8 @@
 	<description>Reliability through Atomicity: manage your distributed transactions and protect your mission critical data</description>
 	<licenses>
 		<license>
-			<name>The Apache Software License, Version 2.0</name>
-			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<name>Atomikos Multiple Licensing Scheme</name>
+			<url>http://www.atomikos.com/Main/WhichLicenseApplies</url>
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
