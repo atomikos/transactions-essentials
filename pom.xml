@@ -200,9 +200,8 @@
 					<!--PLQ "package" must be invoked before javadoc:aggregate-jar -->
 					<preparationGoals>clean package javadoc:aggregate-jar install</preparationGoals>
 					<goals>deploy</goals>
-					<arguments>-DskipTests -Passemble</arguments>
+					<arguments>-DskipTests -Passemble,post-release</arguments>
 					<tag>${releaseVersion}</tag>
-					<releaseProfiles>post-release</releaseProfiles>
 				</configuration>
 			</plugin>
 		</plugins>
