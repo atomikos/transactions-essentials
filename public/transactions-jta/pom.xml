@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.atomikos</groupId>
         <artifactId>ate</artifactId>
-        <version>3.9.0-SNAPSHOT</version>
+        <version>3.9.0.TEST-IGNORE</version>
     </parent>
     <artifactId>transactions-jta</artifactId>
     <name>Transactions JTA</name>
@@ -13,7 +13,7 @@
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>transactions</artifactId>
-            <version>3.9.0-SNAPSHOT</version>
+            <version>3.9.0.TEST-IGNORE</version>
         </dependency>
         <!--Why com.atomikos.datasource.xa.jms.JmsTransactionalResource is not in transaction JMS ?-->
        <dependency>
