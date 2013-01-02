@@ -201,10 +201,7 @@
 					<goals>deploy</goals>
 					<arguments>-DskipTests -Passemble</arguments>
 					<tag>${releaseVersion}</tag>
-					<!--<useReleaseProfile>false</useReleaseProfile> -->
-					<!--PLQ several tries with CloudBees to exlude ".repository" subfolder,
-						without any success so far... -->
-					<!--<checkModificationExcludeList>.workspace/**/*,.repository/**/*</checkModificationExcludeList> -->
+					<releaseProfiles>post-release</releaseProfiles>
 				</configuration>
 			</plugin>
 		</plugins>
