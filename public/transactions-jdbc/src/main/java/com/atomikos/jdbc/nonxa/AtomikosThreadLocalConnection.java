@@ -76,10 +76,10 @@ implements JtaAwareNonXaConnection
 	private static final Logger LOGGER = LoggerFactory.createLogger(AtomikosThreadLocalConnection.class);
 
 
-	private final static List ENLISTMENT_METHODS = Arrays.asList(new String[] {"createStatement", "prepareStatement", "prepareCall"});
-	private final static List CLOSE_METHODS = Arrays.asList(new String[] {"close"});
-	private final static List XA_INCOMPATIBLE_METHODS = Arrays.asList(new String[] {"commit", "rollback", "setSavepoint", "releaseSavepoint"});
-	private final static List NON_TRANSACTIONAL_METHOD_NAMES = Arrays.asList(new String[] {
+	private final static List<String> ENLISTMENT_METHODS = Arrays.asList(new String[] {"createStatement", "prepareStatement", "prepareCall"});
+	private final static List<String> CLOSE_METHODS = Arrays.asList(new String[] {"close"});
+	private final static List<String> XA_INCOMPATIBLE_METHODS = Arrays.asList(new String[] {"commit", "rollback", "setSavepoint", "releaseSavepoint"});
+	private final static List<String> NON_TRANSACTIONAL_METHOD_NAMES = Arrays.asList(new String[] {
 			"equals",
 			"hashCode",
 			"notify",
@@ -114,20 +114,20 @@ implements JtaAwareNonXaConnection
 	{
 		Object ret = null;
 		Object obj = pooledConnection.getConnection();
-		Set interfaces = PropertyUtils.getAllImplementedInterfaces ( obj.getClass() );
+		Set<Class> interfaces = PropertyUtils.getAllImplementedInterfaces ( obj.getClass() );
 		interfaces.add ( Reapable.class );
 		//see case 24532
 		interfaces.add ( DynamicProxy.class );
 		Class[] interfaceClasses = ( Class[] ) interfaces.toArray ( new Class[0] );
 
-		Set minimumSetOfInterfaces = new HashSet();
+		Set<Class> minimumSetOfInterfaces = new HashSet<Class>();
 		minimumSetOfInterfaces.add ( Reapable.class );
 		minimumSetOfInterfaces.add ( DynamicProxy.class );
 		minimumSetOfInterfaces.add ( java.sql.Connection.class );
         Class[] minimumSetOfInterfaceClasses = ( Class[] ) minimumSetOfInterfaces.toArray( new Class[0] );
 
 
-		List classLoaders = new ArrayList();
+		List<ClassLoader> classLoaders = new ArrayList<ClassLoader>();
 		classLoaders.add ( Thread.currentThread().getContextClassLoader() );
 		classLoaders.add ( obj.getClass().getClassLoader() );
 		classLoaders.add ( AtomikosThreadLocalConnection.class.getClassLoader() );

@@ -111,7 +111,7 @@ public class IndoubtStateHandler extends CoordinatorStateHandler
         recovered_ = true;
     }
 
-    protected Object getState ()
+    protected TxState getState ()
     {
         return TxState.IN_DOUBT;
     }

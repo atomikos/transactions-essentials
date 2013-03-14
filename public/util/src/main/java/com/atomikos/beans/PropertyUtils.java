@@ -50,9 +50,9 @@ public class PropertyUtils
 	 * Gets all implemented interfaces of a class.
 	 */
 
-	public static Set getAllImplementedInterfaces ( Class clazz )
+	public static Set<Class> getAllImplementedInterfaces ( Class clazz )
 	{
-		Set ret = null;
+		Set<Class> ret = null;
 
 		if ( clazz.getSuperclass() != null ) {
 			//if superclass exists: first add the superclass interfaces!!!
@@ -60,7 +60,7 @@ public class PropertyUtils
 		}
 		else {
 			//no superclass: start with empty set
-			ret = new HashSet();
+			ret = new HashSet<Class>();
 		}
 
 

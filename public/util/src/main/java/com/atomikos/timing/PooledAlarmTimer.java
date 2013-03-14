@@ -36,14 +36,14 @@ import java.util.List;
  */
 public final class PooledAlarmTimer implements AlarmTimer {
 
-	private final List listeners;
+	private final List<AlarmTimerListener> listeners;
 	private final long timeout;
 
 	private final Object runMonitor = new Object();
 	private boolean runFlag = true;
 
 	public PooledAlarmTimer(long timeout) {
-		listeners = new ArrayList();
+		listeners = new ArrayList<AlarmTimerListener>();
 		this.timeout = timeout;
 	}
 
@@ -106,9 +106,9 @@ public final class PooledAlarmTimer implements AlarmTimer {
 	 * Notify all listeners
 	 */
 	private void notifyListeners() {
-		List tempList = new ArrayList(listeners);
-		for (Iterator it = tempList.iterator(); it.hasNext(); ) {
-			AlarmTimerListener list = (AlarmTimerListener)it.next();
+		List<AlarmTimerListener> tempList = new ArrayList<AlarmTimerListener>(listeners);
+		for (Iterator<AlarmTimerListener> it = tempList.iterator(); it.hasNext(); ) {
+			AlarmTimerListener list = it.next();
 			list.alarm(this);
 		}
 	}
