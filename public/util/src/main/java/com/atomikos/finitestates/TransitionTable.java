@@ -66,7 +66,7 @@ package com.atomikos.finitestates;
 *A Transition Table determines which transitions are legal.
 */
 
-public interface TransitionTable 
+public interface TransitionTable<Status> 
 {
 		
 	/**
@@ -76,6 +76,6 @@ public interface TransitionTable
 	*@param to The end state of the transition.
 	*@return true if the transition is allowed, false otherwise. 
 	*/
-	public  boolean legalTransition(Object from,Object to);
+	public  boolean legalTransition(Status from,Status to);
 
 }

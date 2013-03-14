@@ -45,16 +45,16 @@ import java.util.Hashtable;
  *
  */
 
-public class FSMImp<State> implements FSM<State>
+public class FSMImp<Status> implements FSM<Status>
 {
 
-    private State state_ = null;
+    private Status state_ = null;
     //the current state
 
-    private Hashtable<State,Hashtable<EventListener,Object>>  enterlisteners_ = null;
+    private Hashtable<Status,Hashtable<EventListener,Object>>  enterlisteners_ = null;
     //the enter listeners
 
-    private Hashtable<State,Hashtable<EventListener,Object>> preenterlisteners_ = null;
+    private Hashtable<Status,Hashtable<EventListener,Object>> preenterlisteners_ = null;
     //pre enter listeners
 
     private Hashtable transitionlisteners_ = null;
@@ -80,7 +80,7 @@ public class FSMImp<State> implements FSM<State>
      *@param initialstate The initial state of the FSM.
      */
 
-    public FSMImp ( TransitionTable transitiontable , State initialstate )
+    public FSMImp ( TransitionTable transitiontable , Status initialstate )
     {
         this ( null, transitiontable, initialstate );
         eventsource_ = this;
@@ -97,12 +97,12 @@ public class FSMImp<State> implements FSM<State>
      */
 
     public FSMImp ( Object eventsource, TransitionTable transitiontable,
-                    State initialstate )
+                    Status initialstate )
     {
         transitiontable_ = transitiontable;
         state_ = initialstate;
-        enterlisteners_ = new Hashtable<State,Hashtable<EventListener,Object>>();
-        preenterlisteners_ = new Hashtable<State,Hashtable<EventListener,Object>>();
+        enterlisteners_ = new Hashtable<Status,Hashtable<EventListener,Object>>();
+        preenterlisteners_ = new Hashtable<Status,Hashtable<EventListener,Object>>();
         transitionlisteners_ = new Hashtable();
         pretransitionlisteners_ = new Hashtable();
         eventsource_ = eventsource;
@@ -117,9 +117,9 @@ public class FSMImp<State> implements FSM<State>
      *@param state The state for which the listener wants to be notified.
      */
 
-    protected synchronized  void addEnterListener(Hashtable<State,Hashtable<EventListener,Object>> listeners,
+    protected synchronized  void addEnterListener(Hashtable<Status,Hashtable<EventListener,Object>> listeners,
     		EventListener lstnr,
-			      State state)
+			      Status state)
     {
         Hashtable<EventListener,Object> lstnrs = ( Hashtable<EventListener,Object> ) listeners.get(state);
         if ( lstnrs == null )
@@ -163,7 +163,7 @@ public class FSMImp<State> implements FSM<State>
      *@param pre True iff before entering.
      */
 
-    protected void notifyListeners(Hashtable<State,Hashtable<EventListener,Object>> listeners, State state,
+    protected void notifyListeners(Hashtable<Status,Hashtable<EventListener,Object>> listeners, Status state,
 			     boolean pre)
     {
         Hashtable<EventListener,Object> lstnrs = null;
@@ -236,11 +236,11 @@ public class FSMImp<State> implements FSM<State>
      *@see com.atomikos.finitestates.FSM
      */
 
-    public State getState()
+    public Status getState()
     {
     	//Note: this method should NOT be synchronized on the FSM itself, to avoid deadlocks
     	//in re-entrant 2PC calls!
-    	State ret = null;
+    	Status ret = null;
     	//don't synch on FSM -> use latch object instead
     	synchronized ( stateLatch_ ) {
     		ret = state_;
@@ -248,7 +248,7 @@ public class FSMImp<State> implements FSM<State>
         return ret;
     }
 
-    private void setStateObject ( State state )
+    private void setStateObject ( Status state )
     {
     	//synchronize on stateLatch ONLY to make sure that getState
     	//returns the latest (non-cached) value
@@ -262,7 +262,7 @@ public class FSMImp<State> implements FSM<State>
      *@see com.atomikos.finitestates.StateMutable
      */
 
-    public void setState(State state)
+    public void setState(Status state)
         throws IllegalStateException
     {
     		Object oldstate = null;
@@ -285,7 +285,7 @@ public class FSMImp<State> implements FSM<State>
      *@see com.atomikos.finitestates.FSMEnterEventSource
      */
 
-    public void addFSMEnterListener(FSMEnterListener lstnr, State state)
+    public void addFSMEnterListener(FSMEnterListener<Status> lstnr, Status state)
     {
         addEnterListener(enterlisteners_ , lstnr , state);
 
@@ -296,8 +296,8 @@ public class FSMImp<State> implements FSM<State>
      *@see com.atomikos.finitestates.FSMPreEnterEventSource
      */
 
-    public void addFSMPreEnterListener(FSMPreEnterListener lstnr,
-			         State state)
+    public void addFSMPreEnterListener(FSMPreEnterListener<Status> lstnr,
+			         Status state)
     {
         addEnterListener(preenterlisteners_ , lstnr , state);
     }
@@ -307,8 +307,8 @@ public class FSMImp<State> implements FSM<State>
      */
 
 
-    public void addFSMTransitionListener(FSMTransitionListener lstnr,
-				 Object from, Object to)
+    public void addFSMTransitionListener(FSMTransitionListener<Status> lstnr,
+    		Status from, Status to)
     {
         addTransitionListener ( transitionlisteners_ , lstnr , from , to );
     }
@@ -317,8 +317,8 @@ public class FSMImp<State> implements FSM<State>
      *@see com.atomikos.finitestates.FSMPreTransitionEventSource
      */
 
-    public void addFSMPreTransitionListener(FSMPreTransitionListener lstnr,
-				    Object from, Object to)
+    public void addFSMPreTransitionListener(FSMPreTransitionListener<Status> lstnr,
+    		Status from, Status to)
     {
         addTransitionListener( pretransitionlisteners_ , lstnr , from , to );
     }

@@ -32,7 +32,7 @@ import java.util.EventListener;
 *
 *A listener interface for FSMTransitionEvents.
 */
-public interface FSMTransitionListener extends EventListener
+public interface FSMTransitionListener<Status> extends EventListener
 {
     
     /**
@@ -42,6 +42,6 @@ public interface FSMTransitionListener extends EventListener
      *
      */
     
-    public void transitionPerformed(FSMTransitionEvent e);
+    public void transitionPerformed(FSMTransitionEvent<Status> e);
     
 }
