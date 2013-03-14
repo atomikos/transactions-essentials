@@ -66,7 +66,7 @@ import com.atomikos.timing.PooledAlarmTimer;
 
 public class CoordinatorImp implements CompositeCoordinator, Participant,
         RecoveryCoordinator, StateRecoverable<TxState>, AlarmTimerListener, Stateful<TxState>,
-        FSMPreEnterListener
+        FSMPreEnterListener<TxState>
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(CoordinatorImp.class);
 
@@ -539,9 +539,9 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
      * @see FSMPreEnterListener.
      */
 
-    public void preEnter ( FSMEnterEvent event ) throws IllegalStateException
+    public void preEnter ( FSMEnterEvent<TxState> event ) throws IllegalStateException
     {
-        Object state = event.getState ();
+    	TxState state = event.getState ();
 
         if ( state.equals ( TxState.TERMINATED )
                 || state.equals ( TxState.HEUR_ABORTED )
@@ -973,8 +973,8 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
         }
     }
 
-	public Object getStateWithTwoPhaseCommitDecision() {
-		Object ret = getState();
+	public TxState getStateWithTwoPhaseCommitDecision() {
+		TxState ret = getState();
 		if (TxState.TERMINATED.equals(getState())) {
 			if (isCommitted()) ret = TxState.COMMITTED;
 			else ret = TxState.ABORTED;

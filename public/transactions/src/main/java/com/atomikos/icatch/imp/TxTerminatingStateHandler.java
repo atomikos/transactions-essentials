@@ -69,7 +69,7 @@ class TxTerminatingStateHandler extends TransactionStateHandler
 	/**
 	 * @return ACTIVE or JPA implementations like EclipseJPA will not attempt to flush changes before commit!
 	 */
-	protected Object getState()
+	protected TxState getState()
 	{
 		return TxState.ACTIVE;
 	}

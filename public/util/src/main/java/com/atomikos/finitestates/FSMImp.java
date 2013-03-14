@@ -57,13 +57,13 @@ public class FSMImp<Status> implements FSM<Status>
     private Hashtable<Status,Hashtable<EventListener,Object>> preenterlisteners_ = null;
     //pre enter listeners
 
-    private Hashtable transitionlisteners_ = null;
+    private Hashtable<Status,Hashtable<EventListener,Object>> transitionlisteners_ = null;
     //transition listeners
 
-    private Hashtable pretransitionlisteners_ = null;
+    private Hashtable<Status,Hashtable<EventListener,Object>> pretransitionlisteners_ = null;
     //pretransition listeners
 
-    private TransitionTable transitiontable_ = null;
+    private TransitionTable<Status> transitiontable_ = null;
     //records the legal transitions
 
     private Object eventsource_ = null;
@@ -80,7 +80,7 @@ public class FSMImp<Status> implements FSM<Status>
      *@param initialstate The initial state of the FSM.
      */
 
-    public FSMImp ( TransitionTable transitiontable , Status initialstate )
+    public FSMImp ( TransitionTable<Status> transitiontable , Status initialstate )
     {
         this ( null, transitiontable, initialstate );
         eventsource_ = this;
@@ -96,15 +96,15 @@ public class FSMImp<Status> implements FSM<Status>
      *@param initialstate The initial state of the FSM.
      */
 
-    public FSMImp ( Object eventsource, TransitionTable transitiontable,
+    public FSMImp ( Object eventsource, TransitionTable<Status> transitiontable,
                     Status initialstate )
     {
         transitiontable_ = transitiontable;
         state_ = initialstate;
         enterlisteners_ = new Hashtable<Status,Hashtable<EventListener,Object>>();
         preenterlisteners_ = new Hashtable<Status,Hashtable<EventListener,Object>>();
-        transitionlisteners_ = new Hashtable();
-        pretransitionlisteners_ = new Hashtable();
+        transitionlisteners_ = new Hashtable<Status,Hashtable<EventListener,Object>>();
+        pretransitionlisteners_ = new Hashtable<Status,Hashtable<EventListener,Object>>();
         eventsource_ = eventsource;
         stateLatch_ = new Object();
     }
@@ -140,12 +140,12 @@ public class FSMImp<Status> implements FSM<Status>
 
     protected synchronized void addTransitionListener(Hashtable listeners,
 				 Object lstnr,
-				 Object from,
-				 Object to)
+				 Status from,
+				 Status to)
     {
-        Hashtable lstnrs = ( Hashtable ) listeners.get(from);
+        Hashtable<Status,Hashtable> lstnrs = ( Hashtable<Status,Hashtable> ) listeners.get(from);
         if (lstnrs == null)
-	  lstnrs = new Hashtable();
+	  lstnrs = new Hashtable<Status,Hashtable>();
         Hashtable tolstnrs = (Hashtable ) lstnrs.get(to);
         if (tolstnrs == null)
 	  tolstnrs = new Hashtable();
@@ -167,7 +167,7 @@ public class FSMImp<Status> implements FSM<Status>
 			     boolean pre)
     {
         Hashtable<EventListener,Object> lstnrs = null;
-        FSMEnterEvent event = new FSMEnterEvent (eventsource_, state);
+        FSMEnterEvent<Status> event = new FSMEnterEvent<Status> (eventsource_, state);
         synchronized ( this ) {
 
             lstnrs= listeners.get ( state );
@@ -183,9 +183,9 @@ public class FSMImp<Status> implements FSM<Status>
         while (enumm.hasMoreElements()) {
         		EventListener listener=enumm.nextElement();
             	if ( pre && ( listener instanceof FSMPreEnterListener ))
-            	    ((FSMPreEnterListener) listener).preEnter (event);
+            	    ((FSMPreEnterListener<Status>) listener).preEnter (event);
             	else if (!pre && (listener instanceof FSMEnterListener))
-            	    ((FSMEnterListener) listener).entered ( event );
+            	    ((FSMEnterListener<Status>) listener).entered ( event );
         }
     }
 
@@ -198,24 +198,24 @@ public class FSMImp<Status> implements FSM<Status>
      *@param pre True iff before transition.
      */
 
-    protected void notifyListeners ( Hashtable listeners, Object from ,
-			       Object to , boolean pre )
+    protected void notifyListeners ( Hashtable<Status,Hashtable<EventListener,Object>> listeners, Status from ,
+    		Status to , boolean pre )
     {
-        FSMTransitionEvent event = new FSMTransitionEvent (eventsource_, from, to );
-        Hashtable lstnrs = null;
-        Hashtable  tolstnrs = null;
+        FSMTransitionEvent<Status> event = new FSMTransitionEvent<Status> (eventsource_, from, to );
+        Hashtable<EventListener,Object> lstnrs = null;
+        Hashtable<EventListener,Object>  tolstnrs = null;
         synchronized ( this ) {
-            lstnrs = ( Hashtable ) listeners.get( from );
+            lstnrs = ( Hashtable<EventListener,Object> ) listeners.get( from );
             if ( lstnrs == null )
                 return;
-            tolstnrs = ( Hashtable ) lstnrs.get( to );
+            tolstnrs = ( Hashtable<EventListener,Object> ) lstnrs.get( to );
             if ( tolstnrs == null )
                 return;
 
             //clone to avoid concurrency effects
             //during iteration outside synch block
-            lstnrs = ( Hashtable ) lstnrs.clone();
-            tolstnrs = ( Hashtable ) tolstnrs.clone();
+            lstnrs = ( Hashtable<EventListener,Object> ) lstnrs.clone();
+            tolstnrs = ( Hashtable<EventListener,Object> ) tolstnrs.clone();
         }
 
         //iterator outside synch to avoid deadlocks
@@ -265,7 +265,7 @@ public class FSMImp<Status> implements FSM<Status>
     public void setState(Status state)
         throws IllegalStateException
     {
-    		Object oldstate = null;
+    	Status oldstate = null;
         synchronized ( this ) {
             if (!transitiontable_.legalTransition(state_,state))
                 	throw new IllegalStateException("Transition not allowed: "+

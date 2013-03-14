@@ -112,7 +112,7 @@ class TxTerminatedStateHandler extends TransactionStateHandler
         throw new IllegalStateException ( "Transaction no longer active" );
     }
 
-    protected Object getState()
+    protected TxState getState()
     {
         if ( commit_ ) return getCT().getCoordinatorImp().getStateWithTwoPhaseCommitDecision();
         else {

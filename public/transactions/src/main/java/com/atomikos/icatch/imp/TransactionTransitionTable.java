@@ -36,12 +36,12 @@ import com.atomikos.icatch.TxState;
  * A transition table for transaction <b>coordinator</b> objects.
  */
 
-class TransactionTransitionTable implements TransitionTable
+class TransactionTransitionTable implements TransitionTable<TxState>
 {
 
     protected Hashtable transitions;
 
-    protected static Hashtable defaultTransitions;
+    protected static Hashtable<TxState,Hashtable<TxState,Object>> defaultTransitions;
 
     /**
      * Builds a default transition table for rootsets.
@@ -49,22 +49,22 @@ class TransactionTransitionTable implements TransitionTable
      * @return Hashtable The default table for rootsets.
      */
 
-    protected static Hashtable defaultTransitions ()
+    protected static Hashtable<TxState,Hashtable<TxState,Object>> defaultTransitions ()
     {
         if ( defaultTransitions == null ) {
 
-            Hashtable defaultTrans = new Hashtable ();
-            Hashtable fromInit = new Hashtable ();
+            Hashtable<TxState,Hashtable<TxState,Object>> defaultTrans = new Hashtable<TxState,Hashtable<TxState,Object>> ();
+            
 
             // where can we go from ACTIVE?
-            Hashtable fromActive = new Hashtable ();
+            Hashtable<TxState,Object> fromActive = new Hashtable<TxState,Object> ();
             fromActive.put ( TxState.ACTIVE, new Object () );
             fromActive.put ( TxState.ABORTING, new Object () );
             fromActive.put ( TxState.COMMITTING, new Object () );
             fromActive.put ( TxState.PREPARING, new Object () );
             defaultTrans.put ( TxState.ACTIVE, fromActive );
 
-            Hashtable fromABORTING = new Hashtable ();
+            Hashtable<TxState,Object> fromABORTING = new Hashtable<TxState,Object> ();
             fromABORTING.put ( TxState.TERMINATED, new Object () );
             fromABORTING.put ( TxState.ABORTING, new Object () );
             fromABORTING.put ( TxState.HEUR_ABORTED, new Object () );
@@ -73,7 +73,7 @@ class TransactionTransitionTable implements TransitionTable
             fromABORTING.put ( TxState.HEUR_HAZARD, new Object () );
             defaultTrans.put ( TxState.ABORTING, fromABORTING );
 
-            Hashtable fromPREPARING = new Hashtable ();
+            Hashtable<TxState,Object> fromPREPARING = new Hashtable<TxState,Object> ();
             fromPREPARING.put ( TxState.IN_DOUBT, new Object () );
             fromPREPARING.put ( TxState.TERMINATED, new Object () ); // readonly
             fromPREPARING.put ( TxState.ABORTING, new Object () );
@@ -81,12 +81,12 @@ class TransactionTransitionTable implements TransitionTable
             // needed for beforeCompletion notification of 1PC
             defaultTrans.put ( TxState.PREPARING, fromPREPARING );
 
-            Hashtable fromIN_DOUBT = new Hashtable ();
+            Hashtable<TxState,Object> fromIN_DOUBT = new Hashtable<TxState,Object> ();
             fromIN_DOUBT.put ( TxState.COMMITTING, new Object () );
             fromIN_DOUBT.put ( TxState.ABORTING, new Object () );
             defaultTrans.put ( TxState.IN_DOUBT, fromIN_DOUBT );
 
-            Hashtable fromCOMMING = new Hashtable ();
+            Hashtable<TxState,Object> fromCOMMING = new Hashtable<TxState,Object> ();
             fromCOMMING.put ( TxState.TERMINATED, new Object () );
             fromCOMMING.put ( TxState.HEUR_COMMITTED, new Object () );
             fromCOMMING.put ( TxState.HEUR_ABORTED, new Object () );
@@ -94,28 +94,28 @@ class TransactionTransitionTable implements TransitionTable
             fromCOMMING.put ( TxState.HEUR_HAZARD, new Object () );
             defaultTrans.put ( TxState.COMMITTING, fromCOMMING );
 
-            Hashtable fromHEURCOMM = new Hashtable ();
+            Hashtable<TxState,Object> fromHEURCOMM = new Hashtable<TxState,Object> ();
             fromHEURCOMM.put ( TxState.TERMINATED, new Object () );
             defaultTrans.put ( TxState.HEUR_COMMITTED, fromHEURCOMM );
 
-            Hashtable fromHEURMIXED = new Hashtable ();
+            Hashtable<TxState,Object> fromHEURMIXED = new Hashtable<TxState,Object> ();
             fromHEURMIXED.put ( TxState.HEUR_MIXED, new Object () );
             // idempotence for logging of hazards!
             fromHEURMIXED.put ( TxState.TERMINATED, new Object () );
             defaultTrans.put ( TxState.HEUR_MIXED, fromHEURMIXED );
 
-            Hashtable fromHEURHAZARD = new Hashtable ();
+            Hashtable<TxState,Object> fromHEURHAZARD = new Hashtable<TxState,Object> ();
             fromHEURHAZARD.put ( TxState.HEUR_HAZARD, new Object () );
             // idempotent for indoubt resoltion and logging!
             fromHEURHAZARD.put ( TxState.TERMINATED, new Object () );
             defaultTrans.put ( TxState.HEUR_HAZARD, fromHEURHAZARD );
 
-            Hashtable fromHEURABORTED = new Hashtable ();
+            Hashtable<TxState,Object> fromHEURABORTED = new Hashtable<TxState,Object> ();
             fromHEURABORTED.put ( TxState.TERMINATED, new Object () );
             fromHEURABORTED.put ( TxState.HEUR_ABORTED, new Object () );
             defaultTrans.put ( TxState.HEUR_ABORTED, fromHEURABORTED );
 
-            Hashtable fromTERMINATED = new Hashtable ();
+            Hashtable<TxState,Object> fromTERMINATED = new Hashtable<TxState,Object> ();
             fromTERMINATED.put ( TxState.TERMINATED, new Object () );
             defaultTrans.put ( TxState.TERMINATED, fromTERMINATED );
             defaultTransitions = defaultTrans;
@@ -150,7 +150,7 @@ class TransactionTransitionTable implements TransitionTable
      *            The end state of the transition.
      * @return true if the transition is allowed, false otherwise.
      */
-    public boolean legalTransition ( Object from , Object to )
+    public boolean legalTransition ( TxState from , TxState to )
     {
         if ( transitions == null ) return false;
         if ( !transitions.containsKey ( from ) ) return false;

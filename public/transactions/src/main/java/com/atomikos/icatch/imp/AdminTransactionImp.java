@@ -91,9 +91,9 @@ class AdminTransactionImp implements AdminTransaction
      * @return Object The object state, or null if not found.
      */
 
-    static Object convertState ( int state )
+    static TxState convertState ( int state )
     {
-        Object ret = null;
+    	TxState ret = null;
 
         switch ( state ) {
         case STATE_PREPARED:
@@ -164,7 +164,7 @@ class AdminTransactionImp implements AdminTransaction
 
     public int getState ()
     {
-        Object state = coord_.getState ();
+    	TxState state = coord_.getState ();
 
         return convertState ( state );
     }
@@ -194,7 +194,7 @@ class AdminTransactionImp implements AdminTransaction
     public HeuristicMessage[] getHeuristicMessages ( int state )
     {
         HeuristicMessage[] ret = null;
-        Object txstate = convertState ( state );
+        TxState txstate = convertState ( state );
         if ( txstate != null ) {
             ret = coord_.getHeuristicMessages ( txstate );
         }
@@ -214,7 +214,7 @@ class AdminTransactionImp implements AdminTransaction
         } catch ( RollbackException rb ) {
             // impossible since this happens for 1PC only,
             // and 1PC txs are not in the log?!
-            Stack errors = new Stack ();
+            Stack<Exception> errors = new Stack<Exception> ();
             errors.push ( rb );
             throw new SysException ( "Error in forced commit: " + rb.getMessage (), errors );
         }
