@@ -32,8 +32,10 @@ import java.util.Vector;
 
 import com.atomikos.finitestates.FSMEnterEvent;
 import com.atomikos.finitestates.FSMPreEnterListener;
+import com.atomikos.icatch.TxState;
 import com.atomikos.persistence.LogException;
 import com.atomikos.persistence.ObjectImage;
+import com.atomikos.persistence.Recoverable;
 import com.atomikos.persistence.StateRecoverable;
 import com.atomikos.persistence.StateRecoveryManager;
 
@@ -43,16 +45,16 @@ import com.atomikos.persistence.StateRecoveryManager;
  *
  */
 
-public class VolatileStateRecoveryManager implements StateRecoveryManager,
-        FSMPreEnterListener
+public class VolatileStateRecoveryManager implements StateRecoveryManager<TxState>,
+        FSMPreEnterListener<TxState>
 {
 
-    private Map idToElementMap;
+    private Map<Object,StateObjectImage> idToElementMap;
 
 
     public VolatileStateRecoveryManager ()
     {
-        idToElementMap = new HashMap ();
+        idToElementMap = new HashMap<Object,StateObjectImage> ();
     }
 
     /**
@@ -68,11 +70,11 @@ public class VolatileStateRecoveryManager implements StateRecoveryManager,
      * @see StateRecoveryManager
      */
 
-    public void register ( StateRecoverable staterecoverable )
+    public void register ( StateRecoverable<TxState> staterecoverable )
     {
         if ( staterecoverable == null )
             throw new IllegalArgumentException ( "null in register arg" );
-        Object[] states = staterecoverable.getRecoverableStates ();
+        TxState[] states = staterecoverable.getRecoverableStates ();
         if ( states != null ) {
             for ( int i = 0; i < states.length; i++ ) {
                 staterecoverable.addFSMPreEnterListener ( this, states[i] );
@@ -88,16 +90,16 @@ public class VolatileStateRecoveryManager implements StateRecoveryManager,
      * @see FSMPreEnterListener
      */
 
-    public synchronized void preEnter ( FSMEnterEvent event )
+    public synchronized void preEnter ( FSMEnterEvent<TxState> event )
             throws IllegalStateException
     {
-        Object state = event.getState ();
-        StateRecoverable source = (StateRecoverable) event.getSource ();
+    	TxState state = event.getState ();
+        StateRecoverable<TxState> source = (StateRecoverable<TxState>) event.getSource ();
         ObjectImage img = source.getObjectImage ( state );
         //if img null: do nothing (BUG FIX 10041)
         if ( img != null ) {
 	        	StateObjectImage simg = new StateObjectImage ( img );
-	        Object[] finalstates = source.getFinalStates ();
+	        	TxState[] finalstates = source.getFinalStates ();
 	        boolean delete = false;
 
 	        for ( int i = 0; i < finalstates.length; i++ ) {
@@ -126,12 +128,12 @@ public class VolatileStateRecoveryManager implements StateRecoveryManager,
      * @see StateRecoveryManager
      */
 
-    public StateRecoverable recover ( Object id ) throws LogException
+    public StateRecoverable<TxState> recover ( Object id ) throws LogException
     {
-        StateRecoverable ret = null;
+        StateRecoverable<TxState> ret = null;
 
         StateObjectImage simg = (StateObjectImage) idToElementMap.get ( id );
-        ret = (StateRecoverable) simg.restore ();
+        ret = (StateRecoverable<TxState>) simg.restore ();
 
         return ret;
     }
@@ -140,10 +142,10 @@ public class VolatileStateRecoveryManager implements StateRecoveryManager,
      * @see StateRecoveryManager
      */
 
-    public Vector recover () throws LogException
+    public Vector<Recoverable> recover () throws LogException
     {
-        Vector ret = new Vector ();
-        Iterator keys = idToElementMap.keySet ().iterator ();
+        Vector<Recoverable> ret = new Vector<Recoverable> ();
+        Iterator<Object> keys = idToElementMap.keySet ().iterator ();
         while ( keys.hasNext () ) {
             Object key = keys.next ();
             StateObjectImage simg = (StateObjectImage) idToElementMap

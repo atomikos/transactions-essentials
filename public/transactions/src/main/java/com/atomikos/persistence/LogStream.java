@@ -28,6 +28,7 @@ package com.atomikos.persistence;
 import java.util.Enumeration;
 import java.util.Vector;
 
+
 /**
  * The LogStream interface is an abstract definition of a stream that
  * encapsulates a physical log. In contrast to a regular input or output stream,
@@ -58,7 +59,7 @@ public interface LogStream
      *                On failure.
      */
 
-    public Vector recover () throws LogException;
+    public Vector<Recoverable> recover () throws LogException;
 
     /**
      * After intial recovery, it is good practice to write a checkpoint with
