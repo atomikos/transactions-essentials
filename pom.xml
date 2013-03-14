@@ -60,7 +60,10 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-javadoc-plugin</artifactId>
-					<version>2.7</version>
+					<version>2.9</version>
+					<configuration>
+						<failOnError>false</failOnError>
+					</configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -200,7 +203,7 @@
 					<!--PLQ "package" must be invoked before javadoc:aggregate-jar -->
 					<preparationGoals>clean package javadoc:aggregate-jar install</preparationGoals>
 					<goals>deploy</goals>
-					<arguments>-DskipTests -Passemble,post-release</arguments>
+					<arguments>-DskipTests -Passemble</arguments>
 					<tag>${releaseVersion}</tag>
 				</configuration>
 			</plugin>
