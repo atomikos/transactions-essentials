@@ -62,7 +62,7 @@ class HeurMixedStateHandler extends CoordinatorStateHandler
         hazards_ = (Hashtable) hazards.clone ();
     }
 
-    protected Object getState ()
+    protected TxState getState ()
     {
         return TxState.HEUR_MIXED;
     }

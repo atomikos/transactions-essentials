@@ -76,7 +76,7 @@ public class ActiveStateHandler extends CoordinatorStateHandler
         return rollbackTicks_;
     }
 
-    protected Object getState ()
+    protected TxState getState ()
     {
         return TxState.ACTIVE;
     }

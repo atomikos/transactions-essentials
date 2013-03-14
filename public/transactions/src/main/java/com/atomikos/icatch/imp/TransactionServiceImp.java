@@ -385,21 +385,21 @@ public class TransactionServiceImp implements TransactionService,
 
     private void startlistening ( CoordinatorImp coordinator )
     {
-        Hashtable forgetStates = new Hashtable ();
+        Hashtable<TxState,Object> forgetStates = new Hashtable<TxState,Object> ();
         // forgetStates are those that lead to a removal of the coordinator
         // such that it only exists in the log but no longer in CM
 
         forgetStates.put ( TxState.TERMINATED, new Object () );
 
-        Object[] finalStates = coordinator.getFinalStates ();
+        TxState[] finalStates = coordinator.getFinalStates ();
         for ( int i = 0; i < finalStates.length; i++ ) {
             forgetStates.put ( finalStates[i], new Object () );
         }
 
-        Enumeration enumm = forgetStates.keys ();
+        Enumeration<TxState> enumm = forgetStates.keys ();
 
         while ( enumm.hasMoreElements () ) {
-            Object state = enumm.nextElement ();
+            TxState state = (TxState)enumm.nextElement ();
             coordinator.addFSMEnterListener ( this, state );
         }
 

@@ -484,7 +484,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable,DataSe
      *         state.
      */
 
-    abstract Object getState ();
+    abstract TxState getState ();
 
     /**
      * The corresponding 2PC method is delegated hereto.

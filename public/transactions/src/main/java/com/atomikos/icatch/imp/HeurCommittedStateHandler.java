@@ -51,7 +51,7 @@ class HeurCommittedStateHandler extends CoordinatorStateHandler
         super ( previous );
     }
 
-    protected Object getState ()
+    protected TxState getState ()
     {
         return TxState.HEUR_COMMITTED;
     }

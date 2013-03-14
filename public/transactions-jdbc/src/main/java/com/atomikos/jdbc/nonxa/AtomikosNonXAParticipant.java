@@ -25,6 +25,8 @@
 
 package com.atomikos.jdbc.nonxa;
 
+
+import java.util.List;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
@@ -70,7 +72,7 @@ public class AtomikosNonXAParticipant implements Participant, Serializable,DataS
 
 	private boolean readOnly;
 
-    private ArrayList heuristicMessages;
+    private List<HeuristicMessage> heuristicMessages;
 
     public AtomikosNonXAParticipant() {
 	}
@@ -80,7 +82,7 @@ public class AtomikosNonXAParticipant implements Participant, Serializable,DataS
 
     public AtomikosNonXAParticipant ( JtaAwareNonXaConnection connection , String name )
     {
-        heuristicMessages = new ArrayList ();
+        heuristicMessages = new ArrayList<HeuristicMessage> ();
         this.connection = connection;
         heuristicMessages.add ( new StringHeuristicMessage ( "Non-XA resource '" + name +
                 "': warning: this resource does not support two-phase commit" ) );

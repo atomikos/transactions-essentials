@@ -38,7 +38,7 @@ import com.atomikos.finitestates.FSMPreEnterEventSource;
  * should take this into account.
  */
 
-public interface StateRecoverable extends Recoverable, FSMPreEnterEventSource
+public interface StateRecoverable<T> extends Recoverable, FSMPreEnterEventSource<T>
 {
 
     /**
@@ -50,7 +50,7 @@ public interface StateRecoverable extends Recoverable, FSMPreEnterEventSource
      * 
      */
 
-    public Object[] getRecoverableStates ();
+    public T[] getRecoverableStates ();
 
     /**
      * Needed by the Recovery system to determine when a logged state can be
@@ -60,7 +60,7 @@ public interface StateRecoverable extends Recoverable, FSMPreEnterEventSource
      * @return Object[] The list of final states.
      */
 
-    public Object[] getFinalStates ();
+    public T[] getFinalStates ();
 
     /**
      * Get an object image for the given state.
@@ -74,5 +74,5 @@ public interface StateRecoverable extends Recoverable, FSMPreEnterEventSource
      *         state, even if the state was returned as one of the recoverable states.
      */
 
-    public ObjectImage getObjectImage ( Object state );
+    public ObjectImage getObjectImage ( T state );
 }

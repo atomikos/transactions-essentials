@@ -100,7 +100,7 @@ public class HeurHazardStateHandler extends CoordinatorStateHandler
         } // while
     }
 
-    protected Object getState ()
+    protected TxState getState ()
     {
         return TxState.HEUR_HAZARD;
     }

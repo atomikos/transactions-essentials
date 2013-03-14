@@ -32,7 +32,7 @@ package com.atomikos.finitestates;
 *Interface of an FSMEnterEventSource.
 */
 
-public interface FSMEnterEventSource extends Stateful
+public interface FSMEnterEventSource<T> extends Stateful<T>
 {
 	
 	/**
@@ -42,6 +42,6 @@ public interface FSMEnterEventSource extends Stateful
 	 *
 	 */
 	 
-	public void addFSMEnterListener(FSMEnterListener l, Object state);
+	public void addFSMEnterListener(FSMEnterListener l, T state);
 	
 }

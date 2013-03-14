@@ -56,7 +56,7 @@ class TerminatedStateHandler extends CoordinatorStateHandler
         dispose ();
     }
 
-    protected Object getState ()
+    protected TxState getState ()
     {
         return TxState.TERMINATED;
     }

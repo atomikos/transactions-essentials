@@ -55,9 +55,9 @@ class AtomikosConnectionProxy extends AbstractConnectionProxy
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(AtomikosConnectionProxy.class);
 
-	private final static List ENLISTMENT_METHODS = Arrays.asList(new String[] {"createStatement", "prepareStatement", "prepareCall"});
-	private final static List CLOSE_METHODS = Arrays.asList(new String[] {"close"});
-	private final static List XA_INCOMPATIBLE_METHODS = Arrays.asList(new String[] {"commit", "rollback", "setSavepoint", "releaseSavepoint"});
+	private final static List<String> ENLISTMENT_METHODS = Arrays.asList(new String[] {"createStatement", "prepareStatement", "prepareCall"});
+	private final static List<String> CLOSE_METHODS = Arrays.asList(new String[] {"close"});
+	private final static List<String> XA_INCOMPATIBLE_METHODS = Arrays.asList(new String[] {"commit", "rollback", "setSavepoint", "releaseSavepoint"});
 
 	private final Connection delegate;
 	private SessionHandleState sessionHandleState;
@@ -257,19 +257,19 @@ class AtomikosConnectionProxy extends AbstractConnectionProxy
 	{
 		Reapable ret = null;
         AtomikosConnectionProxy proxy = new AtomikosConnectionProxy(c, sessionHandleState , hmsg );
-        Set interfaces = PropertyUtils.getAllImplementedInterfaces ( c.getClass() );
+        Set<Class> interfaces = PropertyUtils.getAllImplementedInterfaces ( c.getClass() );
         interfaces.add ( Reapable.class );
         //see case 24532
         interfaces.add ( DynamicProxy.class );
         Class[] interfaceClasses = ( Class[] ) interfaces.toArray ( new Class[0] );
 
-		Set minimumSetOfInterfaces = new HashSet();
+		Set<Class> minimumSetOfInterfaces = new HashSet<Class>();
 		minimumSetOfInterfaces.add ( Reapable.class );
 		minimumSetOfInterfaces.add ( DynamicProxy.class );
 		minimumSetOfInterfaces.add ( java.sql.Connection.class );
         Class[] minimumSetOfInterfaceClasses = ( Class[] ) minimumSetOfInterfaces.toArray( new Class[0] );
 
-        List classLoaders = new ArrayList();
+        List<ClassLoader> classLoaders = new ArrayList<ClassLoader>();
 		classLoaders.add ( Thread.currentThread().getContextClassLoader() );
 		classLoaders.add ( c.getClass().getClassLoader() );
 		classLoaders.add ( AtomikosConnectionProxy.class.getClassLoader() );
