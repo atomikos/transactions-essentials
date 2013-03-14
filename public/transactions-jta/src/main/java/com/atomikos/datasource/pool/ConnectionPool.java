@@ -50,6 +50,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 	private ConnectionPoolProperties properties;
 	private boolean destroyed;
 	private PooledAlarmTimer maintenanceTimer;
+	private String name;
 
 
 	public ConnectionPool ( ConnectionFactory connectionFactory , ConnectionPoolProperties properties ) throws ConnectionPoolException
@@ -57,6 +58,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 		this.connectionFactory = connectionFactory;
 		this.properties = properties;
 		this.destroyed = false;
+		this.name = properties.getUniqueResourceName();
 		init();
 	}
 
@@ -92,9 +94,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 			}
 		});
 		TaskManager.getInstance().executeTask ( maintenanceTimer );
-		if ( properties != null ){
-			name = properties.getUniqueResourceName();
-		}
+		
 	}
 
 	private Reapable recycleConnectionIfPossible ( HeuristicMessage hmsg ) throws Exception
@@ -180,11 +180,10 @@ public class ConnectionPool implements XPooledConnectionEventListener
 				} catch (InterruptedException e) {
 					// cf bug 67457
 					InterruptedExceptionHelper.handleInterruptedException ( e );
-					// ignore
 				}
 				remainingTime -= 1000;
 			}
-		} // while (ret == null)
+		} 
 		return ret;
 	}
 
@@ -328,13 +327,8 @@ public class ConnectionPool implements XPooledConnectionEventListener
 		this.notify();
 
 	}
-	String name = "";
+		
 	public String toString() {
-
-
-
-
-
 		return "atomikos connection pool '" + name + "'";
 	}
 
