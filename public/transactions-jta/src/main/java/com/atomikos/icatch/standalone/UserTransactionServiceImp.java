@@ -203,17 +203,17 @@ class UserTransactionServiceImp extends AbstractJtaUserTransactionService
         	}
         }
 
-        int max = (new Integer ( getTrimmedProperty (
-                AbstractUserTransactionServiceFactory.MAX_ACTIVES_PROPERTY_NAME, p ) )).intValue ();
-        long chckpt = (new Long ( getTrimmedProperty (
-                AbstractUserTransactionServiceFactory.CHECKPOINT_INTERVAL_PROPERTY_NAME, p ) )).longValue ();
-        StateRecoveryManager recmgr = Factory.createLogSystem(logname, logdir, enableRecovery, chckpt);
+        int max = Integer.valueOf( getTrimmedProperty (
+                AbstractUserTransactionServiceFactory.MAX_ACTIVES_PROPERTY_NAME, p ) );
+        long chckpt = Long.valueOf( getTrimmedProperty (
+                AbstractUserTransactionServiceFactory.CHECKPOINT_INTERVAL_PROPERTY_NAME, p ) );
+        StateRecoveryManager recmgr = Factory.createLogSystem(p);
 
-        long maxTimeout = (new Long ( getTrimmedProperty (
-                AbstractUserTransactionServiceFactory.MAX_TIMEOUT_PROPERTY_NAME, p ) )).longValue ();
+        long maxTimeout = Long.valueOf( getTrimmedProperty (
+                AbstractUserTransactionServiceFactory.MAX_TIMEOUT_PROPERTY_NAME, p ) );
 
-        long defaultTimeoutInMillis = (new Long ( getTrimmedProperty (
-                AbstractUserTransactionServiceFactory.DEFAULT_JTA_TIMEOUT_PROPERTY_NAME, p ) )).longValue ();
+        long defaultTimeoutInMillis = Long.valueOf( getTrimmedProperty (
+                AbstractUserTransactionServiceFactory.DEFAULT_JTA_TIMEOUT_PROPERTY_NAME, p ) );
         int defaultTimeout = 0;
 
         defaultTimeout = (int) defaultTimeoutInMillis/1000;

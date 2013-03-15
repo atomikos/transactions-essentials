@@ -228,8 +228,8 @@ public class AtomikosNonXAParticipant implements Participant, Serializable,DataS
 	public void writeData(DataOutput out) throws IOException {
 		out.writeBoolean(readOnly);
 		out.writeInt(heuristicMessages.size());
-		for (Iterator iterator = heuristicMessages.iterator(); iterator.hasNext();) {
-			HeuristicMessage heuristicMessage = (HeuristicMessage) iterator.next();
+		for (Iterator<HeuristicMessage> iterator = heuristicMessages.iterator(); iterator.hasNext();) {
+			HeuristicMessage heuristicMessage =  iterator.next();
 			out.writeUTF(heuristicMessage.toString());
 		}
 
@@ -238,7 +238,7 @@ public class AtomikosNonXAParticipant implements Participant, Serializable,DataS
 	public void readData(DataInput in) throws IOException {
 		readOnly=in.readBoolean();
 		int nbMessages=in.readInt();
-		heuristicMessages=new ArrayList(nbMessages);
+		heuristicMessages=new ArrayList<HeuristicMessage>(nbMessages);
 		for (int i = 0; i < nbMessages; i++) {
 			heuristicMessages.add(new StringHeuristicMessage(in.readUTF()));
 		}

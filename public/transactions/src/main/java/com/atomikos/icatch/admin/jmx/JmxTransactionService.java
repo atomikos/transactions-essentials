@@ -117,7 +117,7 @@ public class JmxTransactionService implements JmxTransactionServiceMBean,
 
     private AdminTransaction[] filterHeuristics ( AdminTransaction[] txs )
     {
-    	List ret = new ArrayList();
+    	List<AdminTransaction> ret = new ArrayList<AdminTransaction>();
     	for ( int i = 0 ; i < txs.length ; i++ ) {
     		AdminTransaction next = txs[i];
     		switch ( next.getState() ) {

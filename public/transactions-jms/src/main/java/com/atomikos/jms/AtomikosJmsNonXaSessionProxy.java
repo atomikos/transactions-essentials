@@ -56,19 +56,19 @@ class AtomikosJmsNonXaSessionProxy extends AbstractJmsSessionProxy
 	public static Object newInstance ( Session s , SessionHandleStateChangeListener pooledConnection , SessionHandleStateChangeListener connectionProxy ) throws JMSException 
 	{
         AtomikosJmsNonXaSessionProxy proxy = new AtomikosJmsNonXaSessionProxy ( s , pooledConnection , connectionProxy );
-        Set interfaces = PropertyUtils.getAllImplementedInterfaces ( s.getClass() );
+        Set<Class> interfaces = PropertyUtils.getAllImplementedInterfaces ( s.getClass() );
         //see case 24532
         interfaces.add ( DynamicProxy.class );
         Class[] interfaceClasses = ( Class[] ) interfaces.toArray ( new Class[0] );
         
-        Set minimumSetOfInterfaces = new HashSet();
+        Set<Class> minimumSetOfInterfaces = new HashSet<Class>();
 		minimumSetOfInterfaces.add ( Reapable.class );
 		minimumSetOfInterfaces.add ( DynamicProxy.class );
 		minimumSetOfInterfaces.add ( javax.jms.Session.class );
         Class[] minimumSetOfInterfaceClasses = ( Class[] ) minimumSetOfInterfaces.toArray( new Class[0] );
         
         
-        List classLoaders = new ArrayList();
+        List<ClassLoader> classLoaders = new ArrayList<ClassLoader>();
 		classLoaders.add ( Thread.currentThread().getContextClassLoader() );
 		classLoaders.add ( s.getClass().getClassLoader() );
 		classLoaders.add ( AtomikosJmsNonXaSessionProxy.class.getClassLoader() );
