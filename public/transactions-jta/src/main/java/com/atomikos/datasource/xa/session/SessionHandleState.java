@@ -54,19 +54,19 @@ public class SessionHandleState
 	private static final Logger LOGGER = LoggerFactory.createLogger(SessionHandleState.class);
 
 	private TransactionContext currentContext;
-	private Set allContexts;
+	private Set<TransactionContext> allContexts;
 	private XATransactionalResource resource;
 	private XAResource xaResource;
 	private boolean erroneous;
 	private boolean closed;
-	private List sessionHandleStateChangeListeners = new ArrayList();
+	private List<SessionHandleStateChangeListener> sessionHandleStateChangeListeners = new ArrayList<SessionHandleStateChangeListener>();
 	
 	
 	public SessionHandleState ( XATransactionalResource resource , XAResource xaResource )
 	{
 		this.resource = resource;
 		this.xaResource = xaResource;
-		this.allContexts = new HashSet();
+		this.allContexts = new HashSet<TransactionContext>();
 		this.erroneous = false;
 		this.closed = true;
 	}
@@ -82,7 +82,7 @@ public class SessionHandleState
 	public synchronized boolean isTerminated()
 	{
 		boolean terminated = true;
-		Iterator it = allContexts.iterator();
+		Iterator<TransactionContext> it = allContexts.iterator();
 		while ( it.hasNext() ) {
 			TransactionContext b = ( TransactionContext ) it.next();
 			if ( b.isTerminated() ) {
@@ -122,7 +122,7 @@ public class SessionHandleState
 	
 		synchronized ( this ) {
 			boolean alreadyTerminated = isTerminated();
-			Iterator it = allContexts.iterator();
+			Iterator<TransactionContext> it = allContexts.iterator();
 			while ( it.hasNext() ) {
 				TransactionContext b = ( TransactionContext ) it.next();
 				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": delegating session close to " + b ) ;
@@ -158,7 +158,7 @@ public class SessionHandleState
 			//this happens if a transaction was suspended and now resumed
 			TransactionContext suspended = null;			
 			if ( ct != null ) {
-				Iterator it = allContexts.iterator();
+				Iterator<TransactionContext> it = allContexts.iterator();
 				while ( it.hasNext() && suspended == null ) {
 					TransactionContext b = ( TransactionContext ) it.next();
 					if ( b.isSuspendedInTransaction ( ct ) ) {
@@ -239,9 +239,9 @@ public class SessionHandleState
 		boolean notifyOfTerminatedEvent = false;
 		synchronized ( this ) {
 			boolean alreadyTerminated = isTerminated();
-			Iterator it = allContexts.iterator();
+			Iterator<TransactionContext> it = allContexts.iterator();
 			while ( it.hasNext() ) {
-				TransactionContext b = ( TransactionContext ) it.next();
+				TransactionContext b = it.next();
 				b.transactionTerminated ( ct );
 			}
 			if ( isTerminated() && !alreadyTerminated ) notifyOfTerminatedEvent = true;

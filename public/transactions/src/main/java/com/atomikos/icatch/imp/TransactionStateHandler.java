@@ -306,7 +306,7 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
         localDecSubTxCount();
     }
 
-    protected abstract Object getState();
+    protected abstract TxState getState();
 
 
     protected List<SubTxAwareParticipant> getSubtxawares()

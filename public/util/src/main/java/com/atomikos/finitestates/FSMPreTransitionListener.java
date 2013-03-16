@@ -36,7 +36,7 @@ import java.util.EventListener;
 *
 */
 
-public interface FSMPreTransitionListener extends EventListener
+public interface FSMPreTransitionListener<Status> extends EventListener
 {
 	/**
 	*A method to be called BEFORE the specified transition takes place.
@@ -49,7 +49,7 @@ public interface FSMPreTransitionListener extends EventListener
 	*@exception IllegalStateException on failure.
 	*/
 
-	public void beforeTransition(FSMTransitionEvent e) 
+	public void beforeTransition(FSMTransitionEvent<Status> e) 
 	    throws IllegalStateException;
 
 }

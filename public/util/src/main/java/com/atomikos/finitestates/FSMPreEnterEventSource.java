@@ -32,9 +32,9 @@ package com.atomikos.finitestates;
  *A source of FSMPreEnterEvents.
  */
 
-public interface FSMPreEnterEventSource extends Stateful
+public interface FSMPreEnterEventSource<Status> extends Stateful<Status>
 {
     
-    public void addFSMPreEnterListener(FSMPreEnterListener l,Object state);
+    public void addFSMPreEnterListener(FSMPreEnterListener<Status> l,Status state);
     
 }

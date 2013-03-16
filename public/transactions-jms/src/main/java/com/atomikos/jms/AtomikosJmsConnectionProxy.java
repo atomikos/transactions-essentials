@@ -91,7 +91,7 @@ implements SessionHandleStateChangeListener
 	
 	private XAConnection delegate;
 	private XATransactionalResource jmsTransactionalResource;
-	private List sessions;
+	private List<Session> sessions;
 	private boolean closed;
 	private boolean reaped;
 	private SessionHandleStateChangeListener owner;
@@ -101,7 +101,7 @@ implements SessionHandleStateChangeListener
 	private AtomikosJmsConnectionProxy ( XAConnection c , XATransactionalResource jmsTransactionalResource , SessionHandleStateChangeListener owner, ConnectionPoolProperties props ) 
 	{
 		this.delegate = c;
-		this.sessions = new ArrayList();
+		this.sessions = new ArrayList<Session>();
 		this.jmsTransactionalResource = jmsTransactionalResource;
 		this.closed = false;
 		this.reaped = false;
@@ -298,19 +298,19 @@ implements SessionHandleStateChangeListener
 		 Reapable ret = null;
 		 
         AtomikosJmsConnectionProxy proxy = new AtomikosJmsConnectionProxy ( c , jmsTransactionalResource , owner , props );
-        Set interfaces = PropertyUtils.getAllImplementedInterfaces ( c.getClass() );
+        Set<Class> interfaces = PropertyUtils.getAllImplementedInterfaces ( c.getClass() );
         interfaces.add ( Reapable.class );
         //see case 24532
         interfaces.add ( DynamicProxy.class );
         Class[] interfaceClasses = ( Class[] ) interfaces.toArray ( new Class[0] );
         
-        Set minimumSetOfInterfaces = new HashSet();
+        Set<Class> minimumSetOfInterfaces = new HashSet<Class>();
 		minimumSetOfInterfaces.add ( Reapable.class );
 		minimumSetOfInterfaces.add ( DynamicProxy.class );
 		minimumSetOfInterfaces.add ( javax.jms.Connection.class );
         Class[] minimumSetOfInterfaceClasses = ( Class[] ) minimumSetOfInterfaces.toArray( new Class[0] );
         
-        List classLoaders = new ArrayList();
+        List<ClassLoader> classLoaders = new ArrayList<ClassLoader>();
 		classLoaders.add ( Thread.currentThread().getContextClassLoader() );
 		classLoaders.add ( c.getClass().getClassLoader() );
 		classLoaders.add ( AtomikosJmsConnectionProxy.class.getClassLoader() );

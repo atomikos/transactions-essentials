@@ -69,11 +69,11 @@ package com.atomikos.finitestates;
 *Interface of a finite state machine.
 */
 
-public interface FSM extends StateMutable, 
-							 FSMEnterEventSource,
-							 FSMPreEnterEventSource,
-							 FSMTransitionEventSource,
-							 FSMPreTransitionEventSource  
+public interface FSM<Status> extends StateMutable<Status>, 
+							 FSMEnterEventSource<Status>,
+							 FSMPreEnterEventSource<Status>,
+							 FSMTransitionEventSource<Status>,
+							 FSMPreTransitionEventSource<Status>  
 {
 	
 	

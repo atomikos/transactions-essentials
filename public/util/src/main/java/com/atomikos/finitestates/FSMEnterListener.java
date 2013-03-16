@@ -34,7 +34,7 @@ import java.util.EventListener;
 *
 */
 
-public interface FSMEnterListener extends EventListener
+public interface FSMEnterListener<Status> extends EventListener
 {
 	
 	/**
@@ -42,5 +42,5 @@ public interface FSMEnterListener extends EventListener
 	*
 	*/
 
-	public void entered(FSMEnterEvent e);
+	public void entered(FSMEnterEvent<Status> e);
 }

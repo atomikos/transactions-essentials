@@ -41,6 +41,7 @@ import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 import com.atomikos.persistence.LogException;
 import com.atomikos.persistence.LogStream;
+import com.atomikos.persistence.Recoverable;
 import com.atomikos.util.VersionedFile;
 
 /**
@@ -109,13 +110,13 @@ public class FileLogStream implements LogStream
     }
 
 
-    public synchronized Vector recover () throws LogException
+    public synchronized Vector<Recoverable> recover () throws LogException
     {
 
         if ( corrupt_ )
             throw new LogException ( "Instance might be corrupted" );
 
-        Vector ret = new Vector ();
+        Vector<Recoverable> ret = new Vector<Recoverable> ();
         InputStream in = null;
 
         try {
@@ -133,7 +134,7 @@ public class FileLogStream implements LogStream
                 // if crashed, then unproper closing might cause endless blocking!
                 // therefore, we check if avaible first.
                 count++;
-                Object nxt = ins.readObject ();
+                Recoverable nxt = (Recoverable)ins.readObject ();
 
                 ret.addElement ( nxt );
                 if ( count % 10 == 0 ) {

@@ -25,6 +25,8 @@
 
 package com.atomikos.jdbc.nonxa;
 
+
+import java.util.List;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
@@ -70,7 +72,7 @@ public class AtomikosNonXAParticipant implements Participant, Serializable,DataS
 
 	private boolean readOnly;
 
-    private ArrayList heuristicMessages;
+    private List<HeuristicMessage> heuristicMessages;
 
     public AtomikosNonXAParticipant() {
 	}
@@ -80,7 +82,7 @@ public class AtomikosNonXAParticipant implements Participant, Serializable,DataS
 
     public AtomikosNonXAParticipant ( JtaAwareNonXaConnection connection , String name )
     {
-        heuristicMessages = new ArrayList ();
+        heuristicMessages = new ArrayList<HeuristicMessage> ();
         this.connection = connection;
         heuristicMessages.add ( new StringHeuristicMessage ( "Non-XA resource '" + name +
                 "': warning: this resource does not support two-phase commit" ) );
@@ -226,8 +228,8 @@ public class AtomikosNonXAParticipant implements Participant, Serializable,DataS
 	public void writeData(DataOutput out) throws IOException {
 		out.writeBoolean(readOnly);
 		out.writeInt(heuristicMessages.size());
-		for (Iterator iterator = heuristicMessages.iterator(); iterator.hasNext();) {
-			HeuristicMessage heuristicMessage = (HeuristicMessage) iterator.next();
+		for (Iterator<HeuristicMessage> iterator = heuristicMessages.iterator(); iterator.hasNext();) {
+			HeuristicMessage heuristicMessage =  iterator.next();
 			out.writeUTF(heuristicMessage.toString());
 		}
 
@@ -236,7 +238,7 @@ public class AtomikosNonXAParticipant implements Participant, Serializable,DataS
 	public void readData(DataInput in) throws IOException {
 		readOnly=in.readBoolean();
 		int nbMessages=in.readInt();
-		heuristicMessages=new ArrayList(nbMessages);
+		heuristicMessages=new ArrayList<HeuristicMessage>(nbMessages);
 		for (int i = 0; i < nbMessages; i++) {
 			heuristicMessages.add(new StringHeuristicMessage(in.readUTF()));
 		}

@@ -38,6 +38,7 @@ import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 import com.atomikos.persistence.LogException;
 import com.atomikos.persistence.LogStream;
+import com.atomikos.persistence.Recoverable;
 
 /**
  * A file implementation of a LogStream.
@@ -98,12 +99,12 @@ public class FileLogStream implements LogStream {
 		simulateCrash_ = true;
 	}
 
-	public Vector recover() throws LogException {
+	public Vector<Recoverable> recover() throws LogException {
 
 		if (corrupt_)
 			throw new LogException("Instance might be corrupted");
 
-		Vector<SystemLogImage> ret = new Vector<SystemLogImage>();
+		Vector<Recoverable> ret = new Vector<Recoverable>();
 
 		try {
 			RandomAccessFile f = file_.openLastValidVersionForReading();

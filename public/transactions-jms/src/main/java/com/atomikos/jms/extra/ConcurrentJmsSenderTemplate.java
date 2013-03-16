@@ -29,9 +29,6 @@ import javax.jms.Connection;
 import javax.jms.JMSException;
 import javax.jms.Session;
 
-import com.atomikos.logging.Logger;
-import com.atomikos.logging.LoggerFactory;
-
 
 /**
  * This is a <b>long-lived</b> JMS sender session, representing a
@@ -56,7 +53,7 @@ import com.atomikos.logging.LoggerFactory;
 
 public class ConcurrentJmsSenderTemplate extends AbstractJmsSenderTemplate
 {
-	private static final Logger LOGGER = LoggerFactory.createLogger(ConcurrentJmsSenderTemplate.class);
+
 
 	public ConcurrentJmsSenderTemplate()
 	{

@@ -32,10 +32,10 @@ package com.atomikos.finitestates;
  *A source of PreTransitionEvents.
  */
 
-public interface FSMPreTransitionEventSource extends Stateful
+public interface FSMPreTransitionEventSource<Status> extends Stateful<Status>
 {
     
-    public void addFSMPreTransitionListener(FSMPreTransitionListener l,
-				    Object from, Object to);
+    public void addFSMPreTransitionListener(FSMPreTransitionListener<Status> l,
+				    Status from, Status to);
 
 }

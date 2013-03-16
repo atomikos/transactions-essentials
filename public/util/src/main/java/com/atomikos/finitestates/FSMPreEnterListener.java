@@ -34,7 +34,7 @@ import java.util.EventListener;
 *
 */
 
-public interface FSMPreEnterListener extends EventListener
+public interface FSMPreEnterListener<Status> extends EventListener
 {
 	/**
 	*Called BEFORE the FSM enters the new state, so that 
@@ -45,5 +45,5 @@ public interface FSMPreEnterListener extends EventListener
 	*happening.
 	*/
 
-	public void preEnter(FSMEnterEvent e) throws IllegalStateException;
+	public void preEnter(FSMEnterEvent<Status> e) throws IllegalStateException;
 }

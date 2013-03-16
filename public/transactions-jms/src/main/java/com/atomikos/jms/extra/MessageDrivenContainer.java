@@ -80,7 +80,7 @@ implements MessageConsumerSessionProperties
 	private String destinationName;
 	private int transactionTimeout;
 	private int poolSize;
-	private List sessions;
+	private List<MessageConsumerSession> sessions;
 	private boolean daemonThreads;
 	private boolean notifyListenerOnClose;
 	private String messageSelector;
@@ -94,7 +94,7 @@ implements MessageConsumerSessionProperties
 	
 	public MessageDrivenContainer()
 	{
-		sessions = new ArrayList ();
+		sessions = new ArrayList<MessageConsumerSession> ();
 		notifyListenerOnClose = false;
         setPoolSize ( 1 );
         setTransactionTimeout ( DEFAULT_TIMEOUT );
@@ -235,7 +235,7 @@ implements MessageConsumerSessionProperties
 	{
 	
 	    messageListener = listener;
-	    Iterator it = sessions.iterator ();
+	    Iterator<MessageConsumerSession> it = sessions.iterator ();
 	    while ( it.hasNext () ) {
 	        MessageConsumerSession s = (MessageConsumerSession) it.next ();
 	        s.setMessageListener ( listener );
@@ -442,7 +442,7 @@ implements MessageConsumerSessionProperties
 	 */
 	public void stop() 
 	{
-	    Iterator it = sessions.iterator ();
+	    Iterator<MessageConsumerSession> it = sessions.iterator ();
 	    while ( it.hasNext () ) {
 	        MessageConsumerSession s = (MessageConsumerSession) it.next ();
 	        s.stopListening ();
@@ -470,9 +470,9 @@ implements MessageConsumerSessionProperties
 	public void setNotifyListenerOnClose ( boolean b ) 
 	{
 	    notifyListenerOnClose = b;
-	    Iterator it = sessions.iterator ();
+	    Iterator<MessageConsumerSession> it = sessions.iterator ();
 	    while ( it.hasNext () ) {
-	      	MessageConsumerSession s = (MessageConsumerSession) it.next ();
+	      	MessageConsumerSession s = it.next ();
 	        s.setNotifyListenerOnClose ( b );
 	    }
 	}

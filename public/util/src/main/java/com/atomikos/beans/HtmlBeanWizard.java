@@ -65,7 +65,7 @@ public class HtmlBeanWizard
 	{
 		if ( props == null ) return null;
 
-		ArrayList list = new ArrayList();
+		ArrayList<Property> list = new ArrayList<Property>();
 
 		for ( int i = 0 ; i < props.length ; i++ ) {
 			if ( ! (  props[i].isHidden() ||
@@ -116,7 +116,7 @@ public class HtmlBeanWizard
 	public String[] getPropertyNames()
 	throws PropertyException
 	{
-		Collection names = new ArrayList();
+		Collection<String> names = new ArrayList<String>();
 		String[] template = new String[0];
 		//do nothing if not inited
 		if ( inspector == null ) return template;

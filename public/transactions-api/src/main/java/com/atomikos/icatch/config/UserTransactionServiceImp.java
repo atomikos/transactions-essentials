@@ -110,9 +110,9 @@ public class UserTransactionServiceImp
 
     private Properties properties_;
     
-    private List tsListeners_;
-    private List logAdministrators_;
-    private List resources_;
+    private List<TSListener> tsListeners_;
+    private List<LogAdministrator> logAdministrators_;
+    private List<RecoverableResource> resources_;
 
     private transient UserTransactionService delegate_;
     //the instance to delegate to; obtained from factory
@@ -300,9 +300,9 @@ public class UserTransactionServiceImp
 
     public UserTransactionServiceImp ()
     {
-		tsListeners_ = new ArrayList();
-		logAdministrators_ = new ArrayList();
-		resources_ = new ArrayList();
+		tsListeners_ = new ArrayList<TSListener>();
+		logAdministrators_ = new ArrayList<LogAdministrator>();
+		resources_ = new ArrayList<RecoverableResource>();
        
     }
 
@@ -345,7 +345,7 @@ public class UserTransactionServiceImp
             //use SYSTEM_DEPENDENT DEFAULT values for others
         }
         catch ( Exception e ) {
-            Stack errors = new Stack ();
+            Stack<Exception> errors = new Stack<Exception> ();
             errors.push ( e );
             throw new SysException ( "Error in init of UserTransactionServiceImp: " + e.getMessage() , errors );
         }
@@ -532,7 +532,7 @@ public class UserTransactionServiceImp
 	 * 
 	 * @param resources
 	 */
-	public void setInitialRecoverableResources ( List resources ) 
+	public void setInitialRecoverableResources ( List<RecoverableResource> resources ) 
 	{
 		resources_ = resources;
 		
@@ -543,7 +543,7 @@ public class UserTransactionServiceImp
 	 * 
 	 * @param administrators
 	 */
-	public void setInitialLogAdministrators ( List administrators ) 
+	public void setInitialLogAdministrators ( List<LogAdministrator> administrators ) 
 	{
 		logAdministrators_ = administrators;
 		
@@ -553,7 +553,7 @@ public class UserTransactionServiceImp
 	 * Dependency injection of all listeners to be added during init.
 	 * @param listeners
 	 */
-	public void setInitialTSListeners ( List listeners ) 
+	public void setInitialTSListeners ( List<TSListener> listeners ) 
 	{
 		tsListeners_ = listeners;
 		

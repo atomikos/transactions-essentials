@@ -44,7 +44,7 @@ implements InvocationHandler
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(AbstractConnectionProxy.class);
 	
-	private List statements = new ArrayList();
+	private List<Statement> statements = new ArrayList<Statement>();
 
 	protected synchronized void addStatement ( Statement s )
 	{
@@ -53,9 +53,9 @@ implements InvocationHandler
 	
 	protected synchronized void forceCloseAllPendingStatements ( boolean warn ) 
 	{
-		Iterator it = statements.iterator();
+		Iterator<Statement> it = statements.iterator();
 		while ( it.hasNext() ) {
-			Statement s = ( Statement ) it.next();
+			Statement s =  it.next();
 			try {
 				String msg = "Forcing close of pending statement: " + s;
 				if ( warn ) LOGGER.logWarning ( msg );

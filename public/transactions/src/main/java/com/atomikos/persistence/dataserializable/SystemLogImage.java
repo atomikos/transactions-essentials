@@ -9,7 +9,6 @@ import java.io.ObjectOutput;
 import com.atomikos.icatch.DataSerializable;
 import com.atomikos.persistence.ObjectImage;
 import com.atomikos.persistence.Recoverable;
-import com.atomikos.util.ClassLoadingHelper;
 
 public class SystemLogImage implements Recoverable, DataSerializable{
 

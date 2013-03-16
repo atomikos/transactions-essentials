@@ -25,6 +25,8 @@
 
 package com.atomikos.icatch.standalone;
 
+import static com.atomikos.util.Atomikos.VERSION;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -60,11 +62,6 @@ import com.atomikos.icatch.system.Configuration;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 import com.atomikos.persistence.StateRecoveryManager;
-import com.atomikos.persistence.imp.FileLogStream;
-import com.atomikos.persistence.imp.StateRecoveryManagerImp;
-import com.atomikos.persistence.imp.StreamObjectLog;
-import com.atomikos.persistence.imp.VolatileStateRecoveryManager;
-import static com.atomikos.util.Atomikos.VERSION;
 
 /**
  *
@@ -206,24 +203,17 @@ class UserTransactionServiceImp extends AbstractJtaUserTransactionService
         	}
         }
 
-        int max = (new Integer ( getTrimmedProperty (
-                AbstractUserTransactionServiceFactory.MAX_ACTIVES_PROPERTY_NAME, p ) )).intValue ();
-        long chckpt = (new Long ( getTrimmedProperty (
-                AbstractUserTransactionServiceFactory.CHECKPOINT_INTERVAL_PROPERTY_NAME, p ) )).longValue ();
-        FileLogStream logstream = new FileLogStream ( logdir, logname );
-        StreamObjectLog slog = new StreamObjectLog ( logstream, chckpt );
+        int max = Integer.valueOf( getTrimmedProperty (
+                AbstractUserTransactionServiceFactory.MAX_ACTIVES_PROPERTY_NAME, p ) );
+        long chckpt = Long.valueOf( getTrimmedProperty (
+                AbstractUserTransactionServiceFactory.CHECKPOINT_INTERVAL_PROPERTY_NAME, p ) );
+        StateRecoveryManager recmgr = Factory.createLogSystem(p);
 
-        StateRecoveryManager recmgr = null;
-        if ( enableRecovery )
-            recmgr = new StateRecoveryManagerImp ( slog );
-        else
-            recmgr = new VolatileStateRecoveryManager ();
+        long maxTimeout = Long.valueOf( getTrimmedProperty (
+                AbstractUserTransactionServiceFactory.MAX_TIMEOUT_PROPERTY_NAME, p ) );
 
-        long maxTimeout = (new Long ( getTrimmedProperty (
-                AbstractUserTransactionServiceFactory.MAX_TIMEOUT_PROPERTY_NAME, p ) )).longValue ();
-
-        long defaultTimeoutInMillis = (new Long ( getTrimmedProperty (
-                AbstractUserTransactionServiceFactory.DEFAULT_JTA_TIMEOUT_PROPERTY_NAME, p ) )).longValue ();
+        long defaultTimeoutInMillis = Long.valueOf( getTrimmedProperty (
+                AbstractUserTransactionServiceFactory.DEFAULT_JTA_TIMEOUT_PROPERTY_NAME, p ) );
         int defaultTimeout = 0;
 
         defaultTimeout = (int) defaultTimeoutInMillis/1000;
@@ -252,6 +242,8 @@ class UserTransactionServiceImp extends AbstractJtaUserTransactionService
 
         return ret;
     }
+
+
 
     public void init ( TSInitInfo info ) throws SysException
     {

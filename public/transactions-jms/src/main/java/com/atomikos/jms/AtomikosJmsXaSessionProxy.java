@@ -62,19 +62,19 @@ class AtomikosJmsXaSessionProxy extends AbstractJmsSessionProxy implements Sessi
 			SessionHandleStateChangeListener pooledConnection , SessionHandleStateChangeListener connectionProxy ) throws JMSException 
 	{
         AtomikosJmsXaSessionProxy proxy = new AtomikosJmsXaSessionProxy ( s , jmsTransactionalResource , pooledConnection , connectionProxy );
-        Set interfaces = PropertyUtils.getAllImplementedInterfaces ( s.getClass() );
+        Set<Class> interfaces = PropertyUtils.getAllImplementedInterfaces ( s.getClass() );
         //see case 24532
         interfaces.add ( DynamicProxy.class );
         Class[] interfaceClasses = ( Class[] ) interfaces.toArray ( new Class[0] );
         
-        Set minimumSetOfInterfaces = new HashSet();
+        Set<Class> minimumSetOfInterfaces = new HashSet<Class>();
 		minimumSetOfInterfaces.add ( Reapable.class );
 		minimumSetOfInterfaces.add ( DynamicProxy.class );
 		minimumSetOfInterfaces.add ( javax.jms.Session.class );
         Class[] minimumSetOfInterfaceClasses = ( Class[] ) minimumSetOfInterfaces.toArray( new Class[0] );
         
         
-        List classLoaders = new ArrayList();
+        List<ClassLoader> classLoaders = new ArrayList<ClassLoader>();
 		classLoaders.add ( Thread.currentThread().getContextClassLoader() );
 		classLoaders.add ( s.getClass().getClassLoader() );
 		classLoaders.add ( AtomikosJmsXaSessionProxy.class.getClassLoader() );

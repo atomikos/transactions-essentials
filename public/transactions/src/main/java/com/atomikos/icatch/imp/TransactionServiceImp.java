@@ -61,7 +61,7 @@ import com.atomikos.util.UniqueIdMgr;
  */
 
 public class TransactionServiceImp implements TransactionService,
-        FSMEnterListener, SubTxAwareParticipant, RecoveryService
+        FSMEnterListener<TxState>, SubTxAwareParticipant, RecoveryService
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(TransactionServiceImp.class);
     private static final int NUMLATCHES = 97;
@@ -385,21 +385,21 @@ public class TransactionServiceImp implements TransactionService,
 
     private void startlistening ( CoordinatorImp coordinator )
     {
-        Hashtable forgetStates = new Hashtable ();
+        Hashtable<TxState,Object> forgetStates = new Hashtable<TxState,Object> ();
         // forgetStates are those that lead to a removal of the coordinator
         // such that it only exists in the log but no longer in CM
 
         forgetStates.put ( TxState.TERMINATED, new Object () );
 
-        Object[] finalStates = coordinator.getFinalStates ();
+        TxState[] finalStates = coordinator.getFinalStates ();
         for ( int i = 0; i < finalStates.length; i++ ) {
             forgetStates.put ( finalStates[i], new Object () );
         }
 
-        Enumeration enumm = forgetStates.keys ();
+        Enumeration<TxState> enumm = forgetStates.keys ();
 
         while ( enumm.hasMoreElements () ) {
-            Object state = enumm.nextElement ();
+            TxState state = (TxState)enumm.nextElement ();
             coordinator.addFSMEnterListener ( this, state );
         }
 
@@ -680,10 +680,10 @@ public class TransactionServiceImp implements TransactionService,
      * @see FSMEnterListener.
      */
 
-    public void entered ( FSMEnterEvent event )
+    public void entered ( FSMEnterEvent<TxState> event )
     {
         CoordinatorImp cc = (CoordinatorImp) event.getSource ();
-        Object state = event.getState ();
+        TxState state = event.getState ();
         removeCoordinator(cc);
     }
 

@@ -29,9 +29,6 @@ import javax.jms.Connection;
 import javax.jms.JMSException;
 import javax.jms.Session;
 
-import com.atomikos.logging.Logger;
-import com.atomikos.logging.LoggerFactory;
-
 /**
  * This is a <b>long-lived</b> JMS sender session, representing a
  * self-refreshing JMS session that can be used to send JMS messages in a
@@ -54,7 +51,7 @@ import com.atomikos.logging.LoggerFactory;
 
 public class SingleThreadedJmsSenderTemplate extends AbstractJmsSenderTemplate 
 {
-	private static final Logger LOGGER = LoggerFactory.createLogger(SingleThreadedJmsSenderTemplate.class);
+	
 
 	private Session session;
 	private Connection connection;

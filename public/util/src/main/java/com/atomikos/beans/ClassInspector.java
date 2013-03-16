@@ -80,7 +80,7 @@ public class ClassInspector
     public Method[] getMethods()
     {
         Method[] allMethods = clazz_.getMethods();
-        ArrayList list = new ArrayList();
+        ArrayList<Method> list = new ArrayList<Method>();
         for ( int i = 0 ; i < allMethods.length ; i++ )  {
             if ( memberFilter_.acceptsMethod ( allMethods[i]))
                 list.add ( allMethods[i]);
@@ -98,7 +98,7 @@ public class ClassInspector
     public Field[] getFields()
     {
         Field[] allFields = clazz_.getFields();
-        ArrayList list = new ArrayList();
+        ArrayList<Field> list = new ArrayList<Field>();
         for ( int i = 0 ; i < allFields.length ; i++ )  {
             if ( memberFilter_.acceptsField ( allFields[i]))
                 list.add ( allFields[i]);
@@ -116,7 +116,7 @@ public class ClassInspector
     public Constructor[] getConstructors()
     {
         Constructor[] allConstructors = clazz_.getConstructors();
-        ArrayList list = new ArrayList();
+        ArrayList<Constructor> list = new ArrayList<Constructor>();
         for ( int i = 0 ; i < allConstructors.length ; i++ )  {
             if ( memberFilter_.acceptsConstructor ( allConstructors[i]))
                 list.add ( allConstructors[i]);

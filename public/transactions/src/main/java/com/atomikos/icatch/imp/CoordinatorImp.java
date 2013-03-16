@@ -65,8 +65,8 @@ import com.atomikos.timing.PooledAlarmTimer;
  */
 
 public class CoordinatorImp implements CompositeCoordinator, Participant,
-        RecoveryCoordinator, StateRecoverable, AlarmTimerListener, Stateful,
-        FSMPreEnterListener
+        RecoveryCoordinator, StateRecoverable<TxState>, AlarmTimerListener, Stateful<TxState>,
+        FSMPreEnterListener<TxState>
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(CoordinatorImp.class);
 
@@ -84,7 +84,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     private long maxNumberOfTimeoutTicksBeforeRollback_ = MAX_NUMBER_OF_TIMEOUT_TICKS_BEFORE_ROLLBACK_OF_ACTIVES;
 
     private String root_ = null;
-    private FSM fsm_ = null;
+    private FSM<TxState> fsm_ = null;
     private boolean recoverableWhileActive_;
     private boolean heuristicMeansCommit_ = true;
     private Vector<Participant> participants_ = new Vector<Participant>();
@@ -120,7 +120,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     }
 
 	private void initFsm(TxState initialState) {
-		fsm_ = new FSMImp ( this, new TransactionTransitionTable (),
+		fsm_ = new FSMImp<TxState> ( this, new TransactionTransitionTable (),
                 initialState );
         fsm_.addFSMPreEnterListener ( this, TxState.TERMINATED );
         fsm_.addFSMPreEnterListener ( this, TxState.HEUR_COMMITTED );
@@ -251,7 +251,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     void setStateHandler ( CoordinatorStateHandler stateHandler )
     {
         // NB: if this method is synchronized then deadlock happens on heuristic mixed!
-        Object state = stateHandler.getState ();
+        TxState state = stateHandler.getState ();
         stateHandler_ = stateHandler;
         setState ( state );
     }
@@ -392,7 +392,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     }
 
    
-    void setState ( Object state ) throws IllegalStateException
+    void setState ( TxState state ) throws IllegalStateException
     {
         if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Coordinator " + getCoordinatorId ()
                 + " entering state: " + state.toString () );
@@ -404,7 +404,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
      * @see Stateful
      */
 
-    public Object getState ()
+    public TxState getState ()
     {
         // this method should NOT be synchronized to avoid
         // recursive 2PC deadlocks!
@@ -417,7 +417,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
      */
 
     public void addFSMEnterListener ( FSMEnterListener l ,
-            Object state )
+    		TxState state )
     {
         fsm_.addFSMEnterListener ( l, state );
 
@@ -429,9 +429,9 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
      */
 
     public void addFSMPreEnterListener ( FSMPreEnterListener l ,
-            Object state )
+    		TxState state )
     {
-        fsm_.addFSMPreEnterListener ( l, state );
+        fsm_.addFSMPreEnterListener ( l, (TxState)state );
 
     }
 
@@ -539,9 +539,9 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
      * @see FSMPreEnterListener.
      */
 
-    public void preEnter ( FSMEnterEvent event ) throws IllegalStateException
+    public void preEnter ( FSMEnterEvent<TxState> event ) throws IllegalStateException
     {
-        Object state = event.getState ();
+    	TxState state = event.getState ();
 
         if ( state.equals ( TxState.TERMINATED )
                 || state.equals ( TxState.HEUR_ABORTED )
@@ -823,7 +823,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
      * @see com.atomikos.persistence.StateRecoverable
      */
 
-    public ObjectImage getObjectImage ( Object state )
+    public ObjectImage getObjectImage ( TxState state )
     {
         // IF VOTING: RETURN LIST OF ALL PARTICIPANTS
         // IF INDOUBT: RETURN LIST OF INDOUBTS AND NOT READONLY
@@ -864,7 +864,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
      * @see com.atomikos.persistence.StateRecoverable
      */
 
-    public Object[] getRecoverableStates ()
+    public TxState[] getRecoverableStates ()
     {
         // NOTE: make sure COMMITTING is recoverable as well,
         // in order to be able to recover the commit decision!
@@ -876,7 +876,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
         // NOTE:: active state is recoverable, but if feature is disabled then
         // a null image will be returned to avoid log overhead
 
-        return new Object[] { TxState.ACTIVE , TxState.IN_DOUBT, TxState.COMMITTING,
+        return new TxState[] { TxState.ACTIVE , TxState.IN_DOUBT, TxState.COMMITTING,
                 TxState.HEUR_COMMITTED, TxState.HEUR_ABORTED,
                 TxState.HEUR_HAZARD, TxState.HEUR_MIXED };
 
@@ -887,9 +887,9 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
      * @see com.atomikos.persistence.StateRecoverable
      */
 
-    public Object[] getFinalStates ()
+    public TxState[] getFinalStates ()
     {
-        return new Object[] { TxState.TERMINATED };
+        return new TxState[] { TxState.TERMINATED };
     }
 
     /**
@@ -973,8 +973,8 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
         }
     }
 
-	public Object getStateWithTwoPhaseCommitDecision() {
-		Object ret = getState();
+	public TxState getStateWithTwoPhaseCommitDecision() {
+		TxState ret = getState();
 		if (TxState.TERMINATED.equals(getState())) {
 			if (isCommitted()) ret = TxState.COMMITTED;
 			else ret = TxState.ABORTED;

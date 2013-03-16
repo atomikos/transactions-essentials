@@ -32,9 +32,9 @@ package com.atomikos.finitestates;
  *A source of TransitionEvents.
  */
 
-public interface FSMTransitionEventSource extends Stateful
+public interface FSMTransitionEventSource<Status> extends Stateful<Status>
 {   
-    public void addFSMTransitionListener(FSMTransitionListener l,
-				 Object from, Object to);
+    public void addFSMTransitionListener(FSMTransitionListener<Status> l,
+				 Status from, Status to);
 	
 }

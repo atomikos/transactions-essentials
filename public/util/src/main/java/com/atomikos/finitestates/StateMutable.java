@@ -33,7 +33,7 @@ package com.atomikos.finitestates;
 *can be set.
 *A state can be anything.
 */
-public interface StateMutable extends  Stateful{
+public interface StateMutable<Status> extends  Stateful<Status>{
 	
 	/**
 	*To set a new state.
@@ -43,6 +43,6 @@ public interface StateMutable extends  Stateful{
 	*the new state is not allowed.
 	*/
 
-	public void setState(Object s) throws IllegalStateException;
+	public void setState(Status s) throws IllegalStateException;
 }
 

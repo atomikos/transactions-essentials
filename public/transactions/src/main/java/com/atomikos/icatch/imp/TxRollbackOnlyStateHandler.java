@@ -76,7 +76,7 @@ class TxRollbackOnlyStateHandler extends TransactionStateHandler
         throw new RollbackException ( "Transaction set to rollback only" );
     }
 
-    protected Object getState()
+    protected TxState getState()
     {
         return TxState.MARKED_ABORT;
     }

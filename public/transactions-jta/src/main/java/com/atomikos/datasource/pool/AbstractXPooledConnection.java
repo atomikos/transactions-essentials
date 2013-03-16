@@ -47,7 +47,7 @@ public abstract class AbstractXPooledConnection implements XPooledConnection {
 
 	private long lastTimeAcquired = System.currentTimeMillis();
 	private long lastTimeReleased = System.currentTimeMillis();
-	private List poolEventListeners = new ArrayList();
+	private List<XPooledConnectionEventListener> poolEventListeners = new ArrayList<XPooledConnectionEventListener>();
 	private Reapable currentProxy = null;
 	private ConnectionPoolProperties props;
 	

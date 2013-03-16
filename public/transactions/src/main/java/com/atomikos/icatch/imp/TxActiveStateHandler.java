@@ -40,7 +40,7 @@ class TxActiveStateHandler extends TransactionStateHandler
 
     }
 
-    protected Object getState ()
+    protected TxState getState ()
     {
 
         return TxState.ACTIVE;

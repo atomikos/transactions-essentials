@@ -45,7 +45,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 
 	public final static int DEFAULT_MAINTENANCE_INTERVAL = 60;
 
-	private List connections = new ArrayList();
+	private List<XPooledConnection> connections = new ArrayList<XPooledConnection>();
 	private ConnectionFactory connectionFactory;
 	private ConnectionPoolProperties properties;
 	private boolean destroyed;
@@ -155,9 +155,9 @@ public class ConnectionPool implements XPooledConnectionEventListener
 			XPooledConnection xpc = null;
 
 
-			Iterator it = connections.iterator();
+			Iterator<XPooledConnection> it = connections.iterator();
 			while ( it.hasNext() && ret == null ) {
-				xpc = (XPooledConnection) it.next();
+				xpc =  it.next();
 
 				if (xpc.isAvailable()) {
 					try {
@@ -199,7 +199,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 			return;
 
 		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": trying to shrink pool" );
-		List connectionsToRemove = new ArrayList();
+		List<XPooledConnection> connectionsToRemove = new ArrayList<XPooledConnection>();
 		int maxConnectionsToRemove = totalSize() - properties.getMinPoolSize();
 		if ( maxConnectionsToRemove > 0 ) {
 			for ( int i=0 ; i < connections.size() ; i++ ) {
@@ -226,9 +226,9 @@ public class ConnectionPool implements XPooledConnectionEventListener
 
 		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": reaping old connections" );
 
-		Iterator it = connections.iterator();
+		Iterator<XPooledConnection> it = connections.iterator();
 		while ( it.hasNext() ) {
-			XPooledConnection xpc = ( XPooledConnection ) it.next();
+			XPooledConnection xpc = it.next();
 			long lastTimeReleased = xpc.getLastTimeAcquired();
 			boolean inUse = !xpc.isAvailable();
 

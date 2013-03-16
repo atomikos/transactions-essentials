@@ -33,7 +33,7 @@ package com.atomikos.finitestates;
  *transition without really checking anything.
  */
 
- public class AllowAllTransitionTable implements TransitionTable
+ public class AllowAllTransitionTable<Status> implements TransitionTable<Status>
  {
 
       public AllowAllTransitionTable() {}
@@ -42,7 +42,7 @@ package com.atomikos.finitestates;
        *This method always returns true.
        */
 
-      public boolean legalTransition ( Object from, Object to )
+      public boolean legalTransition ( Status from, Status to )
       {
           return true;
       }

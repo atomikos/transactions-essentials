@@ -32,13 +32,13 @@ import java.util.EventObject;
 *
 *Events signalling a transition of a FSM.
 */
-public class FSMTransitionEvent extends EventObject{
+public class FSMTransitionEvent<Status> extends EventObject{
 
 	private static final long serialVersionUID = 7629493293234798149L;
 
-	protected Object from,to;
+	protected Status from,to;
 
-	public FSMTransitionEvent(Object source,Object fromState,Object toState){
+	public FSMTransitionEvent(Object source,Status fromState,Status toState){
 		super(source);
 		from=fromState;
 		to=toState;
@@ -46,14 +46,14 @@ public class FSMTransitionEvent extends EventObject{
 	/**
 	*The state that was left.
 	*/
-	public Object fromState(){
+	public Status fromState(){
 		return from;
 	}
 
 	/**
 	*The state that was moved to.
 	*/
-	public Object toState(){
+	public Status toState(){
 		return to;
 	}
 }
