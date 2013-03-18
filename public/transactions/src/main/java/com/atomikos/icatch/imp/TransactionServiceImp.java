@@ -651,7 +651,7 @@ public class TransactionServiceImp implements TransactionService,
         this.initProperties_ = properties;
 
         try {
-            recoverymanager_.init ();
+            recoverymanager_.init (properties);
         } catch ( LogException le ) {
             errors.push ( le );
             throw new SysException ( "Error in init: " + le.getMessage (),

@@ -25,24 +25,34 @@
 
 package com.atomikos.persistence.imp;
 
+import java.io.IOException;
 import java.util.Enumeration;
+import java.util.Properties;
 import java.util.Vector;
 
 import com.atomikos.finitestates.FSMEnterEvent;
 import com.atomikos.finitestates.FSMPreEnterListener;
+import com.atomikos.icatch.TxState;
+import com.atomikos.icatch.config.imp.AbstractUserTransactionServiceFactory;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 import com.atomikos.persistence.LogException;
+import com.atomikos.persistence.LogStream;
 import com.atomikos.persistence.ObjectImage;
 import com.atomikos.persistence.ObjectLog;
 import com.atomikos.persistence.StateRecoverable;
 import com.atomikos.persistence.StateRecoveryManager;
+import com.atomikos.persistence.Utils;
 
 /**
  * Default implementation of a state recovery manager.
  */
 
-public class StateRecoveryManagerImp implements StateRecoveryManager,
-        FSMPreEnterListener
+public class StateRecoveryManagerImp implements StateRecoveryManager<TxState>,
+        FSMPreEnterListener<TxState>
 {
+	
+	private static final Logger LOGGER = LoggerFactory.createLogger(StateRecoveryManagerImp.class);
 
     protected ObjectLog objectlog_;
     // for delegation of storage tasks
@@ -59,11 +69,14 @@ public class StateRecoveryManagerImp implements StateRecoveryManager,
         objectlog_ = objectlog;
     }
 
+    public StateRecoveryManagerImp() {
+		// TODO Auto-generated constructor stub
+	}
     /**
      * @see StateRecoveryManager
      */
 
-    public void init () throws LogException
+    private void init () throws LogException
     {
         objectlog_.init ();
     }
@@ -72,11 +85,11 @@ public class StateRecoveryManagerImp implements StateRecoveryManager,
      * @see StateRecoveryManager
      */
 
-    public void register ( StateRecoverable staterecoverable )
+    public void register ( StateRecoverable<TxState> staterecoverable )
     {
         if ( staterecoverable == null )
             throw new IllegalArgumentException ( "null in register arg" );
-        Object[] states = staterecoverable.getRecoverableStates ();
+        TxState[] states = staterecoverable.getRecoverableStates ();
         if ( states != null ) {
             for ( int i = 0; i < states.length; i++ ) {
                 staterecoverable.addFSMPreEnterListener ( this, states[i] );
@@ -92,10 +105,10 @@ public class StateRecoveryManagerImp implements StateRecoveryManager,
      * @see FSMPreEnterListener
      */
 
-    public void preEnter ( FSMEnterEvent event ) throws IllegalStateException
+    public void preEnter ( FSMEnterEvent<TxState> event ) throws IllegalStateException
     {
-        Object state = event.getState ();
-        StateRecoverable source = (StateRecoverable) event.getSource ();
+    	TxState state = event.getState ();
+        StateRecoverable<TxState> source = (StateRecoverable<TxState>) event.getSource ();
         ObjectImage img = source.getObjectImage ( state );
         if ( img != null ) {
             //null images are not logged as per the Recoverable contract
@@ -135,9 +148,9 @@ public class StateRecoveryManagerImp implements StateRecoveryManager,
      * @see StateRecoveryManager
      */
 
-    public StateRecoverable recover ( Object id ) throws LogException
+    public StateRecoverable<TxState> recover ( Object id ) throws LogException
     {
-        StateRecoverable srec = (StateRecoverable) objectlog_.recover ( id );
+        StateRecoverable<TxState> srec = (StateRecoverable<TxState>) objectlog_.recover ( id );
         if ( srec != null ) // null if not found!
             register ( srec );
         return srec;
@@ -147,12 +160,12 @@ public class StateRecoveryManagerImp implements StateRecoveryManager,
      * @see StateRecoveryManager
      */
 
-    public Vector recover () throws LogException
+    public Vector<StateRecoverable<TxState>> recover () throws LogException
     {
-        Vector ret = objectlog_.recover ();
-        Enumeration enumm = ret.elements ();
+    	Vector<StateRecoverable<TxState>> ret = objectlog_.recover ();
+        Enumeration<StateRecoverable<TxState>> enumm = ret.elements ();
         while ( enumm.hasMoreElements () ) {
-            StateRecoverable srec = (StateRecoverable) enumm.nextElement ();
+            StateRecoverable<TxState> srec =  enumm.nextElement ();
             register ( srec );
         }
         return ret;
@@ -166,5 +179,26 @@ public class StateRecoveryManagerImp implements StateRecoveryManager,
     {
         objectlog_.delete ( id );
     }
+
+	public void init(Properties p) throws LogException {
+		long chckpt = Long.valueOf( Utils.getTrimmedProperty (
+                AbstractUserTransactionServiceFactory.CHECKPOINT_INTERVAL_PROPERTY_NAME, p ) );
+
+        String logdir = Utils.getTrimmedProperty (
+                AbstractUserTransactionServiceFactory.LOG_BASE_DIR_PROPERTY_NAME, p );
+        String logname = Utils.getTrimmedProperty (
+                AbstractUserTransactionServiceFactory.LOG_BASE_NAME_PROPERTY_NAME, p );
+        logdir = Utils.findOrCreateFolder ( logdir );
+		LogStream logstream;
+		try {
+			logstream = new FileLogStream ( logdir, logname );
+			objectlog_ = new StreamObjectLog ( logstream, chckpt );
+			objectlog_.init();
+		} catch (IOException e) {
+			throw new LogException(e.getMessage(), e);
+		}
+		
+	}
+	
 
 }

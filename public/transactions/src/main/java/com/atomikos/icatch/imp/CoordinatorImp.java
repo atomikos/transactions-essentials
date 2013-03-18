@@ -843,7 +843,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 
     		}
     		else {
-    			TxState imgstate = (TxState) state;
+    			TxState imgstate = state;
 
     			if ( recoverableWhileActive_ ) {
     				ret = new CoordinatorLogImage ( root_, imgstate, participants_,

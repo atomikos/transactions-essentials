@@ -28,6 +28,7 @@ package com.atomikos.persistence.imp;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Vector;
 
 import com.atomikos.finitestates.FSMEnterEvent;
@@ -35,7 +36,6 @@ import com.atomikos.finitestates.FSMPreEnterListener;
 import com.atomikos.icatch.TxState;
 import com.atomikos.persistence.LogException;
 import com.atomikos.persistence.ObjectImage;
-import com.atomikos.persistence.Recoverable;
 import com.atomikos.persistence.StateRecoverable;
 import com.atomikos.persistence.StateRecoveryManager;
 
@@ -57,14 +57,6 @@ public class VolatileStateRecoveryManager implements StateRecoveryManager<TxStat
         idToElementMap = new HashMap<Object,StateObjectImage> ();
     }
 
-    /**
-     * @see StateRecoveryManager
-     */
-
-    public void init () throws LogException
-    {
-
-    }
 
     /**
      * @see StateRecoveryManager
@@ -142,15 +134,15 @@ public class VolatileStateRecoveryManager implements StateRecoveryManager<TxStat
      * @see StateRecoveryManager
      */
 
-    public Vector<Recoverable> recover () throws LogException
+    public Vector<StateRecoverable<TxState>> recover () throws LogException
     {
-        Vector<Recoverable> ret = new Vector<Recoverable> ();
+        Vector<StateRecoverable<TxState>> ret = new Vector<StateRecoverable<TxState>> ();
         Iterator<Object> keys = idToElementMap.keySet ().iterator ();
         while ( keys.hasNext () ) {
             Object key = keys.next ();
             StateObjectImage simg = (StateObjectImage) idToElementMap
                     .get ( key );
-            ret.add ( simg.restore () );
+            ret.add ( (StateRecoverable<TxState>)simg.restore () );
         }
         return ret;
     }
@@ -163,5 +155,10 @@ public class VolatileStateRecoveryManager implements StateRecoveryManager<TxStat
     {
         idToElementMap.remove ( id );
     }
+
+	public void init(Properties properties) throws LogException {
+		// TODO Auto-generated method stub
+		
+	}
 
 }

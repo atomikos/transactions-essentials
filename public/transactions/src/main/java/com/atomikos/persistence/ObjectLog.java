@@ -27,6 +27,8 @@ package com.atomikos.persistence;
 
 import java.util.Vector;
 
+import com.atomikos.icatch.TxState;
+
 /**
  * Interface defining the functionality for logging objects to persistent storage.
  * 
@@ -65,7 +67,7 @@ public interface ObjectLog
      *         images.
      */
 
-    public Vector recover () throws LogException;
+    public Vector<StateRecoverable<TxState>> recover () throws LogException;
 
     /**
      * Recovers the instance with given ID.
