@@ -25,14 +25,16 @@
 
 package com.atomikos.persistence;
 
+import java.util.Properties;
 import java.util.Vector;
 
+import com.atomikos.icatch.TxState;
 /**
  * A state recovery manager is responsible for reconstructing StateRecoverable
  * instances based on the history.
  */
 
-public interface StateRecoveryManager<TxState>
+public interface StateRecoveryManager<Recoverable>
 {
     /**
      * Recover all recorded recoverable instances in their latest state.
@@ -43,7 +45,8 @@ public interface StateRecoveryManager<TxState>
      *                If the log fails.
      */
 
-    public Vector recover () throws LogException;
+    public Vector<StateRecoverable<TxState>> recover () throws LogException;
+
 
     /**
      * Initialize the recovery mgr before calling the other methods.
@@ -52,8 +55,7 @@ public interface StateRecoveryManager<TxState>
      *                If the underlying log fails.
      */
 
-    public void init () throws LogException;
-
+    public void init (Properties properties) throws LogException;
     /**
      * Register a staterecoverable with the recovery manager service.
      * 
@@ -61,7 +63,7 @@ public interface StateRecoveryManager<TxState>
      *            The object that wants recoverable states.
      */
 
-    public void register ( StateRecoverable<TxState> staterecoverable );
+    public void register ( StateRecoverable<Recoverable> staterecoverable );
 
     /**
      * Reconstruct an instance of a staterecoverable.
@@ -73,7 +75,7 @@ public interface StateRecoveryManager<TxState>
      *                If underlying object log fails.
      */
 
-    public StateRecoverable<TxState> recover ( Object id ) throws LogException;
+    public StateRecoverable<Recoverable> recover ( Object id ) throws LogException;
 
     /**
      * Shutdown.

@@ -205,10 +205,8 @@ class UserTransactionServiceImp extends AbstractJtaUserTransactionService
 
         int max = Integer.valueOf( getTrimmedProperty (
                 AbstractUserTransactionServiceFactory.MAX_ACTIVES_PROPERTY_NAME, p ) );
-        long chckpt = Long.valueOf( getTrimmedProperty (
-                AbstractUserTransactionServiceFactory.CHECKPOINT_INTERVAL_PROPERTY_NAME, p ) );
-        StateRecoveryManager recmgr = Factory.createLogSystem(p);
 
+        StateRecoveryManager recmgr = StateRecoveryManagerLookup.lookup();
         long maxTimeout = Long.valueOf( getTrimmedProperty (
                 AbstractUserTransactionServiceFactory.MAX_TIMEOUT_PROPERTY_NAME, p ) );
 
