@@ -41,6 +41,7 @@ import com.atomikos.persistence.LogException;
 import com.atomikos.persistence.LogStream;
 import com.atomikos.persistence.ObjectImage;
 import com.atomikos.persistence.ObjectLog;
+import com.atomikos.persistence.Recoverable;
 import com.atomikos.persistence.StateRecoverable;
 import com.atomikos.persistence.StateRecoveryManager;
 import com.atomikos.util.IOHelper;
@@ -57,17 +58,7 @@ public class StateRecoveryManagerImp implements StateRecoveryManager<TxState>,
     protected ObjectLog objectlog_;
     // for delegation of storage tasks
 
-    /**
-     * Construct a new instance that uses an underlying log.
-     *
-     * @param objectlog
-     *            The log to delegate to.
-     */
 
-    private StateRecoveryManagerImp ( ObjectLog objectlog )
-    {
-        objectlog_ = objectlog;
-    }
 
     public StateRecoveryManagerImp (  )
     {
@@ -87,11 +78,11 @@ public class StateRecoveryManagerImp implements StateRecoveryManager<TxState>,
      * @see StateRecoveryManager
      */
 
-    public void register ( StateRecoverable staterecoverable )
+    public void register ( StateRecoverable<TxState> staterecoverable )
     {
         if ( staterecoverable == null )
             throw new IllegalArgumentException ( "null in register arg" );
-        Object[] states = staterecoverable.getRecoverableStates ();
+        TxState[] states = staterecoverable.getRecoverableStates ();
         if ( states != null ) {
             for ( int i = 0; i < states.length; i++ ) {
                 staterecoverable.addFSMPreEnterListener ( this, states[i] );
@@ -107,10 +98,10 @@ public class StateRecoveryManagerImp implements StateRecoveryManager<TxState>,
      * @see FSMPreEnterListener
      */
 
-    public void preEnter ( FSMEnterEvent event ) throws IllegalStateException
+    public void preEnter ( FSMEnterEvent<TxState> event ) throws IllegalStateException
     {
-        Object state = event.getState ();
-        StateRecoverable source = (StateRecoverable) event.getSource ();
+    	TxState state = event.getState ();
+        StateRecoverable<TxState> source = (StateRecoverable<TxState>) event.getSource ();
         ObjectImage img = source.getObjectImage ( state );
         if ( img != null ) {
             //null images are not logged as per the Recoverable contract
@@ -151,9 +142,9 @@ public class StateRecoveryManagerImp implements StateRecoveryManager<TxState>,
      * @see StateRecoveryManager
      */
 
-    public StateRecoverable recover ( Object id ) throws LogException
+    public StateRecoverable<TxState> recover ( Object id ) throws LogException
     {
-        StateRecoverable srec = (StateRecoverable) objectlog_.recover ( id );
+        StateRecoverable<TxState> srec = (StateRecoverable<TxState>) objectlog_.recover ( id );
         if ( srec != null ) // null if not found!
             register ( srec );
         return srec;
@@ -163,12 +154,12 @@ public class StateRecoveryManagerImp implements StateRecoveryManager<TxState>,
      * @see StateRecoveryManager
      */
 
-    public Vector recover () throws LogException
+    public Vector<StateRecoverable<TxState>> recover () throws LogException
     {
-        Vector ret = objectlog_.recover ();
-        Enumeration enumm = ret.elements ();
+        Vector<StateRecoverable<TxState>> ret = objectlog_.recover ();
+        Enumeration<StateRecoverable<TxState>> enumm = ret.elements ();
         while ( enumm.hasMoreElements () ) {
-            StateRecoverable srec = (StateRecoverable) enumm.nextElement ();
+            StateRecoverable<TxState> srec = (StateRecoverable<TxState>) enumm.nextElement ();
             register ( srec );
         }
         return ret;
@@ -198,7 +189,7 @@ public class StateRecoveryManagerImp implements StateRecoveryManager<TxState>,
 		try {
 			logstream = new FileLogStream ( logdir, logname );
 			objectlog_ = new StreamObjectLog ( logstream, chckpt );
-			
+			objectlog_.init();
 		} catch (IOException e) {
 			throw new LogException(e.getMessage(), e);
 		}
