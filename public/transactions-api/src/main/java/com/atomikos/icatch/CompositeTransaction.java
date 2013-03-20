@@ -46,7 +46,7 @@ import com.atomikos.finitestates.Stateful;
  */
 
 public interface CompositeTransaction 
-    extends Stateful
+    extends Stateful<TxState>
 {
 	
 	/**
@@ -54,7 +54,7 @@ public interface CompositeTransaction
 	 * @return Object One of the state constants.
 	 * @see TxState
 	 */
-	public Object getState();
+	public TxState getState();
 
     /**
      *

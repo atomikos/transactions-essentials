@@ -350,7 +350,7 @@ extends AbstractCompositeTransaction implements
      * @see com.atomikos.finitestates.Stateful.
      */
 
-    public Object getState ()
+    public TxState getState ()
     {
         return localGetTransactionStateHandler().getState ();
     }

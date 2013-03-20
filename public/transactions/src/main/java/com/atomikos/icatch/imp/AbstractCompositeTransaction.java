@@ -42,6 +42,7 @@ import com.atomikos.icatch.SubTxAwareParticipant;
 import com.atomikos.icatch.Synchronization;
 import com.atomikos.icatch.SysException;
 import com.atomikos.icatch.TransactionControl;
+import com.atomikos.icatch.TxState;
 
 /**
  *
@@ -393,7 +394,7 @@ public abstract class AbstractCompositeTransaction implements CompositeTransacti
      * @see com.atomikos.finitestates.Stateful.
      */
 
-    public Object getState ()
+    public TxState getState ()
     {
     	throw new UnsupportedOperationException();
     }
