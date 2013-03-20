@@ -36,10 +36,9 @@
 package com.atomikos.persistence.imp;
 
 import java.util.Enumeration;
+import java.util.EventListener;
 import java.util.Hashtable;
 import java.util.Vector;
-
-import java.util.EventListener;
 
 import com.atomikos.finitestates.FSM;
 import com.atomikos.finitestates.FSMEnterEvent;

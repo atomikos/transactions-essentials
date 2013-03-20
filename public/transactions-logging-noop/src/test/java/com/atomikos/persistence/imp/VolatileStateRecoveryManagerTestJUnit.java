@@ -7,6 +7,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
 import com.atomikos.icatch.TxState;
 import com.atomikos.icatch.config.imp.AbstractUserTransactionServiceFactory;
 import com.atomikos.persistence.LogException;

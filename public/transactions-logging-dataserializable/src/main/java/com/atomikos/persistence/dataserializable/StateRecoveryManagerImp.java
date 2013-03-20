@@ -41,7 +41,6 @@ import com.atomikos.persistence.LogException;
 import com.atomikos.persistence.LogStream;
 import com.atomikos.persistence.ObjectImage;
 import com.atomikos.persistence.ObjectLog;
-import com.atomikos.persistence.Recoverable;
 import com.atomikos.persistence.StateRecoverable;
 import com.atomikos.persistence.StateRecoveryManager;
 import com.atomikos.util.IOHelper;

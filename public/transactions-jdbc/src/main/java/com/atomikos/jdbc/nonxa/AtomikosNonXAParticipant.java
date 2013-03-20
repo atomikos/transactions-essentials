@@ -26,7 +26,6 @@
 package com.atomikos.jdbc.nonxa;
 
 
-import java.util.List;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
@@ -34,6 +33,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Iterator;
+import java.util.List;
 
 import com.atomikos.icatch.DataSerializable;
 import com.atomikos.icatch.HeurCommitException;

@@ -34,8 +34,6 @@ import com.atomikos.finitestates.FSMEnterEvent;
 import com.atomikos.finitestates.FSMPreEnterListener;
 import com.atomikos.icatch.TxState;
 import com.atomikos.icatch.config.imp.AbstractUserTransactionServiceFactory;
-import com.atomikos.logging.Logger;
-import com.atomikos.logging.LoggerFactory;
 import com.atomikos.persistence.LogException;
 import com.atomikos.persistence.LogStream;
 import com.atomikos.persistence.ObjectImage;
@@ -52,7 +50,6 @@ public class StateRecoveryManagerImp implements StateRecoveryManager<TxState>,
         FSMPreEnterListener<TxState>
 {
 	
-	private static final Logger LOGGER = LoggerFactory.createLogger(StateRecoveryManagerImp.class);
 
     protected ObjectLog objectlog_;
     // for delegation of storage tasks
@@ -70,16 +67,8 @@ public class StateRecoveryManagerImp implements StateRecoveryManager<TxState>,
     }
 
     public StateRecoveryManagerImp() {
-		// TODO Auto-generated constructor stub
-	}
-    /**
-     * @see StateRecoveryManager
-     */
 
-    private void init () throws LogException
-    {
-        objectlog_.init ();
-    }
+	}
 
     /**
      * @see StateRecoveryManager

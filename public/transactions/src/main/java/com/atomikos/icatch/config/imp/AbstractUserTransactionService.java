@@ -25,6 +25,8 @@
 
 package com.atomikos.icatch.config.imp;
 
+import static com.atomikos.util.Atomikos.VERSION;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.UnknownHostException;
@@ -45,7 +47,6 @@ import com.atomikos.icatch.system.Configuration;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 import com.atomikos.util.IOHelper;
-import static com.atomikos.util.Atomikos.VERSION;
 /**
  *
  *
