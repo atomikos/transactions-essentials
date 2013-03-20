@@ -28,7 +28,7 @@ public class VolatileStateRecoveryManagerTestJUnit
 	}
 
 
-	private StateRecoveryManager<TxState> recmgr;
+	private StateRecoveryManager recmgr;
 	
 //	protected AbstractJUnitStateRecoveryManagerTest ( String name )
 //	{

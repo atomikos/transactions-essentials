@@ -49,7 +49,7 @@ import com.atomikos.util.IOHelper;
  * Default implementation of a state recovery manager.
  */
 
-public class StateRecoveryManagerImp implements StateRecoveryManager<TxState>,
+public class StateRecoveryManagerImp implements StateRecoveryManager,
         FSMPreEnterListener<TxState>
 {
 

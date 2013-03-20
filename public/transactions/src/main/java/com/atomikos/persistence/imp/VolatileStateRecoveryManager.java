@@ -45,7 +45,7 @@ import com.atomikos.persistence.StateRecoveryManager;
  *
  */
 
-public class VolatileStateRecoveryManager implements StateRecoveryManager<TxState>,
+public class VolatileStateRecoveryManager implements StateRecoveryManager,
         FSMPreEnterListener<TxState>
 {
 

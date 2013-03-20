@@ -34,7 +34,7 @@ import com.atomikos.icatch.TxState;
  * instances based on the history.
  */
 
-public interface StateRecoveryManager<Recoverable>
+public interface StateRecoveryManager
 {
     /**
      * Recover all recorded recoverable instances in their latest state.
@@ -63,7 +63,7 @@ public interface StateRecoveryManager<Recoverable>
      *            The object that wants recoverable states.
      */
 
-    public void register ( StateRecoverable<Recoverable> staterecoverable );
+    public void register ( StateRecoverable<TxState> staterecoverable );
 
     /**
      * Reconstruct an instance of a staterecoverable.
@@ -75,7 +75,7 @@ public interface StateRecoveryManager<Recoverable>
      *                If underlying object log fails.
      */
 
-    public StateRecoverable<Recoverable> recover ( Object id ) throws LogException;
+    public StateRecoverable<TxState> recover ( Object id ) throws LogException;
 
     /**
      * Shutdown.

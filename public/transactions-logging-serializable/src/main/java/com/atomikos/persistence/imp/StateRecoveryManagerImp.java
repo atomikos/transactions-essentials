@@ -46,7 +46,7 @@ import com.atomikos.persistence.Utils;
  * Default implementation of a state recovery manager.
  */
 
-public class StateRecoveryManagerImp implements StateRecoveryManager<TxState>,
+public class StateRecoveryManagerImp implements StateRecoveryManager,
         FSMPreEnterListener<TxState>
 {
 	

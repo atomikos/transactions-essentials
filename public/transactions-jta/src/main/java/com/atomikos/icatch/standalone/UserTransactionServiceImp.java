@@ -436,7 +436,6 @@ class UserTransactionServiceImp extends AbstractJtaUserTransactionService
     public static Properties getDefaultProperties ()
     {
         Properties ret = new Properties ();
-        ret.setProperty ( AbstractUserTransactionServiceFactory.CONSOLE_FILE_NAME_PROPERTY_NAME, "tm.out" );
         ret.setProperty ( AbstractUserTransactionServiceFactory.OUTPUT_DIR_PROPERTY_NAME, "."
                 + File.separator );
         ret.setProperty ( AbstractUserTransactionServiceFactory.LOG_BASE_DIR_PROPERTY_NAME, "."
@@ -456,7 +455,6 @@ class UserTransactionServiceImp extends AbstractJtaUserTransactionService
         ret.setProperty ( AbstractUserTransactionServiceFactory.CLIENT_DEMARCATION_PROPERTY_NAME, "false" );
         ret.setProperty ( Context.INITIAL_CONTEXT_FACTORY,
                 "com.sun.jndi.rmi.registry.RegistryContextFactory" );
-        ret.setProperty ( AbstractUserTransactionServiceFactory.CONSOLE_LOG_LEVEL_PROPERTY_NAME, "WARN" );
         ret.setProperty ( Context.PROVIDER_URL, "rmi://localhost:1099" );
 
         // ADDED IN 2.0: automatic registration
@@ -464,8 +462,6 @@ class UserTransactionServiceImp extends AbstractJtaUserTransactionService
                 AbstractUserTransactionServiceFactory.AUTOMATIC_RESOURCE_REGISTRATION_PROPERTY_NAME, "true" );
         ret.setProperty ( AbstractUserTransactionServiceFactory.ENABLE_LOGGING_PROPERTY_NAME, "true" );
 
-        ret.setProperty ( AbstractUserTransactionServiceFactory.CONSOLE_FILE_LIMIT_PROPERTY_NAME, "-1" );
-        ret.setProperty ( AbstractUserTransactionServiceFactory.CONSOLE_FILE_COUNT_PROPERTY_NAME, "1" );
 
 
         ret.setProperty ( AbstractUserTransactionServiceFactory.THREADED_2PC_PROPERTY_NAME , "false" );
