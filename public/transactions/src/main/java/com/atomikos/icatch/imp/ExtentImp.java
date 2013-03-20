@@ -45,37 +45,37 @@ public class ExtentImp implements Extent
 
 	private static final long serialVersionUID = -1010453448007350422L;
 
-	private Hashtable participants_ = null;
+	private Hashtable<String,Integer> participants_ = null;
     private boolean queried_ = false;
 
-    private Stack directs_;
+    private Stack<Participant> directs_;
 
     public ExtentImp ()
     {
-        participants_ = new Hashtable ();
-        directs_ = new Stack ();
+        participants_ = new Hashtable<String,Integer> ();
+        directs_ = new Stack<Participant> ();
     }
 
-    public ExtentImp ( Hashtable participants , Stack directs )
+    public ExtentImp ( Hashtable<String,Integer> participants , Stack<Participant> directs )
     {
-        participants_ = (Hashtable) participants.clone ();
-        directs_ = (Stack) directs.clone ();
+        participants_ = (Hashtable<String,Integer>) participants.clone ();
+        directs_ = (Stack<Participant>) directs.clone ();
     }
 
-    public void addRemoteParticipants ( Dictionary participants )
+    public void addRemoteParticipants ( Dictionary<String,Integer> participants )
             throws IllegalStateException, SysException
     {
         if ( participants == null )
             return;
-        Enumeration enumm = participants.keys ();
+        Enumeration<String> enumm = participants.keys ();
         while ( enumm.hasMoreElements () ) {
-            String participant = (String) enumm.nextElement ();
-            Integer count = (Integer) participants_.get ( participant );
+            String participant =  enumm.nextElement ();
+            Integer count =  participants_.get ( participant );
             if ( count == null )
-                count = new Integer ( 0 );
+                count = Integer.valueOf( 0 );
 
-            Integer cnt = (Integer) participants.get ( participant );
-            count = new Integer ( count.intValue () + cnt.intValue () );
+            Integer cnt =  participants.get ( participant );
+            count =  count.intValue () + cnt.intValue () ;
 
             participants_.put ( participant, count );
             // NOTE: this will replace the old participant, and if
@@ -93,20 +93,20 @@ public class ExtentImp implements Extent
      * @see Extent
      */
 
-    public Hashtable getRemoteParticipants ()
+    public Hashtable<String,Integer> getRemoteParticipants ()
     {
         queried_ = true;
-        return (Hashtable) participants_.clone ();
+        return (Hashtable<String,Integer>) participants_.clone ();
     }
 
     /**
      * @see Extent
      */
 
-    public Stack getParticipants ()
+    public Stack<Participant> getParticipants ()
     {
         queried_ = true;
-        return (Stack) directs_.clone ();
+        return (Stack<Participant>) directs_.clone ();
     }
 
     /**
@@ -116,7 +116,7 @@ public class ExtentImp implements Extent
     public synchronized void add ( Participant participant , int count )
             throws SysException, IllegalStateException
     {
-        Hashtable table = new Hashtable ();
+        Hashtable<String,Integer> table = new Hashtable<String,Integer> ();
         table.put ( participant.getURI (), new Integer ( count ) );
         addRemoteParticipants ( table );
         directs_.push ( participant );
@@ -131,9 +131,9 @@ public class ExtentImp implements Extent
     {
         if ( queried_ )  throw new IllegalStateException ( "Adding extent no longer allowed" );
         addRemoteParticipants ( extent.getRemoteParticipants () );
-        Enumeration enumm = extent.getParticipants ().elements ();
+        Enumeration<Participant> enumm = extent.getParticipants ().elements ();
         while ( enumm.hasMoreElements () ) {
-            Participant part = (Participant) enumm.nextElement ();
+            Participant part =  enumm.nextElement ();
             directs_.push ( part );
         }
     }

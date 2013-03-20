@@ -42,7 +42,7 @@ public class SysException extends RuntimeException
 
 	private static void printNestedErrorStack ( SysException e )
 	{
-		Stack errors = e.getErrors();
+		Stack<Exception> errors = e.getErrors();
 		while ( errors != null && ! errors.empty() ) {
 			System.err.println ( "Nested exception is: " );
 			Exception nxt = ( Exception ) errors.pop();
@@ -58,7 +58,7 @@ public class SysException extends RuntimeException
 	}
 
 	private static void addStackTraceElementsToList ( StackTraceElement[] elements ,
-			List list )
+			List<StackTraceElement> list )
 	{
 		for ( int i = 0 ; i < elements.length ; i++ ) {
 			list.add ( elements[i] );
@@ -66,23 +66,23 @@ public class SysException extends RuntimeException
 		}
 	}
 
-	private java.util.Stack myErrors=null;
+	private Stack<Exception> myErrors=null;
 
 	public SysException (String msg)
 	{
 		super(msg);
 	}
-	public SysException (String msg,java.util.Stack nestedList)
+	public SysException (String msg,Stack<Exception> nestedList)
 	{
 		super(msg);
-		myErrors=(java.util.Stack) nestedList.clone();
+		myErrors=(Stack<Exception>) nestedList.clone();
 	}
 
-	private void addStackTraceToList ( List list )
+	private void addStackTraceToList ( List<StackTraceElement> list )
 	{
 		StackTraceElement[] elements = super.getStackTrace();
 		addStackTraceElementsToList ( elements , list );
-		Stack errors = getErrors();
+		Stack<Exception> errors = getErrors();
 		while ( errors != null && ! errors.empty() ) {
 			Exception e = ( Exception ) errors.pop();
 
@@ -97,10 +97,10 @@ public class SysException extends RuntimeException
 		}
 	}
 
-	public java.util.Stack getErrors()
+	public java.util.Stack<Exception> getErrors()
 	{
 		if (myErrors==null) return null;
-		else return (java.util.Stack) myErrors.clone();
+		else return (Stack<Exception>) myErrors.clone();
 	}
 
 	public void printStackTrace()
@@ -112,7 +112,7 @@ public class SysException extends RuntimeException
 
 	public StackTraceElement[] getStackTrace()
 	{
-		ArrayList elements = new ArrayList();
+		List<StackTraceElement> elements = new ArrayList<StackTraceElement>();
 		this.addStackTraceToList ( elements );
 		return ( StackTraceElement[] ) elements.toArray ( new StackTraceElement[0] );
 	}

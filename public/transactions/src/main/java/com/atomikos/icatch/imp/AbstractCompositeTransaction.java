@@ -58,7 +58,7 @@ public abstract class AbstractCompositeTransaction implements CompositeTransacti
 	private static final long serialVersionUID = 3522422565305065464L;
 
 
-    protected Stack lineage_;
+    protected Stack<CompositeTransaction> lineage_;
 
     protected String tid_;
 
@@ -81,13 +81,13 @@ public abstract class AbstractCompositeTransaction implements CompositeTransacti
      *
      */
 
-    public AbstractCompositeTransaction ( String tid , Stack lineage ,
+    public AbstractCompositeTransaction ( String tid , Stack<CompositeTransaction> lineage ,
             boolean serial  )
     {
         tid_ = tid;
         lineage_ = lineage;
         if ( lineage_ == null ) {
-            lineage_ = new Stack ();
+            lineage_ = new Stack<CompositeTransaction> ();
             properties_ = new Properties();
         }
         else {
@@ -174,9 +174,9 @@ public abstract class AbstractCompositeTransaction implements CompositeTransacti
      * @see CompositeTransaction.
      */
 
-    public Stack getLineage ()
+    public Stack<CompositeTransaction> getLineage ()
     {
-        return (Stack) lineage_.clone ();
+        return (Stack<CompositeTransaction>) lineage_.clone ();
     }
 
     /**
@@ -218,11 +218,11 @@ public abstract class AbstractCompositeTransaction implements CompositeTransacti
 
     public boolean isRelatedTransaction ( CompositeTransaction ct )
     {
-        Stack lineage = null;
+        Stack<CompositeTransaction> lineage = null;
         if ( lineage_ == null )
-            lineage = new Stack ();
+            lineage = new Stack<CompositeTransaction> ();
         else
-            lineage = (Stack) lineage_.clone ();
+            lineage = (Stack<CompositeTransaction>) lineage_.clone ();
 
         if ( lineage.empty () )
             return isAncestorOf ( ct );

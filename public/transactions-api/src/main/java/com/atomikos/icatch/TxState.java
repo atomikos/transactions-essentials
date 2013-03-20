@@ -59,15 +59,15 @@ public class TxState implements java.io.Serializable {
 	public static final TxState COMMITTED = new TxState ("COMMITTED");
 	public static final TxState ABORTED = new TxState ("ABORTED");
 	
-	private static Vector v;
-	public static Enumeration getStates() {
+	private static Vector<TxState> v;
+	public static Enumeration<TxState> getStates() {
 		if (v == null) {
-			 v = new Vector();
+			 v = new Vector<TxState>();
 			Class myClass = TxState.class;
 			Field[] fields = myClass.getFields();
 			for (int i = 0; i < fields.length; i++) {
 				try {
-					v.addElement(fields[i].get(null));
+					v.addElement((TxState)fields[i].get(null));
 				} catch (Exception e) {
 				}
 			}// for
@@ -80,9 +80,9 @@ public class TxState implements java.io.Serializable {
 		if(v==null){
 			getStates();
 		}
-		Enumeration elements=v.elements();
+		Enumeration<TxState> elements=v.elements();
 		while (elements.hasMoreElements()) {
-			TxState txState = (TxState) elements.nextElement();
+			TxState txState =  elements.nextElement();
 			if(txState.myName.equals(state)){
 				return txState;
 			}

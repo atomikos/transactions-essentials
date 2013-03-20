@@ -68,7 +68,7 @@ public interface CompositeTransaction
      * @return Stack A stack of ancestors, bottom one is the root.
      */
 
-    public Stack getLineage();
+    public Stack<CompositeTransaction> getLineage();
 
 
     /**

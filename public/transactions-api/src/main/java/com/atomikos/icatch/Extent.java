@@ -47,7 +47,7 @@ public interface Extent extends java.io.Serializable
      * to Integer counts that represent the number of invocations detected by each participant.
      */
 
-    public Hashtable getRemoteParticipants();
+    public Hashtable<String,Integer> getRemoteParticipants();
     
     /**
      * Merges another extent into this one.
@@ -88,7 +88,7 @@ public interface Extent extends java.io.Serializable
       * it will also be part of the remote set.
       */
       
-    public Stack getParticipants();
+    public Stack<Participant> getParticipants();
 
   
     											
