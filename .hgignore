@@ -38,3 +38,6 @@ syntax: regexp
 ^private/examples/simplest-examples-osgi/felix-cache$
 syntax: regexp
 \.properties$
+
+syntax: regexp
+^public/transactions-logging-noop$
