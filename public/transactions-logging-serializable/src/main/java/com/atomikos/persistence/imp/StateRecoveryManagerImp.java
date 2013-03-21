@@ -188,6 +188,10 @@ public class StateRecoveryManagerImp implements StateRecoveryManager,
 		}
 		
 	}
+
+	public int getOrder() {
+		return 100;
+	}
 	
 
 }

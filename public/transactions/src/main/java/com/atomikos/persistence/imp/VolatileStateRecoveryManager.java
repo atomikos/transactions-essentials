@@ -36,6 +36,7 @@ import com.atomikos.finitestates.FSMPreEnterListener;
 import com.atomikos.icatch.TxState;
 import com.atomikos.persistence.LogException;
 import com.atomikos.persistence.ObjectImage;
+import com.atomikos.persistence.Ordered;
 import com.atomikos.persistence.StateRecoverable;
 import com.atomikos.persistence.StateRecoveryManager;
 
@@ -157,8 +158,13 @@ public class VolatileStateRecoveryManager implements StateRecoveryManager,
     }
 
 	public void init(Properties properties) throws LogException {
-		// TODO Auto-generated method stub
+		// nothing to do...		
+	}
+
+
+	public int getOrder() {
 		
+		return Ordered.LOWEST_PRECEDENCE;
 	}
 
 }
