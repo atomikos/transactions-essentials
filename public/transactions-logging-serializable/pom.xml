@@ -3,7 +3,7 @@
   <parent>
     <groupId>com.atomikos</groupId>
     <artifactId>ate</artifactId>
-    <version>continuous-release-test-ignore</version>
+    <version>3.9.0-SNAPSHOT</version>
   </parent>
   <artifactId>transactions-logging-serializable</artifactId>
   <dependencies>
@@ -11,7 +11,7 @@
   		<groupId>com.atomikos</groupId>
   		<!-- should be artifactId: transactions-api -->
   		<artifactId>transactions</artifactId>
-  		<version>continuous-release-test-ignore</version>
+  		<version>3.9.0-SNAPSHOT</version>
   	</dependency>
   </dependencies>
 </project>
