@@ -29,11 +29,6 @@
             <version>2.0.0</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-        	<groupId>com.atomikos</groupId>
-        	<artifactId>transactions-logging-serializable</artifactId>
-        	<version>3.9.0-SNAPSHOT</version>
-        </dependency>
-
+      
     </dependencies>
 </project>
