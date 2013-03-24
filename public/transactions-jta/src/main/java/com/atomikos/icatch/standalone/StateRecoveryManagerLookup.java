@@ -26,7 +26,6 @@ public class StateRecoveryManagerLookup {
 			return new VolatileStateRecoveryManager();
 		}
 		// else
-		// TODO : select the best available StateRecoveryManager impl
 		List<StateRecoveryManager> candidates= new ArrayList<StateRecoveryManager>();
 		
 		while (iterator.hasNext()) {
