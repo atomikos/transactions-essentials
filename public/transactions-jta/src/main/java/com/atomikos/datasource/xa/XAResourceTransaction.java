@@ -956,19 +956,15 @@ public class XAResourceTransaction implements ResourceTransaction,
 	}
 
 	public void writeData(DataOutput out) throws IOException {
-		// TODO : ??? out.writeUTF( xid_. );
-		
 		byte[] data= ClassLoadingHelper.toByteArray((Serializable)xid_);
-		//out.writeUTF(new String(xid_.getBranchQualifier()));
 		out.writeInt(data.length);
-		out.write(data);
-		
+		out.write(data);	
 		out.writeUTF(tid_);
 		out.writeUTF(root_);
 		out.writeUTF(state_.toString());
 		out.writeUTF(resourcename_);
 		out.writeInt(heuristicMessages_.size());
-		for (Iterator iterator = heuristicMessages_.iterator(); iterator.hasNext();) {
+		for (Iterator<HeuristicMessage> iterator = heuristicMessages_.iterator(); iterator.hasNext();) {
 			HeuristicMessage heuristicMessage = (HeuristicMessage) iterator.next();
 			out.writeUTF(heuristicMessage.toString());
 		}
@@ -1001,7 +997,7 @@ public class XAResourceTransaction implements ResourceTransaction,
 		state_ = TxState.valueOf(in.readUTF());
 		resourcename_ = in.readUTF();
 		int nbMessages = in.readInt();
-		heuristicMessages_ = new Vector(nbMessages);
+		heuristicMessages_ = new Vector<HeuristicMessage>(nbMessages);
 		for (int i = 0; i < nbMessages; i++) {
 			heuristicMessages_.add(new StringHeuristicMessage(in.readUTF()));
 		}

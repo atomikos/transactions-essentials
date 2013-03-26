@@ -34,6 +34,7 @@ import java.io.ObjectOutput;
 import java.util.Vector;
 
 import com.atomikos.icatch.DataSerializable;
+import com.atomikos.icatch.Participant;
 import com.atomikos.icatch.RecoveryCoordinator;
 import com.atomikos.icatch.TxState;
 import com.atomikos.persistence.ObjectImage;
@@ -59,7 +60,7 @@ public class CoordinatorLogImage implements ObjectImage,DataSerializable
     boolean heuristicCommit_;
     // what to do on timeout of indoubt: commit or not
 
-    Vector participants_;
+    Vector<Participant> participants_;
     // all participants known for this coordinator.
 
     RecoveryCoordinator coordinator_;
@@ -104,7 +105,7 @@ public class CoordinatorLogImage implements ObjectImage,DataSerializable
      * @param single_threaded_2pc
      */
     public CoordinatorLogImage ( String root , TxState state ,
-            Vector participants , RecoveryCoordinator coordinator ,
+            Vector<Participant> participants , RecoveryCoordinator coordinator ,
             boolean commit_on_heuristic , long maxinquiries ,
             CoordinatorStateHandler stateHandler , boolean single_threaded_2pc )
     {
@@ -136,7 +137,7 @@ public class CoordinatorLogImage implements ObjectImage,DataSerializable
      * @param single_threaded_2pc
      */
     public CoordinatorLogImage ( String root , TxState state ,
-            Vector participants , RecoveryCoordinator coordinator ,
+            Vector<Participant> participants , RecoveryCoordinator coordinator ,
             boolean commit_on_heuristic , long maxinquiries ,
             CoordinatorStateHandler stateHandler , int localSiblingCount ,
             boolean checkSiblings , boolean single_threaded_2pc
@@ -187,7 +188,7 @@ public class CoordinatorLogImage implements ObjectImage,DataSerializable
         try {
 			root_ = (String) in.readObject ();
 			state_ = (TxState) in.readObject ();
-			participants_ = (Vector) in.readObject ();
+			participants_ = (Vector<Participant>) in.readObject ();
 			boolean readcoord = in.readBoolean ();
 			if ( readcoord )
 			    coordinator_ = (RecoveryCoordinator) in.readObject ();
@@ -238,8 +239,9 @@ public class CoordinatorLogImage implements ObjectImage,DataSerializable
 			out.writeBoolean(false);
 		else {
 			out.writeBoolean(true);
-
-			// FIXME: TODO:
+			
+			// FIXME: Work with Guy for a better understanding on what to do here :
+			// Does all Impl of RecoveryCoordinator must implement DataSerializable ??? 
 			// out.writeObject ( coordinator_ );
 		}
 		if (participants_ != null) {
@@ -284,14 +286,14 @@ public class CoordinatorLogImage implements ObjectImage,DataSerializable
 
 			boolean initialized = in.readBoolean();
 			if (initialized) {
-				participants_=new Vector();
+				participants_=new Vector<Participant>();
 				// intead of: participants_ = (Vector) in.readObject ();
 				int size = in.readInt();
 				for (int i = 0; i < size; i++) {
 					String participantClassName=in.readUTF();
 					DataSerializable participant = (DataSerializable) ClassLoadingHelper.newInstance(participantClassName);
 					participant.readData(in);
-					participants_.add(participant);
+					participants_.add((Participant)participant);
 				}
 			}
 
