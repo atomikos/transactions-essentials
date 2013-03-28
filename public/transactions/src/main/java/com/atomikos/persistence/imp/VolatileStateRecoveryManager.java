@@ -126,8 +126,7 @@ public class VolatileStateRecoveryManager implements StateRecoveryManager,
         StateRecoverable<TxState> ret = null;
 
         StateObjectImage simg = (StateObjectImage) idToElementMap.get ( id );
-        ret = (StateRecoverable<TxState>) simg.restore ();
-
+        if (simg != null) ret = (StateRecoverable<TxState>) simg.restore ();
         return ret;
     }
 
