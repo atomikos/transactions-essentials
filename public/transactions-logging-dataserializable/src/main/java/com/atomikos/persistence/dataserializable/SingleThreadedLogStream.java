@@ -193,7 +193,7 @@ public class SingleThreadedLogStream implements LogStream {
 				//was: output_.write(dataByteArrayOutputStream.getContent());
 
 			}
-			requestSync();
+			requestSync(); //TODO wait for sync result!
 			//was: if (shouldSync && output_!=null) output_.getFD().sync();
 		} catch (IOException e) {
 
@@ -222,13 +222,15 @@ public class SingleThreadedLogStream implements LogStream {
 	public void requestSync() throws LogException {
 			executor.submit(new Callable<Void>() {
 				public Void call() throws Exception {
-					boolean shouldSync = !queue.isEmpty();
-					while (!queue.isEmpty()) {
-						byte[] buffer = queue.take();
-						output_.write(buffer);
-					}
-					if (shouldSync) {
-						output_.getFD().sync();
+					synchronized (file_) {
+						boolean shouldSync = !queue.isEmpty();
+						while (!queue.isEmpty()) {
+							byte[] buffer = queue.take();
+							output_.write(buffer);
+						}
+						if (shouldSync) {
+							output_.getFD().sync();
+						}
 					}
 
 					return null;
