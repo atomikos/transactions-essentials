@@ -5,12 +5,14 @@ import java.io.IOException;
 import java.io.ObjectStreamException;
 import java.io.RandomAccessFile;
 import java.io.StreamCorruptedException;
+import java.io.SyncFailedException;
 import java.util.Enumeration;
 import java.util.Vector;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import com.atomikos.icatch.DataSerializable;
@@ -25,7 +27,7 @@ public class SingleThreadedLogStream implements LogStream {
 
 	private static final Logger LOGGER = LoggerFactory.createLogger(SingleThreadedLogStream.class);
 
-	private BlockingQueue<byte[]> queue = new LinkedBlockingQueue<byte[]>();
+	private BlockingQueue<BatchedLogRequest> queue = new LinkedBlockingQueue<BatchedLogRequest>();
 
 	private ExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 	private RandomAccessFile output_;
@@ -188,18 +190,31 @@ public class SingleThreadedLogStream implements LogStream {
 			oo.writeData(dataByteArrayOutputStream);
 			dataByteArrayOutputStream.close();
 			// take care of checkpoint...
-			synchronized (file_) {
-				queue.add(dataByteArrayOutputStream.getContent());
-				//was: output_.write(dataByteArrayOutputStream.getContent());
-
-			}
-			requestSync(); //TODO wait for sync result!
-			//was: if (shouldSync && output_!=null) output_.getFD().sync();
-		} catch (IOException e) {
-
+			byte[] content = dataByteArrayOutputStream.getContent();
+			addLogRequestToBatch(shouldSync, content);
+			if (shouldSync) syncEntireBatchInOneGo();
+		} catch (Exception e) {
 			throw new LogException(e.getMessage(), e);
 		}
 		// System.err.println("flushObject: " +(System.currentTimeMillis()-start));
+	}
+
+	private void addLogRequestToBatch(boolean shouldSync,
+			byte[] content) {
+		BatchedLogRequest queuedRequest = createBatchedLogRequest(content, shouldSync);
+		synchronized (file_) {
+			queue.add(queuedRequest);
+			//was: output_.write(dataByteArrayOutputStream.getContent());
+
+		}
+	}
+
+	private BatchedLogRequest createBatchedLogRequest(byte[] bytes,
+			boolean shouldSync) {
+		BatchedLogRequest ret = new BatchedLogRequest();
+		ret.bytes = bytes;
+		ret.shouldSync = shouldSync;
+		return ret;
 	}
 
 	public synchronized void close() throws LogException {
@@ -219,24 +234,34 @@ public class SingleThreadedLogStream implements LogStream {
 		return file_.getSize();
 	}
 
-	public void requestSync() throws LogException {
-			executor.submit(new Callable<Void>() {
+	public void syncEntireBatchInOneGo() throws Exception {
+			Future<Void> syncResult = executor.submit(new Callable<Void>() {
 				public Void call() throws Exception {
-					synchronized (file_) {
-						boolean shouldSync = !queue.isEmpty();
-						while (!queue.isEmpty()) {
-							byte[] buffer = queue.take();
-							output_.write(buffer);
-						}
-						if (shouldSync) {
-							output_.getFD().sync();
-						}
-					}
-
+					processAllBatchedLogRequests();
 					return null;
 				}
 
 			});
+			syncResult.get();
 	}
 
+	private void processAllBatchedLogRequests()
+			throws InterruptedException, IOException, SyncFailedException {
+		boolean atLeastOneSyncRequestFound = false;
+		synchronized (file_) {				
+			while (!queue.isEmpty()) {
+				BatchedLogRequest req = queue.take();
+				output_.write(req.bytes);
+				if (req.shouldSync) atLeastOneSyncRequestFound = true; 
+			}
+			if (atLeastOneSyncRequestFound) {
+				output_.getFD().sync();
+			}
+		}
+	}
+	
+	private static class BatchedLogRequest {
+		byte[] bytes;
+		boolean shouldSync;
+	}
 }
