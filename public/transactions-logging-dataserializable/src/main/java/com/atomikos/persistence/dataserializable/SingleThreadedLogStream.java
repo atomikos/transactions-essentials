@@ -37,9 +37,6 @@ public class SingleThreadedLogStream implements LogStream {
 	// if necessary.
 
 
-	private boolean simulateCrash_;
-	// for testing
-
 	private boolean corrupt_;
 	// true if checkpoint; second call of recover
 	// not allowed, otherwise suffix_ will be wrong
@@ -49,7 +46,6 @@ public class SingleThreadedLogStream implements LogStream {
 
 	public SingleThreadedLogStream(String baseDir, String baseName) throws IOException {
 		file_ = new VersionedFile(baseDir, baseName, ".log");
-		simulateCrash_ = false;
 
 		corrupt_ = false;
 	}
@@ -70,16 +66,6 @@ public class SingleThreadedLogStream implements LogStream {
 
 			throw new LogException("Error closing previous output", e);
 		}
-	}
-
-	/**
-	 * Makes write checkpoint crash before old file delete.
-	 * 
-	 * For debugging only.
-	 */
-
-	void setCrashMode() {
-		simulateCrash_ = true;
 	}
 
 	public Vector<Recoverable> recover() throws LogException {
@@ -160,11 +146,6 @@ public class SingleThreadedLogStream implements LogStream {
 				// will probably want to write more!
 				// Thus, we return the open stream to the client.
 				// Any closing will be done later, during cleanup if necessary.
-
-				if (simulateCrash_) {
-					corrupt_ = true;
-					throw new LogException("Old file could not be deleted");
-				}
 
 				try {
 					file_.discardBackupVersion();
