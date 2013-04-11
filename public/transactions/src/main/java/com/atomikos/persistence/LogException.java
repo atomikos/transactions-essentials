@@ -52,6 +52,10 @@ public class LogException extends Exception
 		errors_ = new Stack();
 		errors_.push(e);
     }
+    
+    public LogException(Exception e) {
+    	super(e);
+    }
 
 
 }
