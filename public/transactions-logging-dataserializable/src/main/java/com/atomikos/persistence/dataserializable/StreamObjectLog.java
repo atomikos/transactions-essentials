@@ -36,11 +36,11 @@ import com.atomikos.persistence.LogStream;
 import com.atomikos.persistence.ObjectLog;
 import com.atomikos.persistence.Recoverable;
 
-public class StreamObjectLog implements ObjectLog{
+public class StreamObjectLog extends AbstractObjectLog {
 	private static final Logger LOG = LoggerFactory.createLogger(StreamObjectLog.class);
 
     private LogStream logstream_;
-    private Hashtable contentForNextCheckpoint_;
+    private Hashtable<Object,SystemLogImage> contentForNextCheckpoint_;
     private boolean initialized_ = false;
     private long flushesSinceLastCheckpoint_;
     private long maxFlushesBetweenCheckpoints_;
@@ -48,12 +48,12 @@ public class StreamObjectLog implements ObjectLog{
     public StreamObjectLog ( LogStream logstream , long maxFlushesBetweenCheckpoints )
     {
         logstream_ = logstream;
-        contentForNextCheckpoint_ = new Hashtable ();
+        contentForNextCheckpoint_ = new Hashtable<Object,SystemLogImage> ();
         maxFlushesBetweenCheckpoints_ = maxFlushesBetweenCheckpoints;
         flushesSinceLastCheckpoint_ = 0;
     }
 
-    private synchronized void flushAndWriteCheckpointIfThresholdReached(SystemLogImage img, boolean shouldSync) throws LogException
+    void flushAndWriteCheckpointIfThresholdReached(SystemLogImage img, boolean shouldSync) throws LogException
     {
     	flushImage(img, shouldSync);
         flushesSinceLastCheckpoint_++;
@@ -94,7 +94,7 @@ public class StreamObjectLog implements ObjectLog{
 
     }
 
-	private void logAsWarningAndRethrowAsLogException(String msg, Exception e, boolean forceCheckpoint)
+	void logAsWarningAndRethrowAsLogException(String msg, Exception e, boolean forceCheckpoint)
 			throws LogException {
 		LOG.logWarning(msg , e);
 		if (forceCheckpoint) forceWriteCheckpoint();
@@ -145,27 +145,27 @@ public class StreamObjectLog implements ObjectLog{
      * @see ObjectLog
      */
 
-    public synchronized void flush ( Recoverable rec ) throws LogException
+    public  void flush ( Recoverable rec ) throws LogException
     {
         if ( rec == null ) return;
-
-        SystemLogImage simg = new SystemLogImage ( rec, false );
-        flush ( simg , true );
-    }
-
-    protected synchronized void flush ( SystemLogImage img , boolean shouldSync )
-            throws LogException
-    {
-        if ( img == null ) return;
-
-        try {
-        	flushAndWriteCheckpointIfThresholdReached(img,shouldSync);
-        } catch ( Exception e ) {
-        	logAsWarningAndRethrowAsLogException("Unexpected error during flush", e ,true);
+        synchronized (contentForNextCheckpoint_){
+        	SystemLogImage simg = new SystemLogImage ( rec, false );
+            flush ( simg , true );	
         }
+        
     }
 
-	private void rememberImageForNextCheckpoint(SystemLogImage img) {
+	protected void flush(SystemLogImage img, boolean shouldSync) throws LogException {
+	    if ( img == null ) return;
+	
+	    try {
+	    	flushAndWriteCheckpointIfThresholdReached(img,shouldSync);
+	    } catch ( Exception e ) {
+	    	logAsWarningAndRethrowAsLogException("Unexpected error during flush", e ,true);
+	    }
+	}
+    
+    private void rememberImageForNextCheckpoint(SystemLogImage img) {
 		contentForNextCheckpoint_.put ( img.getId (), img );
 	}
 

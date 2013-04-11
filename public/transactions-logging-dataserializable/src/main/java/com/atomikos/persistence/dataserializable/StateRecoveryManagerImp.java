@@ -186,7 +186,8 @@ public class StateRecoveryManagerImp implements StateRecoveryManager,
 		LogStream logstream;
 		try {
 			logstream = new FileLogStream ( logdir, logname );
-			objectlog_ = new StreamObjectLog ( logstream, chckpt );
+			StreamObjectLog streamObjectLog = new StreamObjectLog ( logstream, chckpt );
+			objectlog_=new VeryFastObjectLog(streamObjectLog);
 			objectlog_.init();
 		} catch (IOException e) {
 			throw new LogException(e.getMessage(), e);
@@ -198,7 +199,7 @@ public class StateRecoveryManagerImp implements StateRecoveryManager,
 
 	
 	public int getOrder() {
-		return 200;
+		return 0;
 	}
 
 }
