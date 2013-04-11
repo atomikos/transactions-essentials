@@ -31,10 +31,11 @@ import java.util.Stack;
  * Exception signaling (fatal) errors during logging of recoverable state.
  */
 
+@SuppressWarnings("serial")
 public class LogException extends Exception
 {
 
-    protected java.util.Stack errors_ = null;
+    protected Stack<Exception> errors_ = null;
 
     public LogException ()
     {
@@ -49,7 +50,7 @@ public class LogException extends Exception
  
     public LogException(String msg, Exception e) {
 		super(msg,e);
-		errors_ = new Stack();
+		errors_ = new Stack<Exception>();
 		errors_.push(e);
     }
     
