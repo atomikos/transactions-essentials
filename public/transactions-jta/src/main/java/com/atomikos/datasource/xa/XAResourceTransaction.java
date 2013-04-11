@@ -209,20 +209,13 @@ public class XAResourceTransaction implements ResourceTransaction,
 	}
 
    static String xidToHexString(Xid xid) {
-    	String gtrid = byteArrayToHexString(xid.getGlobalTransactionId());
-    	String bqual = byteArrayToHexString(xid.getBranchQualifier());
+    	String gtrid = StringUtils.byteArrayToHexString(xid.getGlobalTransactionId());
+    	String bqual = StringUtils.byteArrayToHexString(xid.getBranchQualifier());
 
 		return gtrid + ":" + bqual;
 	}
 
-	private static String byteArrayToHexString(byte[] byteArray) {
-		StringBuffer sb = new StringBuffer(2*byteArray.length);
-    	for (int i = 0; i < byteArray.length; i++) {
-    		String hexByte = Integer.toHexString(byteArray[i]);
-			sb.append(hexByte);
-		}
-    	return sb.toString().toUpperCase();
-	}
+	
 
 	private void switchToHeuristicState ( String opCode , TxState state , XAException cause )
 	{

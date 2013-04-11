@@ -10,7 +10,7 @@ public class StringUtils {
     (byte)'C', (byte)'D', (byte)'E', (byte)'F'
   };    
 
-  public static String getHexString(byte[] raw) 
+  public static String byteArrayToHexString(byte[] raw) 
   {
     byte[] hex = new byte[2 * raw.length];
     int index = 0;
@@ -23,18 +23,5 @@ public class StringUtils {
     return new String(hex);
   }
 
-  public static void main(String args[]) throws Exception{
-    byte[] byteArray = {
-      (byte)255, (byte)254, (byte)253, 
-      (byte)252, (byte)251, (byte)250
-    };
-
-    System.out.println(StringUtils.getHexString(byteArray));
-    
-    /*
-     * output :
-     *   fffefdfcfbfa
-     */
-    
-  }
+ 
 }
