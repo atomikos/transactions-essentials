@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.atomikos</groupId>
 	<artifactId>atomikos-parent</artifactId>
@@ -51,8 +52,8 @@
 		<connection>scm:hg:http://atomikos.repositoryhosting.com/hg/atomikos/development</connection>
 		<developerConnection>scm:hg:http://atomikos.repositoryhosting.com/hg/atomikos/development</developerConnection>
 		<url>http://www.atomikos.com/</url>
-	  <tag>latest-dev-release</tag>
-  </scm>
+		<tag>latest-dev-release</tag>
+	</scm>
 
 	<build>
 		<pluginManagement>
@@ -78,7 +79,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-assembly-plugin</artifactId>
-					<!--<version>2.2</version>-->
+					<!--<version>2.2</version> -->
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -158,15 +159,41 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<redirectTestOutputToFile>true</redirectTestOutputToFile>
-					<argLine>-Xmx1024m -Xms256m</argLine>
+					 <argLine>${argLine}</argLine>
 					<forkMode>always</forkMode>
 					<includes>
-						 <include>**/*TestJUnit.java</include> 
-						
+						<include>**/*TestJUnit.java</include>
+
 					</includes>
 					<!-- this conf is made to ensure that no file wil be created outside -->
 					<workingDirectory>${project.build.testOutputDirectory}</workingDirectory>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.6.2.201302030002</version>
+				 <configuration>
+        			<includes>
+        				<include>com/atomikos/**</include>
+        			</includes>
+        			<append>true</append>
+    				</configuration>
+				<executions>
+					<execution>
+						<id>jacoco-initialize</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>jacoco-site</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -209,13 +236,13 @@
 			</plugin>
 		</plugins>
 		<extensions>
-                        <!-- Enabling the use of FTP -->
-                        <extension>
-                                <groupId>org.apache.maven.wagon</groupId>
-                                <artifactId>wagon-ftp</artifactId>
-                                <version>1.0-beta-6</version>
-                        </extension>
-                </extensions>
+			<!-- Enabling the use of FTP -->
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-ftp</artifactId>
+				<version>1.0-beta-6</version>
+			</extension>
+		</extensions>
 	</build>
 
 	<dependencies>
@@ -248,17 +275,17 @@
 				<activeByDefault>true</activeByDefault>
 			</activation>
 			<distributionManagement>
-                                <repository>
-                                        <id>internal.release.repo</id>
-                                        <name>Atomikos Internal Release Repository</name>
-                                        <url>file://${user.home}/.m2/repository</url>
-                                </repository>
-                                <snapshotRepository>
-                                        <id>internal.snapshot.repo</id>
-                                        <name>Atomikos Internal Snapshot Repository</name>
-                                        <url>file://${user.home}/.m2/repository</url>
-                                </snapshotRepository>
-                        </distributionManagement>
+				<repository>
+					<id>internal.release.repo</id>
+					<name>Atomikos Internal Release Repository</name>
+					<url>file://${user.home}/.m2/repository</url>
+				</repository>
+				<snapshotRepository>
+					<id>internal.snapshot.repo</id>
+					<name>Atomikos Internal Snapshot Repository</name>
+					<url>file://${user.home}/.m2/repository</url>
+				</snapshotRepository>
+			</distributionManagement>
 
 			<!-- "modules" must correspond to file system hierarchy -->
 			<modules>
@@ -317,7 +344,7 @@
 				<module>public</module>
 			</modules>
 			<distributionManagement>
-				<!--<snapshotRepository> <id>sonatype-nexus-snapshots</id> <name>Sonatype
+				<!--<snapshotRepository> <id>sonatype-nexus-snapshots</id> <name>Sonatype 
 					Nexus Snapshots</name> <url>${sonatypeOssDistMgmtSnapshotsUrl}</url> </snapshotRepository> -->
 				<repository>
 					<id>sonatype-nexus-staging</id>
@@ -327,5 +354,4 @@
 			</distributionManagement>
 		</profile>
 	</profiles>
-
 </project>
