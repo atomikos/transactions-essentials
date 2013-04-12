@@ -44,7 +44,7 @@ import com.atomikos.icatch.RecoveryService;
 import com.atomikos.icatch.SysException;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
-import com.atomikos.persistence.StateRecoveryManager;
+
 
 /**
  *
@@ -368,12 +368,6 @@ public abstract class XATransactionalResource implements TransactionalResource
 
     }
 
-    private StateRecoveryManager getRecoveryManager () throws ResourceException
-    {
-        if (closed_) throw new IllegalStateException("XATransactionResource already closed");
-       
-        return null;
-    }
 
     /**
      * @see TransactionalResource
