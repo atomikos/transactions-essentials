@@ -72,9 +72,6 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable,DataSe
 
 	private static final Logger LOGGER = LoggerFactory.createLogger(CoordinatorStateHandler.class);
 
-    private static final int THREADS = 1;
-    // how many propagator threads do we need?
-
     private transient CoordinatorImp coordinator_;
     // the coordinator instance whose state we represent
 
@@ -202,8 +199,6 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable,DataSe
     protected void addToHeuristicMap ( Participant p , Object state )
     {
         Stack stack = (Stack) heuristicMap_.get ( state );
-        // returns non-null since stack is always created at construction time,
-        // and restored from log image as well
         stack.push ( p );
 
     }
@@ -302,7 +297,6 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable,DataSe
 
     protected long getRollbackTicks ()
     {
-        // return 0 by default
         return 0;
     }
 
