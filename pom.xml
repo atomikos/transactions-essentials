@@ -19,16 +19,6 @@
 	<properties>
 		<!-- we don't want to depend on platform's default encoding -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<!-- Sonar -->
-		<!-- see https://github.com/SonarSource/sonar-examples/tree/master/projects/code-coverage/combined%20ut-it/combined-ut-it-multimodule-maven-jacoco -->
-		<!-- display ut coverage and it coverage -->
-    <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
-    <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
-    <!-- The destination file for the code coverage report has to be set to the same value
-         in the parent pom and in each module pom. Then JaCoCo will add up information in
-         the same report, so that, it will give the cross-module code coverage. -->
-    <sonar.jacoco.itReportPath>${project.basedir}/../target/jacoco-it.exec</sonar.jacoco.itReportPath>
-	<sonar.language>java</sonar.language>
 	</properties>
 	<developers>
 		<developer>
@@ -177,32 +167,6 @@
 					<!-- this conf is made to ensure that no file wil be created outside -->
 					<workingDirectory>${project.build.testOutputDirectory}</workingDirectory>
 				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.jacoco</groupId>
-				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.6.2.201302030002</version>
-				 <configuration>
-        			<includes>
-        				<include>com/atomikos/**</include>
-        			</includes>
-        			<append>true</append>
-    				</configuration>
-				<executions>
-					<execution>
-						<id>jacoco-initialize</id>
-						<goals>
-							<goal>prepare-agent</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>jacoco-site</id>
-						<phase>verify</phase>
-						<goals>
-							<goal>report</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
