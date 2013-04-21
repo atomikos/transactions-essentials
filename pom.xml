@@ -51,7 +51,6 @@
 		<connection>scm:hg:http://atomikos.repositoryhosting.com/hg/atomikos/development</connection>
 		<developerConnection>scm:hg:http://atomikos.repositoryhosting.com/hg/atomikos/development</developerConnection>
 		<url>http://www.atomikos.com/</url>
-		<tag>latest-dev-release</tag>
 	</scm>
 
 	<build>
