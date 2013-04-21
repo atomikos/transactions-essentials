@@ -416,6 +416,27 @@ implements HeuristicDataSource, ConnectionPoolProperties, Referenceable, Seriali
 	public int getDefaultIsolationLevel() {
 		return defaultIsolationLevel;
 	}
+	
+	public boolean isWrapperFor(Class<?> iface) {
+		return isAssignableFromThisClass(iface) || isAssignableFromWrappedVendorClass(iface);
+	}
+	
+	protected abstract boolean isAssignableFromWrappedVendorClass(Class<?> iface);
+
+	private  boolean isAssignableFromThisClass(Class<?> iface) {
+		return iface.isAssignableFrom(getClass());
+	}
+
+	public <T> T unwrap(Class<T> iface) throws SQLException {
+		if (isAssignableFromThisClass(iface)) {
+			return (T) this;
+		} else if (isAssignableFromWrappedVendorClass(iface)) {
+			return (T) unwrapVendorInstance();
+		} 
+		throw new SQLException("Not a wrapper for class: " + iface);
+	}
+
+	protected abstract Object unwrapVendorInstance();
 
 	
 }

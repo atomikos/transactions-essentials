@@ -222,4 +222,18 @@ extends AbstractDataSourceBean
 		return ret;
 	}
 
+
+	protected boolean isAssignableFromWrappedVendorClass(Class<?> iface) {
+		boolean ret = false;
+		 if (xaDataSource != null ) { 
+			 ret = iface.isAssignableFrom(xaDataSource.getClass());
+		 }
+		 return ret;
+	}
+
+	@Override
+	protected Object unwrapVendorInstance() {
+		return xaDataSource;
+	}
+
 }

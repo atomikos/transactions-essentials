@@ -227,5 +227,17 @@ public class AtomikosNonXADataSourceBean extends AbstractDataSourceBean
 		}
 		return ret;
 	}
+
+	@Override
+	protected boolean isAssignableFromWrappedVendorClass(Class<?> iface) {
+		//we don't really care
+		return false;
+	}
+
+	@Override
+	protected Object unwrapVendorInstance() {
+		throw new UnsupportedOperationException();
+	}
+
 	
 }
