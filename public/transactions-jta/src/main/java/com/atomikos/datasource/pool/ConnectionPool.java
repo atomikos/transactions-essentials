@@ -273,7 +273,6 @@ public class ConnectionPool implements XPooledConnectionEventListener
             long before = System.currentTimeMillis();
         	try {
         		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": about to wait for connection during " + remainingTime + "ms...");
-
         		this.wait (remainingTime);
 
 			} catch (InterruptedException ex) {
@@ -323,7 +322,6 @@ public class ConnectionPool implements XPooledConnectionEventListener
 
 	public synchronized void onXPooledConnectionTerminated(XPooledConnection connection) {
 		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug( this +  ": connection " + connection + " became available, notifying potentially waiting threads");
-
 		this.notify();
 
 	}
