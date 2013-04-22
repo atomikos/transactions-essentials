@@ -14,6 +14,12 @@ import com.atomikos.persistence.LogException;
 import com.atomikos.persistence.Recoverable;
 import com.atomikos.persistence.StateRecoverable;
 
+ /**
+  * A high-performance logging implementation - works by batching multiple
+  * concurrent threads' sync requests together into one sync towards the 
+  * underlying ObjectLog delegate.
+  */
+
 public class VeryFastObjectLog extends AbstractObjectLog {
 
 	private AbstractObjectLog delegate;
