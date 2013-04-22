@@ -57,16 +57,6 @@ public abstract class AbstractUserTransactionServiceFactory implements
 	 */
 	public static final String DEFAULT_JTA_TIMEOUT_PROPERTY_NAME = "com.atomikos.icatch.default_jta_timeout";
 
-
-	/**
-	 * @deprecated use a standard logger API now...
-	 * The name of the property that specifies the filename to use for console
-	 * log files.
-	 *
-	 * Expands to {@value}.
-	 */
-	public static final String CONSOLE_FILE_NAME_PROPERTY_NAME = "com.atomikos.icatch.console_file_name";
-
 	/**
 	 * The name of the property that specifies the output folder for the
 	 * transaction manager's files.
@@ -81,17 +71,6 @@ public abstract class AbstractUserTransactionServiceFactory implements
 	 * Expands to {@value}.
 	 */
 	public static final String LOG_BASE_DIR_PROPERTY_NAME = "com.atomikos.icatch.log_base_dir";
-
-	/**
-	 * @deprecated use a standard logger API now...
-	 * The name of the property that specifies the console log level. Should be
-	 * one of: WARN, INFO or DEBUG.
-	 *
-	 * Expands to {@value}.
-	 */
-	public static final String CONSOLE_LOG_LEVEL_PROPERTY_NAME = "com.atomikos.icatch.console_log_level";
-
-
 
 	/**
 	 * The name of the property that indicates the base name of the log files.
@@ -176,25 +155,6 @@ public abstract class AbstractUserTransactionServiceFactory implements
 	 * Expands to {@value}.
 	 */
 	public static final String ENABLE_LOGGING_PROPERTY_NAME = "com.atomikos.icatch.enable_logging";
-
-	/**
-	 * @deprecated use a standard logger API now...
-	 * The name of the property indicating the max size in bytes of the console
-	 * log files. Negative means unlimited.
-	 *
-	 * Expands to {@value}.
-	 */
-	public static final String CONSOLE_FILE_LIMIT_PROPERTY_NAME = "com.atomikos.icatch.console_file_limit";
-
-	/**
-	 * @deprecated use a standard logger API now...
-	 * The name of the property indicating the number of rotating console log
-	 * files.
-	 *
-	 * Expands to {@value}.
-	 */
-	public static final String CONSOLE_FILE_COUNT_PROPERTY_NAME = "com.atomikos.icatch.console_file_count";
-
 
 	/**
 	 * The name of the property specifying whether two-phase commit should be done concurrently with threads.
