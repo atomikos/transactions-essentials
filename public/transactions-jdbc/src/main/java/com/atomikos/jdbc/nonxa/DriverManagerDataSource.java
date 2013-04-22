@@ -168,5 +168,13 @@ public class DriverManagerDataSource implements DataSource, Serializable
         driverClassName = string;
     }
 
+    
+    public boolean isWrapperFor(Class<?> iface) {
+    	return false;
+    }
+    
+    public <T> T unwrap(Class<T> iface) throws SQLException {
+    	throw new SQLException();
+    }
 
 }
