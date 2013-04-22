@@ -157,11 +157,9 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<redirectTestOutputToFile>true</redirectTestOutputToFile>
-					 <argLine>${argLine}</argLine>
 					<forkMode>always</forkMode>
 					<includes>
 						<include>**/*TestJUnit.java</include>
-
 					</includes>
 					<!-- this conf is made to ensure that no file wil be created outside -->
 					<workingDirectory>${project.build.testOutputDirectory}</workingDirectory>
