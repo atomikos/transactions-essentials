@@ -176,7 +176,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 				//no available connection found -> wait and try again until DB available or remaining time is over
 				LOGGER.logWarning ( this + ": no connection found - waiting a bit..." );
 				try {
-					Thread.sleep(1000);
+					wait(1000);
 				} catch (InterruptedException e) {
 					// cf bug 67457
 					InterruptedExceptionHelper.handleInterruptedException ( e );
