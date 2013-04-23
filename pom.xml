@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.atomikos</groupId>
 	<artifactId>atomikos-parent</artifactId>
@@ -262,6 +263,66 @@
 				<module>public</module>
 				<module>private</module>
 			</modules>
+		</profile>
+		<profile>
+			<id>sonar</id>
+			<properties>
+				<!-- Sonar -->
+				<!-- see https://github.com/SonarSource/sonar-examples/tree/master/projects/code-coverage/combined%20ut-it/combined-ut-it-multimodule-maven-jacoco -->
+				<!-- display ut coverage and it coverage -->
+				<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+				<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+				<!-- The destination file for the code coverage report has to be set 
+					to the same value in the parent pom and in each module pom. Then JaCoCo will 
+					add up information in the same report, so that, it will give the cross-module 
+					code coverage. -->
+				<sonar.jacoco.itReportPath>${project.basedir}/target/jacoco-it.exec</sonar.jacoco.itReportPath>
+				<sonar.language>java</sonar.language>
+			</properties>
+			<build>
+			<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<redirectTestOutputToFile>true</redirectTestOutputToFile>
+					 <argLine>${argLine}</argLine>
+					<forkMode>always</forkMode>
+					<includes>
+						<include>**/*TestJUnit.java</include>
+					</includes>
+					<!-- this conf is made to ensure that no file wil be created outside -->
+					<workingDirectory>${project.build.testOutputDirectory}</workingDirectory>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.6.2.201302030002</version>
+				 <configuration>
+        			<includes>
+        				<include>com/atomikos/**</include>
+        			</includes>
+        			<append>true</append>
+    				</configuration>
+				<executions>
+					<execution>
+						<id>jacoco-initialize</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>jacoco-site</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			</plugins>
+			</build>
 		</profile>
 		<profile>
 			<id>opensource</id>
