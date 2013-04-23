@@ -145,11 +145,11 @@ public class ConnectionPool implements XPooledConnectionEventListener
 			if (availableSize() == 0 && totalSize() < properties.getMaxPoolSize()) {
 				growPool();
 			} else {
-				if (totalSize() == properties.getMaxPoolSize())
-					if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug( this +  ": pool reached max size: " + properties.getMaxPoolSize());
-
-				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug( this +  ": current size: " + availableSize() + "/" + totalSize());
-				remainingTime = waitForConnectionInPoolIfNecessary(remainingTime);
+				if ( LOGGER.isDebugEnabled() )  {
+					if (totalSize() == properties.getMaxPoolSize()) LOGGER.logDebug( this +  ": pool reached max size: " + properties.getMaxPoolSize());
+					else LOGGER.logDebug( this +  ": current size: " + availableSize() + "/" + totalSize());
+				}
+				remainingTime = waitForAtLeastOneAvailableConnection(remainingTime);
 			}
 
 			XPooledConnection xpc = null;
@@ -266,7 +266,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 	 * Returns immediately if the pool already contains a connection in state available.
 	 * @throws CreateConnectionException if a timeout happened while waiting for a connection
 	 */
-	private synchronized long waitForConnectionInPoolIfNecessary(long remainingTime) throws PoolExhaustedException
+	private synchronized long waitForAtLeastOneAvailableConnection(long remainingTime) throws PoolExhaustedException
 	{
         while (availableSize() == 0) {
         	if ( properties.getBorrowConnectionTimeout() <= 0 ) throw new PoolExhaustedException ( "ConnectionPool: pool is empty and borrowConnectionTimeout is not set" );
