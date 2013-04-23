@@ -117,7 +117,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 	 * @param hmsg The heuristic message to get the connection with.
 	 * @return The connection as Reapable.
 	 * @throws CreateConnectionException If the pool attempted to grow but failed.
-	 * @throws PoolExhaustedException If the pool could not grow because it is exhaused.
+	 * @throws PoolExhaustedException If the pool could not grow because it is exhausted.
 	 * @throws ConnectionPoolException Other errors.
 	 */
 	public synchronized Reapable borrowConnection ( HeuristicMessage hmsg ) throws CreateConnectionException , PoolExhaustedException, ConnectionPoolException
