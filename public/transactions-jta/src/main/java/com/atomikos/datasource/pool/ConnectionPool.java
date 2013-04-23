@@ -155,21 +155,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 			
 
 
-			Iterator<XPooledConnection> it = connections.iterator();			
-			while ( it.hasNext() && ret == null ) {
-				XPooledConnection xpc =  it.next();
-				if (xpc.isAvailable()) {
-					try {
-						ret = xpc.createConnectionProxy ( hmsg );
-						if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug( this + ": got connection from pool, new size: " + availableSize() + "/" + totalSize());
-					} catch ( CreateConnectionException ex ) {
-						String msg = this +  ": error creating proxy of connection " + xpc;
-						LOGGER.logWarning( msg , ex);
-						it.remove();
-						xpc.destroy();
-					}
-				}
-			}
+			ret = retrieveFirstAvailableConnectionForWhichProxyCanBeCreated(hmsg);
 
 			if ( ret == null ) {
 				//no available connection found -> wait and try again until DB available or remaining time is over
@@ -183,6 +169,26 @@ public class ConnectionPool implements XPooledConnectionEventListener
 				remainingTime -= 1000;
 			}
 		} 
+		return ret;
+	}
+
+	private Reapable retrieveFirstAvailableConnectionForWhichProxyCanBeCreated(HeuristicMessage hmsg) {
+		Reapable ret = null;
+		Iterator<XPooledConnection> it = connections.iterator();			
+		while ( it.hasNext() && ret == null ) {
+			XPooledConnection xpc =  it.next();
+			if (xpc.isAvailable()) {
+				try {
+					ret = xpc.createConnectionProxy ( hmsg );
+					if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug( this + ": got connection from pool, new size: " + availableSize() + "/" + totalSize());
+				} catch ( CreateConnectionException ex ) {
+					String msg = this +  ": error creating proxy of connection " + xpc;
+					LOGGER.logWarning( msg , ex);
+					it.remove();
+					xpc.destroy();
+				}
+			}
+		}
 		return ret;
 	}
 
