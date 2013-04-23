@@ -122,57 +122,53 @@ public class ConnectionPool implements XPooledConnectionEventListener
 	 */
 	public synchronized Reapable borrowConnection ( HeuristicMessage hmsg ) throws CreateConnectionException , PoolExhaustedException, ConnectionPoolException
 	{
+		assertNotDestroyed();
 
-		long remainingTime = properties.getBorrowConnectionTimeout() * 1000L;
-		Reapable ret = null;
-
-		while ( ret == null ) {
-			assertNotDestroyed();
-			if (remainingTime <= 0)
-				throw new PoolExhaustedException ( "Cannot get a connection after waiting for " + properties.getBorrowConnectionTimeout() + " secs" );
-
-			Reapable recycledConnection = null ;
-			try {
-				recycledConnection = recycleConnectionIfPossible ( hmsg );
-			} catch (Exception e) {
-				//ignore but log
-				LOGGER.logWarning ( this + ": error while trying to recycle" , e );
-				//don't throw: just try normal borrow logic instead...
-			}
-			if ( recycledConnection != null ) return recycledConnection;
-
-
-			if (availableSize() == 0 && totalSize() < properties.getMaxPoolSize()) {
-				growPool();
-			} else {
-				if ( LOGGER.isDebugEnabled() )  {
-					if (totalSize() == properties.getMaxPoolSize()) LOGGER.logDebug( this +  ": pool reached max size: " + properties.getMaxPoolSize());
-					else LOGGER.logDebug( this +  ": current size: " + availableSize() + "/" + totalSize());
-				}
-				remainingTime = waitForAtLeastOneAvailableConnection(remainingTime);
-			}
-
-			
-
-
-			ret = retrieveFirstAvailableConnectionForWhichProxyCanBeCreated(hmsg);
-
-			if ( ret == null ) {
-				//no available connection found -> wait and try again until DB available or remaining time is over
-				LOGGER.logWarning ( this + ": no connection found - waiting a bit..." );
-				try {
-					wait(1000);
-				} catch (InterruptedException e) {
-					// cf bug 67457
-					InterruptedExceptionHelper.handleInterruptedException ( e );
-				}
-				remainingTime -= 1000;
-			}
-		} 
+		Reapable ret = null;	
+		ret = findExistingOpenConnectionForCallingThread(hmsg);	
+		if (ret == null) {
+			ret = findOrWaitForAnAvailableConnection(hmsg);		
+		}
 		return ret;
 	}
 
-	private Reapable retrieveFirstAvailableConnectionForWhichProxyCanBeCreated(HeuristicMessage hmsg) {
+	private Reapable findOrWaitForAnAvailableConnection(HeuristicMessage hmsg) throws CreateConnectionException,
+			PoolExhaustedException {
+		Reapable ret = null;
+		long remainingTime = properties.getBorrowConnectionTimeout() * 1000L;		
+		while ( ret == null ) {
+			try {
+				ret = retrieveFirstAvailableConnection(hmsg);
+			} catch (PoolExhaustedException e) {				
+				if (canGrow()) growPool();
+				else remainingTime = waitForAtLeastOneAvailableConnection(remainingTime);
+			}		
+		}
+		return ret;
+	}
+
+	private Reapable findExistingOpenConnectionForCallingThread(HeuristicMessage hmsg) {
+		Reapable recycledConnection = null ;
+		try {
+			recycledConnection = recycleConnectionIfPossible ( hmsg );
+		} catch (Exception e) {
+			//ignore but log
+			LOGGER.logWarning ( this + ": error while trying to recycle" , e );
+		}
+		return recycledConnection;
+	}
+
+	private void logCurrentPoolSize() {
+		if ( LOGGER.isDebugEnabled() )  {
+			LOGGER.logDebug( this +  ": current size: " + availableSize() + "/" + totalSize());
+		}
+	}
+
+	private boolean canGrow() {
+		return totalSize() < properties.getMaxPoolSize();
+	}
+
+	private Reapable retrieveFirstAvailableConnection(HeuristicMessage hmsg) throws PoolExhaustedException, CreateConnectionException {
 		Reapable ret = null;
 		Iterator<XPooledConnection> it = connections.iterator();			
 		while ( it.hasNext() && ret == null ) {
@@ -180,23 +176,30 @@ public class ConnectionPool implements XPooledConnectionEventListener
 			if (xpc.isAvailable()) {
 				try {
 					ret = xpc.createConnectionProxy ( hmsg );
-					if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug( this + ": got connection from pool, new size: " + availableSize() + "/" + totalSize());
+					if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug( this + ": got connection from pool");
 				} catch ( CreateConnectionException ex ) {
 					String msg = this +  ": error creating proxy of connection " + xpc;
 					LOGGER.logWarning( msg , ex);
 					it.remove();
 					xpc.destroy();
+					if (properties.getTestQuery() == null) {
+						//cf case 104914
+						throw ex;
+					}
+				} finally {
+					logCurrentPoolSize();
 				}
 			}
 		}
+		if (ret == null) throw new PoolExhaustedException();
 		return ret;
 	}
 
 	private synchronized void growPool() throws CreateConnectionException {
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug( this + ": growing pool size to: " + (totalSize() + 1));
 		XPooledConnection xpc = connectionFactory.createPooledConnection();
 		connections.add ( xpc );
 		xpc.registerXPooledConnectionEventListener(this);
+		logCurrentPoolSize();
 	}
 
 	private synchronized void shrinkPool() {
@@ -222,6 +225,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 			}
 		}
 		connections.removeAll(connectionsToRemove);
+		logCurrentPoolSize();
 	}
 
 	private synchronized void reapPool()
@@ -243,6 +247,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 				xpc.reap();
 			}
 		}
+		logCurrentPoolSize();
 	}
 
 	public synchronized void destroy()
@@ -271,14 +276,14 @@ public class ConnectionPool implements XPooledConnectionEventListener
 	 * Returns immediately if the pool already contains a connection in state available.
 	 * @throws CreateConnectionException if a timeout happened while waiting for a connection
 	 */
-	private synchronized long waitForAtLeastOneAvailableConnection(long remainingTime) throws PoolExhaustedException
+	private synchronized long waitForAtLeastOneAvailableConnection(long waitTime) throws PoolExhaustedException
 	{
         while (availableSize() == 0) {
-        	if ( properties.getBorrowConnectionTimeout() <= 0 ) throw new PoolExhaustedException ( "ConnectionPool: pool is empty and borrowConnectionTimeout is not set" );
+        	if ( waitTime <= 0 ) throw new PoolExhaustedException ( "ConnectionPool: pool is empty - increase either maxPoolSize or borrowConnectionTimeout" );
             long before = System.currentTimeMillis();
         	try {
-        		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": about to wait for connection during " + remainingTime + "ms...");
-        		this.wait (remainingTime);
+        		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": about to wait for connection during " + waitTime + "ms...");
+        		this.wait (waitTime);
 
 			} catch (InterruptedException ex) {
 				// cf bug 67457
@@ -288,11 +293,9 @@ public class ConnectionPool implements XPooledConnectionEventListener
 			}
 			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": done waiting." );
 			long now = System.currentTimeMillis();
-            remainingTime -= (now - before);
-            if (remainingTime <= 0)
-            	throw new PoolExhaustedException ("Connection pool is still empty after waiting for " + properties.getBorrowConnectionTimeout() + " secs" );
+            waitTime -= (now - before);
         }
-        return remainingTime;
+        return waitTime;
 	}
 
 	/**

@@ -39,4 +39,8 @@ public class PoolExhaustedException extends ConnectionPoolException {
 		super ( reason );
 	}
 
+	public PoolExhaustedException() {
+		super();
+	}
+
 }

@@ -45,4 +45,6 @@ public class ConnectionPoolException extends Exception
 	{
 		super ( reason );
 	}
+	public ConnectionPoolException() {
+	}
 }
