@@ -152,13 +152,12 @@ public class ConnectionPool implements XPooledConnectionEventListener
 				remainingTime = waitForAtLeastOneAvailableConnection(remainingTime);
 			}
 
-			XPooledConnection xpc = null;
+			
 
 
-			Iterator<XPooledConnection> it = connections.iterator();
+			Iterator<XPooledConnection> it = connections.iterator();			
 			while ( it.hasNext() && ret == null ) {
-				xpc =  it.next();
-
+				XPooledConnection xpc =  it.next();
 				if (xpc.isAvailable()) {
 					try {
 						ret = xpc.createConnectionProxy ( hmsg );
