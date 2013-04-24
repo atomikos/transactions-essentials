@@ -91,7 +91,8 @@ public class ConnectionPool implements XPooledConnectionEventListener
 	}
 
 	private synchronized void addConnectionsIfMinPoolSizeNotReached() {
-		while (connections.size() < properties.getMinPoolSize()) {
+		int connectionsToAdd = properties.getMinPoolSize() - totalSize();
+		for ( int i = 0 ; i < connectionsToAdd ; i++ ) {
 			try {
 				XPooledConnection xpc = connectionFactory.createPooledConnection();
 				connections.add ( xpc );
@@ -250,6 +251,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 			if ( inUse && ( ( now - maxInUseTime * 1000 ) > lastTimeReleased ) ) {
 				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": connection in use for more than " + maxInUseTime + "s, reaping it: " + xpc );
 				xpc.reap();
+				it.remove();
 			}
 		}
 		logCurrentPoolSize();
@@ -270,6 +272,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 			if ( xpc.isAvailable() &&  ( (now - creationTime) >= (maxLifetime * 1000L) ) ) {
 				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": connection in use for more than " + maxLifetime + "s, destroying it: " + xpc );
 				xpc.destroy();
+				it.remove();
 			}
 		}
 		logCurrentPoolSize();
