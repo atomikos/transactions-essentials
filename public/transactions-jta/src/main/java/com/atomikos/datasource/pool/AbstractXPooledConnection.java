@@ -50,6 +50,7 @@ public abstract class AbstractXPooledConnection implements XPooledConnection {
 	private List<XPooledConnectionEventListener> poolEventListeners = new ArrayList<XPooledConnectionEventListener>();
 	private Reapable currentProxy = null;
 	private ConnectionPoolProperties props;
+	private long creationTime = System.currentTimeMillis();
 	
 	protected AbstractXPooledConnection ( ConnectionPoolProperties props ) 
 	{
@@ -130,6 +131,10 @@ public abstract class AbstractXPooledConnection implements XPooledConnection {
 	protected int getDefaultIsolationLevel() 
 	{
 		return props.getDefaultIsolationLevel();
+	}
+	
+	public long getCreationTime() {
+		return creationTime;
 	}
 	
 	protected abstract Reapable doCreateConnectionProxy ( HeuristicMessage hmsg ) throws CreateConnectionException;

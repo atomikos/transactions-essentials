@@ -151,6 +151,7 @@ Referenceable, Serializable {
 	private int maxIdleTime;
 	private int reapTimeout;
 	private boolean localTransactionMode;
+	private int maxLifetime;
 	
 	public AtomikosConnectionFactoryBean()
 	{
@@ -315,6 +316,24 @@ Referenceable, Serializable {
 	}
 
 	/**
+	 * Sets the maximum amount of seconds that a connection is kept in the pool before 
+	 * it is destroyed automatically. Optional, defaults to 0 (no limit).
+	 * @param maxLifetime
+	 */
+	public void setMaxLifetime(int maxLifetime) {
+		this.maxLifetime = maxLifetime;
+	}
+	
+	/**
+	 * Gets the maximum lifetime in seconds.
+	 * 
+	 */
+	public int getMaxLifetime() {
+		return maxLifetime;
+	}
+
+	
+	/**
 	 * Initializes the instance. It is highly recommended that this method be 
 	 * called early after VM startup, to ensure that recovery can start as soon as possible.
 	 * 
@@ -390,7 +409,8 @@ Referenceable, Serializable {
 				" reapTimeout=" + getReapTimeout() + "," +
 				" maintenanceInterval=" + getMaintenanceInterval() + "," +
 				" xaProperties=" + printXaProperties() + "," +
-				" localTransactionMode=" + localTransactionMode +
+				" localTransactionMode=" + localTransactionMode + "," + 
+				" maxLifetime=" + maxLifetime +
 				"]"
 				);
 		

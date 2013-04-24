@@ -167,7 +167,8 @@ extends AbstractDataSourceBean
 				" maintenanceInterval=" + getMaintenanceInterval() + "," +
 				" testQuery=" + getTestQuery() + "," +
 				" xaProperties=" + printXaProperties() + 
-				" loginTimeout=" + getLoginTimeout() +
+				" loginTimeout=" + getLoginTimeout() + "," + 
+				" maxLifetime=" + getMaxLifetime() +
 				"]"
 				);
 		
@@ -235,5 +236,6 @@ extends AbstractDataSourceBean
 	protected Object unwrapVendorInstance() {
 		return xaDataSource;
 	}
+
 
 }

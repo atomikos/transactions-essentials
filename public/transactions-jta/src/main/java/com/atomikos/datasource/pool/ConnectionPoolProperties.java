@@ -75,6 +75,12 @@ public interface ConnectionPoolProperties
 	int getMaxIdleTime();
 	
 	/**
+	 * Gets the max time in seconds that a connection may be kept alive.
+	 * @return
+	 */
+	int getMaxLifetime();
+	
+	/**
 	 * Gets the maintenance interval of the pool's maintenance thread.
 	 * @return
 	 */

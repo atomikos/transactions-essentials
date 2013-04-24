@@ -77,6 +77,7 @@ implements HeuristicDataSource, ConnectionPoolProperties, Referenceable, Seriali
 	private String resourceName;
 
 	private int defaultIsolationLevel = DEFAULT_ISOLATION_LEVEL_UNSET;
+	private int maxLifetime;
 	
 	protected void throwAtomikosSQLException ( String msg ) throws AtomikosSQLException 
 	{
@@ -210,6 +211,23 @@ implements HeuristicDataSource, ConnectionPoolProperties, Referenceable, Seriali
 	 */
 	public void setMaxIdleTime(int maxIdleTime) {
 		this.maxIdleTime = maxIdleTime;
+	}
+	
+	/**
+	 * Sets the maximum amount of seconds that a connection is kept in the pool before 
+	 * it is destroyed automatically. Optional, defaults to 0 (no limit).
+	 * @param maxLifetime
+	 */
+	public void setMaxLifetime(int maxLifetime) {
+		this.maxLifetime = maxLifetime;
+	}
+	
+	/**
+	 * Gets the maximum lifetime in seconds.
+	 * 
+	 */
+	public int getMaxLifetime() {
+		return maxLifetime;
 	}
 
 	/**

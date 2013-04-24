@@ -70,16 +70,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 	private void init() throws ConnectionPoolException
 	{
 		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": initializing..." );
-		for ( int i=0; i < properties.getMinPoolSize() ; i++ ) {
-			try {
-				XPooledConnection xpc = connectionFactory.createPooledConnection();
-				connections.add ( xpc );
-				xpc.registerXPooledConnectionEventListener ( this );
-			} catch ( Exception dbDown ) {
-				//see case 26380
-				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": could not establish initial connection" , dbDown );
-			}
-		}
+		addConnectionsIfMinSizeNotReached();
 		int maintenanceInterval = properties.getMaintenanceInterval();
 		if ( maintenanceInterval <= 0 ) {
 			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": using default maintenance interval..." );
@@ -89,12 +80,27 @@ public class ConnectionPool implements XPooledConnectionEventListener
 		maintenanceTimer = new PooledAlarmTimer ( maintenanceInterval * 1000 );
 		maintenanceTimer.addAlarmTimerListener(new AlarmTimerListener() {
 			public void alarm(AlarmTimer timer) {
-				shrinkPool();
 				reapPool();
+				removeConnectionsThatExceededMaxLifetime();
+				addConnectionsIfMinSizeNotReached();
+				removeIdleConnectionsUntilMinSizeReached();
 			}
 		});
 		TaskManager.getInstance().executeTask ( maintenanceTimer );
 		
+	}
+
+	private synchronized void addConnectionsIfMinSizeNotReached() {
+		while (connections.size() < properties.getMinPoolSize()) {
+			try {
+				XPooledConnection xpc = connectionFactory.createPooledConnection();
+				connections.add ( xpc );
+				xpc.registerXPooledConnectionEventListener ( this );
+			} catch ( Exception dbDown ) {
+				//see case 26380
+				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": could not establish initial connection" , dbDown );
+			}
+		}
 	}
 
 	private Reapable recycleConnectionIfPossible ( HeuristicMessage hmsg ) throws Exception
@@ -202,7 +208,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 		logCurrentPoolSize();
 	}
 
-	private synchronized void shrinkPool() {
+	private synchronized void removeIdleConnectionsUntilMinSizeReached() {
 		if (connections == null || properties.getMaxIdleTime() <= 0 )
 			return;
 
@@ -218,7 +224,6 @@ public class ConnectionPool implements XPooledConnectionEventListener
 				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": connection idle for " + (now - lastRelease) + "ms");
 				if ( xpc.isAvailable() &&  ( (now - lastRelease) >= (maxIdle * 1000L) ) && ( connectionsToRemove.size() < maxConnectionsToRemove ) ) {
 					if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": connection idle for more than " + maxIdle + "s, closing it: " + xpc);
-
 					xpc.destroy();
 					connectionsToRemove.add(xpc);
 				}
@@ -245,6 +250,26 @@ public class ConnectionPool implements XPooledConnectionEventListener
 			if ( inUse && ( ( now - maxInUseTime * 1000 ) > lastTimeReleased ) ) {
 				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": connection in use for more than " + maxInUseTime + "s, reaping it: " + xpc );
 				xpc.reap();
+			}
+		}
+		logCurrentPoolSize();
+	}
+	
+	private synchronized void removeConnectionsThatExceededMaxLifetime()
+	{
+		long maxLifetime = properties.getMaxLifetime();
+		if ( connections == null || maxLifetime <= 0 ) return;
+
+		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": closing connections that exceeded maxLifetime" );
+
+		Iterator<XPooledConnection> it = connections.iterator();
+		while ( it.hasNext() ) {
+			XPooledConnection xpc = it.next();
+			long creationTime = xpc.getCreationTime();
+			long now = System.currentTimeMillis();
+			if ( xpc.isAvailable() &&  ( (now - creationTime) >= (maxLifetime * 1000L) ) ) {
+				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": connection in use for more than " + maxLifetime + "s, destroying it: " + xpc );
+				xpc.destroy();
 			}
 		}
 		logCurrentPoolSize();

@@ -29,7 +29,6 @@ import com.atomikos.icatch.HeuristicMessage;
 
 /**
  * A pooling-capable object wrapping a physical connection to an underlying resource.
- * @author lorban
  */
 public interface XPooledConnection 
 {
@@ -89,6 +88,12 @@ public interface XPooledConnection
 	 * @return
 	 */
 	boolean isErroneous();
+	
+	/**
+	 * Get the moment when the connection was created.
+	 * @return
+	 */
+	long getCreationTime();
 	
 	void registerXPooledConnectionEventListener(XPooledConnectionEventListener listener);
 	
