@@ -148,8 +148,8 @@
 				<!-- same as "-source 1.5 -target 1.5" for compilation -->
 				<!-- see http://maven.apache.org/plugins/maven-compiler-plugin/compile-mojo.html -->
 				<configuration>
-					<source>1.5</source>
-					<target>1.5</target>
+					<source>1.6</source>
+					<target>1.6</target>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -178,7 +178,7 @@
 							<failFast>true</failFast>
 							<rules>
 								<requireJavaVersion>
-									<version>[1.5,1.6)</version>
+									<version>[1.6,1.7)</version>
 								</requireJavaVersion>
 							</rules>
 						</configuration>

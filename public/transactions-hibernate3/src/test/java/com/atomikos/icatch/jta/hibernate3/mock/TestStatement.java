@@ -175,4 +175,24 @@ public class TestStatement implements Statement {
 	}
 
 
+	public <T> T unwrap(Class<T> iface) throws SQLException {
+		return null;
+	}
+
+	public boolean isWrapperFor(Class<?> iface) throws SQLException {
+		return false;
+	}
+
+	public boolean isClosed() throws SQLException {
+		return false;
+	}
+
+	public void setPoolable(boolean poolable) throws SQLException {
+		
+	}
+
+	public boolean isPoolable() throws SQLException {
+		return false;
+	}
+
 }

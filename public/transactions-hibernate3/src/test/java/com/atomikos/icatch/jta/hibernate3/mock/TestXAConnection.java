@@ -6,6 +6,7 @@ import java.util.Vector;
 
 import javax.sql.ConnectionEvent;
 import javax.sql.ConnectionEventListener;
+import javax.sql.StatementEventListener;
 import javax.sql.XAConnection;
 import javax.transaction.xa.XAResource;
 
@@ -185,5 +186,13 @@ implements XAConnection
     {
         user_ = string;
     }
+
+	public void addStatementEventListener(StatementEventListener listener) {
+		throw new UnsupportedOperationException();
+	}
+
+	public void removeStatementEventListener(StatementEventListener listener) {
+		throw new UnsupportedOperationException();
+	}
 }
 
