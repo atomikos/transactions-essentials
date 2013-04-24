@@ -70,7 +70,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 	private void init() throws ConnectionPoolException
 	{
 		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": initializing..." );
-		addConnectionsIfMinSizeNotReached();
+		addConnectionsIfMinPoolSizeNotReached();
 		int maintenanceInterval = properties.getMaintenanceInterval();
 		if ( maintenanceInterval <= 0 ) {
 			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": using default maintenance interval..." );
@@ -82,15 +82,15 @@ public class ConnectionPool implements XPooledConnectionEventListener
 			public void alarm(AlarmTimer timer) {
 				reapPool();
 				removeConnectionsThatExceededMaxLifetime();
-				addConnectionsIfMinSizeNotReached();
-				removeIdleConnectionsUntilMinSizeReached();
+				addConnectionsIfMinPoolSizeNotReached();
+				removeIdleConnectionsIfMinPoolSizeExceeded();
 			}
 		});
 		TaskManager.getInstance().executeTask ( maintenanceTimer );
 		
 	}
 
-	private synchronized void addConnectionsIfMinSizeNotReached() {
+	private synchronized void addConnectionsIfMinPoolSizeNotReached() {
 		while (connections.size() < properties.getMinPoolSize()) {
 			try {
 				XPooledConnection xpc = connectionFactory.createPooledConnection();
@@ -208,7 +208,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 		logCurrentPoolSize();
 	}
 
-	private synchronized void removeIdleConnectionsUntilMinSizeReached() {
+	private synchronized void removeIdleConnectionsIfMinPoolSizeExceeded() {
 		if (connections == null || properties.getMaxIdleTime() <= 0 )
 			return;
 
