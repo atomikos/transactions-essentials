@@ -283,8 +283,8 @@ implements HeuristicDataSource, ConnectionPoolProperties, Referenceable, Seriali
 			throwAtomikosSQLException("Property 'minPoolSize' must be at least 0 and at most maxPoolSize, was: " + minPoolSize);
 		if ( getUniqueResourceName() == null )
 			throwAtomikosSQLException("Property 'uniqueResourceName' cannot be null");
-		if ( getTestQuery() != null ) 
-			LOGGER.logWarning ( this + ": testQuery set - this may cause performance problems if the database becomes permanently unreachable!" );
+		if ( getTestQuery() == null ) 
+			LOGGER.logWarning ( this + ": no testQuery set - the connection pool will not be able to validate the connections!" );
 		if ( getMinPoolSize() == DEFAULT_POOL_SIZE ) {
 			LOGGER.logWarning ( this + ": poolSize equals default - this may cause performance problems!" );
 		}

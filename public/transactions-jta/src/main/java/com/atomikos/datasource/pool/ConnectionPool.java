@@ -143,14 +143,21 @@ public class ConnectionPool implements XPooledConnectionEventListener
 			PoolExhaustedException {
 		Reapable ret = null;
 		long remainingTime = properties.getBorrowConnectionTimeout() * 1000L;		
-		while ( ret == null ) {
-			try {
-				ret = retrieveFirstAvailableConnection(hmsg);
-			} catch (PoolExhaustedException e) {				
-				if (canGrow()) growPool();
-				else remainingTime = waitForAtLeastOneAvailableConnection(remainingTime);
-			}		
-		}
+		do {
+			ret = retrieveFirstAvailableConnectionAndGrowPoolIfNecessary(hmsg);
+			if ( ret == null ) remainingTime = waitForAtLeastOneAvailableConnection(remainingTime);		
+		} while ( ret == null );
+		return ret;
+	}
+
+	private Reapable retrieveFirstAvailableConnectionAndGrowPoolIfNecessary(
+			HeuristicMessage hmsg) throws CreateConnectionException {
+		
+		Reapable ret = retrieveFirstAvailableConnection(hmsg);
+		if ( ret == null && canGrow() ) {
+			growPool();
+			ret = retrieveFirstAvailableConnection(hmsg);
+		}		
 		return ret;
 	}
 
@@ -175,7 +182,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 		return totalSize() < properties.getMaxPoolSize();
 	}
 
-	private Reapable retrieveFirstAvailableConnection(HeuristicMessage hmsg) throws PoolExhaustedException, CreateConnectionException {
+	private Reapable retrieveFirstAvailableConnection(HeuristicMessage hmsg) {
 		Reapable ret = null;
 		Iterator<XPooledConnection> it = connections.iterator();			
 		while ( it.hasNext() && ret == null ) {
@@ -189,16 +196,11 @@ public class ConnectionPool implements XPooledConnectionEventListener
 					LOGGER.logWarning( msg , ex);
 					it.remove();
 					xpc.destroy();
-					if (properties.getTestQuery() == null) {
-						//cf case 104914
-						throw ex;
-					}
 				} finally {
 					logCurrentPoolSize();
 				}
 			}
 		}
-		if (ret == null) throw new PoolExhaustedException();
 		return ret;
 	}
 
