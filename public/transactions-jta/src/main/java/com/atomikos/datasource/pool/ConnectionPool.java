@@ -64,7 +64,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 
 	private void assertNotDestroyed() throws ConnectionPoolException
 	{
-		if ( destroyed ) throw new ConnectionPoolException ( "Pool was already destroyed - you can no longer use it" );
+		if (destroyed) throw new ConnectionPoolException ( "Pool was already destroyed - you can no longer use it" );
 	}
 
 	private void init() throws ConnectionPoolException
@@ -141,13 +141,15 @@ public class ConnectionPool implements XPooledConnectionEventListener
 		return ret;
 	}
 
-	private Reapable findOrWaitForAnAvailableConnection(HeuristicMessage hmsg) throws CreateConnectionException,
-			PoolExhaustedException {
+	private Reapable findOrWaitForAnAvailableConnection(HeuristicMessage hmsg) throws ConnectionPoolException {
 		Reapable ret = null;
 		long remainingTime = properties.getBorrowConnectionTimeout() * 1000L;		
 		do {
 			ret = retrieveFirstAvailableConnectionAndGrowPoolIfNecessary(hmsg);
-			if ( ret == null ) remainingTime = waitForAtLeastOneAvailableConnection(remainingTime);		
+			if ( ret == null ) {
+				remainingTime = waitForAtLeastOneAvailableConnection(remainingTime);
+				assertNotDestroyed();
+			}
 		} while ( ret == null );
 		return ret;
 	}
