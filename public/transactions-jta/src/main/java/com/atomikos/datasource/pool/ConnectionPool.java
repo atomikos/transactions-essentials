@@ -71,12 +71,15 @@ public class ConnectionPool implements XPooledConnectionEventListener
 	{
 		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": initializing..." );
 		addConnectionsIfMinPoolSizeNotReached();
+		launchMaintenanceTimer();
+	}
+
+	private void launchMaintenanceTimer() {
 		int maintenanceInterval = properties.getMaintenanceInterval();
 		if ( maintenanceInterval <= 0 ) {
 			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": using default maintenance interval..." );
 			maintenanceInterval = DEFAULT_MAINTENANCE_INTERVAL;
 		}
-
 		maintenanceTimer = new PooledAlarmTimer ( maintenanceInterval * 1000 );
 		maintenanceTimer.addAlarmTimerListener(new AlarmTimerListener() {
 			public void alarm(AlarmTimer timer) {
@@ -87,7 +90,6 @@ public class ConnectionPool implements XPooledConnectionEventListener
 			}
 		});
 		TaskManager.getInstance().executeTask ( maintenanceTimer );
-		
 	}
 
 	private synchronized void addConnectionsIfMinPoolSizeNotReached() {
