@@ -29,6 +29,7 @@ import java.io.PrintWriter;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 
 import javax.naming.NameNotFoundException;
 import javax.naming.NamingException;
@@ -455,6 +456,15 @@ implements HeuristicDataSource, ConnectionPoolProperties, Referenceable, Seriali
 	}
 
 	protected abstract Object unwrapVendorInstance();
+	
+	/**
+	 * JDK 1.7 requirement.
+	 * 
+	 * @throws SQLFeatureNotSupportedException
+	 */
+	public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+		throw new SQLFeatureNotSupportedException();
+	}
 
 	
 }
