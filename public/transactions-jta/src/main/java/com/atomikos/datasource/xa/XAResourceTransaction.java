@@ -160,17 +160,16 @@ public class XAResourceTransaction implements ResourceTransaction,
     private transient String xidToHexString;
 	private transient String toString;
 
-    private void setXid_(Xid xid_) {
-		this.xid_ = xid_;
-
-		xidToHexString=	xidToHexString(xid_);
+    private void setXid(Xid xid) {
+		this.xid_ = xid;
+		xidToHexString=	xidToHexString(xid);
 		toString = "XAResourceTransaction: "+xidToHexString;
 	}
 
 	private transient XATransactionalResource resource_;
     private transient XAResource xaresource_;
     private Vector<HeuristicMessage> heuristicMessages_;
-    private transient boolean knownInResource_;
+    private transient boolean knownInResource;
     private transient int timeout_;
 
     public XAResourceTransaction ()
@@ -189,11 +188,11 @@ public class XAResourceTransaction implements ResourceTransaction,
         tid_ = transaction.getTid ();
         root_ = root;
         resourcename_ = resource.getName ();
-        setXid_( resource_.createXid ( tid_ ));
+        setXid( resource_.createXid ( tid_ ));
         setState ( TxState.ACTIVE );
         heuristicMessages_ = new Vector ();
         isXaSuspended_ = false;
-        knownInResource_ = false;
+        knownInResource = false;
         addHeuristicMessage ( new StringHeuristicMessage ( "XA resource '"
                 + resource.getName () + "' accessed with Xid '" + xidToHexString  + "'" ) );
     }
@@ -306,7 +305,7 @@ public class XAResourceTransaction implements ResourceTransaction,
             ClassNotFoundException
     {
 
-        setXid_((Xid) in.readObject ());
+        setXid((Xid) in.readObject ());
         tid_ = (String) in.readObject ();
         root_ = (String) in.readObject ();
         state_ = (TxState) in.readObject ();
@@ -413,7 +412,7 @@ public class XAResourceTransaction implements ResourceTransaction,
         if ( state_.equals ( TxState.LOCALLY_DONE ) ) {// reused instance
             flag = XAResource.TMJOIN;
             logFlag = "XAResource.TMJOIN";
-        } else if ( !knownInResource_ ) {// new instance
+        } else if ( !knownInResource ) {// new instance
             flag = XAResource.TMNOFLAGS;
             logFlag = "XAResource.TMNOFLAGS";
         } else
@@ -437,7 +436,7 @@ public class XAResourceTransaction implements ResourceTransaction,
                     errors );
         }
         setState ( TxState.ACTIVE );
-        knownInResource_ = true;
+        knownInResource = true;
     }
 
     /**
@@ -463,7 +462,7 @@ public class XAResourceTransaction implements ResourceTransaction,
         boolean recovered = false;
         // perform extra initialization
 
-        if ( TxState.ACTIVE.equals ( state_ ) || TxState.LOCALLY_DONE.equals ( state_ ) ) {
+        if ( beforePrepare() ) {
         	//see case 23364: recovery before prepare should do nothing
         	//and certainly not reset the xaresource
         	return false;
@@ -475,11 +474,15 @@ public class XAResourceTransaction implements ResourceTransaction,
         	// cf case 59238: support serializable XAResource
         	recovered = true;
         }
-        if (recovered) knownInResource_ = true;
+        if (recovered) knownInResource = true;
         return recovered;
     }
 
-    /**
+    private boolean beforePrepare() {
+		return TxState.ACTIVE.equals ( state_ ) || TxState.LOCALLY_DONE.equals ( state_ );
+	}
+
+	/**
      * Recovered XIDs can be shared in two resources
      * if they connect to the same back-end RM
      * (remember: we use the TM name for the branch!)
@@ -601,10 +604,12 @@ public class XAResourceTransaction implements ResourceTransaction,
         Stack errors = new Stack ();
         terminateInResource ();
 
-        if ( !knownInResource_ )
+        if ( rollbackShouldDoNothing() ) {
             return null;
-        if ( state_.equals ( TxState.TERMINATED ) )
-            return getHeuristicMessages ();
+        } 
+        if ( state_.equals ( TxState.TERMINATED ) ) {        	
+        	return getHeuristicMessages ();
+        }
 
         if ( state_.equals ( TxState.HEUR_MIXED ) )
             throw new HeurMixedException ( getHeuristicMessages () );
@@ -676,7 +681,11 @@ public class XAResourceTransaction implements ResourceTransaction,
         return getHeuristicMessages ();
     }
 
-    /**
+    private boolean rollbackShouldDoNothing() {
+		return !knownInResource && beforePrepare();
+	}
+
+	/**
      * @see Participant
      */
 
@@ -984,7 +993,7 @@ public class XAResourceTransaction implements ResourceTransaction,
 		xid_=(Xid)ClassLoadingHelper.toObject(data);
 		
 		tid_ = in.readUTF();
-		setXid_(xid_);
+		setXid(xid_);
 
 		root_ = in.readUTF();
 		state_ = TxState.valueOf(in.readUTF());
