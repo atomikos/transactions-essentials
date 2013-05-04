@@ -40,11 +40,17 @@ public class ResourceException extends com.atomikos.icatch.SysException
 
     }
 
+    /**
+     * @deprecated
+     */
     public ResourceException(String msg, Stack errors)
     {
         super ( msg , errors );
     }
 
+    /**
+     * @deprecated
+     */
     public ResourceException(Stack errors){
 
         super ( "ResourceException" , errors );

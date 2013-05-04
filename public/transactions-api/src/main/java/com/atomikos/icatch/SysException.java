@@ -76,6 +76,10 @@ public class SysException extends RuntimeException
 	public SysException(String msg, Throwable cause) {
 		super(msg,cause);
 	}
+	
+	/**
+	 * @deprecated
+	 */
 	public SysException (String msg,Stack<Exception> nestedList)
 	{
 		super(msg);
@@ -101,6 +105,9 @@ public class SysException extends RuntimeException
 		}
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public java.util.Stack<Exception> getErrors()
 	{
 		if (myErrors==null) return null;
@@ -114,6 +121,9 @@ public class SysException extends RuntimeException
 		printNestedErrorStack ( this );
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public StackTraceElement[] getStackTrace()
 	{
 		List<StackTraceElement> elements = new ArrayList<StackTraceElement>();

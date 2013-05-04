@@ -39,6 +39,9 @@ public class ExtendedSystemException extends SystemException
 
     private Stack errors_;
 
+    /**
+     * @deprecated.
+     */
     public ExtendedSystemException ( String msg , Stack errors )
     {
         super ( msg );
@@ -47,6 +50,7 @@ public class ExtendedSystemException extends SystemException
 
     /**
      * Get any nested errors as a stack.
+     * @deprecated
      *
      * @return Stack The nested error stack, or null if none.
      */
