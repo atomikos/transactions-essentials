@@ -50,5 +50,9 @@ public class ResourceException extends com.atomikos.icatch.SysException
         super ( "ResourceException" , errors );
     }
 
+	public ResourceException(String msg, Throwable cause) {
+		super(msg, cause);
+	}
+
 }
 

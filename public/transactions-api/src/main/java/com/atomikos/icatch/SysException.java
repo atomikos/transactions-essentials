@@ -72,6 +72,10 @@ public class SysException extends RuntimeException
 	{
 		super(msg);
 	}
+	
+	public SysException(String msg, Throwable cause) {
+		super(msg,cause);
+	}
 	public SysException (String msg,Stack<Exception> nestedList)
 	{
 		super(msg);
@@ -105,7 +109,7 @@ public class SysException extends RuntimeException
 
 	public void printStackTrace()
 	{
-
+		
 		super.printStackTrace();
 		printNestedErrorStack ( this );
 	}

@@ -88,14 +88,12 @@ class SiblingMapper
         return ret;
     }
 
-	private XAResourceTransaction findOrCreateBranchWithResourceException(CompositeTransaction ct) {
-		Stack errors = new Stack();
+	private XAResourceTransaction findOrCreateBranchWithResourceException(CompositeTransaction ct) {		
         XAResourceTransaction ret = null;
         try {
             ret = findOrCreateBranch(ct);
         } catch (Exception e) {
-            errors.push(e);
-            throw new ResourceException ( "Failed to get branch", errors );
+            throw new ResourceException ( "Failed to get branch", e );
         }
 		return ret;
 	}
