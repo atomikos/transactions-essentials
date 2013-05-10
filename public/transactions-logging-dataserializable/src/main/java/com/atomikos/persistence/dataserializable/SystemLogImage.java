@@ -94,7 +94,7 @@ public class SystemLogImage implements Recoverable, DataSerializable{
 
 	public void readData(DataInput in) throws IOException {
 			forgettable_=in.readBoolean();
-			recoverable_ = new com.atomikos.persistence.dataserializable.StateObjectImage();
+			recoverable_ = new com.atomikos.persistence.imp.StateObjectImage();
 			((DataSerializable)recoverable_).readData(in);
 
 	}
