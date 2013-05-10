@@ -71,6 +71,7 @@ public class SysException extends RuntimeException
 	public SysException (String msg)
 	{
 		super(msg);
+		myErrors = new Stack<Exception>();
 	}
 	
 	public SysException(String msg, Throwable cause) {
