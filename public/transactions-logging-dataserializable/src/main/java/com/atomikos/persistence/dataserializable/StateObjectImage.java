@@ -34,6 +34,7 @@ import java.io.ObjectOutput;
 import com.atomikos.icatch.DataSerializable;
 import com.atomikos.persistence.ObjectImage;
 import com.atomikos.persistence.Recoverable;
+import com.atomikos.util.ClassLoadingHelper;
 
 /**
  *
@@ -86,11 +87,12 @@ public class StateObjectImage implements Recoverable, ObjectImage, DataSerializa
     }
 
 	public void writeData(DataOutput out) throws IOException {
+		out.writeUTF(img_.getClass().getName());
 		((DataSerializable)img_).writeData(out);
 	}
 
 	public void readData(DataInput in) throws IOException {
-		img_= new com.atomikos.icatch.imp.CoordinatorLogImage();
+		img_= (ObjectImage)ClassLoadingHelper.newInstance(in.readUTF());
 		((DataSerializable)img_).readData(in);
 
 	}

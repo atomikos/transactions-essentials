@@ -287,7 +287,7 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<redirectTestOutputToFile>true</redirectTestOutputToFile>
-					 <argLine>-Xmx1024m  ${argLine}</argLine>
+					<argLine>-Xmx1024m  ${argLine}</argLine>
 					<forkMode>always</forkMode>
 					<includes>
 						<include>**/*TestJUnit.java</include>
@@ -304,6 +304,10 @@
         			<includes>
         				<include>com/atomikos/**</include>
         			</includes>
+        			<excludes>
+        				<exclude>**/*Test*</exclude>
+        				<exclude>**/*Stub*</exclude>
+        			</excludes>
         			<append>true</append>
     				</configuration>
 				<executions>
