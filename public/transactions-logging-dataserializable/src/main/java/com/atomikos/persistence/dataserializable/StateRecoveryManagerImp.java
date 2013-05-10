@@ -43,6 +43,7 @@ import com.atomikos.persistence.ObjectLog;
 import com.atomikos.persistence.StateRecoverable;
 import com.atomikos.persistence.StateRecoveryManager;
 import com.atomikos.persistence.Utils;
+import com.atomikos.persistence.imp.StateObjectImage;
 
 /**
  * Default implementation of a state recovery manager.
