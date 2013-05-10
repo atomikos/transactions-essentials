@@ -159,7 +159,6 @@ public class FileLogStream implements LogStream
         } catch ( Exception e ) {
         	String msg =  "Error in recover";
         	LOGGER.logWarning(msg,e);
-            e.printStackTrace ();
             throw new LogException ( msg , e );
         } finally {
             try {
