@@ -9,6 +9,7 @@ import java.io.ObjectOutput;
 import com.atomikos.icatch.DataSerializable;
 import com.atomikos.persistence.ObjectImage;
 import com.atomikos.persistence.Recoverable;
+import com.atomikos.persistence.imp.StateObjectImage;
 
 public class SystemLogImage implements Recoverable, DataSerializable{
 
@@ -94,7 +95,7 @@ public class SystemLogImage implements Recoverable, DataSerializable{
 
 	public void readData(DataInput in) throws IOException {
 			forgettable_=in.readBoolean();
-			recoverable_ = new com.atomikos.persistence.imp.StateObjectImage();
+			recoverable_ = new StateObjectImage();
 			((DataSerializable)recoverable_).readData(in);
 
 	}
