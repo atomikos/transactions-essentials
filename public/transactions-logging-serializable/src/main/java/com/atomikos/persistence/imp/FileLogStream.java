@@ -60,12 +60,8 @@ public class FileLogStream implements LogStream
 
     private ObjectOutputStream ooutput_;
 
-    private boolean simulateCrash_;
-    // for testing
-
-
     private boolean corrupt_;
-    // true if checkpoint; second call of recover
+    // true if error on checkpoint; second call of recover
     // not allowed, otherwise suffix_ will be wrong
     // especially since checkpoint failed.
 
@@ -75,7 +71,6 @@ public class FileLogStream implements LogStream
             throws IOException
     {
         file_ = new VersionedFile ( baseDir , baseName , ".log" );
-        simulateCrash_ = false;
 
         corrupt_ = false;
     }
@@ -98,15 +93,10 @@ public class FileLogStream implements LogStream
         }
     }
 
-    /**
-     * Makes write checkpoint crash before old file delete.
-     *
-     * For debugging only.
-     */
 
-    void setCrashMode ()
+    void markAsCorrupt()
     {
-        simulateCrash_ = true;
+        corrupt_ = true;
     }
 
 
@@ -199,15 +189,14 @@ public class FileLogStream implements LogStream
             // Thus, we return the open stream to the client.
             // Any closing will be done later, during cleanup if necessary.
 
-            if ( simulateCrash_ ) {
-            	corrupt_ = true;
-            	throw new LogException ( "Old file could not be deleted" );
+            if ( corrupt_ ) {
+            	throw new LogException ( "Instance corrupted" );
             }
 
             try {
             	file_.discardBackupVersion();
             } catch ( IOException errorOnDelete ) {
-            	 corrupt_ = true;
+            	 markAsCorrupt();
                  // should restart
                  throw new LogException ( "Old file could not be deleted" );
             }

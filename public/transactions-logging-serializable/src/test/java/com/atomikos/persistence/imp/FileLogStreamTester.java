@@ -45,7 +45,7 @@ import com.atomikos.persistence.LogException;
              //next, simulate a crash where both checkpoint and
              //old file are there.
 
-             logstream.setCrashMode();
+             logstream.markAsCorrupt();
              stack.pop();
              stack.push ( "Third" );
              try {
