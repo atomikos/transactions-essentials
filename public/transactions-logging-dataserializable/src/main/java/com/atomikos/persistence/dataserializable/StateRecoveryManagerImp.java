@@ -64,7 +64,7 @@ public class StateRecoveryManagerImp extends AbstractStateRecoveryManager
 
 	
 	public int getOrder() {
-		return 1000;
+		return 0;
 	}
 
 }

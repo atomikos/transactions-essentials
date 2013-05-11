@@ -25,10 +25,12 @@
 
 package com.atomikos.persistence.dataserializable;
 
+import java.io.DataInputStream;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectStreamException;
-import java.io.RandomAccessFile;
 import java.io.StreamCorruptedException;
 import java.util.Enumeration;
 import java.util.Vector;
@@ -40,6 +42,7 @@ import com.atomikos.persistence.LogException;
 import com.atomikos.persistence.LogStream;
 import com.atomikos.persistence.Recoverable;
 import com.atomikos.persistence.imp.SystemLogImage;
+import com.atomikos.util.VersionedFile;
 
 /**
  * A file implementation of a LogStream.
@@ -48,7 +51,7 @@ import com.atomikos.persistence.imp.SystemLogImage;
 public class FileLogStream implements LogStream {
 	private static final Logger LOGGER = LoggerFactory.createLogger(FileLogStream.class);
 
-	private RandomAccessFile output_;
+	private FileOutputStream output_;
 	// keeps track of the latest output stream returned
 	// from writeCheckpoint, so that it can be closed ( invalidated )
 	// if necessary.
@@ -108,21 +111,21 @@ public class FileLogStream implements LogStream {
 		Vector<Recoverable> ret = new Vector<Recoverable>();
 
 		try {
-			RandomAccessFile f = file_.openLastValidVersionForReading();
+			FileInputStream f = file_.openLastValidVersionForReading();
 
 			int count = 0;
 			if (LOGGER.isInfoEnabled()) {
 				LOGGER.logInfo("Starting read of logfile " + file_.getCurrentVersionFileName());
 			}
 			
-			while (f.length() > f.getChannel().position()) {
+			while (f.available()>0) {
 				// if crashed, then unproper closing might cause endless blocking!
 				// therefore, we check if avaible first.
 				count++;
 				
 				SystemLogImage systemLogImage = new SystemLogImage();
 
-				systemLogImage.readData(f);
+				systemLogImage.readData(new DataInputStream(f));
 				ret.addElement(systemLogImage);
 				if (count % 10 == 0) {
 					LOGGER.logInfo(".");
