@@ -13,6 +13,7 @@ import com.atomikos.icatch.TxState;
 import com.atomikos.persistence.LogException;
 import com.atomikos.persistence.Recoverable;
 import com.atomikos.persistence.StateRecoverable;
+import com.atomikos.persistence.imp.AbstractObjectLog;
 import com.atomikos.persistence.imp.SystemLogImage;
 
  /**
@@ -66,7 +67,7 @@ public class VeryFastObjectLog extends AbstractObjectLog {
 	}
 
 	@Override
-	protected void flush(SystemLogImage img, boolean shouldSync) throws LogException {
+	public void flush(SystemLogImage img, boolean shouldSync) throws LogException {
 		if (shouldSync) {
 			try {
 				queueFlushRequest(img);

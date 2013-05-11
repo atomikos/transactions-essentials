@@ -44,6 +44,7 @@ import com.atomikos.persistence.StateRecoverable;
 import com.atomikos.persistence.StateRecoveryManager;
 import com.atomikos.persistence.Utils;
 import com.atomikos.persistence.imp.StateObjectImage;
+import com.atomikos.persistence.imp.StreamObjectLog;
 
 /**
  * Default implementation of a state recovery manager.

@@ -1,8 +1,7 @@
-package com.atomikos.persistence.dataserializable;
+package com.atomikos.persistence.imp;
 
 import com.atomikos.persistence.LogException;
 import com.atomikos.persistence.ObjectLog;
-import com.atomikos.persistence.imp.SystemLogImage;
 
 public abstract class AbstractObjectLog implements ObjectLog {
 
@@ -10,5 +9,5 @@ public abstract class AbstractObjectLog implements ObjectLog {
 		super();
 	}
 
-	protected abstract void flush(SystemLogImage img, boolean shouldSync) throws LogException;
+	public abstract void flush(SystemLogImage img, boolean shouldSync) throws LogException;
 }
