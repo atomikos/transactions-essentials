@@ -32,6 +32,7 @@ import com.atomikos.icatch.config.imp.AbstractUserTransactionServiceFactory;
 import com.atomikos.persistence.LogException;
 import com.atomikos.persistence.LogStream;
 import com.atomikos.persistence.Utils;
+import com.atomikos.persistence.imp.AbstractStateRecoveryManager;
 import com.atomikos.persistence.imp.StreamObjectLog;
 
 /**
@@ -63,7 +64,7 @@ public class StateRecoveryManagerImp extends AbstractStateRecoveryManager
 
 	
 	public int getOrder() {
-		return 0;
+		return 1000;
 	}
 
 }

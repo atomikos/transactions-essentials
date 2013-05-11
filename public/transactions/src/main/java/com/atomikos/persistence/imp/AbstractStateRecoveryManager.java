@@ -1,4 +1,4 @@
-package com.atomikos.persistence.dataserializable;
+package com.atomikos.persistence.imp;
 
 import java.util.Enumeration;
 import java.util.Vector;
@@ -11,7 +11,6 @@ import com.atomikos.persistence.ObjectImage;
 import com.atomikos.persistence.ObjectLog;
 import com.atomikos.persistence.StateRecoverable;
 import com.atomikos.persistence.StateRecoveryManager;
-import com.atomikos.persistence.imp.StateObjectImage;
 
 public abstract class AbstractStateRecoveryManager implements StateRecoveryManager, FSMPreEnterListener<TxState> {
 
