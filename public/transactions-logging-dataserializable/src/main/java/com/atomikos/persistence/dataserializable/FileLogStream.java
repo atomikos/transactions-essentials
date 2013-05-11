@@ -39,6 +39,7 @@ import com.atomikos.logging.LoggerFactory;
 import com.atomikos.persistence.LogException;
 import com.atomikos.persistence.LogStream;
 import com.atomikos.persistence.Recoverable;
+import com.atomikos.persistence.imp.SystemLogImage;
 
 /**
  * A file implementation of a LogStream.

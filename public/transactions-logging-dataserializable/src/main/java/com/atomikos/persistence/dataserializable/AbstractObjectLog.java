@@ -2,6 +2,7 @@ package com.atomikos.persistence.dataserializable;
 
 import com.atomikos.persistence.LogException;
 import com.atomikos.persistence.ObjectLog;
+import com.atomikos.persistence.imp.SystemLogImage;
 
 public abstract class AbstractObjectLog implements ObjectLog {
 

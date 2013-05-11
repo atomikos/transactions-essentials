@@ -13,6 +13,7 @@ import com.atomikos.icatch.TxState;
 import com.atomikos.persistence.LogException;
 import com.atomikos.persistence.Recoverable;
 import com.atomikos.persistence.StateRecoverable;
+import com.atomikos.persistence.imp.SystemLogImage;
 
  /**
   * A high-performance logging implementation - works by batching multiple

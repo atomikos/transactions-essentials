@@ -35,6 +35,7 @@ import com.atomikos.persistence.LogException;
 import com.atomikos.persistence.LogStream;
 import com.atomikos.persistence.ObjectLog;
 import com.atomikos.persistence.Recoverable;
+import com.atomikos.persistence.imp.SystemLogImage;
 
 public class StreamObjectLog extends AbstractObjectLog {
 	private static final Logger LOG = LoggerFactory.createLogger(StreamObjectLog.class);
