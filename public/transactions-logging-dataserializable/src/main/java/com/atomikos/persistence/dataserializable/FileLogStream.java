@@ -28,7 +28,6 @@ package com.atomikos.persistence.dataserializable;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectStreamException;
 import java.io.StreamCorruptedException;
@@ -36,71 +35,22 @@ import java.util.Enumeration;
 import java.util.Vector;
 
 import com.atomikos.icatch.DataSerializable;
-import com.atomikos.logging.Logger;
-import com.atomikos.logging.LoggerFactory;
 import com.atomikos.persistence.LogException;
 import com.atomikos.persistence.LogStream;
 import com.atomikos.persistence.Recoverable;
+import com.atomikos.persistence.imp.AbstractLogStream;
 import com.atomikos.persistence.imp.SystemLogImage;
-import com.atomikos.util.VersionedFile;
 
 /**
  * A file implementation of a LogStream.
  */
 
-public class FileLogStream implements LogStream {
-	private static final Logger LOGGER = LoggerFactory.createLogger(FileLogStream.class);
+public class FileLogStream extends AbstractLogStream implements LogStream {
+	
 
-	private FileOutputStream output_;
-	// keeps track of the latest output stream returned
-	// from writeCheckpoint, so that it can be closed ( invalidated )
-	// if necessary.
-
-	// private ObjectOutputStream ooutput_;
-
-	private boolean simulateCrash_;
-	// for testing
-
-	private boolean corrupt_;
-	// true if checkpoint; second call of recover
-	// not allowed, otherwise suffix_ will be wrong
-	// especially since checkpoint failed.
-
-	private VersionedFile file_;
 
 	public FileLogStream(String baseDir, String baseName) throws IOException {
-		file_ = new VersionedFile(baseDir, baseName, ".log");
-		simulateCrash_ = false;
-
-		corrupt_ = false;
-	}
-
-	private void closeOutput() throws LogException {
-
-		// try to close the previous output stream, if any.
-		try {
-			if (file_ != null) {
-				file_.close();
-				if (LOGGER.isInfoEnabled()) {
-					LOGGER.logInfo("Logfile closed: " + file_.getCurrentVersionFileName());
-				}
-			}
-			output_ = null;
-			// ooutput_ = null;
-		} catch (IOException e) {
-
-			throw new LogException("Error closing previous output", e);
-		}
-	}
-
-	/**
-	 * Makes write checkpoint crash before old file delete.
-	 * 
-	 * For debugging only.
-	 */
-
-	void setCrashMode() {
-		simulateCrash_ = true;
+		super(baseDir,baseName);
 	}
 
 	public Vector<Recoverable> recover() throws LogException {
@@ -202,8 +152,6 @@ public class FileLogStream implements LogStream {
 	}
 
 	public void flushObject(Object o, boolean shouldSync) throws LogException {
-
-		//long start = System.currentTimeMillis();
 		try {
 			final DataByteArrayOutputStream dataByteArrayOutputStream = new DataByteArrayOutputStream();
 			DataSerializable oo = (DataSerializable) o;
@@ -220,24 +168,5 @@ public class FileLogStream implements LogStream {
 
 			throw new LogException(e.getMessage(), e);
 		}
-		//System.err.println("flushObject: " +(System.currentTimeMillis()-start));
-	}
-
-	
-
-	public synchronized void close() throws LogException {
-		closeOutput();
-	}
-
-	public void finalize() throws Throwable {
-		try {
-			close();
-		} finally {
-			super.finalize();
-		}
-	}
-
-	public long getSize() throws LogException {
-		return file_.getSize();
 	}
 }

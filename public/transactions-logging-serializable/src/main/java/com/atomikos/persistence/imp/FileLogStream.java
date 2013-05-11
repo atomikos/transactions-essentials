@@ -27,7 +27,6 @@ package com.atomikos.persistence.imp;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -42,202 +41,149 @@ import com.atomikos.logging.LoggerFactory;
 import com.atomikos.persistence.LogException;
 import com.atomikos.persistence.LogStream;
 import com.atomikos.persistence.Recoverable;
-import com.atomikos.util.VersionedFile;
 
 /**
  * A file implementation of a LogStream.
  */
 
-public class FileLogStream implements LogStream
-{
+public class FileLogStream extends AbstractLogStream implements LogStream {
 	private static final Logger LOGGER = LoggerFactory.createLogger(FileLogStream.class);
 
+	// keeps track of the latest output stream returned
+	// from writeCheckpoint, so that it can be closed ( invalidated )
+	// if necessary.
 
-    private FileOutputStream output_;
-    // keeps track of the latest output stream returned
-    // from writeCheckpoint, so that it can be closed ( invalidated )
-    // if necessary.
+	private ObjectOutputStream ooutput_;
 
-    private ObjectOutputStream ooutput_;
+	private boolean corrupt_;
 
-    private boolean corrupt_;
-    // true if error on checkpoint; second call of recover
-    // not allowed, otherwise suffix_ will be wrong
-    // especially since checkpoint failed.
+	// true if error on checkpoint; second call of recover
+	// not allowed, otherwise suffix_ will be wrong
+	// especially since checkpoint failed.
 
-    private VersionedFile file_;
-
-    public FileLogStream ( String baseDir , String baseName  )
-            throws IOException
-    {
-        file_ = new VersionedFile ( baseDir , baseName , ".log" );
-
-        corrupt_ = false;
-    }
-
-    private void closeOutput () throws LogException
-    {
-
-        // try to close the previous output stream, if any.
-        try {
-            if ( file_ != null ) {
-	             file_.close();
-	             if(LOGGER.isInfoEnabled()){
-	            	 LOGGER.logInfo("Logfile closed: " + file_.getCurrentVersionFileName());
-	             }
-            }
-            output_ = null;
-            ooutput_ = null;
-        } catch ( IOException e ) {
-            throw new LogException ( "Error closing previous output", e );
-        }
-    }
-
-
-    void markAsCorrupt()
-    {
-        corrupt_ = true;
-    }
-
-
-    public synchronized Vector<Recoverable> recover () throws LogException
-    {
-
-        if ( corrupt_ )
-            throw new LogException ( "Instance might be corrupted" );
-
-        Vector<Recoverable> ret = new Vector<Recoverable> ();
-        InputStream in = null;
-
-        try {
-            FileInputStream f = file_.openLastValidVersionForReading();
-
-            in = f;
-
-            ObjectInputStream ins = new ObjectInputStream ( in );
-            int count = 0;
-            if(LOGGER.isInfoEnabled()){
-            	LOGGER.logInfo("Starting read of logfile " + file_.getCurrentVersionFileName());
-            }
-
-            while ( in.available () > 0 ) {
-                // if crashed, then unproper closing might cause endless blocking!
-                // therefore, we check if avaible first.
-                count++;
-                Recoverable nxt = (Recoverable)ins.readObject ();
-
-                ret.addElement ( nxt );
-                if ( count % 10 == 0 ) {
-                    LOGGER.logInfo(".");
-                }
-
-            }
-            LOGGER.logInfo("Done read of logfile");
-
-        } catch ( java.io.EOFException unexpectedEOF ) {
-        	LOGGER.logDebug("Unexpected EOF - logfile not closed properly last time?" , unexpectedEOF);
-        	// merely return what was read so far...
-        } catch ( StreamCorruptedException unexpectedEOF ) {
-        	LOGGER.logDebug("Unexpected EOF - logfile not closed properly last time?" , unexpectedEOF);
-        	// merely return what was read so far...
-        } catch ( ObjectStreamException unexpectedEOF ) {
-        	LOGGER.logDebug("Unexpected EOF - logfile not closed properly last time?" , unexpectedEOF);
-        	// merely return what was read so far...
-        } catch ( FileNotFoundException firstStart ) {
-        	// the file could not be opened for reading;
-        	// merely return the default empty vector
-        } catch ( Exception e ) {
-        	String msg =  "Error in recover";
-        	LOGGER.logWarning(msg,e);
-            throw new LogException ( msg , e );
-        } finally {
-            try {
-                if ( in != null )
-                    in.close ();
-
-            } catch ( IOException io ) {
-                throw new LogException ( "Error in recover", io );
-            }
-        }
-
-        return ret;
-    }
-
-    public synchronized void writeCheckpoint ( Enumeration elements )
-            throws LogException
-    {
-
-        // first, make sure that any pending output stream handles
-        // in the client are invalidated
-        closeOutput ();
-
-        try {
-            // open the new output file
-            // NOTE: after restart, any previous and failed checkpoint files
-            // will be overwritten here. That is perfectly OK.
-            output_ = file_.openNewVersionForWriting();
-            ooutput_ = new ObjectOutputStream ( output_ );
-            while ( elements != null && elements.hasMoreElements () ) {
-                Object next = elements.nextElement ();
-                ooutput_.writeObject ( next );
-            }
-            ooutput_.flush ();
-            output_.flush ();
-            output_.getFD ().sync ();
-            // NOTE: we do NOT close the object output, since the client
-            // will probably want to write more!
-            // Thus, we return the open stream to the client.
-            // Any closing will be done later, during cleanup if necessary.
-
-            if ( corrupt_ ) {
-            	throw new LogException ( "Instance corrupted" );
-            }
-
-            try {
-            	file_.discardBackupVersion();
-            } catch ( IOException errorOnDelete ) {
-            	 markAsCorrupt();
-                 // should restart
-                 throw new LogException ( "Old file could not be deleted" );
-            }
-        } catch ( Exception e ) {
-            throw new LogException ( "Error during checkpointing", e );
-        }
-
-
-
-    }
-
-    public synchronized void flushObject ( Object o, boolean shouldSync ) throws LogException
-    {
-        if ( ooutput_ == null )
-            throw new LogException ( "Not Initialized or already closed" );
-        try {
-            ooutput_.writeObject ( o );
-            output_.flush ();
-            ooutput_.flush ();
-            if (shouldSync) output_.getFD ().sync ();
-        } catch ( IOException e ) {
-            throw new LogException ( e.getMessage (), e );
-        }
-    }
-
-    public synchronized void close () throws LogException
-    {
-        closeOutput ();
-    }
-
-    public void finalize () throws Throwable
-    {
-        try {
-            close ();
-        } finally {
-            super.finalize ();
-        }
-    }
-
-	public long getSize() throws LogException
-	{
-		return file_.getSize();
+	public FileLogStream(String baseDir, String baseName) throws IOException {
+		super(baseDir, baseName);
 	}
+
+	void markAsCorrupt() {
+		corrupt_ = true;
+	}
+
+	public synchronized Vector<Recoverable> recover() throws LogException {
+
+		if (corrupt_)
+			throw new LogException("Instance might be corrupted");
+
+		Vector<Recoverable> ret = new Vector<Recoverable>();
+		InputStream in = null;
+
+		try {
+			FileInputStream f = file_.openLastValidVersionForReading();
+
+			in = f;
+
+			ObjectInputStream ins = new ObjectInputStream(in);
+			int count = 0;
+			if (LOGGER.isInfoEnabled()) {
+				LOGGER.logInfo("Starting read of logfile " + file_.getCurrentVersionFileName());
+			}
+
+			while (in.available() > 0) {
+				// if crashed, then unproper closing might cause endless blocking!
+				// therefore, we check if avaible first.
+				count++;
+				Recoverable nxt = (Recoverable) ins.readObject();
+
+				ret.addElement(nxt);
+				if (count % 10 == 0) {
+					LOGGER.logInfo(".");
+				}
+
+			}
+			LOGGER.logInfo("Done read of logfile");
+
+		} catch (java.io.EOFException unexpectedEOF) {
+			LOGGER.logDebug("Unexpected EOF - logfile not closed properly last time?", unexpectedEOF);
+			// merely return what was read so far...
+		} catch (StreamCorruptedException unexpectedEOF) {
+			LOGGER.logDebug("Unexpected EOF - logfile not closed properly last time?", unexpectedEOF);
+			// merely return what was read so far...
+		} catch (ObjectStreamException unexpectedEOF) {
+			LOGGER.logDebug("Unexpected EOF - logfile not closed properly last time?", unexpectedEOF);
+			// merely return what was read so far...
+		} catch (FileNotFoundException firstStart) {
+			// the file could not be opened for reading;
+			// merely return the default empty vector
+		} catch (Exception e) {
+			String msg = "Error in recover";
+			LOGGER.logWarning(msg, e);
+			throw new LogException(msg, e);
+		} finally {
+			try {
+				if (in != null)
+					in.close();
+
+			} catch (IOException io) {
+				throw new LogException("Error in recover", io);
+			}
+		}
+
+		return ret;
+	}
+
+	public synchronized void writeCheckpoint(Enumeration elements) throws LogException {
+
+		// first, make sure that any pending output stream handles
+		// in the client are invalidated
+		closeOutput();
+
+		try {
+			// open the new output file
+			// NOTE: after restart, any previous and failed checkpoint files
+			// will be overwritten here. That is perfectly OK.
+			output_ = file_.openNewVersionForWriting();
+			ooutput_ = new ObjectOutputStream(output_);
+			while (elements != null && elements.hasMoreElements()) {
+				Object next = elements.nextElement();
+				ooutput_.writeObject(next);
+			}
+			ooutput_.flush();
+			output_.flush();
+			output_.getFD().sync();
+			// NOTE: we do NOT close the object output, since the client
+			// will probably want to write more!
+			// Thus, we return the open stream to the client.
+			// Any closing will be done later, during cleanup if necessary.
+
+			if (corrupt_) {
+				throw new LogException("Instance corrupted");
+			}
+
+			try {
+				file_.discardBackupVersion();
+			} catch (IOException errorOnDelete) {
+				markAsCorrupt();
+				// should restart
+				throw new LogException("Old file could not be deleted");
+			}
+		} catch (Exception e) {
+			throw new LogException("Error during checkpointing", e);
+		}
+
+	}
+
+	public synchronized void flushObject(Object o, boolean shouldSync) throws LogException {
+		if (ooutput_ == null)
+			throw new LogException("Not Initialized or already closed");
+		try {
+			ooutput_.writeObject(o);
+			output_.flush();
+			ooutput_.flush();
+			if (shouldSync)
+				output_.getFD().sync();
+		} catch (IOException e) {
+			throw new LogException(e.getMessage(), e);
+		}
+	}
+
 }
