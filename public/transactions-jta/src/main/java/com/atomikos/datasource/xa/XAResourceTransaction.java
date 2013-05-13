@@ -61,7 +61,7 @@ import com.atomikos.icatch.TxState;
 import com.atomikos.icatch.system.Configuration;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
-import com.atomikos.util.ClassLoadingHelper;
+import com.atomikos.util.SerializationUtils;
 
 /**
  *
@@ -958,7 +958,7 @@ public class XAResourceTransaction implements ResourceTransaction,
 	}
 
 	public void writeData(DataOutput out) throws IOException {
-		byte[] data= ClassLoadingHelper.toByteArray((Serializable)xid_);
+		byte[] data= SerializationUtils.serialize((Serializable)xid_);
 		out.writeInt(data.length);
 		out.write(data);	
 		out.writeUTF(tid_);
@@ -974,7 +974,7 @@ public class XAResourceTransaction implements ResourceTransaction,
 		if (xaresource_ instanceof Serializable) {
 			// cf case 59238
 			out.writeBoolean(true);
-			byte[] bytes = ClassLoadingHelper.toByteArray((Serializable) xaresource_);
+			byte[] bytes = SerializationUtils.serialize((Serializable) xaresource_);
 			out.writeInt(bytes.length);
 			out.write(bytes);
 		} else {
@@ -990,7 +990,7 @@ public class XAResourceTransaction implements ResourceTransaction,
 		int len = in.readInt();
 		byte[] data= new byte[len];
 		in.readFully(data);
-		xid_=(Xid)ClassLoadingHelper.toObject(data);
+		xid_= SerializationUtils.deserialize(data);
 		
 		tid_ = in.readUTF();
 		setXid(xid_);
@@ -1010,7 +1010,7 @@ public class XAResourceTransaction implements ResourceTransaction,
 			int size = in.readInt();
 			byte[] bytes = new byte[size];
 			in.readFully(bytes);
-			xaresource_ = (XAResource) ClassLoadingHelper.toObject(bytes);
+			xaresource_ = SerializationUtils.deserialize(bytes);
 		}
 	}
 

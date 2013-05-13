@@ -12,14 +12,14 @@ import java.io.Serializable;
 
 import org.junit.Test;
 
-import com.atomikos.util.ClassLoadingHelper;
+import com.atomikos.util.SerializationUtils;
 
 public class XidTestJUnit {
 
 	@Test
 	public void testRecoveredXidIsEqualWithDataOutputInputDesign() throws Exception {
 		XID xid = new XID("tid", "resource");
-		byte[] data= ClassLoadingHelper.toByteArray((Serializable)xid);
+		byte[] data= SerializationUtils.serialize((Serializable)xid);
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		DataOutput output = new DataOutputStream(baos);
 		output.writeInt(data.length);
@@ -28,7 +28,7 @@ public class XidTestJUnit {
 		int len = in.readInt();
 		data= new byte[len];
 		in.readFully(data);
-		XID xid2 =(XID)ClassLoadingHelper.toObject(data);
+		XID xid2 =(XID)SerializationUtils.deserialize(data);
 		assertEquals(xid,xid2);
 	}
 
