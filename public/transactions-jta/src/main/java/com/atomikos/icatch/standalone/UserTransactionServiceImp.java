@@ -321,7 +321,7 @@ class UserTransactionServiceImp extends AbstractJtaUserTransactionService
             Stack errors = new Stack ();
             errors.push ( e );
             throw (SysException) new SysException ( "Error in init(): " + e.getMessage (),
-                    errors ).initCause(e);
+                    e ).initCause(e);
         }
     }
 

@@ -30,7 +30,6 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Properties;
-import java.util.Stack;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -205,10 +204,9 @@ public class UserTransactionServerImp implements UserTransactionServer
                 }
 
             } catch ( Exception e ) {
-                Stack errors = new Stack ();
-                errors.push ( e );
+
                 throw new SysException (
-                        "Error exporting - naming service not running?", errors );
+                        "Error exporting - naming service not running?", e );
             }
 
             try {
@@ -216,10 +214,9 @@ public class UserTransactionServerImp implements UserTransactionServer
                 Context ctx = getInitialContext ();
                 ctx.rebind ( name_, this );
             } catch ( Exception e ) {
-                Stack errors = new Stack ();
-                errors.push ( e );
+
                 throw new SysException (
-                        "Please make sure the rmiregistry is running!?", errors );
+                        "Please make sure the rmiregistry is running!?", e );
             }
 
         }
@@ -245,9 +242,7 @@ public class UserTransactionServerImp implements UserTransactionServer
                 Context ctx = getInitialContext ();
                 ctx.unbind ( name_ );
             } catch ( Exception e ) {
-                Stack errors = new Stack ();
-                errors.push ( e );
-                throw new SysException ( e.getMessage (), errors );
+                throw new SysException ( e.getMessage (), e );
             }
             // set exported to false, to make sure this method is
             // idempotent
