@@ -1,4 +1,4 @@
-package com.atomikos.persistence.dataserializable;
+package com.atomikos.persistence.imp;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,8 +13,6 @@ import com.atomikos.icatch.TxState;
 import com.atomikos.persistence.LogException;
 import com.atomikos.persistence.Recoverable;
 import com.atomikos.persistence.StateRecoverable;
-import com.atomikos.persistence.imp.AbstractObjectLog;
-import com.atomikos.persistence.imp.SystemLogImage;
 
  /**
   * A high-performance logging implementation - works by batching multiple
@@ -22,7 +20,7 @@ import com.atomikos.persistence.imp.SystemLogImage;
   * underlying ObjectLog delegate.
   */
 
-public class VeryFastObjectLog extends AbstractObjectLog {
+public class WriteAheadObjectLog extends AbstractObjectLog {
 
 	private AbstractObjectLog delegate;
 
@@ -30,10 +28,18 @@ public class VeryFastObjectLog extends AbstractObjectLog {
 	
 	private List<SystemLogImage> flushQueue = new ArrayList<SystemLogImage>();
 	
-	public VeryFastObjectLog(AbstractObjectLog delegate) {
+	public WriteAheadObjectLog() {
+
+	}
+	
+	public void setDelegate(AbstractObjectLog delegate) {
+		this.delegate = delegate;
+	}
+	public WriteAheadObjectLog(AbstractObjectLog delegate) {
 		this.delegate = delegate;
 	}
 
+	
     public  void flush ( Recoverable rec ) throws LogException
     {
         if ( rec == null ) return;

@@ -26,12 +26,17 @@
 package com.atomikos.persistence.imp;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.Properties;
 
 import com.atomikos.icatch.config.imp.AbstractUserTransactionServiceFactory;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 import com.atomikos.persistence.LogException;
 import com.atomikos.persistence.LogStream;
+import com.atomikos.persistence.ObjectLog;
 import com.atomikos.persistence.Utils;
+import com.atomikos.util.ClassLoadingHelper;
 
 /**
  * Default implementation of a state recovery manager.
@@ -39,9 +44,9 @@ import com.atomikos.persistence.Utils;
 
 public class StateRecoveryManagerImp extends AbstractStateRecoveryManager
 {
-	
 
-
+	private static final String WRITE_AHEAD_OBJECT_LOG_CLASSNAME = "com.atomikos.persistence.imp.WriteAheadObjectLog";
+	private static final Logger LOGGER = LoggerFactory.createLogger(StateRecoveryManagerImp.class);
 	public void init(Properties p) throws LogException {
 		long chckpt = Long.valueOf( Utils.getTrimmedProperty (
                 AbstractUserTransactionServiceFactory.CHECKPOINT_INTERVAL_PROPERTY_NAME, p ) );
@@ -51,16 +56,42 @@ public class StateRecoveryManagerImp extends AbstractStateRecoveryManager
         String logname = Utils.getTrimmedProperty (
                 AbstractUserTransactionServiceFactory.LOG_BASE_NAME_PROPERTY_NAME, p );
         logdir = Utils.findOrCreateFolder ( logdir );
-		LogStream logstream;
+        
+        Boolean serializableLogging= Boolean.valueOf(Utils.getTrimmedProperty (
+                AbstractUserTransactionServiceFactory.SERIALIZABLE_LOGGING_PROPERTY_NAME, p ));
+        
+        LogStream logstream=null;	
 		try {
-			logstream = new FileLogStream ( logdir, logname );
+			if (serializableLogging) {
+				  logstream = new FileLogStream ( logdir, logname );
+			} else {
+				  logstream = new com.atomikos.persistence.dataserializable.FileLogStream ( logdir, logname );
+		    }
+			
 			objectlog_ = new StreamObjectLog ( logstream, chckpt );
+			
+			//check existing VeryFastObjectLog
+			
+			try {
+				Class<ObjectLog>  theClass =	ClassLoadingHelper.loadClass(WRITE_AHEAD_OBJECT_LOG_CLASSNAME);
+				ObjectLog objectLog = theClass.newInstance();
+				Method delegateMethod = theClass.getMethod("setDelegate", AbstractObjectLog.class);
+				delegateMethod.invoke(objectLog, objectlog_);
+				
+				
+				objectlog_ = objectLog;
+			} catch (Exception e) {
+				LOGGER.logInfo(WRITE_AHEAD_OBJECT_LOG_CLASSNAME+" not found falling beck to default");
+			}
+			
 			objectlog_.init();
 		} catch (IOException e) {
 			throw new LogException(e.getMessage(), e);
 		}
 		
 	}
+
+	
 
 	public int getOrder() {
 		return 100;

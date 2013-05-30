@@ -44,11 +44,14 @@ import com.atomikos.icatch.imp.thread.InterruptedExceptionHelper;
  * A state handler for the heuristic mixed coordinator state.
  */
 
-class HeurMixedStateHandler extends CoordinatorStateHandler
+public class HeurMixedStateHandler extends CoordinatorStateHandler
 {
 
     private Hashtable hazards_;
 
+    public HeurMixedStateHandler() {
+	
+	}
     HeurMixedStateHandler ( CoordinatorImp coordinator )
     {
         super ( coordinator );
