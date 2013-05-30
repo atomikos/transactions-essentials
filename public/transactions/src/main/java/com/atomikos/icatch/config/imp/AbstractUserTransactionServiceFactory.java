@@ -172,6 +172,10 @@ public abstract class AbstractUserTransactionServiceFactory implements
 	public static final String REGISTER_SHUTDOWN_HOOK_PROPERTY_NAME = "com.atomikos.icatch.force_shutdown_on_vm_exit";
 
 
+	/**
+	 * The name of the property specifying whether or not to log serializable objects.
+	 */
+	public static final String SERIALIZABLE_LOGGING_PROPERTY_NAME = "com.atomikos.icatch.serializable_logging";
 
 
 }

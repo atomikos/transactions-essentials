@@ -466,6 +466,7 @@ class UserTransactionServiceImp extends AbstractJtaUserTransactionService
 
         ret.setProperty ( AbstractUserTransactionServiceFactory.THREADED_2PC_PROPERTY_NAME , "false" );
         ret.setProperty ( AbstractUserTransactionServiceFactory.REGISTER_SHUTDOWN_HOOK_PROPERTY_NAME , "false" );
+        ret.setProperty ( AbstractUserTransactionServiceFactory.SERIALIZABLE_LOGGING_PROPERTY_NAME , "true" );
         return ret;
     }
 

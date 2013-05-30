@@ -70,14 +70,5 @@ public final class UserTransactionServiceFactory extends AbstractUserTransaction
     {
         return new UserTransactionServiceImp ( properties );
     }
-    //
-    // /**
-    // *Create a TSInitInfo object for this configuration.
-    // *@return TSInitInfo The initialization object.
-    // */
-    //
-    // public static final TSInitInfo createTSInitInfo()
-    // {
-    // return UserTransactionServiceImp.createTSInitInfo();
-    // }
+    
 }
