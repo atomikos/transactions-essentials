@@ -239,7 +239,7 @@ public class CoordinatorLogImage implements ObjectImage,DataSerializable
 			out.writeBoolean(false);
 		else {
 			out.writeBoolean(true);
-			
+			out.writeUTF(coordinator_.getClass().getName());
 			// FIXME: Work with Guy for a better understanding on what to do here :
 			// Does all Impl of RecoveryCoordinator must implement DataSerializable ??? 
 			// out.writeObject ( coordinator_ );
@@ -280,7 +280,9 @@ public class CoordinatorLogImage implements ObjectImage,DataSerializable
 			single_threaded_2pc_ = in.readBoolean();
 			boolean hasCoordinator = in.readBoolean();
 			if(hasCoordinator){
-				//TODO ?
+				String className=in.readUTF();
+				coordinator_=(RecoveryCoordinator)ClassLoadingHelper.newInstance(className);
+				((DataSerializable)coordinator_).readData(in);
 			}
 
 
