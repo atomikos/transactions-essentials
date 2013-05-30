@@ -173,7 +173,7 @@ public abstract class AbstractUserTransactionServiceFactory implements
 
 
 	/**
-	 * The name of the property specifying whether or not to log serializable objects.
+	 * The name of the property specifying whether or not to log as serializable objects.
 	 */
 	public static final String SERIALIZABLE_LOGGING_PROPERTY_NAME = "com.atomikos.icatch.serializable_logging";
 

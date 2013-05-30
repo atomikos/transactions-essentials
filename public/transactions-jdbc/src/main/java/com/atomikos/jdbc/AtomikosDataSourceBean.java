@@ -166,7 +166,7 @@ extends AbstractDataSourceBean
 				" reapTimeout=" + getReapTimeout() + "," +
 				" maintenanceInterval=" + getMaintenanceInterval() + "," +
 				" testQuery=" + getTestQuery() + "," +
-				" xaProperties=" + printXaProperties() + 
+				" xaProperties=" + printXaProperties() + "," +
 				" loginTimeout=" + getLoginTimeout() + "," + 
 				" maxLifetime=" + getMaxLifetime() +
 				"]"
