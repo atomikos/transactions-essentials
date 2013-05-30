@@ -1,11 +1,11 @@
 package com.atomikos.persistence;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 
@@ -30,18 +30,18 @@ public class OrderedUtilsTest {
 		candidates.add(o1);
 		candidates.add(o2);
 		
-		Assert.assertEquals(o1,OrderedUtils.firstByOrder(candidates));
+		assertEquals(o1,OrderedUtils.firstByOrder(candidates));
 	}
 
 	@Test
 	public void nullContentMustReturnNull() {
 		List<Ordered> candidates=null;
-		Assert.assertNull(OrderedUtils.firstByOrder(candidates));
+		assertNull(OrderedUtils.firstByOrder(candidates));
 	}
 
 	@Test
 	public void emptyContentMustReturnNull() {
 		List<Ordered> candidates= new ArrayList<Ordered>(2);
-		Assert.assertNull(OrderedUtils.firstByOrder(candidates));
+		assertNull(OrderedUtils.firstByOrder(candidates));
 	}
 }

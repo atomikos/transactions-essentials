@@ -1,14 +1,11 @@
 package com.atomikos.icatch.standalone;
 
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
-import com.atomikos.persistence.Ordered;
 import com.atomikos.persistence.OrderedUtils;
 import com.atomikos.persistence.StateRecoveryManager;
 import com.atomikos.persistence.imp.VolatileStateRecoveryManager;
