@@ -34,6 +34,7 @@ import com.atomikos.persistence.LogStream;
 import com.atomikos.persistence.Utils;
 import com.atomikos.persistence.imp.AbstractStateRecoveryManager;
 import com.atomikos.persistence.imp.StreamObjectLog;
+import com.atomikos.persistence.imp.WriteAheadObjectLog;
 
 /**
  * Default implementation of a state recovery manager.
@@ -55,7 +56,7 @@ public class StateRecoveryManagerImp extends AbstractStateRecoveryManager
 		try {
 			logstream = new FileLogStream ( logdir, logname );
 			StreamObjectLog streamObjectLog = new StreamObjectLog ( logstream, chckpt );
-			objectlog_=new VeryFastObjectLog(streamObjectLog);
+			objectlog_=new WriteAheadObjectLog(streamObjectLog);
 			objectlog_.init();
 		} catch (IOException e) {
 			throw new LogException(e.getMessage(), e);
