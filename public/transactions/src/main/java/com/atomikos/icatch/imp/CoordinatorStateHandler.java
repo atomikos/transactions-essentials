@@ -589,7 +589,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable,DataSe
             if ( res != TerminationResult.ALL_OK ) {
 
                 if ( res == TerminationResult.HEUR_MIXED ) {
-                    Hashtable hazards = commitresult.getPossiblyIndoubts ();
+                	Hashtable<Participant,TxState> hazards = commitresult.getPossiblyIndoubts ();
                     Hashtable heuristics = commitresult
                             .getHeuristicParticipants ();
                     addToHeuristicMap ( heuristics );

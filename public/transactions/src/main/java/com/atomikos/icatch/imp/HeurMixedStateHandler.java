@@ -25,6 +25,9 @@
 
 package com.atomikos.icatch.imp;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Stack;
@@ -39,6 +42,7 @@ import com.atomikos.icatch.RollbackException;
 import com.atomikos.icatch.SysException;
 import com.atomikos.icatch.TxState;
 import com.atomikos.icatch.imp.thread.InterruptedExceptionHelper;
+import com.atomikos.util.SerializationUtils;
 
 /** 
  * A state handler for the heuristic mixed coordinator state.
@@ -47,7 +51,7 @@ import com.atomikos.icatch.imp.thread.InterruptedExceptionHelper;
 public class HeurMixedStateHandler extends CoordinatorStateHandler
 {
 
-    private Hashtable hazards_;
+    private Hashtable<Participant,TxState> hazards_;
 
     public HeurMixedStateHandler() {
 	
@@ -55,14 +59,14 @@ public class HeurMixedStateHandler extends CoordinatorStateHandler
     HeurMixedStateHandler ( CoordinatorImp coordinator )
     {
         super ( coordinator );
-        hazards_ = new Hashtable ();
+        hazards_ = new Hashtable<Participant,TxState> ();
 
     }
 
-    HeurMixedStateHandler ( CoordinatorStateHandler previous , Hashtable hazards )
+    HeurMixedStateHandler ( CoordinatorStateHandler previous , Hashtable<Participant,TxState> hazards )
     {
         super ( previous );
-        hazards_ = (Hashtable) hazards.clone ();
+        hazards_ = (Hashtable<Participant,TxState>) hazards.clone ();
     }
 
     protected TxState getState ()
@@ -173,4 +177,19 @@ public class HeurMixedStateHandler extends CoordinatorStateHandler
         throw new HeurMixedException ( getHeuristicMessages () );
     }
 
+    @Override
+    public void writeData(DataOutput out) throws IOException {
+    	super.writeData(out);
+    	byte[] content = SerializationUtils.serialize(hazards_);
+    	out.writeInt(content.length);
+    	out.write(content);
+    }
+    
+    @Override
+    public void readData(DataInput in) throws IOException {
+    	super.readData(in);
+    	byte[] content = new byte [in.readInt()];
+    	in.readFully(content);
+    	hazards_= (Hashtable<Participant,TxState>) SerializationUtils.deserialize(content);
+    }
 }
