@@ -81,7 +81,7 @@ public class StateRecoveryManagerImp extends AbstractStateRecoveryManager
 				
 				objectlog_ = objectLog;
 			} catch (Exception e) {
-				LOGGER.logInfo(WRITE_AHEAD_OBJECT_LOG_CLASSNAME+" not found falling beck to default");
+				LOGGER.logInfo(WRITE_AHEAD_OBJECT_LOG_CLASSNAME+" not found falling back to default");
 			}
 			
 			objectlog_.init();
