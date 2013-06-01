@@ -173,6 +173,7 @@ public class StateRecoveryManagerImp  implements StateRecoveryManager, FSMPreEnt
 			
 			try {
 				ObjectLog objectLog = createWriteAheadObjectLogIfAvailableOnClasspath(objectlog_);
+			
 				objectlog_ = objectLog;
 			} catch (Exception writeAheadObjectLogInstantiationFailed) {
 				LOGGER.logInfo(WRITE_AHEAD_OBJECT_LOG_CLASSNAME+" instantiation failed - falling back to default");
