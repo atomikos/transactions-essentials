@@ -62,6 +62,7 @@ import com.atomikos.icatch.system.Configuration;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 import com.atomikos.persistence.StateRecoveryManager;
+import com.atomikos.persistence.imp.StateRecoveryManagerImp;
 
 /**
  *
@@ -206,7 +207,7 @@ class UserTransactionServiceImp extends AbstractJtaUserTransactionService
         int max = Integer.valueOf( getTrimmedProperty (
                 AbstractUserTransactionServiceFactory.MAX_ACTIVES_PROPERTY_NAME, p ) );
 
-        StateRecoveryManager recmgr = StateRecoveryManagerLookup.lookup();
+        StateRecoveryManager recmgr = new StateRecoveryManagerImp();
         long maxTimeout = Long.valueOf( getTrimmedProperty (
                 AbstractUserTransactionServiceFactory.MAX_TIMEOUT_PROPERTY_NAME, p ) );
 

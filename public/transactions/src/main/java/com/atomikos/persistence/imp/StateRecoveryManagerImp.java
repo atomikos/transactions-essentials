@@ -57,7 +57,7 @@ public class StateRecoveryManagerImp extends AbstractStateRecoveryManager
                 AbstractUserTransactionServiceFactory.LOG_BASE_NAME_PROPERTY_NAME, p );
         logdir = Utils.findOrCreateFolder ( logdir );
         
-        Boolean serializableLogging= Boolean.valueOf(Utils.getTrimmedProperty (
+        boolean serializableLogging= "true".equals(Utils.getTrimmedProperty (
                 AbstractUserTransactionServiceFactory.SERIALIZABLE_LOGGING_PROPERTY_NAME, p ));
         
         LogStream logstream=null;	
@@ -91,11 +91,6 @@ public class StateRecoveryManagerImp extends AbstractStateRecoveryManager
 		
 	}
 
-	
-
-	public int getOrder() {
-		return 100;
-	}
 	
 
 }

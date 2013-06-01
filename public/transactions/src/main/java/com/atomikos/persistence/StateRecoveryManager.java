@@ -34,7 +34,7 @@ import com.atomikos.icatch.TxState;
  * instances based on the history.
  */
 
-public interface StateRecoveryManager extends Ordered
+public interface StateRecoveryManager 
 {
     /**
      * Recover all recorded recoverable instances in their latest state.
