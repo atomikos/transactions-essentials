@@ -26,6 +26,7 @@
 package com.atomikos.persistence.imp;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Properties;
 
@@ -70,18 +71,11 @@ public class StateRecoveryManagerImp extends AbstractStateRecoveryManager
 			
 			objectlog_ = new StreamObjectLog ( logstream, chckpt );
 			
-			//check existing VeryFastObjectLog
-			
 			try {
-				Class<ObjectLog>  theClass =	ClassLoadingHelper.loadClass(WRITE_AHEAD_OBJECT_LOG_CLASSNAME);
-				ObjectLog objectLog = theClass.newInstance();
-				Method delegateMethod = theClass.getMethod("setDelegate", AbstractObjectLog.class);
-				delegateMethod.invoke(objectLog, objectlog_);
-				
-				
+				ObjectLog objectLog = createWriteAheadObjectLogIfAvailableOnClasspath(objectlog_);
 				objectlog_ = objectLog;
-			} catch (Exception e) {
-				LOGGER.logInfo(WRITE_AHEAD_OBJECT_LOG_CLASSNAME+" not found falling back to default");
+			} catch (Exception writeAheadObjectLogInstantiationFailed) {
+				LOGGER.logInfo(WRITE_AHEAD_OBJECT_LOG_CLASSNAME+" instantiation failed - falling back to default");
 			}
 			
 			objectlog_.init();
@@ -89,6 +83,17 @@ public class StateRecoveryManagerImp extends AbstractStateRecoveryManager
 			throw new LogException(e.getMessage(), e);
 		}
 		
+	}
+	private ObjectLog createWriteAheadObjectLogIfAvailableOnClasspath(ObjectLog normalObjectLog)
+			throws ClassNotFoundException, InstantiationException,
+			IllegalAccessException, NoSuchMethodException,
+			InvocationTargetException {
+		Class<ObjectLog>  theClass =  ClassLoadingHelper.loadClass(WRITE_AHEAD_OBJECT_LOG_CLASSNAME);
+		ObjectLog objectLog = theClass.newInstance();
+		Method delegateMethod = theClass.getMethod("setDelegate", AbstractObjectLog.class);
+		delegateMethod.invoke(objectLog, normalObjectLog);
+		LOGGER.logInfo("Instantiated write-ahead logging - this constitutes a license violation if you are not a paying customer!");
+		return objectLog;
 	}
 
 	
