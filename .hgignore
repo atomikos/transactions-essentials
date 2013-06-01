@@ -43,3 +43,7 @@ syntax: regexp
 ^public/transactions-logging-noop$
 syntax: regexp
 ^public/transactions-jta/src/main/java/com/atomikos/datasource/xa/Main\.java$
+syntax: regexp
+^private/transactions-writeahead/src/test/java/com/atomikos/persistence/imp/LogTest\.java$
+syntax: regexp
+^private/transactions-writeahead/src/test/java/com/atomikos/persistence/imp/TestXAResource\.java$
