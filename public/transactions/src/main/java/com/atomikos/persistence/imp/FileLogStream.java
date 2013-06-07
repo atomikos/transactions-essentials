@@ -25,6 +25,7 @@
 
 package com.atomikos.persistence.imp;
 
+import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -142,7 +143,7 @@ public class FileLogStream extends AbstractLogStream implements LogStream {
 			// NOTE: after restart, any previous and failed checkpoint files
 			// will be overwritten here. That is perfectly OK.
 			output_ = file_.openNewVersionForWriting();
-			ooutput_ = new ObjectOutputStream(output_);
+			ooutput_ = new ObjectOutputStream(new BufferedOutputStream(output_,4096));
 			while (elements != null && elements.hasMoreElements()) {
 				Object next = elements.nextElement();
 				ooutput_.writeObject(next);
