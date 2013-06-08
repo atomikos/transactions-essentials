@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.atomikos</groupId>
 	<artifactId>atomikos-parent</artifactId>
@@ -51,8 +52,8 @@
 		<connection>scm:hg:http://atomikos.repositoryhosting.com/hg/atomikos/development</connection>
 		<developerConnection>scm:hg:http://atomikos.repositoryhosting.com/hg/atomikos/development</developerConnection>
 		<url>http://www.atomikos.com/</url>
-	  <tag>HEAD</tag>
-  </scm>
+		<tag>HEAD</tag>
+	</scm>
 
 	<build>
 		<pluginManagement>
@@ -154,7 +155,7 @@
 				<configuration>
 					<redirectTestOutputToFile>true</redirectTestOutputToFile>
 					<forkMode>always</forkMode>
-					 <argLine>-Xmx1024m</argLine>
+					<argLine>-Xmx1024m</argLine>
 					<includes>
 						<include>**/*TestJUnit.java</include>
 					</includes>
@@ -276,52 +277,52 @@
 				<sonar.language>java</sonar.language>
 			</properties>
 			<build>
-			<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<configuration>
-					<redirectTestOutputToFile>true</redirectTestOutputToFile>
-					<argLine>-Xmx1024m  ${argLine}</argLine>
-					<forkMode>always</forkMode>
-					<includes>
-						<include>**/*TestJUnit.java</include>
-					</includes>
-					<!-- this conf is made to ensure that no file wil be created outside -->
-					<workingDirectory>${project.build.testOutputDirectory}</workingDirectory>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.jacoco</groupId>
-				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.6.2.201302030002</version>
-				 <configuration>
-        			<includes>
-        				<include>com/atomikos/**</include>
-        			</includes>
-        			<excludes>
-        				<exclude>**/*Test*</exclude>
-        				<exclude>**/*Stub*</exclude>
-        			</excludes>
-        			<append>true</append>
-    				</configuration>
-				<executions>
-					<execution>
-						<id>jacoco-initialize</id>
-						<goals>
-							<goal>prepare-agent</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>jacoco-site</id>
-						<phase>verify</phase>
-						<goals>
-							<goal>report</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			</plugins>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<configuration>
+							<redirectTestOutputToFile>true</redirectTestOutputToFile>
+							<argLine>-Xmx1024m ${argLine}</argLine>
+							<forkMode>always</forkMode>
+							<includes>
+								<include>**/*TestJUnit.java</include>
+							</includes>
+							<!-- this conf is made to ensure that no file wil be created outside -->
+							<workingDirectory>${project.build.testOutputDirectory}</workingDirectory>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>org.jacoco</groupId>
+						<artifactId>jacoco-maven-plugin</artifactId>
+						<version>0.6.2.201302030002</version>
+						<configuration>
+							<includes>
+								<include>com/atomikos/**</include>
+							</includes>
+							<excludes>
+								<exclude>**/*Test*</exclude>
+								<exclude>**/*Stub*</exclude>
+							</excludes>
+							<append>true</append>
+						</configuration>
+						<executions>
+							<execution>
+								<id>jacoco-initialize</id>
+								<goals>
+									<goal>prepare-agent</goal>
+								</goals>
+							</execution>
+							<execution>
+								<id>jacoco-site</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>report</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
 			</build>
 		</profile>
 		<profile>
@@ -354,20 +355,6 @@
 							</execution>
 						</executions>
 					</plugin>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-gpg-plugin</artifactId>
-						<version>1.4</version>
-						<executions>
-							<execution>
-								<id>sign-artifacts</id>
-								<phase>verify</phase>
-								<goals>
-									<goal>sign</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
 				</plugins>
 
 			</build>
@@ -383,6 +370,32 @@
 					<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
 				</repository>
 			</distributionManagement>
+		</profile>
+		<profile>
+			<id>release-sign-artifacts</id>
+			<activation>
+				<property>
+					<name>performRelease</name>
+					<value>true</value>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
 		</profile>
 	</profiles>
 </project>
