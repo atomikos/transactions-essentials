@@ -362,8 +362,11 @@
 				<module>public</module>
 			</modules>
 			<distributionManagement>
-				<!--<snapshotRepository> <id>sonatype-nexus-snapshots</id> <name>Sonatype 
-					Nexus Snapshots</name> <url>${sonatypeOssDistMgmtSnapshotsUrl}</url> </snapshotRepository> -->
+				<snapshotRepository>
+      				<id>sonatype-nexus-snapshots</id>
+      				<name>Sonatype Nexus Snapshots</name>
+      				<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+		    	</snapshotRepository>
 				<repository>
 					<id>sonatype-nexus-staging</id>
 					<name>Nexus Release Repository</name>
