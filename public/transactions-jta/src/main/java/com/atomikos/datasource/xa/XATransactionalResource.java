@@ -84,7 +84,7 @@ public abstract class XATransactionalResource implements TransactionalResource
     // or for cases where XAResource classes
     // are always non-compliant (like JBoss)
 
-    private RecoveryService recoveryService_;
+    private String branchIdentifier;
 
     private static final String MAX_LONG_STR = String.valueOf(Long.MAX_VALUE);
     private static final int MAX_LONG_LEN = MAX_LONG_STR.getBytes().length;
@@ -431,7 +431,7 @@ public abstract class XATransactionalResource implements TransactionalResource
         if ( recoveryService != null ) {
             if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Installing recovery service on resource "
                     + getName () );
-            this.recoveryService_ = recoveryService;
+            branchIdentifier=recoveryService.getName();
             recoveryService.recover ();
         }
 
@@ -498,9 +498,10 @@ public abstract class XATransactionalResource implements TransactionalResource
         // this is needed for oracle8.1.7
         
         
-        if (recoveryService_ == null) throw new IllegalStateException("No recoveryService set yet!");
-
-        String branchIdentifier = recoveryService_.getName();
+        if (branchIdentifier == null) {
+        	LOGGER.logDebug("No recoveryService set yet!");
+        	return;
+        }
         
         if(LOGGER.isDebugEnabled()){
         	LOGGER.logDebug( "recovery initiated for resource " + getName ()
@@ -633,8 +634,7 @@ public abstract class XATransactionalResource implements TransactionalResource
      */
 
     protected Xid createXid(String tid) {
-    	if (recoveryService_ == null) throw new IllegalStateException("Not yet initialized");
-    	String branchIdentifier = recoveryService_.getName();
+    	if (branchIdentifier == null) throw new IllegalStateException("Not yet initialized");
         return getXidFactory().createXid (tid , branchIdentifier);
     }
 
