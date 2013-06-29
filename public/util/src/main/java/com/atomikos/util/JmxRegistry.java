@@ -3,6 +3,7 @@ package com.atomikos.util;
 import java.lang.management.ManagementFactory;
 
 import javax.management.MBeanServer;
+import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
 import com.atomikos.logging.Logger;
@@ -26,22 +27,28 @@ public class JmxRegistry {
 		return mBeanServerInstance;
 	}
 
-	public static void register(ObjectName objectName, Object jmxBean) {
+	public static void register(String objectNameAsString, Object jmxBean) {
 		MBeanServer server = getMBeanServer();
 		try {
+			ObjectName objectName = convertToObjectName(objectNameAsString);
 			server.registerMBean(jmxBean, objectName);
 		} catch (Exception e) {
-			LOGGER.logWarning("Failed to register " + objectName , e);
+			LOGGER.logWarning("Failed to register " + objectNameAsString , e);
 		}
 	}
 
-	public static void unregister(ObjectName objectName) {
+	public static void unregister(String objectNameAsString) {
 		MBeanServer server = getMBeanServer();
 		try {
+			ObjectName objectName = convertToObjectName(objectNameAsString);
 			server.unregisterMBean(objectName);
 		} catch (Exception e) {
-			LOGGER.logWarning("Failed to unregister " + objectName , e);
+			LOGGER.logWarning("Failed to unregister " + objectNameAsString , e);
 		}
+	}
+
+	private static ObjectName convertToObjectName(String objectNameAsString) throws MalformedObjectNameException, NullPointerException {
+		return new ObjectName(objectNameAsString);
 	}
 	
 }
