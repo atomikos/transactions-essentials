@@ -1,7 +1,5 @@
 package com.atomikos.util;
 
-import java.lang.management.ManagementFactory;
-
 import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
@@ -21,29 +19,30 @@ public class JmxRegistry {
 	}
 
 	private static MBeanServer getMBeanServer() {
-		if (mBeanServerInstance == null) {
-			init(ManagementFactory.getPlatformMBeanServer());
-		}
 		return mBeanServerInstance;
 	}
 
 	public static void register(String objectNameAsString, Object jmxBean) {
 		MBeanServer server = getMBeanServer();
-		try {
-			ObjectName objectName = convertToObjectName(objectNameAsString);
-			server.registerMBean(jmxBean, objectName);
-		} catch (Exception e) {
-			LOGGER.logWarning("Failed to register " + objectNameAsString , e);
+		if (server != null) {
+			try {
+				ObjectName objectName = convertToObjectName(objectNameAsString);
+				server.registerMBean(jmxBean, objectName);
+			} catch (Exception e) {
+				LOGGER.logWarning("Failed to register " + objectNameAsString , e);
+			}
 		}
 	}
 
 	public static void unregister(String objectNameAsString) {
 		MBeanServer server = getMBeanServer();
-		try {
-			ObjectName objectName = convertToObjectName(objectNameAsString);
-			server.unregisterMBean(objectName);
-		} catch (Exception e) {
-			LOGGER.logWarning("Failed to unregister " + objectNameAsString , e);
+		if (server != null) {
+			try {
+				ObjectName objectName = convertToObjectName(objectNameAsString);
+				server.unregisterMBean(objectName);
+			} catch (Exception e) {
+				LOGGER.logWarning("Failed to unregister " + objectNameAsString , e);
+			}
 		}
 	}
 

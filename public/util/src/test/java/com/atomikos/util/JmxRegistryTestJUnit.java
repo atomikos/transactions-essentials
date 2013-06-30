@@ -36,8 +36,19 @@ public class JmxRegistryTestJUnit {
 		JmxRegistry.unregister(jmxName);
 		assertUnregistered();
 	}
+	
+	@Test
+	public void testRegisterWithoutMBeanServerDoesNotThrow() {
+		JmxRegistry.init(null);
+		JmxRegistry.register(jmxName, jmxBean);
+	}
 
-
+	@Test
+	public void testUnregisterWithoutMBeanServerDoesNotThrow() {
+		JmxRegistry.init(null);
+		JmxRegistry.unregister(jmxName);
+	}
+	
 	private void assertUnregistered() throws Exception {
 		Mockito.verify(mockedMBeanServer).unregisterMBean(new ObjectName(jmxName));
 	}
