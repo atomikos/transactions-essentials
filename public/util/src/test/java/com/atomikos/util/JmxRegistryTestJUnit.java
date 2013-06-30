@@ -27,14 +27,24 @@ public class JmxRegistryTestJUnit {
 
 	@Test
 	public void testRegister() throws Exception {
-		JmxRegistry.register(jmxName, jmxBean);
+		registerMBean();
 		assertRegistered();
+	}
+
+	private void registerMBean() {
+		JmxRegistry.register(jmxName, jmxBean);
+		Mockito.when(mockedMBeanServer.isRegistered(Mockito.any(ObjectName.class))).thenReturn(true);
 	}
 	
 	@Test
 	public void testUnregister() throws Exception {
-		JmxRegistry.unregister(jmxName);
+		testRegister();
+		unregisterMBean();
 		assertUnregistered();
+	}
+
+	private void unregisterMBean() {
+		JmxRegistry.unregister(jmxName);
 	}
 	
 	

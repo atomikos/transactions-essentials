@@ -47,7 +47,9 @@ public class JmxRegistry {
 		MBeanServer server = getMBeanServer();
 		try {
 			ObjectName objectName = convertToObjectName(objectNameAsString);
-			server.unregisterMBean(objectName);
+			if (server.isRegistered(objectName)) {
+				server.unregisterMBean(objectName);
+			}
 		} catch (Exception e) {
 			LOGGER.logWarning("Failed to unregister " + objectNameAsString , e);
 		}
