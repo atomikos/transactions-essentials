@@ -55,4 +55,8 @@ public abstract class DefaultMBeanRegistration implements MBeanRegistration {
 	@Override
 	public void postDeregister() {}
 
+	protected ObjectName getObjectName() {
+		return name;
+	}
+
 }
