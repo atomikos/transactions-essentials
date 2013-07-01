@@ -2,6 +2,7 @@ package com.atomikos.util;
 
 import javax.management.MBeanRegistration;
 import javax.management.MBeanServer;
+import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
 import com.atomikos.logging.Logger;
@@ -57,6 +58,36 @@ public abstract class DefaultMBeanRegistration implements MBeanRegistration {
 
 	protected ObjectName getObjectName() {
 		return name;
+	}
+	
+	protected void register(String objectNameAsString, Object jmxBean) {
+		MBeanServer server = getMBeanServer();
+		if ( server != null ) {
+			try {
+				ObjectName objectName = convertToObjectName(objectNameAsString);
+				server.registerMBean(jmxBean, objectName);
+			} catch (Exception e) {
+				LOGGER.logWarning("Failed to register " + objectNameAsString , e);
+			}
+		}
+	}
+
+	protected void unregister(String objectNameAsString) {
+		MBeanServer server = getMBeanServer();
+		if (server != null) {
+			try {
+				ObjectName objectName = convertToObjectName(objectNameAsString);
+				if (server.isRegistered(objectName)) {
+					server.unregisterMBean(objectName);
+				}
+			} catch (Exception e) {
+				LOGGER.logWarning("Failed to unregister " + objectNameAsString , e);
+			}
+		}
+	}
+
+	protected ObjectName convertToObjectName(String objectNameAsString) throws MalformedObjectNameException, NullPointerException {
+		return new ObjectName(objectNameAsString);
 	}
 
 }
