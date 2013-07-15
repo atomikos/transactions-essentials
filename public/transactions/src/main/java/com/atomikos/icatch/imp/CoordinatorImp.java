@@ -832,15 +832,9 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     	CoordinatorLogImage ret = null;
     	synchronized ( fsm_ ) {
 
-    		if ( !recoverableWhileActive_ &&
-    				( state.equals ( TxState.ACTIVE ) ||
-    			      ( superiorCoordinator_ == null && state.equals ( TxState.IN_DOUBT ) )
-    				    //see case 23693: don't log prepared state for roots
-    			    )
-    		    ) {
+    		if ( excludedFromLogging(state)) {
     				//merely return null to avoid logging overhead
     				ret = null;
-
     		}
     		else {
     			TxState imgstate = state;
@@ -859,6 +853,21 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 
         return ret;
     }
+    
+	private boolean excludedFromLogging(Object state) {
+		boolean ret = false;
+		if (state.equals ( TxState.ACTIVE ) && !recoverableWhileActive_) {
+				ret = true;
+		} else if ( superiorCoordinator_ == null) {
+			if ( state.equals( TxState.IN_DOUBT )) {
+				ret = true; //see case 23693: don't log prepared state for roots 
+			} else if ( state.equals(TxState.COMMITTING) && participants_.size() == 0 ) {
+				ret = true; //see case 84851: avoid logging overhead for empty transactions
+			}					
+		}
+		
+		return ret;
+	}
 
     /**
      * @see com.atomikos.persistence.StateRecoverable
