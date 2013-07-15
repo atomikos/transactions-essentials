@@ -861,7 +861,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 		} else if ( superiorCoordinator_ == null) {
 			if ( state.equals( TxState.IN_DOUBT )) {
 				ret = true; //see case 23693: don't log prepared state for roots 
-			} else if ( state.equals(TxState.COMMITTING) && participants_.size() == 0 ) {
+			} else if ( participants_.size() == 0 ) {
 				ret = true; //see case 84851: avoid logging overhead for empty transactions
 			}					
 		}
