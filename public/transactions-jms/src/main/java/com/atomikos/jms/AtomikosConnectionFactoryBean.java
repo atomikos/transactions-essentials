@@ -642,6 +642,14 @@ Referenceable, Serializable {
 		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": getReference() returning " + ret );
 		return ret;
 	}
+	
+	public int poolAvailableSize() {
+		return connectionPool.availableSize();
+	}
+
+	public int poolTotalSize() {
+		return connectionPool.totalSize();
+	}
 
 	
 }
