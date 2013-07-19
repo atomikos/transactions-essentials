@@ -29,6 +29,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.mockito.cglib.transform.impl.AddDelegateTransformer;
+
 import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.imp.thread.InterruptedExceptionHelper;
 import com.atomikos.icatch.imp.thread.TaskManager;
@@ -303,6 +305,18 @@ public class ConnectionPool implements XPooledConnectionEventListener
 			maintenanceTimer.stop();
 			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": pool destroyed." );
 		}
+	}
+	
+	public synchronized void refresh() {
+		List<XPooledConnection> connectionsToRemove = new ArrayList<XPooledConnection>();
+		for (XPooledConnection conn : connections) {
+			if (conn.isAvailable()) {
+				connectionsToRemove.add(conn);
+				conn.destroy();
+			}
+		}
+		connections.removeAll(connectionsToRemove);
+		addConnectionsIfMinPoolSizeNotReached();
 	}
 
 	/**

@@ -466,5 +466,11 @@ implements HeuristicDataSource, ConnectionPoolProperties, Referenceable, Seriali
 		throw new SQLFeatureNotSupportedException();
 	}
 
+	/**
+	 * Refreshes all available connections in the pool.
+	 */
+	public void refreshPool() {
+		if (connectionPool != null) connectionPool.refresh();
+	}
 	
 }
