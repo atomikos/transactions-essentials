@@ -651,5 +651,9 @@ Referenceable, Serializable {
 		return connectionPool.totalSize();
 	}
 
+	public void refreshPool() {
+		if (connectionPool != null) connectionPool.refresh();
+	}
+
 	
 }
