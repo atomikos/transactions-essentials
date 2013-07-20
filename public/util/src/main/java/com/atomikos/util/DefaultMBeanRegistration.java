@@ -60,6 +60,12 @@ public abstract class DefaultMBeanRegistration implements MBeanRegistration {
 		return name;
 	}
 	
+	/**
+	 * Utility method for implementations that need to created and register additional MBeans at runtime.
+	 * 
+	 * @param objectNameAsString
+	 * @param jmxBean
+	 */
 	protected void register(String objectNameAsString, Object jmxBean) {
 		MBeanServer server = getMBeanServer();
 		if ( server != null ) {
@@ -72,6 +78,10 @@ public abstract class DefaultMBeanRegistration implements MBeanRegistration {
 		}
 	}
 
+	/**
+	 * Utility method for implementations that register/unregister additional MBeans at runtime.
+	 * @param objectNameAsString
+	 */
 	protected void unregister(String objectNameAsString) {
 		MBeanServer server = getMBeanServer();
 		if (server != null) {
