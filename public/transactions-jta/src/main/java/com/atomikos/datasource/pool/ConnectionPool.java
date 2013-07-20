@@ -29,8 +29,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.mockito.cglib.transform.impl.AddDelegateTransformer;
-
 import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.imp.thread.InterruptedExceptionHelper;
 import com.atomikos.icatch.imp.thread.TaskManager;
