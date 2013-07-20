@@ -31,7 +31,7 @@ public abstract class DefaultMBeanRegistration implements MBeanRegistration {
 	     return name;
 	}
 
-	protected abstract ObjectName createObjectName();
+	protected abstract ObjectName createObjectName() throws Exception;
 	
 	protected MBeanServer getMBeanServer() {
 		return server;
