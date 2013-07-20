@@ -1,17 +1,15 @@
 package com.atomikos.util;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanRegistrationException;
 import javax.management.MBeanServer;
-import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.mockito.internal.verification.Times;
 
 public class DefaultMBeanRegistrationTestJUnit {
 	
