@@ -1,6 +1,8 @@
 package com.atomikos.util;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
+
+import java.lang.management.ManagementFactory;
 
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanRegistrationException;
@@ -13,7 +15,7 @@ import org.mockito.Mockito;
 
 public class DefaultMBeanRegistrationTestJUnit {
 	
-	private ObjectName instanceSpecificObjectName;
+	private static ObjectName instanceSpecificObjectName;
 	
 	private DefaultMBeanRegistration instance;
 	private MBeanServer mockedMBeanServer;
@@ -21,12 +23,7 @@ public class DefaultMBeanRegistrationTestJUnit {
 	@Before
 	public void setUp() throws Exception {
 		instanceSpecificObjectName = new ObjectName("name:name=instance");
-		instance = new DefaultMBeanRegistration() {	
-			@Override
-			protected ObjectName createObjectName() {
-				return instanceSpecificObjectName;
-			}
-		};
+		instance = new TestMBeanRegistration();
 		mockedMBeanServer = Mockito.mock(MBeanServer.class);
 		Mockito.when(mockedMBeanServer.isRegistered(Mockito.any(ObjectName.class))).thenReturn(true);
 	}
@@ -46,12 +43,14 @@ public class DefaultMBeanRegistrationTestJUnit {
 	
 	@Test
 	public void testPreRegisterRemembersSuppliedMBeanServer() throws Exception {
+		instance.setUsePlatformMBeanServer(false);
 		instance.preRegister(mockedMBeanServer, null);
 		assertEquals(mockedMBeanServer, instance.getMBeanServer());
 	}
 	
 	@Test
-	public void testUnregister() throws Exception {
+	public void testUnregisterAfterPreRegister() throws Exception {
+		instance.setUsePlatformMBeanServer(false);
 		instance.preRegister(mockedMBeanServer, instanceSpecificObjectName);
 		instance.unregister();
 		assertUnregistered();
@@ -64,11 +63,62 @@ public class DefaultMBeanRegistrationTestJUnit {
 	}
 	
 	@Test
-	public void testUnregisterDoesNothingIfNotRegistered() throws Exception {
+	public void testRegister() throws Exception {
+		instance.register();
+		assertTrue(instance.isRegistered());
+	}
+	
+	@Test
+	public void testNotRegisteredByDefault() throws Exception {
+		assertFalse(instance.isRegistered());
+	}
+	
+	@Test
+	public void testUnregister() throws Exception {
+		instance.register();
+		instance.unregister();
+		assertFalse(instance.isRegistered());
+	}
+	
+	@Test
+	public void testUnregisterDoesNotThrowIfRegisterNotCalled() throws Exception {
+		instance.unregister();
+	}
+	
+	@Test
+	public void testUnregisterDoesNothingIfRegistrationFailedAfterPreRegister() throws Exception {
 		instance.preRegister(mockedMBeanServer, instanceSpecificObjectName);
 		Mockito.when(mockedMBeanServer.isRegistered(instanceSpecificObjectName)).thenReturn(false);
 		instance.unregister();
 		assertNotUnregistered();
+	}
+	
+	@Test
+	public void testUsePlatformMBeanServerDefaultsToTrue() {
+		assertTrue(instance.getUsePlatformMBeanServer());
+		assertEquals(ManagementFactory.getPlatformMBeanServer(), instance.getMBeanServer());
+	}
+	
+	@Test
+	public void testSetUsePlatformMBeanServer() throws Exception {
+		instance.setUsePlatformMBeanServer(true);
+		assertTrue(instance.getUsePlatformMBeanServer());
+		assertEquals(ManagementFactory.getPlatformMBeanServer(), instance.getMBeanServer());
+		instance.setUsePlatformMBeanServer(false);
+		assertFalse(instance.getUsePlatformMBeanServer());
+		assertNull(instance.getMBeanServer());
+		instance.setUsePlatformMBeanServer(true);
+		assertTrue(instance.getUsePlatformMBeanServer());
+		assertEquals(ManagementFactory.getPlatformMBeanServer(), instance.getMBeanServer());
+	}
+	
+	
+	@Test
+	public void testInitWithUsePlatformMBeanServerTriggersRegistration() throws Exception {
+		assertTrue(instance.getUsePlatformMBeanServer());
+		instance.init();
+		assertNotNull(instance.getObjectName());
+		assertTrue(instance.isRegistered());
 	}
 
 	private void assertNotUnregistered() throws MBeanRegistrationException, InstanceNotFoundException {
@@ -77,5 +127,18 @@ public class DefaultMBeanRegistrationTestJUnit {
 
 	private void assertUnregistered() throws MBeanRegistrationException, InstanceNotFoundException {
 		Mockito.verify(mockedMBeanServer).unregisterMBean(instanceSpecificObjectName);
+	}
+	
+	private static interface TestMBeanRegistrationMBean {}
+	private static class TestMBeanRegistration extends DefaultMBeanRegistration implements TestMBeanRegistrationMBean {
+		@Override
+		protected ObjectName createObjectName() {
+			return instanceSpecificObjectName;
+		}
+
+		@Override
+		protected void doInit() {
+			
+		}
 	}
 }
