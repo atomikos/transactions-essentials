@@ -148,11 +148,11 @@ public abstract class DefaultMBeanRegistration implements MBeanRegistration {
 	 * with the JVM's built-in PlatformMBeanServer. If false, then you will have to 
 	 * explicitly register this bean with some third-party MBeanServer.
 	 */
-	public void setUsePlatformMBeanServer(boolean value) {
+	public void setUsePlatformMBeanServerOnInit(boolean value) {
 		this.usePlatformMBeanServer = value;
 	}
 
-	public boolean getUsePlatformMBeanServer() {
+	public boolean getUsePlatformMBeanServerOnInit() {
 		return usePlatformMBeanServer;
 	}
 

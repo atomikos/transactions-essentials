@@ -43,14 +43,14 @@ public class DefaultMBeanRegistrationTestJUnit {
 	
 	@Test
 	public void testPreRegisterRemembersSuppliedMBeanServer() throws Exception {
-		instance.setUsePlatformMBeanServer(false);
+		instance.setUsePlatformMBeanServerOnInit(false);
 		instance.preRegister(mockedMBeanServer, null);
 		assertEquals(mockedMBeanServer, instance.getMBeanServer());
 	}
 	
 	@Test
 	public void testUnregisterAfterPreRegister() throws Exception {
-		instance.setUsePlatformMBeanServer(false);
+		instance.setUsePlatformMBeanServerOnInit(false);
 		instance.preRegister(mockedMBeanServer, instanceSpecificObjectName);
 		instance.unregister();
 		assertUnregistered();
@@ -95,27 +95,27 @@ public class DefaultMBeanRegistrationTestJUnit {
 	
 	@Test
 	public void testUsePlatformMBeanServerDefaultsToTrue() {
-		assertTrue(instance.getUsePlatformMBeanServer());
+		assertTrue(instance.getUsePlatformMBeanServerOnInit());
 		assertEquals(ManagementFactory.getPlatformMBeanServer(), instance.getMBeanServer());
 	}
 	
 	@Test
 	public void testSetUsePlatformMBeanServer() throws Exception {
-		instance.setUsePlatformMBeanServer(true);
-		assertTrue(instance.getUsePlatformMBeanServer());
+		instance.setUsePlatformMBeanServerOnInit(true);
+		assertTrue(instance.getUsePlatformMBeanServerOnInit());
 		assertEquals(ManagementFactory.getPlatformMBeanServer(), instance.getMBeanServer());
-		instance.setUsePlatformMBeanServer(false);
-		assertFalse(instance.getUsePlatformMBeanServer());
+		instance.setUsePlatformMBeanServerOnInit(false);
+		assertFalse(instance.getUsePlatformMBeanServerOnInit());
 		assertNull(instance.getMBeanServer());
-		instance.setUsePlatformMBeanServer(true);
-		assertTrue(instance.getUsePlatformMBeanServer());
+		instance.setUsePlatformMBeanServerOnInit(true);
+		assertTrue(instance.getUsePlatformMBeanServerOnInit());
 		assertEquals(ManagementFactory.getPlatformMBeanServer(), instance.getMBeanServer());
 	}
 	
 	
 	@Test
 	public void testInitWithUsePlatformMBeanServerTriggersRegistration() throws Exception {
-		assertTrue(instance.getUsePlatformMBeanServer());
+		assertTrue(instance.getUsePlatformMBeanServerOnInit());
 		instance.init();
 		assertNotNull(instance.getObjectName());
 		assertTrue(instance.isRegistered());
