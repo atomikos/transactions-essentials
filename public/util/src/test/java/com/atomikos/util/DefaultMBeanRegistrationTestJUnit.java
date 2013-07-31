@@ -36,13 +36,17 @@ public class DefaultMBeanRegistrationTestJUnit {
 		ObjectName suppliedObjectName = new ObjectName("name:name=supplied");
 		instance.preRegister(mockedMBeanServer, suppliedObjectName);
 		assertEquals(suppliedObjectName, instance.getObjectName());
-		assertEquals(mockedMBeanServer, instance.getMBeanServer());
 	}
 
 	@Test
 	public void testPreRegisterWithNullObjectName() throws Exception {
-		instance.preRegister(mockedMBeanServer, instanceSpecificObjectName);
+		instance.preRegister(mockedMBeanServer, null);
 		assertEquals(instanceSpecificObjectName, instance.getObjectName());
+	}
+	
+	@Test
+	public void testPreRegisterRemembersSuppliedMBeanServer() throws Exception {
+		instance.preRegister(mockedMBeanServer, null);
 		assertEquals(mockedMBeanServer, instance.getMBeanServer());
 	}
 	

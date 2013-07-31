@@ -17,13 +17,13 @@ public abstract class DefaultMBeanRegistration implements MBeanRegistration {
 
 	private static Logger LOGGER = LoggerFactory.createLogger(DefaultMBeanRegistration.class);
 	
-	private MBeanServer server;
+	private MBeanServer mBeanServerFromPreRegister;
 	private ObjectName name;
 
 	@Override
 	public ObjectName preRegister(MBeanServer server, ObjectName name)
 			throws Exception {
-		 this.server = server;
+		 this.mBeanServerFromPreRegister = server;
 	     if ( name == null ) {
 	            name = createObjectName();
 	     }
@@ -34,13 +34,13 @@ public abstract class DefaultMBeanRegistration implements MBeanRegistration {
 	protected abstract ObjectName createObjectName() throws Exception;
 	
 	protected MBeanServer getMBeanServer() {
-		return server;
+		return mBeanServerFromPreRegister;
 	}
 	
 	protected void unregister() {
 		try {
-			if ( server != null && server.isRegistered ( name ) ) {
-				server.unregisterMBean ( name );
+			if ( mBeanServerFromPreRegister != null && mBeanServerFromPreRegister.isRegistered ( name ) ) {
+				mBeanServerFromPreRegister.unregisterMBean ( name );
 			}
 		} catch (Exception e) {
 			LOGGER.logWarning("Failed to unregister" + name, e);
