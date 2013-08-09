@@ -25,10 +25,12 @@
 
 package com.atomikos.util;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URL;
 
 /**
  *
@@ -151,5 +153,21 @@ public class IOHelper
 		}
 		return deleted;
 	}
+	
+	public static byte[] readBytesFromUrl(URL url) throws IOException {
+		InputStream in = url.openStream();
+		byte[] ret = readAllBytesFromInputStream(in);
+		in.close();
+		return ret;
+	}
 
+	public static byte[] readAllBytesFromInputStream(InputStream in) throws IOException {
+		ByteArrayOutputStream bout = new ByteArrayOutputStream();
+		int b = in.read();
+		while (b>=0) {
+			bout.write(b);
+			b = in.read();
+		}
+		return bout.toByteArray();
+	}
 }
