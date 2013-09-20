@@ -385,10 +385,9 @@ public class XAResourceTransaction implements ResourceTransaction,
 	            xaresource_.end ( xid_, XAResource.TMSUCCESS );
 
 	        } catch ( XAException xaerr ) {
-	            errors.push ( xaerr );
 	            String msg = interpretErrorCode ( resourcename_ , "end" , xid_ , xaerr.errorCode );
 	            if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( msg, xaerr );
-	            throw new ResourceException ( msg, errors );
+	            //don't throw: fix for case 102827
 	        }
 	        setState ( TxState.LOCALLY_DONE );
         }
