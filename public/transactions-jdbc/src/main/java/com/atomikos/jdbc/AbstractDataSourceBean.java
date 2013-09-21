@@ -462,7 +462,7 @@ implements HeuristicDataSource, ConnectionPoolProperties, Referenceable, Seriali
 	 * 
 	 * @throws SQLFeatureNotSupportedException
 	 */
-	public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+	public java.util.logging.Logger getParentLogger() throws SQLFeatureNotSupportedException {
 		throw new SQLFeatureNotSupportedException();
 	}
 
