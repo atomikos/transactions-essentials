@@ -243,6 +243,10 @@ public class PropertyUtils
         if ((destinationClass == boolean.class || destinationClass == Boolean.class)  &&  value.getClass() == String.class) {
             return Boolean.valueOf((String) value);
         }
+        
+        if ((destinationClass == short.class || destinationClass == Short.class) && value.getClass() == String.class) {
+            return new Short((String) value);
+        }
 
         throw new PropertyException("cannot convert values of type '" + value.getClass().getName() + "' into type '" + destinationClass + "'");
     }
