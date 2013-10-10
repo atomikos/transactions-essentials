@@ -25,6 +25,7 @@
 
 package com.atomikos.icatch.imp;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -35,6 +36,8 @@ import com.atomikos.finitestates.FSMEnterEvent;
 import com.atomikos.finitestates.FSMEnterListener;
 import com.atomikos.finitestates.FSMImp;
 import com.atomikos.finitestates.FSMPreEnterListener;
+import com.atomikos.finitestates.FSMTransitionEvent;
+import com.atomikos.finitestates.FSMTransitionListener;
 import com.atomikos.finitestates.Stateful;
 import com.atomikos.icatch.CompositeCoordinator;
 import com.atomikos.icatch.HeurCommitException;
@@ -49,7 +52,13 @@ import com.atomikos.icatch.StringHeuristicMessage;
 import com.atomikos.icatch.Synchronization;
 import com.atomikos.icatch.SysException;
 import com.atomikos.icatch.TxState;
+import com.atomikos.icatch.event.TransactionAbortedEvent;
+import com.atomikos.icatch.event.TransactionCommittedEvent;
+import com.atomikos.icatch.event.TransactionCreatedEvent;
+import com.atomikos.icatch.event.TransactionHeuristicEvent;
+import com.atomikos.icatch.event.TransactionReadOnlyEvent;
 import com.atomikos.icatch.imp.thread.TaskManager;
+import com.atomikos.icatch.publish.EventPublisher;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 import com.atomikos.persistence.ObjectImage;
@@ -66,7 +75,7 @@ import com.atomikos.timing.PooledAlarmTimer;
 
 public class CoordinatorImp implements CompositeCoordinator, Participant,
         RecoveryCoordinator, StateRecoverable<TxState>, AlarmTimerListener, Stateful<TxState>,
-        FSMPreEnterListener<TxState>
+        FSMPreEnterListener<TxState>, FSMTransitionListener<TxState>, FSMEnterListener<TxState>
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(CoordinatorImp.class);
 
@@ -127,6 +136,13 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
         fsm_.addFSMPreEnterListener ( this, TxState.HEUR_ABORTED );
         fsm_.addFSMPreEnterListener ( this, TxState.HEUR_MIXED );
         fsm_.addFSMPreEnterListener ( this, TxState.HEUR_HAZARD );
+        fsm_.addFSMTransitionListener ( this, TxState.COMMITTING, TxState.TERMINATED );
+        fsm_.addFSMTransitionListener ( this, TxState.ABORTING, TxState.TERMINATED );
+        fsm_.addFSMTransitionListener ( this, TxState.PREPARING, TxState.TERMINATED);
+        fsm_.addFSMEnterListener(this, TxState.HEUR_COMMITTED);
+        fsm_.addFSMEnterListener(this, TxState.HEUR_ABORTED);
+        fsm_.addFSMEnterListener(this, TxState.HEUR_HAZARD);
+        fsm_.addFSMEnterListener(this, TxState.HEUR_MIXED);
 	}
 
     /**
@@ -174,7 +190,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
         startThreads ( DEFAULT_MILLIS_BETWEEN_TIMER_WAKEUPS );
         checkSiblings_ = checkorphans;
         synchronizations = new ArrayList<Synchronization>();
-
+        publishDomainEvent(new TransactionCreatedEvent(root_));
     }
 
     /**
@@ -996,6 +1012,41 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 			else ret = TxState.ABORTING;
 		}
 		return ret;
+	}
+
+
+
+	@Override
+	public void transitionPerformed(FSMTransitionEvent<TxState> e) {
+		TxState fromState = e.fromState();
+		TxState toState = e.toState();
+		if (TxState.TERMINATED.equals(toState)) {
+			if (TxState.COMMITTING.equals(fromState)) {
+				publishDomainEvent(new TransactionCommittedEvent(root_));
+			} else if (TxState.ABORTING.equals(fromState)) {
+				publishDomainEvent(new TransactionAbortedEvent(root_));
+			} else if (TxState.PREPARING.equals(fromState)) {
+				publishDomainEvent(new TransactionReadOnlyEvent(root_));
+			}
+		}
+	}
+
+	private void publishDomainEvent(Serializable event) {
+		EventPublisher.publish(event);
+	}
+
+	
+
+	@Override
+	public void entered(FSMEnterEvent<TxState> e) {
+		TxState state = e.getState();
+		if ( TxState.HEUR_ABORTED.equals(state) ||
+		     TxState.HEUR_COMMITTED.equals(state) ||
+			 TxState.HEUR_HAZARD.equals(state) ||
+			 TxState.HEUR_MIXED.equals(state)
+			) {
+			publishDomainEvent(new TransactionHeuristicEvent(root_));
+		}
 	}
 
 
