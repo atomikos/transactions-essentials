@@ -27,11 +27,6 @@ package com.atomikos.finitestates;
 
 import java.util.EventObject;
 
-/**
-*
-*
-*Events signalling a transition of a FSM.
-*/
 public class FSMTransitionEvent<Status> extends EventObject{
 
 	private static final long serialVersionUID = 7629493293234798149L;
@@ -43,16 +38,11 @@ public class FSMTransitionEvent<Status> extends EventObject{
 		from=fromState;
 		to=toState;
 	}
-	/**
-	*The state that was left.
-	*/
+	
 	public Status fromState(){
 		return from;
 	}
 
-	/**
-	*The state that was moved to.
-	*/
 	public Status toState(){
 		return to;
 	}
