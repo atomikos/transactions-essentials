@@ -7,11 +7,10 @@ package com.atomikos.icatch.event;
  * heuristic transactions.
  */
 public class TransactionHeuristicEvent extends TransactionEvent {
+	
+	private static final long serialVersionUID = 1L;
 
 	public TransactionHeuristicEvent(String transactionId) {
 		super(transactionId);
 	}
-
-	private static final long serialVersionUID = 1L;
-
 }

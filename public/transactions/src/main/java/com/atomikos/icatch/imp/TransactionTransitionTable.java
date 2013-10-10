@@ -43,12 +43,7 @@ class TransactionTransitionTable implements TransitionTable<TxState>
 
     protected static Hashtable<TxState,Hashtable<TxState,Object>> defaultTransitions;
 
-    /**
-     * Builds a default transition table for rootsets.
-     *
-     * @return Hashtable The default table for rootsets.
-     */
-
+ 
     protected static Hashtable<TxState,Hashtable<TxState,Object>> defaultTransitions ()
     {
         if ( defaultTransitions == null ) {
@@ -56,7 +51,6 @@ class TransactionTransitionTable implements TransitionTable<TxState>
             Hashtable<TxState,Hashtable<TxState,Object>> defaultTrans = new Hashtable<TxState,Hashtable<TxState,Object>> ();
             
 
-            // where can we go from ACTIVE?
             Hashtable<TxState,Object> fromActive = new Hashtable<TxState,Object> ();
             fromActive.put ( TxState.ACTIVE, new Object () );
             fromActive.put ( TxState.ABORTING, new Object () );
@@ -77,8 +71,7 @@ class TransactionTransitionTable implements TransitionTable<TxState>
             fromPREPARING.put ( TxState.IN_DOUBT, new Object () );
             fromPREPARING.put ( TxState.TERMINATED, new Object () ); // readonly
             fromPREPARING.put ( TxState.ABORTING, new Object () );
-            fromPREPARING.put ( TxState.COMMITTING, new Object () ); // SYNCH
-            // needed for beforeCompletion notification of 1PC
+            fromPREPARING.put ( TxState.COMMITTING, new Object () );
             defaultTrans.put ( TxState.PREPARING, fromPREPARING );
 
             Hashtable<TxState,Object> fromIN_DOUBT = new Hashtable<TxState,Object> ();
@@ -100,13 +93,11 @@ class TransactionTransitionTable implements TransitionTable<TxState>
 
             Hashtable<TxState,Object> fromHEURMIXED = new Hashtable<TxState,Object> ();
             fromHEURMIXED.put ( TxState.HEUR_MIXED, new Object () );
-            // idempotence for logging of hazards!
             fromHEURMIXED.put ( TxState.TERMINATED, new Object () );
             defaultTrans.put ( TxState.HEUR_MIXED, fromHEURMIXED );
 
             Hashtable<TxState,Object> fromHEURHAZARD = new Hashtable<TxState,Object> ();
             fromHEURHAZARD.put ( TxState.HEUR_HAZARD, new Object () );
-            // idempotent for indoubt resoltion and logging!
             fromHEURHAZARD.put ( TxState.TERMINATED, new Object () );
             defaultTrans.put ( TxState.HEUR_HAZARD, fromHEURHAZARD );
 
@@ -154,15 +145,12 @@ class TransactionTransitionTable implements TransitionTable<TxState>
     {
         if ( transitions == null ) return false;
         if ( !transitions.containsKey ( from ) ) return false;
-        // if not explicitly allowed -> deny.
+
         else {
             Object allowedNextStates = transitions.get ( from );
             if ( !(allowedNextStates instanceof Hashtable) ) return false;
-            // if not valid transition table -> same as not specified -> deny.
 
             Hashtable toStates = (Hashtable) allowedNextStates;
-            // this will work if we are here!
-
             if ( toStates.containsKey ( to ) ) return true;
             else return false;
         }
