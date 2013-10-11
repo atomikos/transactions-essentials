@@ -4,10 +4,16 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import com.atomikos.icatch.HeurCommitException;
+import com.atomikos.icatch.HeurHazardException;
+import com.atomikos.icatch.HeurMixedException;
+import com.atomikos.icatch.HeurRollbackException;
+import com.atomikos.icatch.Participant;
 import com.atomikos.icatch.event.EventListener;
 import com.atomikos.icatch.event.TransactionAbortedEvent;
 import com.atomikos.icatch.event.TransactionCommittedEvent;
 import com.atomikos.icatch.event.TransactionCreatedEvent;
+import com.atomikos.icatch.event.TransactionHeuristicEvent;
 import com.atomikos.icatch.event.TransactionReadOnlyEvent;
 import com.atomikos.icatch.publish.EventPublisher;
 
@@ -58,6 +64,65 @@ public class TransactionEventTestJUnit {
 		coordinator.addParticipant(new ReadOnlyParticipant());
 		coordinator.prepare();
 		Mockito.verify(eventListenerMock, Mockito.times(1)).eventOccurred(Mockito.any(TransactionReadOnlyEvent.class));
+	}
+	
+	@Test
+	public void testHeuristicTransactionEventWithHeurMixed() throws Exception {
+		coordinator = createCoordinator();
+		EventPublisher.registerEventListener(eventListenerMock);
+		coordinator.addParticipant(createHeuristicCommitParticipant(new HeurMixedException(null)));
+		coordinator.addParticipant(createHeuristicCommitParticipant(new HeurMixedException(null)));
+		coordinator.prepare();
+		coordinator.commit(false);
+		Mockito.verify(eventListenerMock, Mockito.times(1)).eventOccurred(Mockito.any(TransactionHeuristicEvent.class));
+	}
+	
+	@Test
+	public void testHeuristicTransactionEventWithHeurHazard() throws Exception {
+		coordinator = createCoordinator();
+		EventPublisher.registerEventListener(eventListenerMock);
+		coordinator.addParticipant(createHeuristicCommitParticipant(new HeurHazardException(null)));
+		coordinator.addParticipant(createHeuristicCommitParticipant(new HeurHazardException(null)));
+		coordinator.prepare();
+		coordinator.commit(false);
+		Mockito.verify(eventListenerMock, Mockito.times(1)).eventOccurred(Mockito.any(TransactionHeuristicEvent.class));
+	}
+	
+	@Test
+	public void testHeuristicTransactionEventWithHeurAborted() throws Exception {
+		coordinator = createCoordinator();
+		EventPublisher.registerEventListener(eventListenerMock);
+		coordinator.addParticipant(createHeuristicCommitParticipant(new HeurRollbackException(null)));
+		coordinator.addParticipant(createHeuristicCommitParticipant(new HeurRollbackException(null)));
+		coordinator.prepare();
+		coordinator.commit(false);
+		Mockito.verify(eventListenerMock, Mockito.times(1)).eventOccurred(Mockito.any(TransactionHeuristicEvent.class));
+	}
+
+	
+	@Test
+	public void testHeuristicTransactionEventWithHeurCommitted() throws Exception {
+		coordinator = createCoordinator();
+		EventPublisher.registerEventListener(eventListenerMock);
+		coordinator.addParticipant(createHeuristicRollbackParticipant(new HeurCommitException(null)));
+		coordinator.addParticipant(createHeuristicRollbackParticipant(new HeurCommitException(null)));
+		coordinator.prepare();
+		coordinator.rollback();
+		Mockito.verify(eventListenerMock, Mockito.times(1)).eventOccurred(Mockito.any(TransactionHeuristicEvent.class));
+	}
+	
+	private Participant createHeuristicCommitParticipant(
+			Exception heurException) throws Exception {
+		Participant ret = Mockito.mock(Participant.class);
+		Mockito.when(ret.commit(false)).thenThrow(heurException);
+		return ret;
+	}
+	
+	private Participant createHeuristicRollbackParticipant(
+			Exception heurException) throws Exception {
+		Participant ret = Mockito.mock(Participant.class);
+		Mockito.when(ret.rollback()).thenThrow(heurException);
+		return ret;
 	}
 	
 }
