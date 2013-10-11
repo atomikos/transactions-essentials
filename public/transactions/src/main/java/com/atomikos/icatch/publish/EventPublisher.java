@@ -2,6 +2,7 @@ package com.atomikos.icatch.publish;
 
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.ServiceLoader;
 import java.util.Set;
 
 import com.atomikos.icatch.event.EventListener;
@@ -21,8 +22,10 @@ public class EventPublisher {
 	private EventPublisher(){}
 	
 	private static void findAllEventListenersInClassPath() {
-		// TODO Auto-generated method stub
-		
+		ServiceLoader<EventListener> loader = ServiceLoader.load(EventListener.class);
+		for (EventListener l : loader) {
+			registerEventListener(l);
+		}
 	}
 
 	public static void publish(Serializable event) {
@@ -36,7 +39,7 @@ public class EventPublisher {
 			try {
 				listener.eventOccurred(event);
 			} catch (Exception e) {
-				LOGGER.logWarning("Error notifying listener", e);
+				LOGGER.logWarning("Error notifying listener " + listener, e);
 			}
 		}
 	}
