@@ -12,9 +12,11 @@ public abstract class TransactionEvent implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	public String transactionId;
+	public long eventCreationTimestamp;
 	
 	public TransactionEvent(String transactionId) {
 		this.transactionId = transactionId;
+		this.eventCreationTimestamp = System.currentTimeMillis();
 	}
 
 }
