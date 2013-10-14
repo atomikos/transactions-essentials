@@ -25,8 +25,6 @@
 
 package com.atomikos.icatch.admin.jmx;
 
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanRegistration;
@@ -71,33 +69,6 @@ public class JmxTransactionService implements JmxTransactionServiceMBean,
 
     }
 
-    private JmxTransaction createMBean ( AdminTransaction tx )
-    {
-        JmxTransaction ret = null;
-        switch ( tx.getState () ) {
-        case AdminTransaction.STATE_PREPARED:
-            ret = new JmxPreparedTransaction ( tx );
-            break;
-        case AdminTransaction.STATE_HEUR_ABORTED:
-            ret = new JmxHeuristicTransaction ( tx );
-            break;
-        case AdminTransaction.STATE_HEUR_COMMITTED:
-            ret = new JmxHeuristicTransaction ( tx );
-            break;
-        case AdminTransaction.STATE_HEUR_HAZARD:
-            ret = new JmxHeuristicTransaction ( tx );
-            break;
-        case AdminTransaction.STATE_HEUR_MIXED:
-            ret = new JmxHeuristicTransaction ( tx );
-            break;
-        default:
-            ret = new JmxDefaultTransaction ( tx );
-            break;
-        }
-
-        return ret;
-    }
-
     private synchronized void unregisterBeans ()
     {
         try {
@@ -115,30 +86,6 @@ public class JmxTransactionService implements JmxTransactionServiceMBean,
         beans = null;
     }
 
-    private AdminTransaction[] filterHeuristics ( AdminTransaction[] txs )
-    {
-    	List<AdminTransaction> ret = new ArrayList<AdminTransaction>();
-    	for ( int i = 0 ; i < txs.length ; i++ ) {
-    		AdminTransaction next = txs[i];
-    		switch ( next.getState() ) {
-    			case AdminTransaction.STATE_HEUR_ABORTED:
-    				ret.add ( next );
-    				break;
-    			case AdminTransaction.STATE_HEUR_COMMITTED:
-    				ret.add ( next );
-    				break;
-    			case AdminTransaction.STATE_HEUR_HAZARD:
-    				ret.add ( next );
-    				break;
-    			case AdminTransaction.STATE_HEUR_MIXED:
-    				ret.add ( next );
-    				break;
-    			default: break;
-    		}
-    	}
-    	return ( AdminTransaction[] ) ret.toArray ( new AdminTransaction[0] );
-    }
-
     /**
      * @see com.atomikos.icatch.admin.jmx.TransactionServiceMBean#getTransactions()
      */
@@ -153,17 +100,13 @@ public class JmxTransactionService implements JmxTransactionServiceMBean,
             throw new RuntimeException (
                     "LogControl is null: transaction service not running?" );
         AdminTransaction[] transactions = logControl.getAdminTransactions ();
-        if ( heuristicsOnly ) {
-        	transactions = filterHeuristics ( transactions );
-        }
-        beans = new ObjectName[transactions.length];
-
-        for ( int i = 0; i < transactions.length; i++ ) {
+        JmxTransactionMBean[] mBeans = JmxTransactionMBeanFactory.createMBeans(transactions, heuristicsOnly);
+        beans = new ObjectName[mBeans.length];
+        for ( int i = 0; i < mBeans.length; i++ ) {
             try {
                 beans[i] = new ObjectName ( "atomikos.transactions", "TID",
-                        transactions[i].getTid () );
-                JmxTransaction bean = createMBean ( transactions[i] );
-                server.registerMBean ( bean, beans[i] );
+                        mBeans[i].getTid () );
+                server.registerMBean ( mBeans[i], beans[i] );
             } catch ( Exception e ) {
                 throw new RuntimeException ( e.getMessage () );
             }
