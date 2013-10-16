@@ -37,7 +37,7 @@ import com.atomikos.icatch.admin.LogControl;
  * perform the JMX administration of the pending transactions.
  */
 
-class JmxLogAdministrator implements LogAdministrator
+public class JmxLogAdministrator implements LogAdministrator
 {
 
     private static final JmxLogAdministrator theInstance = new JmxLogAdministrator ();
