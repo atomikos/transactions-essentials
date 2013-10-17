@@ -29,9 +29,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.atomikos.datasource.pool.event.ConnectionPoolExhaustedEvent;
 import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.imp.thread.InterruptedExceptionHelper;
 import com.atomikos.icatch.imp.thread.TaskManager;
+import com.atomikos.icatch.publish.EventPublisher;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 import com.atomikos.timing.AlarmTimer;
@@ -147,6 +149,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 		do {
 			ret = retrieveFirstAvailableConnectionAndGrowPoolIfNecessary(hmsg);
 			if ( ret == null ) {
+				EventPublisher.publish(new ConnectionPoolExhaustedEvent(properties.getUniqueResourceName()));
 				remainingTime = waitForAtLeastOneAvailableConnection(remainingTime);
 				assertNotDestroyed();
 			}

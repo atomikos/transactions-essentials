@@ -4,7 +4,7 @@ public class ConnectionPoolExhaustedEvent extends ConnectionPoolEvent {
 
 	private static final long serialVersionUID = 1L;
 
-	protected ConnectionPoolExhaustedEvent(String uniqueResourceName) {
+	public ConnectionPoolExhaustedEvent(String uniqueResourceName) {
 		super(uniqueResourceName);
 	}
 
