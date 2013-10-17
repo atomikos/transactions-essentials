@@ -10,7 +10,4 @@ public class DateHelper {
 	public static String format(Date date) {
 		return dateFormatter.format(date);
 	}
-
-	
-	
 }
