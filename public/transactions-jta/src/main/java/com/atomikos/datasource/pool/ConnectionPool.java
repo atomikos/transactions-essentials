@@ -30,6 +30,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.atomikos.datasource.pool.event.ConnectionPoolExhaustedEvent;
+import com.atomikos.datasource.pool.event.PooledConnectionCreatedEvent;
+import com.atomikos.datasource.pool.event.PooledConnectionDestroyedEvent;
 import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.imp.thread.InterruptedExceptionHelper;
 import com.atomikos.icatch.imp.thread.TaskManager;
@@ -98,7 +100,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 		int connectionsToAdd = properties.getMinPoolSize() - totalSize();
 		for ( int i = 0 ; i < connectionsToAdd ; i++ ) {
 			try {
-				XPooledConnection xpc = connectionFactory.createPooledConnection();
+				XPooledConnection xpc = createPooledConnection();
 				connections.add ( xpc );
 				xpc.registerXPooledConnectionEventListener ( this );
 			} catch ( Exception dbDown ) {
@@ -106,6 +108,13 @@ public class ConnectionPool implements XPooledConnectionEventListener
 				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": could not establish initial connection" , dbDown );
 			}
 		}
+	}
+
+	private XPooledConnection createPooledConnection()
+			throws CreateConnectionException {
+		XPooledConnection xpc = connectionFactory.createPooledConnection();
+		EventPublisher.publish(new PooledConnectionCreatedEvent(properties.getUniqueResourceName(),xpc));
+		return xpc;
 	}
 
 	private Reapable recycleConnectionIfPossible ( HeuristicMessage hmsg ) throws Exception
@@ -202,7 +211,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 					String msg = this +  ": error creating proxy of connection " + xpc;
 					LOGGER.logWarning( msg , ex);
 					it.remove();
-					xpc.destroy();
+					destroyPooledConnection(xpc);
 				} finally {
 					logCurrentPoolSize();
 				}
@@ -212,7 +221,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 	}
 
 	private synchronized void growPool() throws CreateConnectionException {
-		XPooledConnection xpc = connectionFactory.createPooledConnection();
+		XPooledConnection xpc = createPooledConnection();
 		connections.add ( xpc );
 		xpc.registerXPooledConnectionEventListener(this);
 		logCurrentPoolSize();
@@ -234,13 +243,18 @@ public class ConnectionPool implements XPooledConnectionEventListener
 				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": connection idle for " + (now - lastRelease) + "ms");
 				if ( xpc.isAvailable() &&  ( (now - lastRelease) >= (maxIdle * 1000L) ) && ( connectionsToRemove.size() < maxConnectionsToRemove ) ) {
 					if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": connection idle for more than " + maxIdle + "s, closing it: " + xpc);
-					xpc.destroy();
+					destroyPooledConnection(xpc);
 					connectionsToRemove.add(xpc);
 				}
 			}
 		}
 		connections.removeAll(connectionsToRemove);
 		logCurrentPoolSize();
+	}
+
+	private void destroyPooledConnection(XPooledConnection xpc) {
+		xpc.destroy();
+		EventPublisher.publish(new PooledConnectionDestroyedEvent(properties.getUniqueResourceName(),xpc));
 	}
 
 	private synchronized void reapPool()
@@ -280,7 +294,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 			long now = System.currentTimeMillis();
 			if ( xpc.isAvailable() &&  ( (now - creationTime) >= (maxLifetime * 1000L) ) ) {
 				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": connection in use for more than " + maxLifetime + "s, destroying it: " + xpc );
-				xpc.destroy();
+				destroyPooledConnection(xpc);
 				it.remove();
 			}
 		}
@@ -299,7 +313,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 					" - please check your shutdown sequence to avoid heuristic termination " +
 					"of ongoing transactions!" );
 				}
-				xpc.destroy();
+				destroyPooledConnection(xpc);
 			}
 			connections = null;
 			destroyed = true;
@@ -313,7 +327,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 		for (XPooledConnection conn : connections) {
 			if (conn.isAvailable()) {
 				connectionsToRemove.add(conn);
-				conn.destroy();
+				destroyPooledConnection(conn);
 			}
 		}
 		connections.removeAll(connectionsToRemove);
