@@ -1,4 +1,4 @@
-package com.atomikos.icatch.event;
+package com.atomikos.icatch.event.transaction;
 
 
 public class TransactionAbortedEvent extends TransactionEvent {

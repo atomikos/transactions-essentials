@@ -1,4 +1,6 @@
-package com.atomikos.icatch.event;
+package com.atomikos.icatch.event.transaction;
+
+import com.atomikos.icatch.event.Event;
 
 
 /**

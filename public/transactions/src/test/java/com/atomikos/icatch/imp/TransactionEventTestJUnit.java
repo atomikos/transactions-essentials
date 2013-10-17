@@ -10,11 +10,11 @@ import com.atomikos.icatch.HeurMixedException;
 import com.atomikos.icatch.HeurRollbackException;
 import com.atomikos.icatch.Participant;
 import com.atomikos.icatch.event.EventListener;
-import com.atomikos.icatch.event.TransactionAbortedEvent;
-import com.atomikos.icatch.event.TransactionCommittedEvent;
-import com.atomikos.icatch.event.TransactionCreatedEvent;
-import com.atomikos.icatch.event.TransactionHeuristicEvent;
-import com.atomikos.icatch.event.TransactionReadOnlyEvent;
+import com.atomikos.icatch.event.transaction.TransactionAbortedEvent;
+import com.atomikos.icatch.event.transaction.TransactionCommittedEvent;
+import com.atomikos.icatch.event.transaction.TransactionCreatedEvent;
+import com.atomikos.icatch.event.transaction.TransactionHeuristicEvent;
+import com.atomikos.icatch.event.transaction.TransactionReadOnlyEvent;
 import com.atomikos.icatch.publish.EventPublisher;
 
 public class TransactionEventTestJUnit {

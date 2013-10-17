@@ -6,7 +6,7 @@ import org.mockito.Mockito;
 
 import com.atomikos.icatch.event.Event;
 import com.atomikos.icatch.event.EventListener;
-import com.atomikos.icatch.event.TransactionCommittedEvent;
+import com.atomikos.icatch.event.transaction.TransactionCommittedEvent;
 
 public class EventPublisherTestJUnit {
 	
