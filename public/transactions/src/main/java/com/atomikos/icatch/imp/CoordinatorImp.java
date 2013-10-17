@@ -52,6 +52,7 @@ import com.atomikos.icatch.StringHeuristicMessage;
 import com.atomikos.icatch.Synchronization;
 import com.atomikos.icatch.SysException;
 import com.atomikos.icatch.TxState;
+import com.atomikos.icatch.event.Event;
 import com.atomikos.icatch.event.TransactionAbortedEvent;
 import com.atomikos.icatch.event.TransactionCommittedEvent;
 import com.atomikos.icatch.event.TransactionCreatedEvent;
@@ -1031,7 +1032,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 		}
 	}
 
-	private void publishDomainEvent(Serializable event) {
+	private void publishDomainEvent(Event event) {
 		EventPublisher.publish(event);
 	}
 

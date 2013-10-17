@@ -1,21 +1,21 @@
 package com.atomikos.icatch.publish;
 
-import java.io.Serializable;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import com.atomikos.icatch.event.Event;
 import com.atomikos.icatch.event.EventListener;
+import com.atomikos.icatch.event.TransactionCommittedEvent;
 
 public class EventPublisherTestJUnit {
 	
 	private EventListener mock;
-	private Serializable event;
+	private Event event;
 	
 	@Before
 	public void setUp() throws Exception {
-		event = new Integer(0);
+		event = new TransactionCommittedEvent("id");
 		mock = Mockito.mock(EventListener.class);
 		EventPublisher.registerEventListener(mock);
 	}
@@ -28,13 +28,13 @@ public class EventPublisherTestJUnit {
 	@Test
 	public void testPublishNullEventDoesNotNotifyListeners() {
 		EventPublisher.publish(null);
-		Mockito.verify(mock,Mockito.times(0)).eventOccurred((Serializable) Mockito.any());
+		Mockito.verify(mock,Mockito.times(0)).eventOccurred((Event) Mockito.any());
 	}
 	
 	@Test
 	public void testPublishNotifiesListener() {
 		EventPublisher.publish(event);
-		Mockito.verify(mock,Mockito.times(1)).eventOccurred((Serializable) Mockito.any());
+		Mockito.verify(mock,Mockito.times(1)).eventOccurred((Event) Mockito.any());
 	}
 	
 	

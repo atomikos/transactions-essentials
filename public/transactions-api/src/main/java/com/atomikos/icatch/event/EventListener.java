@@ -1,6 +1,5 @@
 package com.atomikos.icatch.event;
 
-import java.io.Serializable;
 
 /**
  * Observer interface for transaction-related domain events. 
@@ -11,6 +10,6 @@ import java.io.Serializable;
  */
 public interface EventListener {
 
-	void eventOccurred(Serializable event);
+	void eventOccurred(Event event);
 	
 }

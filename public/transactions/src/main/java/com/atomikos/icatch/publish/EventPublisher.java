@@ -1,10 +1,10 @@
 package com.atomikos.icatch.publish;
 
-import java.io.Serializable;
 import java.util.HashSet;
 import java.util.ServiceLoader;
 import java.util.Set;
 
+import com.atomikos.icatch.event.Event;
 import com.atomikos.icatch.event.EventListener;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
@@ -28,13 +28,13 @@ public class EventPublisher {
 		}
 	}
 
-	public static void publish(Serializable event) {
+	public static void publish(Event event) {
 		if (event != null) {
 			notifyAllListeners(event);
 		}
 	}
 
-	private static void notifyAllListeners(Serializable event) {
+	private static void notifyAllListeners(Event event) {
 		for(EventListener listener : listeners) {				
 			try {
 				listener.eventOccurred(event);
