@@ -32,6 +32,7 @@ import java.util.List;
 import com.atomikos.datasource.pool.event.ConnectionPoolExhaustedEvent;
 import com.atomikos.datasource.pool.event.PooledConnectionCreatedEvent;
 import com.atomikos.datasource.pool.event.PooledConnectionDestroyedEvent;
+import com.atomikos.datasource.pool.event.PooledConnectionReapedEvent;
 import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.imp.thread.InterruptedExceptionHelper;
 import com.atomikos.icatch.imp.thread.TaskManager;
@@ -257,7 +258,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 		EventPublisher.publish(new PooledConnectionDestroyedEvent(properties.getUniqueResourceName(),xpc));
 	}
 
-	private synchronized void reapPool()
+	public synchronized void reapPool()
 	{
 		long maxInUseTime = properties.getReapTimeout();
 		if ( connections == null || maxInUseTime <= 0 ) return;
@@ -275,6 +276,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": connection in use for more than " + maxInUseTime + "s, reaping it: " + xpc );
 				xpc.reap();
 				it.remove();
+				EventPublisher.publish(new PooledConnectionReapedEvent(properties.getUniqueResourceName(),xpc));
 			}
 		}
 		logCurrentPoolSize();
