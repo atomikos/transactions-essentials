@@ -275,7 +275,6 @@ public class ConnectionPool implements XPooledConnectionEventListener
 			if ( inUse && ( ( now - maxInUseTime * 1000 ) > lastTimeReleased ) ) {
 				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": connection in use for more than " + maxInUseTime + "s, reaping it: " + xpc );
 				xpc.reap();
-				it.remove();
 				EventPublisher.publish(new PooledConnectionReapedEvent(properties.getUniqueResourceName(),xpc));
 			}
 		}
