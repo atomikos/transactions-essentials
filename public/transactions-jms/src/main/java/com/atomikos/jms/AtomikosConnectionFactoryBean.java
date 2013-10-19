@@ -544,7 +544,8 @@ Referenceable, Serializable {
 	/**
 	 * Sets whether or not local transactions are desired. With local transactions,
 	 * no XA enlist will be done - rather, the application should perform session-level
-	 * JMS commit or rollback instead. Note that this feature also requires support from
+	 * JMS commit or rollback, or use explicit acknowledgement modes. 
+	 * Note that this feature also requires support from
 	 * your JMS vendor. Optional, defaults to false. 
 	 * 
 	 * @param mode

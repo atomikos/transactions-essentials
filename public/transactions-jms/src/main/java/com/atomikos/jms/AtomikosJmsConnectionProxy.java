@@ -158,7 +158,7 @@ implements SessionHandleStateChangeListener
 			else if ( CREATE_SESSION_METHOD.equals ( methodName ) ) {
 				Boolean transactedFlag = ( Boolean ) args[0];
 				Session session = null;
-				if ( transactedFlag.booleanValue() && !props.getLocalTransactionMode() ) {
+				if ( !props.getLocalTransactionMode() ) {
 					session = recycleSession();
 					if (session == null) {
 						if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": creating XA-capable session..." );
@@ -174,15 +174,11 @@ implements SessionHandleStateChangeListener
 						addSession ( session );
 					}
 				} else {
-					if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": creating NON-XA session..." );
 					CompositeTransaction ct = null;
 					CompositeTransactionManager ctm = Configuration.getCompositeTransactionManager();
 					if ( ctm != null ) ct = ctm.getCompositeTransaction();
 					if ( ct != null && ct.getProperty ( TransactionManagerImp.JTA_PROPERTY_NAME ) != null ) {
-						if ( transactedFlag.booleanValue() ) 
-							LOGGER.logInfo ( this + ": localTransactionMode is enabled on the connection factory - rollback/commit will NOT be part of the global JTA transaction!" );
-						else 
-							LOGGER.logInfo ( this + ": you are creating a JMS session in non-transacted mode - the resulting JMS work will NOT be part of the JTA transaction!" );
+						if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": creating NON-XA session - the resulting JMS work will NOT be part of the JTA transaction!" );
 					}
 					Integer ackMode = ( Integer ) args[1];
 					Session wrapped = null;
