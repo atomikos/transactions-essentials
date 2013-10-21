@@ -31,6 +31,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ServiceLoader;
 import java.util.Vector;
 
 import com.atomikos.datasource.RecoverableResource;
@@ -117,6 +118,7 @@ public final class Configuration
             TransactionService service )
     {
         service_ = service;
+        addAllTSListenerServicesFromClasspath();
         Iterator it = tsListenersList_.iterator ();
         while ( it.hasNext () && service != null ) {
             TSListener l = (TSListener) it.next ();
@@ -124,7 +126,14 @@ public final class Configuration
         }
     }
 
-    /**
+    private static void addAllTSListenerServicesFromClasspath() {
+		ServiceLoader<TSListener> loader = ServiceLoader.load(TSListener.class);
+		for (TSListener l : loader ) {
+			addTSListener(l);
+		}
+	}
+
+	/**
      * Adds a shutdown hook to the configuration.
      * Shutdown hooks are managed here, since regular shutdown
      * of the transaction core should remove hooks
