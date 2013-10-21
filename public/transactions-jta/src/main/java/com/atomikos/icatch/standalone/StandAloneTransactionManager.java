@@ -104,15 +104,6 @@ class StandAloneTransactionManager extends BaseTransactionManager
         super.init ( service_ , properties );
     }
 
-    /**
-     * @see BaseTransactionManager
-     */
-
-    public void shutdown ( boolean force ) throws SysException,
-            IllegalStateException
-    {
-        service_.shutdown ( force );
-    }
 
     public void addExtent ( Extent extent ) throws SysException
     {
