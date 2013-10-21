@@ -38,7 +38,6 @@ import java.util.Properties;
 import java.util.Stack;
 
 import javax.naming.Context;
-import javax.transaction.UserTransaction;
 
 import com.atomikos.icatch.ExportingTransactionManager;
 import com.atomikos.icatch.ImportingTransactionManager;
@@ -418,21 +417,7 @@ class UserTransactionServiceImp extends AbstractJtaUserTransactionService
         return new TSMetaDataImp ( JTA.version, VERSION, PRODUCT_NAME, false, false );
     }
 
-    /**
-     * @see UserTransactionService
-     */
-
-    public UserTransaction getUserTransaction ()
-    {
-        UserTransaction ret = null;
-        ret = UserTransactionServerImp.getSingleton ().getUserTransaction ();
-        if ( ret == null ) {
-            // not exported
-            ret = new J2eeUserTransaction ();
-        }
-
-        return ret;
-    }
+ 
 
     public static Properties getDefaultProperties ()
     {
