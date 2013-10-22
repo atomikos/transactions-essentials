@@ -244,9 +244,9 @@ public class TransactionServiceImp implements TransactionService,
             TSListener l = (TSListener) enumm.nextElement ();
             try {
 	            if ( init ) {
-	                l.init ( before , initProperties_ );
+	                if (before) l.beforeInit ( initProperties_ );
 	            } else {
-	                l.shutdown ( before );
+	                if (!before) l.afterShutdown();
 	            }
             }
             catch ( Exception e ) {
@@ -620,9 +620,6 @@ public class TransactionServiceImp implements TransactionService,
 
     		if ( ! tsListeners_.contains ( listener ) ) {
     			tsListeners_.addElement ( listener );
-    			if ( initialized_ ) {
-    				listener.init ( false , initProperties_ );
-    			}
     			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug (  "Added TSListener: " + listener );
     		}
 

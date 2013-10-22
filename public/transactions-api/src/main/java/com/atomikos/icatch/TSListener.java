@@ -36,21 +36,14 @@ import java.util.Properties;
 public interface TSListener
 {
      /**
-      * Called before and after initialization.
-      * @param before True indicates that  initialization is about to start.
-      * False indicates that initialization has finished. This means that 
-      * recovery has been done and the transaction service is now 
-      * ready to start new transactions.
-      * @param properties The initialization properties.
+      * Called before initialization of the transaction core.
       */
       
-    public void init ( boolean before , Properties properties );
+    public void beforeInit ( Properties properties );
     
      /** 
-      * Called before and after shutdown.
-      * @param before True if shutdown is about to start.
-      * False if shutdown has finished.
+      * Called after shutdown of the transaction core.
       */
       
-    public void shutdown ( boolean before ); 
+    public void afterShutdown(); 
 }
