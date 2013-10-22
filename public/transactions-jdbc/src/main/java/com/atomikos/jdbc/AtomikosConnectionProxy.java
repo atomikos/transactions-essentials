@@ -199,7 +199,7 @@ class AtomikosConnectionProxy extends AbstractConnectionProxy
 	}
 
 	private CompositeTransactionManager getCompositeTransactionManager() {
-		CompositeTransactionManager ret = Configuration.getCompositeTransactionManager();
+		CompositeTransactionManager ret = Configuration.instance().getCompositeTransactionManager();
 		if ( ret == null ) LOGGER.logWarning ( this + ": WARNING: transaction manager not running?" );
 		return ret;
 	}

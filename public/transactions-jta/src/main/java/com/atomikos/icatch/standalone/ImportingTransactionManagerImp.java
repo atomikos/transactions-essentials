@@ -60,7 +60,7 @@ class ImportingTransactionManagerImp implements ImportingTransactionManager
         CompositeTransaction ret = ts_.recreateCompositeTransaction (
                 propagation, orphancheck, heur_commit );
         // CompositeTransactionManager ctm =
-        // Configuration.getCompositeTransactionManager();
+        // Configuration.instance().getCompositeTransactionManager();
         // ctm.resume ( ret );
         return ret;
     }

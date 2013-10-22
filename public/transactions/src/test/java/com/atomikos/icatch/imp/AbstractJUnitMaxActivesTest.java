@@ -42,7 +42,7 @@ public abstract class AbstractJUnitMaxActivesTest extends TestCase
     throws Exception
     {
         
-        CompositeTransactionManager ctm = Configuration.getCompositeTransactionManager();
+        CompositeTransactionManager ctm = Configuration.instance().getCompositeTransactionManager();
         CompositeTransaction ct1 = ctm.createCompositeTransaction( 1000 );
         
         //new tx should fail

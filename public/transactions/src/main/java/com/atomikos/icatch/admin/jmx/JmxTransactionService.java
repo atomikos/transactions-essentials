@@ -126,7 +126,7 @@ public class JmxTransactionService implements JmxTransactionServiceMBean,
         this.server = server;
 
         JmxLogAdministrator admin = JmxLogAdministrator.getInstance();
-        Configuration.addLogAdministrator ( admin );
+        Configuration.instance().addLogAdministrator ( admin );
 
         if ( name == null )
             name = new ObjectName ( "atomikos", "name", "TransactionService" );

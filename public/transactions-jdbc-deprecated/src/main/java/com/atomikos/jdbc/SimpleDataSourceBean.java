@@ -201,12 +201,12 @@ public class SimpleDataSourceBean implements HeuristicDataSource,
 
         // MOVED TO JTADATASOURCEIMP
         // if ( ! validation )
-        // Configuration.addResource ( ds_.getTransactionalResource() );
+        // Configuration.instance().addResource ( ds_.getTransactionalResource() );
 
         // the application does not know the Jta datasource and hence can not
         // shut it down. therefore, add a shutdown hook to do this job
         DataSourceShutdownHook hook = new DataSourceShutdownHook ( ds_ );
-        Configuration.addShutdownHook ( hook );
+        Configuration.instance().addShutdownHook ( hook );
         
         
         StringBuffer sb = new StringBuffer();

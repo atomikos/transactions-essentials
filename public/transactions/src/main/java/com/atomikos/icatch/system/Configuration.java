@@ -56,40 +56,41 @@ import com.atomikos.logging.LoggerFactory;
 public final class Configuration
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(Configuration.class);
+	
+	private static final Configuration SINGLETON = new Configuration();
 
-
-    private static CompositeTransactionManager ctxmgr_ = null;
+    private CompositeTransactionManager ctxmgr_ = null;
     // the tm for the virtual machine instance
 
-    private static ImportingTransactionManager imptxmgr_ = null;
-    private static ExportingTransactionManager exptxmgr_ = null;
+    private ImportingTransactionManager imptxmgr_ = null;
+    private ExportingTransactionManager exptxmgr_ = null;
 
-    private static Hashtable resources_ = new Hashtable ();
+    private Hashtable resources_ = new Hashtable ();
     // filled on startup, contains all resources managed by the
     // transaction manager.
 
-    private static Vector resourceList_ = new Vector ();
+    private Vector resourceList_ = new Vector ();
     // keep resources in a list, to enable ordered search of XAResource
     // this way, an AcceptAllXATransactionalResource can be added at the end
 
-    private static Vector logAdministrators_ = new Vector ();
+    private Vector logAdministrators_ = new Vector ();
     // the registered log administrators
 
-    private static LogControl logControl_;
+    private LogControl logControl_;
     // the log control for administrators
 
-    private static RecoveryService recoveryService_;
+    private RecoveryService recoveryService_;
     // needed for addResource to do recovery
 
-    private static TransactionService service_;
+    private TransactionService service_;
     // the transaction service for this VM.
 
-    private static Vector tsListenersList_ = new Vector ();
+    private Vector tsListenersList_ = new Vector ();
 
-    private static List shutdownHooks_ = new ArrayList();
+    private List shutdownHooks_ = new ArrayList();
 
 
-	private static void purgeResources ()
+	private void purgeResources ()
     {
         Enumeration enumm = getResources ();
         while ( enumm.hasMoreElements () ) {
@@ -106,6 +107,10 @@ public final class Configuration
     private Configuration ()
     {
     }
+    
+    public static Configuration instance() {
+    	return SINGLETON;
+    }
 
     /**
      * Installs the transaction service in use.
@@ -114,7 +119,7 @@ public final class Configuration
      *            The service.
      */
 
-    public static synchronized void installTransactionService (
+    public synchronized void installTransactionService (
             TransactionService service )
     {
         service_ = service;
@@ -126,7 +131,7 @@ public final class Configuration
         }
     }
 
-    private static void addAllTSListenerServicesFromClasspath() {
+    private void addAllTSListenerServicesFromClasspath() {
 		ServiceLoader<TSListener> loader = ServiceLoader.load(TSListener.class);
 		for (TSListener l : loader ) {
 			addTSListener(l);
@@ -141,7 +146,7 @@ public final class Configuration
      *
      * @param hook
      */
-    public static synchronized void addShutdownHook ( Thread hook )
+    public synchronized void addShutdownHook ( Thread hook )
     {
     	if ( shutdownHooks_.contains ( hook ) ) return;
 
@@ -160,7 +165,7 @@ public final class Configuration
      * This method should be called on shutdown of the core.
      */
 
-    public static synchronized void removeShutdownHooks()
+    public synchronized void removeShutdownHooks()
     {
     	Iterator it = shutdownHooks_.iterator();
 
@@ -192,7 +197,7 @@ public final class Configuration
      * @return TransactionService The transaction service.
      */
 
-    public static TransactionService getTransactionService ()
+    public TransactionService getTransactionService ()
     {
         return service_;
     }
@@ -203,7 +208,7 @@ public final class Configuration
      * @param l
      *            The listener.
      */
-    public synchronized static void addTSListener ( TSListener l )
+    public synchronized void addTSListener ( TSListener l )
     {
 
         if ( service_ != null ) {
@@ -218,7 +223,7 @@ public final class Configuration
      * @param l
      *            The listener.
      */
-    public synchronized static void removeTSListener ( TSListener l )
+    public synchronized void removeTSListener ( TSListener l )
     {
         if ( service_ != null ) {
             service_.removeTSListener ( l );
@@ -233,7 +238,7 @@ public final class Configuration
      *            The instance to install.
      */
 
-    public static synchronized void installCompositeTransactionManager (
+    public synchronized void installCompositeTransactionManager (
             CompositeTransactionManager compositeTransactionManager )
     {
 
@@ -247,7 +252,7 @@ public final class Configuration
      *            The recovery service.
      */
 
-    public static synchronized void installRecoveryService (
+    public synchronized void installRecoveryService (
             RecoveryService service )
     {
         recoveryService_ = service;
@@ -270,7 +275,7 @@ public final class Configuration
      * @param control
      */
 
-    public static synchronized void installLogControl ( LogControl control )
+    public synchronized void installLogControl ( LogControl control )
     {
 
         logControl_ = control;
@@ -290,7 +295,7 @@ public final class Configuration
      *            The instance to install.
      */
 
-    public static synchronized void installImportingTransactionManager (
+    public synchronized void installImportingTransactionManager (
             ImportingTransactionManager importingTransactionManager )
     {
 
@@ -304,7 +309,7 @@ public final class Configuration
      *            The instance to install.
      */
 
-    public static synchronized void installExportingTransactionManager (
+    public synchronized void installExportingTransactionManager (
             ExportingTransactionManager exportingTransactionManager )
     {
 
@@ -317,7 +322,7 @@ public final class Configuration
      * @return CompositeTransactionManager The instance, or null if none.
      */
 
-    public static CompositeTransactionManager getCompositeTransactionManager ()
+    public CompositeTransactionManager getCompositeTransactionManager ()
     {
         return ctxmgr_;
     }
@@ -328,7 +333,7 @@ public final class Configuration
      * @return ImportingTransactionManager The instance, or null if none.
      */
 
-    public static ImportingTransactionManager getImportingTransactionManager ()
+    public ImportingTransactionManager getImportingTransactionManager ()
     {
         return imptxmgr_;
     }
@@ -339,7 +344,7 @@ public final class Configuration
      * @return ExportingTransactionManager The instance, or null if none.
      */
 
-    public static ExportingTransactionManager getExportingTransactionManager ()
+    public ExportingTransactionManager getExportingTransactionManager ()
     {
         return exptxmgr_;
     }
@@ -360,7 +365,7 @@ public final class Configuration
      *                If the name of the resource is already in use.
      */
 
-    public static synchronized void addResource ( RecoverableResource resource )
+    public synchronized void addResource ( RecoverableResource resource )
             throws IllegalStateException
     {
         // ADDED with new recovery: temporary resources:
@@ -393,7 +398,7 @@ public final class Configuration
      *
      * @param admin
      */
-    public static synchronized void addLogAdministrator ( LogAdministrator admin )
+    public synchronized void addLogAdministrator ( LogAdministrator admin )
     {
     	if ( logAdministrators_.contains ( admin ) ) return;
 
@@ -408,7 +413,7 @@ public final class Configuration
      *
      * @param admin
      */
-    public static void removeLogAdministrator ( LogAdministrator admin )
+    public void removeLogAdministrator ( LogAdministrator admin )
     {
         logAdministrators_.remove ( admin );
         if ( logControl_ != null )
@@ -420,7 +425,7 @@ public final class Configuration
      *
      * @return Enumeration The logadministrators.
      */
-    public static Enumeration getLogAdministrators ()
+    public Enumeration getLogAdministrators ()
     {
         Vector v = (Vector) logAdministrators_.clone ();
         return v.elements ();
@@ -434,7 +439,7 @@ public final class Configuration
      * @return RecoverableResource The removed object.
      */
 
-    public static RecoverableResource removeResource ( String name )
+    public RecoverableResource removeResource ( String name )
     {
         RecoverableResource ret = null;
         if ( name != null ) {
@@ -454,7 +459,7 @@ public final class Configuration
      *            The name to find.
      */
 
-    public static RecoverableResource getResource ( String name )
+    public RecoverableResource getResource ( String name )
     {
         RecoverableResource res = null;
         if ( name != null ) res = (RecoverableResource) resources_.get ( name );
@@ -467,7 +472,7 @@ public final class Configuration
      * @return Enumeration The resources.
      */
 
-    public static Enumeration getResources ()
+    public Enumeration getResources ()
     {
         // clone to avoid concurrency problems with
         // add/removeResource (new recovery makes this possible)

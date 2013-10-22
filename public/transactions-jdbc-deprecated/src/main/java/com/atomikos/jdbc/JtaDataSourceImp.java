@@ -202,7 +202,7 @@ public class JtaDataSourceImp implements HeuristicDataSource,
         if ( !allowDuplicateNames )
             addToMap ( resource_.getName (), this );
         if ( registerWithTM ) {
-            Configuration.addResource ( resource_ );
+            Configuration.instance().addResource ( resource_ );
         }
     }
 
@@ -285,7 +285,7 @@ public class JtaDataSourceImp implements HeuristicDataSource,
         pool_.cleanup ();
         removeFromMap ( resource_.getName () );
         if ( autoRegister_ )
-            Configuration.removeResource ( resource_.getName () );
+            Configuration.instance().removeResource ( resource_.getName () );
     }
 
     /**

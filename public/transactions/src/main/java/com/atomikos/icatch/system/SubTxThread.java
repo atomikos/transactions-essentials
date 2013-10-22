@@ -71,14 +71,14 @@ public class SubTxThread extends Thread
     public SubTxThread ( Waiter w , SubTxCode code , HeuristicMessage tag )
             throws SysException
     {
-        parent = Configuration.getCompositeTransactionManager ()
+        parent = Configuration.instance().getCompositeTransactionManager ()
                 .getCompositeTransaction ();
         // if (ct.getSerial()) throw new SystemException("Tx in serial mode;
         // multiple threads not allowed");
 
         msg = tag;
         try {
-            propagation = Configuration.getExportingTransactionManager ()
+            propagation = Configuration.instance().getExportingTransactionManager ()
                     .getPropagation ();
         } catch ( RollbackException e ) {
             throw new SysException ( "Transaction already rolled back" );
@@ -99,7 +99,7 @@ public class SubTxThread extends Thread
     {
         CompositeTransaction ct = null;
         try {
-            ct = Configuration.getImportingTransactionManager ()
+            ct = Configuration.instance().getImportingTransactionManager ()
                     .importTransaction ( propagation, true, false );
             ct.getTransactionControl ().setTag ( msg );
             if ( propagation.isSerial () )

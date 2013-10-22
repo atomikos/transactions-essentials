@@ -434,7 +434,7 @@ Referenceable, Serializable {
 			
 		JmsTransactionalResource tr = new JmsTransactionalResource(getUniqueResourceName() , xaConnectionFactory);
 		com.atomikos.datasource.pool.ConnectionFactory cf = new com.atomikos.jms.AtomikosJmsXAConnectionFactory(xaConnectionFactory, tr, this);
-		Configuration.addResource ( tr );
+		Configuration.instance().addResource ( tr );
 		return cf;
 	}
 	
@@ -579,9 +579,9 @@ Referenceable, Serializable {
 			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": error removing from JNDI" , e );
 		}
 		
-		RecoverableResource res = Configuration.getResource ( getUniqueResourceName() );
+		RecoverableResource res = Configuration.instance().getResource ( getUniqueResourceName() );
 		if ( res != null ) {
-			Configuration.removeResource ( getUniqueResourceName() );
+			Configuration.instance().removeResource ( getUniqueResourceName() );
 			//fix for case 26005: close resource!
 			res.close();
 		}

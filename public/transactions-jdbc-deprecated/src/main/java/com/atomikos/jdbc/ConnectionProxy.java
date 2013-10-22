@@ -134,7 +134,7 @@ class ConnectionProxy implements InvocationHandler
         XAResourceTransaction restx = null;
         CompositeTransaction ct = null;
         CompositeTransactionManager ctm = null;
-        ctm = Configuration.getCompositeTransactionManager ();
+        ctm = Configuration.instance().getCompositeTransactionManager ();
         boolean inTx = false;
         // false if resume should be called (first invocation in tx)
 

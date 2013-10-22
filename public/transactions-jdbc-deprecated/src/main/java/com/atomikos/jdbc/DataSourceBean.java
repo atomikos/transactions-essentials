@@ -143,7 +143,7 @@ public class DataSourceBean implements HeuristicDataSource, Serializable,
         // the application does not know the Jta datasource and hence can not
         // shut it down. therefore, add a shutdown hook to do this job
         DataSourceShutdownHook hook = new DataSourceShutdownHook ( ds_ );
-        Configuration.addShutdownHook ( hook );
+        Configuration.instance().addShutdownHook ( hook );
     }
 
     private synchronized void checkSetup () throws SQLException

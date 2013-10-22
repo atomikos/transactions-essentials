@@ -550,7 +550,7 @@ public class TransactionServiceImp implements TransactionService,
                     }
                 }
 
-                Enumeration reslist = Configuration.getResources ();
+                Enumeration reslist = Configuration.instance().getResources ();
                 while ( reslist.hasMoreElements () ) {
                     RecoverableResource res = (RecoverableResource) reslist
                             .nextElement ();
@@ -576,9 +576,9 @@ public class TransactionServiceImp implements TransactionService,
     }
 
 	private void prepareConfigurationForPresumedAbortIfNecessary() {
-		if ( Configuration.getTransactionService () == null ) {
-            Configuration.installTransactionService ( this );
-            Configuration.installRecoveryService ( this );
+		if ( Configuration.instance().getTransactionService () == null ) {
+            Configuration.instance().installTransactionService ( this );
+            Configuration.instance().installRecoveryService ( this );
 
         }
 	}

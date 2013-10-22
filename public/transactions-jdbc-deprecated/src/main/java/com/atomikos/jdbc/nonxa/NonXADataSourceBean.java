@@ -120,7 +120,7 @@ public class NonXADataSourceBean implements HeuristicDataSource, Referenceable,
         // the application does not know the datasource and hence can not
         // shut it down. therefore, add a shutdown hook to do this job
         DataSourceShutdownHook hook = new DataSourceShutdownHook ( delegate );
-        Configuration.addShutdownHook ( hook );
+        Configuration.instance().addShutdownHook ( hook );
         
         StringBuffer sb = new StringBuffer();
         sb.append("NonXADataSourceBean configured with [");

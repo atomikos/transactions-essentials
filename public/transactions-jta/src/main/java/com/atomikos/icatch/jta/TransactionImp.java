@@ -343,7 +343,7 @@ class TransactionImp implements Transaction
 		TransactionalResource ret = null;
 		XATransactionalResource xatxres;
 		
-		Enumeration enumm = Configuration.getResources ();
+		Enumeration enumm = Configuration.instance().getResources ();
         while ( enumm.hasMoreElements () ) {
             RecoverableResource rres = (RecoverableResource) enumm.nextElement ();
             if ( rres instanceof XATransactionalResource ) {
@@ -360,12 +360,12 @@ class TransactionImp implements Transaction
             	
             	ret = new TemporaryXATransactionalResource(xares);
             	// cf case 61740: check for concurrent additions before this synch block was entered
-            	if ( Configuration.getResource ( ret.getName() ) == null ) {
+            	if ( Configuration.instance().getResource ( ret.getName() ) == null ) {
             		if(LOGGER.isDebugEnabled()){
             			LOGGER.logDebug("constructing new temporary resource "
         						+ "for unknown XAResource: " + xares);
             		}
-            		Configuration.addResource ( ret );
+            		Configuration.instance().addResource ( ret );
             	}
 			}
 

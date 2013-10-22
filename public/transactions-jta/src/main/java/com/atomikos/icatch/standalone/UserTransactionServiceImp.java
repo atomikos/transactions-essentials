@@ -255,16 +255,16 @@ class UserTransactionServiceImp extends AbstractJtaUserTransactionService
             tm = createDefault ( p );
             tm.init ( info.getProperties() );
             // install composite manager
-            Configuration.installCompositeTransactionManager ( tm );
-            Configuration.installRecoveryService ( tm.getTransactionService () );
-            Configuration
+            Configuration.instance().installCompositeTransactionManager ( tm );
+            Configuration.instance().installRecoveryService ( tm.getTransactionService () );
+            Configuration.instance()
                     .installImportingTransactionManager ( new ImportingTransactionManagerImp (
                             tm.getTransactionService () ) );
-            Configuration
+            Configuration.instance()
                     .installExportingTransactionManager ( new ExportingTransactionManagerImp () );
-            Configuration.installLogControl ( tm.getTransactionService ()
+            Configuration.instance().installLogControl ( tm.getTransactionService ()
                     .getLogControl () );
-            Configuration.installTransactionService ( tm
+            Configuration.instance().installTransactionService ( tm
                     .getTransactionService () );
 
             String autoMode = getTrimmedProperty (
@@ -327,7 +327,7 @@ class UserTransactionServiceImp extends AbstractJtaUserTransactionService
 
     public void shutdown ( boolean force ) throws IllegalStateException
     {
-        BaseTransactionManager tm = (BaseTransactionManager) Configuration
+        BaseTransactionManager tm = (BaseTransactionManager) Configuration.instance()
                 .getCompositeTransactionManager ();
         if ( tm == null )
             return;

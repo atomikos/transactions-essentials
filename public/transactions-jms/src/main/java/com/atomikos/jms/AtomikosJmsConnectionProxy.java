@@ -175,7 +175,7 @@ implements SessionHandleStateChangeListener
 					}
 				} else {
 					CompositeTransaction ct = null;
-					CompositeTransactionManager ctm = Configuration.getCompositeTransactionManager();
+					CompositeTransactionManager ctm = Configuration.instance().getCompositeTransactionManager();
 					if ( ctm != null ) ct = ctm.getCompositeTransaction();
 					if ( ct != null && ct.getProperty ( TransactionManagerImp.JTA_PROPERTY_NAME ) != null ) {
 						if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": creating NON-XA session - the resulting JMS work will NOT be part of the JTA transaction!" );
@@ -217,7 +217,7 @@ implements SessionHandleStateChangeListener
 	}
 	
 	private synchronized Session recycleSession() {
-		CompositeTransactionManager tm = Configuration.getCompositeTransactionManager();
+		CompositeTransactionManager tm = Configuration.instance().getCompositeTransactionManager();
 		if (tm == null)
 			return null;
 		

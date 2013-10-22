@@ -72,7 +72,7 @@ public class TSInitInfoImp implements TSInitInfo
 
     public Enumeration getResources ()
     {
-        return Configuration.getResources ();
+        return Configuration.instance().getResources ();
     }
 
     /**
@@ -81,7 +81,7 @@ public class TSInitInfoImp implements TSInitInfo
 
     public void registerLogAdministrator ( LogAdministrator admin )
     {
-        Configuration.addLogAdministrator ( admin );
+        Configuration.instance().addLogAdministrator ( admin );
     }
 
     /**
@@ -90,7 +90,7 @@ public class TSInitInfoImp implements TSInitInfo
 
     public Enumeration getLogAdministrators ()
     {
-        return Configuration.getLogAdministrators ();
+        return Configuration.instance().getLogAdministrators ();
     }
 
     /**
@@ -99,7 +99,7 @@ public class TSInitInfoImp implements TSInitInfo
 
     public void registerResource ( RecoverableResource resource )
     {
-        Configuration.addResource ( resource );
+        Configuration.instance().addResource ( resource );
     }
 
     /**
