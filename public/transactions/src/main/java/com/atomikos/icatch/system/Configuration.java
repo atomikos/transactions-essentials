@@ -146,7 +146,7 @@ public final class Configuration
      *
      * @param hook
      */
-    public synchronized void addShutdownHook ( Thread hook )
+    public synchronized void registerShutdownHook ( Thread hook )
     {
     	if ( shutdownHooks_.contains ( hook ) ) return;
 
@@ -158,6 +158,10 @@ public final class Configuration
 			//ignore: this happens when the VM exits and this method
 			//is called as part of one of the shutdown hooks executing
 		}
+    }
+    
+    public static void addShutdownHook(Thread hook) {
+    	instance().registerShutdownHook(hook);
     }
 
     /**
