@@ -25,9 +25,6 @@
 
 package com.atomikos.icatch;
 
-import java.lang.reflect.Field;
-import java.util.Enumeration;
-import java.util.Vector;
 
 /**
  *
@@ -35,86 +32,85 @@ import java.util.Vector;
  * A state implementation for a distributed transaction system.
  */
 
-public class TxState implements java.io.Serializable {
-
-	static final long serialVersionUID = 648321112075712930L;
-	
-	public static final TxState ACTIVE = new TxState("ACTIVE");
-	public static final TxState MARKED_ABORT = new TxState("MARKED_ABORT");
-	public static final TxState LOCALLY_DONE = new TxState("LOCALLY_DONE");
-	public static final TxState PREPARING = new TxState("PREPARING");
-	public static final TxState IN_DOUBT = new TxState("IN_DOUBT");
-	public static final TxState ABORTING = new TxState("ABORTING");
-	public static final TxState COMMITTING = new TxState("COMMITTING");
-	public static final TxState SUSPENDED = new TxState("SUSPENDED");
-	public static final TxState HEUR_COMMITTED = new TxState("HEUR_COMMITTED");
-	public static final TxState HEUR_ABORTED = new TxState("HEUR_ABORTED");
-	public static final TxState HEUR_MIXED = new TxState("HEUR_MIXED");
-	public static final TxState HEUR_HAZARD = new TxState("HEUR_HAZARD");
-	public static final TxState TERMINATED = new TxState("TERMINATED");
-	
-	/*
-	 * Virtual "substates" of TERMINATED to return to the application if needed.
-	 */
-	public static final TxState COMMITTED = new TxState ("COMMITTED");
-	public static final TxState ABORTED = new TxState ("ABORTED");
-	
-	private static Vector<TxState> v;
-	public static Enumeration<TxState> getStates() {
-		if (v == null) {
-			 v = new Vector<TxState>();
-			Class myClass = TxState.class;
-			Field[] fields = myClass.getFields();
-			for (int i = 0; i < fields.length; i++) {
-				try {
-					v.addElement((TxState)fields[i].get(null));
-				} catch (Exception e) {
-				}
-			}// for
-
-		}
-		return v.elements();
-	}
-
-	public static TxState valueOf(String state) {
-		if(v==null){
-			getStates();
-		}
-		Enumeration<TxState> elements=v.elements();
-		while (elements.hasMoreElements()) {
-			TxState txState =  elements.nextElement();
-			if(txState.myName.equals(state)){
-				return txState;
-			}
-		}
-		
-		//not found....
-		throw new IllegalArgumentException(state);
-	}
-
-	private final String myName;
-
-	private TxState(final String s) {
-		myName = s;
-	}
-
-	public String toString() {
-		return myName;
-	}
-
-	public int hashCode() {
-		return myName.hashCode();
-	}
-
-	public boolean equals(Object obj) {
-		boolean ret = false;
-		if (super.equals(obj)) {
-			ret = true;
-		} else if (obj instanceof TxState) {
-			TxState other = (TxState) obj;
-			ret = myName.equals(other.myName);
-		}
-		return ret;
-	}
+public enum TxState {
+	ACTIVE,MARKED_ABORT,LOCALLY_DONE,PREPARING,IN_DOUBT,ABORTING,COMMITTING,SUSPENDED,HEUR_COMMITTED,HEUR_ABORTED,HEUR_MIXED,HEUR_HAZARD,TERMINATED,COMMITTED,ABORTED;
+//	
+//	public static final TxState ACTIVE = new TxState("ACTIVE");
+//	public static final TxState MARKED_ABORT = new TxState("MARKED_ABORT");
+//	public static final TxState LOCALLY_DONE = new TxState("LOCALLY_DONE");
+//	public static final TxState PREPARING = new TxState("PREPARING");
+//	public static final TxState IN_DOUBT = new TxState("IN_DOUBT");
+//	public static final TxState ABORTING = new TxState("ABORTING");
+//	public static final TxState COMMITTING = new TxState("COMMITTING");
+//	public static final TxState SUSPENDED = new TxState("SUSPENDED");
+//	public static final TxState HEUR_COMMITTED = new TxState("HEUR_COMMITTED");
+//	public static final TxState HEUR_ABORTED = new TxState("HEUR_ABORTED");
+//	public static final TxState HEUR_MIXED = new TxState("HEUR_MIXED");
+//	public static final TxState HEUR_HAZARD = new TxState("HEUR_HAZARD");
+//	public static final TxState TERMINATED = new TxState("TERMINATED");
+//	
+//	/*
+//	 * Virtual "substates" of TERMINATED to return to the application if needed.
+//	 */
+//	public static final TxState COMMITTED = new TxState ("COMMITTED");
+//	public static final TxState ABORTED = new TxState ("ABORTED");
+//	
+//	private static Vector<TxState> v;
+//	public static Enumeration<TxState> getStates() {
+//		if (v == null) {
+//			 v = new Vector<TxState>();
+//			Class myClass = TxState.class;
+//			Field[] fields = myClass.getFields();
+//			for (int i = 0; i < fields.length; i++) {
+//				try {
+//					v.addElement((TxState)fields[i].get(null));
+//				} catch (Exception e) {
+//				}
+//			}// for
+//
+//		}
+//		return v.elements();
+//	}
+//
+//	public static TxState valueOf(String state) {
+//		if(v==null){
+//			getStates();
+//		}
+//		Enumeration<TxState> elements=v.elements();
+//		while (elements.hasMoreElements()) {
+//			TxState txState =  elements.nextElement();
+//			if(txState.myName.equals(state)){
+//				return txState;
+//			}
+//		}
+//		
+//		//not found....
+//		throw new IllegalArgumentException(state);
+//	}
+//
+//	private final String myName;
+//
+//	private TxState(final String s) {
+//		myName = s;
+//	}
+//
+//	public String toString() {
+//		return myName;
+//	}
+//
+//	public int hashCode() {
+//		return myName.hashCode();
+//	}
+//
+//	public boolean equals(Object obj) {
+//		boolean ret = false;
+//		if (super.equals(obj)) {
+//			ret = true;
+//		} else if (obj instanceof TxState) {
+//			TxState other = (TxState) obj;
+//			ret = myName.equals(other.myName);
+//		}
+//		return ret;
+//	}
 
 }
