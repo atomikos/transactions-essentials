@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2013 Atomikos <info@atomikos.com>
  *
  * This code ("Atomikos TransactionsEssentials"), by itself,
  * is being distributed under the
@@ -41,14 +41,13 @@ import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 
 /**
- * Abstract TM class, to be extended for different communication layers. For
- * instance, transacted RMI could be one extension, JTS another one.
+ * Reusable (generic) composite transaction manager implementation.
  */
 
-public class BaseTransactionManager implements CompositeTransactionManager,
+public class CompositeTransactionManagerImp implements CompositeTransactionManager,
         SubTxAwareParticipant
 {
-	private static final Logger LOGGER = LoggerFactory.createLogger(BaseTransactionManager.class);
+	private static final Logger LOGGER = LoggerFactory.createLogger(CompositeTransactionManagerImp.class);
 	private static final long serialVersionUID = -552994279460833505L;
 	
 	private Map<Thread, Stack<CompositeTransaction>> threadtotxmap_ = null;
@@ -57,7 +56,7 @@ public class BaseTransactionManager implements CompositeTransactionManager,
     private boolean initialized_;
 
 
-    protected BaseTransactionManager ()
+    protected CompositeTransactionManagerImp ()
     {
         threadtotxmap_ = new HashMap<Thread, Stack<CompositeTransaction>> ();
         txtothreadmap_ = new HashMap<CompositeTransaction, Thread> ();

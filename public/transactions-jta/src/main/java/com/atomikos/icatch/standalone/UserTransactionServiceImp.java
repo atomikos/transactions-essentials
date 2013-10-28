@@ -50,7 +50,7 @@ import com.atomikos.icatch.config.UserTransactionService;
 import com.atomikos.icatch.config.imp.AbstractUserTransactionServiceFactory;
 import com.atomikos.icatch.config.imp.TSInitInfoImp;
 import com.atomikos.icatch.config.imp.TSMetaDataImp;
-import com.atomikos.icatch.imp.BaseTransactionManager;
+import com.atomikos.icatch.imp.CompositeTransactionManagerImp;
 import com.atomikos.icatch.imp.thread.TaskManager;
 import com.atomikos.icatch.jta.AbstractJtaUserTransactionService;
 import com.atomikos.icatch.jta.J2eeUserTransaction;
@@ -327,7 +327,7 @@ class UserTransactionServiceImp extends AbstractJtaUserTransactionService
 
     public void shutdown ( boolean force ) throws IllegalStateException
     {
-        BaseTransactionManager tm = (BaseTransactionManager) Configuration.instance()
+        CompositeTransactionManagerImp tm = (CompositeTransactionManagerImp) Configuration.instance()
                 .getCompositeTransactionManager ();
         if ( tm == null )
             return;

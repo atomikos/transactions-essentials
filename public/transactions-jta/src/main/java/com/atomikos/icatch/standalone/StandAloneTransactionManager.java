@@ -31,7 +31,7 @@ import com.atomikos.datasource.xa.XID;
 import com.atomikos.icatch.Extent;
 import com.atomikos.icatch.RollbackException;
 import com.atomikos.icatch.SysException;
-import com.atomikos.icatch.imp.BaseTransactionManager;
+import com.atomikos.icatch.imp.CompositeTransactionManagerImp;
 import com.atomikos.icatch.imp.TransactionServiceImp;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
@@ -44,7 +44,7 @@ import com.atomikos.util.UniqueIdMgr;
  * A standalone TM implementation. No import or export supported.
  */
 
-class StandAloneTransactionManager extends BaseTransactionManager
+class StandAloneTransactionManager extends CompositeTransactionManagerImp
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(StandAloneTransactionManager.class);
 
