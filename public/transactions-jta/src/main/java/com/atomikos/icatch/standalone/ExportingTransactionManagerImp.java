@@ -53,8 +53,8 @@ class ExportingTransactionManagerImp implements ExportingTransactionManager
     {
         PropagationImp ret = null;
 
-        CompositeTransaction ct = Configuration.instance()
-                .getCompositeTransactionManager ().getCompositeTransaction ();
+        CompositeTransaction ct = Configuration.
+                getCompositeTransactionManager ().getCompositeTransaction ();
         Stack lineage = (Stack) ct.getLineage ().clone ();
         lineage.push ( ct );
         ret = new PropagationImp ( lineage, ct.isSerial (), ct

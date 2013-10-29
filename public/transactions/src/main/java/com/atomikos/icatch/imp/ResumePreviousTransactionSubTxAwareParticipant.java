@@ -56,7 +56,7 @@ public class ResumePreviousTransactionSubTxAwareParticipant implements
     private void resume()
     {
         CompositeTransactionManager ctm = 
-            Configuration.instance().getCompositeTransactionManager();
+            Configuration.getCompositeTransactionManager();
         if ( ctm == null ) {
             LOGGER.logWarning ( "ResumePreviousTransactionSubTxAwareParticipant: no transaction manager found?" );
         } else {

@@ -187,8 +187,7 @@ class AtomikosNonXAPooledConnection extends AbstractXPooledConnection
 		boolean ret = false;
 		Reapable handle = getCurrentConnectionProxy();
 		if ( handle != null ) {
-			 CompositeTransactionManager ctm = Configuration
-             .instance().getCompositeTransactionManager ();
+			 CompositeTransactionManager ctm = Configuration.getCompositeTransactionManager ();
 			 CompositeTransaction ct = null;
 			 if ( ctm != null ) ct = ctm.getCompositeTransaction ();
 			 if ( ct != null && ct.getProperty (  TransactionManagerImp.JTA_PROPERTY_NAME ) != null ) {

@@ -152,7 +152,7 @@ class AtomikosPooledJmsConnection extends AbstractXPooledConnection implements S
 	{
 		boolean ret = false;
 		if ( currentProxy != null ) {
-			CompositeTransactionManager tm = Configuration.instance().getCompositeTransactionManager();
+			CompositeTransactionManager tm = Configuration.getCompositeTransactionManager();
 			
 			CompositeTransaction current = tm.getCompositeTransaction();
 			if ( ( current != null ) && ( current.getProperty ( TransactionManagerImp.JTA_PROPERTY_NAME) != null )) {

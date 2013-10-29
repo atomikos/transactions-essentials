@@ -52,10 +52,10 @@ public abstract class AbstractJtaUserTransactionService extends
                 AbstractUserTransactionServiceFactory.AUTOMATIC_RESOURCE_REGISTRATION_PROPERTY_NAME, info
                         .getProperties () );
         boolean autoRegister = "true".equals ( autoRegisterProperty );
-        if ( Configuration.instance().getResources ().hasMoreElements () && !autoRegister ) {
+        if ( Configuration.getResources ().hasMoreElements () && !autoRegister ) {
             AcceptAllXATransactionalResource defaultRes = new AcceptAllXATransactionalResource (
                     "com.atomikos.icatch.DefaultResource" );
-            Configuration.instance().addResource ( defaultRes );
+            Configuration.addResource ( defaultRes );
 
         }
 	}

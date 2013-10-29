@@ -195,8 +195,7 @@ implements JtaAwareNonXaConnection
 
     private void updateInTransaction () throws SQLException
     {
-        CompositeTransactionManager ctm = Configuration
-                .instance().getCompositeTransactionManager ();
+        CompositeTransactionManager ctm = Configuration.getCompositeTransactionManager ();
         if ( ctm == null )
             return;
 
@@ -284,7 +283,7 @@ implements JtaAwareNonXaConnection
 	        	return ret;
 	        }
 
-	        CompositeTransactionManager ctm = Configuration.instance().getCompositeTransactionManager ();
+	        CompositeTransactionManager ctm = Configuration.getCompositeTransactionManager ();
 	        CompositeTransaction ct = ctm.getCompositeTransaction();
 
             // if we are already in another (parent) tx then reject this,

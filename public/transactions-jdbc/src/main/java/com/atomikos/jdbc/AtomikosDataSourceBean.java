@@ -198,16 +198,16 @@ extends AbstractDataSourceBean
 			
 			JdbcTransactionalResource tr = new JdbcTransactionalResource(getUniqueResourceName() , xaDataSource);
 			com.atomikos.datasource.pool.ConnectionFactory cf = new com.atomikos.jdbc.AtomikosXAConnectionFactory(xaDataSource, tr, this);
-			Configuration.instance().addResource ( tr );
+			Configuration.addResource ( tr );
 			
 			return cf;
 	}
 	
 	protected void doClose() 
 	{
-		RecoverableResource res = Configuration.instance().getResource ( getUniqueResourceName() );
+		RecoverableResource res = Configuration.getResource ( getUniqueResourceName() );
 		if ( res != null ) {
-			Configuration.instance().removeResource ( getUniqueResourceName() );
+			Configuration.removeResource ( getUniqueResourceName() );
 			//fix for case 26005
 			res.close();
 		}

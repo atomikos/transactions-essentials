@@ -493,7 +493,7 @@ public class XAResourceTransaction implements ResourceTransaction,
      */
 	private boolean tryRecoverWithEveryResourceToEnsureOurXidIsNotEndedByPresumedAbort() {
 		boolean ret = false;		
-		Enumeration resources = Configuration.instance().getResources ();
+		Enumeration resources = Configuration.getResources ();
         while ( resources.hasMoreElements () ) {
             RecoverableResource res = (RecoverableResource) resources.nextElement ();
             if ( res.recover ( this ) ) {

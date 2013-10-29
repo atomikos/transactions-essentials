@@ -15,14 +15,14 @@ public class ConfigurationTestJUnit {
 
 	@Test
 	public void testFindAssemblerInClasspath() {
-		Assembler assembler = Configuration.instance().getAssembler();
+		Assembler assembler = Configuration.getAssembler();
 		Assert.assertNotNull(assembler);
 	}
 	
 	@Test
 	@Ignore
 	public void testAssemblerLoadsDefaultPropertiesFromClasspath() {
-		Assert.assertNotNull(Configuration.instance().getConfigProperties());
+		Assert.assertNotNull(Configuration.getConfigProperties());
 	}
 
 }

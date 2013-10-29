@@ -187,16 +187,16 @@ public abstract class AbstractUserTransactionService implements
         boolean errors = false;
 
         //remove shutdown hooks to avoid case 21519
-        Configuration.instance().removeShutdownHooks();
+        Configuration.removeShutdownHooks();
 
         // Ask the Configuration for all current resources, since
         // newly added ones are not known at init.
-        Enumeration resources = Configuration.instance().getResources ();
+        Enumeration resources = Configuration.getResources ();
         while ( resources.hasMoreElements () ) {
             RecoverableResource res = (RecoverableResource) resources
                     .nextElement ();
 
-            Configuration.instance().removeResource ( res.getName () );
+            Configuration.removeResource ( res.getName () );
             try {
                 res.close ();
             } catch ( ResourceException re ) {
@@ -223,20 +223,20 @@ public abstract class AbstractUserTransactionService implements
             }
 
         }
-        Enumeration logAdmins = Configuration.instance().getLogAdministrators ();
+        Enumeration logAdmins = Configuration.getLogAdministrators ();
         while ( logAdmins.hasMoreElements () ) {
             LogAdministrator admin = (LogAdministrator) logAdmins
                     .nextElement ();
-            Configuration.instance().removeLogAdministrator ( admin );
+            Configuration.removeLogAdministrator ( admin );
         }
 
         // remove TM handles to enable restarts
-        Configuration.instance().installCompositeTransactionManager ( null );
-        Configuration.instance().installExportingTransactionManager ( null );
-        Configuration.instance().installImportingTransactionManager ( null );
-        Configuration.instance().installRecoveryService ( null );
-        Configuration.instance().installTransactionService ( null );
-        Configuration.instance().installLogControl ( null );
+        Configuration.installCompositeTransactionManager ( null );
+        Configuration.installExportingTransactionManager ( null );
+        Configuration.installImportingTransactionManager ( null );
+        Configuration.installRecoveryService ( null );
+        Configuration.installTransactionService ( null );
+        Configuration.installLogControl ( null );
 
         if ( errors && ! force ) {
         	   //Issue 10038:
@@ -260,7 +260,7 @@ public abstract class AbstractUserTransactionService implements
         info_ = info;
 
         // NOTE: adding resources is no longer done here,
-        // since they are directly added to the Configuration.instance().
+        // since they are directly added to the Configuration.
         // Also, in 2.0 useWeakCompare has been deprecated,
         // so we don't have to check for duplicate vendor
         // additions like before.
@@ -284,7 +284,7 @@ public abstract class AbstractUserTransactionService implements
         if ( hookAsString != null ) register = "true".equals ( hookAsString.toLowerCase() );
 
         // ADDED IN 2.0 for automatic initialization: shutdown hook needed
-        if ( register ) Configuration.instance().addShutdownHook ( new ShutdownHook ( this ) );
+        if ( register ) Configuration.addShutdownHook ( new ShutdownHook ( this ) );
 
     }
 
@@ -294,7 +294,7 @@ public abstract class AbstractUserTransactionService implements
 
     public CompositeTransactionManager getCompositeTransactionManager ()
     {
-        return Configuration.instance().getCompositeTransactionManager ();
+        return Configuration.getCompositeTransactionManager ();
     }
 
 
@@ -305,7 +305,7 @@ public abstract class AbstractUserTransactionService implements
 
     public ImportingTransactionManager getImportingTransactionManager ()
     {
-        return Configuration.instance().getImportingTransactionManager ();
+        return Configuration.getImportingTransactionManager ();
     }
 
     /**
@@ -314,52 +314,52 @@ public abstract class AbstractUserTransactionService implements
 
     public ExportingTransactionManager getExportingTransactionManager ()
     {
-        return Configuration.instance().getExportingTransactionManager ();
+        return Configuration.getExportingTransactionManager ();
     }
 
     public void registerResource ( RecoverableResource res )
     {
-        Configuration.instance().addResource ( res );
+        Configuration.addResource ( res );
     }
 
     public void registerLogAdministrator ( LogAdministrator admin )
     {
-        Configuration.instance().addLogAdministrator ( admin );
+        Configuration.addLogAdministrator ( admin );
     }
 
     public Enumeration getResources ()
     {
-        return Configuration.instance().getResources ();
+        return Configuration.getResources ();
     }
 
     public Enumeration getLogAdministrators ()
     {
-        return Configuration.instance().getLogAdministrators ();
+        return Configuration.getLogAdministrators ();
     }
 
 	public void removeResource ( RecoverableResource res )
 	{
 		if ( res == null ) throw new IllegalArgumentException ( "Null not allowed" );
-		Configuration.instance().removeResource ( res.getName() );
+		Configuration.removeResource ( res.getName() );
 
 	}
 
 	public void removeLogAdministrator ( LogAdministrator admin )
 	{
 		if ( admin == null ) throw new IllegalArgumentException ( "Null not allowed" );
-		Configuration.instance().removeLogAdministrator ( admin );
+		Configuration.removeLogAdministrator ( admin );
 	}
 
 	public void registerTSListener ( TSListener listener )
 	{
 		if ( listener == null ) throw new IllegalArgumentException ( "Null not allowed");
-		Configuration.instance().addTSListener ( listener );
+		Configuration.addTSListener ( listener );
 	}
 
 	public void removeTSListener ( TSListener listener )
 	{
 		if ( listener == null ) throw new IllegalArgumentException ( "Null not allowed");
-		Configuration.instance().removeTSListener ( listener );
+		Configuration.removeTSListener ( listener );
 	}
 
 

@@ -80,7 +80,7 @@ public class SubTransactionCoordinatorParticipant implements Participant,DataSer
      */
     public boolean recover () throws SysException
     {
-        TransactionService ts = Configuration.instance().getTransactionService ();
+        TransactionService ts = Configuration.getTransactionService ();
         subordinateCoordinator = ts.getParticipant ( subordinateId );
         return subordinateCoordinator != null;
     }

@@ -255,16 +255,16 @@ class UserTransactionServiceImp extends AbstractJtaUserTransactionService
             tm = createDefault ( p );
             tm.init ( info.getProperties() );
             // install composite manager
-            Configuration.instance().installCompositeTransactionManager ( tm );
-            Configuration.instance().installRecoveryService ( tm.getTransactionService () );
-            Configuration.instance()
-                    .installImportingTransactionManager ( new ImportingTransactionManagerImp (
+            Configuration.installCompositeTransactionManager ( tm );
+            Configuration.installRecoveryService ( tm.getTransactionService () );
+            Configuration.
+                    installImportingTransactionManager ( new ImportingTransactionManagerImp (
                             tm.getTransactionService () ) );
-            Configuration.instance()
-                    .installExportingTransactionManager ( new ExportingTransactionManagerImp () );
-            Configuration.instance().installLogControl ( tm.getTransactionService ()
+            Configuration.
+                    installExportingTransactionManager ( new ExportingTransactionManagerImp () );
+            Configuration.installLogControl ( tm.getTransactionService ()
                     .getLogControl () );
-            Configuration.instance().installTransactionService ( tm
+            Configuration.installTransactionService ( tm
                     .getTransactionService () );
 
             String autoMode = getTrimmedProperty (
@@ -327,8 +327,8 @@ class UserTransactionServiceImp extends AbstractJtaUserTransactionService
 
     public void shutdown ( boolean force ) throws IllegalStateException
     {
-        CompositeTransactionManagerImp tm = (CompositeTransactionManagerImp) Configuration.instance()
-                .getCompositeTransactionManager ();
+        CompositeTransactionManagerImp tm = (CompositeTransactionManagerImp) Configuration.
+                getCompositeTransactionManager ();
         if ( tm == null )
             return;
 
