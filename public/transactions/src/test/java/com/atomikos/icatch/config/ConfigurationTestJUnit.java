@@ -35,5 +35,11 @@ public class ConfigurationTestJUnit {
 		ConfigProperties props = Configuration.getConfigProperties();
 		Assert.assertEquals("jta.properties.override", props.getProperty("com.atomikos.icatch.default.to.override.by.jta"));
 	}
+	
+	@Test
+	public void testTransactionsPropertiesFileInClasspathOverridesDefaults() {
+		ConfigProperties props = Configuration.getConfigProperties();
+		Assert.assertEquals("transactions.properties.override", props.getProperty("com.atomikos.icatch.default.to.override.by.transactions"));
+	}
 
 }
