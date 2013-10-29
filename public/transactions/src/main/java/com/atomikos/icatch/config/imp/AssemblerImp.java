@@ -26,7 +26,6 @@ public class AssemblerImp implements Assembler {
     			url = getClass().getClassLoader().getSystemResource ( fileName );
     		}
     		if (url != null) {
-    			LOGGER.logWarning ( "Using init file: " + url.getPath() );
     			InputStream in;
 				try {
 					in = url.openStream();
@@ -35,6 +34,8 @@ public class AssemblerImp implements Assembler {
 				} catch (IOException e) {
 					LOGGER.logWarning("Failed to load properties", e);
 				}
+    		} else {
+    			LOGGER.logWarning("Failed to load property file from classpath: " + fileName);
     		}
             return p;
     }

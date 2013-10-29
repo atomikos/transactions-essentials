@@ -39,6 +39,7 @@ import com.atomikos.icatch.CompositeTransactionManager;
 import com.atomikos.icatch.ExportingTransactionManager;
 import com.atomikos.icatch.ImportingTransactionManager;
 import com.atomikos.icatch.RecoveryService;
+import com.atomikos.icatch.SysException;
 import com.atomikos.icatch.TSListener;
 import com.atomikos.icatch.TransactionService;
 import com.atomikos.icatch.admin.LogAdministrator;
@@ -475,7 +476,9 @@ public final class Configuration
 		Iterator<Assembler> it = loader.iterator();
 		if (it.hasNext()) {
 			assembler = it.next();
-		} 
+		} else {
+			throw new SysException("No Assembler service found - please make sure that the right jars are in your classpath");
+		}
 	}
 
 	public static ConfigProperties getConfigProperties() {
