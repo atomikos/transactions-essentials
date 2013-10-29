@@ -479,6 +479,6 @@ public final class Configuration
 	}
 
 	public static ConfigProperties getConfigProperties() {
-		return null;
+		return getAssembler().getConfigProperties();
 	}
 }

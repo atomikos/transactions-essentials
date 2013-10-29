@@ -4,7 +4,6 @@ package com.atomikos.icatch.config;
 import junit.framework.Assert;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class ConfigurationTestJUnit {
@@ -20,9 +19,9 @@ public class ConfigurationTestJUnit {
 	}
 	
 	@Test
-	@Ignore
-	public void testAssemblerLoadsDefaultPropertiesFromClasspath() {
-		Assert.assertNotNull(Configuration.getConfigProperties());
+	public void testDefaultValueForMaxActives() {
+		ConfigProperties props = Configuration.getConfigProperties();
+		Assert.assertNotNull(props.getProperty("com.atomikos.icatch.max_actives"));
 	}
 
 }
