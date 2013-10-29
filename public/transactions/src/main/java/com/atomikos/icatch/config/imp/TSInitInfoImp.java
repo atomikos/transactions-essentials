@@ -30,8 +30,8 @@ import java.util.Properties;
 
 import com.atomikos.datasource.RecoverableResource;
 import com.atomikos.icatch.admin.LogAdministrator;
+import com.atomikos.icatch.config.Configuration;
 import com.atomikos.icatch.config.TSInitInfo;
-import com.atomikos.icatch.system.Configuration;
 
 /**
  * Implementation of TSInitInfo.

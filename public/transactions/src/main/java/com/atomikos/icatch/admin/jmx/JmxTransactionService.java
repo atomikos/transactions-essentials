@@ -34,7 +34,7 @@ import javax.management.ObjectName;
 
 import com.atomikos.icatch.admin.AdminTransaction;
 import com.atomikos.icatch.admin.LogControl;
-import com.atomikos.icatch.system.Configuration;
+import com.atomikos.icatch.config.Configuration;
 
 /**
  * An MBean implementation for JMX-based transaction administration. If you use

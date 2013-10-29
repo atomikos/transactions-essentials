@@ -24,7 +24,7 @@
  */
 
 
-package com.atomikos.icatch.system;
+package com.atomikos.icatch.config;
 
 import java.util.ArrayList;
 import java.util.Enumeration;

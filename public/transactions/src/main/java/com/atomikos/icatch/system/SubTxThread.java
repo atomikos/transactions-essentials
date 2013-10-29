@@ -31,6 +31,7 @@ import com.atomikos.icatch.Propagation;
 import com.atomikos.icatch.RollbackException;
 import com.atomikos.icatch.SubTxCode;
 import com.atomikos.icatch.SysException;
+import com.atomikos.icatch.config.Configuration;
 
 /**
  * A thread class for subtransaction threads. A SubTxThread is a thread whose

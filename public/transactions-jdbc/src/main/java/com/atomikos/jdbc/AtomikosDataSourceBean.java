@@ -33,7 +33,7 @@ import javax.sql.XADataSource;
 import com.atomikos.beans.PropertyUtils;
 import com.atomikos.datasource.RecoverableResource;
 import com.atomikos.datasource.xa.jdbc.JdbcTransactionalResource;
-import com.atomikos.icatch.system.Configuration;
+import com.atomikos.icatch.config.Configuration;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 import com.atomikos.util.ClassLoadingHelper;

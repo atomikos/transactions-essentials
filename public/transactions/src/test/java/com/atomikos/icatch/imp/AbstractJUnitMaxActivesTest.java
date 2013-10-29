@@ -4,7 +4,7 @@ import junit.framework.TestCase;
 
 import com.atomikos.icatch.CompositeTransaction;
 import com.atomikos.icatch.CompositeTransactionManager;
-import com.atomikos.icatch.system.Configuration;
+import com.atomikos.icatch.config.Configuration;
 
 /**
  * 

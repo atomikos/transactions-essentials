@@ -29,11 +29,11 @@ import javax.transaction.TransactionManager;
 
 import com.atomikos.datasource.xa.AcceptAllXATransactionalResource;
 import com.atomikos.icatch.SysException;
+import com.atomikos.icatch.config.Configuration;
 import com.atomikos.icatch.config.TSInitInfo;
 import com.atomikos.icatch.config.UserTransactionService;
 import com.atomikos.icatch.config.imp.AbstractUserTransactionService;
 import com.atomikos.icatch.config.imp.AbstractUserTransactionServiceFactory;
-import com.atomikos.icatch.system.Configuration;
 
 public abstract class AbstractJtaUserTransactionService extends
 		AbstractUserTransactionService

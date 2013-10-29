@@ -41,7 +41,7 @@ import com.atomikos.icatch.RollbackException;
 import com.atomikos.icatch.StringHeuristicMessage;
 import com.atomikos.icatch.SysException;
 import com.atomikos.icatch.TransactionService;
-import com.atomikos.icatch.system.Configuration;
+import com.atomikos.icatch.config.Configuration;
 
 /**
  * A participant for registering a subtx coordinator as a subordinate in 2PC of

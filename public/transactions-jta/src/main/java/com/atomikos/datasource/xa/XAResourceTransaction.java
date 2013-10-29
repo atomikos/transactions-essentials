@@ -58,7 +58,7 @@ import com.atomikos.icatch.StringHeuristicMessage;
 import com.atomikos.icatch.SysException;
 import com.atomikos.icatch.TransactionControl;
 import com.atomikos.icatch.TxState;
-import com.atomikos.icatch.system.Configuration;
+import com.atomikos.icatch.config.Configuration;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 import com.atomikos.util.SerializationUtils;

@@ -46,7 +46,7 @@ import com.atomikos.datasource.pool.ConnectionPoolProperties;
 import com.atomikos.datasource.pool.CreateConnectionException;
 import com.atomikos.datasource.pool.PoolExhaustedException;
 import com.atomikos.datasource.xa.jms.JmsTransactionalResource;
-import com.atomikos.icatch.system.Configuration;
+import com.atomikos.icatch.config.Configuration;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 import com.atomikos.util.ClassLoadingHelper;

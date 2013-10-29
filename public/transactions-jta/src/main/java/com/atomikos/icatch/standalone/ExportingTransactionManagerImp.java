@@ -32,8 +32,8 @@ import com.atomikos.icatch.ExportingTransactionManager;
 import com.atomikos.icatch.Extent;
 import com.atomikos.icatch.Propagation;
 import com.atomikos.icatch.SysException;
+import com.atomikos.icatch.config.Configuration;
 import com.atomikos.icatch.imp.PropagationImp;
-import com.atomikos.icatch.system.Configuration;
 
 /**
  *
