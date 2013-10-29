@@ -28,13 +28,13 @@ public class AssemblerImp implements Assembler {
     			InputStream in;
 				try {
 					in = url.openStream();
-					p.load ( in );
+					p.load(in);
 					in.close();
 				} catch (IOException e) {
-					LOGGER.logWarning("Failed to load properties", e);
+					LOGGER.logWarning("Failed to load property file: " + fileName, e);
 				}
     		} else {
-    			LOGGER.logWarning("Failed to load property file from classpath: " + fileName);
+    			LOGGER.logWarning("Could not find expected property file: " + fileName);
     		}
     }
 
@@ -47,8 +47,8 @@ public class AssemblerImp implements Assembler {
 
 	@Override
 	public ConfigProperties getConfigProperties() {
-		Properties p = new Properties();
-		loadPropertiesFromClasspath(p, DEFAULT_PROPERTIES_FILE_NAME);
-		return new ConfigProperties(p);
+		Properties defaults = new Properties();
+		loadPropertiesFromClasspath(defaults, DEFAULT_PROPERTIES_FILE_NAME);
+		return new ConfigProperties(defaults);
 	}
 }
