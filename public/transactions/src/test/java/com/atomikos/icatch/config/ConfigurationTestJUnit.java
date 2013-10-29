@@ -1,9 +1,6 @@
 package com.atomikos.icatch.config;
 
 
-import java.net.MalformedURLException;
-import java.net.URL;
-
 import junit.framework.Assert;
 
 import org.junit.After;
