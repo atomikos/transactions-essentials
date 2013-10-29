@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2012 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2013 Atomikos <info@atomikos.com>
  *
  * This code ("Atomikos TransactionsEssentials"), by itself,
  * is being distributed under the
@@ -43,8 +43,6 @@ import com.atomikos.icatch.TSListener;
 import com.atomikos.icatch.TransactionService;
 import com.atomikos.icatch.admin.LogAdministrator;
 import com.atomikos.icatch.admin.LogControl;
-import com.atomikos.logging.Logger;
-import com.atomikos.logging.LoggerFactory;
 
 /**
  * Configuration is a facade for the icatch transaction management facilities.
@@ -55,7 +53,6 @@ import com.atomikos.logging.LoggerFactory;
 @SuppressWarnings("all")
 public final class Configuration
 {
-	private static final Logger LOGGER = LoggerFactory.createLogger(Configuration.class);
 	
 	private static final Configuration SINGLETON = new Configuration();
 
@@ -376,25 +373,16 @@ public final class Configuration
         // memory overflow can only happen upon addition of resources
         // so before each add, first purge closed resources to make room
         purgeResources ();
-        int numResources = resources_.size ();
-        if ( numResources > 100 ) {
-        	LOGGER.logWarning ( numResources
-                    + " RESOURCES IN CONFIGURATION -- "
-                    + "SOME XARESOURCE IMPLEMENTATIONS MAY NOT CORRECTLY IMPLEMENT isSameRM()!" );
-        	LOGGER.logWarning ( "TO SAVE MEMORY, USE EXPLICIT RESOURCE REGISTRATION MODE." );
-        }
 
         if ( resources_.containsKey ( resource.getName () ) )
             throw new IllegalStateException ( "Attempt to register second "
                     + "resource with name " + resource.getName () );
 
-        LOGGER.logDebug ( "Configuration: adding resource " + resource.getName () );
 
         resources_.put ( resource.getName (), resource );
         resourceList_.add ( resource );
         resource.setRecoveryService ( recoveryService_ );
 
-        LOGGER.logDebug ( "Configuration: added resource " + resource.getName () );
     }
 
     /**
@@ -451,7 +439,6 @@ public final class Configuration
         	if ( ret != null ) resourceList_.remove ( ret );
 
         }
-        LOGGER.logDebug ( "Configuration: removed resource " + name );
         return ret;
     }
 
