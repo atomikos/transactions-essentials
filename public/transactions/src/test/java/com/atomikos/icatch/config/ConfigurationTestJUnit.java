@@ -31,7 +31,7 @@ public class ConfigurationTestJUnit {
 	}
 	
 	@Test
-	public void testPropertiesFileInClasspathOverridesDefaults() {
+	public void testJtaPropertiesFileInClasspathOverridesDefaults() {
 		ConfigProperties props = Configuration.getConfigProperties();
 		Assert.assertEquals("jta.properties.override", props.getProperty("com.atomikos.icatch.override"));
 	}
