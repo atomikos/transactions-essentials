@@ -4,6 +4,7 @@ package com.atomikos.icatch.config;
 import junit.framework.Assert;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class ConfigurationTestJUnit {
@@ -16,6 +17,12 @@ public class ConfigurationTestJUnit {
 	public void testFindAssemblerInClasspath() {
 		Assembler assembler = Configuration.instance().getAssembler();
 		Assert.assertNotNull(assembler);
+	}
+	
+	@Test
+	@Ignore
+	public void testAssemblerLoadsDefaultPropertiesFromClasspath() {
+		Assert.assertNotNull(Configuration.instance().getConfigProperties());
 	}
 
 }

@@ -485,4 +485,8 @@ public final class Configuration
 			assembler = it.next();
 		} 
 	}
+
+	public ConfigProperties getConfigProperties() {
+		return null;
+	}
 }
