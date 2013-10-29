@@ -15,11 +15,14 @@ public class ConfigurationTestJUnit {
 	@Before
 	public void setUp() throws Exception {
 		System.setProperty("com.atomikos.icatch.jta.to.override.by.system", "system.properties.override");
+		System.setProperty("com.atomikos.icatch.custom.to.override.by.system", "system.properties.override");
 	}
 	
 	@After
 	public void tearDown() throws Exception {
 		System.clearProperty("com.atomikos.icatch.jta.to.override.by.system");
+		System.clearProperty("com.atomikos.icatch.file");
+		System.clearProperty("com.atomikos.icatch.custom.to.override.by.system");
 	}
 
 	@Test
@@ -72,6 +75,10 @@ public class ConfigurationTestJUnit {
 		Assert.assertEquals("custom.properties.override", props.getProperty("com.atomikos.icatch.jta.to.override.by.custom"));
 	}
 
-	
+	@Test
+	public void testSystemPropertyOverridesCustomPropertiesFile() {
+		ConfigProperties props = Configuration.getConfigProperties();
+		Assert.assertEquals("system.properties.override", props.getProperty("com.atomikos.icatch.custom.to.override.by.system"));
+	}
 
 }
