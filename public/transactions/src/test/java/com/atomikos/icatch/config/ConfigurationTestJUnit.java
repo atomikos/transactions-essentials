@@ -23,5 +23,17 @@ public class ConfigurationTestJUnit {
 		ConfigProperties props = Configuration.getConfigProperties();
 		Assert.assertNotNull(props.getProperty("com.atomikos.icatch.max_actives"));
 	}
+	
+	@Test
+	public void testSpecificPropertyFromPropertiesFileInClasspath() {
+		ConfigProperties props = Configuration.getConfigProperties();
+		Assert.assertNotNull(props.getProperty("com.atomikos.icatch.bla"));
+	}
+	
+	@Test
+	public void testPropertiesFileInClasspathOverridesDefaults() {
+		ConfigProperties props = Configuration.getConfigProperties();
+		Assert.assertEquals("override", props.getProperty("com.atomikos.icatch.override"));
+	}
 
 }

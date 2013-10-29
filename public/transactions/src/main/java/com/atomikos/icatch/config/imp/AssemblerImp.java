@@ -13,6 +13,8 @@ import com.atomikos.util.ClassLoadingHelper;
 public class AssemblerImp implements Assembler {
 	
 	private static final String DEFAULT_PROPERTIES_FILE_NAME = "transactions-defaults.properties";
+
+	private static final String JTA_PROPERTIES_FILE_NAME = "jta.properties";
 	
 	private static com.atomikos.logging.Logger LOGGER = LoggerFactory.createLogger(AssemblerImp.class);
 	
@@ -42,13 +44,14 @@ public class AssemblerImp implements Assembler {
 	 * Called by ServiceLoader.
 	 */
 	public AssemblerImp() {
-		
 	}
 
 	@Override
 	public ConfigProperties getConfigProperties() {
 		Properties defaults = new Properties();
 		loadPropertiesFromClasspath(defaults, DEFAULT_PROPERTIES_FILE_NAME);
-		return new ConfigProperties(defaults);
+		Properties classPathOverrides = new Properties(defaults);
+		loadPropertiesFromClasspath(classPathOverrides, JTA_PROPERTIES_FILE_NAME);
+		return new ConfigProperties(classPathOverrides);
 	}
 }
