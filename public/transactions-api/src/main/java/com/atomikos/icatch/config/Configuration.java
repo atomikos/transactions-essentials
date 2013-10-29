@@ -86,6 +86,8 @@ public final class Configuration
 
     private List shutdownHooks_ = new ArrayList();
 
+	private Assembler assembler;
+
 
 	private void purgeResources ()
     {
@@ -471,4 +473,16 @@ public final class Configuration
         return ret.elements ();
     }
 
+	protected synchronized Assembler getAssembler() {
+		if (assembler == null) loadAssembler();
+		return assembler;
+	}
+
+	private void loadAssembler() {
+		ServiceLoader<Assembler> loader = ServiceLoader.load(Assembler.class);
+		Iterator<Assembler> it = loader.iterator();
+		if (it.hasNext()) {
+			assembler = it.next();
+		} 
+	}
 }
