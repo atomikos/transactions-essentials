@@ -1,7 +1,9 @@
 package com.atomikos.icatch.config.imp;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.Properties;
@@ -18,6 +20,8 @@ public class AssemblerImp implements Assembler {
 	private static final String JTA_PROPERTIES_FILE_NAME = "jta.properties";
 
 	private static final String TRANSACTIONS_PROPERTIES_FILE_NAME = "transactions.properties";
+
+	private static final String FILE_PATH_PROPERTY_NAME = "com.atomikos.icatch.file";
 	
 	private static com.atomikos.logging.Logger LOGGER = LoggerFactory.createLogger(AssemblerImp.class);
 	
@@ -30,18 +34,22 @@ public class AssemblerImp implements Assembler {
     			url = getClass().getClassLoader().getSystemResource ( fileName );
     		}
     		if (url != null) {
-    			InputStream in;
-				try {
-					in = url.openStream();
-					p.load(in);
-					in.close();
-				} catch (IOException e) {
-					LOGGER.logWarning("Failed to load property file: " + fileName, e);
-				}
+    			loadPropertiesFromUrl(p, url);
     		} else {
-    			LOGGER.logWarning("Could not find expected property file: " + fileName);
+    			LOGGER.logDebug("Could not find expected property file: " + fileName);
     		}
     }
+
+	private void loadPropertiesFromUrl(Properties p, URL url) {
+		InputStream in;
+		try {
+			in = url.openStream();
+			p.load(in);
+			in.close();
+		} catch (IOException e) {
+			LOGGER.logDebug("Failed to load property file: " + url.toString(), e);
+		}
+	}
 
 	/**
 	 * Called by ServiceLoader.
@@ -57,9 +65,25 @@ public class AssemblerImp implements Assembler {
 		loadPropertiesFromClasspath(transactionsProperties, TRANSACTIONS_PROPERTIES_FILE_NAME);
 		Properties jtaProperties = new Properties(transactionsProperties);
 		loadPropertiesFromClasspath(jtaProperties, JTA_PROPERTIES_FILE_NAME);
-		Properties finalProperties = new Properties(jtaProperties);
+		Properties customProperties = new Properties(jtaProperties);
+		loadPropertiesFromCustomFilePath(customProperties);
+		Properties finalProperties = new Properties(customProperties);
 		applySystemProperties(finalProperties);
 		return new ConfigProperties(finalProperties);
+	}
+
+	private void loadPropertiesFromCustomFilePath(Properties customProperties) {
+		String customFilePath = System.getProperty(FILE_PATH_PROPERTY_NAME);
+		if (customFilePath != null) {
+			File file = new File(customFilePath);
+			URL url;
+			try {
+				url = file.toURL();
+				loadPropertiesFromUrl(customProperties, url);
+			} catch (MalformedURLException e) {
+				LOGGER.logWarning("File not found: " + customFilePath);
+			}
+		}
 	}
 
 	private void applySystemProperties(Properties finalProperties) {

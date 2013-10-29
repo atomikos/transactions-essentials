@@ -1,6 +1,9 @@
 package com.atomikos.icatch.config;
 
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import junit.framework.Assert;
 
 import org.junit.After;
@@ -60,5 +63,15 @@ public class ConfigurationTestJUnit {
 		ConfigProperties props = Configuration.getConfigProperties();
 		Assert.assertEquals("system.properties.override", props.getProperty("com.atomikos.icatch.jta.to.override.by.system"));
 	}
+	
+	@Test
+	public void testCustomPropertiesFileOverridesJtaPropertiesFile() {
+		String customFileNamePath ="target/test-classes/custom.properties";
+		System.setProperty("com.atomikos.icatch.file", customFileNamePath);
+		ConfigProperties props = Configuration.getConfigProperties();
+		Assert.assertEquals("custom.properties.override", props.getProperty("com.atomikos.icatch.jta.to.override.by.custom"));
+	}
+
+	
 
 }
