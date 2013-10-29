@@ -47,5 +47,12 @@ public class ConfigurationTestJUnit {
 		ConfigProperties props = Configuration.getConfigProperties();
 		Assert.assertEquals("jta.properties.override", props.getProperty("com.atomikos.icatch.transactions.to.override.by.jta"));
 	}
+	
+	@Test
+	public void testSystemPropertiesOverrideJtaPropertiesFile() {
+		System.setProperty("com.atomikos.icatch.jta.to.override.by.system", "system.properties.override");
+		ConfigProperties props = Configuration.getConfigProperties();
+		Assert.assertEquals("system.properties.override", props.getProperty("com.atomikos.icatch.jta.to.override.by.system"));
+	}
 
 }

@@ -3,6 +3,7 @@ package com.atomikos.icatch.config.imp;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Enumeration;
 import java.util.Properties;
 
 import com.atomikos.icatch.config.Assembler;
@@ -56,6 +57,19 @@ public class AssemblerImp implements Assembler {
 		loadPropertiesFromClasspath(transactionsProperties, TRANSACTIONS_PROPERTIES_FILE_NAME);
 		Properties jtaProperties = new Properties(transactionsProperties);
 		loadPropertiesFromClasspath(jtaProperties, JTA_PROPERTIES_FILE_NAME);
-		return new ConfigProperties(jtaProperties);
+		Properties finalProperties = new Properties(jtaProperties);
+		applySystemProperties(finalProperties);
+		return new ConfigProperties(finalProperties);
+	}
+
+	private void applySystemProperties(Properties finalProperties) {
+		Properties systemProperties = System.getProperties();
+		Enumeration<?> propertyNames = systemProperties.propertyNames();
+		while (propertyNames.hasMoreElements()) {
+			String name = (String) propertyNames.nextElement();
+			if (name.startsWith("com.atomikos")) {
+				finalProperties.setProperty(name, systemProperties.getProperty(name));
+			}
+		}
 	}
 }
