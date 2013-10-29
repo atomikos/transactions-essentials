@@ -15,6 +15,8 @@ public class AssemblerImp implements Assembler {
 	private static final String DEFAULT_PROPERTIES_FILE_NAME = "transactions-defaults.properties";
 
 	private static final String JTA_PROPERTIES_FILE_NAME = "jta.properties";
+
+	private static final String TRANSACTIONS_PROPERTIES_FILE_NAME = "transactions.properties";
 	
 	private static com.atomikos.logging.Logger LOGGER = LoggerFactory.createLogger(AssemblerImp.class);
 	
@@ -50,7 +52,9 @@ public class AssemblerImp implements Assembler {
 	public ConfigProperties getConfigProperties() {
 		Properties defaults = new Properties();
 		loadPropertiesFromClasspath(defaults, DEFAULT_PROPERTIES_FILE_NAME);
-		Properties jtaProperties = new Properties(defaults);
+		Properties transactionsProperties = new Properties(defaults);
+		loadPropertiesFromClasspath(transactionsProperties, TRANSACTIONS_PROPERTIES_FILE_NAME);
+		Properties jtaProperties = new Properties(transactionsProperties);
 		loadPropertiesFromClasspath(jtaProperties, JTA_PROPERTIES_FILE_NAME);
 		return new ConfigProperties(jtaProperties);
 	}
