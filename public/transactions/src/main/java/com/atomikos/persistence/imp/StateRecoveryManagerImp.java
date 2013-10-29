@@ -44,7 +44,6 @@ import com.atomikos.persistence.ObjectImage;
 import com.atomikos.persistence.ObjectLog;
 import com.atomikos.persistence.StateRecoverable;
 import com.atomikos.persistence.StateRecoveryManager;
-import com.atomikos.persistence.Utils;
 import com.atomikos.util.ClassLoadingHelper;
 
 /**

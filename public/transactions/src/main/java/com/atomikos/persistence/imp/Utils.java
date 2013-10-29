@@ -1,4 +1,4 @@
-package com.atomikos.persistence;
+package com.atomikos.persistence.imp;
 
 import java.io.File;
 import java.io.IOException;
