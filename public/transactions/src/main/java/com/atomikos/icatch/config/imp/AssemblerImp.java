@@ -50,8 +50,8 @@ public class AssemblerImp implements Assembler {
 	public ConfigProperties getConfigProperties() {
 		Properties defaults = new Properties();
 		loadPropertiesFromClasspath(defaults, DEFAULT_PROPERTIES_FILE_NAME);
-		Properties classPathOverrides = new Properties(defaults);
-		loadPropertiesFromClasspath(classPathOverrides, JTA_PROPERTIES_FILE_NAME);
-		return new ConfigProperties(classPathOverrides);
+		Properties jtaProperties = new Properties(defaults);
+		loadPropertiesFromClasspath(jtaProperties, JTA_PROPERTIES_FILE_NAME);
+		return new ConfigProperties(jtaProperties);
 	}
 }
