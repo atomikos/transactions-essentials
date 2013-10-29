@@ -16,8 +16,7 @@ public class AssemblerImp implements Assembler {
 	
 	private static com.atomikos.logging.Logger LOGGER = LoggerFactory.createLogger(AssemblerImp.class);
 	
-    private Properties loadPropertiesFromClasspath(String fileName){
-    		Properties p = new Properties();
+    private void loadPropertiesFromClasspath(Properties p, String fileName){
     		URL url = null;
     		
     		//first look in application classpath (cf ISSUE 10091)
@@ -37,7 +36,6 @@ public class AssemblerImp implements Assembler {
     		} else {
     			LOGGER.logWarning("Failed to load property file from classpath: " + fileName);
     		}
-            return p;
     }
 
 	/**
@@ -49,6 +47,8 @@ public class AssemblerImp implements Assembler {
 
 	@Override
 	public ConfigProperties getConfigProperties() {
-		return new ConfigProperties(loadPropertiesFromClasspath(DEFAULT_PROPERTIES_FILE_NAME));
+		Properties p = new Properties();
+		loadPropertiesFromClasspath(p, DEFAULT_PROPERTIES_FILE_NAME);
+		return new ConfigProperties(p);
 	}
 }
