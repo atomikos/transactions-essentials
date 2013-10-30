@@ -24,7 +24,8 @@ public class ConfigProperties {
 	
 	public boolean getAsBoolean(String name) {
 		boolean ret = false;
-		
+		String retAsString = getProperty(name);
+		ret = Boolean.valueOf(retAsString);
 		return ret;
 	}
 
