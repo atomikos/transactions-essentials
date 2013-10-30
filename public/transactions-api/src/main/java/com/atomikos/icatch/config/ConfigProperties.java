@@ -12,12 +12,20 @@ public class ConfigProperties {
 	}
 
 	public String getProperty(String name) {
-		return properties.getProperty(name);
+		String ret = properties.getProperty(name);
+		if (ret == null) throw new IllegalArgumentException(name);
+		return ret;
 	}
 
 	public void setProperty(String name,
 			String value) {
 		properties.setProperty(name, value);		
+	}
+	
+	public boolean getAsBoolean(String name) {
+		boolean ret = false;
+		
+		return ret;
 	}
 
 }
