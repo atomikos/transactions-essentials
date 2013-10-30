@@ -34,4 +34,9 @@ public class ConfigProperties {
 		return Integer.valueOf(retAsString);
 	}
 
+	public long getAsLong(String name) {
+		String retAsString = getProperty(name);
+		return Long.valueOf(retAsString);
+	}
+
 }

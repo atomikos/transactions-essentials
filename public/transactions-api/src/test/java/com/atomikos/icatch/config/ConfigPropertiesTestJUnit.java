@@ -36,4 +36,9 @@ public class ConfigPropertiesTestJUnit {
 		Assert.assertEquals(10, props.getAsInt(CUSTOM_PROPERTY_NAME));
 	}
 
+	@Test
+	public void testGetAsLong() {
+		props.setProperty(CUSTOM_PROPERTY_NAME, "10");
+		Assert.assertEquals(10, props.getAsLong(CUSTOM_PROPERTY_NAME));
+	}
 }
