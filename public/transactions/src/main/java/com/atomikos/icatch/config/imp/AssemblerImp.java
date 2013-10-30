@@ -69,6 +69,7 @@ public class AssemblerImp implements Assembler {
 		loadPropertiesFromCustomFilePath(customProperties);
 		Properties finalProperties = new Properties(customProperties);
 		applySystemProperties(finalProperties);
+		ConfigPropertiesUtils.substitutePlaceHolderValues(finalProperties);
 		return new ConfigProperties(finalProperties);
 	}
 

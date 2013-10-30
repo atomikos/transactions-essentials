@@ -96,9 +96,9 @@ public class ConfigurationTestJUnit {
 	}
 
 	@Test
-	@Ignore
 	public void testPlaceHolderSubstitution() {
-		Assert.fail("todo");
+		ConfigProperties props = Configuration.getConfigProperties();
+		Assert.assertEquals("system.properties.override", props.getProperty("com.atomikos.icatch.jta.to.substitute"));
 	}
 
 }
