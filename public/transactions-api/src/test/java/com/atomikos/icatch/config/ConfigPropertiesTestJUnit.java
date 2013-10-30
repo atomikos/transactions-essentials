@@ -43,8 +43,9 @@ public class ConfigPropertiesTestJUnit {
 	}
 	
 	@Test
-	public void testGetPropertyIgnoresTrailingSpace() {
-		props.setProperty(CUSTOM_PROPERTY_NAME, "bla ");
+	public void testGetPropertyIgnoresTrimsSpaces() {
+		props.setProperty(CUSTOM_PROPERTY_NAME, " bla ");
 		assertEquals("bla", props.getProperty(CUSTOM_PROPERTY_NAME));
 	}
+	
 }
