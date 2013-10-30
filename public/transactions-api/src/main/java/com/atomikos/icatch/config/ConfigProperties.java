@@ -29,4 +29,9 @@ public class ConfigProperties {
 		return ret;
 	}
 
+	public int getAsInt(String name) {
+		String retAsString = getProperty(name);
+		return Integer.valueOf(retAsString);
+	}
+
 }

@@ -95,10 +95,5 @@ public class ConfigurationTestJUnit {
 		Assert.assertEquals("system.properties.override", props.getProperty("com.atomikos.icatch.jta.to.substitute"));
 	}
 	
-	@Test
-	public void testGetAsBoolean() {
-		props.setProperty(CUSTOM_PROPERTY_NAME,"true");
-		Assert.assertTrue(props.getAsBoolean(CUSTOM_PROPERTY_NAME));
-	}
 
 }
