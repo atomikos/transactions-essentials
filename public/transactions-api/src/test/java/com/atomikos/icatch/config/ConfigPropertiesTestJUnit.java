@@ -43,7 +43,7 @@ public class ConfigPropertiesTestJUnit {
 	}
 	
 	@Test
-	public void testGetPropertyIgnoresTrimsSpaces() {
+	public void testGetPropertyTrimsSpaces() {
 		props.setProperty(CUSTOM_PROPERTY_NAME, " bla ");
 		assertEquals("bla", props.getProperty(CUSTOM_PROPERTY_NAME));
 	}
