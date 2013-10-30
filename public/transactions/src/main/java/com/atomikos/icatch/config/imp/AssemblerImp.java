@@ -58,7 +58,7 @@ public class AssemblerImp implements Assembler {
 	}
 
 	@Override
-	public ConfigProperties getConfigProperties() {
+	public ConfigProperties initializeProperties() {
 		Properties defaults = new Properties();
 		loadPropertiesFromClasspath(defaults, DEFAULT_PROPERTIES_FILE_NAME);
 		Properties transactionsProperties = new Properties(defaults);

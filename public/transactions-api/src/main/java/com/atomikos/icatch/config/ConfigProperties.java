@@ -15,4 +15,9 @@ public class ConfigProperties {
 		return properties.getProperty(name);
 	}
 
+	public void setProperty(String name,
+			String value) {
+		properties.setProperty(name, value);		
+	}
+
 }

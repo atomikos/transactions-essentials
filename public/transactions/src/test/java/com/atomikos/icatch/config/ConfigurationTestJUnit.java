@@ -5,10 +5,14 @@ import junit.framework.Assert;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class ConfigurationTestJUnit {
 
+	private static final String CUSTOM_PROPERTY_NAME = "bla";
+	private static final String CUSTOM_PROPERTY_VALUE = "blabla";
+	
 	@Before
 	public void setUp() throws Exception {
 		System.setProperty("com.atomikos.icatch.jta.to.override.by.system", "system.properties.override");
@@ -20,6 +24,7 @@ public class ConfigurationTestJUnit {
 		System.clearProperty("com.atomikos.icatch.jta.to.override.by.system");
 		System.clearProperty("com.atomikos.icatch.file");
 		System.clearProperty("com.atomikos.icatch.custom.to.override.by.system");
+		Configuration.resetConfigProperties();
 	}
 
 	@Test
@@ -76,6 +81,24 @@ public class ConfigurationTestJUnit {
 	public void testSystemPropertyOverridesCustomPropertiesFile() {
 		ConfigProperties props = Configuration.getConfigProperties();
 		Assert.assertEquals("system.properties.override", props.getProperty("com.atomikos.icatch.custom.to.override.by.system"));
+	}
+	
+	@Test
+	public void testProgramaticallySetPropertiesAreTakenIntoAccount() {
+		setCustomProperty();
+		ConfigProperties props = Configuration.getConfigProperties();
+		Assert.assertEquals(CUSTOM_PROPERTY_VALUE, props.getProperty(CUSTOM_PROPERTY_NAME));
+	}
+	
+	private void setCustomProperty() {
+		ConfigProperties props = Configuration.getConfigProperties();
+		props.setProperty(CUSTOM_PROPERTY_NAME, CUSTOM_PROPERTY_VALUE);
+	}
+
+	@Test
+	@Ignore
+	public void testPlaceHolderSubstitution() {
+		Assert.fail("todo");
 	}
 
 }

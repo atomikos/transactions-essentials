@@ -88,6 +88,8 @@ public final class Configuration
 
 	private static Assembler assembler;
 
+	private static ConfigProperties configProperties;
+
 
 	private static void purgeResources ()
     {
@@ -481,7 +483,15 @@ public final class Configuration
 		}
 	}
 
-	public static ConfigProperties getConfigProperties() {
-		return getAssembler().getConfigProperties();
+	public static synchronized ConfigProperties getConfigProperties() {
+		if (configProperties == null) {
+			configProperties = getAssembler().initializeProperties();
+		}
+		return configProperties;
+	}
+
+	static synchronized void resetConfigProperties() {
+		configProperties = null;
+		
 	}
 }
