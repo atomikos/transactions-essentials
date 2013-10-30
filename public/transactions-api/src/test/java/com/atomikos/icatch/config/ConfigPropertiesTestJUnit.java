@@ -41,4 +41,10 @@ public class ConfigPropertiesTestJUnit {
 		props.setProperty(CUSTOM_PROPERTY_NAME, "10");
 		Assert.assertEquals(10, props.getAsLong(CUSTOM_PROPERTY_NAME));
 	}
+	
+	@Test
+	public void testGetPropertyIgnoresTrailingSpace() {
+		props.setProperty(CUSTOM_PROPERTY_NAME, "bla ");
+		assertEquals("bla", props.getProperty(CUSTOM_PROPERTY_NAME));
+	}
 }

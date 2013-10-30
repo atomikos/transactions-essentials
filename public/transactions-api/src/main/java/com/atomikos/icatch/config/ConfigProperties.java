@@ -14,6 +14,7 @@ public class ConfigProperties {
 	public String getProperty(String name) {
 		String ret = properties.getProperty(name);
 		if (ret == null) throw new IllegalArgumentException(name);
+		ret = ret.trim();
 		return ret;
 	}
 
