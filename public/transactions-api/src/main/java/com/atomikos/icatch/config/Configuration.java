@@ -40,7 +40,7 @@ import com.atomikos.icatch.ExportingTransactionManager;
 import com.atomikos.icatch.ImportingTransactionManager;
 import com.atomikos.icatch.RecoveryService;
 import com.atomikos.icatch.SysException;
-import com.atomikos.icatch.TSListener;
+import com.atomikos.icatch.TransactionServicePlugin;
 import com.atomikos.icatch.TransactionService;
 import com.atomikos.icatch.admin.LogAdministrator;
 import com.atomikos.icatch.admin.LogControl;
@@ -120,18 +120,18 @@ public final class Configuration
             TransactionService service )
     {
         service_ = service;
-        addAllTSListenerServicesFromClasspath();
+        addAllTransactionServicePluginServicesFromClasspath();
         Iterator it = tsListenersList_.iterator ();
         while ( it.hasNext () && service != null ) {
-            TSListener l = (TSListener) it.next ();
+            TransactionServicePlugin l = (TransactionServicePlugin) it.next ();
             service_.addTSListener ( l );
         }
     }
 
-    private static void addAllTSListenerServicesFromClasspath() {
-		ServiceLoader<TSListener> loader = ServiceLoader.load(TSListener.class);
-		for (TSListener l : loader ) {
-			addTSListener(l);
+    private static void addAllTransactionServicePluginServicesFromClasspath() {
+		ServiceLoader<TransactionServicePlugin> loader = ServiceLoader.load(TransactionServicePlugin.class);
+		for (TransactionServicePlugin l : loader ) {
+			registerTransactionServicePlugin(l);
 		}
 	}
 
@@ -206,7 +206,7 @@ public final class Configuration
      * @param l
      *            The listener.
      */
-    public static synchronized void addTSListener ( TSListener l )
+    public static synchronized void registerTransactionServicePlugin ( TransactionServicePlugin l )
     {
 
         if ( service_ != null ) {
@@ -221,7 +221,7 @@ public final class Configuration
      * @param l
      *            The listener.
      */
-    public static synchronized void removeTSListener ( TSListener l )
+    public static synchronized void unregisterTransactionServicePlugin ( TransactionServicePlugin l )
     {
         if ( service_ != null ) {
             service_.removeTSListener ( l );

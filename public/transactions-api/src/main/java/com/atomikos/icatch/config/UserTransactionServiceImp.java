@@ -43,7 +43,7 @@ import com.atomikos.icatch.CompositeTransactionManager;
 import com.atomikos.icatch.ExportingTransactionManager;
 import com.atomikos.icatch.ImportingTransactionManager;
 import com.atomikos.icatch.SysException;
-import com.atomikos.icatch.TSListener;
+import com.atomikos.icatch.TransactionServicePlugin;
 import com.atomikos.icatch.admin.LogAdministrator;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
@@ -110,7 +110,7 @@ public class UserTransactionServiceImp
 
     private Properties properties_;
     
-    private List<TSListener> tsListeners_;
+    private List<TransactionServicePlugin> tsListeners_;
     private List<LogAdministrator> logAdministrators_;
     private List<RecoverableResource> resources_;
 
@@ -300,7 +300,7 @@ public class UserTransactionServiceImp
 
     public UserTransactionServiceImp ()
     {
-		tsListeners_ = new ArrayList<TSListener>();
+		tsListeners_ = new ArrayList<TransactionServicePlugin>();
 		logAdministrators_ = new ArrayList<LogAdministrator>();
 		resources_ = new ArrayList<RecoverableResource>();
        
@@ -399,7 +399,7 @@ public class UserTransactionServiceImp
         }
         it = tsListeners_.iterator();
         while ( it.hasNext() ) {
-        	TSListener nxt = ( TSListener ) it.next();
+        	TransactionServicePlugin nxt = ( TransactionServicePlugin ) it.next();
         	registerTSListener ( nxt );
         }
         delegate_.init ( info );
@@ -492,13 +492,13 @@ public class UserTransactionServiceImp
 		delegate_.removeLogAdministrator ( admin );
 	}
 
-	public void registerTSListener ( TSListener listener ) 
+	public void registerTSListener ( TransactionServicePlugin listener ) 
 	{
 		checkInit();
 		delegate_.registerTSListener ( listener );
 	}
 
-	public void removeTSListener ( TSListener listener ) 
+	public void removeTSListener ( TransactionServicePlugin listener ) 
 	{
 		checkInit();
 		delegate_.removeTSListener ( listener );
@@ -553,7 +553,7 @@ public class UserTransactionServiceImp
 	 * Dependency injection of all listeners to be added during init.
 	 * @param listeners
 	 */
-	public void setInitialTSListeners ( List<TSListener> listeners ) 
+	public void setInitialTSListeners ( List<TransactionServicePlugin> listeners ) 
 	{
 		tsListeners_ = listeners;
 		

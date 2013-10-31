@@ -39,7 +39,7 @@ import com.atomikos.icatch.CompositeTransactionManager;
 import com.atomikos.icatch.ExportingTransactionManager;
 import com.atomikos.icatch.ImportingTransactionManager;
 import com.atomikos.icatch.SysException;
-import com.atomikos.icatch.TSListener;
+import com.atomikos.icatch.TransactionServicePlugin;
 import com.atomikos.icatch.admin.LogAdministrator;
 import com.atomikos.icatch.config.Configuration;
 import com.atomikos.icatch.config.TSInitInfo;
@@ -350,16 +350,16 @@ public abstract class AbstractUserTransactionService implements
 		Configuration.removeLogAdministrator ( admin );
 	}
 
-	public void registerTSListener ( TSListener listener )
+	public void registerTSListener ( TransactionServicePlugin listener )
 	{
 		if ( listener == null ) throw new IllegalArgumentException ( "Null not allowed");
-		Configuration.addTSListener ( listener );
+		Configuration.registerTransactionServicePlugin ( listener );
 	}
 
-	public void removeTSListener ( TSListener listener )
+	public void removeTSListener ( TransactionServicePlugin listener )
 	{
 		if ( listener == null ) throw new IllegalArgumentException ( "Null not allowed");
-		Configuration.removeTSListener ( listener );
+		Configuration.unregisterTransactionServicePlugin ( listener );
 	}
 
 

@@ -45,14 +45,14 @@ public interface TransactionService
        * @param listener The listener.
        */
        
-      public void addTSListener ( TSListener listener );
+      public void addTSListener ( TransactionServicePlugin listener );
       
        /**
         * Removes a listener from the transaction service.
         * @param listener The listener.
         */
         
-      public void removeTSListener ( TSListener listener );
+      public void removeTSListener ( TransactionServicePlugin listener );
   
   
        /**

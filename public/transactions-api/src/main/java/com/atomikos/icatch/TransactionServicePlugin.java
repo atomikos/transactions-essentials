@@ -28,12 +28,12 @@ package com.atomikos.icatch;
 import java.util.Properties;
 
  /**
-  * A listener interface for transaction service startup and shutdown events.
+  * A plugin interface for transaction service extension modules.
   * Instances can register themselves in order to be notified about
   * recovery and shutdown events.
   */
 
-public interface TSListener
+public interface TransactionServicePlugin
 {
      /**
       * Called before initialization of the transaction core.

@@ -43,7 +43,7 @@ import com.atomikos.icatch.RecoveryCoordinator;
 import com.atomikos.icatch.RecoveryService;
 import com.atomikos.icatch.SubTxAwareParticipant;
 import com.atomikos.icatch.SysException;
-import com.atomikos.icatch.TSListener;
+import com.atomikos.icatch.TransactionServicePlugin;
 import com.atomikos.icatch.TransactionService;
 import com.atomikos.icatch.TxState;
 import com.atomikos.icatch.admin.LogControl;
@@ -241,7 +241,7 @@ public class TransactionServiceImp implements TransactionService,
 
         Enumeration enumm = tsListeners_.elements ();
         while ( enumm.hasMoreElements () ) {
-            TSListener l = (TSListener) enumm.nextElement ();
+            TransactionServicePlugin l = (TransactionServicePlugin) enumm.nextElement ();
             try {
 	            if ( init ) {
 	                if (before) l.beforeInit ( initProperties_ );
@@ -609,7 +609,7 @@ public class TransactionServiceImp implements TransactionService,
      * @see TransactionService
      */
 
-    public void addTSListener ( TSListener listener )
+    public void addTSListener ( TransactionServicePlugin listener )
             throws IllegalStateException
     {
 
@@ -630,7 +630,7 @@ public class TransactionServiceImp implements TransactionService,
      * @see TransactionService
      */
 
-    public void removeTSListener ( TSListener listener )
+    public void removeTSListener ( TransactionServicePlugin listener )
     {
 
         tsListeners_.removeElement ( listener );

@@ -32,7 +32,7 @@ import com.atomikos.icatch.CompositeTransactionManager;
 import com.atomikos.icatch.ExportingTransactionManager;
 import com.atomikos.icatch.ImportingTransactionManager;
 import com.atomikos.icatch.SysException;
-import com.atomikos.icatch.TSListener;
+import com.atomikos.icatch.TransactionServicePlugin;
 import com.atomikos.icatch.admin.LogAdministrator;
 
  /**
@@ -133,7 +133,7 @@ public interface UserTransactionService
 	   * Registers a listener with the transaction service.
 	   * @param listener
 	   */
-	  public void registerTSListener ( TSListener listener );
+	  public void registerTSListener ( TransactionServicePlugin listener );
 	  
 	  /**
 	   * Removes a listener from the transaction service.
@@ -143,7 +143,7 @@ public interface UserTransactionService
 	   * This method does nothing if the listener is not found.
 	   * @param listener 
 	   */
-	  public void removeTSListener ( TSListener listener );
+	  public void removeTSListener ( TransactionServicePlugin listener );
 
 	/**
 	     *Initializes the intra-VM transaction manager.
