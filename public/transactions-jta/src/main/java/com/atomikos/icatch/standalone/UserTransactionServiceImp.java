@@ -76,27 +76,10 @@ class UserTransactionServiceImp extends AbstractJtaUserTransactionService
     private static final String PRODUCT_NAME = "TransactionsEssentials";
     // the product name as it should be in the license.
 
-    // the current release number to be checked in license
-
-    // private StandAloneTransactionManager tm_ = null;
-    // the TM to use
-
     private File lockfile_ = null;
-    // the lockfile to guard against double startup
-
 	private FileOutputStream lockfilestream_ = null;
     private FileLock lock_ = null;
-
     private TSInitInfo info_ = null;
-    // the info object that was used
-
-    // private UserTransactionServerImp utxs_ = null;
-    // not null if client demarcation allowed
-
-    // REMOVED IN 2.0
-    // private UserTransaction utx_ = null;
-    // the user tx
-
     private Properties properties_;
 
 
