@@ -52,8 +52,6 @@ import com.atomikos.icatch.imp.CompositeTransactionManagerImp;
 import com.atomikos.icatch.imp.thread.TaskManager;
 import com.atomikos.icatch.jta.AbstractJtaUserTransactionService;
 import com.atomikos.icatch.jta.JTA;
-import com.atomikos.icatch.jta.TransactionManagerImp;
-import com.atomikos.icatch.jta.UserTransactionServerImp;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 import com.atomikos.persistence.StateRecoveryManager;
@@ -168,20 +166,6 @@ class UserTransactionServiceImp extends AbstractJtaUserTransactionService
         long maxTimeout = Long.valueOf( getTrimmedProperty (
                 AbstractUserTransactionServiceFactory.MAX_TIMEOUT_PROPERTY_NAME, p ) );
 
-        long defaultTimeoutInMillis = Long.valueOf( getTrimmedProperty (
-                AbstractUserTransactionServiceFactory.DEFAULT_JTA_TIMEOUT_PROPERTY_NAME, p ) );
-        int defaultTimeout = 0;
-
-        defaultTimeout = (int) defaultTimeoutInMillis/1000;
-        if ( defaultTimeout <= 0 ) {
-        	LOGGER.logWarning ( "WARNING: " + AbstractUserTransactionServiceFactory.DEFAULT_JTA_TIMEOUT_PROPERTY_NAME + " should be more than 1000 milliseconds - resetting to 10000 milliseconds instead..." );
-        	defaultTimeout = 10;
-        }
-
-
-        TransactionManagerImp.setDefaultTimeout(defaultTimeout);
-
-
         String name = getTrimmedProperty (
                 AbstractUserTransactionServiceFactory.TM_UNIQUE_NAME_PROPERTY_NAME, p );
         if ( name == null || name.equals ( "" ) )
@@ -189,12 +173,6 @@ class UserTransactionServiceImp extends AbstractJtaUserTransactionService
                     "Property not set: com.atomikos.icatch.tm_unique_name" );
         ret = new StandAloneTransactionManager ( name, recmgr,
                 logdir, maxTimeout, max, !threadedCommit );
-
-        // set default serial mode for JTA txs.
-        if ( new Boolean ( getTrimmedProperty (
-                UserTransactionServiceFactory.SERIAL_JTA_TRANSACTIONS_PROPERTY_NAME, p ) )
-                .booleanValue () )
-            TransactionManagerImp.setDefaultSerial ( true );
 
         return ret;
     }
@@ -244,33 +222,7 @@ class UserTransactionServiceImp extends AbstractJtaUserTransactionService
 
             }
 
-            // lastly, set up UserTransactionServer if client demarcation
-            // is allowed
-            boolean clientDemarcation = new Boolean ( getTrimmedProperty (
-                    AbstractUserTransactionServiceFactory.CLIENT_DEMARCATION_PROPERTY_NAME, p ) )
-                    .booleanValue ();
-
-            if ( clientDemarcation ) {
-
-                String name = getTrimmedProperty (
-                        AbstractUserTransactionServiceFactory.TM_UNIQUE_NAME_PROPERTY_NAME, p );
-                if ( name == null || name.equals ( "" ) )
-                    throw new SysException (
-                            "Property not set: com.atomikos.icatch.tm_unique_name" );
-                UserTransactionServerImp utxs = UserTransactionServerImp
-                        .getSingleton ();
-                utxs.init ( name, p );
-
-                String factory = getTrimmedProperty (
-                        Context.INITIAL_CONTEXT_FACTORY, p );
-                String url = getTrimmedProperty ( Context.PROVIDER_URL, p );
-                if ( url == null || url.equals ( "" ) ) {
-                    throw new SysException ( "Property not set: "
-                            + Context.PROVIDER_URL );
-                }
-
-            }
-
+      
             // this will add all resources and recover them
             super.init ( info );
 

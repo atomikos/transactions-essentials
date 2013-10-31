@@ -4,6 +4,7 @@ import java.util.Properties;
 
 public class ConfigProperties {
 	
+	private static final String TM_UNIQUE_NAME_PROPERTY_NAME = "com.atomikos.icatch.tm_unique_name";
 	private Properties properties;
 
 	public ConfigProperties(Properties properties) {
@@ -38,6 +39,10 @@ public class ConfigProperties {
 	public long getAsLong(String name) {
 		String retAsString = getProperty(name);
 		return Long.valueOf(retAsString);
+	}
+
+	public String getTmUniqueName() {
+		return getProperty(TM_UNIQUE_NAME_PROPERTY_NAME);
 	}
 
 }
