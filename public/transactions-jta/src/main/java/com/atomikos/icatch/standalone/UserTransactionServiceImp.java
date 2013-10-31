@@ -54,7 +54,6 @@ import com.atomikos.icatch.config.imp.TSMetaDataImp;
 import com.atomikos.icatch.imp.CompositeTransactionManagerImp;
 import com.atomikos.icatch.imp.thread.TaskManager;
 import com.atomikos.icatch.jta.AbstractJtaUserTransactionService;
-import com.atomikos.icatch.jta.J2eeUserTransaction;
 import com.atomikos.icatch.jta.JTA;
 import com.atomikos.icatch.jta.TransactionManagerImp;
 import com.atomikos.icatch.jta.UserTransactionServerImp;
