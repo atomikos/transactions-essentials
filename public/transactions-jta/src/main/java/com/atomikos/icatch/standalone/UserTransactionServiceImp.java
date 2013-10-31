@@ -29,10 +29,7 @@ import static com.atomikos.util.Atomikos.VERSION;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.channels.FileLock;
-import java.nio.channels.OverlappingFileLockException;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.Stack;
@@ -76,9 +73,6 @@ class UserTransactionServiceImp extends AbstractJtaUserTransactionService
     private static final String PRODUCT_NAME = "TransactionsEssentials";
     // the product name as it should be in the license.
 
-    private File lockfile_ = null;
-	private FileOutputStream lockfilestream_ = null;
-    private FileLock lock_ = null;
     private TSInitInfo info_ = null;
     private Properties properties_;
 
@@ -160,31 +154,9 @@ class UserTransactionServiceImp extends AbstractJtaUserTransactionService
         boolean threadedCommit = true;
         if ( "false".equals( threadedCommitPrefs )) threadedCommit = false;
 
-        // make sure that no other instance is running with the same log
-        // by setting a lock file
-        lockfile_ = new File(logdir,logname + ".lck");
-        //lockfile_ = new File ( logdir + logname + ".lck" );
-
+        
         StateRecoveryManager recmgr = null;
         if ( enableRecovery ) {
-        	 //ISSUE 10077: don't complain about lock file if no logging
-        	try {
-        		lockfilestream_ = new FileOutputStream ( lockfile_ );
-        		lock_ = lockfilestream_.getChannel().tryLock();
-        		lockfile_.deleteOnExit();
-        	} catch ( OverlappingFileLockException failedToGetLock ) {
-        		//happens on windows
-        		lock_ = null;
-        	} catch ( IOException failedToGetLock ) {
-        		//happens on windows
-        		lock_ = null;
-        	}
-        	if ( lock_ == null ) {
-        		 System.err.println ( "ERROR: the specified log seems to be "
-                         + "in use already. Make sure that no other instance is "
-                         + "running, or kill any pending process if needed." );
-                 throw new RuntimeException ( "Log already in use?" );
-        	}
         	recmgr = new StateRecoveryManagerImp();
         } else {
         	recmgr = new VolatileStateRecoveryManager();
@@ -331,25 +303,7 @@ class UserTransactionServiceImp extends AbstractJtaUserTransactionService
             // delegate to superclass to ensure resources are delisted.
             super.shutdown ( force );
 
-			 try {
-            	if ( lock_ != null ) {
-            		lock_.release();
-            		//lock_.channel().close();
-            	}
-            	if ( lockfilestream_ != null ) lockfilestream_.close();
-            } catch (IOException e) {
-            	// error release lock or shutting down channel
-            	System.err.println ( "Error releasing file lock: "
-            			+ e.getMessage());
-            } finally {
-            	lock_ = null;
-            }
-
-            if ( lockfile_ != null ) {
-                lockfile_.delete ();
-                lockfile_ = null;
-            }
-
+			
             info_ = null;
 
         } catch ( IllegalStateException il ) {

@@ -57,6 +57,7 @@ public class StateRecoveryManagerImp  implements StateRecoveryManager, FSMPreEnt
 	private static final Logger LOGGER = LoggerFactory.createLogger(StateRecoveryManagerImp.class);
 	
 	private ObjectLog objectlog_;
+	private LogFileLock lock_;
 
 
 	/**
@@ -113,6 +114,7 @@ public class StateRecoveryManagerImp  implements StateRecoveryManager, FSMPreEnt
 	 */
 	public void close() throws LogException {
 		objectlog_.close();
+		lock_.releaseLock();
 	}
 
 	/**
@@ -156,6 +158,9 @@ public class StateRecoveryManagerImp  implements StateRecoveryManager, FSMPreEnt
         String logname = Utils.getTrimmedProperty (
                 AbstractUserTransactionServiceFactory.LOG_BASE_NAME_PROPERTY_NAME, p );
         logdir = Utils.findOrCreateFolder ( logdir );
+        
+        lock_ = new LogFileLock(logdir, logname);
+        lock_.acquireLock();
         
         boolean serializableLogging= "true".equals(Utils.getTrimmedProperty (
                 AbstractUserTransactionServiceFactory.SERIALIZABLE_LOGGING_PROPERTY_NAME, p ));
