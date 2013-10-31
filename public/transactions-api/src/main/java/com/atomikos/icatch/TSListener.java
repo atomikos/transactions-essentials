@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2013 Atomikos <info@atomikos.com>
  *
  * This code ("Atomikos TransactionsEssentials"), by itself,
  * is being distributed under the
@@ -37,6 +37,13 @@ public interface TSListener
 {
      /**
       * Called before initialization of the transaction core.
+      * 
+      * <em>
+      * DISCLAIMER: only implementations that register with the ServiceLoader
+      * mechanism are sure of receiving this notification. Other implementations
+      * should be aware that the transaction core may already be running by the 
+      * time they register - in which case there will be no callback.
+      * </em>
       */
       
     public void beforeInit ( Properties properties );
