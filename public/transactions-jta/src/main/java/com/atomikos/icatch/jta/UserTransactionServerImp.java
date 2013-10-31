@@ -41,6 +41,7 @@ import javax.transaction.NotSupportedException;
 import javax.transaction.Status;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
+import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
 
 import com.atomikos.icatch.SysException;
@@ -72,8 +73,7 @@ public class UserTransactionServerImp implements UserTransactionServer
         return singleton_;
     }
 
-    private TransactionManagerImp tm_;
-    // the transaction manager to delegate to
+  
 
     private String name_;
     // to bind in JNDI
@@ -188,10 +188,7 @@ public class UserTransactionServerImp implements UserTransactionServer
             }
             properties_ = properties;
 
-            tm_ = (TransactionManagerImp) TransactionManagerImp
-                    .getTransactionManager ();
-            if ( tm_ == null )
-                throw new SysException ( "No TM found" );
+           
 
             try {
 
@@ -259,15 +256,22 @@ public class UserTransactionServerImp implements UserTransactionServer
             SystemException, NotSupportedException
     {
 
-        tm_.begin ( timeout );
-        TransactionImp tx = (TransactionImp) tm_.getTransaction ();
+    	TransactionManagerImp tm = getTransactionManager();
+        tm.begin ( timeout );
+        TransactionImp tx = (TransactionImp) tm.getTransaction ();
         // set serial mode or shared access will NOT work!
         tx.getCT ().getTransactionControl ().setSerial ();
-        tm_.suspend ();
+        tm.suspend ();
         return tx.getCT ().getTid ();
     }
 
-    /**
+    private TransactionManagerImp getTransactionManager() {
+    	TransactionManagerImp ret = (TransactionManagerImp) TransactionManagerImp.getTransactionManager();
+    	if (ret == null) throw new SysException("Transaction manager not initialized?");
+    	return ret;
+	}
+
+	/**
      * @see UserTransactionServer
      */
 
@@ -276,7 +280,7 @@ public class UserTransactionServerImp implements UserTransactionServer
             HeuristicRollbackException, SecurityException,
             IllegalStateException, SystemException
     {
-        Transaction tx = tm_.getJtaTransactionWithId(tid);
+        Transaction tx = getTransactionManager().getJtaTransactionWithId(tid);
         if ( tx == null ) {
             throw new javax.transaction.RollbackException (
                     "Transaction not found: " + tid );
@@ -291,7 +295,7 @@ public class UserTransactionServerImp implements UserTransactionServer
     public void rollback ( String tid ) throws RemoteException,
             IllegalStateException, SecurityException, SystemException
     {
-        Transaction tx = tm_.getJtaTransactionWithId(tid);
+        Transaction tx = getTransactionManager().getJtaTransactionWithId(tid);
         if ( tx != null ) {
             tx.rollback ();
         }
@@ -304,7 +308,7 @@ public class UserTransactionServerImp implements UserTransactionServer
     public void setRollbackOnly ( String tid ) throws RemoteException,
             java.lang.IllegalStateException, SystemException
     {
-        Transaction tx = tm_.getJtaTransactionWithId(tid);
+        Transaction tx = getTransactionManager().getJtaTransactionWithId(tid);
         if ( tx != null ) {
             tx.setRollbackOnly ();
         }
@@ -317,7 +321,7 @@ public class UserTransactionServerImp implements UserTransactionServer
     public int getStatus ( String tid ) throws RemoteException, SystemException
     {
         int ret = Status.STATUS_NO_TRANSACTION;
-        Transaction tx = tm_.getJtaTransactionWithId(tid);
+        Transaction tx = getTransactionManager().getJtaTransactionWithId(tid);
         if ( tx != null ) {
             ret = tx.getStatus ();
         }

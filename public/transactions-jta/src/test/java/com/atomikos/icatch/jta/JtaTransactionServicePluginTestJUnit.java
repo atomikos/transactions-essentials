@@ -1,10 +1,14 @@
 package com.atomikos.icatch.jta;
 
+import java.rmi.registry.LocateRegistry;
 import java.util.Properties;
 import java.util.ServiceLoader;
 
+import javax.naming.Context;
+
 import junit.framework.Assert;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -23,6 +27,18 @@ public class JtaTransactionServicePluginTestJUnit {
 		properties.setProperty("com.atomikos.icatch.serial_jta_transactions", "true");
 		properties.setProperty("com.atomikos.icatch.client_demarcation", "true");
 		properties.setProperty("com.atomikos.icatch.tm_unique_name", "bla");
+		properties.setProperty("com.atomikos.icatch.rmi_export_class", "UnicastRemoteObject");
+        properties.setProperty ( Context.INITIAL_CONTEXT_FACTORY,
+                "com.sun.jndi.rmi.registry.RegistryContextFactory" );
+        properties.setProperty ( Context.PROVIDER_URL, "rmi://localhost:1099" );
+        try {
+        	LocateRegistry.createRegistry ( 1099 );
+        } catch (Exception ok){}
+	}
+	
+	@After
+	public void tearDown() throws Exception {
+		plugin.afterShutdown();
 	}
 
 	@Test
@@ -43,18 +59,30 @@ public class JtaTransactionServicePluginTestJUnit {
 	}
 	
 	@Test
-	public void testSetsSerialJtaTransactions() {
-		properties.setProperty("com.atomikos.icatch.serial_jta_transactions", "true");
-		plugin.beforeInit(properties);
-		Assert.assertTrue(TransactionManagerImp.getDefaultSerial());
-		
+	public void testSetSerialJtaTransactionsFalse() {
 		properties.setProperty("com.atomikos.icatch.serial_jta_transactions", "false");
 		plugin.beforeInit(properties);
 		Assert.assertFalse(TransactionManagerImp.getDefaultSerial());
-		
+	}
+	
+	@Test
+	public void testSetsSerialJtaTransactionsTrue() {
 		properties.setProperty("com.atomikos.icatch.serial_jta_transactions", "true");
 		plugin.beforeInit(properties);
 		Assert.assertTrue(TransactionManagerImp.getDefaultSerial());
 	}
 	
+	@Test
+	public void testClientDemarcationTrue() {
+		properties.setProperty("com.atomikos.icatch.client_demarcation", "true");
+		plugin.beforeInit(properties);
+		Assert.assertTrue(UserTransactionServerImp.getSingleton().getUserTransaction() instanceof RemoteClientUserTransaction);
+	}
+
+	@Test
+	public void testClientDemarcationFalse() {
+		properties.setProperty("com.atomikos.icatch.client_demarcation", "false");
+		plugin.beforeInit(properties);
+		Assert.assertFalse(UserTransactionServerImp.getSingleton().getUserTransaction() instanceof RemoteClientUserTransaction);
+	}
 }
