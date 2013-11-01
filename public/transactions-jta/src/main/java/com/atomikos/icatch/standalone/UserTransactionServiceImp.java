@@ -193,11 +193,6 @@ class UserTransactionServiceImp extends AbstractJtaUserTransactionService
             // install composite manager
             Configuration.installCompositeTransactionManager ( tm );
             Configuration.installRecoveryService ( tm.getTransactionService () );
-            Configuration.
-                    installImportingTransactionManager ( new ImportingTransactionManagerImp (
-                            tm.getTransactionService () ) );
-            Configuration.
-                    installExportingTransactionManager ( new ExportingTransactionManagerImp () );
             Configuration.installLogControl ( tm.getTransactionService ()
                     .getLogControl () );
             Configuration.installTransactionService ( tm
