@@ -12,7 +12,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.atomikos.icatch.TransactionServicePlugin;
+import com.atomikos.icatch.provider.TransactionServicePlugin;
 
 public class JtaTransactionServicePluginTestJUnit {
 

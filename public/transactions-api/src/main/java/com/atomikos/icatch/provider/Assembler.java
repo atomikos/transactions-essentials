@@ -1,4 +1,5 @@
-package com.atomikos.icatch.config;
+package com.atomikos.icatch.provider;
+
 
 public interface Assembler {
 

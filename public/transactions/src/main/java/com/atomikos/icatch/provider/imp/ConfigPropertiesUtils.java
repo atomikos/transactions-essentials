@@ -1,4 +1,4 @@
-package com.atomikos.icatch.config.imp;
+package com.atomikos.icatch.provider.imp;
 
 import java.util.Properties;
 

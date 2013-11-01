@@ -2,9 +2,9 @@ package com.atomikos.icatch.jta;
 
 import java.util.Properties;
 
-import com.atomikos.icatch.TransactionServicePlugin;
-import com.atomikos.icatch.config.ConfigProperties;
 import com.atomikos.icatch.config.imp.AbstractUserTransactionServiceFactory;
+import com.atomikos.icatch.provider.ConfigProperties;
+import com.atomikos.icatch.provider.TransactionServicePlugin;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 

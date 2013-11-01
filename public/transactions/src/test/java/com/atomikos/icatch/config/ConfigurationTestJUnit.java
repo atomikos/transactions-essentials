@@ -7,6 +7,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.atomikos.icatch.provider.Assembler;
+import com.atomikos.icatch.provider.ConfigProperties;
+
 public class ConfigurationTestJUnit {
 
 	private static final String CUSTOM_PROPERTY_NAME = "bla";

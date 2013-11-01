@@ -1,4 +1,4 @@
-package com.atomikos.icatch.config;
+package com.atomikos.icatch.provider;
 
 import static org.junit.Assert.*;
 
@@ -8,6 +8,8 @@ import junit.framework.Assert;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import com.atomikos.icatch.provider.ConfigProperties;
 
 public class ConfigPropertiesTestJUnit {
 	

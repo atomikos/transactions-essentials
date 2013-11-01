@@ -27,6 +27,8 @@ package com.atomikos.icatch;
 
 import java.util.Properties;
 
+import com.atomikos.icatch.provider.TransactionServicePlugin;
+
  /**
   * This internal interface is the base interface for creating transactions.
   * It also acts as a container for existing transactions.

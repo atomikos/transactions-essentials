@@ -23,7 +23,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  */
 
-package com.atomikos.icatch;
+package com.atomikos.icatch.provider;
 
 import java.util.Properties;
 

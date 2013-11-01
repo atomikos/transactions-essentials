@@ -1,4 +1,4 @@
-package com.atomikos.icatch.config.imp;
+package com.atomikos.icatch.provider.imp;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,8 +8,8 @@ import java.net.URL;
 import java.util.Enumeration;
 import java.util.Properties;
 
-import com.atomikos.icatch.config.Assembler;
-import com.atomikos.icatch.config.ConfigProperties;
+import com.atomikos.icatch.provider.Assembler;
+import com.atomikos.icatch.provider.ConfigProperties;
 import com.atomikos.logging.LoggerFactory;
 import com.atomikos.util.ClassLoadingHelper;
 

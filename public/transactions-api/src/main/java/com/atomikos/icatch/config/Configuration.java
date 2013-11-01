@@ -40,10 +40,12 @@ import com.atomikos.icatch.ExportingTransactionManager;
 import com.atomikos.icatch.ImportingTransactionManager;
 import com.atomikos.icatch.RecoveryService;
 import com.atomikos.icatch.SysException;
-import com.atomikos.icatch.TransactionServicePlugin;
 import com.atomikos.icatch.TransactionService;
 import com.atomikos.icatch.admin.LogAdministrator;
 import com.atomikos.icatch.admin.LogControl;
+import com.atomikos.icatch.provider.Assembler;
+import com.atomikos.icatch.provider.ConfigProperties;
+import com.atomikos.icatch.provider.TransactionServicePlugin;
 
 /**
  * Configuration is a facade for the icatch transaction management facilities.
