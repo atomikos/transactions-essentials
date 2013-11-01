@@ -68,7 +68,7 @@ public class ConfigurationTestJUnit {
 	@Test
 	public void testCustomPropertiesFileOverridesJtaPropertiesFile() {
 		Configuration.resetConfigProperties();
-		String customFileNamePath ="target/test-classes/custom.properties";
+		String customFileNamePath ="custom.properties";
 		System.setProperty("com.atomikos.icatch.file", customFileNamePath);
 		ConfigProperties props = Configuration.getConfigProperties();
 		Assert.assertEquals("custom.properties.override", props.getProperty("com.atomikos.icatch.jta.to.override.by.custom"));
