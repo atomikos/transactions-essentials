@@ -56,7 +56,7 @@ public class CompositeTransactionManagerImp implements CompositeTransactionManag
     private boolean initialized_;
 
 
-    protected CompositeTransactionManagerImp ()
+    public CompositeTransactionManagerImp ()
     {
         threadtotxmap_ = new HashMap<Thread, Stack<CompositeTransaction>> ();
         txtothreadmap_ = new HashMap<CompositeTransaction, Thread> ();
