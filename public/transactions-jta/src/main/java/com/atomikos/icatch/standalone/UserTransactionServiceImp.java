@@ -62,6 +62,7 @@ import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 import com.atomikos.persistence.StateRecoveryManager;
 import com.atomikos.persistence.imp.StateRecoveryManagerImp;
+import com.atomikos.persistence.imp.VolatileStateRecoveryManager;
 
 /**
  *
@@ -181,7 +182,7 @@ class UserTransactionServiceImp extends AbstractJtaUserTransactionService
         // by setting a lock file
         lockfile_ = new File(logdir,logname + ".lck");
         //lockfile_ = new File ( logdir + logname + ".lck" );
-
+        StateRecoveryManager recmgr = null;
         if ( enableRecovery ) {
         	 //ISSUE 10077: don't complain about lock file if no logging
         	try {
@@ -201,12 +202,14 @@ class UserTransactionServiceImp extends AbstractJtaUserTransactionService
                          + "running, or kill any pending process if needed." );
                  throw new RuntimeException ( "Log already in use?" );
         	}
+        	recmgr = new StateRecoveryManagerImp();
+        } else {
+        	recmgr = new VolatileStateRecoveryManager();
         }
 
         int max = Integer.valueOf( getTrimmedProperty (
                 AbstractUserTransactionServiceFactory.MAX_ACTIVES_PROPERTY_NAME, p ) );
 
-        StateRecoveryManager recmgr = new StateRecoveryManagerImp();
         long maxTimeout = Long.valueOf( getTrimmedProperty (
                 AbstractUserTransactionServiceFactory.MAX_TIMEOUT_PROPERTY_NAME, p ) );
 
