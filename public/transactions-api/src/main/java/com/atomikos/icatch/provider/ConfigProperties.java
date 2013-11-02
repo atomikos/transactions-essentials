@@ -151,4 +151,12 @@ public class ConfigProperties {
 		return getAsBoolean(THREADED_2PC_PROPERTY_NAME);
 	}
 
+	public void applyUserSpecificProperties(Properties userSpecificProperties) {
+		Enumeration names = userSpecificProperties.propertyNames();
+		while (names.hasMoreElements()) {
+			String name = (String) names.nextElement();
+			properties.setProperty(name, userSpecificProperties.getProperty(name));
+		}
+	}
+
 }

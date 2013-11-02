@@ -85,5 +85,15 @@ public class ConfigPropertiesTestJUnit {
 		props.setProperty("com.atomikos.icatch.threaded_2pc", "true");
 		assertTrue(props.getThreaded2pc());
 	}
+	
+	@Test
+	public void testMergeProperties() {
+		props.setProperty(CUSTOM_PROPERTY_NAME, "bla");
+		Properties userSpecificProperties = new Properties();
+		userSpecificProperties.setProperty("userSpecific", "userBla");
+		props.applyUserSpecificProperties(userSpecificProperties);
+		assertEquals("bla" , props.getProperty(CUSTOM_PROPERTY_NAME));
+		assertEquals("userBla", props.getProperty("userSpecific"));
+	}
 }
 
