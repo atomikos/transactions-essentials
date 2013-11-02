@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>com.atomikos</groupId>
 		<artifactId>ate</artifactId>
-		<version>3.9.0</version>
+		<version>3.9.1-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>atomikos-util</artifactId>
