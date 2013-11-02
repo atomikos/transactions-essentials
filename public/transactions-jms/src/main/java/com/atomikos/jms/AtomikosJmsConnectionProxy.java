@@ -158,7 +158,7 @@ implements SessionHandleStateChangeListener
 			else if ( CREATE_SESSION_METHOD.equals ( methodName ) ) {
 				Boolean transactedFlag = ( Boolean ) args[0];
 				Session session = null;
-				if ( !props.getLocalTransactionMode() ) {
+				if ( createXaSession(transactedFlag.booleanValue()) ) {
 					session = recycleSession();
 					if (session == null) {
 						if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": creating XA-capable session..." );
@@ -214,6 +214,10 @@ implements SessionHandleStateChangeListener
 		
 		//dummy return to make compiler happy
 		return null;
+	}
+
+	private boolean createXaSession(boolean sessionTransactedFlag) {
+		return !props.getLocalTransactionMode();
 	}
 	
 	private synchronized Session recycleSession() {
