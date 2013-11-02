@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Enumeration;
 import java.util.Properties;
 
 import com.atomikos.icatch.provider.Assembler;
@@ -68,8 +67,6 @@ public class AssemblerImp implements Assembler {
 		Properties customProperties = new Properties(jtaProperties);
 		loadPropertiesFromCustomFilePath(customProperties);
 		Properties finalProperties = new Properties(customProperties);
-		applySystemProperties(finalProperties);
-		ConfigPropertiesUtils.substitutePlaceHolderValues(finalProperties);
 		return new ConfigProperties(finalProperties);
 	}
 
@@ -87,14 +84,5 @@ public class AssemblerImp implements Assembler {
 		}
 	}
 
-	private void applySystemProperties(Properties finalProperties) {
-		Properties systemProperties = System.getProperties();
-		Enumeration<?> propertyNames = systemProperties.propertyNames();
-		while (propertyNames.hasMoreElements()) {
-			String name = (String) propertyNames.nextElement();
-			if (name.startsWith("com.atomikos")) {
-				finalProperties.setProperty(name, systemProperties.getProperty(name));
-			}
-		}
-	}
+
 }

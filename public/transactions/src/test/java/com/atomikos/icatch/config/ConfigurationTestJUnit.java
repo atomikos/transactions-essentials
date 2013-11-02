@@ -12,7 +12,7 @@ import com.atomikos.icatch.provider.ConfigProperties;
 
 public class ConfigurationTestJUnit {
 
-	private static final String CUSTOM_PROPERTY_NAME = "bla";
+	private static final String CUSTOM_PROPERTY_NAME = "com.atomikos.icatch.bla";
 	private static final String CUSTOM_PROPERTY_VALUE = "blabla";
 	
 	private ConfigProperties props;
@@ -83,12 +83,25 @@ public class ConfigurationTestJUnit {
 	}
 	
 	@Test
-	public void testProgramaticallySetPropertiesAreTakenIntoAccount() {
+	public void testProgrammaticallySetPropertiesAreTakenIntoAccount() {
 		setCustomProperty();
 		ConfigProperties props = Configuration.getConfigProperties();
 		Assert.assertEquals(CUSTOM_PROPERTY_VALUE, props.getProperty(CUSTOM_PROPERTY_NAME));
 	}
 	
+	@Test
+	public void testSystemPropertyOverridesProgrammaticallySetProperty() {
+		setCustomProperty();
+		final String systemOverride = overrideCustomPropertyAsSystemProperty();
+		Assert.assertEquals(systemOverride, props.getProperty(CUSTOM_PROPERTY_NAME));
+	}
+	
+	private String overrideCustomPropertyAsSystemProperty() {
+		String ret = CUSTOM_PROPERTY_VALUE + "xxx";
+		System.setProperty(CUSTOM_PROPERTY_NAME, ret);
+		return ret;
+	}
+
 	private void setCustomProperty() {
 		props.setProperty(CUSTOM_PROPERTY_NAME, CUSTOM_PROPERTY_VALUE);
 	}
