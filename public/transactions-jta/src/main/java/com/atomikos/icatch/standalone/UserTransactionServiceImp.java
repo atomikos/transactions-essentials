@@ -136,8 +136,7 @@ class UserTransactionServiceImp extends AbstractJtaUserTransactionService
     {
         StandAloneTransactionManager ret = null;
 
-        String logname = getTrimmedProperty (
-                AbstractUserTransactionServiceFactory.LOG_BASE_NAME_PROPERTY_NAME, p );
+       
         String logdir = getTrimmedProperty (
                 AbstractUserTransactionServiceFactory.LOG_BASE_DIR_PROPERTY_NAME, p );
         logdir = findOrCreateFolder ( logdir );

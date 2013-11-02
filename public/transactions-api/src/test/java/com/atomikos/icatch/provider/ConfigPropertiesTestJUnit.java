@@ -50,4 +50,40 @@ public class ConfigPropertiesTestJUnit {
 		assertEquals("bla", props.getProperty(CUSTOM_PROPERTY_NAME));
 	}
 	
+	@Test
+	public void testGetLogBaseDir() {
+		props.setProperty("com.atomikos.icatch.log_base_dir", "bla");
+		assertEquals("bla", props.getLogBaseDir());
+	}
+	
+	@Test
+	public void testGetLogBaseName() {
+		props.setProperty("com.atomikos.icatch.log_base_name", "bla");
+		assertEquals("bla", props.getLogBaseName());
+	}
+	
+	@Test
+	public void testGetEnableLogging() {
+		props.setProperty("com.atomikos.icatch.enable_logging", "true");
+		assertTrue(props.getEnableLogging());
+	}
+	
+	@Test
+	public void testMaxTimeout() {
+		props.setProperty("com.atomikos.icatch.max_timeout", "30000");
+		assertEquals(30000, props.getMaxTimeout());
+	}
+	
+	@Test 
+	public void testMaxActives() {
+		props.setProperty("com.atomikos.icatch.max_actives", "100");
+		assertEquals(100, props.getMaxActives());
+	}
+	
+	@Test
+	public void testThreaded2pc() {
+		props.setProperty("com.atomikos.icatch.threaded_2pc", "true");
+		assertTrue(props.getThreaded2pc());
+	}
 }
+

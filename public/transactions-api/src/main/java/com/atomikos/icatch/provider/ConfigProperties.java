@@ -6,6 +6,12 @@ import java.util.Properties;
 public class ConfigProperties {
 
 	private static final String TM_UNIQUE_NAME_PROPERTY_NAME = "com.atomikos.icatch.tm_unique_name";
+	private static final String LOG_BASE_DIR_PROPERTY_NAME = "com.atomikos.icatch.log_base_dir";
+	private static final String LOG_BASE_NAME_PROPERTY_NAME = "com.atomikos.icatch.log_base_name";
+	private static final String ENABLE_LOGGING_PROPERTY_NAME = "com.atomikos.icatch.enable_logging";
+	private static final String MAX_TIMEOUT_PROPERTY_NAME = "com.atomikos.icatch.max_timeout";
+	private static final String MAX_ACTIVES_PROPERTY_NAME = "com.atomikos.icatch.max_actives";
+	private static final String THREADED_2PC_PROPERTY_NAME = "com.atomikos.icatch.threaded_2pc";
 
 
 	/**
@@ -119,6 +125,30 @@ public class ConfigProperties {
 
 	public String getTmUniqueName() {
 		return getProperty(TM_UNIQUE_NAME_PROPERTY_NAME);
+	}
+
+	public String getLogBaseDir() {
+		return getProperty(LOG_BASE_DIR_PROPERTY_NAME);
+	}
+
+	public String getLogBaseName() {
+		return getProperty(LOG_BASE_NAME_PROPERTY_NAME);
+	}
+
+	public boolean getEnableLogging() {
+		return getAsBoolean(ENABLE_LOGGING_PROPERTY_NAME);
+	}
+
+	public long getMaxTimeout() {
+		return getAsLong(MAX_TIMEOUT_PROPERTY_NAME);
+	}
+
+	public int getMaxActives() {
+		return getAsInt(MAX_ACTIVES_PROPERTY_NAME);
+	}
+
+	public boolean getThreaded2pc() {
+		return getAsBoolean(THREADED_2PC_PROPERTY_NAME);
 	}
 
 }
