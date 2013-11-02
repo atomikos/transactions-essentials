@@ -1,5 +1,6 @@
 package com.atomikos.icatch.provider;
 
+import com.atomikos.icatch.RecoveryService;
 import com.atomikos.icatch.TransactionService;
 
 
@@ -9,4 +10,5 @@ public interface Assembler {
 	
 	TransactionService assembleTransactionService(ConfigProperties configProperties);
 
+	RecoveryService assembleRecoveryService(ConfigProperties configProperties);
 }

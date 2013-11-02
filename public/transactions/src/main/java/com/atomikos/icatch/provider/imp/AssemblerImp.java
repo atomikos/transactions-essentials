@@ -7,6 +7,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Properties;
 
+import com.atomikos.icatch.RecoveryService;
 import com.atomikos.icatch.SysException;
 import com.atomikos.icatch.TransactionService;
 import com.atomikos.icatch.imp.TransactionServiceImp;
@@ -120,6 +121,13 @@ public class AssemblerImp implements Assembler {
 			}
 			transactionService = new TransactionServiceImp(tmUniqueName, recMgr, idMgr, maxTimeout, maxActives, !threaded2pc);
 		}
+		return transactionService;
+	}
+
+	@Override
+	public RecoveryService assembleRecoveryService(
+			ConfigProperties configProperties) {
+		assembleTransactionService(configProperties);
 		return transactionService;
 	}
 
