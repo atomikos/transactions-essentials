@@ -83,6 +83,8 @@ public class JtaTransactionServicePluginTestJUnit {
 		properties.setProperty("com.atomikos.icatch.client_demarcation", "true");
 		plugin.beforeInit(properties);
 		Assert.assertTrue(UserTransactionServerImp.getSingleton().getUserTransaction() instanceof RemoteClientUserTransaction);
+		plugin.afterShutdown();
+		Assert.assertNull(UserTransactionServerImp.getSingleton().getUserTransaction());
 	}
 
 	@Test

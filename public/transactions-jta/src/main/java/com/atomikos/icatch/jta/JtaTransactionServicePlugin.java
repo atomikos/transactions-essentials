@@ -81,6 +81,7 @@ public class JtaTransactionServicePlugin implements TransactionServicePlugin {
 	@Override
 	public void afterShutdown() {
 		UserTransactionServerImp.getSingleton().shutdown();
+		TransactionManagerImp.installTransactionManager ( null, false );
 	}
 
 }
