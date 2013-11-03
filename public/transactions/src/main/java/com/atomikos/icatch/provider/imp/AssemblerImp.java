@@ -139,12 +139,4 @@ public class AssemblerImp implements Assembler {
 			ConfigProperties configProperties) {
 		return new CompositeTransactionManagerImp();
 	}
-
-	@Override
-	public LogControl assembleLogControl(ConfigProperties configProperties) {
-		assembleTransactionService(configProperties);
-		return transactionService.getLogControl();
-	}
-
-
 }

@@ -3,7 +3,6 @@ package com.atomikos.icatch.provider;
 import com.atomikos.icatch.CompositeTransactionManager;
 import com.atomikos.icatch.RecoveryService;
 import com.atomikos.icatch.TransactionService;
-import com.atomikos.icatch.admin.LogControl;
 
 
 public interface Assembler {
@@ -16,5 +15,4 @@ public interface Assembler {
 	
 	CompositeTransactionManager assembleCompositeTransactionManager(ConfigProperties configProperties);
 
-	LogControl assembleLogControl(ConfigProperties configProperties);
 }

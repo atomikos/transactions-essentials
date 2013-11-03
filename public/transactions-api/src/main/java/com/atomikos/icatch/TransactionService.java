@@ -27,6 +27,7 @@ package com.atomikos.icatch;
 
 import java.util.Properties;
 
+import com.atomikos.icatch.admin.LogControl;
 import com.atomikos.icatch.provider.TransactionServicePlugin;
 
  /**
@@ -174,4 +175,9 @@ public interface TransactionService
        */
       
       public RecoveryCoordinator getSuperiorRecoveryCoordinator ( String root );
+      
+      /**
+       * Gets the logcontrol instance for admin purposes.
+       */
+      public LogControl getLogControl();
 }
