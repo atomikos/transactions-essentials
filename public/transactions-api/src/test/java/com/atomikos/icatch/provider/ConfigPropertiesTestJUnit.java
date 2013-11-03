@@ -95,5 +95,10 @@ public class ConfigPropertiesTestJUnit {
 		assertEquals("bla" , props.getProperty(CUSTOM_PROPERTY_NAME));
 		assertEquals("userBla", props.getProperty("userSpecific"));
 	}
+	
+	@Test
+	public void testDefaultTmUniqueName() {
+		assertNotNull(props.getTmUniqueName());
+	}
 }
 

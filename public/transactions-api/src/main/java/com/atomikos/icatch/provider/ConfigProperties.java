@@ -1,5 +1,6 @@
 package com.atomikos.icatch.provider;
 
+import java.net.UnknownHostException;
 import java.util.Enumeration;
 import java.util.Properties;
 
@@ -59,6 +60,19 @@ public class ConfigProperties {
 		return result;
 	}
 
+    private static String getDefaultName ()
+    {
+
+        String ret = "tm";
+        try {
+            ret = java.net.InetAddress.getLocalHost ().getHostAddress ()
+                    + ".tm";
+        } catch ( UnknownHostException e ) {
+            // ignore: use short default
+        }
+
+        return ret;
+    }
 
 
 	private Properties properties;
@@ -66,6 +80,11 @@ public class ConfigProperties {
 	public ConfigProperties(Properties properties) {
 		if (properties == null) throw new IllegalArgumentException("Properties should not be null");
 		this.properties = properties;
+		setDefaultTmUniqueName();
+	}
+
+	private void setDefaultTmUniqueName() {
+		properties.setProperty(TM_UNIQUE_NAME_PROPERTY_NAME, getDefaultName());
 	}
 
 	private void applySystemProperties() {
