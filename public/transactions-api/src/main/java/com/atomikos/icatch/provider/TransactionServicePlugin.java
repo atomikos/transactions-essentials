@@ -48,6 +48,12 @@ public interface TransactionServicePlugin
       
     public void beforeInit ( Properties properties );
     
+    /**
+     * Called after initialization of the transaction core.
+     */
+    
+    public void afterInit();
+    
      /** 
       * Called after shutdown of the transaction core.
       */

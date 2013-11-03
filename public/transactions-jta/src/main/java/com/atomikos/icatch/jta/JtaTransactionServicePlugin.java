@@ -84,4 +84,9 @@ public class JtaTransactionServicePlugin implements TransactionServicePlugin {
 		TransactionManagerImp.installTransactionManager ( null, false );
 	}
 
+	@Override
+	public void afterInit() {
+		
+	}
+
 }
