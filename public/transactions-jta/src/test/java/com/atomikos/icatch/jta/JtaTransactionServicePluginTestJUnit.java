@@ -12,6 +12,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.atomikos.datasource.RecoverableResource;
+import com.atomikos.datasource.ResourceException;
+import com.atomikos.icatch.Participant;
+import com.atomikos.icatch.RecoveryService;
+import com.atomikos.icatch.config.Configuration;
 import com.atomikos.icatch.provider.TransactionServicePlugin;
 
 public class JtaTransactionServicePluginTestJUnit {
@@ -31,6 +36,7 @@ public class JtaTransactionServicePluginTestJUnit {
         properties.setProperty ( Context.INITIAL_CONTEXT_FACTORY,
                 "com.sun.jndi.rmi.registry.RegistryContextFactory" );
         properties.setProperty ( Context.PROVIDER_URL, "rmi://localhost:1099" );
+        properties.setProperty("com.atomikos.icatch.automatic_resource_registration", "true");
         try {
         	LocateRegistry.createRegistry ( 1099 );
         } catch (Exception ok){}
@@ -84,5 +90,54 @@ public class JtaTransactionServicePluginTestJUnit {
 		properties.setProperty("com.atomikos.icatch.client_demarcation", "false");
 		plugin.beforeInit(properties);
 		Assert.assertFalse(UserTransactionServerImp.getSingleton().getUserTransaction() instanceof RemoteClientUserTransaction);
+	}
+	
+	
+	@Test
+	public void testAutomaticResourceRegistrationFalse() {
+		properties.setProperty("com.atomikos.icatch.automatic_resource_registration", "false");
+		Configuration.addResource(new RecoverableResource() {
+
+			@Override
+			public void setRecoveryService(RecoveryService recoveryService)
+					throws ResourceException {
+				
+			}
+
+			@Override
+			public boolean recover(Participant participant)
+					throws ResourceException {
+				return false;
+			}
+
+			@Override
+			public void endRecovery() throws ResourceException {
+				
+			}
+
+			@Override
+			public void close() throws ResourceException {
+				
+			}
+
+			@Override
+			public String getName() {
+				return "bla";
+			}
+
+			@Override
+			public boolean isSameRM(RecoverableResource res)
+					throws ResourceException {
+				return false;
+			}
+
+			@Override
+			public boolean isClosed() {
+				return false;
+			}
+			
+		});
+		plugin.beforeInit(properties);
+		Assert.assertNotNull(Configuration.getResource("com.atomikos.icatch.DefaultResource"));
 	}
 }

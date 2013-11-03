@@ -2,6 +2,8 @@ package com.atomikos.icatch.jta;
 
 import java.util.Properties;
 
+import com.atomikos.datasource.xa.AcceptAllXATransactionalResource;
+import com.atomikos.icatch.config.Configuration;
 import com.atomikos.icatch.config.imp.AbstractUserTransactionServiceFactory;
 import com.atomikos.icatch.provider.ConfigProperties;
 import com.atomikos.icatch.provider.TransactionServicePlugin;
@@ -11,6 +13,15 @@ import com.atomikos.logging.LoggerFactory;
 public class JtaTransactionServicePlugin implements TransactionServicePlugin {
 	
 	private static Logger LOGGER = LoggerFactory.createLogger(JtaTransactionServicePlugin.class);
+	
+	/**
+	 * The name of the property indicating whether (JTA/XA) resources should be
+	 * registered automatically or not.
+	 *
+	 * Expands to {@value}.
+	 */
+	public static final String AUTOMATIC_RESOURCE_REGISTRATION_PROPERTY_NAME = "com.atomikos.icatch.automatic_resource_registration";
+
 	
 	/**
 	 * The name of the property that specifies the default timeout (in
@@ -56,6 +67,14 @@ public class JtaTransactionServicePlugin implements TransactionServicePlugin {
             String name = configProperties.getTmUniqueName();
             UserTransactionServerImp utxs = UserTransactionServerImp.getSingleton();
             utxs.init(name, properties);           
+        }
+        
+        boolean autoRegister = configProperties.getAsBoolean(AUTOMATIC_RESOURCE_REGISTRATION_PROPERTY_NAME);
+        if ( Configuration.getResources ().hasMoreElements() && !autoRegister ) {
+            AcceptAllXATransactionalResource defaultRes = new AcceptAllXATransactionalResource (
+                    "com.atomikos.icatch.DefaultResource" );
+            Configuration.addResource ( defaultRes );
+
         }
 	}
 
