@@ -47,6 +47,8 @@ public class JtaTransactionServicePlugin implements TransactionServicePlugin {
 	 */
 	public static final String CLIENT_DEMARCATION_PROPERTY_NAME = "com.atomikos.icatch.client_demarcation";
 
+	private boolean autoRegisterResources;
+
 
 	@Override
 	public void beforeInit(Properties properties) {
@@ -69,8 +71,8 @@ public class JtaTransactionServicePlugin implements TransactionServicePlugin {
             utxs.init(name, properties);           
         }
         
-        boolean autoRegister = configProperties.getAsBoolean(AUTOMATIC_RESOURCE_REGISTRATION_PROPERTY_NAME);
-        if ( Configuration.getResources ().hasMoreElements() && !autoRegister ) {
+        autoRegisterResources = configProperties.getAsBoolean(AUTOMATIC_RESOURCE_REGISTRATION_PROPERTY_NAME);
+        if ( Configuration.getResources ().hasMoreElements() && !autoRegisterResources ) {
             AcceptAllXATransactionalResource defaultRes = new AcceptAllXATransactionalResource (
                     "com.atomikos.icatch.DefaultResource" );
             Configuration.addResource ( defaultRes );
@@ -86,7 +88,7 @@ public class JtaTransactionServicePlugin implements TransactionServicePlugin {
 
 	@Override
 	public void afterInit() {
-		
+		TransactionManagerImp.installTransactionManager(Configuration.getCompositeTransactionManager(), autoRegisterResources);
 	}
 
 }
