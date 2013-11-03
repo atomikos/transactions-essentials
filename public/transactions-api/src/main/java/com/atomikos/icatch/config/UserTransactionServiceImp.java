@@ -550,10 +550,10 @@ public class UserTransactionServiceImp
 	}
 
 	/**
-	 * Dependency injection of all listeners to be added during init.
+	 * Dependency injection of extra plugins to be added during init.
 	 * @param listeners
 	 */
-	public void setInitialTSListeners ( List<TransactionServicePlugin> listeners ) 
+	public void setInitialTransactionServicePlugins ( List<TransactionServicePlugin> listeners ) 
 	{
 		tsListeners_ = listeners;
 		
