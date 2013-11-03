@@ -35,7 +35,6 @@ import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
 
-import com.atomikos.icatch.admin.imp.SimpleLogAdministrator;
 import com.atomikos.icatch.config.TSInitInfo;
 import com.atomikos.icatch.config.UserTransactionService;
 import com.atomikos.icatch.config.UserTransactionServiceImp;
@@ -75,8 +74,6 @@ public class UserTransactionImp implements UserTransaction, Serializable,
             if ( txmgr_ == null ) {
                 UserTransactionService uts = new UserTransactionServiceImp ();
                 TSInitInfo info = uts.createTSInitInfo ();
-                uts.registerLogAdministrator ( SimpleLogAdministrator
-                        .getInstance () );
                 uts.init ( info );
                 txmgr_ = TransactionManagerImp.getTransactionManager ();
             }

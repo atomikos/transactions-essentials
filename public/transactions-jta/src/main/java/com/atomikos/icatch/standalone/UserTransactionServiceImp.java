@@ -39,8 +39,6 @@ import javax.naming.Context;
 import com.atomikos.icatch.ExportingTransactionManager;
 import com.atomikos.icatch.ImportingTransactionManager;
 import com.atomikos.icatch.SysException;
-import com.atomikos.icatch.admin.LogAdministrator;
-import com.atomikos.icatch.admin.imp.LocalLogAdministrator;
 import com.atomikos.icatch.config.Configuration;
 import com.atomikos.icatch.config.TSInitInfo;
 import com.atomikos.icatch.config.TSMetaData;
@@ -204,18 +202,6 @@ class UserTransactionServiceImp extends AbstractJtaUserTransactionService
             boolean autoRegister = "true".equals ( autoMode );
             com.atomikos.icatch.jta.TransactionManagerImp
                     .installTransactionManager ( tm, autoRegister );
-            Enumeration admins = info_.getLogAdministrators ();
-            while ( admins.hasMoreElements () ) {
-                LogAdministrator admin = (LogAdministrator) admins
-                        .nextElement ();
-                if ( admin instanceof LocalLogAdministrator ) {
-                    LocalLogAdministrator ladmin = (LocalLogAdministrator) admin;
-                    ladmin.init ( this );
-                }
-
-
-            }
-
       
             // this will add all resources and recover them
             super.init ( info );
