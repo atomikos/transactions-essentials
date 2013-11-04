@@ -41,7 +41,6 @@ import javax.transaction.NotSupportedException;
 import javax.transaction.Status;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
-import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
 
 import com.atomikos.icatch.SysException;
