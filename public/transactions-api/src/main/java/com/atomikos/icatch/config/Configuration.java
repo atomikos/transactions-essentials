@@ -130,8 +130,16 @@ public final class Configuration
     }
 
     private static void addAllTransactionServicePluginServicesFromClasspath() {
-		ServiceLoader<TransactionServicePlugin> loader = ServiceLoader.load(TransactionServicePlugin.class);
-		for (TransactionServicePlugin l : loader ) {
+        
+    	//Under OSGi context, Atomikos bundle is loaded under different ClassLoader than the JDK
+      	//we need to switch dynamically the ClassLoader
+        ClassLoader backup = Thread.currentThread().getContextClassLoader();
+        Thread.currentThread().setContextClassLoader( Configuration.class.getClassLoader() );
+        ServiceLoader<TransactionServicePlugin> loader = ServiceLoader.load(TransactionServicePlugin.class);
+      	//now we can go back to previous ClassLoader
+        Thread.currentThread().setContextClassLoader( backup );
+		
+        for (TransactionServicePlugin l : loader ) {
 			registerTransactionServicePlugin(l);
 		}
 	}
@@ -446,7 +454,13 @@ public final class Configuration
 	}
 
 	private static void loadAssembler() {
+		//Under OSGi context, Atomikos bundle is loaded under different ClassLoader than the JDK
+		//we need to switch dynamically the ClassLoader
+        ClassLoader backup = Thread.currentThread().getContextClassLoader();
+        Thread.currentThread().setContextClassLoader( Configuration.class.getClassLoader() );
 		ServiceLoader<Assembler> loader = ServiceLoader.load(Assembler.class);
+		//now we can go back to previous ClassLoader
+        Thread.currentThread().setContextClassLoader( backup );
 		Iterator<Assembler> it = loader.iterator();
 		if (it.hasNext()) {
 			assembler = it.next();
