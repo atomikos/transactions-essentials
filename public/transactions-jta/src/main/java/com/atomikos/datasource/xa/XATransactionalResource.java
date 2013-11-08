@@ -316,10 +316,8 @@ public abstract class XATransactionalResource implements TransactionalResource
                                     + xares + " and " + xaresource );
                 }
             } catch ( XAException xe ) {
-                Stack errors = new Stack ();
-                errors.push ( xe );
                 throw new SysException ( "Error in XAResource comparison: "
-                        + xe.getMessage (), errors );
+                        + xe.getMessage (), xe );
             }
         }
         return ret;

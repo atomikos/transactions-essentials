@@ -9,6 +9,7 @@ import java.util.Properties;
 
 import com.atomikos.icatch.CompositeTransactionManager;
 import com.atomikos.icatch.SysException;
+import com.atomikos.icatch.TransactionService;
 import com.atomikos.icatch.imp.CompositeTransactionManagerImp;
 import com.atomikos.icatch.imp.TransactionServiceImp;
 import com.atomikos.icatch.provider.Assembler;

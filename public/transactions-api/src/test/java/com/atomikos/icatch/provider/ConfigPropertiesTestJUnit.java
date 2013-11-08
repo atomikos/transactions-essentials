@@ -1,6 +1,8 @@
 package com.atomikos.icatch.provider;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Properties;
 
@@ -8,8 +10,6 @@ import junit.framework.Assert;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import com.atomikos.icatch.provider.ConfigProperties;
 
 public class ConfigPropertiesTestJUnit {
 	
