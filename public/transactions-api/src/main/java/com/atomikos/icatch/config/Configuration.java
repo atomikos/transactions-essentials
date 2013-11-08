@@ -48,6 +48,7 @@ import com.atomikos.icatch.provider.Assembler;
 import com.atomikos.icatch.provider.ConfigProperties;
 import com.atomikos.icatch.provider.TransactionServicePlugin;
 import com.atomikos.icatch.provider.TransactionServiceProvider;
+import com.atomikos.util.ClassLoadingHelper;
 
 /**
  * Configuration is a facade for the icatch transaction management facilities.
@@ -130,20 +131,12 @@ public final class Configuration
     }
 
     private static void addAllTransactionServicePluginServicesFromClasspath() {
-        
-    	//Under OSGi context, Atomikos bundle is loaded under different ClassLoader than the JDK
-      	//we need to switch dynamically the ClassLoader
-        ClassLoader backup = Thread.currentThread().getContextClassLoader();
-        Thread.currentThread().setContextClassLoader( Configuration.class.getClassLoader() );
-        ServiceLoader<TransactionServicePlugin> loader = ServiceLoader.load(TransactionServicePlugin.class);
-      	//now we can go back to previous ClassLoader
-        Thread.currentThread().setContextClassLoader( backup );
-		
+        ServiceLoader<TransactionServicePlugin> loader = ClassLoadingHelper.loadFromClassLoader(TransactionServicePlugin.class);
         for (TransactionServicePlugin l : loader ) {
 			registerTransactionServicePlugin(l);
 		}
 	}
-
+    
 	/**
      * Adds a shutdown hook to the configuration.
      * Shutdown hooks are managed here, since regular shutdown
@@ -454,13 +447,7 @@ public final class Configuration
 	}
 
 	private static void loadAssembler() {
-		//Under OSGi context, Atomikos bundle is loaded under different ClassLoader than the JDK
-		//we need to switch dynamically the ClassLoader
-        ClassLoader backup = Thread.currentThread().getContextClassLoader();
-        Thread.currentThread().setContextClassLoader( Configuration.class.getClassLoader() );
-		ServiceLoader<Assembler> loader = ServiceLoader.load(Assembler.class);
-		//now we can go back to previous ClassLoader
-        Thread.currentThread().setContextClassLoader( backup );
+        ServiceLoader<Assembler> loader = ClassLoadingHelper.loadFromClassLoader(Assembler.class);
 		Iterator<Assembler> it = loader.iterator();
 		if (it.hasNext()) {
 			assembler = it.next();

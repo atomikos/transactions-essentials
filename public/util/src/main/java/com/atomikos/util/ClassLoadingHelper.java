@@ -32,6 +32,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.net.URL;
 import java.util.List;
+import java.util.ServiceLoader;
 
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
@@ -170,5 +171,16 @@ public class ClassLoadingHelper {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	public static <T> ServiceLoader<T> loadFromClassLoader(Class<T> toLoad) {
+		//Under OSGi context, Atomikos bundle is loaded under different ClassLoader than the JDK
+	  	//we need to switch dynamically the ClassLoader
+		ClassLoader backup = Thread.currentThread().getContextClassLoader();
+	    Thread.currentThread().setContextClassLoader( ClassLoadingHelper.class.getClassLoader() );
+	    ServiceLoader<T> loader = ServiceLoader.load(toLoad);
+	  	//now we can go back to previous ClassLoader
+	    Thread.currentThread().setContextClassLoader( backup );
+		return loader;
 	}
 }
