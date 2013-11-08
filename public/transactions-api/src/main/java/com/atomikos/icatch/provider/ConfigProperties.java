@@ -211,7 +211,7 @@ public class ConfigProperties {
 		while (propertyNames.hasMoreElements()) {
 			String name = (String) propertyNames.nextElement();			
 			LOGGER.logInfo("USING: " + name + " = " + properties.getProperty(name));
-			System.out.println("USING: " + name + " = " + properties.getProperty(name));
+			//System.out.println("USING: " + name + " = " + properties.getProperty(name));
 		}
 	}
 
