@@ -100,5 +100,27 @@ public class ConfigPropertiesTestJUnit {
 	public void testDefaultTmUniqueName() {
 		assertNotNull(props.getTmUniqueName());
 	}
+	
+	@Test
+	public void testGetPropertiesIncludesSystemProperties() {
+		final String name = "com.atomikos.icatch.testGetPropertiesIncludesSystemProperties";
+		System.setProperty(name, "bla");
+		assertNotNull(props.getCompletedProperties().getProperty(name));
+	}
+	
+	@Test
+	public void testForceShutdownOnVmExit() {
+		props.setProperty("com.atomikos.icatch.force_shutdown_on_vm_exit", "true");
+		Assert.assertTrue(props.getForceShutdownOnVmExit());
+		props.setProperty("com.atomikos.icatch.force_shutdown_on_vm_exit", "false");
+		Assert.assertFalse(props.getForceShutdownOnVmExit());
+	}
+
+
+	private Properties createDefaultProperties(String name, String value) {
+		Properties ret = new Properties();
+		ret.setProperty(name, value);
+		return ret;
+	}
 }
 

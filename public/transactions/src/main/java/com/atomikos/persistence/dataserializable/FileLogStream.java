@@ -54,14 +54,17 @@ public class FileLogStream extends AbstractLogStream implements LogStream {
 	}
 
 	public Vector<Recoverable> recover() throws LogException {
-
+		
 		if (corrupt_)
 			throw new LogException("Instance might be corrupted");
 
+		
 		Vector<Recoverable> ret = new Vector<Recoverable>();
 
 		try {
+			
 			FileInputStream f = file_.openLastValidVersionForReading();
+			
 
 			int count = 0;
 			if (LOGGER.isInfoEnabled()) {

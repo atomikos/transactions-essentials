@@ -27,27 +27,19 @@
 
 package com.atomikos.icatch.config;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
-import java.util.Stack;
 
 import com.atomikos.datasource.RecoverableResource;
 import com.atomikos.icatch.CompositeTransactionManager;
-import com.atomikos.icatch.ExportingTransactionManager;
-import com.atomikos.icatch.ImportingTransactionManager;
 import com.atomikos.icatch.SysException;
 import com.atomikos.icatch.admin.LogAdministrator;
+import com.atomikos.icatch.provider.ConfigProperties;
 import com.atomikos.icatch.provider.TransactionServicePlugin;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
-import com.atomikos.util.ClassLoadingHelper;
 
 /**
  * This is the main class for creating a UserTransactionService instance.
@@ -73,11 +65,8 @@ public class UserTransactionServiceImp
 	/**
      * Constant denoting the system property name that suggest NOT to use
      * any configuration file for the transaction service's properties.
-     * If this a system property with this name is set to an arbitrary value
-     * then the transaction service will attempt initialization based on
-     * system properties only. In that case, all the parameters that would
-     * normally be set through the properties file have to be supplied as
-     * system properties with the same name and corresponding value.
+     * 
+     * @deprecated No longer used since 4.0
      */
     public static final String NO_FILE_PROPERTY_NAME = "com.atomikos.icatch.no_file";
 
@@ -90,23 +79,21 @@ public class UserTransactionServiceImp
      * file from the classpath.
      */
 
-    public static final String FILE_PATH_PROPERTY_NAME = "com.atomikos.icatch.file";
+    public static final String FILE_PATH_PROPERTY_NAME = ConfigProperties.FILE_PATH_PROPERTY_NAME;
     
     /**
      * The name of the system property to disable printing 'Using init file...' messages.
+     * 
+     * @deprecated No longer used since 4.0
      */
     
     public static final String HIDE_INIT_FILE_PATH_PROPERTY_NAME = "com.atomikos.icatch.hide_init_file_path";
 
-    /**
-     * The default file name for the transaction service's init parameters.
-     *
-     */
-
-    
+   /**
+    * @deprecated
+    */
     public static final String DEFAULT_PROPERTIES_FILE_NAME = "transactions.properties";
     
-    private static final String PRE_3_0_DEFAULT_PROPERTIES_FILE_NAME = "jta.properties";
 
     private Properties properties_;
     
@@ -114,185 +101,12 @@ public class UserTransactionServiceImp
     private List<LogAdministrator> logAdministrators_;
     private List<RecoverableResource> resources_;
 
-    private transient UserTransactionService delegate_;
-    //the instance to delegate to; obtained from factory
     
-    /**
-     * Replace ${...} sequence with the referenced value from the given properties or 
-     * (if not found) the system properties -
-     * contributed through Marian Kelc (marian.kelc@eplus.de)
-     * E-Plus Mobilfunk GmbH &amp; Co. KG, Germany
-     */
-     private static String evaluateReference ( String value , Properties properties )
-     {
-         String result = value;
-         //by default, the value as-is is returned
-         
-         int startIndex = value.indexOf ( '$' );
-         if ( startIndex > -1 && value.charAt ( startIndex +1 ) == '{') {
-        	 	//at least one reference is found
-             int endIndex = value.indexOf ( '}' );
-             if ( startIndex + 2 == endIndex )
-                 throw new IllegalArgumentException ( "property ref cannot refer to an empty name: ${}" );
-             if ( endIndex == -1 )
-                 throw new IllegalArgumentException ( "unclosed property ref: ${" + value.substring ( startIndex + 2 ) );
-
-             //strip-off reference characters -> get the referenced property name 
-             String subPropertyKey = value.substring ( startIndex + 2, endIndex );
-             //the properties take precedence -> try them first
-             String subPropertyValue = properties.getProperty ( subPropertyKey );
-            	if ( subPropertyValue == null ) {
-            		//not found in properties -> try system property
-            		subPropertyValue = System.getProperty ( subPropertyKey );
-            	}
-             
-             if ( subPropertyValue != null ) {
-            	    //in-line refs supported - result is prefix + value + suffix !!!
-                 result = result.substring ( 0, startIndex ) + subPropertyValue + result.substring ( endIndex +1 );
-                 //two or more refs supported - evaluate any remaining references in the value
-                 result =  evaluateReference ( result , properties );
-             }
-             else {
-            	 	//referenced value not found -> ignore any other references and return value as-is
-            	    //NOTE: trying to resolve further references would lead to infinite recursion
-             }
-            	 
-         }
-         
-         return result;
-     }
- 
-    
-    private static Properties mergeProperties ( Properties first, Properties defaults )
-    {
-    	
-    	Enumeration names = first.propertyNames();
-    	while ( names.hasMoreElements() ) {
-    		String name = ( String ) names.nextElement();
-    		String value = first.getProperty ( name );
-    		defaults.setProperty ( name , value );
-    	}
-    	return defaults;
-    }
-    
-    private URL findPropertiesFileInClasspath ( String fileName )
-    {
-    		URL ret = null;
-    		
-    		// FIRST: look in application classpath (cf ISSUE 10091)
-    		ret = ClassLoadingHelper.loadResourceFromClasspath( getClass() , fileName );
-    		
-    		if ( ret == null ) {
-    			//if not found in app classpath: try what we always did:
-    			//lookup as a system resource, without extra prefix
-    			ret = getClass().getClassLoader().
-			   	getSystemResource ( fileName );
-    		}
-    		
-    		return ret;
-    }
-
-    private Properties findProperties()
-    {
-        Properties p = new Properties();
-
-        
-         //look for system property that specifies the transactions.properties file
-         //if not found: look for properties file in classpath
-         //if not found: use default properties
-
-		  java.net.URL url = null;
-          if ( System.getProperty ( NO_FILE_PROPERTY_NAME )  == null ) {
-
-              String filename = System.getProperty ( FILE_PATH_PROPERTY_NAME );
-              if ( filename == null ) {
-                  filename = DEFAULT_PROPERTIES_FILE_NAME;
-                  LOGGER.logWarning ( "No properties path set - looking for " +
-                       DEFAULT_PROPERTIES_FILE_NAME +
-                       " in classpath..." );
-				   url = findPropertiesFileInClasspath ( filename );
-				   if ( url == null ) {
-					   filename = PRE_3_0_DEFAULT_PROPERTIES_FILE_NAME;
-		               LOGGER.logWarning ( DEFAULT_PROPERTIES_FILE_NAME + " not found - looking for " +
-		                       PRE_3_0_DEFAULT_PROPERTIES_FILE_NAME +
-		                       " in classpath..." );
-					   url = findPropertiesFileInClasspath ( filename );
-				   }
-              }
-              else {
-              		//a file was given
-              		java.io.File file = new java.io.File ( filename );
-              		try
-                    {
-                        url = file.toURL();
-                    }
-                    catch (MalformedURLException e)
-                    {
-                        //ignore: just leave url null
-                        //and use default
-                    }
-              		
-              }
-              try {
-                  
-                  
-                  if ( url == null ) throw new IOException();
-                  LOGGER.logWarning ( "Using init file: " + url.getPath() );
-                  InputStream in = url.openStream();
-                  p.load ( in );
-                  in.close();
-              }
-              catch ( IOException io ) {
-              	 //io.printStackTrace();
-              	 String msg = "Failed to open transactions properties file - using default values";
-                 LOGGER.logWarning ( msg );
-                 //use the default standalone service
-                 p.setProperty ( "com.atomikos.icatch.service" ,
-                                 "com.atomikos.icatch.standalone.UserTransactionServiceFactory" );
-              }
-          }
-          else {
-              //NO property file should be used, so try system property
-              //but ONLY for the factory class: each implementation should
-              //get its own specific properties
-
-              p.setProperty ( "com.atomikos.icatch.service" ,
-                              System.getProperty ( "com.atomikos.icatch.service" ));
-          }
-          
-          substitutePlaceHolderValues(p);
-
-          return p;
-
-
-    }
-
-
-	private void substitutePlaceHolderValues(Properties p) {
-		//resolve referenced values with ant-like ${...} syntax
-          java.util.Enumeration allProps= p.propertyNames();
-          while ( allProps.hasMoreElements() ) {
-              String key = ( String ) allProps.nextElement();
-              String raw = p.getProperty ( key );
-              String value= evaluateReference ( raw , p );
-              if ( !raw.equals ( value ) ) {
-                p.setProperty ( key, value );
-              }
-          }
-	}
     
 
+   
 
 
-
-	private String getOrFindProperty ( String name )
-    {
-    	
-        if ( properties_ == null ) properties_ = findProperties();
-
-        return properties_.getProperty ( name );
-    }
-    
     /**
      * Default constructor.
      *
@@ -303,6 +117,7 @@ public class UserTransactionServiceImp
 		tsListeners_ = new ArrayList<TransactionServicePlugin>();
 		logAdministrators_ = new ArrayList<LogAdministrator>();
 		resources_ = new ArrayList<RecoverableResource>();
+		properties_ = new Properties();
        
     }
 
@@ -318,53 +133,9 @@ public class UserTransactionServiceImp
     public UserTransactionServiceImp ( Properties properties )
     {
     	this();
-    	
-    	properties_ = findProperties();
-    		
-    	//override defaults in file with specified properties   		
-        properties_.putAll ( properties );
+    	properties_ = properties;
     }
 
-    private void checkInit ()
-    {
-
-        if ( delegate_ != null ) return;
-
-        String factoryClassName = getOrFindProperty ( "com.atomikos.icatch.service" );
-
-        if ( factoryClassName == null )
-            throw new SysException (
-            "UserTransactionServiceImp: property not defined: com.atomikos.icatch.service" );
-
-        try {
-            Class factoryClass = ClassLoadingHelper.loadClass ( factoryClassName );
-            UserTransactionServiceFactory factory =
-                    ( UserTransactionServiceFactory ) factoryClass.newInstance ();
-            delegate_ = factory.getUserTransactionService ( properties_ );
-            //This should initialize the properties with whatever is specified and
-            //use SYSTEM_DEPENDENT DEFAULT values for others
-        }
-        catch ( Exception e ) {
-            Stack<Exception> errors = new Stack<Exception> ();
-            errors.push ( e );
-            throw new SysException ( "Error in init of UserTransactionServiceImp: " + e.getMessage() , errors );
-        }
-
-    }
-
-    /**
-     *
-     * @see UserTransactionService
-     */
-    public TSInitInfo createTSInitInfo ()
-    {
-        TSInitInfo ret = null;
-        checkInit ();
-        ret = delegate_.createTSInitInfo ();
-        Properties p = mergeProperties ( properties_ , ret.getProperties() );
-        ret.setProperties ( p );
-        return ret;
-    }
 
     /**
      *
@@ -374,36 +145,32 @@ public class UserTransactionServiceImp
     public void shutdown ( boolean force )
             throws IllegalStateException
     {
-        checkInit ();
-        delegate_.shutdown ( force );
+    	Configuration.shutdown(force);
     }
 
 
-    /**
-     *@see UserTransactionService
-     */
 
-    public void init ( TSInitInfo info )
-            throws SysException
-    {
-        checkInit ();
-        Iterator it = resources_.iterator();
+
+	private void initialize() {
+		Iterator it = resources_.iterator();
         while ( it.hasNext() ) {
         	RecoverableResource nxt = ( RecoverableResource ) it.next();
-        	registerResource ( nxt );
+        	Configuration.addResource ( nxt );
         }
         it = logAdministrators_.iterator();
         while  ( it.hasNext() ) {
         	LogAdministrator nxt = ( LogAdministrator ) it.next();
-        	registerLogAdministrator ( nxt );
+        	Configuration.addLogAdministrator ( nxt );
         }
         it = tsListeners_.iterator();
         while ( it.hasNext() ) {
         	TransactionServicePlugin nxt = ( TransactionServicePlugin ) it.next();
-        	registerTSListener ( nxt );
+        	Configuration.registerTransactionServicePlugin ( nxt );
         }
-        delegate_.init ( info );
-    }
+        ConfigProperties configProps = Configuration.getConfigProperties();
+        configProps.applyUserSpecificProperties(properties_);
+        Configuration.init();
+	}
 
     /**
      *@see UserTransactionService
@@ -412,33 +179,8 @@ public class UserTransactionServiceImp
     public CompositeTransactionManager
             getCompositeTransactionManager ()
     {
-        checkInit ();
-        return delegate_.getCompositeTransactionManager ();
+        return Configuration.getCompositeTransactionManager();
     }
-
-
-   
-
-    /**
-     *@see UserTransactionService
-     */
-
-    public ImportingTransactionManager getImportingTransactionManager ()
-    {
-        checkInit ();
-        return delegate_.getImportingTransactionManager ();
-    }
-
-    /**
-     *@see UserTransactionService
-     */
-
-    public ExportingTransactionManager getExportingTransactionManager ()
-    {
-        checkInit ();
-        return delegate_.getExportingTransactionManager ();
-    }
-
 
 
     /**
@@ -446,8 +188,7 @@ public class UserTransactionServiceImp
      */
     public void registerResource(RecoverableResource res)
     {
-        checkInit();
-        delegate_.registerResource(res);
+        Configuration.addResource(res);
         
     }
 
@@ -456,52 +197,29 @@ public class UserTransactionServiceImp
      */
     public void registerLogAdministrator(LogAdministrator admin)
     {
-        checkInit();
-        delegate_.registerLogAdministrator ( admin );
+        Configuration.addLogAdministrator(admin);
         
-    }
-
-    /**
-     * @see com.atomikos.icatch.UserTransactionService#getResources()
-     */
-    public Enumeration getResources()
-    {
-        checkInit();
-        return delegate_.getResources();
-    }
-
-    /**
-     * @see com.atomikos.icatch.UserTransactionService#getLogAdministrators()
-     */
-    public Enumeration getLogAdministrators()
-    {
-        checkInit();
-        return delegate_.getLogAdministrators();
-    }
+    }   
 
 	public void removeResource ( RecoverableResource res ) 
 	{
-		checkInit();
-		delegate_.removeResource ( res );
+		Configuration.removeResource(res.getName());
 		
 	}
 
 	public void removeLogAdministrator ( LogAdministrator admin ) 
 	{
-		checkInit();
-		delegate_.removeLogAdministrator ( admin );
+		Configuration.removeLogAdministrator(admin);
 	}
 
-	public void registerTSListener ( TransactionServicePlugin listener ) 
+	public void registerTransactionServicePlugin ( TransactionServicePlugin listener ) 
 	{
-		checkInit();
-		delegate_.registerTSListener ( listener );
+		Configuration.registerTransactionServicePlugin(listener);
 	}
 
-	public void removeTSListener ( TransactionServicePlugin listener ) 
+	public void removeTransactionServicePlugin ( TransactionServicePlugin listener ) 
 	{
-		checkInit();
-		delegate_.removeTSListener ( listener );
+		Configuration.unregisterTransactionServicePlugin(listener);
 	}
 
 
@@ -565,16 +283,14 @@ public class UserTransactionServiceImp
 	 */
 	public void init()
 	{
-		TSInitInfo info = createTSInitInfo();
-		init ( info );
+		initialize();
 	}
 
 
 
 	public void init ( Properties properties ) throws SysException {
-		TSInitInfo info = createTSInitInfo();
-		mergeProperties ( properties , info.getProperties() );
-		init ( info );
+		properties_ = properties;
+		initialize();
 	}
 
 

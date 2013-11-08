@@ -347,14 +347,14 @@ class TransactionImp implements Transaction
         while ( enumm.hasMoreElements () ) {
             RecoverableResource rres = (RecoverableResource) enumm.nextElement ();
             if ( rres instanceof XATransactionalResource ) {
+            	System.out.println(rres);
                 xatxres = (XATransactionalResource) rres;
                 if ( xatxres.usesXAResource ( xares ) ) ret = xatxres;
             }
 
         }
-
+        
         if ( ret == null && autoRegistration_ ) {
-
             synchronized ( Configuration.class ) {
             	// synchronized to avoid case 61740
             	

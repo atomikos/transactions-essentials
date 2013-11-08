@@ -8,14 +8,12 @@ import java.net.URL;
 import java.util.Properties;
 
 import com.atomikos.icatch.CompositeTransactionManager;
-import com.atomikos.icatch.RecoveryService;
 import com.atomikos.icatch.SysException;
-import com.atomikos.icatch.TransactionService;
-import com.atomikos.icatch.admin.LogControl;
 import com.atomikos.icatch.imp.CompositeTransactionManagerImp;
 import com.atomikos.icatch.imp.TransactionServiceImp;
 import com.atomikos.icatch.provider.Assembler;
 import com.atomikos.icatch.provider.ConfigProperties;
+import com.atomikos.icatch.provider.TransactionServiceProvider;
 import com.atomikos.logging.LoggerFactory;
 import com.atomikos.persistence.StateRecoveryManager;
 import com.atomikos.persistence.imp.StateRecoveryManagerImp;
@@ -31,13 +29,10 @@ public class AssemblerImp implements Assembler {
 
 	private static final String TRANSACTIONS_PROPERTIES_FILE_NAME = "transactions.properties";
 
-	private static final String FILE_PATH_PROPERTY_NAME = "com.atomikos.icatch.file";
-
 	private static final int MAX_TID_LENGTH = 64; //XID limitation
 	
 	private static com.atomikos.logging.Logger LOGGER = LoggerFactory.createLogger(AssemblerImp.class);
 	
-	private TransactionServiceImp transactionService = null;
 	
     private void loadPropertiesFromClasspath(Properties p, String fileName){
     		URL url = null;
@@ -55,6 +50,7 @@ public class AssemblerImp implements Assembler {
     }
 
 	private void loadPropertiesFromUrl(Properties p, URL url) {
+		LOGGER.logInfo("Loading " + url.toString());
 		InputStream in;
 		try {
 			in = url.openStream();
@@ -86,7 +82,7 @@ public class AssemblerImp implements Assembler {
 	}
 
 	private void loadPropertiesFromCustomFilePath(Properties customProperties) {
-		String customFilePath = System.getProperty(FILE_PATH_PROPERTY_NAME);
+		String customFilePath = System.getProperty(ConfigProperties.FILE_PATH_PROPERTY_NAME);
 		if (customFilePath != null) {
 			File file = new File(customFilePath);
 			URL url;
@@ -100,39 +96,31 @@ public class AssemblerImp implements Assembler {
 	}
 
 	@Override
-	public TransactionService assembleTransactionService(
+	public TransactionServiceProvider assembleTransactionService(
 			ConfigProperties configProperties) {
-		if (transactionService == null) {			
-			String tmUniqueName = configProperties.getTmUniqueName();
-			String logBaseDir = configProperties.getLogBaseDir();
-			boolean enableLogging = configProperties.getEnableLogging();
-			long maxTimeout = configProperties.getMaxTimeout();
-			int maxActives = configProperties.getMaxActives();
-			boolean threaded2pc = configProperties.getThreaded2pc();
-			StateRecoveryManager recMgr = null;
-			if (enableLogging) {
-				recMgr = new StateRecoveryManagerImp();
-			} else {
-				recMgr = new VolatileStateRecoveryManager();
-			}
-			UniqueIdMgr idMgr = new UniqueIdMgr ( tmUniqueName, logBaseDir );
-			if ( idMgr.getMaxIdLengthInBytes() > MAX_TID_LENGTH ) {
-				// see case 73086
-				String msg = "Value too long :" + tmUniqueName;
-				LOGGER.logWarning ( msg );
-				throw new SysException(msg);
-			}
-			transactionService = new TransactionServiceImp(tmUniqueName, recMgr, idMgr, maxTimeout, maxActives, !threaded2pc);
+		String tmUniqueName = configProperties.getTmUniqueName();
+		String logBaseDir = configProperties.getLogBaseDir();
+		boolean enableLogging = configProperties.getEnableLogging();
+		long maxTimeout = configProperties.getMaxTimeout();
+		int maxActives = configProperties.getMaxActives();
+		boolean threaded2pc = configProperties.getThreaded2pc();
+		StateRecoveryManager recMgr = null;
+		if (enableLogging) {
+			recMgr = new StateRecoveryManagerImp();
+		} else {
+			recMgr = new VolatileStateRecoveryManager();
 		}
-		return transactionService;
+		UniqueIdMgr idMgr = new UniqueIdMgr ( tmUniqueName, logBaseDir );
+		if ( idMgr.getMaxIdLengthInBytes() > MAX_TID_LENGTH ) {
+			// see case 73086
+			String msg = "Value too long :" + tmUniqueName;
+			LOGGER.logWarning ( msg );
+			throw new SysException(msg);
+		}
+		return new TransactionServiceImp(tmUniqueName, recMgr, idMgr, maxTimeout, maxActives, !threaded2pc);
+		
 	}
 
-	@Override
-	public RecoveryService assembleRecoveryService(
-			ConfigProperties configProperties) {
-		assembleTransactionService(configProperties);
-		return transactionService;
-	}
 
 	@Override
 	public CompositeTransactionManager assembleCompositeTransactionManager(

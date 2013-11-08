@@ -14,11 +14,8 @@ import org.junit.Test;
 
 import com.atomikos.datasource.RecoverableResource;
 import com.atomikos.datasource.ResourceException;
-import com.atomikos.icatch.CompositeTransaction;
-import com.atomikos.icatch.CompositeTransactionManager;
 import com.atomikos.icatch.Participant;
 import com.atomikos.icatch.RecoveryService;
-import com.atomikos.icatch.SysException;
 import com.atomikos.icatch.config.Configuration;
 import com.atomikos.icatch.imp.CompositeTransactionManagerImp;
 import com.atomikos.icatch.provider.TransactionServicePlugin;
@@ -98,54 +95,7 @@ public class JtaTransactionServicePluginTestJUnit {
 		Assert.assertFalse(UserTransactionServerImp.getSingleton().getUserTransaction() instanceof RemoteClientUserTransaction);
 	}
 	
-	
-	@Test
-	public void testAutomaticResourceRegistrationFalse() {
-		properties.setProperty("com.atomikos.icatch.automatic_resource_registration", "false");
-		Configuration.addResource(new RecoverableResource() {
 
-			@Override
-			public void setRecoveryService(RecoveryService recoveryService)
-					throws ResourceException {
-				
-			}
-
-			@Override
-			public boolean recover(Participant participant)
-					throws ResourceException {
-				return false;
-			}
-
-			@Override
-			public void endRecovery() throws ResourceException {
-				
-			}
-
-			@Override
-			public void close() throws ResourceException {
-				
-			}
-
-			@Override
-			public String getName() {
-				return "bla";
-			}
-
-			@Override
-			public boolean isSameRM(RecoverableResource res)
-					throws ResourceException {
-				return false;
-			}
-
-			@Override
-			public boolean isClosed() {
-				return false;
-			}
-			
-		});
-		plugin.beforeInit(properties);
-		Assert.assertNotNull(Configuration.getResource("com.atomikos.icatch.DefaultResource"));
-	}
 	
 	@Test
 	public void testAfterInitInstallsJtaTransactionManager() {

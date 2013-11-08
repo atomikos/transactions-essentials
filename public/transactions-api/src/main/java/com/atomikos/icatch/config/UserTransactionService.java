@@ -24,13 +24,10 @@
  */
 
 package com.atomikos.icatch.config;
-import java.util.Enumeration;
 import java.util.Properties;
 
 import com.atomikos.datasource.RecoverableResource;
 import com.atomikos.icatch.CompositeTransactionManager;
-import com.atomikos.icatch.ExportingTransactionManager;
-import com.atomikos.icatch.ImportingTransactionManager;
 import com.atomikos.icatch.SysException;
 import com.atomikos.icatch.admin.LogAdministrator;
 import com.atomikos.icatch.provider.TransactionServicePlugin;
@@ -44,144 +41,25 @@ import com.atomikos.icatch.provider.TransactionServicePlugin;
 
 public interface UserTransactionService
 {
-    
-      
-      /**
-       * Gets the ImportingTransactionManager instance.
-       *
-       * @return ImportingTransactionManager The instance.
-       */
-       
-     public ImportingTransactionManager getImportingTransactionManager();
-     
-      /**
-       * Gets the ExportingTransactionManager instance
-       *
-       * @return ExportingTransactionManager The instance.
-       */
-       
-     public ExportingTransactionManager getExportingTransactionManager();
-     
-      
-      
-     /**
-      * Create a TSInitInfo for this transaction service.
-      * @return  TSInitInfo The init info instance.
-      * @deprecated Use the properties-based init method instead.
-      */
+	public void shutdown ( boolean force ) throws IllegalStateException;
 
-     public TSInitInfo createTSInitInfo();
-
-	/**
-	     * Shuts down the core.
-	     * It is <b>highly recommended</b> that this method be called 
-	     * <b>before the VM exits</b>, in order to ensure proper log closing.
-	     * After this method completes, all resources will have been removed 
-	     * from the configuration, as well as all logadministrators.
-	     * To re-initialize, everything should be registered again.
-	     *
-	     * @param force If true, then shutdown will succeed even if
-	     * some transactions are still active. If false, then the calling thread
-	     * will block until any active transactions are terminated. A heuristic
-	     * transaction is also considered to be active.
-	     */
-	     
-	   public void shutdown ( boolean force ) 
-	   throws IllegalStateException;
-
-	/**
-	 * Registers a new resource for recovery.
-	 * 
-	 * @param resource The resource to be added.
-	 * 
-	 */
-	
 	public void registerResource ( RecoverableResource resource );
-	
-	/**
-	 * Removes the given resource. This method should be 
-	 * used with extreme care, because removing resources
-	 * can endanger recovery!
-	 * @param The resource to remove.
-	 * If the resource is not found then this method does 
-	 * nothing.
-	 */
-	
+
 	public void removeResource ( RecoverableResource res );
 
-		/**
-		 * Registers a LogAdministrator instance for administration.
-		 * This allows inspection of active transactions and manual
-		 * intervention.
-		 * Care should be taken if multiple instances are registered:
-		 * the responsibility of taking conflicting manual decisions is
-		 * entirely with the user!
-		 * @param admin The instance.
-		 */
-	      
-	  public void registerLogAdministrator ( LogAdministrator admin );
-	  
-	  /**
-	   * Removes the given log administrator. Does nothing if 
-	   * the instance is not found.
-	   * @param admin
-	   */
-	  
-	  public void removeLogAdministrator ( LogAdministrator admin );
-	  
-	  /**
-	   * Registers a listener with the transaction service.
-	   * @param listener
-	   */
-	  public void registerTSListener ( TransactionServicePlugin listener );
-	  
-	  /**
-	   * Removes a listener from the transaction service.
-	   * After this method is called, the listener in question
-	   * will no longer receive callback notifications from the
-	   * transaction service.
-	   * This method does nothing if the listener is not found.
-	   * @param listener 
-	   */
-	  public void removeTSListener ( TransactionServicePlugin listener );
+	public void registerLogAdministrator ( LogAdministrator admin );
 
-	/**
-	     *Initializes the intra-VM transaction manager.
-	     *
-	     *@param info The TSInitInfo with details for initialization.
-	     *@deprecated Use the property-based init method instead.
-	     */
-	       
-	   public void init ( TSInitInfo info )
-	   throws SysException;
-	   
-	   public void init ( Properties properties ) throws SysException;
+	public void removeLogAdministrator ( LogAdministrator admin );
 
-	/**
-	  * Gets the resources registered.
-	  * @return Enumeration The resources, or empty if none.
-	  *
-	  */
+	public void registerTransactionServicePlugin ( TransactionServicePlugin listener );
+
+	public void removeTransactionServicePlugin ( TransactionServicePlugin listener );
+
+	public void init ( Properties properties ) throws SysException;
 	
-	public Enumeration getResources();
+	public void init() throws SysException;
 
-	/**
-	  * Gets the log administrators.
-	  * @return Enumeration The registered administrators.
-	  *
-	  */
-	
-	public Enumeration getLogAdministrators();
+	public CompositeTransactionManager getCompositeTransactionManager();
 
-	/**
-	     *Gets the composite transaction manager for the config.
-	     *
-	     * @return CompositeTransactionManager The composite
-	     * transaction manager.
-	     */
-	     
-	   public CompositeTransactionManager 
-	   getCompositeTransactionManager();
-     
 
 }

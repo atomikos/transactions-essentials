@@ -385,14 +385,13 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 
     protected void startThreads ( long timeout )
     {
-    	  
     	synchronized ( fsm_ ) {
     		if ( timer_ == null ) { //not null for repeated recovery 
     			stateHandler_.activate ();
     			timer_ = new PooledAlarmTimer(timeout);
     			timer_.addAlarmTimerListener(this);
     			submitTimer(timer_);
-    		}
+    		} 
     	}
 
     }
@@ -592,7 +591,6 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     {
         boolean allOK = true;
         boolean ret;
-
     	 if ( LOGGER.isDebugEnabled() ){
     		 LOGGER.logDebug (  "starting recover() for coordinator: " + getCoordinatorId () );
     	 }
@@ -793,7 +791,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     protected void restore ( ObjectImage image )
     {
         CoordinatorLogImage img = (CoordinatorLogImage) image;
-
+        
         root_ = img.root_;
 
         participants_ = img.participants_;
@@ -823,6 +821,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 
         }
         single_threaded_2pc_ = img.single_threaded_2pc_;
+        
     }
 
     /**

@@ -4,7 +4,12 @@ import java.net.UnknownHostException;
 import java.util.Enumeration;
 import java.util.Properties;
 
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
+
 public class ConfigProperties {
+
+	private static final Logger LOGGER = LoggerFactory.createLogger(ConfigProperties.class);
 
 	public static final String TM_UNIQUE_NAME_PROPERTY_NAME = "com.atomikos.icatch.tm_unique_name";
 	public static final String LOG_BASE_DIR_PROPERTY_NAME = "com.atomikos.icatch.log_base_dir";
@@ -13,6 +18,8 @@ public class ConfigProperties {
 	public static final String MAX_TIMEOUT_PROPERTY_NAME = "com.atomikos.icatch.max_timeout";
 	public static final String MAX_ACTIVES_PROPERTY_NAME = "com.atomikos.icatch.max_actives";
 	public static final String THREADED_2PC_PROPERTY_NAME = "com.atomikos.icatch.threaded_2pc";
+	public static final String FORCE_SHUTDOWN_ON_VM_EXIT_PROPERTY_NAME = "com.atomikos.icatch.force_shutdown_on_vm_exit";
+	public static final String FILE_PATH_PROPERTY_NAME = "com.atomikos.icatch.file";
 
 
 	/**
@@ -77,6 +84,7 @@ public class ConfigProperties {
 
 	private Properties properties;
 
+
 	public ConfigProperties(Properties properties) {
 		if (properties == null) throw new IllegalArgumentException("Properties should not be null");
 		this.properties = properties;
@@ -112,8 +120,7 @@ public class ConfigProperties {
 	}
 
 	public String getProperty(String name) {
-		applySystemProperties();
-		substitutePlaceHolderValues();
+		completeProperties();
 		String ret = properties.getProperty(name);
 		if (ret == null) throw new IllegalArgumentException(name);
 		ret = ret.trim();
@@ -176,6 +183,40 @@ public class ConfigProperties {
 			String name = (String) names.nextElement();
 			properties.setProperty(name, userSpecificProperties.getProperty(name));
 		}
+	}
+
+	public Properties getCompletedProperties() {
+		Properties ret = new Properties();
+		completeProperties();
+		Enumeration propertyNames = properties.propertyNames();
+		while (propertyNames.hasMoreElements()) {
+			String name = (String) propertyNames.nextElement();
+			ret.setProperty(name, getProperty(name));
+		}
+		return ret;
+	}
+
+	private void completeProperties() {
+		applySystemProperties();
+		substitutePlaceHolderValues();
+	}
+
+	public void logProperties() {
+		Properties properties = getCompletedProperties();
+		logProperties(properties);
+	}
+
+	private void logProperties(Properties properties) {
+		Enumeration propertyNames = properties.propertyNames();
+		while (propertyNames.hasMoreElements()) {
+			String name = (String) propertyNames.nextElement();			
+			LOGGER.logInfo("USING: " + name + " = " + properties.getProperty(name));
+			System.out.println("USING: " + name + " = " + properties.getProperty(name));
+		}
+	}
+
+	public boolean getForceShutdownOnVmExit() {
+		return getAsBoolean(FORCE_SHUTDOWN_ON_VM_EXIT_PROPERTY_NAME);
 	}
 
 }

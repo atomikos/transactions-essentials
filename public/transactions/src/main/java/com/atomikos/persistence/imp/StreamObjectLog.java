@@ -127,7 +127,6 @@ public class StreamObjectLog extends AbstractObjectLog implements ObjectLog {
 	public synchronized Vector recover() throws LogException {
 		if (!initialized_)
 			throw new LogException("Not initialized");
-
 		Vector ret = new Vector();
 		Enumeration enumm = contentForNextCheckpoint_.elements();
 		while (enumm.hasMoreElements()) {

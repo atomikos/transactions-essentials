@@ -41,11 +41,9 @@ import javax.transaction.NotSupportedException;
 import javax.transaction.Status;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
-import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
 
 import com.atomikos.icatch.SysException;
-import com.atomikos.icatch.config.imp.AbstractUserTransactionServiceFactory;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 
@@ -162,7 +160,7 @@ public class UserTransactionServerImp implements UserTransactionServer
 
         boolean canExport = false;
         String exportClass = properties
-                .getProperty ( AbstractUserTransactionServiceFactory.RMI_EXPORT_CLASS_PROPERTY_NAME );
+                .getProperty ( "com.atomikos.icatch.rmi_export_class" );
         canExport = "UnicastRemoteObject".equals ( exportClass )
                 || "PortableRemoteObject".equals ( exportClass );
         if ( !canExport ) {
@@ -229,7 +227,7 @@ public class UserTransactionServerImp implements UserTransactionServer
 
         if ( exported_ ) {
             String exportClass = properties_
-                    .getProperty ( AbstractUserTransactionServiceFactory.RMI_EXPORT_CLASS_PROPERTY_NAME );
+                    .getProperty ( "com.atomikos.icatch.rmi_export_class" );
             try {
                 if ( "PortableRemoteObject".equals ( exportClass ) )
                     PortableRemoteObject.unexportObject ( this );

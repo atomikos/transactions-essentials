@@ -97,6 +97,26 @@ public interface CompositeTransactionManager
 
 	public CompositeTransaction suspend() throws SysException ;
 
+    /**
+     * Recreate a composite transaction based on an imported context. Needed by
+     * the application's communication layer.
+     *
+     * @param context
+     *            The propagationcontext.
+     * @param orphancheck
+     *            If true, real composite txs are done. If false, OTS like
+     *            behavior applies.
+     * @param heur_commit
+     *            True for heuristic commit, false for heuristic rollback.
+     *
+     * @return CompositeTransaction The recreated local instance.
+     * @exception SysException
+     *                Failure.
+     */
+
+	public CompositeTransaction recreateCompositeTransaction(
+			Propagation propagation, boolean orphancheck, boolean heur_commit);
+
 
 
 }

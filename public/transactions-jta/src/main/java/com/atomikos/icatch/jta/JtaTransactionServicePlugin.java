@@ -1,10 +1,10 @@
 package com.atomikos.icatch.jta;
 
+import java.util.Enumeration;
 import java.util.Properties;
 
 import com.atomikos.datasource.xa.AcceptAllXATransactionalResource;
 import com.atomikos.icatch.config.Configuration;
-import com.atomikos.icatch.config.imp.AbstractUserTransactionServiceFactory;
 import com.atomikos.icatch.provider.ConfigProperties;
 import com.atomikos.icatch.provider.TransactionServicePlugin;
 import com.atomikos.logging.Logger;
@@ -57,7 +57,7 @@ public class JtaTransactionServicePlugin implements TransactionServicePlugin {
 		int defaultJtaTimeout = 0;
 		defaultJtaTimeout = (int) defaultTimeoutInMillis/1000;
 		if ( defaultJtaTimeout <= 0 ) {
-			LOGGER.logWarning ( "WARNING: " + AbstractUserTransactionServiceFactory.DEFAULT_JTA_TIMEOUT_PROPERTY_NAME + " should be more than 1000 milliseconds - resetting to 10000 milliseconds instead..." );
+			LOGGER.logWarning ( "WARNING: " + DEFAULT_JTA_TIMEOUT_PROPERTY_NAME + " should be more than 1000 milliseconds - resetting to 10000 milliseconds instead..." );
 			defaultJtaTimeout = 10;
 		}
 		TransactionManagerImp.setDefaultTimeout(defaultJtaTimeout);
@@ -72,13 +72,14 @@ public class JtaTransactionServicePlugin implements TransactionServicePlugin {
         }
         
         autoRegisterResources = configProperties.getAsBoolean(AUTOMATIC_RESOURCE_REGISTRATION_PROPERTY_NAME);
-        if ( Configuration.getResources ().hasMoreElements() && !autoRegisterResources ) {
-            AcceptAllXATransactionalResource defaultRes = new AcceptAllXATransactionalResource (
-                    "com.atomikos.icatch.DefaultResource" );
-            Configuration.addResource ( defaultRes );
-
-        }
+//        if ( Configuration.getResources().hasMoreElements() && !autoRegisterResources ) {
+//        	AcceptAllXATransactionalResource defaultRes = new AcceptAllXATransactionalResource (
+//                    "com.atomikos.icatch.DefaultResource" );
+//            Configuration.addResource ( defaultRes );
+//
+//        }
 	}
+
 
 	@Override
 	public void afterShutdown() {

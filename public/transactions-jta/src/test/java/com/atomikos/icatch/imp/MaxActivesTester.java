@@ -4,9 +4,9 @@ import java.util.Properties;
 
 import com.atomikos.icatch.CompositeTransaction;
 import com.atomikos.icatch.CompositeTransactionManager;
-import com.atomikos.icatch.config.TSInitInfo;
 import com.atomikos.icatch.config.UserTransactionService;
-import com.atomikos.icatch.config.imp.AbstractUserTransactionServiceFactory;
+import com.atomikos.icatch.config.UserTransactionServiceImp;
+import com.atomikos.icatch.provider.ConfigProperties;
 
 /**
  * 
@@ -23,10 +23,9 @@ public class MaxActivesTester
 	public static void test ( UserTransactionService uts )
 	throws Exception
 	{
-		TSInitInfo info = uts.createTSInitInfo();
-		Properties p = info.getProperties();
-		p.setProperty ( AbstractUserTransactionServiceFactory.MAX_ACTIVES_PROPERTY_NAME , "1");
-		uts.init ( info );
+		Properties p = new Properties();
+		p.setProperty ( ConfigProperties.MAX_ACTIVES_PROPERTY_NAME , "1");
+		uts.init ( p );
 		try
         {
             CompositeTransactionManager ctm = uts.getCompositeTransactionManager();
@@ -62,8 +61,7 @@ public class MaxActivesTester
 	public static void main ( String[] args ) throws Exception
 	{
 		UserTransactionService uts =
-					new com.atomikos.icatch.standalone.
-						UserTransactionServiceFactory().getUserTransactionService( new Properties() );
+					new UserTransactionServiceImp();
 		test ( uts );
 	}
 

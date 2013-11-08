@@ -36,7 +36,10 @@ import com.atomikos.icatch.Participant;
 import com.atomikos.icatch.Propagation;
 import com.atomikos.icatch.SubTxAwareParticipant;
 import com.atomikos.icatch.SysException;
+import com.atomikos.icatch.TransactionService;
 import com.atomikos.icatch.TxState;
+import com.atomikos.icatch.config.Configuration;
+import com.atomikos.icatch.provider.ConfigProperties;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 
@@ -52,15 +55,12 @@ public class CompositeTransactionManagerImp implements CompositeTransactionManag
 	
 	private Map<Thread, Stack<CompositeTransaction>> threadtotxmap_ = null;
     private Map<CompositeTransaction, Thread> txtothreadmap_ = null;
-    private TransactionServiceImp service_;
-    private boolean initialized_;
 
 
     public CompositeTransactionManagerImp ()
     {
         threadtotxmap_ = new HashMap<Thread, Stack<CompositeTransaction>> ();
         txtothreadmap_ = new HashMap<CompositeTransaction, Thread> ();
-        initialized_ = false;
     }
 
 
@@ -165,21 +165,6 @@ public class CompositeTransactionManagerImp implements CompositeTransactionManag
     }
 
 
-    /**
-     * Initialize the TM.
-     *
-     * @param service
-     *            The tx service to use. As part of this method, the service
-     *            will also be initialized.
-     * @param properties The init properties.
-     */
-
-    public void init ( TransactionServiceImp service , Properties properties ) throws SysException
-    {
-        service_ = service;
-        service_.init ( properties );
-        initialized_ = true;
-    }
 
     /**
      * Get the participant for the given root. Needed for recovery of JCA
@@ -190,10 +175,18 @@ public class CompositeTransactionManagerImp implements CompositeTransactionManag
      */
     public Participant getParticipant ( String root )
     {
-        return service_.getParticipant ( root );
+        return getTransactionService().getParticipant ( root );
     }
 
-    /**
+    private TransactionService getTransactionService() {
+    	TransactionService ret = Configuration.getTransactionService();
+    	if (ret == null) throw new IllegalStateException("Not initialized");
+    	return ret;
+	}
+
+
+
+	/**
      * Called if a tx is ended successfully. In order to remove the tx from the
      * mapping.
      *
@@ -223,9 +216,7 @@ public class CompositeTransactionManagerImp implements CompositeTransactionManag
 
     public CompositeTransaction getCompositeTransaction () throws SysException
     {
-        if ( !initialized_ )
-            throw new IllegalStateException ( "Not initialized" );
-
+        
         CompositeTransaction ct = null;
         ct = getCurrentTx ();
         if ( ct != null ) {
@@ -249,7 +240,7 @@ public class CompositeTransactionManagerImp implements CompositeTransactionManag
     public CompositeTransaction getCompositeTransaction ( String tid )
             throws SysException
     {
-        CompositeTransaction ret = service_.getCompositeTransaction ( tid );
+        CompositeTransaction ret = getTransactionService().getCompositeTransaction ( tid );
         if ( ret != null ) {
         	if(LOGGER.isDebugEnabled()){
         		LOGGER.logDebug("getCompositeTransaction ( " + tid
@@ -284,7 +275,7 @@ public class CompositeTransactionManagerImp implements CompositeTransactionManag
      *                Failure.
      */
 
-    protected synchronized CompositeTransaction recreateCompositeTransaction (
+    public synchronized CompositeTransaction recreateCompositeTransaction (
             Propagation context , boolean orphancheck , boolean heur_commit )
             throws SysException
     {
@@ -295,7 +286,7 @@ public class CompositeTransactionManagerImp implements CompositeTransactionManag
         if ( ct != null ) {
             LOGGER.logWarning("Recreating a transaction with existing transaction: " + ct.getTid());
         }
-        ct = service_.recreateCompositeTransaction ( context, orphancheck,
+        ct = getTransactionService().recreateCompositeTransaction ( context, orphancheck,
                 heur_commit );
         Thread t = Thread.currentThread ();
         setThreadMappings ( ct, t );
@@ -308,8 +299,6 @@ public class CompositeTransactionManagerImp implements CompositeTransactionManag
 
     public CompositeTransaction suspend () throws SysException
     {
-    	if ( !initialized_ ) throw new IllegalStateException ( "Not initialized" );
-       
     	
 
         CompositeTransaction ret = getCurrentTx ();
@@ -337,9 +326,7 @@ public class CompositeTransactionManagerImp implements CompositeTransactionManag
     {
         
 
-        if ( !initialized_ )
-            throw new IllegalStateException ( "Not initialized" );
-
+       
         Stack ancestors = new Stack ();
         Stack tmp = new Stack ();
         Stack lineage = (Stack) ct.getLineage ().clone ();
@@ -383,7 +370,7 @@ public class CompositeTransactionManagerImp implements CompositeTransactionManag
     public void shutdown ( boolean force ) throws SysException,
             IllegalStateException
     {
-        service_.shutdown ( force );
+        getTransactionService().shutdown ( force );
     }
 
     protected void startlistening ( CompositeTransaction transaction )
@@ -427,7 +414,7 @@ public class CompositeTransactionManagerImp implements CompositeTransactionManag
         
         ct = getCurrentTx ();
         if ( ct == null ) {
-            ret = service_.createCompositeTransaction ( timeout );
+            ret = getTransactionService().createCompositeTransaction ( timeout );
             if(LOGGER.isInfoEnabled()){
             	LOGGER.logInfo("createCompositeTransaction ( " + timeout + " ): "
                     + "created new ROOT transaction with id " + ret.getTid ());

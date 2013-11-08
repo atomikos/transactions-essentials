@@ -35,7 +35,8 @@ import java.util.Vector;
 import com.atomikos.finitestates.FSMEnterEvent;
 import com.atomikos.finitestates.FSMPreEnterListener;
 import com.atomikos.icatch.TxState;
-import com.atomikos.icatch.config.imp.AbstractUserTransactionServiceFactory;
+import com.atomikos.icatch.provider.ConfigProperties;
+import com.atomikos.icatch.provider.imp.AssemblerImp;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 import com.atomikos.persistence.LogException;
@@ -55,6 +56,10 @@ public class StateRecoveryManagerImp  implements StateRecoveryManager, FSMPreEnt
 
 	private static final String WRITE_AHEAD_OBJECT_LOG_CLASSNAME = "com.atomikos.persistence.imp.WriteAheadObjectLog";
 	private static final Logger LOGGER = LoggerFactory.createLogger(StateRecoveryManagerImp.class);
+	private static final String CHECKPOINT_INTERVAL_PROPERTY_NAME = "com.atomikos.icatch.checkpoint_interval";
+	private static final String LOG_BASE_DIR_PROPERTY_NAME = "com.atomikos.icatch.log_base_dir";
+	private static final String LOG_BASE_NAME_PROPERTY_NAME = "com.atomikos.icatch.log_base_name";
+	private static final String SERIALIZABLE_LOGGING_PROPERTY_NAME = "com.atomikos.icatch.serializable_logging";
 	
 	private ObjectLog objectlog_;
 	private LogFileLock lock_;
@@ -122,8 +127,9 @@ public class StateRecoveryManagerImp  implements StateRecoveryManager, FSMPreEnt
 	 */
 	public StateRecoverable<TxState> recover(Object id) throws LogException {
 		StateRecoverable<TxState> srec = (StateRecoverable<TxState>) objectlog_.recover(id);
-		if (srec != null) // null if not found!
+		if (srec != null) {// null if not found!
 			register(srec);
+		} 
 		return srec;
 	}
 
@@ -150,20 +156,17 @@ public class StateRecoveryManagerImp  implements StateRecoveryManager, FSMPreEnt
 	
 	
 	public void init(Properties p) throws LogException {
-		long chckpt = Long.valueOf( Utils.getTrimmedProperty (
-                AbstractUserTransactionServiceFactory.CHECKPOINT_INTERVAL_PROPERTY_NAME, p ) );
+		ConfigProperties configProperties = new ConfigProperties(p);
+		long chckpt = configProperties.getAsLong(CHECKPOINT_INTERVAL_PROPERTY_NAME);
 
-        String logdir = Utils.getTrimmedProperty (
-                AbstractUserTransactionServiceFactory.LOG_BASE_DIR_PROPERTY_NAME, p );
-        String logname = Utils.getTrimmedProperty (
-                AbstractUserTransactionServiceFactory.LOG_BASE_NAME_PROPERTY_NAME, p );
+        String logdir = configProperties.getProperty(LOG_BASE_DIR_PROPERTY_NAME);
+        String logname = configProperties.getProperty(LOG_BASE_NAME_PROPERTY_NAME);
         logdir = Utils.findOrCreateFolder ( logdir );
         
         lock_ = new LogFileLock(logdir, logname);
         lock_.acquireLock();
         
-        boolean serializableLogging= "true".equals(Utils.getTrimmedProperty (
-                AbstractUserTransactionServiceFactory.SERIALIZABLE_LOGGING_PROPERTY_NAME, p ));
+        boolean serializableLogging = configProperties.getAsBoolean(SERIALIZABLE_LOGGING_PROPERTY_NAME);
         
         LogStream logstream=null;	
 		try {

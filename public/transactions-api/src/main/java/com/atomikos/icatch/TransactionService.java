@@ -66,15 +66,7 @@ public interface TransactionService
         
       public CompositeTransaction getCompositeTransaction ( String tid );
       
-      /**
-       * Initializes the TM, and recovers.
-       * Should be first method called.
-       * @param properties The properties used to 
-       * initialize the system.
-       * @exception SysException
-       */
-     
-      public void init ( Properties properties ) throws SysException;
+
       
       /**
        * Starts a new transaction.
@@ -176,8 +168,5 @@ public interface TransactionService
       
       public RecoveryCoordinator getSuperiorRecoveryCoordinator ( String root );
       
-      /**
-       * Gets the logcontrol instance for admin purposes.
-       */
-      public LogControl getLogControl();
+
 }

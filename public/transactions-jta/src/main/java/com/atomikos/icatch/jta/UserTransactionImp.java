@@ -35,7 +35,6 @@ import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
 
-import com.atomikos.icatch.config.TSInitInfo;
 import com.atomikos.icatch.config.UserTransactionService;
 import com.atomikos.icatch.config.UserTransactionServiceImp;
 import com.atomikos.util.SerializableObjectFactory;
@@ -73,8 +72,7 @@ public class UserTransactionImp implements UserTransaction, Serializable,
             txmgr_ = TransactionManagerImp.getTransactionManager ();
             if ( txmgr_ == null ) {
                 UserTransactionService uts = new UserTransactionServiceImp ();
-                TSInitInfo info = uts.createTSInitInfo ();
-                uts.init ( info );
+                uts.init();
                 txmgr_ = TransactionManagerImp.getTransactionManager ();
             }
         }

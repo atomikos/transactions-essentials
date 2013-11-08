@@ -38,7 +38,7 @@ import com.atomikos.datasource.ResourceException;
  * configuration for each such enlist. As an alternative, this class pretends to
  * recognize <b>any</b> XAResource and can be used to avoid problems when
  * automatic registration is <b>disabled</b>: instead of reporting errors
- * claiming that the XAResource is unknown for fault isSameRM cases,
+ * claiming that the XAResource is unknown for faulty isSameRM cases,
  * this class will silently accept them.
  *
  *

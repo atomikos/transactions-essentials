@@ -35,6 +35,7 @@ import java.util.ServiceLoader;
 import java.util.Vector;
 
 import com.atomikos.datasource.RecoverableResource;
+import com.atomikos.datasource.ResourceException;
 import com.atomikos.icatch.CompositeTransactionManager;
 import com.atomikos.icatch.ExportingTransactionManager;
 import com.atomikos.icatch.ImportingTransactionManager;
@@ -46,6 +47,7 @@ import com.atomikos.icatch.admin.LogControl;
 import com.atomikos.icatch.provider.Assembler;
 import com.atomikos.icatch.provider.ConfigProperties;
 import com.atomikos.icatch.provider.TransactionServicePlugin;
+import com.atomikos.icatch.provider.TransactionServiceProvider;
 
 /**
  * Configuration is a facade for the icatch transaction management facilities.
@@ -68,23 +70,20 @@ public final class Configuration
     // filled on startup, contains all resources managed by the
     // transaction manager.
 
-    private static Vector resourceList_ = new Vector ();
+    private static Vector<RecoverableResource> resourceList_ = new Vector ();
     // keep resources in a list, to enable ordered search of XAResource
     // this way, an AcceptAllXATransactionalResource can be added at the end
 
-    private static Vector logAdministrators_ = new Vector ();
+    private static Vector<LogAdministrator> logAdministrators_ = new Vector ();
     // the registered log administrators
-
-    private static LogControl logControl_;
-    // the log control for administrators
 
     private static RecoveryService recoveryService_;
     // needed for addResource to do recovery
 
-    private static TransactionService service_;
+    private static TransactionServiceProvider service_;
     // the transaction service for this VM.
 
-    private static Vector tsListenersList_ = new Vector ();
+    private static Vector<TransactionServicePlugin> tsListenersList_ = new Vector ();
 
     private static List shutdownHooks_ = new ArrayList();
 
@@ -121,7 +120,7 @@ public final class Configuration
     public static synchronized void installTransactionService (
             TransactionService service )
     {
-        service_ = service;
+        service_ = (TransactionServiceProvider) service;
         addAllTransactionServicePluginServicesFromClasspath();
         Iterator it = tsListenersList_.iterator ();
         while ( it.hasNext () && service != null ) {
@@ -245,29 +244,7 @@ public final class Configuration
         ctxmgr_ = compositeTransactionManager;
     }
 
-    /**
-     * Installs a recovery service as a Singleton.
-     *
-     * @param service
-     *            The recovery service.
-     */
 
-    public static synchronized void installRecoveryService (
-            RecoveryService service )
-    {
-        recoveryService_ = service;
-        if ( service != null ) {
-            // notify all currently registered resources
-            Enumeration resources = getResources ();
-            while ( resources.hasMoreElements () ) {
-                RecoverableResource next = (RecoverableResource) resources
-                        .nextElement ();
-                next.setRecoveryService ( service );
-
-            }
-
-        }
-    }
 
     /**
      * Installs the log control interface to use.
@@ -278,14 +255,6 @@ public final class Configuration
     public static synchronized void installLogControl ( LogControl control )
     {
 
-        logControl_ = control;
-        if ( logControl_ != null ) {
-            Enumeration enumm = getLogAdministrators ();
-            while ( enumm.hasMoreElements () ) {
-                LogAdministrator admin = (LogAdministrator) enumm.nextElement ();
-                admin.registerLogControl ( control );
-            }
-        }
     }
 
     /**
@@ -394,8 +363,8 @@ public final class Configuration
     	if ( logAdministrators_.contains ( admin ) ) return;
 
         logAdministrators_.add ( admin );
-        if ( logControl_ != null ) {
-            admin.registerLogControl ( logControl_ );
+        if ( service_ != null ) {
+            admin.registerLogControl ( service_.getLogControl() );
         }
     }
 
@@ -407,8 +376,9 @@ public final class Configuration
     public static void removeLogAdministrator ( LogAdministrator admin )
     {
         logAdministrators_.remove ( admin );
-        if ( logControl_ != null )
-            admin.deregisterLogControl ( logControl_ );
+        if ( service_ != null ) {
+            admin.deregisterLogControl(service_.getLogControl());
+        }
     }
 
     /**
@@ -494,6 +464,132 @@ public final class Configuration
 
 	static synchronized void resetConfigProperties() {
 		configProperties = null;
+	}
+	
+	public static synchronized void shutdown(boolean force) {
+		if (service_ != null) {
+			removeLogAdministrators(service_.getLogControl());
+			service_.shutdown(force);
+			notifyAfterShutdown();
+			removeShutdownHooks();
+			removeAndCloseResources(force);
+			clearSystemComponents();
+		}
+	}
+	
+	private static void clearSystemComponents() {
+		service_ = null;
+		recoveryService_ = null;
+		ctxmgr_ = null;
+		tsListenersList_.clear();
+		resetConfigProperties();
+		assembler = null;
+		imptxmgr_ = null;
+		exptxmgr_ = null;
+	}
+
+	private static void notifyAfterShutdown() {
+		for (TransactionServicePlugin p : tsListenersList_) {
+			p.afterShutdown();
+		}
+	}
+
+	private static void removeLogAdministrators(LogControl logControl) {
+        Enumeration logAdmins = Configuration.getLogAdministrators ();
+        while ( logAdmins.hasMoreElements () ) {
+            LogAdministrator admin = (LogAdministrator) logAdmins
+                    .nextElement ();
+            admin.deregisterLogControl(logControl);
+            Configuration.removeLogAdministrator ( admin );
+        }
+	}
+
+	private static void removeAndCloseResources(boolean force) {
+		Enumeration resources = Configuration.getResources ();
+        while ( resources.hasMoreElements () ) {
+            RecoverableResource res = (RecoverableResource) resources
+                    .nextElement ();
+
+            Configuration.removeResource ( res.getName () );
+            try {
+                res.close ();
+            } catch ( ResourceException re ) {
+         	   //Issue 10038:
+         	   //Ignore errors in force mode: force is most likely
+         	   //during VM exit; in that case interleaving of shutdown hooks
+         	   //means that resource connectors may have closed already
+         	   //by the time the TM hook runs. We don't want useless
+         	   //reports in that case.
+         	   //NOTE: any invalid states will be detected during the next
+         	   //(re)init so they can be ignored here (if force mode)
+
+                if ( !force ) {
+                	re.printStackTrace();
+                }
+            }
+        }
+	}
+
+	public static synchronized void init() {
+		if (service_ == null) {
+			addAllTransactionServicePluginServicesFromClasspath();
+			ConfigProperties configProperties = getConfigProperties();
+			configProperties.logProperties();
+			assembleSystemComponents(configProperties);
+			notifyBeforeInit(configProperties);
+			initializeSystemComponents(configProperties);
+			notifyAfterInit();
+			if (configProperties.getForceShutdownOnVmExit()) {
+				addShutdownHook(new ForceShutdownHook());
+			}
+		}
+	}
+
+	private static void notifyAfterInit() {
+		for (TransactionServicePlugin p : tsListenersList_) {
+			p.afterInit();
+		}
+		for (LogAdministrator a : logAdministrators_) {
+			a.registerLogControl(service_.getLogControl());
+		}
+		for (RecoverableResource r : resourceList_ ) {
+			r.setRecoveryService(recoveryService_);
+		}
 		
 	}
+
+	private static void initializeSystemComponents(
+			ConfigProperties configProperties) {
+		service_.init(configProperties.getCompletedProperties());
+	}
+
+	private static void notifyBeforeInit(ConfigProperties configProperties) {
+		for (TransactionServicePlugin p : tsListenersList_) {
+			p.beforeInit(configProperties.getCompletedProperties());
+		}
+	}
+
+	private static void assembleSystemComponents(
+			ConfigProperties configProperties) {
+		Assembler assembler = getAssembler();
+		service_ = assembler.assembleTransactionService(configProperties);
+		recoveryService_ = service_.getRecoveryService();
+		ctxmgr_ = assembler.assembleCompositeTransactionManager(configProperties);
+	}
+	
+	private static class ForceShutdownHook extends Thread
+    {
+        
+
+        private ForceShutdownHook()
+        {
+            super();
+        }
+
+        public void run() {
+            Configuration.shutdown(true);
+        }
+    }
+
+
 }

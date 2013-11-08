@@ -47,9 +47,10 @@ import com.atomikos.icatch.TransactionService;
 import com.atomikos.icatch.TxState;
 import com.atomikos.icatch.admin.LogControl;
 import com.atomikos.icatch.config.Configuration;
-import com.atomikos.icatch.config.imp.AbstractUserTransactionServiceFactory;
 import com.atomikos.icatch.imp.thread.InterruptedExceptionHelper;
+import com.atomikos.icatch.imp.thread.TaskManager;
 import com.atomikos.icatch.provider.TransactionServicePlugin;
+import com.atomikos.icatch.provider.TransactionServiceProvider;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 import com.atomikos.persistence.LogException;
@@ -60,7 +61,7 @@ import com.atomikos.util.UniqueIdMgr;
  * General implementation of Transaction Service.
  */
 
-public class TransactionServiceImp implements TransactionService,
+public class TransactionServiceImp implements TransactionServiceProvider,
         FSMEnterListener<TxState>, SubTxAwareParticipant, RecoveryService
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(TransactionServiceImp.class);
@@ -226,35 +227,7 @@ public class TransactionServiceImp implements TransactionService,
         return ret;
     }
 
-    /**
-     * Utility method to notify the registered listeners
-     *
-     * @param init
-     *            True for init, false for shutdown.
-     * @param before
-     *            True if init/shutdown is about to be done, false if it has
-     *            been done already.
-     */
 
-    private void notifyListeners ( boolean init , boolean before )
-    {
-
-        Enumeration enumm = tsListeners_.elements ();
-        while ( enumm.hasMoreElements () ) {
-            TransactionServicePlugin l = (TransactionServicePlugin) enumm.nextElement ();
-            try {
-	            if ( init ) {
-	                if (before) l.beforeInit ( initProperties_ );
-	            } else {
-	                if (!before) l.afterShutdown();
-	            }
-            }
-            catch ( Exception e ) {
-            		LOGGER.logWarning ( "Error in TSListener" , e );
-            }
-        }
-
-    }
 
     /**
      * Removes the coordinator from the root map.
@@ -345,8 +318,7 @@ public class TransactionServiceImp implements TransactionService,
         if ( timeout > maxTimeout_ ) {
             timeout = maxTimeout_;
             //FIXED 20188
-            LOGGER.logWarning ( "Attempt to create a transaction with a timeout that exceeds " +
-            		AbstractUserTransactionServiceFactory.MAX_TIMEOUT_PROPERTY_NAME + " - truncating to: " + maxTimeout_ );
+            LOGGER.logWarning ( "Attempt to create a transaction with a timeout that exceeds maximum - truncating to: " + maxTimeout_ );
         }
 
         synchronized ( shutdownSynchronizer_ ) {
@@ -479,9 +451,7 @@ public class TransactionServiceImp implements TransactionService,
     protected synchronized void recoverCoordinators () throws SysException
     {
         Stack errors = new Stack ();
-
         try {
-
             Vector recovered = recoverymanager_.recover ();
             Enumeration enumm = recovered.elements ();
             while ( enumm.hasMoreElements () ) {
@@ -513,14 +483,7 @@ public class TransactionServiceImp implements TransactionService,
     public void recover ()
     {
 
-        prepareConfigurationForPresumedAbortIfNecessary();
-
-        //call listeners here: pending listeners may have been installed
-        //by the installation step above
         if ( ! initialized_ ) {
-        		//only call if not initialized or listeners will get
-        		//multiple callbacks, once for each recovery scan!!!
-        		notifyListeners ( true, true );
         		initialized_ = true;
         }
 
@@ -575,13 +538,7 @@ public class TransactionServiceImp implements TransactionService,
 
     }
 
-	private void prepareConfigurationForPresumedAbortIfNecessary() {
-		if ( Configuration.getTransactionService () == null ) {
-            Configuration.installTransactionService ( this );
-            Configuration.installRecoveryService ( this );
 
-        }
-	}
 
     /**
      * Get a LogControl for the service.
@@ -660,8 +617,6 @@ public class TransactionServiceImp implements TransactionService,
         control_ = new LogControlImp ( this );
         
         recover(); //ensure that remote participants can start inquiring and replay
-
-        notifyListeners ( true, false );
     }
 
     /**
@@ -825,6 +780,7 @@ public class TransactionServiceImp implements TransactionService,
     public synchronized void shutdown ( boolean force ) throws SysException,
             IllegalStateException
     {
+
         Stack errors = new Stack ();
         boolean wasShuttingDown = false;
         if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Transaction Service: Entering shutdown ( "
@@ -852,6 +808,7 @@ public class TransactionServiceImp implements TransactionService,
             }
 
         } // if wasShuttingDown
+
 
         synchronized ( shutdownSynchronizer_ ) {
         	LOGGER.logDebug ( "Transaction Service: Shutdown acquired lock on waiter." );
@@ -894,7 +851,7 @@ public class TransactionServiceImp implements TransactionService,
                             + inter.getMessage (), errors );
                 }
             }
-            notifyListeners ( false, true );
+
             initialized_ = false;
             if ( !wasShuttingDown ) {
                 // If we were already shutting down, then the FIRST thread
@@ -912,9 +869,16 @@ public class TransactionServiceImp implements TransactionService,
             } 
 
         }
-
-        notifyListeners ( false, false );
+        
+        shutdownSystemExecutors();
     }
+
+	private void shutdownSystemExecutors() {
+		TaskManager exec = TaskManager.getInstance();
+        if ( exec != null ) {
+        		exec.shutdown();
+        }
+	}
 
     public synchronized void finalize () throws Throwable
     {
@@ -960,5 +924,10 @@ public class TransactionServiceImp implements TransactionService,
         CompositeTransaction ct = createCT ( tid, cc, lineage, false );
         return ct;
     }
+
+	@Override
+	public RecoveryService getRecoveryService() {
+		return this;
+	}
 
 }

@@ -88,13 +88,11 @@ public class FileLogStream extends AbstractLogStream implements LogStream {
 			if (LOGGER.isInfoEnabled()) {
 				LOGGER.logInfo("Starting read of logfile " + file_.getCurrentVersionFileName());
 			}
-
 			while (in.available() > 0) {
 				// if crashed, then unproper closing might cause endless blocking!
 				// therefore, we check if avaible first.
 				count++;
 				Recoverable nxt = (Recoverable) ins.readObject();
-
 				ret.addElement(nxt);
 				if (count % 10 == 0) {
 					LOGGER.logInfo(".");

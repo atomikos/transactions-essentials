@@ -118,6 +118,7 @@ public class IndoubtStateHandler extends CoordinatorStateHandler
 
     protected void onTimeout ()
     {
+    	
 
         // first check if we are still the current state!
         // otherwise, a COMMITTING tx could be rolled back if it
