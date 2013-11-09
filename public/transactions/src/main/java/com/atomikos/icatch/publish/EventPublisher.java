@@ -22,7 +22,7 @@ public class EventPublisher {
 	private EventPublisher(){}
 	
 	private static void findAllEventListenersInClassPath() {
-		ServiceLoader<EventListener> loader = ServiceLoader.load(EventListener.class);
+		ServiceLoader<EventListener> loader = ServiceLoader.load(EventListener.class,EventPublisher.class.getClassLoader());
 		for (EventListener l : loader) {
 			registerEventListener(l);
 		}

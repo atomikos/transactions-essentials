@@ -173,14 +173,5 @@ public class ClassLoadingHelper {
 		return null;
 	}
 
-	public static <T> ServiceLoader<T> loadFromClassLoader(Class<T> toLoad) {
-		//Under OSGi context, Atomikos bundle is loaded under different ClassLoader than the JDK
-	  	//we need to switch dynamically the ClassLoader
-		ClassLoader backup = Thread.currentThread().getContextClassLoader();
-	    Thread.currentThread().setContextClassLoader( ClassLoadingHelper.class.getClassLoader() );
-	    ServiceLoader<T> loader = ServiceLoader.load(toLoad);
-	  	//now we can go back to previous ClassLoader
-	    Thread.currentThread().setContextClassLoader( backup );
-		return loader;
-	}
+	
 }

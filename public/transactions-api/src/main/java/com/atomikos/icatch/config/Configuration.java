@@ -131,7 +131,7 @@ public final class Configuration
     }
 
     private static void addAllTransactionServicePluginServicesFromClasspath() {
-        ServiceLoader<TransactionServicePlugin> loader = ClassLoadingHelper.loadFromClassLoader(TransactionServicePlugin.class);
+        ServiceLoader<TransactionServicePlugin> loader = ServiceLoader.load(TransactionServicePlugin.class,Configuration.class.getClassLoader());
         for (TransactionServicePlugin l : loader ) {
 			registerTransactionServicePlugin(l);
 		}
@@ -447,7 +447,7 @@ public final class Configuration
 	}
 
 	private static void loadAssembler() {
-        ServiceLoader<Assembler> loader = ClassLoadingHelper.loadFromClassLoader(Assembler.class);
+        ServiceLoader<Assembler> loader = ServiceLoader.load(Assembler.class,Configuration.class.getClassLoader());
 		Iterator<Assembler> it = loader.iterator();
 		if (it.hasNext()) {
 			assembler = it.next();
