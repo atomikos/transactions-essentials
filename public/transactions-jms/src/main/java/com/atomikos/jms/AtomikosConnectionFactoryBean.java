@@ -413,7 +413,8 @@ Referenceable, Serializable {
 				" maintenanceInterval=" + getMaintenanceInterval() + "," +
 				" xaProperties=" + printXaProperties() + "," +
 				" localTransactionMode=" + localTransactionMode + "," + 
-				" maxLifetime=" + maxLifetime +
+				" maxLifetime=" + maxLifetime + "," +
+				" ignoreSessionTransactedFlag=" + ignoreSessionTransactedFlag +
 				"]"
 				);
 		

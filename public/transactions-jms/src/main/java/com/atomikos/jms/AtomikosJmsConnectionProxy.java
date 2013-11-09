@@ -221,11 +221,9 @@ implements SessionHandleStateChangeListener
 
 	private boolean createXaSession(boolean sessionTransactedFlag) {
 		if (ignoreSessionTransactedFlag) {
-			System.out.println("IGNORING SESSION TRANSACTED FLAG");
 			return !props.getLocalTransactionMode();
 		}
 		else {
-			System.out.println("RESPECTING SESSION TRANSACTED FLAG");
 			return sessionTransactedFlag && !props.getLocalTransactionMode();
 		}
 	}
