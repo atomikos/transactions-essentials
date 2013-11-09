@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2013 Atomikos <info@atomikos.com>
  *
  * This code ("Atomikos TransactionsEssentials"), by itself,
  * is being distributed under the
@@ -54,16 +54,19 @@ class AtomikosPooledJmsConnection extends AbstractXPooledConnection implements S
 	private ConnectionPoolProperties props;
 	private boolean erroneous;
 
-	protected AtomikosPooledJmsConnection(XAConnection xac, XATransactionalResource jmsTransactionalResource, ConnectionPoolProperties props) {
+	private boolean ignoreSessionTransactedFlag;
+
+	protected AtomikosPooledJmsConnection(boolean ignoreSessionTransactedFlag, XAConnection xac, XATransactionalResource jmsTransactionalResource, ConnectionPoolProperties props) {
 		super(props);
 		this.jmsTransactionalResource = jmsTransactionalResource;
 		this.xaConnection = xac;
 		this.props = props;
 		this.erroneous = false;
+		this.ignoreSessionTransactedFlag = ignoreSessionTransactedFlag;
 	}
 
 	protected Reapable doCreateConnectionProxy(HeuristicMessage msg) throws CreateConnectionException {
-		currentProxy = AtomikosJmsConnectionProxy.newInstance ( xaConnection , jmsTransactionalResource , this , props );
+		currentProxy = AtomikosJmsConnectionProxy.newInstance (ignoreSessionTransactedFlag, xaConnection , jmsTransactionalResource , this , props );
 		return currentProxy;
 	}
 

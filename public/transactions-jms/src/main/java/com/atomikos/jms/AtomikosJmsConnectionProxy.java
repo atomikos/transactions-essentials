@@ -97,8 +97,10 @@ implements SessionHandleStateChangeListener
 	private SessionHandleStateChangeListener owner;
 	private ConnectionPoolProperties props;
 	private boolean erroneous;
+
+	private boolean ignoreSessionTransactedFlag;
 	
-	private AtomikosJmsConnectionProxy ( XAConnection c , XATransactionalResource jmsTransactionalResource , SessionHandleStateChangeListener owner, ConnectionPoolProperties props ) 
+	private AtomikosJmsConnectionProxy ( boolean ignoreSessionTransactedFlag, XAConnection c , XATransactionalResource jmsTransactionalResource , SessionHandleStateChangeListener owner, ConnectionPoolProperties props ) 
 	{
 		this.delegate = c;
 		this.sessions = new ArrayList<Session>();
@@ -107,6 +109,7 @@ implements SessionHandleStateChangeListener
 		this.reaped = false;
 		this.owner = owner;
 		this.props = props;
+		this.ignoreSessionTransactedFlag = ignoreSessionTransactedFlag;
 	}
 
 	private void reap() {
@@ -217,7 +220,14 @@ implements SessionHandleStateChangeListener
 	}
 
 	private boolean createXaSession(boolean sessionTransactedFlag) {
-		return !props.getLocalTransactionMode();
+		if (ignoreSessionTransactedFlag) {
+			System.out.println("IGNORING SESSION TRANSACTED FLAG");
+			return !props.getLocalTransactionMode();
+		}
+		else {
+			System.out.println("RESPECTING SESSION TRANSACTED FLAG");
+			return sessionTransactedFlag && !props.getLocalTransactionMode();
+		}
 	}
 	
 	private synchronized Session recycleSession() {
@@ -293,11 +303,11 @@ implements SessionHandleStateChangeListener
 		sessions.clear ();
 	}
 	
-	public static Reapable newInstance ( XAConnection c, XATransactionalResource jmsTransactionalResource , SessionHandleStateChangeListener owner , ConnectionPoolProperties props ) 
+	public static Reapable newInstance ( boolean ignoreSessionTransactedFlag, XAConnection c, XATransactionalResource jmsTransactionalResource , SessionHandleStateChangeListener owner , ConnectionPoolProperties props ) 
 	{
 		 Reapable ret = null;
 		 
-        AtomikosJmsConnectionProxy proxy = new AtomikosJmsConnectionProxy ( c , jmsTransactionalResource , owner , props );
+        AtomikosJmsConnectionProxy proxy = new AtomikosJmsConnectionProxy ( ignoreSessionTransactedFlag, c , jmsTransactionalResource , owner , props );
         Set<Class> interfaces = PropertyUtils.getAllImplementedInterfaces ( c.getClass() );
         interfaces.add ( Reapable.class );
         //see case 24532

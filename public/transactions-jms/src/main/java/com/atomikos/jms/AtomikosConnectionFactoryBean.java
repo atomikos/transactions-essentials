@@ -152,6 +152,8 @@ Referenceable, Serializable {
 	private int reapTimeout;
 	private boolean localTransactionMode;
 	private int maxLifetime;
+
+	private boolean ignoreSessionTransactedFlag;
 	
 	public AtomikosConnectionFactoryBean()
 	{
@@ -161,6 +163,7 @@ Referenceable, Serializable {
 		maintenanceInterval = 60;
 		maxIdleTime = 60;
 		reapTimeout = 0;
+		ignoreSessionTransactedFlag = true;
 		xaProperties = new Properties();
 	}
 	
@@ -654,6 +657,29 @@ Referenceable, Serializable {
 
 	public void refreshPool() {
 		if (connectionPool != null) connectionPool.refresh();
+	}
+
+	public boolean getIgnoreSessionTransactedFlag() {
+		return ignoreSessionTransactedFlag;
+	}
+
+	/**
+	 * Sets whether or not to ignore the sessionTransacted flag 
+	 * when creating JMS Sessions. If set, then by default all
+	 * JMS Session objects will be XA-capable and enlist in the
+	 * active JTA transaction. If not set, then you will only get
+	 * XA-capable JMS Session objects if the sessionTransacted flag
+	 * is set upon session creation. Set this to false to get the
+	 * pre-3.9 behavior of Atomikos.
+	 * 
+	 * This setting is ignored for localTransactionMode: 
+	 * in localTransactionMode you never get XA-capable Session objects.
+	 *
+	 * 
+	 * @param value
+	 */
+	public void setIgnoreSessionTransactedFlag(boolean value) {
+		this.ignoreSessionTransactedFlag = value;
 	}
 
 	

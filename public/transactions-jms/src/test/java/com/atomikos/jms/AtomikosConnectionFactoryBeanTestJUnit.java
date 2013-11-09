@@ -126,4 +126,12 @@ public class AtomikosConnectionFactoryBeanTestJUnit extends TestCase
 		assertFalse ( bean.getLocalTransactionMode() );
 	}
 	
+	public void testIgnoreSessionTransactedFlag() {
+		assertTrue(bean.getIgnoreSessionTransactedFlag());
+		bean.setIgnoreSessionTransactedFlag(false);
+		assertFalse(bean.getIgnoreSessionTransactedFlag());
+		bean.setIgnoreSessionTransactedFlag(true);
+		assertTrue(bean.getIgnoreSessionTransactedFlag());
+
+	}
 }
