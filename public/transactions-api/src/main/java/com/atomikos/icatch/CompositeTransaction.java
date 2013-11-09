@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2013 Atomikos <info@atomikos.com>
  *
  * This code ("Atomikos TransactionsEssentials"), by itself,
  * is being distributed under the
@@ -29,8 +29,6 @@ package com.atomikos.icatch;
 import java.util.Properties;
 import java.util.Stack;
 
-import com.atomikos.finitestates.Stateful;
-
 /**
  * Represents a nested part of a global
  * composite transaction. Each invocation of a server is 
@@ -46,7 +44,6 @@ import com.atomikos.finitestates.Stateful;
  */
 
 public interface CompositeTransaction 
-    extends Stateful<TxState>
 {
 	
 	/**

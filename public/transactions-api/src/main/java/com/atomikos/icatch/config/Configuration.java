@@ -48,7 +48,6 @@ import com.atomikos.icatch.provider.Assembler;
 import com.atomikos.icatch.provider.ConfigProperties;
 import com.atomikos.icatch.provider.TransactionServicePlugin;
 import com.atomikos.icatch.provider.TransactionServiceProvider;
-import com.atomikos.util.ClassLoadingHelper;
 
 /**
  * Configuration is a facade for the icatch transaction management facilities.
@@ -535,7 +534,6 @@ public final class Configuration
 		if (service_ == null) {
 			addAllTransactionServicePluginServicesFromClasspath();
 			ConfigProperties configProperties = getConfigProperties();
-			configProperties.logProperties();
 			assembleSystemComponents(configProperties);
 			notifyBeforeInit(configProperties);
 			initializeSystemComponents(configProperties);
@@ -575,7 +573,7 @@ public final class Configuration
 		Assembler assembler = getAssembler();
 		service_ = assembler.assembleTransactionService(configProperties);
 		recoveryService_ = service_.getRecoveryService();
-		ctxmgr_ = assembler.assembleCompositeTransactionManager(configProperties);
+		ctxmgr_ = assembler.assembleCompositeTransactionManager();
 	}
 	
 	private static class ForceShutdownHook extends Thread

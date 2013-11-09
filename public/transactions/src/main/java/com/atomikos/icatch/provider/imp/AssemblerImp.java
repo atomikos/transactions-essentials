@@ -5,11 +5,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Enumeration;
 import java.util.Properties;
 
 import com.atomikos.icatch.CompositeTransactionManager;
 import com.atomikos.icatch.SysException;
-import com.atomikos.icatch.TransactionService;
 import com.atomikos.icatch.imp.CompositeTransactionManagerImp;
 import com.atomikos.icatch.imp.TransactionServiceImp;
 import com.atomikos.icatch.provider.Assembler;
@@ -96,9 +96,18 @@ public class AssemblerImp implements Assembler {
 		}
 	}
 
+
+	private void logProperties(Properties properties) {
+		Enumeration propertyNames = properties.propertyNames();
+		while (propertyNames.hasMoreElements()) {
+			String name = (String) propertyNames.nextElement();			
+			LOGGER.logInfo("USING: " + name + " = " + properties.getProperty(name));		}
+	}
+
 	@Override
 	public TransactionServiceProvider assembleTransactionService(
 			ConfigProperties configProperties) {
+		logProperties(configProperties.getCompletedProperties());
 		String tmUniqueName = configProperties.getTmUniqueName();
 		String logBaseDir = configProperties.getLogBaseDir();
 		boolean enableLogging = configProperties.getEnableLogging();
@@ -124,8 +133,7 @@ public class AssemblerImp implements Assembler {
 
 
 	@Override
-	public CompositeTransactionManager assembleCompositeTransactionManager(
-			ConfigProperties configProperties) {
+	public CompositeTransactionManager assembleCompositeTransactionManager() {
 		return new CompositeTransactionManagerImp();
 	}
 }

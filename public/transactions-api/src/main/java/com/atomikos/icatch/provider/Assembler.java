@@ -10,6 +10,6 @@ public interface Assembler {
 	
 	TransactionServiceProvider assembleTransactionService(ConfigProperties configProperties);
 	
-	CompositeTransactionManager assembleCompositeTransactionManager(ConfigProperties configProperties);
+	CompositeTransactionManager assembleCompositeTransactionManager();
 
 }

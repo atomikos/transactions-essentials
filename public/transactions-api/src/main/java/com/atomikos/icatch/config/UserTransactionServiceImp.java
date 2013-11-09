@@ -38,8 +38,6 @@ import com.atomikos.icatch.SysException;
 import com.atomikos.icatch.admin.LogAdministrator;
 import com.atomikos.icatch.provider.ConfigProperties;
 import com.atomikos.icatch.provider.TransactionServicePlugin;
-import com.atomikos.logging.Logger;
-import com.atomikos.logging.LoggerFactory;
 
 /**
  * This is the main class for creating a UserTransactionService instance.
@@ -58,7 +56,6 @@ public class UserTransactionServiceImp
         implements java.io.Serializable , UserTransactionService
 {
 	
-	private static final Logger LOGGER = LoggerFactory.createLogger(UserTransactionServiceImp.class);
 
 	private static final long serialVersionUID = -3374591336514451887L;
 

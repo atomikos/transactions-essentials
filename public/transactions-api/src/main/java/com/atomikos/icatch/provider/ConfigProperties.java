@@ -4,12 +4,8 @@ import java.net.UnknownHostException;
 import java.util.Enumeration;
 import java.util.Properties;
 
-import com.atomikos.logging.Logger;
-import com.atomikos.logging.LoggerFactory;
-
 public class ConfigProperties {
 
-	private static final Logger LOGGER = LoggerFactory.createLogger(ConfigProperties.class);
 
 	public static final String TM_UNIQUE_NAME_PROPERTY_NAME = "com.atomikos.icatch.tm_unique_name";
 	public static final String LOG_BASE_DIR_PROPERTY_NAME = "com.atomikos.icatch.log_base_dir";
@@ -199,20 +195,6 @@ public class ConfigProperties {
 	private void completeProperties() {
 		applySystemProperties();
 		substitutePlaceHolderValues();
-	}
-
-	public void logProperties() {
-		Properties properties = getCompletedProperties();
-		logProperties(properties);
-	}
-
-	private void logProperties(Properties properties) {
-		Enumeration propertyNames = properties.propertyNames();
-		while (propertyNames.hasMoreElements()) {
-			String name = (String) propertyNames.nextElement();			
-			LOGGER.logInfo("USING: " + name + " = " + properties.getProperty(name));
-			//System.out.println("USING: " + name + " = " + properties.getProperty(name));
-		}
 	}
 
 	public boolean getForceShutdownOnVmExit() {
