@@ -256,7 +256,7 @@
 			<modules>
 				<module>public</module>
 				<module>private</module>
-				<module>specs</module>
+				<!-- <module>specs</module> -->
 			</modules>
 		</profile>
 		
