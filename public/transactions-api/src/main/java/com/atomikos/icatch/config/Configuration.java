@@ -63,9 +63,6 @@ public final class Configuration
     private static CompositeTransactionManager ctxmgr_ = null;
     // the tm for the virtual machine instance
 
-    private static ImportingTransactionManager imptxmgr_ = null;
-    private static ExportingTransactionManager exptxmgr_ = null;
-
     private static Hashtable resources_ = new Hashtable ();
     // filled on startup, contains all resources managed by the
     // transaction manager.
@@ -257,33 +254,6 @@ public final class Configuration
 
     }
 
-    /**
-     * Installs an importing transaction manager as a Singleton.
-     *
-     * @param importingTransactionManager
-     *            The instance to install.
-     */
-
-    public static synchronized void installImportingTransactionManager (
-            ImportingTransactionManager importingTransactionManager )
-    {
-
-        imptxmgr_ = importingTransactionManager;
-    }
-
-    /**
-     * Installs an exporting transaction manager as a Singleton.
-     *
-     * @param exportingTransactionManager
-     *            The instance to install.
-     */
-
-    public static synchronized void installExportingTransactionManager (
-            ExportingTransactionManager exportingTransactionManager )
-    {
-
-        exptxmgr_ = exportingTransactionManager;
-    }
 
     /**
      * Get the composite transaction manager.
@@ -296,27 +266,7 @@ public final class Configuration
         return ctxmgr_;
     }
 
-    /**
-     * Get the importing transaction manager.
-     *
-     * @return ImportingTransactionManager The instance, or null if none.
-     */
 
-    public static ImportingTransactionManager getImportingTransactionManager ()
-    {
-        return imptxmgr_;
-    }
-
-    /**
-     * Get the exporting transaction manager.
-     *
-     * @return ExportingTransactionManager The instance, or null if none.
-     */
-
-    public static ExportingTransactionManager getExportingTransactionManager ()
-    {
-        return exptxmgr_;
-    }
 
     /**
      * Add a resource to the transaction manager domain. Should be called for
@@ -484,8 +434,6 @@ public final class Configuration
 		tsListenersList_.clear();
 		resetConfigProperties();
 		assembler = null;
-		imptxmgr_ = null;
-		exptxmgr_ = null;
 	}
 
 	private static void notifyAfterShutdown() {
