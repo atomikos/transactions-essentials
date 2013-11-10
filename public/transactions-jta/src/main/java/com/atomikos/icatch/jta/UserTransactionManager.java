@@ -73,6 +73,8 @@ public class UserTransactionManager implements TransactionManager,
     	if ( tm == null ) {
     		if ( getStartupTransactionService() ) {
     			startupTransactionService();
+    			tm = (TransactionManagerImp) TransactionManagerImp
+    			        .getTransactionManager ();
     		}
     		else {
     			throw new SystemException ( "Transaction service not running" );
@@ -82,8 +84,6 @@ public class UserTransactionManager implements TransactionManager,
 
 	private void startupTransactionService() {
 		coreStartedHere = Configuration.init();
-		tm = (TransactionManagerImp) TransactionManagerImp
-		        .getTransactionManager ();
 	}
 	
 
