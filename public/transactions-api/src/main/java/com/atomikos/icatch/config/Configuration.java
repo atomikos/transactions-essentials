@@ -478,8 +478,14 @@ public final class Configuration
         }
 	}
 
-	public static synchronized void init() {
+	/**
+	 * 
+	 * @return False if already running.
+	 */
+	public static synchronized boolean init() {
+		boolean startupInitiated = false;
 		if (service_ == null) {
+			startupInitiated = true;
 			addAllTransactionServicePluginServicesFromClasspath();
 			ConfigProperties configProperties = getConfigProperties();
 			assembleSystemComponents(configProperties);
@@ -490,6 +496,7 @@ public final class Configuration
 				addShutdownHook(new ForceShutdownHook());
 			}
 		}
+		return startupInitiated;
 	}
 
 	private static void notifyAfterInit() {
