@@ -40,7 +40,7 @@ import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
 
-import com.atomikos.icatch.config.UserTransactionServiceImp;
+import com.atomikos.icatch.config.Configuration;
 import com.atomikos.util.SerializableObjectFactory;
 
 /**
@@ -55,8 +55,6 @@ public class UserTransactionManager implements TransactionManager,
 	private static final long serialVersionUID = -655789038710288096L;
 
 	private transient TransactionManagerImp tm;
-    
-    private UserTransactionServiceImp uts;
 
 	private boolean forceShutdown;
 	
@@ -64,38 +62,35 @@ public class UserTransactionManager implements TransactionManager,
 	
 	private boolean closed;
 
+	private boolean coreStartedHere;
+
     private void checkSetup () throws SystemException
     {
     	if ( closed ) throw new SystemException ( "This UserTransactionManager instance was closed already. Call init() to reuse if desired." );
-    	
-    	if ( tm == null ) { // case 75549: avoid synch overhead if already initialized
-    		synchronized ( TransactionManagerImp.class ) {
-    			tm = (TransactionManagerImp) TransactionManagerImp
+
+    	tm = (TransactionManagerImp) TransactionManagerImp
     			.getTransactionManager ();
-    			if ( tm == null ) {
-    				if ( getStartupTransactionService() ) {
-    					startupTransactionService();
-    				}
-    				else {
-    					throw new SystemException ( "Transaction service not running" );
-    				}
-    			}
+    	if ( tm == null ) {
+    		if ( getStartupTransactionService() ) {
+    			startupTransactionService();
     		}
-    	}
+    		else {
+    			throw new SystemException ( "Transaction service not running" );
+    		}
+    	}	
     }
 
 	private void startupTransactionService() {
-		uts = new UserTransactionServiceImp ();
-		uts.init();
+		coreStartedHere = Configuration.init();
 		tm = (TransactionManagerImp) TransactionManagerImp
 		        .getTransactionManager ();
 	}
 	
 
 	private void shutdownTransactionService() {
-		if ( uts != null ) { // null if we did not start core here
-			uts.shutdown ( forceShutdown );
-			uts = null;
+		if (coreStartedHere) { 
+			Configuration.shutdown(forceShutdown);
+			coreStartedHere = false;
 		}
 	}
     
