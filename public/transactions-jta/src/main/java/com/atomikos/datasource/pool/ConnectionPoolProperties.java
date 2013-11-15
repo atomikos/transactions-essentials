@@ -105,5 +105,5 @@ public interface ConnectionPoolProperties
 	 * @return The level, or -1 if not set.
 	 */
 	int getDefaultIsolationLevel();
-	
+
 }

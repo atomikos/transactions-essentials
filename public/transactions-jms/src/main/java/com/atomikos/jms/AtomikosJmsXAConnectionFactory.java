@@ -56,7 +56,7 @@ class AtomikosJmsXAConnectionFactory implements ConnectionFactory
 		XAConnection xac;
 		try {
 			xac = xaConnectionFactory.createXAConnection();
-			return new AtomikosPooledJmsConnection(xac, jmsTransactionalResource, atomikosConnectionFactory);
+			return new AtomikosPooledJmsConnection(atomikosConnectionFactory.getIgnoreSessionTransactedFlag(), xac, jmsTransactionalResource, atomikosConnectionFactory);
 		} catch (JMSException ex) {
 			throw new CreateConnectionException("error creating JMS connection", ex);
 		}
