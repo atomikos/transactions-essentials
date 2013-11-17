@@ -84,11 +84,12 @@ public class ConfigProperties {
 	public ConfigProperties(Properties properties) {
 		if (properties == null) throw new IllegalArgumentException("Properties should not be null");
 		this.properties = properties;
-		setDefaultTmUniqueName();
 	}
 
 	private void setDefaultTmUniqueName() {
-		properties.setProperty(TM_UNIQUE_NAME_PROPERTY_NAME, getDefaultName());
+		if (properties.getProperty(TM_UNIQUE_NAME_PROPERTY_NAME) == null ) {
+			properties.setProperty(TM_UNIQUE_NAME_PROPERTY_NAME, getDefaultName());
+		}
 	}
 
 	private void applySystemProperties() {
@@ -195,6 +196,7 @@ public class ConfigProperties {
 	private void completeProperties() {
 		applySystemProperties();
 		substitutePlaceHolderValues();
+		setDefaultTmUniqueName();
 	}
 
 	public boolean getForceShutdownOnVmExit() {

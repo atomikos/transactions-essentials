@@ -122,5 +122,13 @@ public class ConfigPropertiesTestJUnit {
 		ret.setProperty(name, value);
 		return ret;
 	}
+	
+	@Test
+	public void testDefaultTmUniqueNameDoesNotOverrideAnyCustomSetting() {
+		final String NAME = "bla";
+		Properties p = createDefaultProperties(ConfigProperties.TM_UNIQUE_NAME_PROPERTY_NAME, NAME);
+		props = new ConfigProperties(p);
+		assertEquals(NAME, props.getTmUniqueName());
+	}
 }
 
