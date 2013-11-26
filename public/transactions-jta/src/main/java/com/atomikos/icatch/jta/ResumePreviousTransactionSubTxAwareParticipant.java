@@ -23,7 +23,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  */
 
-package com.atomikos.icatch.imp;
+package com.atomikos.icatch.jta;
 
 import com.atomikos.icatch.CompositeTransaction;
 import com.atomikos.icatch.CompositeTransactionManager;
