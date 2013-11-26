@@ -51,12 +51,12 @@ public class AssemblerImp implements Assembler {
     }
 
 	private void loadPropertiesFromUrl(Properties p, URL url) {
-		LOGGER.logInfo("Loading " + url.toString());
 		InputStream in;
 		try {
 			in = url.openStream();
 			p.load(in);
 			in.close();
+			LOGGER.logInfo("Loaded " + url.toString());
 		} catch (IOException e) {
 			LOGGER.logDebug("Failed to load property file: " + url.toString(), e);
 		}
