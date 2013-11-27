@@ -531,7 +531,6 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable,DataSe
             HeurMixedException, HeurHazardException,
             java.lang.IllegalStateException, RollbackException, SysException
     {
-        Stack<Exception> errors = new Stack<Exception> ();
         CoordinatorStateHandler nextStateHandler = null;
 
         try {
@@ -650,15 +649,13 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable,DataSe
                 coordinator_.setStateHandler ( nextStateHandler );
             }
         } catch ( RuntimeException runerr ) {
-            errors.push ( runerr );
-            throw new SysException ( "Error in commit: " + runerr.getMessage (), errors );
+            throw new SysException ( "Error in commit: " + runerr.getMessage (), runerr );
         }
 
         catch ( InterruptedException intr ) {
         	// cf bug 67457
 			InterruptedExceptionHelper.handleInterruptedException ( intr );
-            errors.push ( intr );
-            throw new SysException ( "Error in commit" + intr.getMessage (), errors );
+            throw new SysException ( "Error in commit" + intr.getMessage (), intr );
         }
 
         return getHeuristicMessages ();
@@ -680,7 +677,6 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable,DataSe
             SysException, HeurHazardException, java.lang.IllegalStateException
     {
        
-        Stack errors = new Stack ();
         CoordinatorStateHandler nextStateHandler = null;
         try {
 
@@ -772,15 +768,13 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable,DataSe
         }
 
         catch ( RuntimeException runerr ) {
-            errors.push ( runerr );
-            throw new SysException ( "Error in rollback: " + runerr.getMessage (), errors );
+            throw new SysException ( "Error in rollback: " + runerr.getMessage (), runerr );
         }
 
         catch ( InterruptedException e ) {
         	// cf bug 67457
 			InterruptedExceptionHelper.handleInterruptedException ( e );
-            errors.push ( e );
-            throw new SysException ( "Error in rollback: " + e.getMessage (), errors );
+            throw new SysException ( "Error in rollback: " + e.getMessage (), e );
         }
 
         return getHeuristicMessages ();

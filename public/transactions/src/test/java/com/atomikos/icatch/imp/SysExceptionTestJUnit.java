@@ -1,7 +1,5 @@
 package com.atomikos.icatch.imp;
 
-import java.util.Stack;
-
 import junit.framework.TestCase;
 
 import com.atomikos.icatch.SysException;
@@ -41,9 +39,7 @@ public class SysExceptionTestJUnit extends TestCase
 	{
 		Exception exception = new Exception (  );
 		exception.fillInStackTrace();
-		Stack errors = new Stack();
-		errors.push ( exception );
-		SysException se = new SysException ( null , errors );
+		SysException se = new SysException ( null , exception );
 		StackTraceElement[] st = se.getStackTrace();
 		assertNotNull ( st );
 		assertFalse ( st.length == 0 );
@@ -53,9 +49,7 @@ public class SysExceptionTestJUnit extends TestCase
 	{
 		Exception exception = new SysException ( "test" );
 		exception.fillInStackTrace();
-		Stack errors = new Stack();
-		errors.push ( exception );
-		SysException se = new SysException (null , errors );
+		SysException se = new SysException (null , exception );
 		StackTraceElement[] st = se.getStackTrace();
 		assertNotNull ( st );
 		assertFalse ( st.length == 0 );

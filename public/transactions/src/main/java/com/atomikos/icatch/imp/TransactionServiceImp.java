@@ -385,7 +385,6 @@ public class TransactionServiceImp implements TransactionServiceProvider,
             throws SysException
     {
         root = root.intern ();
-        Stack errors = new Stack ();
         if ( !initialized_ )
             throw new IllegalStateException ( "Not initialized" );
 
@@ -402,10 +401,9 @@ public class TransactionServiceImp implements TransactionServiceProvider,
                     try {
                         cc = (CoordinatorImp) recoverymanager_.recover ( root );
                     } catch ( LogException le ) {
-                        errors.push ( le );
                         throw new SysException (
                                 "Error in getting coordinator: "
-                                        + le.getMessage (), errors );
+                                        + le.getMessage (), le );
                     }
                     if ( cc != null ) {
                         startlistening ( cc );
@@ -450,7 +448,6 @@ public class TransactionServiceImp implements TransactionServiceProvider,
 
     protected synchronized void recoverCoordinators () throws SysException
     {
-        Stack errors = new Stack ();
         try {
             Vector recovered = recoverymanager_.recover ();
             Enumeration enumm = recovered.elements ();
@@ -464,9 +461,8 @@ public class TransactionServiceImp implements TransactionServiceProvider,
             }
         } catch ( Exception e ) {
             LOGGER.logWarning ( "Error in recoverCoordinators", e );
-            errors.push ( e );
             throw new SysException ( "Error in recoverCoordinators: "
-                    + e.getMessage (), errors );
+                    + e.getMessage (), e );
         }
 
     }
@@ -528,10 +524,8 @@ public class TransactionServiceImp implements TransactionServiceProvider,
                 LOGGER.logWarning ( "Error in recover: "
                         + e.getClass ().getName () + e.getMessage (), e );
 
-                Stack errors = new Stack ();
-                errors.push ( e );
                 throw new SysException ( "Error in recovering: "
-                        + e.getMessage (), errors );
+                        + e.getMessage (), e );
             }
 
         }
@@ -601,15 +595,13 @@ public class TransactionServiceImp implements TransactionServiceProvider,
 
     public synchronized void init ( Properties properties ) throws SysException
     {
-        Stack errors = new Stack ();
         this.initProperties_ = properties;
 
         try {
             recoverymanager_.init (properties);
         } catch ( LogException le ) {
-            errors.push ( le );
             throw new SysException ( "Error in init: " + le.getMessage (),
-                    errors );
+                    le );
         }
         recoverCoordinators ();
 
@@ -724,7 +716,6 @@ public class TransactionServiceImp implements TransactionServiceProvider,
             throw new IllegalStateException (
                     "Max number of active transactions reached:" + maxNumberOfActiveTransactions_ );
 
-        Stack errors = new Stack ();
         CoordinatorImp cc = null;
         CompositeTransaction ct = null;
 
@@ -765,9 +756,8 @@ public class TransactionServiceImp implements TransactionServiceProvider,
             ct = createCT ( tid, cc, lineage, serial );
 
         } catch ( Exception e ) {
-            errors.push ( e );
             e.printStackTrace ();
-            throw new SysException ( "Error in recreate.", errors );
+            throw new SysException ( "Error in recreate.", e );
         }
 
         return ct;
@@ -781,7 +771,6 @@ public class TransactionServiceImp implements TransactionServiceProvider,
             IllegalStateException
     {
 
-        Stack errors = new Stack ();
         boolean wasShuttingDown = false;
         if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Transaction Service: Entering shutdown ( "
                 + force + " )..." );
@@ -846,9 +835,8 @@ public class TransactionServiceImp implements TransactionServiceProvider,
                 } catch ( InterruptedException inter ) {
                 	// cf bug 67457
         			InterruptedExceptionHelper.handleInterruptedException ( inter );
-                    errors.push ( inter );
                     throw new SysException ( "Error in shutdown: "
-                            + inter.getMessage (), errors );
+                            + inter.getMessage (), inter );
                 }
             }
 
@@ -860,10 +848,9 @@ public class TransactionServiceImp implements TransactionServiceProvider,
                 try {
                     recoverymanager_.close ();
                 } catch ( LogException le ) {
-                    errors.push ( le );
                     le.printStackTrace();
                     throw new SysException ( "Error in shutdown: "
-                            + le.getMessage (), errors );
+                            + le.getMessage (), le );
                 }
               
             } 

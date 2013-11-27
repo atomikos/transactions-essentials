@@ -25,8 +25,6 @@
 
 package com.atomikos.icatch.imp;
 
-import java.util.Stack;
-
 import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeurMixedException;
@@ -214,9 +212,7 @@ class AdminTransactionImp implements AdminTransaction
         } catch ( RollbackException rb ) {
             // impossible since this happens for 1PC only,
             // and 1PC txs are not in the log?!
-            Stack<Exception> errors = new Stack<Exception> ();
-            errors.push ( rb );
-            throw new SysException ( "Error in forced commit: " + rb.getMessage (), errors );
+            throw new SysException ( "Error in forced commit: " + rb.getMessage (), rb );
         }
     }
 

@@ -539,7 +539,6 @@ public class XAResourceTransaction implements ResourceTransaction,
             HeurHazardException, HeurMixedException, SysException
     {
         int ret = 0;
-        Stack errors = new Stack ();
         terminateInResource ();
 
         if ( TxState.ACTIVE.equals ( state_ ) ) {
@@ -569,8 +568,7 @@ public class XAResourceTransaction implements ResourceTransaction,
                     && (xaerr.errorCode <= XAException.XA_RBEND) ) {
                 throw new RollbackException ( msg );
             } else {
-                errors.push ( xaerr );
-                throw new SysException ( msg , errors );
+                throw new SysException ( msg , xaerr );
             }
         }
         setState ( TxState.IN_DOUBT );
@@ -600,7 +598,6 @@ public class XAResourceTransaction implements ResourceTransaction,
             throws HeurCommitException, HeurMixedException,
             HeurHazardException, SysException
     {
-        Stack errors = new Stack ();
         terminateInResource ();
 
         if ( rollbackShouldDoNothing() ) {
@@ -637,9 +634,8 @@ public class XAResourceTransaction implements ResourceTransaction,
 
         } catch ( ResourceException resErr ) {
             // failure of suspend
-            errors.push ( resErr );
             throw new SysException ( "Error in rollback: "
-                    + resErr.getMessage (), errors );
+                    + resErr.getMessage (), resErr );
         } catch ( XAException xaerr ) {
         	    String msg = interpretErrorCode ( resourcename_ , "rollback" , xid_ , xaerr.errorCode );
             if ( (XAException.XA_RBBASE <= xaerr.errorCode)
@@ -671,8 +667,7 @@ public class XAResourceTransaction implements ResourceTransaction,
                 default:
                 	//fix for bug 31209
                 	switchToHeuristicState( "rollback", TxState.HEUR_HAZARD , xaerr );
-                    errors.push ( xaerr );
-                    throw new SysException ( msg , errors );
+                    throw new SysException ( msg , xaerr );
                 } 
             }
         }
@@ -692,7 +687,6 @@ public class XAResourceTransaction implements ResourceTransaction,
             throws HeurRollbackException, HeurHazardException,
             HeurMixedException, RollbackException, SysException
     {
-        Stack errors = new Stack ();
         terminateInResource ();
 
         if ( state_.equals ( TxState.TERMINATED ) )
@@ -738,10 +732,9 @@ public class XAResourceTransaction implements ResourceTransaction,
 
             if ( (XAException.XA_RBBASE <= xaerr.errorCode)
                     && (xaerr.errorCode <= XAException.XA_RBEND) ) {
-                errors.push ( xaerr );
 
                 if ( !onePhase )
-                    throw new SysException ( msg , errors );
+                    throw new SysException ( msg , xaerr );
                 else
                     throw new com.atomikos.icatch.RollbackException (
                             "Already rolled back in resource." );
@@ -769,8 +762,7 @@ public class XAResourceTransaction implements ResourceTransaction,
                 default:
                 	//fix for bug 31209
                 	switchToHeuristicState( "commit", TxState.HEUR_HAZARD , xaerr );
-                    errors.push ( xaerr );
-                    throw new SysException ( msg , errors );
+                    throw new SysException ( msg , xaerr );
                 } 
             } 
         }

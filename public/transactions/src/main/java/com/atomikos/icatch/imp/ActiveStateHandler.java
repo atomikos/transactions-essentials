@@ -127,7 +127,6 @@ public class ActiveStateHandler extends CoordinatorStateHandler
             HeurMixedException, SysException
     {
 
-        Stack errors = new Stack (); // error propagation
         int count = 0; // number of participants
         PrepareResult result = null; // synchronization
         boolean allReadOnly = true; // if still true at end-> readonly vote
@@ -218,21 +217,18 @@ public class ActiveStateHandler extends CoordinatorStateHandler
                     // participants voted YES in the first place,
                     // which contradicts the fact that we are dealing with
                     // !voteOK
-                    errors.push ( hc );
                     throw new SysException ( "Unexpected heuristic: "
-                            + hc.getMessage (), errors );
+                            + hc.getMessage (), hc );
                 }
                 throw new RollbackException ( "Prepare: " + "NO vote" );
              
             }
         } catch ( RuntimeException runerr ) {
-            errors.push ( runerr );
-            throw new SysException ( "Error in prepare: " + runerr.getMessage (), errors );
+            throw new SysException ( "Error in prepare: " + runerr.getMessage (), runerr );
         } catch ( InterruptedException err ) {
         	// cf bug 67457
 			InterruptedExceptionHelper.handleInterruptedException ( err );
-            errors.push ( err );
-            throw new SysException ( "Error in prepare: " + err.getMessage (), errors );
+            throw new SysException ( "Error in prepare: " + err.getMessage (), err );
         }
         // here we are if all yes.
         if ( allReadOnly ) {

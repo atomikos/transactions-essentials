@@ -162,17 +162,14 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
     
     private void rollback() throws IllegalStateException, SysException
     {
-    	 Stack errors = new Stack ();
-
          for ( int i = 0; i < subtxawares_.size (); i++ ) {
          	SubTxAwareParticipant subtxaware = (SubTxAwareParticipant) subtxawares_.get ( i );
          	subtxaware.rolledback ( ct_ );
          }
 
-         Enumeration enumm = null;
          Extent extent = ct_.getExtent ();
          if ( extent != null ) {
-         	enumm = extent.getParticipants ().elements ();
+        	 Enumeration<Participant> enumm = extent.getParticipants ().elements ();
          	while ( enumm.hasMoreElements () ) {
          		Participant part = (Participant) enumm.nextElement();
          		addParticipant ( part );
@@ -184,14 +181,11 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
          try {
              ct_.getCoordinatorImp().rollback();
          } catch ( HeurCommitException e ) {
-             errors.push ( e );
-             throw new SysException ( "Unexpected error in rollback", errors );
+             throw new SysException ( "Unexpected error in rollback", e );
          } catch ( HeurMixedException e ) {
-             errors.push ( e );
-             throw new SysException ( "Unexpected error in rollback", errors );
+             throw new SysException ( "Unexpected error in rollback", e );
          } catch ( HeurHazardException e ) {
-             errors.push ( e );
-             throw new SysException ( "Unexpected error in rollback", errors );
+             throw new SysException ( "Unexpected error in rollback", e );
          }
     }
 

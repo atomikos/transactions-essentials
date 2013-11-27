@@ -26,7 +26,6 @@
 package com.atomikos.icatch.imp;
 
 import java.util.Dictionary;
-import java.util.Stack;
 
 import com.atomikos.icatch.CompositeTerminator;
 import com.atomikos.icatch.HeurHazardException;
@@ -72,7 +71,6 @@ class CompositeTerminatorImp implements CompositeTerminator
             HeurHazardException, SysException, java.lang.SecurityException,
             RollbackException
     {
-    	Stack errors = new Stack ();
 
         transaction_.doCommit ();
         setSiblingInfoForIncoming1pcRequestFromRemoteClient();
@@ -93,9 +91,8 @@ class CompositeTerminatorImp implements CompositeTerminator
             } catch ( SysException se ) {
                 throw se;
             } catch ( Exception e ) {
-                errors.push ( e );
                 throw new SysException (
-                        "Unexpected error: " + e.getMessage (), errors );
+                        "Unexpected error: " + e.getMessage (), e );
             }
         }
 
@@ -118,16 +115,13 @@ class CompositeTerminatorImp implements CompositeTerminator
 
     public void rollback () throws IllegalStateException, SysException
     {
-        Stack errors = new Stack ();
-
         transaction_.doRollback ();
 
         if ( transaction_.isRoot () )
             try {
                 coordinator_.terminate ( false );
             } catch ( Exception e ) {
-                errors.push ( e );
-                throw new SysException ( "Unexpected error in rollback: " + e.getMessage (), errors );
+                throw new SysException ( "Unexpected error in rollback: " + e.getMessage (), e );
             }
     }
 
