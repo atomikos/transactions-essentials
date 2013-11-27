@@ -23,24 +23,29 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  */
 
-package com.atomikos.icatch.imp.thread;
+package com.atomikos.thread;
+
 
 
 /**
- * A simple way of interacting with the different versions
- * of thread pool instances we support.
+ * 
+ * This is a system replacement interface for the java1.5 Executor
+ * interface, it is used for backporting thread pools.
  * 
  * @author Lars J. Nilsson
  */
-interface ExecutorFactory 
+interface InternalSystemExecutor 
 {
 
-	
-
 	/**
-	 * @return A new executor, which may, or may not, be pooled
-	 * @throws Exception
+	 * @param task Task to execute, never null
 	 */
-	InternalSystemExecutor createExecutor() throws Exception;
+	
+	public void execute ( Runnable task );
+	
+	/**
+	 * Shutdown underlying thread pool.
+	 */
+	public void shutdown();
 	
 }

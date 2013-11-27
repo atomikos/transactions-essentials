@@ -23,29 +23,21 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  */
 
-package com.atomikos.icatch.imp.thread;
-
+package com.atomikos.thread;
 
 
 /**
- * 
- * This is a system replacement interface for the java1.5 Executor
- * interface, it is used for backporting thread pools.
- * 
+ * This creator exclusively creates trivial executors, ie. the "new thread"
+ * strategy without pooling.
+ *
  * @author Lars J. Nilsson
  */
-interface InternalSystemExecutor 
+
+class TrivialExecutorFactory implements ExecutorFactory
 {
 
-	/**
-	 * @param task Task to execute, never null
-	 */
-	
-	public void execute ( Runnable task );
-	
-	/**
-	 * Shutdown underlying thread pool.
-	 */
-	public void shutdown();
-	
+	public InternalSystemExecutor createExecutor() throws Exception
+	{
+		return new TrivialSystemExecutor();
+	}
 }

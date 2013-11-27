@@ -23,7 +23,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  */
 
-package com.atomikos.icatch.imp.thread;
+package com.atomikos.thread;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;

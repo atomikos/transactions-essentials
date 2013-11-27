@@ -25,9 +25,9 @@
 
 package com.atomikos.icatch.imp;
 
-import com.atomikos.icatch.imp.thread.TaskManager;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
+import com.atomikos.thread.TaskManager;
 
 /**
  * A propagator sends PropagationMessages to participants.

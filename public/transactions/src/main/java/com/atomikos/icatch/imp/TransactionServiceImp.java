@@ -47,14 +47,14 @@ import com.atomikos.icatch.TransactionService;
 import com.atomikos.icatch.TxState;
 import com.atomikos.icatch.admin.LogControl;
 import com.atomikos.icatch.config.Configuration;
-import com.atomikos.icatch.imp.thread.InterruptedExceptionHelper;
-import com.atomikos.icatch.imp.thread.TaskManager;
 import com.atomikos.icatch.provider.TransactionServicePlugin;
 import com.atomikos.icatch.provider.TransactionServiceProvider;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 import com.atomikos.persistence.LogException;
 import com.atomikos.persistence.StateRecoveryManager;
+import com.atomikos.thread.InterruptedExceptionHelper;
+import com.atomikos.thread.TaskManager;
 import com.atomikos.util.UniqueIdMgr;
 
 /**

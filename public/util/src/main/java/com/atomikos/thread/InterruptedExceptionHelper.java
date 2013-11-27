@@ -1,4 +1,4 @@
-package com.atomikos.icatch.imp.thread;
+package com.atomikos.thread;
 
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;

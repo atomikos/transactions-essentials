@@ -41,7 +41,7 @@ import com.atomikos.icatch.Participant;
 import com.atomikos.icatch.RollbackException;
 import com.atomikos.icatch.SysException;
 import com.atomikos.icatch.TxState;
-import com.atomikos.icatch.imp.thread.InterruptedExceptionHelper;
+import com.atomikos.thread.InterruptedExceptionHelper;
 import com.atomikos.util.SerializationUtils;
 
 /** 

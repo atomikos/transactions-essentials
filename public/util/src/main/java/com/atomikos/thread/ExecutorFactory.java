@@ -23,21 +23,24 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  */
 
-package com.atomikos.icatch.imp.thread;
+package com.atomikos.thread;
 
 
 /**
- * This creator exclusively creates trivial executors, ie. the "new thread"
- * strategy without pooling.
- *
+ * A simple way of interacting with the different versions
+ * of thread pool instances we support.
+ * 
  * @author Lars J. Nilsson
  */
-
-class TrivialExecutorFactory implements ExecutorFactory
+interface ExecutorFactory 
 {
 
-	public InternalSystemExecutor createExecutor() throws Exception
-	{
-		return new TrivialSystemExecutor();
-	}
+	
+
+	/**
+	 * @return A new executor, which may, or may not, be pooled
+	 * @throws Exception
+	 */
+	InternalSystemExecutor createExecutor() throws Exception;
+	
 }
