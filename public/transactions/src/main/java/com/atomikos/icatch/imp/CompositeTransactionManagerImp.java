@@ -27,7 +27,6 @@ package com.atomikos.icatch.imp;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Stack;
 
 import com.atomikos.icatch.CompositeTransaction;
@@ -39,7 +38,6 @@ import com.atomikos.icatch.SysException;
 import com.atomikos.icatch.TransactionService;
 import com.atomikos.icatch.TxState;
 import com.atomikos.icatch.config.Configuration;
-import com.atomikos.icatch.provider.ConfigProperties;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 

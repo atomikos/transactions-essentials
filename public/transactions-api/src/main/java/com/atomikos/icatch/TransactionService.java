@@ -25,9 +25,6 @@
 
 package com.atomikos.icatch;
 
-import java.util.Properties;
-
-import com.atomikos.icatch.admin.LogControl;
 import com.atomikos.icatch.provider.TransactionServicePlugin;
 
  /**

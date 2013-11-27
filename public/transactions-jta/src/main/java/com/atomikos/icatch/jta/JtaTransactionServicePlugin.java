@@ -1,9 +1,7 @@
 package com.atomikos.icatch.jta;
 
-import java.util.Enumeration;
 import java.util.Properties;
 
-import com.atomikos.datasource.xa.AcceptAllXATransactionalResource;
 import com.atomikos.icatch.config.Configuration;
 import com.atomikos.icatch.provider.ConfigProperties;
 import com.atomikos.icatch.provider.TransactionServicePlugin;

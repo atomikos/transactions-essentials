@@ -12,10 +12,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.atomikos.datasource.RecoverableResource;
-import com.atomikos.datasource.ResourceException;
-import com.atomikos.icatch.Participant;
-import com.atomikos.icatch.RecoveryService;
 import com.atomikos.icatch.config.Configuration;
 import com.atomikos.icatch.imp.CompositeTransactionManagerImp;
 import com.atomikos.icatch.provider.TransactionServicePlugin;

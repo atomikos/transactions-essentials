@@ -32,7 +32,6 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.net.URL;
 import java.util.List;
-import java.util.ServiceLoader;
 
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;

@@ -36,7 +36,6 @@ import com.atomikos.finitestates.FSMEnterEvent;
 import com.atomikos.finitestates.FSMPreEnterListener;
 import com.atomikos.icatch.TxState;
 import com.atomikos.icatch.provider.ConfigProperties;
-import com.atomikos.icatch.provider.imp.AssemblerImp;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 import com.atomikos.persistence.LogException;
