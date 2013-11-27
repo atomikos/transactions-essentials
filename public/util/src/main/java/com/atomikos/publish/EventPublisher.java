@@ -1,4 +1,4 @@
-package com.atomikos.icatch.publish;
+package com.atomikos.publish;
 
 import java.util.HashSet;
 import java.util.ServiceLoader;

@@ -15,7 +15,7 @@ import com.atomikos.icatch.event.transaction.TransactionCommittedEvent;
 import com.atomikos.icatch.event.transaction.TransactionCreatedEvent;
 import com.atomikos.icatch.event.transaction.TransactionHeuristicEvent;
 import com.atomikos.icatch.event.transaction.TransactionReadOnlyEvent;
-import com.atomikos.icatch.publish.EventPublisher;
+import com.atomikos.publish.EventPublisher;
 
 public class TransactionEventTestJUnit {
 

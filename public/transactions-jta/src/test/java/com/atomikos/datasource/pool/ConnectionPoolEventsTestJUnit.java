@@ -14,7 +14,7 @@ import com.atomikos.datasource.pool.event.PooledConnectionReapedEvent;
 import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.event.Event;
 import com.atomikos.icatch.event.EventListener;
-import com.atomikos.icatch.publish.EventPublisher;
+import com.atomikos.publish.EventPublisher;
 
 public class ConnectionPoolEventsTestJUnit {
 

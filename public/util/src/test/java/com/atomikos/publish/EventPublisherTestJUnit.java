@@ -1,4 +1,4 @@
-package com.atomikos.icatch.publish;
+package com.atomikos.publish;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -7,6 +7,7 @@ import org.mockito.Mockito;
 import com.atomikos.icatch.event.Event;
 import com.atomikos.icatch.event.EventListener;
 import com.atomikos.icatch.event.transaction.TransactionCommittedEvent;
+import com.atomikos.publish.EventPublisher;
 
 public class EventPublisherTestJUnit {
 	
