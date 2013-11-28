@@ -45,22 +45,22 @@ import com.atomikos.icatch.CompositeTransaction;
 class SiblingMapper
 {
 
-    protected Map<CompositeTransaction,List<XAResourceTransaction>> siblingsOfSameRoot_;
-    protected XATransactionalResource res_;
+    protected Map<CompositeTransaction,List<XAResourceTransaction>> siblingsOfSameRoot;
+    protected XATransactionalResource res;
 
-    protected String root_ ;
+    protected String root ;
 
     SiblingMapper ( XATransactionalResource res , String root )
     {
-        siblingsOfSameRoot_ = new HashMap<CompositeTransaction,List<XAResourceTransaction>>();
-        res_ = res;
-        root_ = root;
+        this.siblingsOfSameRoot = new HashMap<CompositeTransaction,List<XAResourceTransaction>>();
+        this.res = res;
+        this.root = root;
     }
     
     private XAResourceTransaction findSiblingBranchToJoin(CompositeTransaction ct) {
     	XAResourceTransaction ret = null;
     	if (ct.isSerial()) {
-    		Iterator <List<XAResourceTransaction>> allSiblingLists = siblingsOfSameRoot_.values().iterator();
+    		Iterator <List<XAResourceTransaction>> allSiblingLists = this.siblingsOfSameRoot.values().iterator();
     		while (ret == null && allSiblingLists.hasNext()) {
     			List<XAResourceTransaction> siblings = allSiblingLists.next();
     			ret = findJoinableBranchInList(siblings);
@@ -111,7 +111,7 @@ class SiblingMapper
 
 	private XAResourceTransaction createNewBranch(CompositeTransaction ct) {
 		XAResourceTransaction ret;
-		ret = new XAResourceTransaction(res_, ct, root_);
+		ret = new XAResourceTransaction(this.res, ct, this.root);
 		rememberBranch(ct, ret);
 		return ret;
 	}
@@ -122,7 +122,7 @@ class SiblingMapper
 	}
 
 	private List<XAResourceTransaction> findSiblingsForTransaction(CompositeTransaction ct) {
-		List<XAResourceTransaction> ret = siblingsOfSameRoot_.get(ct);
+		List<XAResourceTransaction> ret = this.siblingsOfSameRoot.get(ct);
 		if (ret == null) {
 			ret = new ArrayList<XAResourceTransaction>();
 		}
@@ -130,10 +130,10 @@ class SiblingMapper
 	}
 	
 	private void rememberBranch(CompositeTransaction ct, XAResourceTransaction branch) {
-		List<XAResourceTransaction> list = siblingsOfSameRoot_.get(ct);
+		List<XAResourceTransaction> list = this.siblingsOfSameRoot.get(ct);
 		if (list == null) {
 			list = new ArrayList<XAResourceTransaction>();
-			siblingsOfSameRoot_.put(ct,list);
+			this.siblingsOfSameRoot.put(ct,list);
 		}
 		list.add(branch);
 	}

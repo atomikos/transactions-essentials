@@ -38,10 +38,10 @@ import javax.transaction.xa.Xid;
 public class LoggingXAResource implements XAResource
 {
 
-    private PrintWriter writer_;
+    private PrintWriter writer;
     // where to log to
 
-    private XAResource xares_;
+    private XAResource xares;
     // the wrapped resource
 
     /**
@@ -55,22 +55,22 @@ public class LoggingXAResource implements XAResource
 
     public LoggingXAResource ( XAResource xares , PrintWriter writer )
     {
-        xares_ = xares;
-        writer_ = writer;
+        this.xares = xares;
+        this.writer = writer;
     }
 
     private void log ( String msg , XAException error )
     {
-        if ( writer_ != null ) {
-            writer_.println ( "XAResource: " + msg + ": " + error.toString ()
+        if ( this.writer != null ) {
+            this.writer.println ( "XAResource: " + msg + ": " + error.toString ()
                     + " errorCode " + error.errorCode );
         }
     }
 
     private void log ( String msg )
     {
-        if ( writer_ != null ) {
-            writer_.println ( "XAResource: " + msg );
+        if ( this.writer != null ) {
+            this.writer.println ( "XAResource: " + msg );
         }
     }
 
@@ -78,13 +78,14 @@ public class LoggingXAResource implements XAResource
      * @see XAResource
      */
 
-    public Xid[] recover ( int flag ) throws XAException
+    @Override
+	public Xid[] recover ( int flag ) throws XAException
     {
         Xid[] ret = null;
 
         try {
             log ( "Enter recover" );
-            ret = xares_.recover ( flag );
+            ret = this.xares.recover ( flag );
             log ( "Exit recover" );
         } catch ( XAException e ) {
             log ( "Error in recover", e );
@@ -98,13 +99,14 @@ public class LoggingXAResource implements XAResource
      * @see XAResource
      */
 
-    public boolean setTransactionTimeout ( int secs ) throws XAException
+    @Override
+	public boolean setTransactionTimeout ( int secs ) throws XAException
     {
         boolean ret = false;
 
         try {
             log ( "Enter setTransactionTimeout" );
-            ret = xares_.setTransactionTimeout ( secs );
+            ret = this.xares.setTransactionTimeout ( secs );
             log ( "Exit setTransactionTimeout with return value " + ret );
         } catch ( XAException e ) {
             log ( "Error in setTransactionTimeout", e );
@@ -118,13 +120,14 @@ public class LoggingXAResource implements XAResource
      * @see XAResource
      */
 
-    public int getTransactionTimeout () throws XAException
+    @Override
+	public int getTransactionTimeout () throws XAException
     {
         int ret = -1;
 
         try {
             log ( "Enter getTransactionTimeout" );
-            ret = xares_.getTransactionTimeout ();
+            ret = this.xares.getTransactionTimeout ();
             log ( "Exit getTransactionTimeout with return value " + ret );
         } catch ( XAException e ) {
             log ( "Error in getTransactionTimeout", e );
@@ -138,13 +141,14 @@ public class LoggingXAResource implements XAResource
      * @see XAResource
      */
 
-    public boolean isSameRM ( XAResource xares ) throws XAException
+    @Override
+	public boolean isSameRM ( XAResource xares ) throws XAException
     {
         boolean ret = false;
 
         try {
             log ( "Enter isSameRM" );
-            ret = xares_.isSameRM ( xares );
+            ret = this.xares.isSameRM ( xares );
             log ( "Exit isSameRM with return value " + ret );
         } catch ( XAException e ) {
             log ( "Error in isSameRM", e );
@@ -158,11 +162,12 @@ public class LoggingXAResource implements XAResource
      * @see XAResource
      */
 
-    public void start ( Xid xid , int flags ) throws XAException
+    @Override
+	public void start ( Xid xid , int flags ) throws XAException
     {
         try {
             log ( "Enter start for xid " + xid.toString () );
-            xares_.start ( xid, flags );
+            this.xares.start ( xid, flags );
             log ( "Exit start" );
         } catch ( XAException e ) {
             log ( "Error in start", e );
@@ -175,11 +180,12 @@ public class LoggingXAResource implements XAResource
      * @see XAResource
      */
 
-    public void end ( Xid xid , int flags ) throws XAException
+    @Override
+	public void end ( Xid xid , int flags ) throws XAException
     {
         try {
             log ( "Enter end for xid " + xid.toString () );
-            xares_.end ( xid, flags );
+            this.xares.end ( xid, flags );
             log ( "Exit end" );
         } catch ( XAException e ) {
             log ( "Error in end", e );
@@ -192,12 +198,13 @@ public class LoggingXAResource implements XAResource
      * @see XAResource
      */
 
-    public int prepare ( Xid xid ) throws XAException
+    @Override
+	public int prepare ( Xid xid ) throws XAException
     {
         int ret = -1;
         try {
             log ( "Enter prepare for xid " + xid.toString () );
-            ret = xares_.prepare ( xid );
+            ret = this.xares.prepare ( xid );
             log ( "Exit prepare with return value " + ret );
         } catch ( XAException e ) {
             log ( "Error in prepare", e );
@@ -211,11 +218,12 @@ public class LoggingXAResource implements XAResource
      * @see XAResource
      */
 
-    public void rollback ( Xid xid ) throws XAException
+    @Override
+	public void rollback ( Xid xid ) throws XAException
     {
         try {
             log ( "Enter rollback for xid " + xid.toString () );
-            xares_.rollback ( xid );
+            this.xares.rollback ( xid );
             log ( "Exit rollback" );
         } catch ( XAException e ) {
             log ( "Error in rollback", e );
@@ -228,11 +236,12 @@ public class LoggingXAResource implements XAResource
      * @see XAResource
      */
 
-    public void commit ( Xid xid , boolean onephase ) throws XAException
+    @Override
+	public void commit ( Xid xid , boolean onephase ) throws XAException
     {
         try {
             log ( "Enter commit for xid " + xid.toString () );
-            xares_.commit ( xid, onephase );
+            this.xares.commit ( xid, onephase );
             log ( "Exit commit" );
         } catch ( XAException e ) {
             log ( "Error in commit", e );
@@ -245,11 +254,12 @@ public class LoggingXAResource implements XAResource
      * @see XAResource
      */
 
-    public void forget ( Xid xid ) throws XAException
+    @Override
+	public void forget ( Xid xid ) throws XAException
     {
         try {
             log ( "Enter forget for xid " + xid.toString () );
-            xares_.forget ( xid );
+            this.xares.forget ( xid );
             log ( "Exit forget" );
         } catch ( XAException e ) {
             log ( "Error in forget", e );

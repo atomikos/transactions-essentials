@@ -66,18 +66,18 @@ public abstract class XATransactionalResource implements TransactionalResource
 	private static final Logger LOGGER = LoggerFactory.createLogger(XATransactionalResource.class);
 
     protected XAResource xares_;
-    protected String servername_;
-    protected Hashtable recoveredXidMap_;
-    protected Hashtable rootTransactionToSiblingMapperMap_;
-    protected XidFactory xidFact_;
-    private boolean closed_;
+    protected String servername;
+    protected Hashtable recoveredXidMap;
+    protected Hashtable rootTransactionToSiblingMapperMap;
+    protected XidFactory xidFact;
+    private boolean closed;
 
-    private boolean weakCompare_;
+    private boolean weakCompare;
     // if true: do NOT delegate usesXAResource calls
     // to the xaresource; needed for SONICMQ and other
     // JMS that do not correctly implement isSameRM
 
-    private boolean compareAlwaysTrue_;
+    private boolean compareAlwaysTrue;
     // if true, then isSameRM will ALWAYS return true
     // this can be useful for cases where different
     // JOINs don't have to work with lock sharing
@@ -99,19 +99,19 @@ public abstract class XATransactionalResource implements TransactionalResource
     public XATransactionalResource ( String servername )
     {
 
-        servername_ = servername;
-        rootTransactionToSiblingMapperMap_ = new Hashtable ();
+        this.servername = servername;
+        this.rootTransactionToSiblingMapperMap = new Hashtable ();
         // name should be less than 64 for xid compatibility
 
         //branch id is server name + long value!
 
-        if ( servername.getBytes ().length > (64- MAX_LONG_LEN) )
+        if ( servername.getBytes ().length > 64- MAX_LONG_LEN )
             throw new RuntimeException (
                     "Max length of resource name exceeded: should be less than " + ( 64 - MAX_LONG_LEN ) );
-        xidFact_ = new DefaultXidFactory ();
-        closed_ = false;
-        weakCompare_ = false;
-        compareAlwaysTrue_ = false;
+        this.xidFact = new DefaultXidFactory ();
+        this.closed = false;
+        this.weakCompare = false;
+        this.compareAlwaysTrue = false;
     }
 
     /**
@@ -128,7 +128,7 @@ public abstract class XATransactionalResource implements TransactionalResource
     public XATransactionalResource ( String servername , XidFactory factory )
     {
         this ( servername );
-        xidFact_ = factory;
+        this.xidFact = factory;
     }
 
     /**
@@ -159,25 +159,25 @@ public abstract class XATransactionalResource implements TransactionalResource
 
     public XidFactory getXidFactory ()
     {
-        return xidFact_;
+        return this.xidFact;
     }
 
     void removeSiblingMap ( String root )
     {
-        synchronized ( rootTransactionToSiblingMapperMap_ ) {
-            rootTransactionToSiblingMapperMap_.remove ( root );
+        synchronized ( this.rootTransactionToSiblingMapperMap ) {
+            this.rootTransactionToSiblingMapperMap.remove ( root );
         }
 
     }
 
     SiblingMapper getSiblingMap ( String root )
     {
-        synchronized ( rootTransactionToSiblingMapperMap_ ) {
-            if ( rootTransactionToSiblingMapperMap_.containsKey ( root ) )
-                return (SiblingMapper) rootTransactionToSiblingMapperMap_.get ( root );
+        synchronized ( this.rootTransactionToSiblingMapperMap ) {
+            if ( this.rootTransactionToSiblingMapperMap.containsKey ( root ) )
+                return (SiblingMapper) this.rootTransactionToSiblingMapperMap.get ( root );
             else {
                 SiblingMapper map = new SiblingMapper ( this , root );
-                rootTransactionToSiblingMapperMap_.put ( root, map );
+                this.rootTransactionToSiblingMapperMap.put ( root, map );
                 return map;
             }
         }
@@ -199,13 +199,13 @@ public abstract class XATransactionalResource implements TransactionalResource
             // NOTE: xares_ is null if no connection could be gotten
             // in that case we just return true
             // otherwise, test the xaresource liveness
-            if ( xares_ != null ) {
-                xares_.isSameRM ( xares_ );
+            if ( this.xares_ != null ) {
+                this.xares_.isSameRM ( this.xares_ );
                 ret = false;
             }
         } catch ( XAException xa ) {
             // timed out?
-            if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( servername_
+            if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this.servername
                     + ": XAResource needs refresh?", xa );
 
         }
@@ -231,7 +231,7 @@ public abstract class XATransactionalResource implements TransactionalResource
 
     public void useWeakCompare ( boolean weakCompare )
     {
-        weakCompare_ = weakCompare;
+        this.weakCompare = weakCompare;
     }
 
     /**
@@ -245,7 +245,7 @@ public abstract class XATransactionalResource implements TransactionalResource
 
     public boolean usesWeakCompare ()
     {
-        return weakCompare_;
+        return this.weakCompare;
     }
 
     /**
@@ -260,7 +260,7 @@ public abstract class XATransactionalResource implements TransactionalResource
      */
     public void setAcceptAllXAResources ( boolean val )
     {
-        compareAlwaysTrue_ = val;
+        this.compareAlwaysTrue = val;
     }
 
     /**
@@ -269,7 +269,7 @@ public abstract class XATransactionalResource implements TransactionalResource
      */
     public boolean acceptsAllXAResources ()
     {
-        return compareAlwaysTrue_;
+        return this.compareAlwaysTrue;
     }
 
     /**
@@ -333,22 +333,23 @@ public abstract class XATransactionalResource implements TransactionalResource
     {
         // null on first invocation
         if ( needsRefresh () ) {
-        	LOGGER.logDebug ( servername_ + ": refreshing XAResource..." );
-            xares_ = refreshXAConnection ();
-            LOGGER.logInfo ( servername_ + ": refreshed XAResource" );
+        	LOGGER.logDebug ( this.servername + ": refreshing XAResource..." );
+            this.xares_ = refreshXAConnection ();
+            LOGGER.logInfo ( this.servername + ": refreshed XAResource" );
         }
 
-        return xares_;
+        return this.xares_;
     }
 
     /**
      * @see TransactionalResource
      */
 
-    public ResourceTransaction getResourceTransaction ( CompositeTransaction ct )
+    @Override
+	public ResourceTransaction getResourceTransaction ( CompositeTransaction ct )
             throws ResourceException, IllegalStateException
     {
-        if ( closed_ ) throw new IllegalStateException("XATransactionResource already closed");
+        if ( this.closed ) throw new IllegalStateException("XATransactionResource already closed");
 
         if ( ct == null ) return null; // happens in create method of beans?
 
@@ -362,7 +363,7 @@ public abstract class XATransactionalResource implements TransactionalResource
                 if (next.isRoot()) root = next.getTid ();
             }
         }
-        return (getSiblingMap ( root )).findOrCreateBranchForTransaction ( ct );
+        return getSiblingMap ( root ).findOrCreateBranchForTransaction ( ct );
 
     }
 
@@ -371,9 +372,10 @@ public abstract class XATransactionalResource implements TransactionalResource
      * @see TransactionalResource
      */
 
-    public String getName ()
+    @Override
+	public String getName ()
     {
-        return servername_;
+        return this.servername;
     }
 
     /**
@@ -383,9 +385,10 @@ public abstract class XATransactionalResource implements TransactionalResource
      *
      */
 
-    public void close () throws ResourceException
+    @Override
+	public void close () throws ResourceException
     {
-        closed_ = true;
+        this.closed = true;
     }
 
     /**
@@ -394,16 +397,18 @@ public abstract class XATransactionalResource implements TransactionalResource
      * @return boolean True if closed.
      * @throws ResourceException
      */
-    public boolean isClosed () throws ResourceException
+    @Override
+	public boolean isClosed () throws ResourceException
     {
-        return closed_;
+        return this.closed;
     }
 
     /**
      * @see RecoverableResource
      */
 
-    public boolean isSameRM ( RecoverableResource res )
+    @Override
+	public boolean isSameRM ( RecoverableResource res )
             throws ResourceException
     {
         if ( res == null || !(res instanceof XATransactionalResource) ) {
@@ -411,25 +416,26 @@ public abstract class XATransactionalResource implements TransactionalResource
         }
 
         XATransactionalResource xatxres = (XATransactionalResource) res;
-        if ( xatxres.servername_ == null || servername_ == null ) {
+        if ( xatxres.servername == null || this.servername == null ) {
             return false;
         }
 
-        return xatxres.servername_.equals ( servername_ );
+        return xatxres.servername.equals ( this.servername );
     }
 
     /**
      * @see RecoverableResource
      */
 
-    public void setRecoveryService ( RecoveryService recoveryService )
+    @Override
+	public void setRecoveryService ( RecoveryService recoveryService )
             throws ResourceException
     {
 
         if ( recoveryService != null ) {
             if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Installing recovery service on resource "
                     + getName () );
-            branchIdentifier=recoveryService.getName();
+            this.branchIdentifier=recoveryService.getName();
             recoveryService.recover ();
         }
 
@@ -439,12 +445,13 @@ public abstract class XATransactionalResource implements TransactionalResource
      * @see TransactionalResource
      */
 
-    public synchronized boolean recover ( Participant participant )
+    @Override
+	public synchronized boolean recover ( Participant participant )
             throws ResourceException
     {
     	boolean recovered = true;
     	
-        if ( closed_ ){ 
+        if ( this.closed ){ 
         	throw new IllegalStateException ("XATransactionResource already closed");
         }
         if ( !(participant instanceof XAResourceTransaction) ) {
@@ -462,7 +469,7 @@ public abstract class XATransactionalResource implements TransactionalResource
 
         recoverXidsFromResourceIfNecessary();
 
-        if ( !recoveredXidMap_.containsKey ( xarestx.getXid() ) ) {
+        if ( !this.recoveredXidMap.containsKey ( xarestx.getXid() ) ) {
             recovered = false;
         }
 
@@ -471,7 +478,7 @@ public abstract class XATransactionalResource implements TransactionalResource
         		xarestx.setRecoveredXAResource ( getXAResource () );
         		xarestx.setResource(this);
         }
-        recoveredXidMap_.remove ( xarestx.getXid() );
+        this.recoveredXidMap.remove ( xarestx.getXid() );
         return recovered;
     }
 
@@ -485,31 +492,31 @@ public abstract class XATransactionalResource implements TransactionalResource
 
     protected void recover() throws ResourceException
     {
-        recoveredXidMap_ = new Hashtable ();
+        this.recoveredXidMap = new Hashtable ();
         Xid[] recoveredlist = null;
         int flags = XAResource.TMSTARTRSCAN;
         boolean allXidsFromResourceHaveBeenRecovered = false;
         Stack errors = new Stack ();
-        Vector recoveredXids = new Vector();
+        Vector<Xid> recoveredXids = new Vector<Xid>();
         // this vector contains ALL recovered Xids so far,
         // to check if a scan returns duplicate results
         // this is needed for oracle8.1.7
         
         
-        if (branchIdentifier == null) {
+        if (this.branchIdentifier == null) {
         	LOGGER.logDebug("No recoveryService set yet!");
         	return;
         }
         
         if(LOGGER.isDebugEnabled()){
         	LOGGER.logDebug( "recovery initiated for resource " + getName ()
-                    + " with branchIdentifier " + branchIdentifier);
+                    + " with branchIdentifier " + this.branchIdentifier);
         }
 
         do {
-            recoveredlist = recoverXidsFromXAResource(flags, errors);
+            recoveredlist = recoverXidsFromXAResource(flags);
             flags = XAResource.TMNOFLAGS;
-            allXidsFromResourceHaveBeenRecovered = (recoveredlist == null || recoveredlist.length == 0);
+            allXidsFromResourceHaveBeenRecovered = recoveredlist == null || recoveredlist.length == 0;
             if ( !allXidsFromResourceHaveBeenRecovered ) {
                 allXidsFromResourceHaveBeenRecovered = true; //tentative: tolerate infinite loops of same Xids like in Oracle 8.1.7
                 for ( Xid vendorXid : recoveredlist ) {
@@ -517,20 +524,20 @@ public abstract class XATransactionalResource implements TransactionalResource
                     if (notAlreadyRecovered(recoveredXids, xid)) {
                     	allXidsFromResourceHaveBeenRecovered = false;
                     	if(LOGGER.isInfoEnabled()){
-                    		LOGGER.logInfo("Resource " + servername_ + " inspecting XID: " + xid);
+                    		LOGGER.logInfo("Resource " + this.servername + " inspecting XID: " + xid);
                     	}
                         recoveredXids.addElement ( xid );
                         
                         // only really 'recover' this xid if it is ours
                         String branch = new String ( vendorXid.getBranchQualifier () );
-                        if ( branch.startsWith ( branchIdentifier ) ) {
-                            recoveredXidMap_.put ( xid, new Object () );
+                        if ( branch.startsWith ( this.branchIdentifier ) ) {
+                            this.recoveredXidMap.put ( xid, new Object () );
                             if(LOGGER.isInfoEnabled()){
-                            	LOGGER.logInfo("Resource " + servername_ + " recovering XID: " + xid);
+                            	LOGGER.logInfo("Resource " + this.servername + " recovering XID: " + xid);
                             }
                         } else {
                         	if(LOGGER.isInfoEnabled()){
-                        		LOGGER.logInfo("Resource " + servername_ + ": XID " + xid + " with branch " + branch + " is not under my responsibility");
+                        		LOGGER.logInfo("Resource " + this.servername + ": XID " + xid + " with branch " + branch + " is not under my responsibility");
                         	}
                         }
                     }
@@ -542,11 +549,11 @@ public abstract class XATransactionalResource implements TransactionalResource
 
     }
 
-	private boolean notAlreadyRecovered(Vector recoveredXids, Xid xid) {
+	private boolean notAlreadyRecovered(Vector<Xid> recoveredXids, Xid xid) {
 		return !recoveredXids.contains ( xid );
 	}
 
-	private Xid[] recoverXidsFromXAResource(int flags, Stack errors) {
+	private Xid[] recoverXidsFromXAResource(int flags) {
 		Xid[] recoveredlist = null;
 		try {
 		    recoveredlist = getXAResource().recover(flags);
@@ -559,8 +566,7 @@ public abstract class XATransactionalResource implements TransactionalResource
 
 		} catch ( XAException xaerr ) {
 		    LOGGER.logWarning ( "Error in recovery", xaerr );
-		    errors.push ( xaerr );
-		    throw new ResourceException ( "Error in recovery", errors );
+		    throw new ResourceException ( "Error in recovery", xaerr );
 		}
 		return recoveredlist;
 	}
@@ -573,9 +579,10 @@ public abstract class XATransactionalResource implements TransactionalResource
      * @see TransactionalResource.
      */
 
-    public void endRecovery () throws ResourceException
+    @Override
+	public void endRecovery () throws ResourceException
     {
-        if ( closed_ ) throw new IllegalStateException ( "XATransactionResource already closed" );
+        if ( this.closed ) throw new IllegalStateException ( "XATransactionResource already closed" );
 
         if (getXAResource() != null) {
         	recoverXidsFromResourceIfNecessary();       
@@ -589,14 +596,14 @@ public abstract class XATransactionalResource implements TransactionalResource
     }
 
 	private void performPresumedAbortForRemainingXids() {
-		Enumeration toAbortList = recoveredXidMap_.keys ();
+		Enumeration toAbortList = this.recoveredXidMap.keys ();
 		XAResource xaresource = getXAResource();
         while ( toAbortList.hasMoreElements () ) {
             XID xid = (XID) toAbortList.nextElement ();
             try {
                 xaresource.rollback ( xid );
                 if(LOGGER.isInfoEnabled()){
-                	LOGGER.logInfo("XAResource.rollback ( " + xid + " ) called " + "on resource " + servername_);
+                	LOGGER.logInfo("XAResource.rollback ( " + xid + " ) called " + "on resource " + this.servername);
                 }
             } catch ( XAException xaerr ) {
                 // here, an indoubt tx might remain in resource; we do nothing
@@ -606,11 +613,11 @@ public abstract class XATransactionalResource implements TransactionalResource
 	}
 
 	private void resetForNextRecoveryScan() {
-		recoveredXidMap_ = null;
+		this.recoveredXidMap = null;
 	}
 
 	private void recoverXidsFromResourceIfNecessary() {
-		if (recoveredXidMap_ == null) recover();
+		if (this.recoveredXidMap == null) recover();
 	}
 
     /**
@@ -619,7 +626,7 @@ public abstract class XATransactionalResource implements TransactionalResource
      * @param factory
      */
     public void setXidFactory(XidFactory factory) {
-        xidFact_ = factory;
+        this.xidFact = factory;
     }
 
     /**
@@ -632,8 +639,8 @@ public abstract class XATransactionalResource implements TransactionalResource
      */
 
     protected Xid createXid(String tid) {
-    	if (branchIdentifier == null) throw new IllegalStateException("Not yet initialized");
-        return getXidFactory().createXid (tid , branchIdentifier);
+    	if (this.branchIdentifier == null) throw new IllegalStateException("Not yet initialized");
+        return getXidFactory().createXid (tid , this.branchIdentifier);
     }
 
 }

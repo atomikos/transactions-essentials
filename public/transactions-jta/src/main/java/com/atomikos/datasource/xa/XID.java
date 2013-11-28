@@ -41,18 +41,18 @@ public class XID implements Serializable, Xid
 
 	private static final long serialVersionUID = 4796496938014754464L;
 
-	private String meAsString_;
+	private String meAsString;
     // cached result of toString(), to gain performance
 
-    private int formatId_;
+    private int formatId;
     // required for Xid implementation
-    private int branchUsed_ = 0;
+    private int branchUsed = 0;
     // how many bytes in branch array are used
-    private int globalUsed_ = 0;
+    private int globalUsed = 0;
     // how many bytes in global array are used
-    private byte[] branchQualifier_ = new byte[Xid.MAXBQUALSIZE];
+    private byte[] branchQualifier = new byte[Xid.MAXBQUALSIZE];
     // for Xid
-    private byte[] globalTransactionId_ = new byte[Xid.MAXGTRIDSIZE];
+    private byte[] globalTransactionId = new byte[Xid.MAXGTRIDSIZE];
     // for Xid
     private static final int DEFAULT_FORMAString = ('A' << 24) + ('T' << 16)
             + ('O' << 8) + 'M';
@@ -62,11 +62,11 @@ public class XID implements Serializable, Xid
 
     private XID ( String tid )
     {
-        formatId_ = DEFAULT_FORMAString;
-        branchQualifier_[0] = 0;
-        branchUsed_ = 1;
-        globalTransactionId_ = tid.toString ().getBytes ();
-        globalUsed_ = tid.toString ().getBytes ().length;
+        this.formatId = DEFAULT_FORMAString;
+        this.branchQualifier[0] = 0;
+        this.branchUsed = 1;
+        this.globalTransactionId = tid.toString ().getBytes ();
+        this.globalUsed = tid.toString ().getBytes ().length;
     }
 
     /**
@@ -86,12 +86,12 @@ public class XID implements Serializable, Xid
     public XID ( String tid , String resourceURL )
     {
         this ( tid );
-        branchQualifier_ = resourceURL.getBytes ();
-        branchUsed_ = branchQualifier_.length;
-        if ( branchQualifier_.length > Xid.MAXBQUALSIZE )
+        this.branchQualifier = resourceURL.getBytes ();
+        this.branchUsed = this.branchQualifier.length;
+        if ( this.branchQualifier.length > Xid.MAXBQUALSIZE )
             throw new RuntimeException (
                     "Max branch qualifier length exceeded." );
-        if ( globalUsed_ > Xid.MAXGTRIDSIZE )
+        if ( this.globalUsed > Xid.MAXGTRIDSIZE )
             throw new RuntimeException ( "Max global tid length exceeded." );
 
     }
@@ -107,29 +107,33 @@ public class XID implements Serializable, Xid
 
     public XID ( Xid xid )
     {
-        formatId_ = xid.getFormatId ();
-        globalTransactionId_ = xid.getGlobalTransactionId ();
-        globalUsed_ = xid.getGlobalTransactionId ().length;
-        branchQualifier_ = xid.getBranchQualifier ();
-        branchUsed_ = xid.getBranchQualifier ().length;
+        this.formatId = xid.getFormatId ();
+        this.globalTransactionId = xid.getGlobalTransactionId ();
+        this.globalUsed = xid.getGlobalTransactionId ().length;
+        this.branchQualifier = xid.getBranchQualifier ();
+        this.branchUsed = xid.getBranchQualifier ().length;
     }
 
-    public int getFormatId ()
+    @Override
+	public int getFormatId ()
     {
-        return formatId_;
+        return this.formatId;
     }
 
-    public byte[] getBranchQualifier ()
+    @Override
+	public byte[] getBranchQualifier ()
     {
-        return branchQualifier_;
+        return this.branchQualifier;
     }
 
-    public byte[] getGlobalTransactionId ()
+    @Override
+	public byte[] getGlobalTransactionId ()
     {
-        return globalTransactionId_;
+        return this.globalTransactionId;
     }
 
-    public boolean equals ( Object obj )
+    @Override
+	public boolean equals ( Object obj )
     {
     	if (this == obj)
 			return true;
@@ -138,28 +142,22 @@ public class XID implements Serializable, Xid
 		if (getClass() != obj.getClass())
 			return false;
         Xid xid = (Xid) obj;
-
-//        String id1 = new String ( xid.getGlobalTransactionId () ).intern ();
-//        String id2 = new String ( xid.getBranchQualifier () ).intern ();
-//        String id3 = new String ( getGlobalTransactionId () ).intern ();
-//        String id4 = new String ( getBranchQualifier () ).intern ();
-//      return (id1.intern ().equals ( id3.intern () ) && id2.intern ().equals (
-//      id4.intern () ));
-        //PLQ : this should be faster...
         return Arrays.equals(xid.getGlobalTransactionId (),getGlobalTransactionId ()) && Arrays.equals(xid.getBranchQualifier (), getBranchQualifier ());
 
     }
 
-    public String toString ()
+    @Override
+	public String toString ()
     {
-        if ( meAsString_ == null ) {
-            meAsString_ = new String ( getGlobalTransactionId () )
+        if ( this.meAsString == null ) {
+            this.meAsString = new String ( getGlobalTransactionId () )
                     + new String ( getBranchQualifier () );
         }
-        return meAsString_;
+        return this.meAsString;
     }
 
-    public int hashCode ()
+    @Override
+	public int hashCode ()
     {
         return toString ().hashCode ();
     }

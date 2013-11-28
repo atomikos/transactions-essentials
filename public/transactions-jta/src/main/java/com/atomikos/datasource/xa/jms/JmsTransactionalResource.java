@@ -25,8 +25,6 @@
 
 package com.atomikos.datasource.xa.jms;
 
-import java.util.Stack;
-
 import javax.jms.JMSException;
 import javax.jms.XAConnection;
 import javax.jms.XAConnectionFactory;
@@ -47,9 +45,9 @@ import com.atomikos.datasource.xa.XidFactory;
 public class JmsTransactionalResource extends XATransactionalResource
 {
 
-    private XAConnectionFactory factory_;
+    private XAConnectionFactory factory;
 
-    private XAConnection conn_;
+    private XAConnection conn;
 
     /**
      * Create a new instance.
@@ -63,8 +61,8 @@ public class JmsTransactionalResource extends XATransactionalResource
     public JmsTransactionalResource ( String name , XAConnectionFactory factory )
     {
         super ( name );
-        factory_ = factory;
-        conn_ = null;
+        this.factory = factory;
+        this.conn = null;
     }
 
     /**
@@ -84,8 +82,8 @@ public class JmsTransactionalResource extends XATransactionalResource
             XAConnectionFactory qFactory , XidFactory xidFactory )
     {
         super ( name , xidFactory );
-        factory_ = qFactory;
-        conn_ = null;
+        this.factory = qFactory;
+        this.conn = null;
     }
 
     /**
@@ -94,14 +92,15 @@ public class JmsTransactionalResource extends XATransactionalResource
      * @return XAResource The XAResource instance.
      */
 
-    protected synchronized XAResource refreshXAConnection ()
+    @Override
+	protected synchronized XAResource refreshXAConnection ()
             throws ResourceException
     {
         XAResource res = null;
 
-        if ( conn_ != null ) {
+        if ( this.conn != null ) {
             try {
-                conn_.close ();
+                this.conn.close ();
             } catch ( Exception err ) {
                 // happens if connection has timed out
                 // which is probably normal, otherwise
@@ -110,17 +109,15 @@ public class JmsTransactionalResource extends XATransactionalResource
         }
 
         try {
-            conn_ = factory_.createXAConnection ();
-            XASession session = conn_.createXASession ();
+            this.conn = this.factory.createXAConnection ();
+            XASession session = this.conn.createXASession ();
             // note: session does not have to be kept in attribute,
             // since JMS explicitly states that closing the connection
             // also closes all sessions.
             res = session.getXAResource ();
         } catch ( JMSException jms ) {
-            Stack errors = new Stack ();
-            errors.push ( jms );
             throw new ResourceException ( "Error in getting XA resource",
-                    errors );
+            		jms );
         }
 
         return res;
@@ -132,11 +129,12 @@ public class JmsTransactionalResource extends XATransactionalResource
      * JMS infrastructure.
      */
 
-    public void close () throws ResourceException
+    @Override
+	public void close () throws ResourceException
     {
         super.close ();
         try {
-            if ( conn_ != null ) conn_.close ();
+            if ( this.conn != null ) this.conn.close ();
         } catch ( JMSException err ) {
             throw new ResourceException ( err.getMessage () );
         }
