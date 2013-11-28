@@ -26,7 +26,6 @@
 package com.atomikos.datasource.xa.jdbc;
 
 import java.sql.SQLException;
-import java.util.Stack;
 
 import javax.sql.XAConnection;
 import javax.sql.XADataSource;
@@ -35,6 +34,7 @@ import javax.transaction.xa.XAResource;
 import com.atomikos.datasource.ResourceException;
 import com.atomikos.datasource.xa.XATransactionalResource;
 import com.atomikos.datasource.xa.XidFactory;
+import com.atomikos.util.Assert;
 
 /**
  *
@@ -44,10 +44,10 @@ import com.atomikos.datasource.xa.XidFactory;
 
 public class JdbcTransactionalResource extends XATransactionalResource
 {
-    private XADataSource xads_;
-    private XAConnection conn_;
-    private String user_; // null if not set
-    private String password_; // null if not set
+    private XADataSource xaDataSource;
+    private XAConnection xaConnection;
+    private String user; // null if not set
+    private String password; // null if not set
     /**
      * Constructs a new instance with a given name and XADataSource.
      *
@@ -60,9 +60,9 @@ public class JdbcTransactionalResource extends XATransactionalResource
     public JdbcTransactionalResource ( String serverName , XADataSource xads )
     {
         super(serverName);
-        xads_ = xads;
-        if (xads_ == null) throw new NullPointerException("XADataSource must not be null");
-        conn_ = null;
+        Assert.notNull("XADataSource must not be null", xads);
+        this.xaDataSource = xads;
+        this.xaConnection = null;
     }
 
     /**
@@ -82,8 +82,8 @@ public class JdbcTransactionalResource extends XATransactionalResource
             XidFactory factory )
     {
         super ( serverName , factory );
-        xads_ = xads;
-        conn_ = null;
+        this.xaDataSource = xads;
+        this.xaConnection = null;
     }
 
     /**
@@ -94,8 +94,8 @@ public class JdbcTransactionalResource extends XATransactionalResource
     private String getUser ()
     {
         String ret = "";
-        if ( user_ != null )
-            ret = user_;
+        if ( this.user != null )
+            ret = this.user;
 
         return ret;
     }
@@ -108,8 +108,8 @@ public class JdbcTransactionalResource extends XATransactionalResource
     private String getPassword ()
     {
         String ret = "";
-        if ( password_ != null )
-            ret = password_;
+        if ( this.password != null )
+            ret = this.password;
         return ret;
     }
 
@@ -119,14 +119,15 @@ public class JdbcTransactionalResource extends XATransactionalResource
      * @return XAResource The XAResource instance.
      */
 
-    protected synchronized XAResource refreshXAConnection ()
+    @Override
+	protected synchronized XAResource refreshXAConnection ()
             throws ResourceException
     {
         XAResource res = null;
 
-        if ( conn_ != null ) {
+        if ( this.xaConnection != null ) {
             try {
-                conn_.close ();
+                this.xaConnection.close ();
             } catch ( Exception err ) {
                 // happens if connection has timed out
                 // which is probably normal, otherwise
@@ -135,15 +136,12 @@ public class JdbcTransactionalResource extends XATransactionalResource
         }
 
         try {
-            conn_ = createXAConnection();
-            if ( conn_ != null )
-                res = conn_.getXAResource ();
+            this.xaConnection = createXAConnection();
+            if ( this.xaConnection != null )
+                res = this.xaConnection.getXAResource ();
             // null if db down during recovery
         } catch ( SQLException sql ) {
-            Stack errors = new Stack ();
-            errors.push ( sql );
-            throw new ResourceException ( "Error in getting XA resource",
-                    errors );
+            throw new ResourceException ( "Error in getting XA resource",sql );
         }
 
         return res;
@@ -162,7 +160,7 @@ public class JdbcTransactionalResource extends XATransactionalResource
 
     public void setUser ( String user )
     {
-        user_ = user;
+        this.user = user;
     }
 
     /**
@@ -177,7 +175,7 @@ public class JdbcTransactionalResource extends XATransactionalResource
 
     public void setPassword ( String password )
     {
-        password_ = password;
+        this.password = password;
     }
 
     /**
@@ -185,12 +183,13 @@ public class JdbcTransactionalResource extends XATransactionalResource
      * XADataSource.
      */
 
-    public void close () throws ResourceException
+    @Override
+	public void close () throws ResourceException
     {
         super.close ();
         try {
-            if ( conn_ != null )
-                conn_.close ();
+            if ( this.xaConnection != null )
+                this.xaConnection.close ();
         } catch ( SQLException err ) {
             // throw new ResourceException ( err.getMessage() );
             // exception REMOVED because it close clashes
@@ -204,9 +203,9 @@ public class JdbcTransactionalResource extends XATransactionalResource
     		XAConnection conn = null;
     		try {
             if ( "".equals ( getUser () ) )
-                conn = xads_.getXAConnection ();
+                conn = this.xaDataSource.getXAConnection ();
             else
-                conn = xads_.getXAConnection ( getUser (), getPassword () );
+                conn = this.xaDataSource.getXAConnection ( getUser (), getPassword () );
         } catch ( SQLException noConnection ) {
             // ignore and return null: happens if
             // db is down at this time (during
