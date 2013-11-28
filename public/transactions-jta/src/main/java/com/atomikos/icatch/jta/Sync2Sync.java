@@ -35,49 +35,51 @@ class Sync2Sync implements com.atomikos.icatch.Synchronization
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(Sync2Sync.class);
 
-    protected javax.transaction.Synchronization sync_;
+    protected javax.transaction.Synchronization sync;
 
-    private Boolean committed_; //null for readonly
+    private Boolean committed; //null for readonly
     
     Sync2Sync ( javax.transaction.Synchronization sync )
     {
-        sync_ = sync;
+        this.sync = sync;
     }
 
-    public void beforeCompletion ()
+    @Override
+	public void beforeCompletion ()
     {
-        sync_.beforeCompletion ();
+        this.sync.beforeCompletion ();
         resetForReuse();
-        LOGGER.logInfo("beforeCompletion() called on Synchronization: " + sync_.toString());
+        LOGGER.logInfo("beforeCompletion() called on Synchronization: " + this.sync.toString());
     }
 
 	private void resetForReuse() {
-        committed_ = null;
+        this.committed = null;
 	}
 
-    public void afterCompletion ( Object state )
+    @Override
+	public void afterCompletion ( Object state )
     {
         if ( state.equals ( TxState.TERMINATED ) ) {
-            if ( committed_ == null ) { //readonly: unknown
-                sync_.afterCompletion ( Status.STATUS_UNKNOWN );
+            if ( this.committed == null ) { //readonly: unknown
+                this.sync.afterCompletion ( Status.STATUS_UNKNOWN );
                 LOGGER.logInfo ( "afterCompletion ( STATUS_UNKNOWN ) called "
-                                + " on Synchronization: " + sync_.toString () );
+                                + " on Synchronization: " + this.sync.toString () );
             } else {
-                boolean commit = committed_.booleanValue ();
+                boolean commit = this.committed.booleanValue ();
                 if ( commit ) {
-                    sync_.afterCompletion ( Status.STATUS_COMMITTED );
+                    this.sync.afterCompletion ( Status.STATUS_COMMITTED );
                     LOGGER.logInfo ( "afterCompletion ( STATUS_COMMITTED ) called "
                                     + " on Synchronization: "
-                                    + sync_.toString () );
+                                    + this.sync.toString () );
                 } else {
-                    sync_.afterCompletion ( Status.STATUS_ROLLEDBACK );
+                    this.sync.afterCompletion ( Status.STATUS_ROLLEDBACK );
                     LOGGER.logInfo ( "afterCompletion ( STATUS_ROLLEDBACK ) called "
                                     + " on Synchronization: "
-                                    + sync_.toString () );
+                                    + this.sync.toString () );
                 }
             }
-        } else if ( state.equals ( TxState.COMMITTING ) ) committed_ = new Boolean ( true );
-          else if ( state.equals ( TxState.ABORTING ) ) committed_ = new Boolean ( false );
+        } else if ( state.equals ( TxState.COMMITTING ) ) this.committed = new Boolean ( true );
+          else if ( state.equals ( TxState.ABORTING ) ) this.committed = new Boolean ( false );
 
     }
 }

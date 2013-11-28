@@ -77,24 +77,24 @@ public final class RemoteClientUserTransaction implements UserTransaction,
 
     static final int DEFAULT_TIMEOUT = 30;
 
-    private transient UserTransactionServer txmgrServer_;
+    private transient UserTransactionServer txmgrServer;
     // not null if used outside server VM
 
-    private transient TransactionManager txmgr_;
+    private transient TransactionManager txmgr;
     // not null if used in server VM
 
-    private transient Hashtable threadToTidMap_;
+    private transient Hashtable threadToTidMap;
 
-    private int timeout_;
+    private int timeout;
 
-    private String name_;
+    private String name;
     // the RMI name to lookup the remote server.
 
-    private String initialContextFactory_;
+    private String initialContextFactory;
 
-    private String providerUrl_;
+    private String providerUrl;
 
-    private boolean imported_;
+    private boolean imported;
     // if true: no commit/rollback allowed
     // this is the case for instances that are
     // passed on between remote clients
@@ -107,9 +107,9 @@ public final class RemoteClientUserTransaction implements UserTransaction,
 
     public RemoteClientUserTransaction ()
     {
-        threadToTidMap_ = new Hashtable ();
-        timeout_ = DEFAULT_TIMEOUT;
-        imported_ = false;
+        this.threadToTidMap = new Hashtable ();
+        this.timeout = DEFAULT_TIMEOUT;
+        this.imported = false;
     }
 
     /**
@@ -127,28 +127,28 @@ public final class RemoteClientUserTransaction implements UserTransaction,
     public RemoteClientUserTransaction ( String name ,
             String initialContextFactory , String providerUrl )
     {
-        initialContextFactory_ = initialContextFactory;
-        providerUrl_ = providerUrl;
+        this.initialContextFactory = initialContextFactory;
+        this.providerUrl = providerUrl;
 
-        name_ = name;
-        threadToTidMap_ = new Hashtable ();
-        timeout_ = DEFAULT_TIMEOUT;
-        imported_ = false;
+        this.name = name;
+        this.threadToTidMap = new Hashtable ();
+        this.timeout = DEFAULT_TIMEOUT;
+        this.imported = false;
     }
 
     private String getNotFoundMessage ()
     {
         String errorMsg = "Name not found: "
-                + name_
+                + this.name
                 + "\n"
                 + "Please check that: \n"
                 + "	-server property com.atomikos.icatch.client_demarcation is set to true \n"
                 + "   -server property com.atomikos.icatch.rmi_export_class is correct \n"
                 + "	-server property java.naming.factory.initial is "
-                + initialContextFactory_ + "\n"
+                + this.initialContextFactory + "\n"
                 + "	-server property java.naming.provider.url is "
-                + providerUrl_ + "\n"
-                + "	-the naming service is running on port " + providerUrl_
+                + this.providerUrl + "\n"
+                + "	-the naming service is running on port " + this.providerUrl
                 + "\n" + "	-the transaction server is running";
 
         return errorMsg;
@@ -164,59 +164,60 @@ public final class RemoteClientUserTransaction implements UserTransaction,
     private boolean checkSetup ()
     {
         // first try to get intra-VM txmgr
-        txmgr_ = TransactionManagerImp.getTransactionManager ();
+        this.txmgr = TransactionManagerImp.getTransactionManager ();
 
         // if no intra-VM tm: use remote tm
-        if ( txmgr_ == null ) {
+        if ( this.txmgr == null ) {
 
             try {
                 Hashtable env = new Hashtable ();
                 env.put ( Context.INITIAL_CONTEXT_FACTORY,
-                        initialContextFactory_ );
-                env.put ( Context.PROVIDER_URL, providerUrl_ );
+                        this.initialContextFactory );
+                env.put ( Context.PROVIDER_URL, this.providerUrl );
                 Context ctx = new InitialContext ( env );
-                txmgrServer_ = (UserTransactionServer) PortableRemoteObject
-                        .narrow ( ctx.lookup ( name_ ),
+                this.txmgrServer = (UserTransactionServer) PortableRemoteObject
+                        .narrow ( ctx.lookup ( this.name ),
                                 UserTransactionServer.class );
 
             } catch ( Exception e ) {
                 e.printStackTrace ();
                 throw new RuntimeException ( getNotFoundMessage () );
             }
-            if ( txmgrServer_ == null )
+            if ( this.txmgrServer == null )
                 throw new RuntimeException ( getNotFoundMessage () );
         }
 
-        return txmgr_ != null;
+        return this.txmgr != null;
     }
 
     private synchronized void setThreadMapping ( String tid )
     {
         Thread thread = Thread.currentThread ();
-        threadToTidMap_.put ( thread, tid );
+        this.threadToTidMap.put ( thread, tid );
     }
 
     private synchronized String removeThreadMapping ()
     {
         Thread thread = Thread.currentThread ();
-        return (String) threadToTidMap_.remove ( thread );
+        return (String) this.threadToTidMap.remove ( thread );
     }
 
     private synchronized String getThreadMapping ()
     {
         Thread thread = Thread.currentThread ();
-        return (String) threadToTidMap_.get ( thread );
+        return (String) this.threadToTidMap.get ( thread );
     }
 
     /**
      * @see javax.transaction.UserTransaction
      */
 
-    public void begin () throws NotSupportedException, SystemException
+    @Override
+	public void begin () throws NotSupportedException, SystemException
     {
         boolean local = checkSetup ();
         if ( local )
-            txmgr_.begin ();
+            this.txmgr.begin ();
         else {
 
             String tid = getThreadMapping ();
@@ -227,7 +228,7 @@ public final class RemoteClientUserTransaction implements UserTransaction,
             }
 
             try {
-                tid = txmgrServer_.begin ( timeout_ );
+                tid = this.txmgrServer.begin ( this.timeout );
             } catch ( RemoteException re ) {
                 throw new SystemException ( re.getMessage () );
             }
@@ -239,7 +240,8 @@ public final class RemoteClientUserTransaction implements UserTransaction,
      * @see javax.transaction.UserTransaction
      */
 
-    public void commit () throws javax.transaction.RollbackException,
+    @Override
+	public void commit () throws javax.transaction.RollbackException,
             javax.transaction.HeuristicMixedException,
             javax.transaction.HeuristicRollbackException,
             javax.transaction.SystemException, java.lang.IllegalStateException,
@@ -247,10 +249,10 @@ public final class RemoteClientUserTransaction implements UserTransaction,
     {
         boolean local = checkSetup ();
         if ( local )
-            txmgr_.commit ();
+            this.txmgr.commit ();
         else {
 
-            if ( imported_ )
+            if ( this.imported )
                 throw new SecurityException ( "Commit not allowed: not creator" );
 
             String tid = removeThreadMapping ();
@@ -258,7 +260,7 @@ public final class RemoteClientUserTransaction implements UserTransaction,
                 throw new IllegalStateException ( "No transaction for thread" );
 
             try {
-                txmgrServer_.commit ( tid );
+                this.txmgrServer.commit ( tid );
             } catch ( RemoteException re ) {
                 throw new SystemException ( re.getMessage () );
             }
@@ -269,16 +271,17 @@ public final class RemoteClientUserTransaction implements UserTransaction,
      * @see javax.transaction.UserTransaction
      */
 
-    public void rollback () throws IllegalStateException, SystemException,
+    @Override
+	public void rollback () throws IllegalStateException, SystemException,
             SecurityException
     {
 
         boolean local = checkSetup ();
         if ( local )
-            txmgr_.rollback ();
+            this.txmgr.rollback ();
         else {
 
-            if ( imported_ )
+            if ( this.imported )
                 throw new SecurityException (
                         "Rollback not allowed: not creator" );
             String tid = removeThreadMapping ();
@@ -286,7 +289,7 @@ public final class RemoteClientUserTransaction implements UserTransaction,
                 throw new IllegalStateException ( "No transaction for thread" );
 
             try {
-                txmgrServer_.rollback ( tid );
+                this.txmgrServer.rollback ( tid );
             } catch ( RemoteException re ) {
                 throw new SystemException ( re.getMessage () );
             }
@@ -297,19 +300,20 @@ public final class RemoteClientUserTransaction implements UserTransaction,
      * @see javax.transaction.UserTransaction
      */
 
-    public void setRollbackOnly () throws IllegalStateException,
+    @Override
+	public void setRollbackOnly () throws IllegalStateException,
             SystemException
     {
         boolean local = checkSetup ();
         if ( local )
-            txmgr_.setRollbackOnly ();
+            this.txmgr.setRollbackOnly ();
         else {
 
             String tid = getThreadMapping ();
             if ( tid == null )
                 throw new IllegalStateException ( "No transaction for thread" );
             try {
-                txmgrServer_.setRollbackOnly ( tid );
+                this.txmgrServer.setRollbackOnly ( tid );
             } catch ( RemoteException re ) {
                 throw new SystemException ( re.getMessage () );
             }
@@ -320,18 +324,19 @@ public final class RemoteClientUserTransaction implements UserTransaction,
      * @see javax.transaction.UserTransaction
      */
 
-    public int getStatus () throws SystemException
+    @Override
+	public int getStatus () throws SystemException
     {
         int ret = Status.STATUS_NO_TRANSACTION;
         boolean local = checkSetup ();
         if ( local )
-            ret = txmgr_.getStatus ();
+            ret = this.txmgr.getStatus ();
         else {
 
             String tid = getThreadMapping ();
             if ( tid != null ) {
                 try {
-                    ret = txmgrServer_.getStatus ( tid );
+                    ret = this.txmgrServer.getStatus ( tid );
                 } catch ( RemoteException re ) {
                     throw new SystemException ( re.getMessage () );
                 }
@@ -344,10 +349,11 @@ public final class RemoteClientUserTransaction implements UserTransaction,
      * @see javax.transaction.UserTransaction
      */
 
-    public void setTransactionTimeout ( int seconds ) throws SystemException
+    @Override
+	public void setTransactionTimeout ( int seconds ) throws SystemException
     {
 
-        timeout_ = seconds;
+        this.timeout = seconds;
     }
 
     /**
@@ -358,14 +364,15 @@ public final class RemoteClientUserTransaction implements UserTransaction,
      *         thread is executing. Null if no transaction.
      */
 
-    public String toString ()
+    @Override
+	public String toString ()
     {
         String ret = null;
         boolean local = checkSetup ();
         if ( local ) {
             Transaction tx = null;
             try {
-                tx = txmgr_.getTransaction ();
+                tx = this.txmgr.getTransaction ();
             } catch ( SystemException e ) {
                 String msg = "Error getting transaction";
                 LOGGER.logWarning ( msg, e );
@@ -393,14 +400,15 @@ public final class RemoteClientUserTransaction implements UserTransaction,
      * @see Referenceable
      */
 
-    public Reference getReference () throws NamingException
+    @Override
+	public Reference getReference () throws NamingException
     {
-        RefAddr nameRef = new StringRefAddr ( "ServerName", name_ );
-        RefAddr urlRef = new StringRefAddr ( "ProviderUrl", providerUrl_ );
+        RefAddr nameRef = new StringRefAddr ( "ServerName", this.name );
+        RefAddr urlRef = new StringRefAddr ( "ProviderUrl", this.providerUrl );
         RefAddr factRef = new StringRefAddr ( "ContextFactory",
-                initialContextFactory_ );
+                this.initialContextFactory );
         RefAddr timeoutRef = new StringRefAddr ( "Timeout", new Integer (
-                timeout_ ).toString () );
+                this.timeout ).toString () );
         Reference ref = new Reference ( getClass ().getName (),
                 new StringRefAddr ( "name", "RemoteClientUserTransaction" ),
                 RemoteClientUserTransactionFactory.class.getName (), null );
@@ -421,7 +429,8 @@ public final class RemoteClientUserTransaction implements UserTransaction,
      * @see Externalizable
      */
 
-    public void writeExternal ( ObjectOutput out ) throws IOException
+    @Override
+	public void writeExternal ( ObjectOutput out ) throws IOException
     {
         // Implement two-fold behaviour:
         // if thread not currently associated with a tx
@@ -431,17 +440,18 @@ public final class RemoteClientUserTransaction implements UserTransaction,
 
         String tid = getThreadMapping ();
         out.writeObject ( tid );
-        out.writeObject ( name_ );
-        out.writeObject ( initialContextFactory_ );
-        out.writeObject ( providerUrl_ );
-        out.writeInt ( timeout_ );
+        out.writeObject ( this.name );
+        out.writeObject ( this.initialContextFactory );
+        out.writeObject ( this.providerUrl );
+        out.writeInt ( this.timeout );
     }
 
     /**
      * @see Externalizable
      */
 
-    public void readExternal ( ObjectInput in ) throws IOException,
+    @Override
+	public void readExternal ( ObjectInput in ) throws IOException,
             ClassNotFoundException
     {
         // Try if a tid is there;
@@ -451,14 +461,14 @@ public final class RemoteClientUserTransaction implements UserTransaction,
         String tid = (String) in.readObject ();
         if ( tid != null ) {
             setThreadMapping ( tid );
-            imported_ = true;
+            this.imported = true;
             // this will mark the instance to not
             // allow commit/rollback
         }
-        name_ = (String) in.readObject ();
-        initialContextFactory_ = (String) in.readObject ();
-        providerUrl_ = (String) in.readObject ();
-        timeout_ = in.readInt ();
+        this.name = (String) in.readObject ();
+        this.initialContextFactory = (String) in.readObject ();
+        this.providerUrl = (String) in.readObject ();
+        this.timeout = in.readInt ();
     }
 
 }

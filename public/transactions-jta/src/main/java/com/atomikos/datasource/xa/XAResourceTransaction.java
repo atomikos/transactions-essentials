@@ -34,7 +34,6 @@ import java.io.ObjectOutput;
 import java.io.OptionalDataException;
 import java.io.Serializable;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.Stack;
 import java.util.Vector;
 
@@ -64,908 +63,942 @@ import com.atomikos.logging.LoggerFactory;
 import com.atomikos.util.SerializationUtils;
 
 /**
- *
- *
+ * 
+ * 
  * An implementation of ResourceTransaction for XA transactions.
  */
 
 public class XAResourceTransaction implements ResourceTransaction,
-        Externalizable, Participant, DataSerializable
-{
-	private static final Logger LOGGER = LoggerFactory.createLogger(XAResourceTransaction.class);
+		Externalizable, Participant, DataSerializable {
+	private static final Logger LOGGER = LoggerFactory
+			.createLogger(XAResourceTransaction.class);
 
-    static final long serialVersionUID = -8227293322090019196L;
+	static final long serialVersionUID = -8227293322090019196L;
 
-    protected static String interpretErrorCode ( String resourceName , String opCode , Xid xid , int errorCode ) {
+	protected static String interpretErrorCode(String resourceName,
+			String opCode, Xid xid, int errorCode) {
 
-    		String msg = "unkown";
-    		switch ( errorCode ) {
-    			case XAException.XAER_RMFAIL:
-    				msg = "the XA resource has become unavailable";
-    				break;
-    			case XAException.XA_RBROLLBACK:
-    				msg = "the XA resource has rolled back for an unspecified reason";
-    				break;
-    			case XAException.XA_RBCOMMFAIL:
-    				msg = "the XA resource rolled back due to a communication failure";
-    				break;
-    			case XAException.XA_RBDEADLOCK:
-    				msg = "the XA resource has rolled back because of a deadlock";
-    				break;
-    			case XAException.XA_RBINTEGRITY:
-    				msg = "the XA resource has rolled back due to a constraint violation";
-    				break;
-    			case XAException.XA_RBOTHER:
-    				msg = "the XA resource has rolled back for an unknown reason";
-    				break;
-    			case XAException.XA_RBPROTO:
-    				msg = "the XA resource has rolled back because it did not expect this command in the current context";
-    				break;
-    			case XAException.XA_RBTIMEOUT:
-    				msg = "the XA resource has rolled back because the transaction took too long";
-    				break;
-    			case XAException.XA_RBTRANSIENT:
-    				msg = "the XA resource has rolled back for a temporary reason - the transaction can be retried later";
-    				break;
-    			case XAException.XA_NOMIGRATE:
-    				msg = "XA resume attempted in a different place from where suspend happened";
-    				break;
-    			case XAException.XA_HEURHAZ:
-    				msg = "the XA resource may have heuristically completed the transaction";
-    				break;
-    			case XAException.XA_HEURCOM:
-    				msg = "the XA resource has heuristically committed";
-    				break;
-    			case XAException.XA_HEURRB:
-    				msg = "the XA resource has heuristically rolled back";
-    				break;
-    			case XAException.XA_HEURMIX:
-    				msg = "the XA resource has heuristically committed some parts and rolled back other parts";
-    				break;
-    			case XAException.XA_RETRY:
-    				msg = "the XA command had no effect and may be retried";
-    				break;
-    			case XAException.XA_RDONLY:
-    				msg = "the XA resource had no updates to perform for this transaction";
-    				break;
-    			case XAException.XAER_RMERR:
-    				msg = "the XA resource detected an internal error";
-    				break;
-    			case XAException.XAER_NOTA:
-    				msg = "the supplied XID is invalid for this XA resource";
-    				break;
-    			case XAException.XAER_INVAL:
-    				msg = "invalid arguments were given for the XA operation";
-    				break;
-    			case XAException.XAER_PROTO:
-    				msg = "the XA resource did not expect this command in the current context";
-    				break;
-    			case XAException.XAER_DUPID:
-    				msg = "the supplied XID already exists in this XA resource";
-    				break;
-    			case XAException.XAER_OUTSIDE:
-    				msg = "the XA resource is currently involved in a local (non-XA) transaction";
-    				break;
-    			default: msg = "unknown";
-    		}
-    		return "XA resource '" + resourceName + "': " + opCode + " for XID '" + xidToHexString ( xid ) +
-    			   "' raised " + errorCode + ": " + msg;
-    }
+		String msg = "unkown";
+		switch (errorCode) {
+		case XAException.XAER_RMFAIL:
+			msg = "the XA resource has become unavailable";
+			break;
+		case XAException.XA_RBROLLBACK:
+			msg = "the XA resource has rolled back for an unspecified reason";
+			break;
+		case XAException.XA_RBCOMMFAIL:
+			msg = "the XA resource rolled back due to a communication failure";
+			break;
+		case XAException.XA_RBDEADLOCK:
+			msg = "the XA resource has rolled back because of a deadlock";
+			break;
+		case XAException.XA_RBINTEGRITY:
+			msg = "the XA resource has rolled back due to a constraint violation";
+			break;
+		case XAException.XA_RBOTHER:
+			msg = "the XA resource has rolled back for an unknown reason";
+			break;
+		case XAException.XA_RBPROTO:
+			msg = "the XA resource has rolled back because it did not expect this command in the current context";
+			break;
+		case XAException.XA_RBTIMEOUT:
+			msg = "the XA resource has rolled back because the transaction took too long";
+			break;
+		case XAException.XA_RBTRANSIENT:
+			msg = "the XA resource has rolled back for a temporary reason - the transaction can be retried later";
+			break;
+		case XAException.XA_NOMIGRATE:
+			msg = "XA resume attempted in a different place from where suspend happened";
+			break;
+		case XAException.XA_HEURHAZ:
+			msg = "the XA resource may have heuristically completed the transaction";
+			break;
+		case XAException.XA_HEURCOM:
+			msg = "the XA resource has heuristically committed";
+			break;
+		case XAException.XA_HEURRB:
+			msg = "the XA resource has heuristically rolled back";
+			break;
+		case XAException.XA_HEURMIX:
+			msg = "the XA resource has heuristically committed some parts and rolled back other parts";
+			break;
+		case XAException.XA_RETRY:
+			msg = "the XA command had no effect and may be retried";
+			break;
+		case XAException.XA_RDONLY:
+			msg = "the XA resource had no updates to perform for this transaction";
+			break;
+		case XAException.XAER_RMERR:
+			msg = "the XA resource detected an internal error";
+			break;
+		case XAException.XAER_NOTA:
+			msg = "the supplied XID is invalid for this XA resource";
+			break;
+		case XAException.XAER_INVAL:
+			msg = "invalid arguments were given for the XA operation";
+			break;
+		case XAException.XAER_PROTO:
+			msg = "the XA resource did not expect this command in the current context";
+			break;
+		case XAException.XAER_DUPID:
+			msg = "the supplied XID already exists in this XA resource";
+			break;
+		case XAException.XAER_OUTSIDE:
+			msg = "the XA resource is currently involved in a local (non-XA) transaction";
+			break;
+		default:
+			msg = "unknown";
+		}
+		return "XA resource '" + resourceName + "': " + opCode + " for XID '"
+				+ xidToHexString(xid) + "' raised " + errorCode + ": " + msg;
+	}
 
-    private String tid_ , root_;
-    private boolean isXaSuspended_;
-    private TxState state_;
-    private String resourcename_;
-    private transient Xid xid_;
-    private transient String xidToHexString;
+	private String tid, root;
+	private boolean isXaSuspended;
+	private TxState state;
+	private String resourcename;
+	private transient Xid xid;
+	private transient String xidToHexString;
 	private transient String toString;
 
-    private void setXid(Xid xid) {
-		this.xid_ = xid;
-		xidToHexString=	xidToHexString(xid);
-		toString = "XAResourceTransaction: "+xidToHexString;
+	private void setXid(Xid xid) {
+		this.xid = xid;
+		this.xidToHexString = xidToHexString(xid);
+		this.toString = "XAResourceTransaction: " + this.xidToHexString;
 	}
 
-	private transient XATransactionalResource resource_;
-    private transient XAResource xaresource_;
-    private Vector<HeuristicMessage> heuristicMessages_;
-    private transient boolean knownInResource;
-    private transient int timeout_;
+	private transient XATransactionalResource resource;
+	private transient XAResource xaresource;
+	private Vector<HeuristicMessage> heuristicMessages;
+	private transient boolean knownInResource;
+	private transient int timeout;
 
-    public XAResourceTransaction ()
-    {
-        // needed for externalization mechanism
-    }
-
-    XAResourceTransaction(XATransactionalResource resource, CompositeTransaction transaction, String root)
-    {
-        setResource ( resource );
-        TransactionControl control = transaction.getTransactionControl ();
-        if ( control != null ) {
-            timeout_ = (int) transaction.getTransactionControl ().getTimeout () / 1000;
-
-        }
-        tid_ = transaction.getTid ();
-        root_ = root;
-        resourcename_ = resource.getName ();
-        setXid( resource_.createXid ( tid_ ));
-        setState ( TxState.ACTIVE );
-        heuristicMessages_ = new Vector ();
-        isXaSuspended_ = false;
-        knownInResource = false;
-        addHeuristicMessage ( new StringHeuristicMessage ( "XA resource '"
-                + resource.getName () + "' accessed with Xid '" + xidToHexString  + "'" ) );
-    }
-
-	void setResource ( XATransactionalResource resource )
-	{
-		this.resource_ = resource;
+	public XAResourceTransaction() {
+		// needed for externalization mechanism
 	}
 
-	void setState ( TxState state )
-	{
-		this.state_ = state;
+	XAResourceTransaction(XATransactionalResource resource,
+			CompositeTransaction transaction, String root) {
+		setResource(resource);
+		TransactionControl control = transaction.getTransactionControl();
+		if (control != null) {
+			this.timeout = (int) transaction.getTransactionControl()
+					.getTimeout() / 1000;
+
+		}
+		this.tid = transaction.getTid();
+		this.root = root;
+		this.resourcename = resource.getName();
+		setXid(this.resource.createXid(this.tid));
+		setState(TxState.ACTIVE);
+		this.heuristicMessages = new Vector();
+		this.isXaSuspended = false;
+		this.knownInResource = false;
+		addHeuristicMessage(new StringHeuristicMessage("XA resource '"
+				+ resource.getName() + "' accessed with Xid '"
+				+ this.xidToHexString + "'"));
 	}
 
-   static String xidToHexString(Xid xid) {
-    	String gtrid = StringUtils.byteArrayToHexString(xid.getGlobalTransactionId());
-    	String bqual = StringUtils.byteArrayToHexString(xid.getBranchQualifier());
+	void setResource(XATransactionalResource resource) {
+		this.resource = resource;
+	}
+
+	void setState(TxState state) {
+		this.state = state;
+	}
+
+	static String xidToHexString(Xid xid) {
+		String gtrid = StringUtils.byteArrayToHexString(xid
+				.getGlobalTransactionId());
+		String bqual = StringUtils.byteArrayToHexString(xid
+				.getBranchQualifier());
 
 		return gtrid + ":" + bqual;
 	}
 
-	
-
-	private void switchToHeuristicState ( String opCode , TxState state , XAException cause )
-	{
-		String errorMsg = interpretErrorCode ( resourcename_ , opCode , xid_ , cause.errorCode );
-		addHeuristicMessage ( new StringHeuristicMessage ( errorMsg ) );
-		setState ( state );
+	private void switchToHeuristicState(String opCode, TxState state,
+			XAException cause) {
+		String errorMsg = interpretErrorCode(this.resourcename, opCode,
+				this.xid, cause.errorCode);
+		addHeuristicMessage(new StringHeuristicMessage(errorMsg));
+		setState(state);
 	}
 
-	protected void testOrRefreshXAResourceFor2PC () throws XAException
-    {
-        try {
+	protected void testOrRefreshXAResourceFor2PC() throws XAException {
+		try {
 
-        	//fix for case 31209: refresh entire XAConnection on heur hazard
-        	if ( state_.equals ( TxState.HEUR_HAZARD ) ) forceRefreshXAConnection();
-        	else if ( xaresource_ != null ) { // null if connection failure
-                xaresource_.isSameRM ( xaresource_ ); // test xa connection for liveness
-            }
-        } catch ( XAException xa ) {
-            // timed out?
-           if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( resourcename_
-                    + ": XAResource needs refresh", xa );
+			// fix for case 31209: refresh entire XAConnection on heur hazard
+			if (this.state.equals(TxState.HEUR_HAZARD))
+				forceRefreshXAConnection();
+			else if (this.xaresource != null) { // null if connection failure
+				this.xaresource.isSameRM(this.xaresource); // test xa connection
+															// for liveness
+			}
+		} catch (XAException xa) {
+			// timed out?
+			if (LOGGER.isDebugEnabled())
+				LOGGER.logDebug(this.resourcename
+						+ ": XAResource needs refresh", xa);
 
-            if ( resource_ == null ) {
-    			// cf bug 67951 - happens on recovery without resource found
-    			throwXAExceptionForUnavailableResource();
-    		} else {
-    			xaresource_ = resource_.getXAResource ();
-    		}
-        }
+			if (this.resource == null) {
+				// cf bug 67951 - happens on recovery without resource found
+				throwXAExceptionForUnavailableResource();
+			} else {
+				this.xaresource = this.resource.getXAResource();
+			}
+		}
 
-    }
+	}
 
-	protected void forceRefreshXAConnection() throws XAException
-	{
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( resourcename_ + ": forcing refresh of XAConnection..." );
-		if ( resource_ == null ) {
+	protected void forceRefreshXAConnection() throws XAException {
+		if (LOGGER.isDebugEnabled())
+			LOGGER.logDebug(this.resourcename
+					+ ": forcing refresh of XAConnection...");
+		if (this.resource == null) {
 			// cf bug 67951 - happens on recovery without resource found
 			throwXAExceptionForUnavailableResource();
 		}
 
 		try {
-			xaresource_ = resource_.refreshXAConnection();
-		} catch ( ResourceException re ) {
-			LOGGER.logWarning ( resourcename_ + ": could not refresh XAConnection" , re );
+			this.xaresource = this.resource.refreshXAConnection();
+		} catch (ResourceException re) {
+			LOGGER.logWarning(this.resourcename
+					+ ": could not refresh XAConnection", re);
 		}
 	}
 
-	private void throwXAExceptionForUnavailableResource() throws XAException
-	{
-		String msg = resourcename_ + ": resource no longer available - recovery might be at risk!";
-		LOGGER.logWarning ( msg );
-		XAException err = new XAException ( msg );
+	private void throwXAExceptionForUnavailableResource() throws XAException {
+		String msg = this.resourcename
+				+ ": resource no longer available - recovery might be at risk!";
+		LOGGER.logWarning(msg);
+		XAException err = new XAException(msg);
 		err.errorCode = XAException.XAER_RMFAIL;
 		throw err;
 	}
 
+	/**
+	 * Needed for garbage collection of res tx instances: if no new siblings can
+	 * arrive, this method removes any pointers to res txs in the resource
+	 */
 
-    /**
-     * Needed for garbage collection of res tx instances: if no new siblings can
-     * arrive, this method removes any pointers to res txs in the resource
-     */
+	private void terminateInResource() {
+		if (this.resource != null)
+			this.resource.removeSiblingMap(this.root);
+	}
 
-    private void terminateInResource ()
-    {
-        if ( resource_ != null )
-            resource_.removeSiblingMap ( root_ );
-    }
+	@Override
+	public void writeExternal(ObjectOutput out) throws IOException {
+		out.writeObject(this.xid);
+		out.writeObject(this.tid);
+		out.writeObject(this.root);
+		out.writeObject(this.state);
+		// CLONE vector to ensure it gets re-written!
+		out.writeObject(this.heuristicMessages.clone());
+		out.writeObject(this.resourcename);
+		if (this.xaresource instanceof Serializable) {
+			// cf case 59238
+			out.writeObject(Boolean.TRUE);
+			out.writeObject(this.xaresource);
+		} else {
+			out.writeObject(Boolean.FALSE);
+		}
+	}
 
-    public void writeExternal ( ObjectOutput out ) throws IOException
-    {
-        out.writeObject ( xid_ );
-        out.writeObject ( tid_ );
-        out.writeObject ( root_ );
-        out.writeObject ( state_ );
-        // CLONE vector to ensure it gets re-written!
-        out.writeObject ( heuristicMessages_.clone () );
-        out.writeObject ( resourcename_ );
-        if ( xaresource_ instanceof Serializable ) {
-            // cf case 59238
-            out.writeObject ( Boolean.TRUE );
-            out.writeObject ( xaresource_ );
-        } else {
-            out.writeObject ( Boolean.FALSE );
-        }
-    }
+	@Override
+	public void readExternal(ObjectInput in) throws IOException,
+			ClassNotFoundException {
 
-    public void readExternal ( ObjectInput in ) throws IOException,
-            ClassNotFoundException
-    {
+		setXid((Xid) in.readObject());
+		this.tid = (String) in.readObject();
+		this.root = (String) in.readObject();
+		this.state = (TxState) in.readObject();
 
-        setXid((Xid) in.readObject ());
-        tid_ = (String) in.readObject ();
-        root_ = (String) in.readObject ();
-        state_ = (TxState) in.readObject ();
+		this.heuristicMessages = (Vector) in.readObject();
+		this.resourcename = (String) in.readObject();
 
-        heuristicMessages_ = (Vector) in.readObject ();
-        resourcename_ = (String) in.readObject ();
-
-        try {
+		try {
 			Boolean xaresSerializable = (Boolean) in.readObject();
-			if (xaresSerializable !=null && xaresSerializable ) {
-			    // cf case 59238
-			    xaresource_ = ( XAResource ) in.readObject();
+			if (xaresSerializable != null && xaresSerializable) {
+				// cf case 59238
+				this.xaresource = (XAResource) in.readObject();
 			}
 		} catch (OptionalDataException e) {
 			// happens if boolean is missing - like in older logfiles
-			LOGGER.logDebug ("Ignoring missing field" , e );
+			LOGGER.logDebug("Ignoring missing field", e);
 		}
 
-    }
-
-
-    /**
-     * @see ResourceTransaction.
-     */
-
-    public String getTid ()
-    {
-        return tid_;
-    }
-
-
-    /**
-     * @see ResourceTransaction.
-     */
-
-    public void addHeuristicMessage ( HeuristicMessage mesg )
-            throws IllegalStateException
-    {
-    	if(mesg!=null && mesg.toString()!=null){
-    		heuristicMessages_.addElement ( mesg );
-    	}
-
-    }
-
-    /**
-     * @see ResourceTransaction.
-     */
-
-    public HeuristicMessage[] getHeuristicMessages ()
-    {
-        HeuristicMessage[] heurArray = new HeuristicMessage[1];
-        return (HeuristicMessage[]) heuristicMessages_.toArray ( heurArray );
-
-    }
-
-
-    /**
-     * @see ResourceTransaction.
-     */
-
-    public synchronized void suspend () throws ResourceException
-    {
-        Stack errors = new Stack ();
-
-        //BugzID: 20545
-        //State may be IN_DOUBT or TERMINATED when a connection is closed AFTER commit!
-        //In that case, don't call END again, and also don't generate any error!
-        //This is required for some hibernate connection release strategies.
-        if ( state_.equals( ( TxState.ACTIVE ) ) ) {
-	        try {
-	        	if(LOGGER.isInfoEnabled()){
-	        		LOGGER.logInfo("XAResource.end ( " + xidToHexString
-		                    + " , XAResource.TMSUCCESS ) on resource "
-		                    + resourcename_ + " represented by XAResource instance "
-		                    + xaresource_);
-	        	}
-	            xaresource_.end ( xid_, XAResource.TMSUCCESS );
-
-	        } catch ( XAException xaerr ) {
-	            String msg = interpretErrorCode ( resourcename_ , "end" , xid_ , xaerr.errorCode );
-	            if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( msg, xaerr );
-	            //don't throw: fix for case 102827
-	        }
-	        setState ( TxState.LOCALLY_DONE );
-        }
-    }
-    
-    boolean supportsTmJoin() {
-    	return !(resource_.usesWeakCompare() || 
-    			resource_.acceptsAllXAResources () ||
-    			isActive());
-    }
-
-    /**
-     * @see ResourceTransaction.
-     */
-
-    public synchronized void resume () throws ResourceException
-    {
-        int flag = 0;
-        Stack errors = new Stack ();
-        String logFlag = "";
-        if ( state_.equals ( TxState.LOCALLY_DONE ) ) {// reused instance
-            flag = XAResource.TMJOIN;
-            logFlag = "XAResource.TMJOIN";
-        } else if ( !knownInResource ) {// new instance
-            flag = XAResource.TMNOFLAGS;
-            logFlag = "XAResource.TMNOFLAGS";
-        } else
-            throw new IllegalStateException ( "Wrong state for resume: "
-                    + state_ );
-
-        try {
-        	if(LOGGER.isInfoEnabled()){
-        		LOGGER.logInfo("XAResource.start ( " + xidToHexString  + " , " + logFlag
-                        + " ) on resource " + resourcename_
-                        + " represented by XAResource instance " + xaresource_);
-        	}
-            xaresource_.start ( xid_, flag );
-
-        } catch ( XAException xaerr ) {
-        		String msg = interpretErrorCode ( resourcename_ , "resume" , xid_ , xaerr.errorCode );
-            LOGGER.logWarning ( msg ,
-                    xaerr );
-            errors.push ( xaerr );
-            throw new ResourceException ( msg ,
-                    errors );
-        }
-        setState ( TxState.ACTIVE );
-        knownInResource = true;
-    }
-
-    /**
-     * @see Participant
-     */
-
-    public void setCascadeList ( java.util.Dictionary allParticipants )
-            throws SysException
-    {
-        // nothing to do: local participant
-    }
-
-    public Object getState ()
-    {
-        return state_;
-    }
-
-    /**
-     * @see Participant
-     */
-    public boolean recover () throws SysException
-    {
-        boolean recovered = false;
-        // perform extra initialization
-
-        if ( beforePrepare() ) {
-        	//see case 23364: recovery before prepare should do nothing
-        	//and certainly not reset the xaresource
-        	return false;
-        }
-
-        recovered = tryRecoverWithEveryResourceToEnsureOurXidIsNotEndedByPresumedAbort();
-
-        if ( !recovered && getXAResource() != null ) {
-        	// cf case 59238: support serializable XAResource
-        	recovered = true;
-        }
-        if (recovered) knownInResource = true;
-        return recovered;
-    }
-
-    private boolean beforePrepare() {
-		return TxState.ACTIVE.equals ( state_ ) || TxState.LOCALLY_DONE.equals ( state_ );
 	}
 
 	/**
-     * Recovered XIDs can be shared in two resources
-     * if they connect to the same back-end RM
-     * (remember: we use the TM name for the branch!)
-     * So each resource needs to know that our Xid
-     * can be recovered, or endRecovery in one of them
-     * will incorrectly rollback.
-     * 
-     * @return True iff at least one resource was found that recovers this instance.
-     */
-	private boolean tryRecoverWithEveryResourceToEnsureOurXidIsNotEndedByPresumedAbort() {
-		boolean ret = false;		
-		Enumeration resources = Configuration.getResources ();
-        while ( resources.hasMoreElements () ) {
-            RecoverableResource res = (RecoverableResource) resources.nextElement ();
-            if ( res.recover ( this ) ) {
-                ret = true;
-            }
+	 * @see ResourceTransaction.
+	 */
 
-        }
+	public String getTid() {
+		return this.tid;
+	}
+
+	/**
+	 * @see ResourceTransaction.
+	 */
+
+	@Override
+	public void addHeuristicMessage(HeuristicMessage mesg)
+			throws IllegalStateException {
+		if (mesg != null && mesg.toString() != null) {
+			this.heuristicMessages.addElement(mesg);
+		}
+
+	}
+
+	/**
+	 * @see ResourceTransaction.
+	 */
+
+	@Override
+	public HeuristicMessage[] getHeuristicMessages() {
+		HeuristicMessage[] heurArray = new HeuristicMessage[1];
+		return this.heuristicMessages.toArray(heurArray);
+
+	}
+
+	/**
+	 * @see ResourceTransaction.
+	 */
+
+	@Override
+	public synchronized void suspend() throws ResourceException {
+
+		// BugzID: 20545
+		// State may be IN_DOUBT or TERMINATED when a connection is closed AFTER
+		// commit!
+		// In that case, don't call END again, and also don't generate any
+		// error!
+		// This is required for some hibernate connection release strategies.
+		if (this.state.equals(TxState.ACTIVE)) {
+			try {
+				if (LOGGER.isInfoEnabled()) {
+					LOGGER.logInfo("XAResource.end ( " + this.xidToHexString
+							+ " , XAResource.TMSUCCESS ) on resource "
+							+ this.resourcename
+							+ " represented by XAResource instance "
+							+ this.xaresource);
+				}
+				this.xaresource.end(this.xid, XAResource.TMSUCCESS);
+
+			} catch (XAException xaerr) {
+				String msg = interpretErrorCode(this.resourcename, "end",
+						this.xid, xaerr.errorCode);
+				if (LOGGER.isDebugEnabled())
+					LOGGER.logDebug(msg, xaerr);
+				// don't throw: fix for case 102827
+			}
+			setState(TxState.LOCALLY_DONE);
+		}
+	}
+
+	boolean supportsTmJoin() {
+		return !(this.resource.usesWeakCompare()
+				|| this.resource.acceptsAllXAResources() || isActive());
+	}
+
+	/**
+	 * @see ResourceTransaction.
+	 */
+
+	@Override
+	public synchronized void resume() throws ResourceException {
+		int flag = 0;
+		Stack errors = new Stack();
+		String logFlag = "";
+		if (this.state.equals(TxState.LOCALLY_DONE)) {// reused instance
+			flag = XAResource.TMJOIN;
+			logFlag = "XAResource.TMJOIN";
+		} else if (!this.knownInResource) {// new instance
+			flag = XAResource.TMNOFLAGS;
+			logFlag = "XAResource.TMNOFLAGS";
+		} else
+			throw new IllegalStateException("Wrong state for resume: "
+					+ this.state);
+
+		try {
+			if (LOGGER.isInfoEnabled()) {
+				LOGGER.logInfo("XAResource.start ( " + this.xidToHexString
+						+ " , " + logFlag + " ) on resource "
+						+ this.resourcename
+						+ " represented by XAResource instance "
+						+ this.xaresource);
+			}
+			this.xaresource.start(this.xid, flag);
+
+		} catch (XAException xaerr) {
+			String msg = interpretErrorCode(this.resourcename, "resume",
+					this.xid, xaerr.errorCode);
+			LOGGER.logWarning(msg, xaerr);
+			throw new ResourceException(msg, xaerr);
+		}
+		setState(TxState.ACTIVE);
+		this.knownInResource = true;
+	}
+
+	/**
+	 * @see Participant
+	 */
+
+	@Override
+	public void setCascadeList(java.util.Dictionary allParticipants)
+			throws SysException {
+		// nothing to do: local participant
+	}
+
+	public Object getState() {
+		return this.state;
+	}
+
+	/**
+	 * @see Participant
+	 */
+	@Override
+	public boolean recover() throws SysException {
+		boolean recovered = false;
+		// perform extra initialization
+
+		if (beforePrepare()) {
+			// see case 23364: recovery before prepare should do nothing
+			// and certainly not reset the xaresource
+			return false;
+		}
+
+		recovered = tryRecoverWithEveryResourceToEnsureOurXidIsNotEndedByPresumedAbort();
+
+		if (!recovered && getXAResource() != null) {
+			// cf case 59238: support serializable XAResource
+			recovered = true;
+		}
+		if (recovered)
+			this.knownInResource = true;
+		return recovered;
+	}
+
+	private boolean beforePrepare() {
+		return TxState.ACTIVE.equals(this.state)
+				|| TxState.LOCALLY_DONE.equals(this.state);
+	}
+
+	/**
+	 * Recovered XIDs can be shared in two resources if they connect to the same
+	 * back-end RM (remember: we use the TM name for the branch!) So each
+	 * resource needs to know that our Xid can be recovered, or endRecovery in
+	 * one of them will incorrectly rollback.
+	 * 
+	 * @return True iff at least one resource was found that recovers this
+	 *         instance.
+	 */
+	private boolean tryRecoverWithEveryResourceToEnsureOurXidIsNotEndedByPresumedAbort() {
+		boolean ret = false;
+		Enumeration resources = Configuration.getResources();
+		while (resources.hasMoreElements()) {
+			RecoverableResource res = (RecoverableResource) resources
+					.nextElement();
+			if (res.recover(this)) {
+				ret = true;
+			}
+
+		}
 		return ret;
 	}
 
-    /**
-     * @see Participant
-     */
+	/**
+	 * @see Participant
+	 */
 
-    public void setGlobalSiblingCount ( int count )
-    {
-        // nothing to be done here
-    }
-
-    /**
-     * @see Participant
-     */
-
-    public synchronized void forget ()
-    {
-        terminateInResource ();
-        try { 
-            if ( xaresource_ != null ) { // null if recovery failed
-                xaresource_.forget ( xid_ );
-            }
-        } catch ( Exception err ) {
-        	LOGGER.logDebug ( "Error forgetting xid: " + xid_ , err );
-            // we don't care here
-        }
-        setState ( TxState.TERMINATED );
-    }
-
-    /**
-     * @see Participant
-     */
-
-    public synchronized int prepare () throws RollbackException,
-            HeurHazardException, HeurMixedException, SysException
-    {
-        int ret = 0;
-        terminateInResource ();
-
-        if ( TxState.ACTIVE.equals ( state_ ) ) {
-        	// tolerate non-delisting apps/servers
-            suspend ();
-        }
-
-        // duplicate prepares can happen for siblings in serial subtxs!!!
-        // in that case, the second prepare just returns READONLY
-        if ( state_.equals ( TxState.IN_DOUBT ) )
-            return Participant.READ_ONLY;
-        else if ( !state_.equals ( TxState.LOCALLY_DONE ) )
-            throw new SysException ( "Wrong state for prepare: " + state_ );
-        try {
-            // refresh xaresource for MQSeries: seems to close XAResource after suspend???
-            testOrRefreshXAResourceFor2PC ();
-            if(LOGGER.isDebugEnabled()){
-            	LOGGER.logDebug( "About to call prepare on XAResource instance: "
-                        + xaresource_);
-            }
-            ret = xaresource_.prepare ( xid_ );
-
-        } catch ( XAException xaerr ) {
-        	String msg = interpretErrorCode ( resourcename_ , "prepare" , xid_ , xaerr.errorCode );
-            LOGGER.logWarning ( msg , xaerr ); // see case 84253
-            if ( (XAException.XA_RBBASE <= xaerr.errorCode)
-                    && (xaerr.errorCode <= XAException.XA_RBEND) ) {
-                throw new RollbackException ( msg );
-            } else {
-                throw new SysException ( msg , xaerr );
-            }
-        }
-        setState ( TxState.IN_DOUBT );
-        if ( ret == XAResource.XA_RDONLY ) {
-        	if(LOGGER.isInfoEnabled()){
-        		LOGGER.logInfo("XAResource.prepare ( " + xidToHexString
-                        + " ) returning XAResource.XA_RDONLY " + "on resource "
-                        + resourcename_ + " represented by XAResource instance "
-                        + xaresource_);
-        	}
-            return Participant.READ_ONLY;
-        } else {
-        	if(LOGGER.isInfoEnabled()){
-        		LOGGER.logInfo("XAResource.prepare ( " + xidToHexString  + " ) returning OK "
-                        + "on resource " + resourcename_
-                        + " represented by XAResource instance " + xaresource_);
-        	}
-            return Participant.READ_ONLY + 1;
-        }
-    }
-
-    /**
-     * @see Participant.
-     */
-
-    public synchronized HeuristicMessage[] rollback ()
-            throws HeurCommitException, HeurMixedException,
-            HeurHazardException, SysException
-    {
-        terminateInResource ();
-
-        if ( rollbackShouldDoNothing() ) {
-            return null;
-        } 
-        if ( state_.equals ( TxState.TERMINATED ) ) {        	
-        	return getHeuristicMessages ();
-        }
-
-        if ( state_.equals ( TxState.HEUR_MIXED ) )
-            throw new HeurMixedException ( getHeuristicMessages () );
-        if ( state_.equals ( TxState.HEUR_COMMITTED ) )
-            throw new HeurCommitException ( getHeuristicMessages () );
-        if ( xaresource_ == null ) { // if recover failed
-        		LOGGER.logWarning ( "XAResourceTransaction " + getXid ()
-                    + ": no XAResource to rollback - the required resource is probably not yet intialized?" );
-            throw new HeurHazardException ( getHeuristicMessages () );
-        }
-
-
-        try {
-            if ( state_.equals ( TxState.ACTIVE ) ) { // first suspend xid
-                suspend ();
-            }
-
-            // refresh xaresource for MQSeries: seems to close XAResource after suspend???
-            testOrRefreshXAResourceFor2PC ();
-            if(LOGGER.isInfoEnabled()){
-            	LOGGER.logInfo("XAResource.rollback ( " + xidToHexString  + " ) "
-                        + "on resource " + resourcename_
-                        + " represented by XAResource instance " + xaresource_);
-            }
-            xaresource_.rollback ( xid_ );
-
-        } catch ( ResourceException resErr ) {
-            // failure of suspend
-            throw new SysException ( "Error in rollback: "
-                    + resErr.getMessage (), resErr );
-        } catch ( XAException xaerr ) {
-        	    String msg = interpretErrorCode ( resourcename_ , "rollback" , xid_ , xaerr.errorCode );
-            if ( (XAException.XA_RBBASE <= xaerr.errorCode)
-                    && (xaerr.errorCode <= XAException.XA_RBEND) ) { // do nothing, corresponds with semantics of rollback          
-                if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( msg );
-            } else {
-                LOGGER.logWarning ( msg , xaerr );
-                switch ( xaerr.errorCode ) {
-                case XAException.XA_HEURHAZ:
-                	switchToHeuristicState ( "rollback" , TxState.HEUR_HAZARD , xaerr );
-                	throw new HeurHazardException ( getHeuristicMessages() );
-                case XAException.XA_HEURMIX:
-                	switchToHeuristicState ( "rollback" , TxState.HEUR_MIXED , xaerr );
-                    throw new HeurMixedException ( getHeuristicMessages () );
-                case XAException.XA_HEURCOM:
-                	switchToHeuristicState ( "rollback", TxState.HEUR_COMMITTED , xaerr );
-                    throw new HeurCommitException ( getHeuristicMessages () );
-                case XAException.XA_HEURRB:
-                    forget ();
-                    break;
-                case XAException.XAER_NOTA:
-                	   //see case 21552
-                	 if(LOGGER.isDebugEnabled()){
-                		 LOGGER.logDebug("XAResource.rollback: invalid Xid - already rolled back in resource?");
-                	 }
-                    setState ( TxState.TERMINATED );
-                    //ignore error - corresponds to semantics of rollback!
-                    break;
-                default:
-                	//fix for bug 31209
-                	switchToHeuristicState( "rollback", TxState.HEUR_HAZARD , xaerr );
-                    throw new SysException ( msg , xaerr );
-                } 
-            }
-        }
-        setState ( TxState.TERMINATED );
-        return getHeuristicMessages ();
-    }
-
-    private boolean rollbackShouldDoNothing() {
-		return !knownInResource && beforePrepare();
+	@Override
+	public void setGlobalSiblingCount(int count) {
+		// nothing to be done here
 	}
 
 	/**
-     * @see Participant
-     */
+	 * @see Participant
+	 */
 
-    public synchronized HeuristicMessage[] commit ( boolean onePhase )
-            throws HeurRollbackException, HeurHazardException,
-            HeurMixedException, RollbackException, SysException
-    {
-        terminateInResource ();
+	@Override
+	public synchronized void forget() {
+		terminateInResource();
+		try {
+			if (this.xaresource != null) { // null if recovery failed
+				this.xaresource.forget(this.xid);
+			}
+		} catch (Exception err) {
+			LOGGER.logDebug("Error forgetting xid: " + this.xid, err);
+			// we don't care here
+		}
+		setState(TxState.TERMINATED);
+	}
 
-        if ( state_.equals ( TxState.TERMINATED ) )
-            return getHeuristicMessages ();
-        if ( state_.equals ( TxState.HEUR_MIXED ) )
-            throw new HeurMixedException ( getHeuristicMessages () );
-        if ( state_.equals ( TxState.HEUR_ABORTED ) )
-            throw new HeurRollbackException ( getHeuristicMessages () );
-        if ( xaresource_ == null ) { // null if recovery failed
-            LOGGER.logWarning ( "XAResourceTransaction " + getXid ()
-                    + ": no XAResource to commit - the required resource is probably not yet intialized?" );
-            throw new HeurHazardException ( getHeuristicMessages () );
-        }
+	/**
+	 * @see Participant
+	 */
 
-        try {
+	@Override
+	public synchronized int prepare() throws RollbackException,
+			HeurHazardException, HeurMixedException, SysException {
+		int ret = 0;
+		terminateInResource();
 
-            if ( TxState.ACTIVE.equals ( state_ ) ) { // tolerate non-delisting apps/servers
-                suspend ();
-            }
-        } catch ( ResourceException re ) {
-            // happens if already rolled back or something else;
-            // in any case the transaction can be trusted to act
-            // as if rollback already happened
-            throw new com.atomikos.icatch.RollbackException ( re.getMessage () );
-        }
+		if (TxState.ACTIVE.equals(this.state)) {
+			// tolerate non-delisting apps/servers
+			suspend();
+		}
 
-        if ( !(state_.equals ( TxState.LOCALLY_DONE ) || state_
-                .equals ( TxState.IN_DOUBT ) || state_.equals ( TxState.HEUR_HAZARD )) )
-            throw new SysException ( "Wrong state for commit: " + state_ );
-        try {
-            // refresh xaresource for MQSeries: seems to close XAResource after suspend???
-            testOrRefreshXAResourceFor2PC ();
-            if(LOGGER.isInfoEnabled()){
-            	LOGGER.logInfo("XAResource.commit ( " + xidToHexString + " , " + onePhase
-                        + " ) on resource " + resourcename_
-                        + " represented by XAResource instance " + xaresource_);
-            }
-            xaresource_.commit ( xid_, onePhase );
+		// duplicate prepares can happen for siblings in serial subtxs!!!
+		// in that case, the second prepare just returns READONLY
+		if (this.state.equals(TxState.IN_DOUBT))
+			return Participant.READ_ONLY;
+		else if (!this.state.equals(TxState.LOCALLY_DONE))
+			throw new SysException("Wrong state for prepare: " + this.state);
+		try {
+			// refresh xaresource for MQSeries: seems to close XAResource after
+			// suspend???
+			testOrRefreshXAResourceFor2PC();
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.logDebug("About to call prepare on XAResource instance: "
+						+ this.xaresource);
+			}
+			ret = this.xaresource.prepare(this.xid);
 
-        } catch ( XAException xaerr ) {
-        	String msg = interpretErrorCode ( resourcename_ , "commit" , xid_ , xaerr.errorCode );
-            LOGGER.logWarning ( msg , xaerr );
+		} catch (XAException xaerr) {
+			String msg = interpretErrorCode(this.resourcename, "prepare",
+					this.xid, xaerr.errorCode);
+			LOGGER.logWarning(msg, xaerr); // see case 84253
+			if (XAException.XA_RBBASE <= xaerr.errorCode
+					&& xaerr.errorCode <= XAException.XA_RBEND) {
+				throw new RollbackException(msg);
+			} else {
+				throw new SysException(msg, xaerr);
+			}
+		}
+		setState(TxState.IN_DOUBT);
+		if (ret == XAResource.XA_RDONLY) {
+			if (LOGGER.isInfoEnabled()) {
+				LOGGER.logInfo("XAResource.prepare ( " + this.xidToHexString
+						+ " ) returning XAResource.XA_RDONLY " + "on resource "
+						+ this.resourcename
+						+ " represented by XAResource instance "
+						+ this.xaresource);
+			}
+			return Participant.READ_ONLY;
+		} else {
+			if (LOGGER.isInfoEnabled()) {
+				LOGGER.logInfo("XAResource.prepare ( " + this.xidToHexString
+						+ " ) returning OK " + "on resource "
+						+ this.resourcename
+						+ " represented by XAResource instance "
+						+ this.xaresource);
+			}
+			return Participant.READ_ONLY + 1;
+		}
+	}
 
-            if ( (XAException.XA_RBBASE <= xaerr.errorCode)
-                    && (xaerr.errorCode <= XAException.XA_RBEND) ) {
+	/**
+	 * @see Participant.
+	 */
 
-                if ( !onePhase )
-                    throw new SysException ( msg , xaerr );
-                else
-                    throw new com.atomikos.icatch.RollbackException (
-                            "Already rolled back in resource." );
-            } else {
-                switch ( xaerr.errorCode ) {
-                case XAException.XA_HEURHAZ:
-                	switchToHeuristicState ( "commit" , TxState.HEUR_HAZARD , xaerr );
-                    throw new HeurHazardException ( getHeuristicMessages () );
-                case XAException.XA_HEURMIX:
-                	switchToHeuristicState ( "commit", TxState.HEUR_MIXED , xaerr );
-                    throw new HeurMixedException ( getHeuristicMessages () );
-                case XAException.XA_HEURCOM:
-                    forget ();
-                    break;
-                case XAException.XA_HEURRB:
-                	switchToHeuristicState ( "commit", TxState.HEUR_ABORTED , xaerr );
-                    throw new HeurRollbackException ( getHeuristicMessages () );
-                case XAException.XAER_NOTA:
-                    if ( ! onePhase ) {
-                    	   //see case 21552
-                    	LOGGER.logWarning("XAResource.commit: invalid Xid - transaction already committed in resource?");
-                        setState ( TxState.TERMINATED );
-                        break;
-                    }
-                default:
-                	//fix for bug 31209
-                	switchToHeuristicState( "commit", TxState.HEUR_HAZARD , xaerr );
-                    throw new SysException ( msg , xaerr );
-                } 
-            } 
-        }
-        setState ( TxState.TERMINATED );
-        return getHeuristicMessages ();
-    }
+	@Override
+	public synchronized HeuristicMessage[] rollback()
+			throws HeurCommitException, HeurMixedException,
+			HeurHazardException, SysException {
+		terminateInResource();
 
-    /**
-     * Absolutely necessary for coordinator to work correctly
-     */
+		if (rollbackShouldDoNothing()) {
+			return null;
+		}
+		if (this.state.equals(TxState.TERMINATED)) {
+			return getHeuristicMessages();
+		}
 
-    public boolean equals ( Object o )
-    {
-    	if (this==o) return true;
-    	
-        // NOTE: basing equals on the xid means that if two
-        // different instances for the same xid exist then these
-        // will be considered the same, and a second will
-        // NOT be added to the coordinator's participant list.
-        // However, this is not a problem, since the first added instance
-        // will do all commit work (they are equivalent).
-        // Note that this can ONLY happen for two invocations of the
-        // SAME local composite transaction to the SAME resource.
-        // Because INSIDE ONE local transaction there is no
-        // internal parallellism, having two invocations to the same
-        // resource execute with the same xid is not a problem.
+		if (this.state.equals(TxState.HEUR_MIXED))
+			throw new HeurMixedException(getHeuristicMessages());
+		if (this.state.equals(TxState.HEUR_COMMITTED))
+			throw new HeurCommitException(getHeuristicMessages());
+		if (this.xaresource == null) { // if recover failed
+			LOGGER.logWarning("XAResourceTransaction "
+					+ getXid()
+					+ ": no XAResource to rollback - the required resource is probably not yet intialized?");
+			throw new HeurHazardException(getHeuristicMessages());
+		}
 
-        if (!(o instanceof XAResourceTransaction))  return false;
+		try {
+			if (this.state.equals(TxState.ACTIVE)) { // first suspend xid
+				suspend();
+			}
 
-        XAResourceTransaction other = (XAResourceTransaction) o;
-        return xid_.equals ( other.xid_ );
-    }
+			// refresh xaresource for MQSeries: seems to close XAResource after
+			// suspend???
+			testOrRefreshXAResourceFor2PC();
+			if (LOGGER.isInfoEnabled()) {
+				LOGGER.logInfo("XAResource.rollback ( " + this.xidToHexString
+						+ " ) " + "on resource " + this.resourcename
+						+ " represented by XAResource instance "
+						+ this.xaresource);
+			}
+			this.xaresource.rollback(this.xid);
 
-    /**
-     * Absolutely necessary for coordinator to work correctly
-     */
+		} catch (ResourceException resErr) {
+			// failure of suspend
+			throw new SysException("Error in rollback: " + resErr.getMessage(),
+					resErr);
+		} catch (XAException xaerr) {
+			String msg = interpretErrorCode(this.resourcename, "rollback",
+					this.xid, xaerr.errorCode);
+			if (XAException.XA_RBBASE <= xaerr.errorCode
+					&& xaerr.errorCode <= XAException.XA_RBEND) { // do nothing,
+																	// corresponds
+																	// with
+																	// semantics
+																	// of
+																	// rollback
+				if (LOGGER.isDebugEnabled())
+					LOGGER.logDebug(msg);
+			} else {
+				LOGGER.logWarning(msg, xaerr);
+				switch (xaerr.errorCode) {
+				case XAException.XA_HEURHAZ:
+					switchToHeuristicState("rollback", TxState.HEUR_HAZARD,
+							xaerr);
+					throw new HeurHazardException(getHeuristicMessages());
+				case XAException.XA_HEURMIX:
+					switchToHeuristicState("rollback", TxState.HEUR_MIXED,
+							xaerr);
+					throw new HeurMixedException(getHeuristicMessages());
+				case XAException.XA_HEURCOM:
+					switchToHeuristicState("rollback", TxState.HEUR_COMMITTED,
+							xaerr);
+					throw new HeurCommitException(getHeuristicMessages());
+				case XAException.XA_HEURRB:
+					forget();
+					break;
+				case XAException.XAER_NOTA:
+					// see case 21552
+					if (LOGGER.isDebugEnabled()) {
+						LOGGER.logDebug("XAResource.rollback: invalid Xid - already rolled back in resource?");
+					}
+					setState(TxState.TERMINATED);
+					// ignore error - corresponds to semantics of rollback!
+					break;
+				default:
+					// fix for bug 31209
+					switchToHeuristicState("rollback", TxState.HEUR_HAZARD,
+							xaerr);
+					throw new SysException(msg, xaerr);
+				}
+			}
+		}
+		setState(TxState.TERMINATED);
+		return getHeuristicMessages();
+	}
 
-    public int hashCode ()
-    {
-        return xidToHexString.hashCode();
-    }
+	private boolean rollbackShouldDoNothing() {
+		return !this.knownInResource && beforePrepare();
+	}
 
-    public String toString ()
-    {
-        return toString;
-    }
+	/**
+	 * @see Participant
+	 */
 
-    /**
-     * Get the Xid. Needed by jta mappings.
-     *
-     * @return Xid The Xid of this restx.
-     */
+	@Override
+	public synchronized HeuristicMessage[] commit(boolean onePhase)
+			throws HeurRollbackException, HeurHazardException,
+			HeurMixedException, RollbackException, SysException {
+		terminateInResource();
 
-    public Xid getXid ()
-    {
-        return xid_;
-    }
+		if (this.state.equals(TxState.TERMINATED))
+			return getHeuristicMessages();
+		if (this.state.equals(TxState.HEUR_MIXED))
+			throw new HeurMixedException(getHeuristicMessages());
+		if (this.state.equals(TxState.HEUR_ABORTED))
+			throw new HeurRollbackException(getHeuristicMessages());
+		if (this.xaresource == null) { // null if recovery failed
+			LOGGER.logWarning("XAResourceTransaction "
+					+ getXid()
+					+ ": no XAResource to commit - the required resource is probably not yet intialized?");
+			throw new HeurHazardException(getHeuristicMessages());
+		}
 
-    protected void setRecoveredXAResource ( XAResource xaresource )
-    {
-    	// See case 25671: only reset xaresource if NOT enlisted!
-    	// Otherwise, the delist will fail since XA does not allow
-    	// enlist/delist on different xaresource instances.
-    	// This should not interfere with recovery since a recovered
-    	// instance will NOT have state ACTIVE...
-    	if ( ! TxState.ACTIVE.equals ( state_ ) ) {
-    		setXAResource ( xaresource );
-    	}
-    }
+		try {
 
-    /**
-     * Set the XAResource attribute.
-     *
-     * @param xaresource
-     *            The new XAResource to use. This new XAResource represents the
-     *            new connection to the XA database. Necessary because on reuse,
-     *            the old xaresource may be in use by another thread, for
-     *            another transaction.
-     */
+			if (TxState.ACTIVE.equals(this.state)) { // tolerate non-delisting
+														// apps/servers
+				suspend();
+			}
+		} catch (ResourceException re) {
+			// happens if already rolled back or something else;
+			// in any case the transaction can be trusted to act
+			// as if rollback already happened
+			throw new com.atomikos.icatch.RollbackException(re.getMessage());
+		}
 
-    public void setXAResource ( XAResource xaresource )
-    {
-    	if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": about to switch to XAResource " + xaresource );
-    	xaresource_ = xaresource;
-    	try {
-    		xaresource_.setTransactionTimeout ( timeout_ );
-    	} catch ( XAException e ) {
-    		String msg = interpretErrorCode ( resourcename_ , "setTransactionTimeout" , xid_ , e.errorCode );
-    		LOGGER.logWarning ( msg , e );
-    		// we don't care
-    	}
-    	if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "XAResourceTransaction " + getXid() + ": switched to XAResource " + xaresource );
-    }
+		if (!(this.state.equals(TxState.LOCALLY_DONE)
+				|| this.state.equals(TxState.IN_DOUBT) || this.state
+					.equals(TxState.HEUR_HAZARD)))
+			throw new SysException("Wrong state for commit: " + this.state);
+		try {
+			// refresh xaresource for MQSeries: seems to close XAResource after
+			// suspend???
+			testOrRefreshXAResourceFor2PC();
+			if (LOGGER.isInfoEnabled()) {
+				LOGGER.logInfo("XAResource.commit ( " + this.xidToHexString
+						+ " , " + onePhase + " ) on resource "
+						+ this.resourcename
+						+ " represented by XAResource instance "
+						+ this.xaresource);
+			}
+			this.xaresource.commit(this.xid, onePhase);
 
-    /**
-     * Perform an XA suspend.
-     */
+		} catch (XAException xaerr) {
+			String msg = interpretErrorCode(this.resourcename, "commit",
+					this.xid, xaerr.errorCode);
+			LOGGER.logWarning(msg, xaerr);
 
-    public void xaSuspend () throws XAException
-    {
-    	// cf case 61305: make XA suspend idempotent so appserver suspends do not interfere with our suspends (triggered by transaction suspend)
-    	if ( !isXaSuspended_ ) {
-    		try {
-    			if(LOGGER.isInfoEnabled()){
-    				LOGGER.logInfo("XAResource.suspend ( " + xidToHexString
-        					+ " , XAResource.TMSUSPEND ) on resource "
-        					+ resourcename_ + " represented by XAResource instance "
-        					+ xaresource_);
-    			}
-    			xaresource_.end ( xid_, XAResource.TMSUSPEND );
+			if (XAException.XA_RBBASE <= xaerr.errorCode
+					&& xaerr.errorCode <= XAException.XA_RBEND) {
 
-    			isXaSuspended_ = true;
-    		}
-    		catch ( XAException xaerr ) {
-    			String msg = interpretErrorCode ( resourcename_ , "suspend" , xid_ , xaerr.errorCode );
-    			LOGGER.logWarning ( msg , xaerr );
-    			throw xaerr;
-    		}
-    	}
-    }
+				if (!onePhase)
+					throw new SysException(msg, xaerr);
+				else
+					throw new com.atomikos.icatch.RollbackException(
+							"Already rolled back in resource.");
+			} else {
+				switch (xaerr.errorCode) {
+				case XAException.XA_HEURHAZ:
+					switchToHeuristicState("commit", TxState.HEUR_HAZARD, xaerr);
+					throw new HeurHazardException(getHeuristicMessages());
+				case XAException.XA_HEURMIX:
+					switchToHeuristicState("commit", TxState.HEUR_MIXED, xaerr);
+					throw new HeurMixedException(getHeuristicMessages());
+				case XAException.XA_HEURCOM:
+					forget();
+					break;
+				case XAException.XA_HEURRB:
+					switchToHeuristicState("commit", TxState.HEUR_ABORTED,
+							xaerr);
+					throw new HeurRollbackException(getHeuristicMessages());
+				case XAException.XAER_NOTA:
+					if (!onePhase) {
+						// see case 21552
+						LOGGER.logWarning("XAResource.commit: invalid Xid - transaction already committed in resource?");
+						setState(TxState.TERMINATED);
+						break;
+					}
+				default:
+					// fix for bug 31209
+					switchToHeuristicState("commit", TxState.HEUR_HAZARD, xaerr);
+					throw new SysException(msg, xaerr);
+				}
+			}
+		}
+		setState(TxState.TERMINATED);
+		return getHeuristicMessages();
+	}
 
-    /**
-     * Perform an xa resume
-     */
+	/**
+	 * Absolutely necessary for coordinator to work correctly
+	 */
 
-    public void xaResume () throws XAException
-    {
-        try {
-        	if(LOGGER.isInfoEnabled()){
-        		LOGGER.logInfo("XAResource.start ( " + xidToHexString
-                    + " , XAResource.TMRESUME ) on resource "
-                    + resourcename_ + " represented by XAResource instance "
-                    + xaresource_);
-        		}
-        	xaresource_.start ( xid_, XAResource.TMRESUME );
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
 
-            isXaSuspended_ = false;
-        }
-        catch ( XAException xaerr ) {
-			String msg = interpretErrorCode ( resourcename_ , "resume" , xid_ , xaerr.errorCode );
-			LOGGER.logWarning ( msg , xaerr );
+		// NOTE: basing equals on the xid means that if two
+		// different instances for the same xid exist then these
+		// will be considered the same, and a second will
+		// NOT be added to the coordinator's participant list.
+		// However, this is not a problem, since the first added instance
+		// will do all commit work (they are equivalent).
+		// Note that this can ONLY happen for two invocations of the
+		// SAME local composite transaction to the SAME resource.
+		// Because INSIDE ONE local transaction there is no
+		// internal parallellism, having two invocations to the same
+		// resource execute with the same xid is not a problem.
+
+		if (!(o instanceof XAResourceTransaction))
+			return false;
+
+		XAResourceTransaction other = (XAResourceTransaction) o;
+		return this.xid.equals(other.xid);
+	}
+
+	/**
+	 * Absolutely necessary for coordinator to work correctly
+	 */
+
+	@Override
+	public int hashCode() {
+		return this.xidToHexString.hashCode();
+	}
+
+	@Override
+	public String toString() {
+		return this.toString;
+	}
+
+	/**
+	 * Get the Xid. Needed by jta mappings.
+	 * 
+	 * @return Xid The Xid of this restx.
+	 */
+
+	public Xid getXid() {
+		return this.xid;
+	}
+
+	protected void setRecoveredXAResource(XAResource xaresource) {
+		// See case 25671: only reset xaresource if NOT enlisted!
+		// Otherwise, the delist will fail since XA does not allow
+		// enlist/delist on different xaresource instances.
+		// This should not interfere with recovery since a recovered
+		// instance will NOT have state ACTIVE...
+		if (!TxState.ACTIVE.equals(this.state)) {
+			setXAResource(xaresource);
+		}
+	}
+
+	/**
+	 * Set the XAResource attribute.
+	 * 
+	 * @param xaresource
+	 *            The new XAResource to use. This new XAResource represents the
+	 *            new connection to the XA database. Necessary because on reuse,
+	 *            the old xaresource may be in use by another thread, for
+	 *            another transaction.
+	 */
+
+	public void setXAResource(XAResource xaresource) {
+		if (LOGGER.isDebugEnabled())
+			LOGGER.logDebug(this + ": about to switch to XAResource "
+					+ xaresource);
+		this.xaresource = xaresource;
+		try {
+			this.xaresource.setTransactionTimeout(this.timeout);
+		} catch (XAException e) {
+			String msg = interpretErrorCode(this.resourcename,
+					"setTransactionTimeout", this.xid, e.errorCode);
+			LOGGER.logWarning(msg, e);
+			// we don't care
+		}
+		if (LOGGER.isDebugEnabled())
+			LOGGER.logDebug("XAResourceTransaction " + getXid()
+					+ ": switched to XAResource " + xaresource);
+	}
+
+	/**
+	 * Perform an XA suspend.
+	 */
+
+	public void xaSuspend() throws XAException {
+		// cf case 61305: make XA suspend idempotent so appserver suspends do
+		// not interfere with our suspends (triggered by transaction suspend)
+		if (!this.isXaSuspended) {
+			try {
+				if (LOGGER.isInfoEnabled()) {
+					LOGGER.logInfo("XAResource.suspend ( "
+							+ this.xidToHexString
+							+ " , XAResource.TMSUSPEND ) on resource "
+							+ this.resourcename
+							+ " represented by XAResource instance "
+							+ this.xaresource);
+				}
+				this.xaresource.end(this.xid, XAResource.TMSUSPEND);
+
+				this.isXaSuspended = true;
+			} catch (XAException xaerr) {
+				String msg = interpretErrorCode(this.resourcename, "suspend",
+						this.xid, xaerr.errorCode);
+				LOGGER.logWarning(msg, xaerr);
+				throw xaerr;
+			}
+		}
+	}
+
+	/**
+	 * Perform an xa resume
+	 */
+
+	public void xaResume() throws XAException {
+		try {
+			if (LOGGER.isInfoEnabled()) {
+				LOGGER.logInfo("XAResource.start ( " + this.xidToHexString
+						+ " , XAResource.TMRESUME ) on resource "
+						+ this.resourcename
+						+ " represented by XAResource instance "
+						+ this.xaresource);
+			}
+			this.xaresource.start(this.xid, XAResource.TMRESUME);
+
+			this.isXaSuspended = false;
+		} catch (XAException xaerr) {
+			String msg = interpretErrorCode(this.resourcename, "resume",
+					this.xid, xaerr.errorCode);
+			LOGGER.logWarning(msg, xaerr);
 			throw xaerr;
 		}
 
-    }
-
-    /**
-     * Test if the resource has been ended with TMSUSPEND.
-     *
-     * @return boolean True if so.
-     */
-    public boolean isXaSuspended ()
-    {
-        return isXaSuspended_;
-    }
-
-    /**
-     * Test if the restx is active (in use).
-     *
-     * @return boolean True if so.
-     */
-    public boolean isActive ()
-    {
-        return state_.equals ( TxState.ACTIVE );
-    }
-
-    /**
-     * @see com.atomikos.icatch.Participant#getURI()
-     */
-    public String getURI ()
-    {
-
-        return null;
-    }
-
-	String getResourceName()
-	{
-		return resourcename_;
 	}
 
-	XAResource getXAResource()
-	{
-		return xaresource_;
+	/**
+	 * Test if the resource has been ended with TMSUSPEND.
+	 * 
+	 * @return boolean True if so.
+	 */
+	public boolean isXaSuspended() {
+		return this.isXaSuspended;
 	}
 
+	/**
+	 * Test if the restx is active (in use).
+	 * 
+	 * @return boolean True if so.
+	 */
+	public boolean isActive() {
+		return this.state.equals(TxState.ACTIVE);
+	}
+
+	/**
+	 * @see com.atomikos.icatch.Participant#getURI()
+	 */
+	@Override
+	public String getURI() {
+
+		return null;
+	}
+
+	String getResourceName() {
+		return this.resourcename;
+	}
+
+	XAResource getXAResource() {
+		return this.xaresource;
+	}
+
+	@Override
 	public void writeData(DataOutput out) throws IOException {
-		byte[] data= SerializationUtils.serialize((Serializable)xid_);
+		byte[] data = SerializationUtils.serialize((Serializable) this.xid);
 		out.writeInt(data.length);
-		out.write(data);	
-		out.writeUTF(tid_);
-		out.writeUTF(root_);
-		out.writeUTF(state_.toString());
-		out.writeUTF(resourcename_);
-		out.writeInt(heuristicMessages_.size());
-		for (Iterator<HeuristicMessage> iterator = heuristicMessages_.iterator(); iterator.hasNext();) {
-			HeuristicMessage heuristicMessage = (HeuristicMessage) iterator.next();
+		out.write(data);
+		out.writeUTF(this.tid);
+		out.writeUTF(this.root);
+		out.writeUTF(this.state.toString());
+		out.writeUTF(this.resourcename);
+		out.writeInt(this.heuristicMessages.size());
+		for (HeuristicMessage heuristicMessage2 : this.heuristicMessages) {
+			HeuristicMessage heuristicMessage = heuristicMessage2;
 			out.writeUTF(heuristicMessage.toString());
 		}
-		
-		if (xaresource_ instanceof Serializable) {
+
+		if (this.xaresource instanceof Serializable) {
 			// cf case 59238
 			out.writeBoolean(true);
-			byte[] bytes = SerializationUtils.serialize((Serializable) xaresource_);
+			byte[] bytes = SerializationUtils
+					.serialize((Serializable) this.xaresource);
 			out.writeInt(bytes.length);
 			out.write(bytes);
 		} else {
@@ -974,34 +1007,35 @@ public class XAResourceTransaction implements ResourceTransaction,
 
 	}
 
+	@Override
 	public void readData(DataInput in) throws IOException {
 		// xid_ ???
 
-		//String branchQualifier = in.readUTF();
+		// String branchQualifier = in.readUTF();
 		int len = in.readInt();
-		byte[] data= new byte[len];
+		byte[] data = new byte[len];
 		in.readFully(data);
-		xid_= SerializationUtils.deserialize(data);
-		
-		tid_ = in.readUTF();
-		setXid(xid_);
+		this.xid = SerializationUtils.deserialize(data);
 
-		root_ = in.readUTF();
-		state_ = TxState.valueOf(in.readUTF());
-		resourcename_ = in.readUTF();
+		this.tid = in.readUTF();
+		setXid(this.xid);
+
+		this.root = in.readUTF();
+		this.state = TxState.valueOf(in.readUTF());
+		this.resourcename = in.readUTF();
 		int nbMessages = in.readInt();
-		heuristicMessages_ = new Vector<HeuristicMessage>(nbMessages);
+		this.heuristicMessages = new Vector<HeuristicMessage>(nbMessages);
 		for (int i = 0; i < nbMessages; i++) {
-			heuristicMessages_.add(new StringHeuristicMessage(in.readUTF()));
+			this.heuristicMessages
+					.add(new StringHeuristicMessage(in.readUTF()));
 		}
-		
 
 		boolean xaresourceSerializable = in.readBoolean();
 		if (xaresourceSerializable) {
 			int size = in.readInt();
 			byte[] bytes = new byte[size];
 			in.readFully(bytes);
-			xaresource_ = SerializationUtils.deserialize(bytes);
+			this.xaresource = SerializationUtils.deserialize(bytes);
 		}
 	}
 
