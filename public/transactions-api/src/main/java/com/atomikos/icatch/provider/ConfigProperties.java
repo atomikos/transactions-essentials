@@ -4,7 +4,7 @@ import java.net.UnknownHostException;
 import java.util.Enumeration;
 import java.util.Properties;
 
-public class ConfigProperties {
+public final class ConfigProperties {
 
 
 	public static final String TM_UNIQUE_NAME_PROPERTY_NAME = "com.atomikos.icatch.tm_unique_name";
