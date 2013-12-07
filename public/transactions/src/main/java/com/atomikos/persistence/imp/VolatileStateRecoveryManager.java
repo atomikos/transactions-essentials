@@ -38,6 +38,7 @@ import com.atomikos.persistence.LogException;
 import com.atomikos.persistence.ObjectImage;
 import com.atomikos.persistence.StateRecoverable;
 import com.atomikos.persistence.StateRecoveryManager;
+import com.atomikos.util.Assert;
 
 /**
  * A volatile recovery manager (one that doesn't support persistent logging and
@@ -64,8 +65,7 @@ public class VolatileStateRecoveryManager implements StateRecoveryManager,
 
     public void register ( StateRecoverable<TxState> staterecoverable )
     {
-        if ( staterecoverable == null )
-            throw new IllegalArgumentException ( "null in register arg" );
+    	Assert.notNull("illegal attempt to register null staterecoverable", staterecoverable);		
         TxState[] states = staterecoverable.getRecoverableStates ();
         if ( states != null ) {
             for ( int i = 0; i < states.length; i++ ) {

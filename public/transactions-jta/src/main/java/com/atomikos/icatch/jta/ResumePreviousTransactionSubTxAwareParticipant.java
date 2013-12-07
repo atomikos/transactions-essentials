@@ -31,6 +31,7 @@ import com.atomikos.icatch.SubTxAwareParticipant;
 import com.atomikos.icatch.config.Configuration;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
+import com.atomikos.util.Assert;
 
 /**
  * A subtx aware participant that resumes a previous 
@@ -48,8 +49,7 @@ public class ResumePreviousTransactionSubTxAwareParticipant implements
     public ResumePreviousTransactionSubTxAwareParticipant (
             CompositeTransaction previous )
     {
-        if ( previous == null ) 
-            throw new IllegalArgumentException ( "Previous transaction is null?" );
+        Assert.notNull( "Previous transaction is null?", previous );
         this.previous = previous;
     }
     
