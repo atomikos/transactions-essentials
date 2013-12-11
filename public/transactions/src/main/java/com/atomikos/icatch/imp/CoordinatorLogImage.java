@@ -243,6 +243,7 @@ public class CoordinatorLogImage implements ObjectImage,DataSerializable
 			// FIXME: Work with Guy for a better understanding on what to do here :
 			// Does all Impl of RecoveryCoordinator must implement DataSerializable ??? 
 			// out.writeObject ( coordinator_ );
+			((DataSerializable)coordinator_).writeData(out);
 		}
 		if (participants_ != null) {
 			out.writeBoolean(true);
