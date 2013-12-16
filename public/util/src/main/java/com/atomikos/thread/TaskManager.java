@@ -25,112 +25,97 @@
 
 package com.atomikos.thread;
 
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
-import com.atomikos.util.ClassLoadingHelper;
 
 /**
- * This singleton manages system executors for several components.
- * This class will check the runtime classes
- * for the 1.5 java.util.concurrent package, if failing that it will look for the 1.4 backport, and
- * failing that revert to a "two threads per transaction" strategy.
  * 
- * @author Lars J. Nilsson
  */
 
-public class TaskManager 
-{
+public class TaskManager {
 	private static final Logger LOGGER = LoggerFactory.createLogger(TaskManager.class);
 
 	private static TaskManager singleton;
-	
-	private InternalSystemExecutor executor;
-	
 
-	
+	private ThreadPoolExecutor executor;
+
 	/**
-	 * Gets the singleton instance. 
+	 * Gets the singleton instance.
 	 * 
 	 * @return
 	 */
-	public static synchronized final TaskManager getInstance() 
-	{
-		if ( singleton == null ) {
-			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "TaskManager: initializing..." );
+	public static synchronized final TaskManager getInstance() {
+		if (singleton == null) {
+			if (LOGGER.isDebugEnabled())
+				LOGGER.logDebug("TaskManager: initializing...");
 			singleton = new TaskManager();
 		}
 		return singleton;
 	}
 
-	protected TaskManager ()
-	{		
-			init();
+	protected TaskManager() {
+		init();
 	}
 
-	private void init() 
-	{
-		ExecutorFactory creator;
-		try {
-			if ( isClassAvailable ( Java15ExecutorFactory.MAIN_CLASS ) ) {
-				if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( "THREADS: using JDK thread pooling..." );
-				creator = new Java15ExecutorFactory();
-			}
-			else if ( isClassAvailable ( Java14BackportExecutorFactory.MAIN_CLASS ) ) {
-				if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( "THREADS: using 1.4 (backport) thread pooling..." );
-				creator = new Java14BackportExecutorFactory();
-			}
-			else {
-				LOGGER.logWarning ( "THREADS: pooling NOT enabled!" );
-				creator = new TrivialExecutorFactory();
-			}
-		} catch(Exception e) {
-			LOGGER.logWarning ( "THREADS: Illegal setup, thread pooling is NOT enabled!", e);
-			creator = new TrivialExecutorFactory();
-		}
-		
-		try {
-			executor = creator.createExecutor();
-		} catch (Exception e) {
-			LOGGER.logWarning("Failed to create system executor; Received message: " + e.getMessage() + "; Failling back to a trivial executor.", e);
-			executor = new TrivialSystemExecutor();
-		}
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "THREADS: using executor " + executor.getClass());
+	private void init() {
+		SynchronousQueue<Runnable> synchronousQueue = new SynchronousQueue<Runnable>();
+		executor = new ThreadPoolExecutor(0, Integer.MAX_VALUE, new Long(60L),
+				TimeUnit.SECONDS, synchronousQueue, new AtomikosThreadFactory());
+
 	}
-	
+
 	/**
 	 * Notification of shutdown to close all pooled threads.
-	 *
+	 * 
 	 */
-	public synchronized void shutdown()
-	{
+	public synchronized void shutdown() {
 		if (executor != null) {
 			executor.shutdown();
 			executor = null;
 		}
 	}
-	
+
 	/**
 	 * Schedules a task for execution by a thread.
 	 * 
 	 * @param task
 	 */
-	public void executeTask ( Runnable task ) 
-	{
-		if ( executor == null ) {
-			//happens on restart of TS within same VM
+	public void executeTask(Runnable task) {
+		if (executor == null) {
+			// happens on restart of TS within same VM
 			init();
 		}
-		executor.execute ( task );
+		executor.execute(task);
 	}
-	
-	private boolean isClassAvailable(String clazz)
-	{
-		try {
-			ClassLoadingHelper.loadClass(clazz);
-			return true;
-		} catch (ClassNotFoundException e) {
-			return false;
+
+	private static class AtomikosThreadFactory implements
+			java.util.concurrent.ThreadFactory {
+
+		private volatile AtomicInteger count = new AtomicInteger(0);
+		private final ThreadGroup group;
+
+		private AtomikosThreadFactory() {
+			SecurityManager sm = System.getSecurityManager();
+			group = (sm != null ? sm.getThreadGroup() : Thread.currentThread()
+					.getThreadGroup());
 		}
+
+		@Override
+		public Thread newThread(Runnable r) {
+			String realName = "Atomikos:" + count.incrementAndGet();
+			if (LOGGER.isDebugEnabled())
+				LOGGER.logDebug("ThreadFactory: creating new thread: "+ realName);
+			Thread thread = new Thread(group, r, realName);
+			thread.setContextClassLoader(Thread.currentThread().getContextClassLoader());
+			thread.setDaemon(true);
+			return thread;
+		}
+
 	}
 
 }
