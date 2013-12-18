@@ -43,27 +43,27 @@ import java.util.Set;
  *
  * @author lorban
  */
-public class PropertyUtils
+public class PropertyUtils 
 {
-
+	
 	/**
-	 * Gets all implemented interfaces of a class.
+	 * Gets all implemented interfaces of a class. 
 	 */
-
-	public static Set<Class> getAllImplementedInterfaces ( Class clazz )
+	
+	public static Set getAllImplementedInterfaces ( Class clazz ) 
 	{
-		Set<Class> ret = null;
-
+		Set ret = null;
+		
 		if ( clazz.getSuperclass() != null ) {
 			//if superclass exists: first add the superclass interfaces!!!
-			ret = getAllImplementedInterfaces ( clazz.getSuperclass() );
+			ret = getAllImplementedInterfaces ( clazz.getSuperclass() ); 
 		}
 		else {
 			//no superclass: start with empty set
-			ret = new HashSet<Class>();
-		}
-
-
+			ret = new HashSet();
+		} 
+		
+		
 		//add the interfaces in this class
 		Class[] interfaces = clazz.getInterfaces();
 		ret.addAll(Arrays.asList(interfaces));
@@ -80,7 +80,7 @@ public class PropertyUtils
      * @param propertyValue the value of the property to set.
      * @throws PropertyException if an error happened while trying to set the property.
      */
-    public static void setProperty ( Object target, String propertyName, Object propertyValue ) throws PropertyException
+    public static void setProperty ( Object target, String propertyName, Object propertyValue ) throws PropertyException 
     {
         String[] propertyNames = propertyName.split("\\.");
         Object currentTarget = target;
@@ -118,7 +118,7 @@ public class PropertyUtils
      * @return a Map of String with properties names as key and their values
      * @throws PropertyException if an error happened while trying to get a property.
      */
-    public static Map getProperties ( Object target ) throws PropertyException
+    public static Map getProperties ( Object target ) throws PropertyException 
     {
         Map properties = new HashMap();
         Class clazz = target.getClass();
@@ -155,7 +155,7 @@ public class PropertyUtils
      * @return the value of the specified property.
      * @throws PropertyException if an error happened while trying to get the property.
      */
-    public static Object getProperty ( Object target, String propertyName ) throws PropertyException
+    public static Object getProperty ( Object target, String propertyName ) throws PropertyException 
     {
         String[] propertyNames = propertyName.split("\\.");
         Object currentTarget = target;
@@ -176,7 +176,7 @@ public class PropertyUtils
      * @param properties a map of String/Object pairs.
      * @throws PropertyException if an error happened while trying to set a property.
      */
-    public static void setProperties ( Object target, Map properties ) throws PropertyException
+    public static void setProperties ( Object target, Map properties ) throws PropertyException 
     {
         Iterator it = properties.entrySet().iterator();
         while (it.hasNext()) {
@@ -195,7 +195,7 @@ public class PropertyUtils
      * @param propertyValue the value of the property to set.
      * @throws PropertyException if an error happened while trying to set the property.
      */
-    private static void setDirectProperty ( Object target, String propertyName, Object propertyValue ) throws PropertyException
+    private static void setDirectProperty ( Object target, String propertyName, Object propertyValue ) throws PropertyException 
     {
         Method setter = getSetter(target, propertyName);
         Class parameterType = setter.getParameterTypes()[0];
@@ -214,7 +214,7 @@ public class PropertyUtils
         }
     }
 
-    private static Map getNestedProperties(String prefix, Properties properties)
+    private static Map getNestedProperties(String prefix, Properties properties) 
     {
         Map result = new HashMap();
         Iterator it = properties.entrySet().iterator();
@@ -227,7 +227,7 @@ public class PropertyUtils
         return result;
     }
 
-    private static Object convert ( Object value, Class destinationClass )
+    private static Object convert ( Object value, Class destinationClass ) 
     throws PropertyException
     {
         if (value.getClass() == destinationClass)
@@ -243,15 +243,11 @@ public class PropertyUtils
         if ((destinationClass == boolean.class || destinationClass == Boolean.class)  &&  value.getClass() == String.class) {
             return Boolean.valueOf((String) value);
         }
-        
-        if ((destinationClass == short.class || destinationClass == Short.class) && value.getClass() == String.class) {
-            return new Short((String) value);
-        }
 
         throw new PropertyException("cannot convert values of type '" + value.getClass().getName() + "' into type '" + destinationClass + "'");
     }
 
-    private static void callSetter ( Object target, String propertyName, Object parameter) throws PropertyException
+    private static void callSetter ( Object target, String propertyName, Object parameter) throws PropertyException 
     {
         Method setter = getSetter(target, propertyName);
         try {
@@ -263,7 +259,7 @@ public class PropertyUtils
         }
     }
 
-    private static Object callGetter ( Object target, String propertyName ) throws PropertyException
+    private static Object callGetter ( Object target, String propertyName ) throws PropertyException 
     {
         Method getter = getGetter(target, propertyName);
         try {
@@ -275,7 +271,7 @@ public class PropertyUtils
         }
     }
 
-    private static Method getSetter ( Object target, String propertyName ) throws PropertyException
+    private static Method getSetter ( Object target, String propertyName ) throws PropertyException 
     {
         if (propertyName == null || "".equals(propertyName))
             throw new PropertyException("encountered invalid null or empty property name");
@@ -290,7 +286,7 @@ public class PropertyUtils
         throw new PropertyException("no writeable property '" + propertyName + "' in class '" + target.getClass().getName() + "'");
     }
 
-    private static Method getGetter ( Object target, String propertyName ) throws PropertyException
+    private static Method getGetter ( Object target, String propertyName ) throws PropertyException 
     {
         String getterName = "get" + propertyName.substring(0, 1).toUpperCase() + propertyName.substring(1);
         Method[] methods = target.getClass().getMethods();
@@ -303,7 +299,7 @@ public class PropertyUtils
         throw new PropertyException("no readable property '" + propertyName + "' in class '" + target.getClass().getName() + "'");
     }
 
-    private static boolean containsSetterForGetter ( Class clazz, Method getterMethod ) throws PropertyException
+    private static boolean containsSetterForGetter ( Class clazz, Method getterMethod ) throws PropertyException 
     {
         String getterMethodName = getterMethod.getName();
         String setterMethodName;
@@ -324,7 +320,7 @@ public class PropertyUtils
         return false;
     }
 
-    private static Class getPropertyType ( Object target, String propertyName ) throws PropertyException
+    private static Class getPropertyType ( Object target, String propertyName ) throws PropertyException 
     {
         String getterName = "get" + propertyName.substring(0, 1).toUpperCase() + propertyName.substring(1);
         Method[] methods = target.getClass().getMethods();
