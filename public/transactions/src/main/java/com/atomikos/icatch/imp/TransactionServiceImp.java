@@ -696,7 +696,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
             cc.setRecoverableWhileActive();
         }
         ret = createCT ( tid, cc, lineage, parent.isSerial () );
-        ret.noLocalAncestors_ = false;
+        ret.noLocalAncestors = false;
         return ret;
 
     }

@@ -57,15 +57,15 @@ extends AbstractCompositeTransaction implements
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(CompositeTransactionImp.class);
 
-    protected CoordinatorImp coordinator_ = null;
+    protected CoordinatorImp coordinator = null;
 
-    protected TransactionServiceImp txservice_;
+    protected TransactionServiceImp txservice;
 
-    protected Extent extent_ = null;
+    protected Extent extent = null;
 
-    protected boolean noLocalAncestors_;
+    protected boolean noLocalAncestors;
 
-    private TransactionStateHandler stateHandler_;
+    private TransactionStateHandler stateHandler;
 
     /**
      * This constructor is kept for compatibility with the test classes.
@@ -100,44 +100,44 @@ extends AbstractCompositeTransaction implements
     {
 
         super ( tid , lineage , serial );
-        coordinator_ = coordinator;
-        txservice_ = txservice;
-        extent_ = null;
-        noLocalAncestors_ = true;
-        stateHandler_ = new TxActiveStateHandler ( this );
+        this.coordinator = coordinator;
+        this.txservice = txservice;
+        this.extent = null;
+        this.noLocalAncestors = true;
+        this.stateHandler = new TxActiveStateHandler ( this );
         coordinator.addFSMEnterListener ( this, TxState.TERMINATED );
 
     }
 
     synchronized void localSetTransactionStateHandler ( TransactionStateHandler handler )
     {
-        stateHandler_ = handler;
+        stateHandler = handler;
     }
 
     synchronized void localTestAndSetTransactionStateHandler ( TransactionStateHandler expected , TransactionStateHandler newHandler )
     {
-    	if ( stateHandler_ != expected ) throw new IllegalStateException ( "State is no longer " + expected.getState() + " but " + newHandler.getState()  );
+    	if ( stateHandler != expected ) throw new IllegalStateException ( "State is no longer " + expected.getState() + " but " + newHandler.getState()  );
     	localSetTransactionStateHandler( newHandler );
     }
 
     synchronized TransactionStateHandler localGetTransactionStateHandler()
     {
-    	return stateHandler_;
+    	return stateHandler;
     }
 
     boolean isLocalRoot ()
     {
-        return noLocalAncestors_;
+        return noLocalAncestors;
     }
 
     TransactionServiceImp getTransactionService ()
     {
-        return txservice_;
+        return txservice;
     }
 
     CoordinatorImp getCoordinatorImp ()
     {
-        return coordinator_;
+        return coordinator;
     }
 
 
@@ -247,7 +247,7 @@ extends AbstractCompositeTransaction implements
 
     public CompositeCoordinator getCompositeCoordinator () throws SysException
     {
-        return coordinator_;
+        return coordinator;
     }
 
     /**
@@ -265,7 +265,7 @@ extends AbstractCompositeTransaction implements
 
     public CompositeTerminator getTerminator ()
     {
-        return new CompositeTerminatorImp ( txservice_, this, coordinator_ );
+        return new CompositeTerminatorImp ( txservice, this, coordinator );
     }
 
     /**
@@ -296,7 +296,7 @@ extends AbstractCompositeTransaction implements
 
     public long getTimeout ()
     {
-        return coordinator_.getTimeOut ();
+        return coordinator.getTimeOut ();
     }
 
     /**
@@ -305,9 +305,9 @@ extends AbstractCompositeTransaction implements
 
     public synchronized Extent getExtent ()
     {
-    		if ( extent_ == null )
-            extent_ = new ExtentImp ();
-    		return extent_;
+    		if ( extent == null )
+            extent = new ExtentImp ();
+    		return extent;
     }
 
 
@@ -364,9 +364,9 @@ extends AbstractCompositeTransaction implements
         	// our coordinator terminated and we did not -> coordinator must have seen a timeout/abort 
             try {
             	boolean recoverableWhileActive = false;
-            	Boolean pref = coordinator_.isRecoverableWhileActive();
+            	Boolean pref = coordinator.isRecoverableWhileActive();
             	if ( pref != null ) recoverableWhileActive = pref.booleanValue();
-            	if ( !recoverableWhileActive && !( stateHandler_ instanceof TxTerminatedStateHandler ) ) {
+            	if ( !recoverableWhileActive && !( stateHandler instanceof TxTerminatedStateHandler ) ) {
             		// note: check for TxTerminatedStateHandler differentiates regular rollback from timeout/rollback !!!           		          		
             		setRollbackOnly(); // see case 27857: keep tx context for thread on timeout
             	} else  {
