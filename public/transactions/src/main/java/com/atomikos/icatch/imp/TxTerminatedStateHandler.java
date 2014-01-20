@@ -103,13 +103,13 @@ class TxTerminatedStateHandler extends TransactionStateHandler
     protected void rollbackWithStateCheck () throws java.lang.IllegalStateException, SysException
 
     {
-        throw new IllegalStateException ( "Transaction no longer active" );
+        if (commit_) throw new IllegalStateException ( "Transaction no longer active" );
     }
 
     protected void commit () throws SysException,
             java.lang.IllegalStateException, RollbackException
     {
-        throw new IllegalStateException ( "Transaction no longer active" );
+        if (!commit_) throw new IllegalStateException ( "Transaction no longer active" );
     }
 
     protected TxState getState()
