@@ -44,13 +44,13 @@ class TxTerminatedStateHandler extends TransactionStateHandler
 {
 	private static Logger LOGGER = LoggerFactory.createLogger(TxTerminatedStateHandler.class);
 
-    private boolean commit_;
+    private boolean transactionCommitted;
 
     protected TxTerminatedStateHandler ( CompositeTransactionImp ct ,
-            TransactionStateHandler handler , boolean commit )
+            TransactionStateHandler handler , boolean transactionCommitted )
     {
         super ( ct , handler );
-        commit_ = commit;
+        this.transactionCommitted = transactionCommitted;
     }
 
     protected CompositeTransaction createSubTransaction () throws SysException,
@@ -63,7 +63,7 @@ class TxTerminatedStateHandler extends TransactionStateHandler
             throws SysException, java.lang.IllegalStateException
     {
 
-        if ( !commit_ ) {
+        if ( !transactionCommitted ) {
         	// can happen after resuming a timedout transaction;
             // accept the participant, but call rollback immediately
         	// cf JBoss
@@ -91,7 +91,7 @@ class TxTerminatedStateHandler extends TransactionStateHandler
             throws SysException, java.lang.IllegalStateException
     {
 
-        if ( commit_ )
+        if ( transactionCommitted )
             throw new IllegalStateException ( "Transaction no longer active" );
         else {
             // accept the participant, but call rollback immediately
@@ -103,18 +103,18 @@ class TxTerminatedStateHandler extends TransactionStateHandler
     protected void rollbackWithStateCheck () throws java.lang.IllegalStateException, SysException
 
     {
-        if (commit_) throw new IllegalStateException ( "Transaction no longer active" );
+        if (transactionCommitted) throw new IllegalStateException ( "Transaction no longer active" );
     }
 
     protected void commit () throws SysException,
             java.lang.IllegalStateException, RollbackException
     {
-        if (!commit_) throw new IllegalStateException ( "Transaction no longer active" );
+        if (!transactionCommitted) throw new IllegalStateException ( "Transaction no longer active" );
     }
 
     protected TxState getState()
     {
-        if ( commit_ ) return getCT().getCoordinatorImp().getStateWithTwoPhaseCommitDecision();
+        if ( transactionCommitted ) return getCT().getCoordinatorImp().getStateWithTwoPhaseCommitDecision();
         else {
         	// Because we have no rolled back state, we return marked abort.
             // This should be indistinguishable for the client: a later rollback
