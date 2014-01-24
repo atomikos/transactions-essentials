@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2014 Atomikos <info@atomikos.com>
  *
  * This code ("Atomikos TransactionsEssentials"), by itself,
  * is being distributed under the
@@ -34,7 +34,7 @@ import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 
 /**
- * 
+ * Scheduling logic for tasks/threads.
  */
 
 public class TaskManager {
