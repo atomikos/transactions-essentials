@@ -47,6 +47,7 @@ import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
 
+import com.atomikos.icatch.provider.ConfigProperties;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 
@@ -88,7 +89,6 @@ public final class RemoteClientUserTransaction implements UserTransaction,
     private int timeout;
 
     private String userTransactionServerLookupName;
-    // the RMI name to lookup the remote server.
 
     private String initialContextFactory;
 
@@ -114,6 +114,15 @@ public final class RemoteClientUserTransaction implements UserTransaction,
 
     /**
      * Preferred constructor.
+     * 
+     * @param userTransactionServerLookupName
+     * @param configProperties
+     */
+    public RemoteClientUserTransaction(String userTransactionServerLookupName, ConfigProperties configProperties) {
+    	this(userTransactionServerLookupName, configProperties.getProperty("java.naming.factory.initial"), configProperties.getProperty("java.naming.provider.url"));
+    }
+    
+    /**
      * 
      * @param name
      *            The unique name of the UserTransactionServer.
