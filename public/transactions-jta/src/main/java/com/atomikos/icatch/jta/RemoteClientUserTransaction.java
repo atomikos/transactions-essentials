@@ -87,7 +87,7 @@ public final class RemoteClientUserTransaction implements UserTransaction,
 
     private int timeout;
 
-    private String name;
+    private String userTransactionServerLookupName;
     // the RMI name to lookup the remote server.
 
     private String initialContextFactory;
@@ -130,7 +130,7 @@ public final class RemoteClientUserTransaction implements UserTransaction,
         this.initialContextFactory = initialContextFactory;
         this.providerUrl = providerUrl;
 
-        this.name = name;
+        this.userTransactionServerLookupName = name;
         this.threadToTidMap = new Hashtable ();
         this.timeout = DEFAULT_TIMEOUT;
         this.imported = false;
@@ -139,7 +139,7 @@ public final class RemoteClientUserTransaction implements UserTransaction,
     private String getNotFoundMessage ()
     {
         String errorMsg = "Name not found: "
-                + this.name
+                + this.userTransactionServerLookupName
                 + "\n"
                 + "Please check that: \n"
                 + "	-server property com.atomikos.icatch.client_demarcation is set to true \n"
@@ -176,7 +176,7 @@ public final class RemoteClientUserTransaction implements UserTransaction,
                 env.put ( Context.PROVIDER_URL, this.providerUrl );
                 Context ctx = new InitialContext ( env );
                 this.txmgrServer = (UserTransactionServer) PortableRemoteObject
-                        .narrow ( ctx.lookup ( this.name ),
+                        .narrow ( ctx.lookup ( this.userTransactionServerLookupName ),
                                 UserTransactionServer.class );
 
             } catch ( Exception e ) {
@@ -403,7 +403,7 @@ public final class RemoteClientUserTransaction implements UserTransaction,
     @Override
 	public Reference getReference () throws NamingException
     {
-        RefAddr nameRef = new StringRefAddr ( "ServerName", this.name );
+        RefAddr nameRef = new StringRefAddr ( "ServerName", this.userTransactionServerLookupName );
         RefAddr urlRef = new StringRefAddr ( "ProviderUrl", this.providerUrl );
         RefAddr factRef = new StringRefAddr ( "ContextFactory",
                 this.initialContextFactory );
@@ -426,21 +426,17 @@ public final class RemoteClientUserTransaction implements UserTransaction,
     //
 
     /**
+     * Needed to ship instances across the network among clients.
+     * 
      * @see Externalizable
      */
 
     @Override
 	public void writeExternal ( ObjectOutput out ) throws IOException
     {
-        // Implement two-fold behaviour:
-        // if thread not currently associated with a tx
-        // then write null;
-        // else write the current TID in order
-        // to ship context among remote clients.
-
         String tid = getThreadMapping ();
-        out.writeObject ( tid );
-        out.writeObject ( this.name );
+        out.writeObject ( tid ); // null if no current transaction for thread
+        out.writeObject ( this.userTransactionServerLookupName );
         out.writeObject ( this.initialContextFactory );
         out.writeObject ( this.providerUrl );
         out.writeInt ( this.timeout );
@@ -454,18 +450,12 @@ public final class RemoteClientUserTransaction implements UserTransaction,
 	public void readExternal ( ObjectInput in ) throws IOException,
             ClassNotFoundException
     {
-        // Try if a tid is there;
-        // if yes then this means that the streaming out
-        // was done for a transaction context;
-        // hence restore that context
         String tid = (String) in.readObject ();
-        if ( tid != null ) {
+        if ( tid != null ) { // null if this instance was passed along outside a transaction
             setThreadMapping ( tid );
             this.imported = true;
-            // this will mark the instance to not
-            // allow commit/rollback
         }
-        this.name = (String) in.readObject ();
+        this.userTransactionServerLookupName = (String) in.readObject ();
         this.initialContextFactory = (String) in.readObject ();
         this.providerUrl = (String) in.readObject ();
         this.timeout = in.readInt ();
