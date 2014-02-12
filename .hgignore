@@ -49,3 +49,8 @@ syntax: regexp
 ^private/transactions-writeahead/src/test/java/com/atomikos/persistence/imp/LogTest\.java$
 syntax: regexp
 ^private/transactions-writeahead/src/test/java/com/atomikos/persistence/imp/TestXAResource\.java$
+
+syntax: regexp
+^specs/examples/examples-jta-spring-jmx/activemq-data$
+syntax: regexp
+^specs/examples/examples-jta-spring-jmx/db$
