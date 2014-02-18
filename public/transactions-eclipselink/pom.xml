@@ -3,7 +3,7 @@
 	<parent>
 		<artifactId>ate</artifactId>
 		<groupId>com.atomikos</groupId>
-		<version>3.9.3</version>
+		<version>3.9.4-SNAPSHOT</version>
 	</parent>
 	<artifactId>transactions-eclipselink</artifactId>
 	<dependencies>
@@ -22,7 +22,7 @@
 		<dependency>
 			<groupId>com.atomikos</groupId>
 			<artifactId>transactions-jta</artifactId>
-			<version>3.9.3</version>
+			<version>3.9.4-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 	<repositories>
