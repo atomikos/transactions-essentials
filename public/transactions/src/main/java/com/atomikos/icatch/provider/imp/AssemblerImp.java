@@ -120,7 +120,7 @@ public class AssemblerImp implements Assembler {
 		} else {
 			recMgr = new VolatileStateRecoveryManager();
 		}
-		UniqueIdMgr idMgr = new UniqueIdMgr ( tmUniqueName, logBaseDir );
+		UniqueIdMgr idMgr = new UniqueIdMgr ( tmUniqueName );
 		if ( idMgr.getMaxIdLengthInBytes() > MAX_TID_LENGTH ) {
 			// see case 73086
 			String msg = "Value too long :" + tmUniqueName;

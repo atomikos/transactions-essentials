@@ -11,15 +11,9 @@ public class UniqueIdMgrTestJUnit extends TestCase {
 		idmgr = new UniqueIdMgr ( "./testserver" );
 	}
 	
-	public void testNoDuplicatesAcrossEpochs()
-	{
-		idmgr.epoch_ = 1;
-		idmgr.lastcounter_ = 10;
-		String id = idmgr.get();
-		idmgr.epoch_ = 11;
-		idmgr.lastcounter_ = 0;
-		if ( id.equals ( idmgr.get() ) ) 
-			fail ( "Duplicate id");
+	
+	public void testGetReturnsUniqueId() {
+		assertFalse(idmgr.get().equals(idmgr.get()));
 	}
 
 }
