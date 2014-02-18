@@ -231,8 +231,7 @@ public class XAResourceTransaction implements ResourceTransaction,
 			if (this.state.equals(TxState.HEUR_HAZARD))
 				forceRefreshXAConnection();
 			else if (this.xaresource != null) { // null if connection failure
-				this.xaresource.isSameRM(this.xaresource); // test xa connection
-															// for liveness
+				assertConnectionIsStillAlive(); 
 			}
 		} catch (XAException xa) {
 			// timed out?
@@ -248,6 +247,10 @@ public class XAResourceTransaction implements ResourceTransaction,
 			}
 		}
 
+	}
+
+	private void assertConnectionIsStillAlive() throws XAException {
+		this.xaresource.isSameRM(this.xaresource);
 	}
 
 	protected void forceRefreshXAConnection() throws XAException {
