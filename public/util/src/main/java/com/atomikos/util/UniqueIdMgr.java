@@ -39,15 +39,13 @@ public class UniqueIdMgr
 {
 
 
-	private final static int MAX_LENGTH_OF_NUMERIC_SUFFIX = 16;
+	private final static int MAX_LENGTH_OF_NUMERIC_SUFFIX = 8 + 5;
+	private final static int MAX_COUNTER_WITHIN_SAME_MILLIS = 32000;
 
 
     String server_; //name of server
-    long lastcounter_;
-   
-    private String prefix_, suffix_;
-    //prefix and suffix to add to each generated id
-
+    int lastcounter_;
+  
 
     /**
      *Generate a new instance for a given server.
@@ -63,10 +61,10 @@ public class UniqueIdMgr
  
 
     //FIX FOR BUG 10104
-    private String getCountWithLeadingZeroes ( long number )
+    private String getCountWithLeadingZeroes (int number)
     {
     		String ret = Long.toString ( number );
-    		int max = Long.toString ( Long.MAX_VALUE ).length();
+    		int max = Long.toString(MAX_COUNTER_WITHIN_SAME_MILLIS).length();
     		int len = ret.length();
     		StringBuffer zeroes = new StringBuffer();
     		while ( len < max ) {
@@ -86,12 +84,13 @@ public class UniqueIdMgr
     public synchronized String get()
     {
         lastcounter_++;
-        return getCommonPartOfId() + getCountWithLeadingZeroes(System.currentTimeMillis()) + getCountWithLeadingZeroes ( lastcounter_ ) ;
+        if (lastcounter_ == MAX_COUNTER_WITHIN_SAME_MILLIS) lastcounter_ = 0;
+        return getCommonPartOfId() + System.currentTimeMillis() + getCountWithLeadingZeroes ( lastcounter_ ) ;
     }
 
     private String getCommonPartOfId() {
     	StringBuffer ret = new StringBuffer(64);
-		ret.append(prefix_).append(server_).append(suffix_);
+		ret.append(server_);
 		return ret.toString();
     }
 
