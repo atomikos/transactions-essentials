@@ -110,4 +110,30 @@ public class Log4JLoggerFactoryTestJUnit extends AbstractLoggerFactoryTest {
 		return org.apache.log4j.Logger.getLogger(getClass());
 	}
 
+  @Override
+  protected void assertLoggedAsError() {
+    ArgumentCaptor<LoggingEvent> arg = ArgumentCaptor.forClass(LoggingEvent.class);
+    Mockito.verify(mockedAppender).doAppend(arg.capture());
+    LoggingEvent loggingEvent = arg.getValue();
+    assertLoggingEvent(loggingEvent,Level.ERROR,false);
+  }
+
+  @Override
+  protected void assertLoggedAsErrorWithException() {
+    ArgumentCaptor<LoggingEvent> arg = ArgumentCaptor.forClass(LoggingEvent.class);
+    Mockito.verify(mockedAppender).doAppend(arg.capture());
+    LoggingEvent loggingEvent = arg.getValue();
+    assertLoggingEvent(loggingEvent,Level.ERROR,true);
+  }
+
+  @Override
+  protected void configureLoggingFrameworkWithNone() {
+    getUnderlyingLogger().setLevel(Level.OFF);
+  }
+
+  @Override
+  protected void configureLoggingFrameworkWithError() {
+    getUnderlyingLogger().setLevel(Level.ERROR);    
+  }
+
 }

@@ -41,5 +41,19 @@ class Slf4jLogger implements Logger {
 	public boolean isInfoEnabled() {
 		return slf4j.isInfoEnabled();
 	}
+  
+  public void logError(String message) {
+    slf4j.error(message);
+  }
+
+  
+  public void logError(String message, Throwable error) {
+    slf4j.error(message, error);
+  }
+
+  
+  public boolean isErrorEnabled() {
+    return slf4j.isErrorEnabled();
+  }
 
 }

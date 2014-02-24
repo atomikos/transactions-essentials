@@ -106,4 +106,30 @@ public class JULLoggerFactoryTestJUnit extends AbstractLoggerFactoryTest {
 		return java.util.logging.Logger.getLogger(getClass().getName());
 	}
 
+  @Override
+  protected void assertLoggedAsError() {
+    ArgumentCaptor<LogRecord> arg = ArgumentCaptor.forClass(LogRecord.class);
+    Mockito.verify(handler).publish(arg.capture());
+    LogRecord logRecord = arg.getValue();
+    assertLogRecord(logRecord,Level.SEVERE,false);
+  }
+
+  @Override
+  protected void assertLoggedAsErrorWithException() {
+    ArgumentCaptor<LogRecord> arg = ArgumentCaptor.forClass(LogRecord.class);
+    Mockito.verify(handler).publish(arg.capture());
+    LogRecord logRecord = arg.getValue();
+    assertLogRecord(logRecord,Level.SEVERE,true);
+  }
+
+  @Override
+  protected void configureLoggingFrameworkWithError() {
+    getUnderlyingLogger().setLevel(Level.SEVERE);    
+  }
+
+  @Override
+  protected void configureLoggingFrameworkWithNone() {
+    getUnderlyingLogger().setLevel(Level.OFF);
+  }
+
 }

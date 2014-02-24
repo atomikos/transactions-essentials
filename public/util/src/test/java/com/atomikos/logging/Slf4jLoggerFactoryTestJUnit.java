@@ -52,6 +52,26 @@ public class Slf4jLoggerFactoryTestJUnit extends AbstractLoggerFactoryTest {
 	protected void configureLoggingFrameworkWithInfo() {
 		Mockito.when(StaticLoggerBinder.mockito.isInfoEnabled()).thenReturn(true);
 	}
+
+  @Override
+  protected void assertLoggedAsError() {
+    Mockito.verify(StaticLoggerBinder.mockito).error(MESSAGE);
+  }
+
+  @Override
+  protected void assertLoggedAsErrorWithException() {
+    Mockito.verify(StaticLoggerBinder.mockito).error(MESSAGE,ERROR);
+  }
+
+  @Override
+  protected void configureLoggingFrameworkWithNone() {
+    Mockito.when(StaticLoggerBinder.mockito.isErrorEnabled()).thenReturn(false);
+  }
+
+  @Override
+  protected void configureLoggingFrameworkWithError() {
+    Mockito.when(StaticLoggerBinder.mockito.isErrorEnabled()).thenReturn(true);
+  }
 	
 
 }

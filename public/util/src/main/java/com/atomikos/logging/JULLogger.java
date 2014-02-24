@@ -45,5 +45,17 @@ class JULLogger implements Logger {
 	public boolean isInfoEnabled() {
 		return julLogger.isLoggable(Level.INFO);
 	}
+  
+  public void logError(String message) {
+    julLogger.log(Level.SEVERE, message);
+  }
+  
+  public void logError(String message, Throwable error) {
+    julLogger.log(Level.SEVERE, message, error);
+  }
+  
+  public boolean isErrorEnabled() {
+    return julLogger.isLoggable(Level.SEVERE);
+  }
 
 }
