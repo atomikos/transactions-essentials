@@ -52,3 +52,7 @@ syntax: regexp
 
 syntax: regexp
 ^specs/examples/examples-tcc-rest/inventory\.xml$
+syntax: regexp
+^specs/examples/osgi/transactions-essentials/osgi-web-demo/db$
+syntax: regexp
+^specs/examples/osgi/transactions-essentials/osgi-example-integration-tests/db$

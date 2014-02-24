@@ -109,7 +109,6 @@ public class AssemblerImp implements Assembler {
 			ConfigProperties configProperties) {
 		logProperties(configProperties.getCompletedProperties());
 		String tmUniqueName = configProperties.getTmUniqueName();
-		String logBaseDir = configProperties.getLogBaseDir();
 		boolean enableLogging = configProperties.getEnableLogging();
 		long maxTimeout = configProperties.getMaxTimeout();
 		int maxActives = configProperties.getMaxActives();
@@ -120,10 +119,11 @@ public class AssemblerImp implements Assembler {
 		} else {
 			recMgr = new VolatileStateRecoveryManager();
 		}
-		UniqueIdMgr idMgr = new UniqueIdMgr ( tmUniqueName, logBaseDir );
-		if ( idMgr.getMaxIdLengthInBytes() > MAX_TID_LENGTH ) {
+		UniqueIdMgr idMgr = new UniqueIdMgr ( tmUniqueName );
+		int overflow = idMgr.getMaxIdLengthInBytes() - MAX_TID_LENGTH;
+		if ( overflow > 0 ) {
 			// see case 73086
-			String msg = "Value too long :" + tmUniqueName;
+			String msg = "Value too long : " + tmUniqueName;
 			LOGGER.logWarning ( msg );
 			throw new SysException(msg);
 		}
