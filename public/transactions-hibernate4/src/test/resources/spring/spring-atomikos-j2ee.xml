@@ -76,8 +76,6 @@
         <prop key="javax.persistence.transactionType">jta</prop>
         <prop key="hibernate.transaction.jta.platform">com.atomikos.icatch.jta.hibernate4.AtomikosJ2eePlatform</prop>
         <prop key="hibernate.hbm2ddl.auto">create</prop>
-        <prop key="hibernate.generate_statistics">${hibernate.generate_statistics:-true}</prop>
-        <prop key="hibernate.cache.use_structured_entries">${hibernate.cache.use_structured_entries:-true}</prop>
         <prop key="hibernate.search.autoregister_listeners">false</prop>
       </props>
     </property>
