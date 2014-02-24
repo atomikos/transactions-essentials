@@ -56,3 +56,5 @@ syntax: regexp
 ^specs/examples/osgi/transactions-essentials/osgi-web-demo/db$
 syntax: regexp
 ^specs/examples/osgi/transactions-essentials/osgi-example-integration-tests/db$
+syntax: regexp
+^private/transactions-log-hazelcast$
