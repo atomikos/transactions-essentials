@@ -267,12 +267,12 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
         		setRollbackOnly();
         		// see case 115604
         		// transport the first exception here as return value
-            if (cause == null) {
-              cause = error;
-            } else {
-              // log the others which may still happen as error
-              LOGGER.logError("Unexpected error in beforeCompletion: ", error);
-            }       		
+        		if (cause == null) {
+        			cause = error;
+        		} else {
+        			// log the others which may still happen as error
+        			LOGGER.logError("Unexpected error in beforeCompletion: ", error);
+        		}       		
         	}
         	sync = localPopSynchronization();
         }
