@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>com.atomikos</groupId>
 		<artifactId>ate</artifactId>
-		<version>4.0.0</version>
+		<version>4.0.0-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>atomikos-util</artifactId>
@@ -14,7 +14,7 @@
 		<dependency>
 			<groupId>com.atomikos</groupId>
 			<artifactId>transactions-api</artifactId>
-			<version>4.0.0</version>
+			<version>4.0.0-SNAPSHOT</version>
 		</dependency>
 	<!-- only for HtmlBeanWizard -->
 		<dependency>
