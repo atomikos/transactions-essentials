@@ -58,6 +58,8 @@ public class ActiveStateHandler extends CoordinatorStateHandler
     // if max allowed -> rollback on timeout
 
     private int globalSiblingCount_;
+    
+    private boolean wasSetToRollbackOnly;
 
     
     public ActiveStateHandler() {
@@ -68,6 +70,7 @@ public class ActiveStateHandler extends CoordinatorStateHandler
     {
         super ( coordinator );
         rollbackTicks_ = 0;
+        wasSetToRollbackOnly = false;
     }
 
 
@@ -94,8 +97,11 @@ public class ActiveStateHandler extends CoordinatorStateHandler
                 if ( getCoordinator ().getState ().equals ( getState () ) ) {
                 	if ( getCoordinator().prefersSingleThreaded2PC() ) {
                 		//cf case 71748
-                		LOGGER.logWarning ( "Timeout/setRollbackOnly of ACTIVE coordinator !" );
-                		getCoordinator().setRollbackOnly();
+                		if (!wasSetToRollbackOnly) {
+                			LOGGER.logWarning ( "Timeout/setRollbackOnly of ACTIVE coordinator !" );
+                			getCoordinator().setRollbackOnly();
+                			wasSetToRollbackOnly = true;
+                		}
                 	} else {
                 		LOGGER.logWarning ( "Rollback of timedout ACTIVE coordinator !" );
                 		final boolean indoubt = getCoordinator().isRecoverableWhileActive().booleanValue();

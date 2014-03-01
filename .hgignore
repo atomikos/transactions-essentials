@@ -52,9 +52,11 @@ syntax: regexp
 
 syntax: regexp
 ^specs/examples/examples-tcc-rest/inventory\.xml$
+^specs/examples/examples-jta-spring-jmx/activemq-data$
 syntax: regexp
 ^specs/examples/osgi/transactions-essentials/osgi-web-demo/db$
 syntax: regexp
 ^specs/examples/osgi/transactions-essentials/osgi-example-integration-tests/db$
 syntax: regexp
 ^private/transactions-log-hazelcast$
+^specs/examples/examples-jta-spring-jmx/db$
