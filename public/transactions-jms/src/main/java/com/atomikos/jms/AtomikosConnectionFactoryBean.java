@@ -117,7 +117,7 @@ import com.atomikos.util.IntraVmObjectRegistry;
   * 
   * <dt><strong>Non-transacted JMS</strong></dt>
   * <dd>
-  * This class can be used for sending and receiving in non-transacted mode. <br/>
+  * This class can be used for sending and receiving in non-transacted mode, of localTransactionMode set to true.<br/>
   * <strong>WARNING:</strong> as per JMS specification, <strong>this mode gives hardly any guarantees in terms of consistency after failures.</strong><br/>
   * To enable this mode, make sure to create the session as follows:<br/>
   * 
