@@ -66,8 +66,6 @@ public class UserTransactionManager implements TransactionManager,
 
     private void checkSetup () throws SystemException
     {
-    	if ( closed ) throw new SystemException ( "This UserTransactionManager instance was closed already. Call init() to reuse if desired." );
-
     	tm = (TransactionManagerImp) TransactionManagerImp
     			.getTransactionManager ();
     	if ( tm == null ) {
@@ -208,7 +206,6 @@ public class UserTransactionManager implements TransactionManager,
     public void rollback () throws IllegalStateException, SecurityException,
             SystemException
     {
-        checkSetup ();
         tm.rollback ();
 
     }
