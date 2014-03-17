@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2014 Atomikos <info@atomikos.com>
  *
  * This code ("Atomikos TransactionsEssentials"), by itself,
  * is being distributed under the
@@ -66,7 +66,11 @@ public class UserTransactionManager implements TransactionManager,
 
     private void checkSetup () throws SystemException
     {
-    	tm = (TransactionManagerImp) TransactionManagerImp
+    	if (!closed) initializeTransactionManagerSingleton();	
+    }
+
+	private void initializeTransactionManagerSingleton() throws SystemException {
+		tm = (TransactionManagerImp) TransactionManagerImp
     			.getTransactionManager ();
     	if ( tm == null ) {
     		if ( getStartupTransactionService() ) {
@@ -77,8 +81,8 @@ public class UserTransactionManager implements TransactionManager,
     		else {
     			throw new SystemException ( "Transaction service not running" );
     		}
-    	}	
-    }
+    	}
+	}
 
 	private void startupTransactionService() {
 		coreStartedHere = Configuration.init();
@@ -107,7 +111,7 @@ public class UserTransactionManager implements TransactionManager,
      */
     public void setStartupTransactionService ( boolean startup )
     {
-    		this.startupTransactionService = startup;
+    	this.startupTransactionService = startup;
     }
     
     /**
@@ -117,7 +121,7 @@ public class UserTransactionManager implements TransactionManager,
      */
     public boolean getStartupTransactionService()
     {
-    		return this.startupTransactionService;
+    	return this.startupTransactionService;
     }
     
     /**
@@ -140,6 +144,7 @@ public class UserTransactionManager implements TransactionManager,
      */
     public void begin () throws NotSupportedException, SystemException
     {
+    	if ( closed ) throw new SystemException ( "This UserTransactionManager instance was closed already. Call init() to reuse if desired." );
         checkSetup ();
         tm.begin ();
 
@@ -216,7 +221,6 @@ public class UserTransactionManager implements TransactionManager,
     public void setRollbackOnly () throws IllegalStateException,
             SystemException
     {
-        checkSetup ();
         tm.setRollbackOnly ();
 
     }
@@ -257,8 +261,8 @@ public class UserTransactionManager implements TransactionManager,
      */
     public void close()
     {
-    		shutdownTransactionService();
-    		closed = true;
+    	shutdownTransactionService();
+    	closed = true;
     }
 
 
