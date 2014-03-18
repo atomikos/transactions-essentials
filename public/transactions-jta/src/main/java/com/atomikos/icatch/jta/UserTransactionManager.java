@@ -171,6 +171,7 @@ public class UserTransactionManager implements TransactionManager,
             HeuristicRollbackException, SecurityException,
             IllegalStateException, SystemException
     {
+    	if ( closed ) throw new SystemException ( "This UserTransactionManager instance was closed already - commit no longer allowed or possible." );
         checkSetup ();
         tm.commit ();
 
