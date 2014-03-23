@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.atomikos</groupId>
         <artifactId>ate</artifactId>
-        <version>4.0.0M3</version>
+        <version>4.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>transactions-jdbc</artifactId>
     <name>Transactions JDBC</name>
@@ -13,7 +13,7 @@
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>transactions-jta</artifactId>
-            <version>4.0.0M3</version>
+            <version>4.0.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>
