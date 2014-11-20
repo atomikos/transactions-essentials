@@ -26,6 +26,7 @@
 		<module>transactions-hibernate3</module>
 		<module>transactions-hibernate4</module>
 		<module>transactions-eclipselink</module>
+		<module>transactions-jndi-provider</module>
 	</modules>
 
 
