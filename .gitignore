@@ -1,0 +1,7 @@
+private/
+specs/
+.hg/
+.hgignore
+.hgtags
+
+
