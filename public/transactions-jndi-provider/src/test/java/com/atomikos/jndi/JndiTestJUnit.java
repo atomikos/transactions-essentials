@@ -21,7 +21,7 @@ import org.mockito.Mockito;
 import com.atomikos.icatch.jta.UserTransactionManager;
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 
-public class JndiTest  {
+public class JndiTestJUnit  {
 
 	 private Context ctx ;
 	  @Before
