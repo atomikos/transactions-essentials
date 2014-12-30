@@ -5,6 +5,7 @@ bin/
 target/
 eclipse/
 .repository/
+.gitignore
 
 *.iml
 *.ipr
