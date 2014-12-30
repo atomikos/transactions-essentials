@@ -28,7 +28,7 @@ public class AtomikosContext implements Context {
 
 	@Override
 	public void close() throws NamingException {
-		// ignore
+	
 	}
 
 	@Override
@@ -38,21 +38,23 @@ public class AtomikosContext implements Context {
 
 	@Override
 	public Object lookup(String s) throws NamingException {
+		Object ret;
 		if (log.isDebugEnabled()) {
 			log.logDebug("looking up '" + s + "'");
 		}
-		Object o;
+
 		if (USER_TRANSACTION_NAME.equals(s)) {
 			if (userTransactionManager == null) {
 				userTransactionManager = new UserTransactionManager();
 			}
-			o = userTransactionManager;
+			ret = userTransactionManager;
 		} else {
-			o = IntraVmObjectRegistry.getResource(s);
+			ret = IntraVmObjectRegistry.getResource(s);
 		}
-		if (o == null)
-			throw new NameNotFoundException("unable to find a bound object at name '" + s + "'");
-		return o;
+		if (ret == null) {
+			throw new NameNotFoundException("unable to find a bound object with name '" + s + "'");
+		}
+		return ret;
 	}
 
 	@Override
