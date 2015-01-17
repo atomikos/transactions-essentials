@@ -1,6 +1,6 @@
-## Atomikos transaction manager: out-of-container transactions.
+## Atomikos TransactionsEssentials: out-of-container transactions.
 
-A light-weight, embeddable transaction manager for instant reliability without design efforts in your code.
+A light-weight, embeddable transaction manager for instant reliability without design efforts in your code. If you are reading this file then you are probably looking at our project fork on GitHub, meant to allow community members to fork and contribute. Our GitHub project is merged and updated regularly with our legacy (internal) development repository.
 
 ### Getting Started
 
@@ -27,11 +27,11 @@ Pull latest from repo `git pull origin master` and try `mvn clean install -Popen
 
 ### Contributing
 
-DO NOT COMMIT/PUSH TO THIS REPOSITORY DIRECTLY! WE OVERWRITE IT WHENEVER WE MERGE PULL REQUESTS.
-
-Please fork and send a pull request when you have a contribution ready for our review.
+Please fork to contribute, and send a pull request when you have a contribution ready for our review.
 
 For an enhancement or larger feature, create a GitHub issue first to discuss.
+
+DO NOT COMMIT/PUSH TO THIS REPOSITORY DIRECTLY! WE OVERWRITE IT WHENEVER WE MERGE PULL REQUESTS.
 
 #### License
 
@@ -39,6 +39,6 @@ See http://www.atomikos.com/Main/WhichLicenseApplies
 
 #### Copyright
 
-Copyright (c) 2000-2015, Atomikos BVBA - all rights reserved.
+Copyright (c) 2000-2015, Atomikos - all rights reserved.
 
 Visit [www.atomikos.com](http://www.atomikos.com/) for more…
