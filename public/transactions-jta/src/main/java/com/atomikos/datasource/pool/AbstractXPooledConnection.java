@@ -38,7 +38,6 @@ import com.atomikos.logging.LoggerFactory;
   * 
   * Abstract superclass with generic support for XPooledConnection.
   * 
-  * @author guy
   *
   */
 
