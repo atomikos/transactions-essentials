@@ -16,6 +16,9 @@
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
+	
+	
+	
 	<properties>
 		<!-- we don't want to depend on platform's default encoding -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
