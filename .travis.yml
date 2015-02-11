@@ -1,0 +1,8 @@
+language: java
+
+script: mvn clean install -Popensource
+
+notifications:
+  email: 
+  	- guy@atomikos.com
+  	- pascal.leclercq@gmail.com
