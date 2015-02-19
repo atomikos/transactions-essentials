@@ -29,8 +29,6 @@ Pull latest from repo `git pull origin master` and try `mvn clean install -Popen
 
 Please fork to contribute, and send a pull request when you have a contribution ready for our review.
 
-For an enhancement or larger feature, create a GitHub issue first to discuss.
-
 DO NOT COMMIT/PUSH TO THIS REPOSITORY DIRECTLY! WE OVERWRITE IT WHENEVER WE MERGE PULL REQUESTS.
 
 #### License
