@@ -5,7 +5,7 @@ jdk:
 
 install: mvn install -DskipTests=true -Popensource 
 
-script: mvn clean install -Popensource
+script: mvn clean test -Popensource
 
 
 notifications:
