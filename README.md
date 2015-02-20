@@ -3,9 +3,6 @@
 
 [![Build Status](https://travis-ci.org/pascalleclercq/transactions-essentials.svg?branch=master)](https://travis-ci.org/pascalleclercq/transactions-essentials)
 
-
-[![Build Status](https://travis-ci.org/pascalleclercq/transactions-essentials.svg?branch=master)](https://travis-ci.org/pascalleclercq/transactions-essentials)
-
 A light-weight, embeddable transaction manager for instant reliability without design efforts in your code. If you are reading this file then you are probably looking at our project fork on GitHub, meant to allow community members to fork and contribute. Our GitHub project is merged and updated regularly with our legacy (internal) development repository.
 
 ### Getting Started
