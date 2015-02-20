@@ -261,6 +261,9 @@
 		
 		<profile>
 			<id>opensource</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
 			<build>
 				<plugins>
 					<plugin>
