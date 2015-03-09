@@ -230,6 +230,7 @@ public class PropertyUtils
     private static Object convert ( Object value, Class destinationClass ) 
     throws PropertyException
     {
+
         if (value.getClass() == destinationClass)
             return value;
 
@@ -243,7 +244,10 @@ public class PropertyUtils
         if ((destinationClass == boolean.class || destinationClass == Boolean.class)  &&  value.getClass() == String.class) {
             return Boolean.valueOf((String) value);
         }
-
+    	if(destinationClass.isAssignableFrom(value.getClass())){
+    		return value;
+    	}
+        
         throw new PropertyException("cannot convert values of type '" + value.getClass().getName() + "' into type '" + destinationClass + "'");
     }
 

@@ -127,10 +127,10 @@ public class AtomikosConnectionProvider implements ConnectionProvider {
 		while (it.hasNext()) {
 			Map.Entry entry = (Map.Entry) it.next();
 			String key = (String) entry.getKey();
-			String value = (String) entry.getValue();
+			Object value =  entry.getValue();
 
 			if (key.startsWith(PROPERTIES_PREFIX) && !key.equals(PROPERTY_NONXA)) {
-				atomikosProperties.setProperty(key.substring(PROPERTIES_PREFIX.length()), value);
+				atomikosProperties.put(key.substring(PROPERTIES_PREFIX.length()), value);
 			}
 		}
 		return atomikosProperties;
