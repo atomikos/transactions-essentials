@@ -61,3 +61,6 @@ syntax: regexp
 syntax: regexp
 ^private/transactions-log-hazelcast$
 ^specs/examples/examples-jta-spring-jmx/db$
+
+syntax: regexp
+^private/integration-tests/jdbc-integration-tests/src/main/java/main/Main\.java$
