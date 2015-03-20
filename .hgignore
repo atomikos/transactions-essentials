@@ -64,3 +64,9 @@ syntax: regexp
 
 syntax: regexp
 ^private/integration-tests/jdbc-integration-tests/src/main/java/main/Main\.java$
+syntax: regexp
+^private/integration-tests/transactions-osgi-tests/activemq-data$
+syntax: regexp
+^private/integration-tests/transactions-osgi-tests/derbyXADB1$
+syntax: regexp
+^private/integration-tests/transactions-osgi-tests/derbyXADB2$
