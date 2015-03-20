@@ -63,8 +63,6 @@ syntax: regexp
 ^specs/examples/examples-jta-spring-jmx/db$
 
 syntax: regexp
-^private/integration-tests/jdbc-integration-tests/src/main/java/main/Main\.java$
-syntax: regexp
 ^private/integration-tests/transactions-osgi-tests/activemq-data$
 syntax: regexp
 ^private/integration-tests/transactions-osgi-tests/derbyXADB1$
