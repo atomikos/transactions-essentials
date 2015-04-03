@@ -419,20 +419,19 @@ Referenceable, Serializable {
 				);
 		
 		if (xaConnectionFactory == null) {
-			Class xaClass = null;
 			try {
-				xaClass = ClassLoadingHelper.loadClass ( xaConnectionFactoryClassName );
+				Class<XAConnectionFactory> xaClass = ClassLoadingHelper.loadClass ( xaConnectionFactoryClassName );
+				xaConnectionFactory = xaClass.newInstance();
 			} catch ( ClassNotFoundException notFound ) {
 				AtomikosJMSException.throwAtomikosJMSException ( "The class '" + xaConnectionFactoryClassName +
 						"' specified by property 'xaConnectionFactoryClassName' of class AtomikosConnectionFactoryBean could not be found in the classpath. " +
 						"Please make sure the spelling in your setup is correct, and that the required jar(s) are in the classpath." , notFound );
-			}
-			Object driver = xaClass.newInstance();
-			if ( !( driver instanceof XAConnectionFactory ) ) 
+			} catch (ClassCastException cce) {
 				AtomikosJMSException.throwAtomikosJMSException ( "The class '" + xaConnectionFactoryClassName +
 						"' specified by property 'xaConnectionFactoryClassName' of class AtomikosConnectionFactoryBean does not implement the required interface javax.jms.XAConnectionFactory. " +
 						"Please make sure the spelling in your setup is correct, and check your JMS driver vendor's documentation." );
-			xaConnectionFactory = (XAConnectionFactory) driver;
+			}
+			
 			PropertyUtils.setProperties(xaConnectionFactory, xaProperties );
 		}
 			

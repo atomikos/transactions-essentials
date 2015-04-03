@@ -134,14 +134,14 @@ public class ClassLoadingHelper {
 	 * @throws ClassNotFoundException
 	 *             If not found
 	 */
-	public static Class loadClass(String className)
+	public static <T> Class<T> loadClass(String className)
 			throws ClassNotFoundException {
-		Class clazz = null;
+		Class<T> clazz = null;
 		try {
-			clazz = Thread.currentThread().getContextClassLoader()
+			clazz = (Class<T>)Thread.currentThread().getContextClassLoader()
 					.loadClass(className);
 		} catch (ClassNotFoundException nf) {
-			clazz = Class.forName(className);
+			clazz = (Class<T>)Class.forName(className);
 		}
 		return clazz;
 	}
@@ -155,7 +155,7 @@ public class ClassLoadingHelper {
 	 *            The name of the resource
 	 * @return The URL to the resource, or null if not found.
 	 */
-	public static URL loadResourceFromClasspath(Class clazz, String resourceName) {
+	public static URL loadResourceFromClasspath(Class<?> clazz, String resourceName) {
 		URL ret = null;
 		// first try from package scope
 		ret = clazz.getResource(resourceName);
