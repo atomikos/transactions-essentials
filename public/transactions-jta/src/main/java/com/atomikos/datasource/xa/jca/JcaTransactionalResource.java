@@ -123,10 +123,8 @@ public class JcaTransactionalResource extends XATransactionalResource
                 ret = connection.getXAResource ();
         } catch ( javax.resource.ResourceException e ) {
         	LOGGER.logWarning("error getting XAResource: " + e.getMessage ());
-            Stack errors = new Stack ();
-            errors.push ( e );
-            throw new ResourceException ( "Error in getting XA resource",
-                    errors );
+
+            throw new ResourceException ( "Error in getting XA resource", e);
         }
 
        LOGGER.logInfo("refreshXAConnection() done.");

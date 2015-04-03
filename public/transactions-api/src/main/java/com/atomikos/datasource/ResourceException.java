@@ -25,7 +25,6 @@
 
 package com.atomikos.datasource;
 
-import java.util.Stack;
 
 /**
 * Exception on the level of the resource manager.
@@ -38,22 +37,6 @@ public class ResourceException extends com.atomikos.icatch.SysException
     public ResourceException(String msg){
         super(msg);
 
-    }
-
-    /**
-     * @deprecated
-     */
-    public ResourceException(String msg, Stack errors)
-    {
-        super ( msg , errors );
-    }
-
-    /**
-     * @deprecated
-     */
-    public ResourceException(Stack errors){
-
-        super ( "ResourceException" , errors );
     }
 
 	public ResourceException(String msg, Throwable cause) {
