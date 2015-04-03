@@ -156,25 +156,26 @@ class TransactionImp implements Transaction {
 	@Override
 	public int getStatus() {
 		TxState state = this.compositeTransaction.getState();
-		if (state.equals(TxState.IN_DOUBT))
-			return Status.STATUS_PREPARED;
-		else if (state.equals(TxState.PREPARING))
-			return Status.STATUS_PREPARING;
-		else if (state.equals(TxState.ACTIVE))
-			return Status.STATUS_ACTIVE;
-		else if (state.equals(TxState.MARKED_ABORT))
-			return Status.STATUS_MARKED_ROLLBACK;
-		else if (state.equals(TxState.COMMITTING))
-			return Status.STATUS_COMMITTING;
-		else if (state.equals(TxState.ABORTING))
-			return Status.STATUS_ROLLING_BACK;
-		else if (state.equals(TxState.COMMITTED))
-			return Status.STATUS_COMMITTED;
-		else if (state.equals(TxState.ABORTED))
-			return Status.STATUS_ROLLEDBACK;
-		else
-			// other cases are either very short or irrelevant to user?
-			return Status.STATUS_UNKNOWN;
+		switch (state) {
+			case IN_DOUBT:
+				return Status.STATUS_PREPARED;
+			case PREPARING:
+				return Status.STATUS_PREPARING;
+			case ACTIVE:
+				return Status.STATUS_ACTIVE;
+			case MARKED_ABORT:
+				return Status.STATUS_MARKED_ROLLBACK;
+			case COMMITTING:
+				return Status.STATUS_COMMITTING;
+			case ABORTING:
+				return Status.STATUS_ROLLING_BACK;
+			case COMMITTED:
+				return Status.STATUS_COMMITTED;
+			case ABORTED:
+				return Status.STATUS_ROLLEDBACK;
+			default:
+				return Status.STATUS_UNKNOWN;
+		}
 	}
 
 	/**
