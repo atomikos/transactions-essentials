@@ -79,14 +79,6 @@ public class SysException extends RuntimeException
 		myErrors = new Stack<Exception>();
 	}
 	
-	/**
-	 * @deprecated
-	 */
-	public SysException (String msg,Stack<Exception> nestedList)
-	{
-		super(msg);
-		myErrors=(Stack<Exception>) nestedList.clone();
-	}
 
 	private void addStackTraceToList ( List<StackTraceElement> list )
 	{
@@ -123,13 +115,5 @@ public class SysException extends RuntimeException
 		printNestedErrorStack ( this );
 	}
 
-	/**
-	 * @deprecated
-	 */
-	public StackTraceElement[] getStackTrace()
-	{
-		List<StackTraceElement> elements = new ArrayList<StackTraceElement>();
-		this.addStackTraceToList ( elements );
-		return ( StackTraceElement[] ) elements.toArray ( new StackTraceElement[0] );
-	}
+	
 }
