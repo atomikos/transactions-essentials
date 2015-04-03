@@ -81,16 +81,6 @@ public class CompTxImpTester
 		catch ( SysException se ) {
 			System.out.println("ERROR: " + se.getMessage());
 			se.printStackTrace();
-			if ( se.getErrors() != null ) {
-				Stack errors = se.getErrors();
-				while ( ! errors.empty() ) {
-					Exception err = (Exception) errors.pop();
-					System.out.println("Nested exception :"+
-										err.getMessage() + " " +
-										err.getClass().getName() );
-					err.printStackTrace();
-				}
-			}
 		}
 		catch ( Exception e ) {
 			System.out.println("ERROR: " + e.getMessage());

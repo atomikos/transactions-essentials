@@ -144,7 +144,7 @@ class TransactionImp implements Transaction {
 		} catch (SysException se) {
 			String msg = "Unexpected error during registerSynchronization";
 			LOGGER.logWarning(msg, se);
-			throw new ExtendedSystemException(msg, se.getErrors());
+			throw new ExtendedSystemException(msg, se);
 		}
 
 	}
@@ -197,7 +197,7 @@ class TransactionImp implements Transaction {
 			rethrowAsJtaHeuristicMixedException(hm.getMessage(), hm);
 		} catch (SysException se) {
 			LOGGER.logWarning(se.getMessage(), se);
-			throw new ExtendedSystemException(se.getMessage(), se.getErrors());
+			throw new ExtendedSystemException(se.getMessage(), se);
 		} catch (com.atomikos.icatch.RollbackException rb) {
 			// see case 29708: all statements have been closed
 			String msg = rb.getMessage();
@@ -218,7 +218,7 @@ class TransactionImp implements Transaction {
 			this.compositeTransaction.rollback();
 		} catch (SysException se) {
 			LOGGER.logWarning(se.getMessage(), se);
-			throw new ExtendedSystemException(se.getMessage(), se.getErrors());
+			throw new ExtendedSystemException(se.getMessage(), se);
 		}
 
 	}
@@ -320,16 +320,6 @@ class TransactionImp implements Transaction {
 				restx.setXAResource(xares);
 				restx.resume();
 			} catch (ResourceException re) {
-				Stack nested = re.getErrors();
-				if (!nested.empty() && nested.peek() instanceof XAException) {
-					XAException xaerr = (XAException) nested.peek();
-					if (XAException.XA_RBBASE <= xaerr.errorCode
-							&& xaerr.errorCode <= XAException.XA_RBEND)
-						rethrowAsJtaRollbackException(
-								"The transaction was rolled back in the back-end resource. Further enlists are useless.",
-								re);
-				}
-
 				errors.push(re);
 				throw new ExtendedSystemException(
 						"Unexpected error during enlist", errors);
