@@ -5,8 +5,6 @@
  */
 
 package com.atomikos.icatch.imp;
-import java.util.Stack;
-
 import com.atomikos.icatch.CompositeTerminator;
 import com.atomikos.icatch.CompositeTransaction;
 import com.atomikos.icatch.Extent;

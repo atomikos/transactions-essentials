@@ -26,7 +26,6 @@
 package com.atomikos.icatch.imp;
 
 import java.util.Enumeration;
-import java.util.Stack;
 import java.util.Vector;
 
 import com.atomikos.icatch.HeurCommitException;

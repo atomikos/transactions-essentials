@@ -25,8 +25,6 @@
 
 package com.atomikos.datasource.xa.jca;
 
-import java.util.Stack;
-
 import javax.resource.spi.ManagedConnection;
 import javax.resource.spi.ManagedConnectionFactory;
 import javax.transaction.xa.XAResource;
