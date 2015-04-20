@@ -245,6 +245,10 @@ public class PropertyUtils
         		return convertStringToSet((String)value);
         	}
         }
+       
+        if(destinationClass.isAssignableFrom(value.getClass())){
+        		return value;
+        }
         
         throw new PropertyException("cannot convert values of type '" + value.getClass().getName() + "' into type '" + destinationClass + "'");
     }
