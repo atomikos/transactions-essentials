@@ -227,29 +227,84 @@ public class PropertyUtils
         return result;
     }
 
-    private static Object convert ( Object value, Class destinationClass ) 
+    private static Object convert ( Object value, Class destinationClass )
     throws PropertyException
     {
-
         if (value.getClass() == destinationClass)
             return value;
 
-        if (value.getClass() == int.class || value.getClass() == Integer.class || value.getClass() == boolean.class || value.getClass() == Boolean.class)
+        if (isPrimitiveType(value.getClass()))
             return value;
-
-        if ((destinationClass == int.class || destinationClass == Integer.class)  &&  value.getClass() == String.class) {
-            return new Integer((String) value);
+        
+        if (value.getClass() == String.class && isPrimitiveType(destinationClass)) {
+        	return convertStringToPrimitive((String) value, destinationClass);
         }
 
-        if ((destinationClass == boolean.class || destinationClass == Boolean.class)  &&  value.getClass() == String.class) {
-            return Boolean.valueOf((String) value);
+        if(Set.class.isAssignableFrom(destinationClass)){
+        	if(value.getClass() == String.class) {
+        		return convertStringToSet((String)value);
+        	}
         }
-    	if(destinationClass.isAssignableFrom(value.getClass())){
-    		return value;
-    	}
         
         throw new PropertyException("cannot convert values of type '" + value.getClass().getName() + "' into type '" + destinationClass + "'");
     }
+    
+    private static Set<String> convertStringToSet(String propertyValue) {
+    	String[] elements=propertyValue.split(",");
+    	Set<String> result= new HashSet<String>();
+    	for (String element: elements) {
+    		result.add(element);
+		}
+
+    	return result;
+	}
+
+    private static Object convertStringToPrimitive(String value, Class destinationClass) { 
+		if ((destinationClass == int.class || destinationClass == Integer.class)) {
+            return new Integer(value);
+        }
+
+        if ((destinationClass == boolean.class || destinationClass == Boolean.class)) {
+            return Boolean.valueOf(value);
+        }
+        
+        if ((destinationClass == short.class || destinationClass == Short.class)) {
+            return new Short(value);
+        }
+        
+        if ((destinationClass == byte.class || destinationClass == Byte.class)) {
+            return new Byte(value);
+        }
+        
+        if ((destinationClass == long.class || destinationClass == Long.class)) {
+            return new Long(value);
+        }
+        
+        if ((destinationClass == float.class || destinationClass == Float.class)) {
+            return new Float(value);
+        }
+        
+        if ((destinationClass == double.class || destinationClass == Double.class)) {
+            return new Double(value);
+        }
+        
+        if ((destinationClass == char.class || destinationClass == Character.class)) {
+            return value.charAt(0);
+        }
+        
+        return null;
+	}
+
+	private static boolean isPrimitiveType(Class clazz) {
+		return  clazz == int.class || clazz == Integer.class || 
+				clazz == boolean.class || clazz == Boolean.class ||
+				clazz == byte.class || clazz == Byte.class || 
+				clazz == short.class || clazz == Short.class ||
+				clazz == long.class || clazz == Long.class ||
+				clazz == float.class || clazz == Float.class ||
+				clazz == double.class || clazz == Double.class ||
+				clazz == char.class || clazz == Character.class;
+	}
 
     private static void callSetter ( Object target, String propertyName, Object parameter) throws PropertyException 
     {
