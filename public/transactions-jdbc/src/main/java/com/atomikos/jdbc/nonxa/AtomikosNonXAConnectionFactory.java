@@ -79,25 +79,14 @@ class AtomikosNonXAConnectionFactory implements ConnectionFactory
 	public void init() throws SQLException 
 	{
 		try {
-
-
-			Class driverClass = ClassLoadingHelper.loadClass ( driverClassName );
-            
-            Object aDriver = driverClass.newInstance();
-            
-            if ( ! ( aDriver instanceof java.sql.Driver ) ) {
-            	String msg = "Driver class '" + driverClassName + "' does not seem to be a valid JDBC driver - please check the spelling and verify your JDBC vendor's documentation";
-            	AtomikosSQLException.throwAtomikosSQLException ( msg );
-            } 
-            driver = (Driver) aDriver;
+			Class<java.sql.Driver> driverClass = ClassLoadingHelper.loadClass ( driverClassName );
+            driver = driverClass.newInstance();
             if(user!=null){
             	connectionProperties.put("user", user);	
             }
-            
             if(password!=null){
             	connectionProperties.put("password",password);
             }
-            
         } catch ( InstantiationException e ) {
            AtomikosSQLException.throwAtomikosSQLException ( "Could not instantiate driver class: "
                     + driverClassName );
@@ -106,6 +95,9 @@ class AtomikosNonXAConnectionFactory implements ConnectionFactory
         } catch ( ClassNotFoundException e ) {
         	 AtomikosSQLException.throwAtomikosSQLException  ( "Driver class not found: '"
                     + driverClassName + "' - please make sure the spelling is correct." );
+        } catch (ClassCastException cce){
+        	String msg = "Driver class '" + driverClassName + "' does not seem to be a valid JDBC driver - please check the spelling and verify your JDBC vendor's documentation";
+        	AtomikosSQLException.throwAtomikosSQLException ( msg );
         }
         DriverManager.setLoginTimeout ( loginTimeout );
 	}

@@ -175,25 +175,22 @@ extends AbstractDataSourceBean
 		
 			if (xaDataSource == null)
 			{
-				Class xadsClass = null;
 				try {
-					xadsClass = ClassLoadingHelper.loadClass ( getXaDataSourceClassName() );
+					Class<XADataSource> xadsClass = ClassLoadingHelper.loadClass ( getXaDataSourceClassName() );
+					xaDataSource =  xadsClass.newInstance();
+					
 				} catch ( ClassNotFoundException nf ) {
 					AtomikosSQLException.throwAtomikosSQLException ( "The class '" + getXaDataSourceClassName() +
 							"' specified by property 'xaDataSourceClassName' could not be found in the classpath. Please make sure the spelling is correct, and that the required jar(s) are in the classpath." , nf );
-					 
-				}
-				Object driver =  xadsClass.newInstance();
-				if ( ! ( driver instanceof XADataSource ) ) {
+				} catch (ClassCastException cce) {
 					AtomikosSQLException.throwAtomikosSQLException (
 							 "The class '" + getXaDataSourceClassName() +
-								"' specified by property 'xaDataSourceClassName' does not implement the required interface javax.jdbc.XADataSource. Please make sure the spelling is correct, and check your JDBC driver vendor's documentation." 
-					);
+								"' specified by property 'xaDataSourceClassName' does not implement the required interface javax.jdbc.XADataSource. Please make sure the spelling is correct, and check your JDBC driver vendor's documentation.");
 				}
-				xaDataSource = (XADataSource) driver;
 				xaDataSource.setLoginTimeout ( getLoginTimeout() );
 				xaDataSource.setLogWriter ( getLogWriter() );
 				PropertyUtils.setProperties(xaDataSource, xaProperties );
+				
 			}
 			
 			JdbcTransactionalResource tr = new JdbcTransactionalResource(getUniqueResourceName() , xaDataSource);

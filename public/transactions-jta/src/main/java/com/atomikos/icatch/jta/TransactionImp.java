@@ -144,7 +144,7 @@ class TransactionImp implements Transaction {
 		} catch (SysException se) {
 			String msg = "Unexpected error during registerSynchronization";
 			LOGGER.logWarning(msg, se);
-			throw new ExtendedSystemException(msg, se.getErrors());
+			throw new ExtendedSystemException(msg, se);
 		}
 
 	}
@@ -156,25 +156,26 @@ class TransactionImp implements Transaction {
 	@Override
 	public int getStatus() {
 		TxState state = this.compositeTransaction.getState();
-		if (state.equals(TxState.IN_DOUBT))
-			return Status.STATUS_PREPARED;
-		else if (state.equals(TxState.PREPARING))
-			return Status.STATUS_PREPARING;
-		else if (state.equals(TxState.ACTIVE))
-			return Status.STATUS_ACTIVE;
-		else if (state.equals(TxState.MARKED_ABORT))
-			return Status.STATUS_MARKED_ROLLBACK;
-		else if (state.equals(TxState.COMMITTING))
-			return Status.STATUS_COMMITTING;
-		else if (state.equals(TxState.ABORTING))
-			return Status.STATUS_ROLLING_BACK;
-		else if (state.equals(TxState.COMMITTED))
-			return Status.STATUS_COMMITTED;
-		else if (state.equals(TxState.ABORTED))
-			return Status.STATUS_ROLLEDBACK;
-		else
-			// other cases are either very short or irrelevant to user?
-			return Status.STATUS_UNKNOWN;
+		switch (state) {
+			case IN_DOUBT:
+				return Status.STATUS_PREPARED;
+			case PREPARING:
+				return Status.STATUS_PREPARING;
+			case ACTIVE:
+				return Status.STATUS_ACTIVE;
+			case MARKED_ABORT:
+				return Status.STATUS_MARKED_ROLLBACK;
+			case COMMITTING:
+				return Status.STATUS_COMMITTING;
+			case ABORTING:
+				return Status.STATUS_ROLLING_BACK;
+			case COMMITTED:
+				return Status.STATUS_COMMITTED;
+			case ABORTED:
+				return Status.STATUS_ROLLEDBACK;
+			default:
+				return Status.STATUS_UNKNOWN;
+		}
 	}
 
 	/**
@@ -196,7 +197,7 @@ class TransactionImp implements Transaction {
 			rethrowAsJtaHeuristicMixedException(hm.getMessage(), hm);
 		} catch (SysException se) {
 			LOGGER.logWarning(se.getMessage(), se);
-			throw new ExtendedSystemException(se.getMessage(), se.getErrors());
+			throw new ExtendedSystemException(se.getMessage(), se);
 		} catch (com.atomikos.icatch.RollbackException rb) {
 			// see case 29708: all statements have been closed
 			String msg = rb.getMessage();
@@ -217,7 +218,7 @@ class TransactionImp implements Transaction {
 			this.compositeTransaction.rollback();
 		} catch (SysException se) {
 			LOGGER.logWarning(se.getMessage(), se);
-			throw new ExtendedSystemException(se.getMessage(), se.getErrors());
+			throw new ExtendedSystemException(se.getMessage(), se);
 		}
 
 	}
@@ -319,16 +320,6 @@ class TransactionImp implements Transaction {
 				restx.setXAResource(xares);
 				restx.resume();
 			} catch (ResourceException re) {
-				Stack nested = re.getErrors();
-				if (!nested.empty() && nested.peek() instanceof XAException) {
-					XAException xaerr = (XAException) nested.peek();
-					if (XAException.XA_RBBASE <= xaerr.errorCode
-							&& xaerr.errorCode <= XAException.XA_RBEND)
-						rethrowAsJtaRollbackException(
-								"The transaction was rolled back in the back-end resource. Further enlists are useless.",
-								re);
-				}
-
 				errors.push(re);
 				throw new ExtendedSystemException(
 						"Unexpected error during enlist", errors);

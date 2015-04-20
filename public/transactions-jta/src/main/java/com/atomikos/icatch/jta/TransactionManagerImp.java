@@ -214,7 +214,7 @@ public class TransactionManagerImp implements TransactionManager,
          } catch ( SysException se ) {
          	String msg = "Error while retrieving the transaction for the calling thread";
          	LOGGER.logWarning( msg , se);
-            throw new ExtendedSystemException ( msg , se.getErrors () );
+            throw new ExtendedSystemException ( msg , se );
          }
     	 establishJtaTransactionContextIfNecessary(ct);
          return ct;
@@ -294,8 +294,7 @@ public class TransactionManagerImp implements TransactionManager,
         } catch ( SysException se ) {
         	String msg = "Error in begin()";
         	LOGGER.logWarning( msg , se );
-            throw new ExtendedSystemException ( msg , se
-                    .getErrors () );
+            throw new ExtendedSystemException ( msg , se );
         }
         recreateCompositeTransactionAsJtaTransaction(ct);
     }
@@ -374,8 +373,7 @@ public class TransactionManagerImp implements TransactionManager,
         } catch ( SysException se ) {
         	String msg = "Unexpected error while suspending the existing transaction for the current thread";
         	LOGGER.logWarning( msg , se );
-            throw new ExtendedSystemException ( msg , se
-                    .getErrors () );
+            throw new ExtendedSystemException ( msg , se );
         }
 	}
 
@@ -398,7 +396,7 @@ public class TransactionManagerImp implements TransactionManager,
         } catch ( SysException se ) {
         	String msg = "Unexpected error while resuming the transaction in the calling thread";
         	LOGGER.logWarning( msg , se );
-            throw new ExtendedSystemException(msg , se.getErrors());
+            throw new ExtendedSystemException(msg , se );
         }
         tximp.resumeEnlistedXaReources();
 

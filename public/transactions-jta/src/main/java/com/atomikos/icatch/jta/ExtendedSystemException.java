@@ -39,9 +39,14 @@ public class ExtendedSystemException extends SystemException
 
     private Stack errors_;
 
-    /**
-     * @deprecated.
-     */
+
+    public ExtendedSystemException ( String msg , Throwable cause )
+    {
+        super ( msg);
+        errors_ = new Stack();
+        errors_.add(cause);
+    }
+   
     public ExtendedSystemException ( String msg , Stack errors )
     {
         super ( msg );

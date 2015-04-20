@@ -27,9 +27,7 @@ package com.atomikos.datasource.xa;
 
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.List;
 import java.util.Stack;
-import java.util.Vector;
 
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
