@@ -76,7 +76,7 @@ abstract class ConsumerProducerSupport
 
 	
 	
-	protected void enlist ( String hmsg ) throws JMSException
+	protected void enlist() throws JMSException
 	{
 		CompositeTransaction ct = null;
 		CompositeTransactionManager ctm = getCompositeTransactionManager();

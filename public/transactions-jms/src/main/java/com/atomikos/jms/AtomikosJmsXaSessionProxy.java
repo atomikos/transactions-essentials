@@ -54,8 +54,8 @@ class AtomikosJmsXaSessionProxy extends AbstractJmsSessionProxy implements Sessi
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(AtomikosJmsXaSessionProxy.class);
 
-	private final static List PRODUCER_CONSUMER_METHODS = Arrays.asList(new String[] {"createConsumer", "createProducer","createDurableSubscriber"});
-	private final static List SESSION_TRANSACTION_METHODS = Arrays.asList(new String[] {"commit", "rollback"});
+	private final static List<String> PRODUCER_CONSUMER_METHODS = Arrays.asList("createConsumer", "createProducer","createDurableSubscriber");
+	private final static List<String> SESSION_TRANSACTION_METHODS = Arrays.asList("commit", "rollback");
 	private final static String CLOSE_METHOD = "close";
 	
 	public static Object newInstance ( XASession s , XATransactionalResource jmsTransactionalResource , 

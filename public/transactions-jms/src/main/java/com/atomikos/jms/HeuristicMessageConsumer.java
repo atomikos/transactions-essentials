@@ -45,12 +45,10 @@ public interface HeuristicMessageConsumer extends MessageConsumer
      * Block until a message is there, and use the supplied heuristic
      * information.
      * 
-     * @param hmsg
-     *            The heuristic information to show in case of problems.
      * @return Message The JMS message.
      * @throws JMSException
      */
-    public Message receive ( String hmsg ) throws JMSException;
+    public Message receive ( ) throws JMSException;
 
 
 
@@ -58,8 +56,6 @@ public interface HeuristicMessageConsumer extends MessageConsumer
      * Block until a message is there, but use the supplied heuristic
      * information.
      * 
-     * @param hmsg
-     *            The heuristic information to show in case of problems.
      * @param timeout
      *            The timeout for receive.
      * @return Message The message or null on timeout.
@@ -67,20 +63,18 @@ public interface HeuristicMessageConsumer extends MessageConsumer
      *                On error.
      */
 
-    public Message receive ( long timeout ,  String hmsg ) throws JMSException;
+    public Message receive ( long timeout ) throws JMSException;
 
 
     /**
      * Do not block until a message is there, and use the supplied heuristic
      * information.
      * 
-     * @param hmsg
-     *            The heuristic information to show in case of problems.
      * @return Message The message, or null if none.
      * @exception JMSException
      *                On error.
      */
 
-    public Message receiveNoWait ( String hmsg ) throws JMSException;
+    public Message receiveNoWait ( ) throws JMSException;
 
 }

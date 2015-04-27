@@ -49,7 +49,7 @@ class AtomikosJmsMessageProducerProxy extends ConsumerProducerSupport implements
 	public void send ( Message msg, String heuristicMessage ) throws JMSException {
 		
 		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": send ( message , heuristicMessage )..." );
-		enlist ( heuristicMessage );
+		enlist ( );
 		delegate.send ( msg );
 		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": send done." );
 	}
@@ -57,7 +57,7 @@ class AtomikosJmsMessageProducerProxy extends ConsumerProducerSupport implements
 	public void send ( Destination dest, Message msg, String heuristicMessage)
 			throws JMSException {
 		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": send ( destination , message , heuristicMessage )..." );
-		enlist ( heuristicMessage );
+		enlist ( );
 		delegate.send ( dest , msg );
 		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": send done." );
 	}
@@ -66,7 +66,7 @@ class AtomikosJmsMessageProducerProxy extends ConsumerProducerSupport implements
 			long timeToLive, String heuristicMessage ) throws JMSException {
 		
 		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": send ( message , deliveryMode , priority , timeToLive , heuristicMessage )..." );
-		enlist ( heuristicMessage );
+		enlist ( );
 		delegate.send (  msg , deliveryMode , priority , timeToLive );
 		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": send done." );
 	}
@@ -75,7 +75,7 @@ class AtomikosJmsMessageProducerProxy extends ConsumerProducerSupport implements
 			int priority, long timeToLive, String heuristicMessage ) 
 			throws JMSException {
 		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": send ( destination , message , deliveryMode , priority , timeToLive , heuristicMessage )..." );
-		enlist ( heuristicMessage );
+		enlist ( );
 		delegate.send (  dest , msg , deliveryMode , priority , timeToLive );
 		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": send done." );
 	}

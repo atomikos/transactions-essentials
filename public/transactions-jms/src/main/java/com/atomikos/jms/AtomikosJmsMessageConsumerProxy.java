@@ -51,11 +51,11 @@ class AtomikosJmsMessageConsumerProxy extends ConsumerProducerSupport implements
 		return delegate;
 	}
 	
-	public Message receive ( String hmsg ) throws JMSException {
-		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": receive ( " + hmsg + " )..." );
+	public Message receive() throws JMSException {
+		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": receive()..." );
 		Message ret = null;
 		try {
-			enlist ( hmsg );
+			enlist();
 			ret = delegate.receive();
 		} catch (Exception e) {
 			handleException ( e );
@@ -64,12 +64,12 @@ class AtomikosJmsMessageConsumerProxy extends ConsumerProducerSupport implements
 		return ret;
 	}
 
-	public Message receive ( long timeout , String hmsg ) throws JMSException {
-		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": receive ( " + timeout + " , " + hmsg + " )..." );
+	public Message receive ( long timeout ) throws JMSException {
+		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": receive ( " + timeout + ")..." );
 		
 		Message ret = null;
 		try {
-			enlist ( hmsg );
+			enlist();
 			ret = delegate.receive ( timeout );
 		} catch (Exception e) {
 			handleException ( e );
@@ -78,12 +78,12 @@ class AtomikosJmsMessageConsumerProxy extends ConsumerProducerSupport implements
 		return ret;
 	}
 
-	public Message receiveNoWait ( String hmsg ) throws JMSException {
-		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": receiveNoWait ( " + hmsg + " )..." );
+	public Message receiveNoWait() throws JMSException {
+		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": receiveNoWait()..." );
 		
 		Message ret = null;
 		try {
-			enlist ( hmsg );
+			enlist();
 			ret = delegate.receiveNoWait();
 		} catch (Exception e) {
 			handleException ( e );
@@ -124,27 +124,6 @@ class AtomikosJmsMessageConsumerProxy extends ConsumerProducerSupport implements
 			handleException ( e );
 		}
 		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": getMessageSelector() returning " + ret );
-		return ret;
-	}
-
-	public Message receive() throws JMSException {
-		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": receive()..." );
-		Message ret = receive ( null );
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": receive() returning " + ret );
-		return ret;
-	}
-
-	public Message receive ( long timeout ) throws JMSException {
-		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": receive ( " + timeout + " )..." );
-		Message ret =  receive ( timeout , null );
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": receive() returning " + ret );
-		return ret;
-	}
-
-	public Message receiveNoWait() throws JMSException {
-		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": receiveNoWait()..." );
-		Message ret = receiveNoWait ( null );
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": receiveNoWait() returning " + ret );
 		return ret;
 	}
 
