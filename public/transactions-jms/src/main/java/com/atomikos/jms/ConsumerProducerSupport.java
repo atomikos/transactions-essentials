@@ -34,7 +34,6 @@ import com.atomikos.datasource.xa.session.InvalidSessionHandleStateException;
 import com.atomikos.datasource.xa.session.SessionHandleState;
 import com.atomikos.icatch.CompositeTransaction;
 import com.atomikos.icatch.CompositeTransactionManager;
-import com.atomikos.icatch.StringHeuristicMessage;
 import com.atomikos.icatch.Synchronization;
 import com.atomikos.icatch.TxState;
 import com.atomikos.icatch.config.Configuration;
@@ -82,7 +81,6 @@ abstract class ConsumerProducerSupport
 		CompositeTransaction ct = null;
 		CompositeTransactionManager ctm = getCompositeTransactionManager();
 		boolean enlist = false;
-		StringHeuristicMessage shmsg = new StringHeuristicMessage ( hmsg );
 		
 		if ( ctm != null ) {
 			ct = ctm.getCompositeTransaction();
@@ -94,7 +92,7 @@ abstract class ConsumerProducerSupport
 		if ( enlist ) {
 			registerSynchronization ( ct );	
 			try {
-				state.notifyBeforeUse ( ct , shmsg );
+				state.notifyBeforeUse ( ct );
 			} catch ( InvalidSessionHandleStateException ex ) {
 				String msg = "error during enlist: " + ex.getMessage();
 				LOGGER.logWarning ( this + ": " + msg );

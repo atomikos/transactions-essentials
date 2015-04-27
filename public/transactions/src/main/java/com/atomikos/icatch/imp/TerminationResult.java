@@ -32,10 +32,8 @@ import java.util.Stack;
 import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.HeurMixedException;
 import com.atomikos.icatch.HeurRollbackException;
-import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.Participant;
 import com.atomikos.icatch.RollbackException;
-import com.atomikos.icatch.StringHeuristicMessage;
 import com.atomikos.icatch.TxState;
 
 
@@ -106,13 +104,11 @@ class TerminationResult extends Result
                 } else if ( err instanceof HeurMixedException ) {
                     atLeastOneHeuristicMixedException = true;
                     HeurMixedException hm = (HeurMixedException) err;
-                    addErrorMessages ( hm.getHeuristicMessages () );
                     heuristicparticipants_.put ( reply.getParticipant (),
                             TxState.HEUR_MIXED );
                 } else if ( err instanceof HeurCommitException ) {
                     atLeastOneHeuristicCommitException = true;
                     HeurCommitException hc = (HeurCommitException) err;
-                    addErrorMessages ( hc.getHeuristicMessages () );
                     atLeastOneHeuristicMixedException = (atLeastOneHeuristicMixedException || atLeastOneHeuristicRollbackException || atLeastOneHeuristicHazardException);
                     heuristicparticipants_.put ( reply.getParticipant (),
                             TxState.HEUR_COMMITTED );
@@ -121,7 +117,6 @@ class TerminationResult extends Result
                     atLeastOneHeuristicRollbackException = true;
                     atLeastOneHeuristicMixedException = (atLeastOneHeuristicMixedException || atLeastOneHeuristicCommitException || atLeastOneHeuristicHazardException);
                     HeurRollbackException hr = (HeurRollbackException) err;
-                    addErrorMessages ( hr.getHeuristicMessages () );
                     heuristicparticipants_.put ( reply.getParticipant (),
                             TxState.HEUR_ABORTED );
 
@@ -129,10 +124,6 @@ class TerminationResult extends Result
 
                     atLeastOneHeuristicHazardException = true;
                     atLeastOneHeuristicMixedException = (atLeastOneHeuristicMixedException || atLeastOneHeuristicRollbackException || atLeastOneHeuristicCommitException);
-                    HeuristicMessage heurmsg = new StringHeuristicMessage (
-                            "No commit ACK from " + "participant "
-                                    + reply.getParticipant () );
-                    heuristicMessagesOfHeuristicParticipants_.addElement ( heurmsg );
                     heuristicparticipants_.put ( reply.getParticipant (),
                             TxState.HEUR_HAZARD );
                     possiblyIndoubts_.put ( reply.getParticipant (),
@@ -140,17 +131,6 @@ class TerminationResult extends Result
 
                 }
             }
-            else {
-
-                // if reply OK -> add messages anyway, for complete overview
-                // this is in case coordinator makes heur commit
-                // So that it can present an overview of what has been
-                // heuristically committed.
-
-                HeuristicMessage[] msgs = (HeuristicMessage[]) reply.getResponse ();
-                if ( msgs != null ) addMessages ( msgs );
-            }
-
         } 
 
         if ( onePhaseCommitWithRollbackException )

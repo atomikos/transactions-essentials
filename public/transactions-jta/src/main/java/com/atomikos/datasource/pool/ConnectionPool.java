@@ -33,7 +33,6 @@ import com.atomikos.datasource.pool.event.ConnectionPoolExhaustedEvent;
 import com.atomikos.datasource.pool.event.PooledConnectionCreatedEvent;
 import com.atomikos.datasource.pool.event.PooledConnectionDestroyedEvent;
 import com.atomikos.datasource.pool.event.PooledConnectionReapedEvent;
-import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 import com.atomikos.publish.EventPublisher;
@@ -118,14 +117,14 @@ public class ConnectionPool implements XPooledConnectionEventListener
 		return xpc;
 	}
 
-	private Reapable recycleConnectionIfPossible ( HeuristicMessage hmsg ) throws Exception
+	private Reapable recycleConnectionIfPossible() throws Exception
 	{
 		Reapable ret = null;
 		for (int i = 0; i < totalSize(); i++) {
 			XPooledConnection xpc = (XPooledConnection) connections.get(i);
 
 			if (xpc.canBeRecycledForCallingThread()) {
-				ret = xpc.createConnectionProxy ( hmsg );
+				ret = xpc.createConnectionProxy();
 				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug( this + ": recycling connection from pool..." );
 				return ret;
 			}
@@ -135,29 +134,28 @@ public class ConnectionPool implements XPooledConnectionEventListener
 
 	/**
 	 * Borrows a connection from the pool.
-	 * @param hmsg The heuristic message to get the connection with.
 	 * @return The connection as Reapable.
 	 * @throws CreateConnectionException If the pool attempted to grow but failed.
 	 * @throws PoolExhaustedException If the pool could not grow because it is exhausted.
 	 * @throws ConnectionPoolException Other errors.
 	 */
-	public synchronized Reapable borrowConnection ( HeuristicMessage hmsg ) throws CreateConnectionException , PoolExhaustedException, ConnectionPoolException
+	public synchronized Reapable borrowConnection() throws CreateConnectionException , PoolExhaustedException, ConnectionPoolException
 	{
 		assertNotDestroyed();
 
 		Reapable ret = null;	
-		ret = findExistingOpenConnectionForCallingThread(hmsg);	
+		ret = findExistingOpenConnectionForCallingThread();	
 		if (ret == null) {
-			ret = findOrWaitForAnAvailableConnection(hmsg);		
+			ret = findOrWaitForAnAvailableConnection();		
 		}
 		return ret;
 	}
 
-	private Reapable findOrWaitForAnAvailableConnection(HeuristicMessage hmsg) throws ConnectionPoolException {
+	private Reapable findOrWaitForAnAvailableConnection() throws ConnectionPoolException {
 		Reapable ret = null;
 		long remainingTime = properties.getBorrowConnectionTimeout() * 1000L;		
 		do {
-			ret = retrieveFirstAvailableConnectionAndGrowPoolIfNecessary(hmsg);
+			ret = retrieveFirstAvailableConnectionAndGrowPoolIfNecessary();
 			if ( ret == null ) {
 				EventPublisher.publish(new ConnectionPoolExhaustedEvent(properties.getUniqueResourceName()));
 				remainingTime = waitForAtLeastOneAvailableConnection(remainingTime);
@@ -167,21 +165,20 @@ public class ConnectionPool implements XPooledConnectionEventListener
 		return ret;
 	}
 
-	private Reapable retrieveFirstAvailableConnectionAndGrowPoolIfNecessary(
-			HeuristicMessage hmsg) throws CreateConnectionException {
+	private Reapable retrieveFirstAvailableConnectionAndGrowPoolIfNecessary() throws CreateConnectionException {
 		
-		Reapable ret = retrieveFirstAvailableConnection(hmsg);
+		Reapable ret = retrieveFirstAvailableConnection();
 		if ( ret == null && canGrow() ) {
 			growPool();
-			ret = retrieveFirstAvailableConnection(hmsg);
+			ret = retrieveFirstAvailableConnection();
 		}		
 		return ret;
 	}
 
-	private Reapable findExistingOpenConnectionForCallingThread(HeuristicMessage hmsg) {
+	private Reapable findExistingOpenConnectionForCallingThread() {
 		Reapable recycledConnection = null ;
 		try {
-			recycledConnection = recycleConnectionIfPossible ( hmsg );
+			recycledConnection = recycleConnectionIfPossible();
 		} catch (Exception e) {
 			//ignore but log
 			LOGGER.logWarning ( this + ": error while trying to recycle" , e );
@@ -199,14 +196,14 @@ public class ConnectionPool implements XPooledConnectionEventListener
 		return totalSize() < properties.getMaxPoolSize();
 	}
 
-	private Reapable retrieveFirstAvailableConnection(HeuristicMessage hmsg) {
+	private Reapable retrieveFirstAvailableConnection() {
 		Reapable ret = null;
 		Iterator<XPooledConnection> it = connections.iterator();			
 		while ( it.hasNext() && ret == null ) {
 			XPooledConnection xpc =  it.next();
 			if (xpc.isAvailable()) {
 				try {
-					ret = xpc.createConnectionProxy ( hmsg );
+					ret = xpc.createConnectionProxy();
 					if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug( this + ": got connection from pool");
 				} catch ( CreateConnectionException ex ) {
 					String msg = this +  ": error creating proxy of connection " + xpc;

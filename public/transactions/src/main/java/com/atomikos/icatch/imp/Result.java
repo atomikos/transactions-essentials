@@ -27,9 +27,7 @@ package com.atomikos.icatch.imp;
 
 import java.util.Hashtable;
 import java.util.Stack;
-import java.util.Vector;
 
-import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.Participant;
 
 /**
@@ -49,8 +47,6 @@ abstract class Result
     protected int numberOfMissingReplies_ = 0;
     protected Stack<Reply> replies_ = new Stack<Reply>();
     protected Hashtable<Participant,Object> repliedlist_ = new Hashtable<Participant,Object>();
-    protected Vector<HeuristicMessage> heuristicMessagesOfNormalParticipants_ = new Vector<HeuristicMessage>();
-    protected Vector<HeuristicMessage> heuristicMessagesOfHeuristicParticipants_ = new Vector<HeuristicMessage>();
 
     public Result ( int numberOfRepliesToWaitFor )
     {
@@ -74,35 +70,6 @@ abstract class Result
         return result_;
     }
 
-    /**
-     * Add any heuristic messages from this message round.
-     *
-     * Needed in implementation of analyze().
-     */
-
-    protected synchronized void addMessages ( HeuristicMessage[] marr )
-    {
-        if ( marr == null ) return;
-        
-        for ( int i = 0; i < marr.length; i++ )
-            heuristicMessagesOfNormalParticipants_.addElement ( marr[i] );
-    }
-
-    /**
-     * Add any heuristic messages from this message round. This method serves
-     * for adding the messages of participants that decided ON THEIR OWN to
-     * terminate heuristically.
-     *
-     * Needed in implementation of analyze().
-     */
-
-    protected synchronized void addErrorMessages ( HeuristicMessage[] marr )
-    {
-        if ( marr == null ) return;
-        
-        for ( int i = 0; i < marr.length; i++ )
-            heuristicMessagesOfHeuristicParticipants_.addElement ( marr[i] );
-    }
 
     /**
      * Abstract method: analyze the results for this message round.
@@ -116,59 +83,6 @@ abstract class Result
     protected abstract void calculateResultFromAllReplies() throws IllegalStateException,
             InterruptedException;
 
-    /**
-     * Get the heuristic info for the message round. This returns all heuristic
-     * messages for participants that did NOT heuristically terminate on their
-     * own.
-     *
-     * @return HeuristicMessages[] The heuristic messages, or null if none.
-     * @exception IllegalStateException
-     *                If not done yet.
-     * @exception InterruptedException
-     *                If interrupted during wait for results.
-     */
-
-    public HeuristicMessage[] getMessages () throws IllegalStateException,
-            InterruptedException
-    {
-        calculateResultFromAllReplies();
-
-        if ( heuristicMessagesOfNormalParticipants_.isEmpty () ) return null;
-
-        Object[] oarr = heuristicMessagesOfNormalParticipants_.toArray ();
-        HeuristicMessage[] ret = new HeuristicMessage[oarr.length];
-        for ( int i = 0; i < ret.length; i++ )
-            ret[i] = (HeuristicMessage) oarr[i];
-
-        return ret;
-    }
-
-    /**
-     * Get the heuristic error info for the message round. These are for
-     * participants that actually did terminate heuristically on their own.
-     *
-     * @return HeuristicMessages[] The heuristic messages, or null if none.
-     * @exception IllegalStateException
-     *                If not done yet.
-     * @exception InterruptedException
-     *                If interrupted during wait.
-     */
-
-    public HeuristicMessage[] getErrorMessages () throws IllegalStateException,
-            InterruptedException
-    {
-        calculateResultFromAllReplies();
-
-        if ( heuristicMessagesOfHeuristicParticipants_.isEmpty () )
-            return null;
-
-        Object[] oarr = heuristicMessagesOfHeuristicParticipants_.toArray ();
-        HeuristicMessage[] ret = new HeuristicMessage[oarr.length];
-        for ( int i = 0; i < ret.length; i++ )
-            ret[i] = (HeuristicMessage) oarr[i];
-
-        return ret;
-    }
     
     private boolean ignoreReply ( Reply reply ) {
     	// retried messages are not counted in result

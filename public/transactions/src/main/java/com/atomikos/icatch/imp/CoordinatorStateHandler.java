@@ -45,7 +45,6 @@ import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeurMixedException;
 import com.atomikos.icatch.HeurRollbackException;
-import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.Participant;
 import com.atomikos.icatch.RollbackException;
 import com.atomikos.icatch.SysException;
@@ -222,67 +221,6 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable,DataSe
             TxState state = participants.get ( next );
             addToHeuristicMap ( next, state );
         }
-    }
-
-    /**
-     * Gets the heuristic messages for all participants that are in the given
-     * heuristic state
-     *
-     * @param heuristicState
-     *            The heuristic state, or the terminated state.
-     * @return HeuristicMessage[] The heuristic messages of all participants in
-     *         the given state, or an empty array if none.
-     */
-
-    protected HeuristicMessage[] getHeuristicMessages (
-            Object heuristicState )
-    {
-        Vector msgs = new Vector ();
-
-        Stack parts = (Stack) heuristicMap_.get ( heuristicState );
-        if ( parts == null ) {
-            throw new RuntimeException ( "Error: getHeuristicMessages "
-                    + "for non-mapped heuristic state: " + heuristicState );
-        }
-        Enumeration enumm = parts.elements ();
-        while ( enumm.hasMoreElements () ) {
-            Participant p = (Participant) enumm.nextElement ();
-            HeuristicMessage[] errs = p.getHeuristicMessages ();
-            if ( errs != null ) {
-                for ( int i = 0; i < errs.length; i++ ) {
-                    msgs.addElement ( errs[i] );
-                }
-            }
-        }
-        HeuristicMessage[] template = new HeuristicMessage[0];
-        return (HeuristicMessage[]) msgs.toArray ( template );
-    }
-
-    /**
-     * Get the heuristic info for the message round.
-     *
-     * @return HeuristicMessages[] The heuristic messages, or an empty array if
-     *         none.
-     */
-
-    protected HeuristicMessage[] getHeuristicMessages ()
-    {
-        // this method should NOT be synchronized to make rollback
-        // recursion-safe.
-        Vector msgs = new Vector ();
-        Enumeration enumm = coordinator_.getParticipants ().elements ();
-        while ( enumm.hasMoreElements () ) {
-            Participant p = (Participant) enumm.nextElement ();
-            HeuristicMessage[] errs = p.getHeuristicMessages ();
-            if ( errs != null ) {
-                for ( int i = 0; i < errs.length; i++ ) {
-                    msgs.addElement ( errs[i] );
-                }
-            }
-        }
-
-        HeuristicMessage[] template = new HeuristicMessage[0];
-        return (HeuristicMessage[]) msgs.toArray ( template );
     }
 
     /**
@@ -502,7 +440,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable,DataSe
      *
      */
 
-    protected abstract HeuristicMessage[] commit ( boolean onePhase )
+    protected abstract void commit ( boolean onePhase )
             throws HeurRollbackException, HeurMixedException,
             HeurHazardException, java.lang.IllegalStateException,
             RollbackException, SysException;
@@ -513,7 +451,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable,DataSe
      * class (in addition to their state-specific preconditions).
      */
 
-    protected abstract HeuristicMessage[] rollback ()
+    protected abstract void rollback ()
             throws HeurCommitException, HeurMixedException, SysException,
             HeurHazardException, java.lang.IllegalStateException;
 
@@ -527,7 +465,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable,DataSe
      *            True iff one-phase commit.
      */
 
-    protected HeuristicMessage[] commitFromWithinCallback ( boolean heuristic ,
+    protected void commitFromWithinCallback ( boolean heuristic ,
             boolean onePhase ) throws HeurRollbackException,
             HeurMixedException, HeurHazardException,
             java.lang.IllegalStateException, RollbackException, SysException
@@ -556,7 +494,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable,DataSe
 					throw new RollbackException ( msg , error );
         		} catch ( HeurCommitException e ) {
 					LOGGER.logWarning ( "Illegal heuristic commit during rollback:" + e );
-					throw new HeurMixedException ( e.getHeuristicMessages() );
+					throw new HeurMixedException();
 				}
         	}
 
@@ -603,7 +541,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable,DataSe
                             hazards );
 
                     coordinator_.setStateHandler ( nextStateHandler );
-                    throw new HeurMixedException ( getHeuristicMessages () );
+                    throw new HeurMixedException();
                 }
 
                 else if ( res == TerminationResult.ROLLBACK ) {
@@ -617,7 +555,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable,DataSe
                     // Here, we do NOT need to add extra information, since ALL
                     // participants agreed to rollback. 
                     // Therefore, we need not worry about who aborted and who committed.
-                    throw new HeurRollbackException ( getHeuristicMessages () );
+                    throw new HeurRollbackException();
 
                 }
 
@@ -634,7 +572,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable,DataSe
                     nextStateHandler = new HeurHazardStateHandler ( this,
                             hazards );
                     coordinator_.setStateHandler ( nextStateHandler );
-                    throw new HeurHazardException ( getHeuristicMessages () );
+                    throw new HeurHazardException();
                 }
 
             } else {
@@ -657,9 +595,6 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable,DataSe
 			InterruptedExceptionHelper.handleInterruptedException ( intr );
             throw new SysException ( "Error in commit" + intr.getMessage (), intr );
         }
-
-        return getHeuristicMessages ();
-
     }
 
     /**
@@ -672,7 +607,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable,DataSe
      *            True iff a heuristic commit should be done.
      */
 
-    protected HeuristicMessage[] rollbackFromWithinCallback ( boolean indoubt ,
+    protected void rollbackFromWithinCallback ( boolean indoubt ,
             boolean heuristic ) throws HeurCommitException, HeurMixedException,
             SysException, HeurHazardException, java.lang.IllegalStateException
     {
@@ -721,7 +656,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable,DataSe
                     nextStateHandler = new HeurMixedStateHandler ( this,
                             hazards );
                     coordinator_.setStateHandler ( nextStateHandler );
-                    throw new HeurMixedException ( getHeuristicMessages () );
+                    throw new HeurMixedException();
                 }
 
                 else if ( res == TerminationResult.HEUR_COMMIT ) {
@@ -729,7 +664,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable,DataSe
                     coordinator_.setStateHandler ( nextStateHandler );
                     // NO extra per-participant state mappings, since ALL
                     // participants are heuristically committed.
-                    throw new HeurCommitException ( getHeuristicMessages () );
+                    throw new HeurCommitException();
 
                 }
 
@@ -747,7 +682,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable,DataSe
                     }
                     nextStateHandler = new HeurHazardStateHandler ( this, hazards );
                     coordinator_.setStateHandler ( nextStateHandler );
-                    throw new HeurHazardException ( getHeuristicMessages () );
+                    throw new HeurHazardException();
                 }
             }
 
@@ -774,9 +709,6 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable,DataSe
 			InterruptedExceptionHelper.handleInterruptedException ( e );
             throw new SysException ( "Error in rollback: " + e.getMessage (), e );
         }
-
-        return getHeuristicMessages ();
-
     }
 
     protected void forget ()
@@ -816,12 +748,11 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable,DataSe
         coordinator_.setStateHandler ( nextStateHandler );
     }
     
-    public HeuristicMessage[] rollbackWithAfterCompletionNotification(RollbackCallback cb) throws HeurCommitException,
+    public void rollbackWithAfterCompletionNotification(RollbackCallback cb) throws HeurCommitException,
     HeurMixedException, SysException, HeurHazardException,
     java.lang.IllegalStateException {
-		HeuristicMessage[] ret = null;
 		try {
-        	ret = cb.doRollback();
+        	cb.doRollback();
         	coordinator_.notifySynchronizationsAfterCompletion(TxState.ABORTING, TxState.TERMINATED);
     	} catch (HeurCommitException hc) {
     		coordinator_.notifySynchronizationsAfterCompletion(TxState.COMMITTING, TxState.TERMINATED);
@@ -833,15 +764,13 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable,DataSe
     		coordinator_.notifySynchronizationsAfterCompletion(TxState.ABORTING,TxState.TERMINATED);
     		throw hh;
     	}
-		return ret;
 	}
     
-    HeuristicMessage[] commitWithAfterCompletionNotification(CommitCallback cb) throws HeurRollbackException, HeurMixedException,
+    void commitWithAfterCompletionNotification(CommitCallback cb) throws HeurRollbackException, HeurMixedException,
     HeurHazardException, java.lang.IllegalStateException,
     RollbackException, SysException {
-		HeuristicMessage[] ret = null;
 		try {
-			ret = cb.doCommit();
+			cb.doCommit();
 			coordinator_.notifySynchronizationsAfterCompletion(TxState.COMMITTING,TxState.TERMINATED);
 		} catch (RollbackException rb) {
 			coordinator_.notifySynchronizationsAfterCompletion(TxState.ABORTING,TxState.TERMINATED);
@@ -856,31 +785,30 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable,DataSe
 			coordinator_.notifySynchronizationsAfterCompletion(TxState.ABORTING,TxState.TERMINATED);
 			throw hr;
 		}
-		return ret;
     }
     
-    public HeuristicMessage[] rollbackHeuristically ()
+    public void rollbackHeuristically ()
             throws HeurCommitException, HeurMixedException, SysException,
             HeurHazardException, java.lang.IllegalStateException
     {
-    	return rollbackWithAfterCompletionNotification(new RollbackCallback() {		
-			public HeuristicMessage[] doRollback() throws HeurCommitException,
+    	 rollbackWithAfterCompletionNotification(new RollbackCallback() {		
+			public void doRollback() throws HeurCommitException,
 					HeurMixedException, SysException, HeurHazardException,
 					IllegalStateException {
-				return rollbackFromWithinCallback(true, true);
+				 rollbackFromWithinCallback(true, true);
 			}
 		});
     }
 
-    public HeuristicMessage[] commitHeuristically () throws HeurMixedException,
+    public void commitHeuristically () throws HeurMixedException,
     SysException, HeurRollbackException, HeurHazardException,
     java.lang.IllegalStateException, RollbackException
     {
-    	return commitWithAfterCompletionNotification(new CommitCallback() {		
-			public HeuristicMessage[] doCommit() throws HeurRollbackException,
+    	 commitWithAfterCompletionNotification(new CommitCallback() {		
+			public void doCommit() throws HeurRollbackException,
 					HeurMixedException, HeurHazardException, IllegalStateException,
 					RollbackException, SysException {
-				return commitFromWithinCallback(true,false);
+				commitFromWithinCallback(true,false);
 			}
 		});
     }

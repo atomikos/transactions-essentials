@@ -28,7 +28,6 @@ package com.atomikos.icatch.imp;
 import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeurMixedException;
-import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.Participant;
 
 /**
@@ -54,7 +53,7 @@ class RollbackMessage extends PropagationMessage
     /**
      * A rollback message.
      *
-     * @return Object An array of heuristic messages.
+     * @return Boolean null
      * @exception PropagationException
      *                If problems. If heuristics, this will be a fatal
      *                exception; otherwise, rollback has to be retried since
@@ -62,12 +61,11 @@ class RollbackMessage extends PropagationMessage
      *                transient in nature.
      */
 
-    protected Object send () throws PropagationException
+    protected Boolean send () throws PropagationException
     {
         Participant part = getParticipant ();
-        HeuristicMessage[] msgs = null;
         try {
-            msgs = part.rollback ();
+             part.rollback ();
 
         } catch ( HeurCommitException heurc ) {
             throw new PropagationException ( heurc, false );
@@ -80,11 +78,11 @@ class RollbackMessage extends PropagationMessage
             if ( indoubt_ ) {
                 // here, participant might be indoubt!
                 // fill in exact heuristic msgs by using buffered effect of proxies
-                HeurHazardException heurh = new HeurHazardException ( part.getHeuristicMessages () );
+                HeurHazardException heurh = new HeurHazardException();
                 throw new PropagationException ( heurh, true );
             }
         }
-        return msgs;
+        return null;
     }
 
     public String toString ()

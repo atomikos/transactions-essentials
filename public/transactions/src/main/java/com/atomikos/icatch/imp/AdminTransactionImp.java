@@ -29,7 +29,6 @@ import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeurMixedException;
 import com.atomikos.icatch.HeurRollbackException;
-import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.RollbackException;
 import com.atomikos.icatch.SysException;
 import com.atomikos.icatch.TxState;
@@ -166,39 +165,7 @@ class AdminTransactionImp implements AdminTransaction
 
         return convertState ( state );
     }
-
-    /**
-     * @see AdminTransaction
-     */
-
-    public HeuristicMessage[] getTags ()
-    {
-        return coord_.getTags ();
-    }
-
-    /**
-     * @see AdminTransaction
-     */
-
-    public HeuristicMessage[] getHeuristicMessages ()
-    {
-        return coord_.getHeuristicMessages ();
-    }
-
-    /**
-     * @see AdminTransaction
-     */
-
-    public HeuristicMessage[] getHeuristicMessages ( int state )
-    {
-        HeuristicMessage[] ret = null;
-        TxState txstate = convertState ( state );
-        if ( txstate != null ) {
-            ret = coord_.getHeuristicMessages ( txstate );
-        }
-
-        return ret;
-    }
+  
 
     /**
      * @see AdminTransaction

@@ -25,33 +25,17 @@
 
 package com.atomikos.icatch;
 
-
-
 /**
- * Exception signaling that two-phase commit was not acknowledged
- * by some participants.
+ * Exception signaling that two-phase commit was not acknowledged by some
+ * participants.
  */
 
-public class HeurHazardException extends Exception
-{
+public class HeurHazardException extends Exception {
 
 	private static final long serialVersionUID = 1L;
 
-	protected HeuristicMessage[] msgs_=null;
+	public HeurHazardException() {
+		super("Heuristic Hazard Exception");
+	}
 
-
-    public HeurHazardException(HeuristicMessage[] msgs)
-    {
-        super ("Heuristic Exception");
-        msgs_=msgs;
-    }
-
-    /**
-     * @return HeuristicMessage[] The messages, or null if none given.
-     */
-
-    public HeuristicMessage[] getHeuristicMessages()
-    {
-        return msgs_;
-    }
 }

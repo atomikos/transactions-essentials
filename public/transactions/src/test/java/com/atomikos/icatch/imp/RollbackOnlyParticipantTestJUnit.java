@@ -6,27 +6,17 @@ import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeurMixedException;
 import com.atomikos.icatch.HeurRollbackException;
-import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.RollbackException;
-import com.atomikos.icatch.StringHeuristicMessage;
 import com.atomikos.icatch.SysException;
 
 public class RollbackOnlyParticipantTestJUnit extends TestCase {
 
 	private RollbackOnlyParticipant p;
 
-	private StringHeuristicMessage msg;
 	
 	protected void setUp() throws Exception {
 		super.setUp();
-		msg = new StringHeuristicMessage ( "test" );
-		p = new RollbackOnlyParticipant ( msg );
-	}
-	
-	public void testHeuristicMessages()
-	{
-		HeuristicMessage[] msgs = p.getHeuristicMessages();
-		assertEquals ( msgs[0] , msg );
+		p = new RollbackOnlyParticipant();
 	}
 	
 	public void testRecover()

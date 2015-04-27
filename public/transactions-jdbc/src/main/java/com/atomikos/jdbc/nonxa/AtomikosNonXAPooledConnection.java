@@ -35,7 +35,6 @@ import com.atomikos.datasource.pool.CreateConnectionException;
 import com.atomikos.datasource.pool.Reapable;
 import com.atomikos.icatch.CompositeTransaction;
 import com.atomikos.icatch.CompositeTransactionManager;
-import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.config.Configuration;
 import com.atomikos.icatch.jta.TransactionManagerImp;
 import com.atomikos.jdbc.JdbcConnectionProxyHelper;
@@ -90,7 +89,7 @@ class AtomikosNonXAPooledConnection extends AbstractXPooledConnection
 
 	}
 
-	protected Reapable doCreateConnectionProxy ( HeuristicMessage hmsg ) throws CreateConnectionException 
+	protected Reapable doCreateConnectionProxy() throws CreateConnectionException 
 	{
 		Reapable ret = null;
 		if ( canBeRecycledForCallingThread() ) {

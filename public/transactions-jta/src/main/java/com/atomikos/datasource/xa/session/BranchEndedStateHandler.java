@@ -28,7 +28,6 @@ package com.atomikos.datasource.xa.session;
 import com.atomikos.datasource.xa.XAResourceTransaction;
 import com.atomikos.datasource.xa.XATransactionalResource;
 import com.atomikos.icatch.CompositeTransaction;
-import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 
@@ -53,7 +52,7 @@ extends TransactionContextStateHandler
 		branch.suspend();
 	}
 
-	TransactionContextStateHandler checkEnlistBeforeUse ( CompositeTransaction ct , HeuristicMessage hmsg )
+	TransactionContextStateHandler checkEnlistBeforeUse ( CompositeTransaction ct)
 			throws InvalidSessionHandleStateException 
 	{
 		String msg = "Detected illegal attempt to use a closed XA session";

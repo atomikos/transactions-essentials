@@ -40,7 +40,6 @@ import com.atomikos.datasource.xa.session.SessionHandleState;
 import com.atomikos.datasource.xa.session.SessionHandleStateChangeListener;
 import com.atomikos.icatch.CompositeTransaction;
 import com.atomikos.icatch.CompositeTransactionManager;
-import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.config.Configuration;
 import com.atomikos.icatch.jta.TransactionManagerImp;
 import com.atomikos.logging.Logger;
@@ -105,11 +104,11 @@ public class AtomikosXAPooledConnection extends AbstractXPooledConnection
 
 
 	
-	protected Reapable doCreateConnectionProxy ( HeuristicMessage hmsg ) throws CreateConnectionException
+	protected Reapable doCreateConnectionProxy() throws CreateConnectionException
 	{
 		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": creating connection proxy..." );
 		JdbcConnectionProxyHelper.setIsolationLevel ( connection , getDefaultIsolationLevel() );
-		return AtomikosConnectionProxy.newInstance ( connection , sessionHandleState , hmsg );
+		return AtomikosConnectionProxy.newInstance ( connection , sessionHandleState);
 	}
 
 	protected void testUnderlyingConnection() throws CreateConnectionException {

@@ -137,8 +137,6 @@ public interface Participant extends java.io.Serializable
      * of this method.
      *
      *
-     * @return HeuristicMessage[] An array of messages, null if none.
-     *
      * @param onePhase If true, one-phase commit is being started.
      * If the participant has received a prepare call earlier, 
      * then it should throw a SysException here.
@@ -156,7 +154,7 @@ public interface Participant extends java.io.Serializable
      * @exception SysException
      */
 
-    public HeuristicMessage[] commit ( boolean onePhase )
+    public void commit ( boolean onePhase )
         throws HeurRollbackException,
 	     HeurHazardException,
 	     HeurMixedException,
@@ -175,8 +173,6 @@ public interface Participant extends java.io.Serializable
      * In that case, implementations never need to throw any of the heuristic exceptions
      * of this method.
      *
-     * @return HeuristicMessage[] An array of messages, null if none.
-     *
      * @exception HeurCommitException If the participant committed.
      * @exception HeurHazardException If the participant's final state
      * is unsure.
@@ -185,7 +181,7 @@ public interface Participant extends java.io.Serializable
      * @exception SysException
      */
 
-    public HeuristicMessage[] rollback()
+    public void rollback()
         throws HeurCommitException,
 	     HeurMixedException,
 	     HeurHazardException,
@@ -205,11 +201,5 @@ public interface Participant extends java.io.Serializable
 
     public void forget();
 
-    /**
-     *
-     *@return HeuristicMessage[] An array of heuristic messages, or null if none.
-     */
-     
-    public HeuristicMessage[] getHeuristicMessages();
 }
 

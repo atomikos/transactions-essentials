@@ -49,24 +49,5 @@ public interface JmxTransactionMBean
 
     public String getState ();
 
-    /**
-     * Gets the high-level heuristic comments. This is what remote clients will
-     * see as well.
-     * 
-     * @return HeuristicMessage The comments giving a summary of the tasks done
-     *         in this transaction.
-     */
-
-    public String[] getTags ();
-
-    /**
-     * Gets the HeuristicMessage detailed info for this transaction.
-     * 
-     * @return HeuristicMessage[] The detailed heuristic messages. These show
-     *         the comments for EACH individual resource that was part of the
-     *         transaction.
-     */
-
-    public String[] getHeuristicMessages ();
 
 }

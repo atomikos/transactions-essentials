@@ -29,7 +29,6 @@ import javax.transaction.xa.XAResource;
 
 import com.atomikos.datasource.xa.XATransactionalResource;
 import com.atomikos.icatch.CompositeTransaction;
-import com.atomikos.icatch.HeuristicMessage;
 
  /**
   *
@@ -69,7 +68,6 @@ abstract class TransactionContextStateHandler
 	/**
 	 * Checks and performs an XA enlist if needed.
 	 * @param ct The transaction to enlist with, null if none.
-	 * @param HeuristicMessage hmsg The heuristic message.
 	 *
 	 * @return The next state, or null if no change.
 	 *
@@ -81,7 +79,7 @@ abstract class TransactionContextStateHandler
 	 *
 	 */
 
-	abstract TransactionContextStateHandler checkEnlistBeforeUse ( CompositeTransaction ct , HeuristicMessage hmsg )
+	abstract TransactionContextStateHandler checkEnlistBeforeUse ( CompositeTransaction ct )
 	throws InvalidSessionHandleStateException, UnexpectedTransactionContextException;
 
 	/**

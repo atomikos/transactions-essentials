@@ -29,7 +29,6 @@ import javax.transaction.xa.XAResource;
 
 import com.atomikos.datasource.xa.XATransactionalResource;
 import com.atomikos.icatch.CompositeTransaction;
-import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 
@@ -83,9 +82,9 @@ class TransactionContext
 	 * @throws UnexpectedTransactionContextException If the current transaction context is not what would be expected.
 	 */
 	
-	synchronized void checkEnlistBeforeUse ( CompositeTransaction ct , HeuristicMessage hmsg ) throws InvalidSessionHandleStateException, UnexpectedTransactionContextException
+	synchronized void checkEnlistBeforeUse ( CompositeTransaction ct ) throws InvalidSessionHandleStateException, UnexpectedTransactionContextException
 	{
-		TransactionContextStateHandler nextState = state.checkEnlistBeforeUse ( ct , hmsg );
+		TransactionContextStateHandler nextState = state.checkEnlistBeforeUse ( ct );
 		setState ( nextState );
 	}
 	

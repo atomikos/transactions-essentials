@@ -35,7 +35,6 @@ import java.io.OptionalDataException;
 import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.Stack;
-import java.util.Vector;
 
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
@@ -50,10 +49,8 @@ import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeurMixedException;
 import com.atomikos.icatch.HeurRollbackException;
-import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.Participant;
 import com.atomikos.icatch.RollbackException;
-import com.atomikos.icatch.StringHeuristicMessage;
 import com.atomikos.icatch.SysException;
 import com.atomikos.icatch.TransactionControl;
 import com.atomikos.icatch.TxState;
@@ -169,7 +166,6 @@ public class XAResourceTransaction implements ResourceTransaction,
 
 	private transient XATransactionalResource resource;
 	private transient XAResource xaresource;
-	private Vector<HeuristicMessage> heuristicMessages;
 	private transient boolean knownInResource;
 	private transient int timeout;
 
@@ -191,12 +187,8 @@ public class XAResourceTransaction implements ResourceTransaction,
 		this.resourcename = resource.getName();
 		setXid(this.resource.createXid(this.tid));
 		setState(TxState.ACTIVE);
-		this.heuristicMessages = new Vector();
 		this.isXaSuspended = false;
 		this.knownInResource = false;
-		addHeuristicMessage(new StringHeuristicMessage("XA resource '"
-				+ resource.getName() + "' accessed with Xid '"
-				+ this.xidToHexString + "'"));
 	}
 
 	void setResource(XATransactionalResource resource) {
@@ -220,7 +212,6 @@ public class XAResourceTransaction implements ResourceTransaction,
 			XAException cause) {
 		String errorMsg = interpretErrorCode(this.resourcename, opCode,
 				this.xid, cause.errorCode);
-		addHeuristicMessage(new StringHeuristicMessage(errorMsg));
 		setState(state);
 	}
 
@@ -295,8 +286,6 @@ public class XAResourceTransaction implements ResourceTransaction,
 		out.writeObject(this.tid);
 		out.writeObject(this.root);
 		out.writeObject(this.state);
-		// CLONE vector to ensure it gets re-written!
-		out.writeObject(this.heuristicMessages.clone());
 		out.writeObject(this.resourcename);
 		if (this.xaresource instanceof Serializable) {
 			// cf case 59238
@@ -316,7 +305,6 @@ public class XAResourceTransaction implements ResourceTransaction,
 		this.root = (String) in.readObject();
 		this.state = (TxState) in.readObject();
 
-		this.heuristicMessages = (Vector) in.readObject();
 		this.resourcename = (String) in.readObject();
 
 		try {
@@ -338,30 +326,6 @@ public class XAResourceTransaction implements ResourceTransaction,
 
 	public String getTid() {
 		return this.tid;
-	}
-
-	/**
-	 * @see ResourceTransaction.
-	 */
-
-	@Override
-	public void addHeuristicMessage(HeuristicMessage mesg)
-			throws IllegalStateException {
-		if (mesg != null && mesg.toString() != null) {
-			this.heuristicMessages.addElement(mesg);
-		}
-
-	}
-
-	/**
-	 * @see ResourceTransaction.
-	 */
-
-	@Override
-	public HeuristicMessage[] getHeuristicMessages() {
-		HeuristicMessage[] heurArray = new HeuristicMessage[1];
-		return this.heuristicMessages.toArray(heurArray);
-
 	}
 
 	/**
@@ -606,27 +570,27 @@ public class XAResourceTransaction implements ResourceTransaction,
 	 */
 
 	@Override
-	public synchronized HeuristicMessage[] rollback()
+	public synchronized void rollback()
 			throws HeurCommitException, HeurMixedException,
 			HeurHazardException, SysException {
 		terminateInResource();
 
 		if (rollbackShouldDoNothing()) {
-			return null;
+			return;
 		}
 		if (this.state.equals(TxState.TERMINATED)) {
-			return getHeuristicMessages();
+			return;
 		}
 
 		if (this.state.equals(TxState.HEUR_MIXED))
-			throw new HeurMixedException(getHeuristicMessages());
+			throw new HeurMixedException();
 		if (this.state.equals(TxState.HEUR_COMMITTED))
-			throw new HeurCommitException(getHeuristicMessages());
+			throw new HeurCommitException();
 		if (this.xaresource == null) { // if recover failed
 			LOGGER.logWarning("XAResourceTransaction "
 					+ getXid()
 					+ ": no XAResource to rollback - the required resource is probably not yet intialized?");
-			throw new HeurHazardException(getHeuristicMessages());
+			throw new HeurHazardException();
 		}
 
 		try {
@@ -667,15 +631,15 @@ public class XAResourceTransaction implements ResourceTransaction,
 				case XAException.XA_HEURHAZ:
 					switchToHeuristicState("rollback", TxState.HEUR_HAZARD,
 							xaerr);
-					throw new HeurHazardException(getHeuristicMessages());
+					throw new HeurHazardException();
 				case XAException.XA_HEURMIX:
 					switchToHeuristicState("rollback", TxState.HEUR_MIXED,
 							xaerr);
-					throw new HeurMixedException(getHeuristicMessages());
+					throw new HeurMixedException();
 				case XAException.XA_HEURCOM:
 					switchToHeuristicState("rollback", TxState.HEUR_COMMITTED,
 							xaerr);
-					throw new HeurCommitException(getHeuristicMessages());
+					throw new HeurCommitException();
 				case XAException.XA_HEURRB:
 					forget();
 					break;
@@ -696,7 +660,6 @@ public class XAResourceTransaction implements ResourceTransaction,
 			}
 		}
 		setState(TxState.TERMINATED);
-		return getHeuristicMessages();
 	}
 
 	private boolean rollbackShouldDoNothing() {
@@ -708,22 +671,22 @@ public class XAResourceTransaction implements ResourceTransaction,
 	 */
 
 	@Override
-	public synchronized HeuristicMessage[] commit(boolean onePhase)
+	public synchronized void commit(boolean onePhase)
 			throws HeurRollbackException, HeurHazardException,
 			HeurMixedException, RollbackException, SysException {
 		terminateInResource();
 
 		if (this.state.equals(TxState.TERMINATED))
-			return getHeuristicMessages();
+			return;
 		if (this.state.equals(TxState.HEUR_MIXED))
-			throw new HeurMixedException(getHeuristicMessages());
+			throw new HeurMixedException();
 		if (this.state.equals(TxState.HEUR_ABORTED))
-			throw new HeurRollbackException(getHeuristicMessages());
+			throw new HeurRollbackException();
 		if (this.xaresource == null) { // null if recovery failed
 			LOGGER.logWarning("XAResourceTransaction "
 					+ getXid()
 					+ ": no XAResource to commit - the required resource is probably not yet intialized?");
-			throw new HeurHazardException(getHeuristicMessages());
+			throw new HeurHazardException();
 		}
 
 		try {
@@ -773,17 +736,17 @@ public class XAResourceTransaction implements ResourceTransaction,
 				switch (xaerr.errorCode) {
 				case XAException.XA_HEURHAZ:
 					switchToHeuristicState("commit", TxState.HEUR_HAZARD, xaerr);
-					throw new HeurHazardException(getHeuristicMessages());
+					throw new HeurHazardException();
 				case XAException.XA_HEURMIX:
 					switchToHeuristicState("commit", TxState.HEUR_MIXED, xaerr);
-					throw new HeurMixedException(getHeuristicMessages());
+					throw new HeurMixedException();
 				case XAException.XA_HEURCOM:
 					forget();
 					break;
 				case XAException.XA_HEURRB:
 					switchToHeuristicState("commit", TxState.HEUR_ABORTED,
 							xaerr);
-					throw new HeurRollbackException(getHeuristicMessages());
+					throw new HeurRollbackException();
 				case XAException.XAER_NOTA:
 					if (!onePhase) {
 						// see case 21552
@@ -799,7 +762,6 @@ public class XAResourceTransaction implements ResourceTransaction,
 			}
 		}
 		setState(TxState.TERMINATED);
-		return getHeuristicMessages();
 	}
 
 	/**
@@ -991,12 +953,6 @@ public class XAResourceTransaction implements ResourceTransaction,
 		out.writeUTF(this.root);
 		out.writeUTF(this.state.toString());
 		out.writeUTF(this.resourcename);
-		out.writeInt(this.heuristicMessages.size());
-		for (HeuristicMessage heuristicMessage2 : this.heuristicMessages) {
-			HeuristicMessage heuristicMessage = heuristicMessage2;
-			out.writeUTF(heuristicMessage.toString());
-		}
-
 		if (this.xaresource instanceof Serializable) {
 			// cf case 59238
 			out.writeBoolean(true);
@@ -1026,13 +982,6 @@ public class XAResourceTransaction implements ResourceTransaction,
 		this.root = in.readUTF();
 		this.state = TxState.valueOf(in.readUTF());
 		this.resourcename = in.readUTF();
-		int nbMessages = in.readInt();
-		this.heuristicMessages = new Vector<HeuristicMessage>(nbMessages);
-		for (int i = 0; i < nbMessages; i++) {
-			this.heuristicMessages
-					.add(new StringHeuristicMessage(in.readUTF()));
-		}
-
 		boolean xaresourceSerializable = in.readBoolean();
 		if (xaresourceSerializable) {
 			int size = in.readInt();

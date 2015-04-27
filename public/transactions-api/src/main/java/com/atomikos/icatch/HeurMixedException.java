@@ -43,72 +43,8 @@ package com.atomikos.icatch;
 
 public class HeurMixedException extends Exception
 {
-
-    protected HeuristicMessage[] aborts_=null, commits_=null, msgs_=null;
-
-
-    public HeurMixedException (HeuristicMessage[] msgs)
+    public HeurMixedException ()
     {
-        super("Heuristic Exception");
-        msgs_=msgs;
+        super("Heuristic Mixed Exception");
     }
-
-    public HeurMixedException(HeuristicMessage[] aborts,
-			HeuristicMessage[] commits)
-    {
-        super("Heuristic Exception");
-        aborts_=aborts;
-        commits_=commits;
-    }
-
-    /**
-     *
-     * @return HeuristicMessage[] The list of application-level messages for those participants that did rollback, or null if none.
-     */
-
-    public HeuristicMessage[] getHeuristicRollbackMessages()
-    {
-        return aborts_;
-    }
-
-    /**
-     * @return HeuristicMessage[] The list of messages describing the work at those participants that committed, or null if none.
-     *
-     */
-
-    public HeuristicMessage[] getHeuristicCommitMessages()
-    {
-        return commits_;
-    }
-
-    /**
-     * Gets all heuristic messages.
-     *
-     * @return HeuristicMessage[] The list of messages, or null if none.
-     */
-
-    public HeuristicMessage[] getHeuristicMessages()
-    {
-    	if (msgs_!=null)
-    		return msgs_;
-
-    	if (aborts_==null)
-    		return getHeuristicCommitMessages();
-    	else if (commits_==null)
-    		return getHeuristicRollbackMessages();
-
-    	int i=0,j=0;
-    	int len = aborts_.length + commits_.length;
-
-    	HeuristicMessage[] msgs=new HeuristicMessage[len];
-
-    	for (i=0;i<aborts_.length;i++)
-    		msgs[i]=aborts_[i];
-    	for (j=0;j<commits_.length;j++)
-    		msgs[i+j]=commits_[j];
-
-    	return msgs;
-    }
-
-
 }

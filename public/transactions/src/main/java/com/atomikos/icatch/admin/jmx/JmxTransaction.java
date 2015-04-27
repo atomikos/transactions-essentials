@@ -29,7 +29,6 @@ import javax.management.MBeanRegistration;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
-import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.admin.AdminTransaction;
 
 /**
@@ -97,17 +96,7 @@ public abstract class JmxTransaction implements JmxTransactionMBean,
         return ret;
     }
 
-    protected static String[] convertHeuristicMessages ( HeuristicMessage[] msgs )
-    {
-        String[] ret = new String[msgs.length];
-        for ( int i = 0; i < msgs.length; i++ ) {
-            if ( msgs[i] != null )
-                ret[i] = msgs[i].toString ();
-            else
-                ret[i] = "";
-        }
-        return ret;
-    }
+    
 
     /**
      * Wraps an existing AdminTransaction instance as an MBean.
@@ -158,25 +147,6 @@ public abstract class JmxTransaction implements JmxTransactionMBean,
         return convertState ( adminTransaction.getState () );
     }
 
-    /**
-     * @see com.atomikos.icatch.admin.jmx.TransactionMBean#getTags()
-     */
-
-    public String[] getTags ()
-    {
-
-        return convertHeuristicMessages ( adminTransaction.getTags () );
-    }
-
-    /**
-     * @see com.atomikos.icatch.admin.jmx.TransactionMBean#getHeuristicMessages()
-     */
-
-    public String[] getHeuristicMessages ()
-    {
-        return convertHeuristicMessages ( adminTransaction
-                .getHeuristicMessages () );
-    }
 
     /**
      * @see javax.management.MBeanRegistration#preRegister(javax.management.MBeanServer,

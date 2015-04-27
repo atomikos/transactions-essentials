@@ -31,7 +31,6 @@ import javax.transaction.xa.XAResource;
 import com.atomikos.datasource.xa.XAResourceTransaction;
 import com.atomikos.datasource.xa.XATransactionalResource;
 import com.atomikos.icatch.CompositeTransaction;
-import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 
@@ -49,13 +48,12 @@ class BranchEnlistedStateHandler extends TransactionContextStateHandler
 	private CompositeTransaction ct;
 	private XAResourceTransaction branch;
 	
-	BranchEnlistedStateHandler ( XATransactionalResource resource , CompositeTransaction ct , XAResource xaResource , HeuristicMessage hmsg ) 
+	BranchEnlistedStateHandler ( XATransactionalResource resource , CompositeTransaction ct , XAResource xaResource) 
     {
 		super ( resource , xaResource );
 		this.ct = ct;
 		this.branch = ( XAResourceTransaction ) resource.getResourceTransaction ( ct );
 		branch.setXAResource ( xaResource );
-		if ( hmsg != null ) branch.addHeuristicMessage ( hmsg );
 		branch.resume();
 	}
 
@@ -75,7 +73,7 @@ class BranchEnlistedStateHandler extends TransactionContextStateHandler
 		}
 	}
 
-	TransactionContextStateHandler checkEnlistBeforeUse ( CompositeTransaction currentTx , HeuristicMessage hmsg )
+	TransactionContextStateHandler checkEnlistBeforeUse ( CompositeTransaction currentTx)
 			throws InvalidSessionHandleStateException, UnexpectedTransactionContextException 
 	{
 		

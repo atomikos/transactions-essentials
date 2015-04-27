@@ -28,14 +28,13 @@ package com.atomikos.icatch.imp;
 import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeurMixedException;
 import com.atomikos.icatch.HeurRollbackException;
-import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.Participant;
 import com.atomikos.icatch.RollbackException;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 
 /**
- * A commit message implemenation.
+ * A commit message implementation.
  */
 
 class CommitMessage extends PropagationMessage
@@ -56,7 +55,7 @@ class CommitMessage extends PropagationMessage
     /**
      * A commit message.
      * 
-     * @return Object An array of heuristic messages.
+     * @return Boolean null.
      * @exception PropagationException
      *                If problems. If heuristics, this will be a heuristic
      *                exception; otherwise, commit has to be retried since
@@ -64,13 +63,12 @@ class CommitMessage extends PropagationMessage
      *                nature, then the error is transient.
      */
 
-    protected Object send () throws PropagationException
+    protected Boolean send () throws PropagationException
     {
         Participant part = getParticipant ();
-        HeuristicMessage[] msgs = null;
         try {
-            msgs = part.commit ( onephase_ );
-            return msgs;
+            part.commit ( onephase_ );
+            return null;
         } catch ( RollbackException rb ) {
             throw new PropagationException ( rb, false );
         } catch ( HeurMixedException heurm ) {
@@ -83,7 +81,7 @@ class CommitMessage extends PropagationMessage
             // of participant proxies.
             String msg = "Unexpected error in commit";
             LOGGER.logWarning ( msg, e );
-            HeurHazardException heurh = new HeurHazardException ( part.getHeuristicMessages () );
+            HeurHazardException heurh = new HeurHazardException();
             throw new PropagationException ( heurh, true );
         }
     }

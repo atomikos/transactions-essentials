@@ -34,7 +34,6 @@ import com.atomikos.icatch.Extent;
 import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeurMixedException;
 import com.atomikos.icatch.HeurRollbackException;
-import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.Participant;
 import com.atomikos.icatch.RecoveryCoordinator;
 import com.atomikos.icatch.RollbackException;
@@ -64,7 +63,6 @@ public abstract class AbstractCompositeTransaction implements CompositeTransacti
 
     protected boolean serial_;
 
-    protected HeuristicMessage tag_;
 
     protected Properties properties_;
 
@@ -110,14 +108,7 @@ public abstract class AbstractCompositeTransaction implements CompositeTransacti
         return tid_;
     }
 
-    /**
-     * @see CompositeTransaction.
-     */
-
-    public void setTag ( HeuristicMessage tag )
-    {
-        tag_ = tag;
-    }
+   
 
     /**
      * @see CompositeTransaction.

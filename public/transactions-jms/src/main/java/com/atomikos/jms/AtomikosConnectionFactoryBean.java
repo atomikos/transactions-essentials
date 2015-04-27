@@ -612,7 +612,7 @@ Referenceable, Serializable {
 		Connection ret = null;
 		try {
 			init();
-			ret =  (Connection) connectionPool.borrowConnection ( null );
+			ret =  (Connection) connectionPool.borrowConnection();
 		} catch (CreateConnectionException ex) {
 			throwAtomikosJMSException("Failed to grow the connection pool", ex);
 		} catch (PoolExhaustedException e) {

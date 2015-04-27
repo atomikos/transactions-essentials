@@ -41,7 +41,6 @@ import com.atomikos.datasource.pool.XPooledConnection;
 import com.atomikos.datasource.pool.XPooledConnectionEventListener;
 import com.atomikos.icatch.CompositeTransaction;
 import com.atomikos.icatch.CompositeTransactionManager;
-import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.config.Configuration;
 import com.atomikos.icatch.jta.TransactionManagerImp;
 import com.atomikos.jdbc.AbstractConnectionProxy;
@@ -446,11 +445,6 @@ implements JtaAwareNonXaConnection
 			ret = pooledConnection.equals ( xpc );
 		}
 		return ret;
-	}
-
-	public void addHeuristicMessage ( HeuristicMessage hmsg )
-	{
-		if ( participant != null ) participant.addHeuristicMessage ( hmsg );
 	}
 
 }

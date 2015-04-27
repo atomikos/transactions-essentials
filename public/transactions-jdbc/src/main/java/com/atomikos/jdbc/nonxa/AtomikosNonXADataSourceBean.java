@@ -29,7 +29,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import com.atomikos.datasource.pool.ConnectionFactory;
-import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.jdbc.AbstractDataSourceBean;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
@@ -196,22 +195,21 @@ public class AtomikosNonXADataSourceBean extends AbstractDataSourceBean
 		return ret;
 	}
 
-	public synchronized Connection getConnection ( HeuristicMessage hmsg ) throws SQLException
+	public synchronized Connection getConnection() throws SQLException
 	{
-		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": getConnection ( " + hmsg + " )..." );
+		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": getConnection()..." );
 		
 		init();
 		
 		
 		//let pool take care of reusing an existing handle
-		Connection proxy = super.getConnection ( hmsg );          
+		Connection proxy = super.getConnection();          
 
         // here we are certain that proxy is not null -> increase the use count
         DynamicProxy dproxy = ( DynamicProxy ) proxy;
         com.atomikos.jdbc.nonxa.AtomikosThreadLocalConnection previous = (AtomikosThreadLocalConnection) dproxy.getInvocationHandler();
 
         previous.incUseCount();
-        previous.addHeuristicMessage ( hmsg );
         if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": returning " + proxy );
 		return proxy;
 	}

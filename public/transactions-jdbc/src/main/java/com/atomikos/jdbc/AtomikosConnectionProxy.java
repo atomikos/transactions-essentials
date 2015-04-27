@@ -41,7 +41,6 @@ import com.atomikos.datasource.xa.session.InvalidSessionHandleStateException;
 import com.atomikos.datasource.xa.session.SessionHandleState;
 import com.atomikos.icatch.CompositeTransaction;
 import com.atomikos.icatch.CompositeTransactionManager;
-import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.Synchronization;
 import com.atomikos.icatch.TxState;
 import com.atomikos.icatch.config.Configuration;
@@ -63,15 +62,13 @@ class AtomikosConnectionProxy extends AbstractConnectionProxy
 	private SessionHandleState sessionHandleState;
 	private boolean closed = false;
 	private boolean reaped = false;
-	private HeuristicMessage hmsg;
 
 	private String toString;
 
-	private AtomikosConnectionProxy ( Connection c, SessionHandleState sessionHandleState , HeuristicMessage hmsg )
+	private AtomikosConnectionProxy ( Connection c, SessionHandleState sessionHandleState)
 	{
 		this.delegate = c;
 		this.sessionHandleState = sessionHandleState;
-		this.hmsg = hmsg;
 		sessionHandleState.notifySessionBorrowed();
 	}
 
@@ -220,7 +217,7 @@ class AtomikosConnectionProxy extends AbstractConnectionProxy
 			if ( ctm != null ) {
 				ct = ctm.getCompositeTransaction();
 				//first notify the session handle - see case 27857
-				sessionHandleState.notifyBeforeUse ( ct , hmsg );
+				sessionHandleState.notifyBeforeUse ( ct );
 				if (ct != null && ct.getProperty ( TransactionManagerImp.JTA_PROPERTY_NAME ) != null ) {
 					ret = true;
 					if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": detected transaction " + ct );
@@ -253,10 +250,10 @@ class AtomikosConnectionProxy extends AbstractConnectionProxy
 		return sessionHandleState.isActiveInTransaction ( ct );
 	}
 
-	public static Reapable newInstance ( Connection c , SessionHandleState sessionHandleState , HeuristicMessage hmsg )
+	public static Reapable newInstance ( Connection c , SessionHandleState sessionHandleState )
 	{
 		Reapable ret = null;
-        AtomikosConnectionProxy proxy = new AtomikosConnectionProxy(c, sessionHandleState , hmsg );
+        AtomikosConnectionProxy proxy = new AtomikosConnectionProxy(c, sessionHandleState );
         Set<Class> interfaces = PropertyUtils.getAllImplementedInterfaces ( c.getClass() );
         interfaces.add ( Reapable.class );
         //see case 24532

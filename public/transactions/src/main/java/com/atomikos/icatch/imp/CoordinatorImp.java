@@ -43,11 +43,9 @@ import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeurMixedException;
 import com.atomikos.icatch.HeurRollbackException;
-import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.Participant;
 import com.atomikos.icatch.RecoveryCoordinator;
 import com.atomikos.icatch.RollbackException;
-import com.atomikos.icatch.StringHeuristicMessage;
 import com.atomikos.icatch.Synchronization;
 import com.atomikos.icatch.SysException;
 import com.atomikos.icatch.TxState;
@@ -98,11 +96,6 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     private boolean heuristicMeansCommit_ = true;
     private Vector<Participant> participants_ = new Vector<Participant>();
     private RecoveryCoordinator superiorCoordinator_ = null; 
-    private Vector<HeuristicMessage> tags_ = new Vector<HeuristicMessage>();
-    // the tags of all incoming txs
-    // does NOT have to be logged: the contents are
-    // retrieved BEFORE prepare (in Participant proxy),
-    // at return time of the call.
 
     private CoordinatorStateHandler stateHandler_;
     private boolean single_threaded_2pc_;
@@ -248,14 +241,6 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
         stateHandler_.setCommitted ();
     }
 
-    void addTag ( HeuristicMessage tag )
-    {
-    	synchronized ( fsm_ ) {
-    		if ( tag != null )
-    			tags_.addElement ( tag );
-    	}
-    }
-
     /**
      * Set the state handler. This method should always be preferred over
      * calling setState directly.
@@ -315,23 +300,6 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     }
 
     /**
-     * Gets the heuristic messages for all participants that are in the given
-     * heuristic state
-     *
-     * @param heuristicState
-     *            The heuristic state, or the terminated state.
-     * @return HeuristicMessage[] The heuristic messages of all participants in
-     *         the given state, or an empty array if none.
-     */
-
-    public HeuristicMessage[] getHeuristicMessages (
-            Object heuristicState )
-    {
-    	//NB: don't synchronize, to avoid blocks in recursive 2PC
-        return stateHandler_.getHeuristicMessages ( heuristicState );
-    }
-
-    /**
      * Tests if the transaction was committed or not.
      *
      * @return boolean True iff committed.
@@ -340,36 +308,6 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     public boolean isCommitted ()
     {
         return stateHandler_.isCommitted ();
-    }
-
-    /**
-     * Get the heuristic info for the message round.
-     *
-     * @return HeuristicMessages[] The heuristic messages, or an empty array if
-     *         none.
-     */
-
-    public HeuristicMessage[] getHeuristicMessages ()
-    {
-    	// NB: don't synchronize, to avoid blocks in recursive 2PC
-        return stateHandler_.getHeuristicMessages ();
-    }
-
-    /**
-     * Get the heuristic tags for this coordinator. This info is returned to
-     * remote client TMs by a Participant proxy.
-     */
-
-    public HeuristicMessage[] getTags ()
-    {
-    	HeuristicMessage[] template = null;
-    	synchronized ( fsm_ ) {
-    		template = new HeuristicMessage[tags_.size ()];
-    		for ( int i = 0; i < template.length; i++ ) {
-    			template[i] = (HeuristicMessage) tags_.elementAt ( i );
-    		}
-    	}
-        return template;
     }
 
     /**
@@ -694,28 +632,24 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
      * @see Participant.
      */
 
-    public HeuristicMessage[] commit ( boolean onePhase )
+    public void commit ( boolean onePhase )
             throws HeurRollbackException, HeurMixedException,
             HeurHazardException, java.lang.IllegalStateException,
             RollbackException, SysException
     {
-    	HeuristicMessage[] ret = null;
     	synchronized ( fsm_ ) {
-    		ret = stateHandler_.commit(onePhase);
+    		 stateHandler_.commit(onePhase);
     	}
-    	return ret;
     }
 
     /**
      * @see Participant.
      */
 
-    public HeuristicMessage[] rollback () throws HeurCommitException,
+    public void rollback () throws HeurCommitException,
             HeurMixedException, SysException, HeurHazardException,
             java.lang.IllegalStateException
     {
-
-    	HeuristicMessage[] ret = null;
     	
         if ( getState ().equals ( TxState.ABORTING ) ) {
             // this method is ONLY called for EXTERNAL events -> by remote coordinators
@@ -725,42 +659,35 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
             // original call will still be in its propagation phase,
             // where the state is set to ABORTING.
             // Returning immediately will make sure no
-            // deadlock happens during 2PC, especially for recursion!.
-            // NOTE that if heuristic problems arise, the first call will always
-            // return the heuristic info and set the heuristic state.
-            return getHeuristicMessages ();
+            // deadlock happens during 2PC, especially for recursion!
+            return;
         }
 
         // here, we are certain that no RECURSIVE call is going on,
         // so we can safely lock this instance.
 
         synchronized ( fsm_ ) {
-        	ret = stateHandler_.rollback();
+        	stateHandler_.rollback();
         }
-        return ret;
     }
 
 
-    public HeuristicMessage[] rollbackHeuristically ()
+    public void rollbackHeuristically ()
             throws HeurCommitException, HeurMixedException, SysException,
             HeurHazardException, java.lang.IllegalStateException
     {
-    	HeuristicMessage[] ret = null;
         synchronized ( fsm_ ) {
-        	ret = stateHandler_.rollbackHeuristically();
+        	stateHandler_.rollbackHeuristically();
         } 
-        return ret;
     }
 
-    public HeuristicMessage[] commitHeuristically () throws HeurMixedException,
+    public void commitHeuristically () throws HeurMixedException,
             SysException, HeurRollbackException, HeurHazardException,
             java.lang.IllegalStateException, RollbackException
     {
-    	HeuristicMessage[] ret = null;
     	synchronized ( fsm_ ) {
-    		ret = stateHandler_.commitHeuristically();
+    		stateHandler_.commitHeuristically();
     	}
-    	return ret;
     }
 
 
@@ -982,9 +909,8 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     }
     
     void setRollbackOnly() { 	
-    	StringHeuristicMessage msg = new StringHeuristicMessage (
-    	"setRollbackOnly" );
-    	RollbackOnlyParticipant p = new RollbackOnlyParticipant ( msg );
+    	
+    	RollbackOnlyParticipant p = new RollbackOnlyParticipant ( );
 
     	try {
     		addParticipant ( p );

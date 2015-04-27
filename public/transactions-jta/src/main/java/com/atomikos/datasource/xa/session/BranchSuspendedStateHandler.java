@@ -30,7 +30,6 @@ import javax.transaction.xa.XAResource;
 import com.atomikos.datasource.xa.XAResourceTransaction;
 import com.atomikos.datasource.xa.XATransactionalResource;
 import com.atomikos.icatch.CompositeTransaction;
-import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 
@@ -48,7 +47,7 @@ class BranchSuspendedStateHandler extends TransactionContextStateHandler
 		this.ct = ct;
 	}
 
-	TransactionContextStateHandler checkEnlistBeforeUse ( CompositeTransaction ct , HeuristicMessage hmsg )
+	TransactionContextStateHandler checkEnlistBeforeUse ( CompositeTransaction ct)
 			throws InvalidSessionHandleStateException,
 			UnexpectedTransactionContextException 
 	{

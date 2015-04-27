@@ -35,7 +35,6 @@ import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeurMixedException;
 import com.atomikos.icatch.HeurRollbackException;
-import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.Participant;
 import com.atomikos.icatch.RollbackException;
 import com.atomikos.icatch.SysException;
@@ -156,30 +155,30 @@ public class IndoubtStateHandler extends CoordinatorStateHandler
                     // commit from terminator would return OK -> BAD!
 
                     rollbackWithAfterCompletionNotification(new RollbackCallback() {
-						public HeuristicMessage[] doRollback()
+						public void doRollback()
 								throws HeurCommitException,
 								HeurMixedException, SysException,
 								HeurHazardException, IllegalStateException {
-							return rollbackFromWithinCallback(true,!recovered_);
+							 rollbackFromWithinCallback(true,!recovered_);
 						}});
                 }
                 // heuristic decision
                 else if ( getCoordinator ().prefersHeuristicCommit () ) {
                 	commitWithAfterCompletionNotification ( new CommitCallback() {
-                		public HeuristicMessage[] doCommit()
+                		public void doCommit()
                 				throws HeurRollbackException, HeurMixedException,
                 				HeurHazardException, IllegalStateException,
                 				RollbackException, SysException {
-                			return commitFromWithinCallback ( true, false );
+                			commitFromWithinCallback ( true, false );
                 		}          	
                 	});
                 } else { 
                 	rollbackWithAfterCompletionNotification(new RollbackCallback() {
-						public HeuristicMessage[] doRollback()
+						public void doRollback()
 								throws HeurCommitException,
 								HeurMixedException, SysException,
 								HeurHazardException, IllegalStateException {
-							return rollbackFromWithinCallback(true,true);
+							rollbackFromWithinCallback(true,true);
 						}});
                 }
             } // else
@@ -204,33 +203,33 @@ public class IndoubtStateHandler extends CoordinatorStateHandler
         return Participant.READ_ONLY + 1;
     }
 
-    protected HeuristicMessage[] commit ( boolean onePhase )
+    protected void commit ( boolean onePhase )
             throws HeurRollbackException, HeurMixedException,
             HeurHazardException, java.lang.IllegalStateException,
             RollbackException, SysException
     {
 
-        return commitWithAfterCompletionNotification ( new CommitCallback() {
-    		public HeuristicMessage[] doCommit()
+         commitWithAfterCompletionNotification ( new CommitCallback() {
+    		public void doCommit()
     				throws HeurRollbackException, HeurMixedException,
     				HeurHazardException, IllegalStateException,
     				RollbackException, SysException {
-    			return commitFromWithinCallback ( false, false );
+    			commitFromWithinCallback ( false, false );
     		}          	
     	});
 
     }
 
-    protected HeuristicMessage[] rollback ()
+    protected void rollback ()
             throws HeurCommitException, HeurMixedException, SysException,
             HeurHazardException, java.lang.IllegalStateException
     {
-        return rollbackWithAfterCompletionNotification(new RollbackCallback() {
-			public HeuristicMessage[] doRollback()
+        rollbackWithAfterCompletionNotification(new RollbackCallback() {
+			public void doRollback()
 					throws HeurCommitException,
 					HeurMixedException, SysException,
 					HeurHazardException, IllegalStateException {
-				return rollbackFromWithinCallback(true,false);
+				 rollbackFromWithinCallback(true,false);
 			}});
     }
 

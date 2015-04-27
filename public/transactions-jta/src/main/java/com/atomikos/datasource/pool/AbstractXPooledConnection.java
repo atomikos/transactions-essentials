@@ -28,7 +28,6 @@ package com.atomikos.datasource.pool;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 
@@ -64,11 +63,11 @@ public abstract class AbstractXPooledConnection implements XPooledConnection {
 		return lastTimeReleased;
 	}
 	
-	public synchronized Reapable createConnectionProxy ( HeuristicMessage hmsg ) throws CreateConnectionException
+	public synchronized Reapable createConnectionProxy() throws CreateConnectionException
 	{
 		updateLastTimeAcquired();
 		testUnderlyingConnection();
-		currentProxy = doCreateConnectionProxy ( hmsg );
+		currentProxy = doCreateConnectionProxy();
 		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": returning proxy " + currentProxy );
 		return currentProxy;
 	}
@@ -136,7 +135,7 @@ public abstract class AbstractXPooledConnection implements XPooledConnection {
 		return creationTime;
 	}
 	
-	protected abstract Reapable doCreateConnectionProxy ( HeuristicMessage hmsg ) throws CreateConnectionException;
+	protected abstract Reapable doCreateConnectionProxy() throws CreateConnectionException;
 
 	protected abstract void testUnderlyingConnection() throws CreateConnectionException;
 }

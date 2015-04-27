@@ -38,7 +38,6 @@ import com.atomikos.datasource.xa.XATransactionalResource;
 import com.atomikos.datasource.xa.session.SessionHandleStateChangeListener;
 import com.atomikos.icatch.CompositeTransaction;
 import com.atomikos.icatch.CompositeTransactionManager;
-import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.config.Configuration;
 import com.atomikos.icatch.jta.TransactionManagerImp;
 import com.atomikos.logging.Logger;
@@ -65,7 +64,7 @@ class AtomikosPooledJmsConnection extends AbstractXPooledConnection implements S
 		this.ignoreSessionTransactedFlag = ignoreSessionTransactedFlag;
 	}
 
-	protected Reapable doCreateConnectionProxy(HeuristicMessage msg) throws CreateConnectionException {
+	protected Reapable doCreateConnectionProxy() throws CreateConnectionException {
 		currentProxy = AtomikosJmsConnectionProxy.newInstance (ignoreSessionTransactedFlag, xaConnection , jmsTransactionalResource , this , props );
 		return currentProxy;
 	}

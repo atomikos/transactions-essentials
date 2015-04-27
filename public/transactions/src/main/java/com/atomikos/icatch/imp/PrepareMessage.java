@@ -26,10 +26,8 @@
 package com.atomikos.icatch.imp;
 
 import com.atomikos.icatch.HeurHazardException;
-import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.Participant;
 import com.atomikos.icatch.RollbackException;
-import com.atomikos.icatch.StringHeuristicMessage;
 
 /**
  * A prepare message implementation.
@@ -46,11 +44,11 @@ class PrepareMessage extends PropagationMessage
     /**
      * A prepare message.
      *
-     * @return Object Boolean True if YES vote, False if NO vote, null if
+     * @return Boolean True if YES vote, False if NO vote, null if
      *         readonly vote.
      */
 
-    protected Object send () throws PropagationException
+    protected Boolean send () throws PropagationException
     {
         Participant part = getParticipant ();
         int ret = 0;
@@ -68,11 +66,7 @@ class PrepareMessage extends PropagationMessage
             result = new Boolean ( false );
         } catch ( Exception e ) {
             // here, participant might be indoubt!
-            StringHeuristicMessage shm = new StringHeuristicMessage (
-                    "Possibly heuristic participant: " + part.toString () );
-            HeuristicMessage[] msgs = new HeuristicMessage[1];
-            msgs[0] = shm;
-            HeurHazardException heurh = new HeurHazardException ( msgs );
+            HeurHazardException heurh = new HeurHazardException ();
             throw new PropagationException ( heurh, false );
 
         }

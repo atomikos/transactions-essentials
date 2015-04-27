@@ -25,7 +25,6 @@
 
 package com.atomikos.datasource.pool;
 
-import com.atomikos.icatch.HeuristicMessage;
 
 /**
  * A pooling-capable object wrapping a physical connection to an underlying resource.
@@ -77,11 +76,10 @@ public interface XPooledConnection
 	 * Create a disposable connection object that acts a controller for
 	 * the pooled connection. What exactly a connection object is depends
 	 * on the implementation.
-	 * @param hmsg The heuristic message to show in the logs.
 	 * @return
 	 * @throws CreateConnectionException 
 	 */
-	Reapable createConnectionProxy ( HeuristicMessage hmsg ) throws CreateConnectionException;
+	Reapable createConnectionProxy() throws CreateConnectionException;
 	
 	/**
 	 * Is the pooled connection broken ? 

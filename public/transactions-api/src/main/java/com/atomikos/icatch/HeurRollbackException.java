@@ -23,33 +23,17 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  */
 
-
-
 package com.atomikos.icatch;
 
-
-
 /**
- * An exception signaling that the transaction's work has been rolled back heuristically.
+ * An exception signaling that the transaction's work has been rolled back
+ * heuristically.
  */
 
-public class HeurRollbackException extends Exception
-{
+public class HeurRollbackException extends Exception {
 
-    protected HeuristicMessage[] msgs_=null;
-
-    public HeurRollbackException(HeuristicMessage[] msgs)
-    {
-        super("Heuristic Exception");
-        msgs_=msgs;
-    }
-
-    /**
-     * @return HeuristicMessage[] The list of messages describing the work, or null if none.
-     */
-    public HeuristicMessage[] getHeuristicMessages(){
-        return msgs_;
-    }
-
+	public HeurRollbackException() {
+		super("Heuristic Rollback Exception");
+	}
 
 }

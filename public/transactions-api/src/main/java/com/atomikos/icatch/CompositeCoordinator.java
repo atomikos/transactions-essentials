@@ -50,21 +50,6 @@ public interface CompositeCoordinator extends java.io.Serializable
 
     public RecoveryCoordinator getRecoveryCoordinator();
     
-    /**
-     *
-     * @return HeuristicMessage[] Any tags set by the application.
-     * 
-     * These serve as a summary of the local work
-     * towards remote client TMs (that way, these
-     * do not have to see ALL local heuristic messages,
-     * but rather get a relevant summary).
-     * 
-     * The participant proxy for a local coordinator
-     * returns these tags as its heuristic messages.
-     */
-     
-    public HeuristicMessage[] getTags();
-    
     
     /**
      * Checks whether the instance is recoverable

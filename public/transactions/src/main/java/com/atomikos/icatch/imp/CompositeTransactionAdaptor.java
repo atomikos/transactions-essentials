@@ -30,7 +30,6 @@ import java.util.Stack;
 
 import com.atomikos.icatch.CompositeCoordinator;
 import com.atomikos.icatch.CompositeTransaction;
-import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.RecoveryCoordinator;
 import com.atomikos.icatch.SysException;
 
@@ -129,15 +128,6 @@ public class CompositeTransactionAdaptor extends AbstractCompositeTransaction
     public String getCoordinatorId ()
     {
         return root_;
-    }
-
-    /**
-     * @see CompositeCoordinator.
-     */
-
-    public HeuristicMessage[] getTags ()
-    {
-        return null;
     }
 
     /**

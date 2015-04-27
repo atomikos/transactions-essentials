@@ -29,7 +29,6 @@ import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeurMixedException;
 import com.atomikos.icatch.HeurRollbackException;
-import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.Participant;
 import com.atomikos.icatch.RollbackException;
 import com.atomikos.icatch.SysException;
@@ -84,7 +83,7 @@ class TerminatedStateHandler extends CoordinatorStateHandler
         return Participant.READ_ONLY;
     }
 
-    protected HeuristicMessage[] commit ( boolean onePhase )
+    protected void commit ( boolean onePhase )
             throws HeurRollbackException, HeurMixedException,
             HeurHazardException, java.lang.IllegalStateException,
             RollbackException, SysException
@@ -94,7 +93,7 @@ class TerminatedStateHandler extends CoordinatorStateHandler
             // respond consistently on multiple commits
             // but only if NOT 1PC: in that case, terminated
             // means that we have rolled back!
-            return getHeuristicMessages ();
+            return;
         } else {
             // 1PC -> commit causes rolled back exception,
             // and this ONLY works if at most 1 commit message is
@@ -115,12 +114,10 @@ class TerminatedStateHandler extends CoordinatorStateHandler
 
     }
 
-    protected HeuristicMessage[] rollback () throws HeurCommitException,
+    protected void rollback () throws HeurCommitException,
             HeurMixedException, SysException, HeurHazardException,
             java.lang.IllegalStateException
     {
-
-        return getHeuristicMessages ();
     }
 
     protected void forget ()

@@ -34,10 +34,8 @@ import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeurMixedException;
 import com.atomikos.icatch.HeurRollbackException;
-import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.Participant;
 import com.atomikos.icatch.RollbackException;
-import com.atomikos.icatch.StringHeuristicMessage;
 import com.atomikos.icatch.SysException;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
@@ -52,13 +50,9 @@ public class RollbackOnlyParticipant implements Participant,DataSerializable
 
 	private static final Logger LOG = LoggerFactory.createLogger(RollbackOnlyParticipant.class);
 
-    private StringHeuristicMessage msg_;
-    // the message to return in exception
+    
 
-    RollbackOnlyParticipant ( StringHeuristicMessage msg )
-    {
-        msg_ = msg;
-    }
+    RollbackOnlyParticipant() {}
 
     /**
      * @see Participant
@@ -105,30 +99,28 @@ public class RollbackOnlyParticipant implements Participant,DataSerializable
             HeurMixedException, SysException
     {
         // prepare MUST fail: rollback only!
-        throw new RollbackException ( msg_.toString () );
+        throw new RollbackException();
     }
 
     /**
      * @see Participant
      */
 
-    public HeuristicMessage[] commit ( boolean onePhase )
+    public void commit ( boolean onePhase )
             throws HeurRollbackException, HeurHazardException,
             HeurMixedException, RollbackException, SysException
     {
-        if (onePhase) throw new RollbackException(msg_.toString());
+        if (onePhase) throw new RollbackException();
         else LOG.logWarning("Unexpected 2-phase commit: outcome should be rollback!");
-        return getHeuristicMessages();
     }
 
     /**
      * @see Participant
      */
 
-    public HeuristicMessage[] rollback () throws HeurCommitException,
+    public void rollback () throws HeurCommitException,
             HeurMixedException, HeurHazardException, SysException
     {
-        return getHeuristicMessages ();
     }
 
     /**
@@ -139,25 +131,11 @@ public class RollbackOnlyParticipant implements Participant,DataSerializable
     {      
     }
 
-    /**
-     * @see Participant
-     */
-
-    public HeuristicMessage[] getHeuristicMessages ()
-    {
-        HeuristicMessage[] ret = new HeuristicMessage[1];
-        ret[0] = msg_;
-        return ret;
-    }
 
 	public void writeData(DataOutput out) throws IOException {
-		out.writeUTF(msg_.toString());
-		
 	}
 
 	public void readData(DataInput in) throws IOException {
-		msg_=new StringHeuristicMessage(in.readUTF());
-		
 	}
 
 }

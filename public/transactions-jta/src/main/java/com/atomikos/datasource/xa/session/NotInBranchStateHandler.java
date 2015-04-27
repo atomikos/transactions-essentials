@@ -29,7 +29,6 @@ import javax.transaction.xa.XAResource;
 
 import com.atomikos.datasource.xa.XATransactionalResource;
 import com.atomikos.icatch.CompositeTransaction;
-import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.TxState;
 import com.atomikos.icatch.jta.TransactionManagerImp;
 
@@ -48,7 +47,7 @@ class NotInBranchStateHandler extends TransactionContextStateHandler
 		super ( resource , xaResource );
 	}
 
-	TransactionContextStateHandler checkEnlistBeforeUse ( CompositeTransaction ct , HeuristicMessage hmsg ) throws InvalidSessionHandleStateException
+	TransactionContextStateHandler checkEnlistBeforeUse ( CompositeTransaction ct ) throws InvalidSessionHandleStateException
 	{
 		TransactionContextStateHandler ret = null;
 		if ( ct != null && ct.getProperty ( TransactionManagerImp.JTA_PROPERTY_NAME ) != null ) {
@@ -61,7 +60,7 @@ class NotInBranchStateHandler extends TransactionContextStateHandler
 
 			//JTA transaction found for calling thread -> enlist
 			//also see the state diagram documentation
-			ret = new BranchEnlistedStateHandler ( getXATransactionalResource() , ct , getXAResource() , hmsg );
+			ret = new BranchEnlistedStateHandler ( getXATransactionalResource() , ct , getXAResource() );
 
 		}
 		return ret;

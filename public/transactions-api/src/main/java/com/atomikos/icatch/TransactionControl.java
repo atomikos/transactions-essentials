@@ -79,22 +79,10 @@ package com.atomikos.icatch;
      */
      
      public int getLocalSubTxCount();
-     
-    /**
-     *Sets the tag for this transaction. This is returned as a summary of
-     *the local work in case the transaction was imported from a remote
-     *client TM.
-     *
-     *@param tag The tag to add to the transaction.
-     */
-     
-    public void setTag ( HeuristicMessage tag ) ;
-
-
+    
     /**
      *Get the extent for the transaction.
      */
-
      public Extent getExtent();
      
      

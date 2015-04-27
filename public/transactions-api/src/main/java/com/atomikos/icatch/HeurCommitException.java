@@ -25,32 +25,16 @@
 
 package com.atomikos.icatch;
 
-
-
 /**
  * Exception signaling heuristic commit.
  */
 
-public class HeurCommitException extends Exception
-{
+public class HeurCommitException extends Exception {
 
 	private static final long serialVersionUID = 1L;
 
-	protected HeuristicMessage[] msgs_=null;
-
-    public HeurCommitException(HeuristicMessage[] msgs)
-    {
-        super("Heuristic Exception");
-        msgs_=msgs;
-    }
-
-    /**
-     *
-     * @return HeuristicMessage[] The list of messages, or null if none.
-     */
-    public HeuristicMessage[] getHeuristicMessages(){
-        return msgs_;
-    }
-
+	public HeurCommitException() {
+		super("Heuristic Commit Exception");
+	}
 
 }

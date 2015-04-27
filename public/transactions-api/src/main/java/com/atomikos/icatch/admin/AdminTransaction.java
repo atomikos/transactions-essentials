@@ -31,7 +31,6 @@ import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeurMixedException;
 import com.atomikos.icatch.HeurRollbackException;
-import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.SysException;
 
  /**
@@ -83,35 +82,6 @@ public interface AdminTransaction extends Serializable
         */
 
       public int getState();
-
-       /**
-        * Gets the high-level heuristic comments.
-        * This is what remote clients will see as well.
-        * @return HeuristicMessage The comments giving a summary
-        * of the tasks done in this transaction.
-        */
-
-      public HeuristicMessage[] getTags();
-
-       /**
-        * Gets the HeuristicMessage detailed info for this transaction.
-        * @return HeuristicMessage[] The detailed heuristic messages.
-        * These show the comments for EACH individual resource
-        * that was part of the transaction.
-        */
-
-      public HeuristicMessage[] getHeuristicMessages();
-
-        /**
-         * Gets the heuristic messages for work in the given state.
-         * This method is useful in particular for STATE_HEUR_MIXED
-         * and STATE_HEUR_HAZARD.
-         *
-         * @return HeuristicMessage[] The description of all work in
-         * the given state, or null if no such work exists.
-         */
-
-      public HeuristicMessage[] getHeuristicMessages ( int state );
 
        /**
         * Tests if the transaction's 2PC outcome was commit.

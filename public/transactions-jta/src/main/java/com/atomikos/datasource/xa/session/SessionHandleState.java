@@ -35,7 +35,6 @@ import javax.transaction.xa.XAResource;
 
 import com.atomikos.datasource.xa.XATransactionalResource;
 import com.atomikos.icatch.CompositeTransaction;
-import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
  
@@ -144,12 +143,11 @@ public class SessionHandleState
 	 * This method MUST be called BEFORE any work is delegated to the underlying
 	 * vendor connection.
 	 * @param ct The current transaction, or null if none. 
-	 * @param HeuristicMessage hmsg The heuristic message, null if none.
 	 * 
 	 * @throws InvalidSessionHandleStateException 
 	 */
 	
-	public synchronized void notifyBeforeUse ( CompositeTransaction ct , HeuristicMessage hmsg ) throws InvalidSessionHandleStateException
+	public synchronized void notifyBeforeUse ( CompositeTransaction ct ) throws InvalidSessionHandleStateException
 	{
 		if ( closed ) throw new InvalidSessionHandleStateException ( "The underlying XA session is closed" );
 		
@@ -176,7 +174,7 @@ public class SessionHandleState
 				//no suspended branch was found -> try to use the current branch
 				try {
 					if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": checking XA context for transaction " + ct );
-					currentContext.checkEnlistBeforeUse ( ct , hmsg );
+					currentContext.checkEnlistBeforeUse ( ct );
 				}
 				catch ( UnexpectedTransactionContextException txBoundaryPassed ) {
 					//we are being used in a different context than expected -> suspend!
@@ -187,7 +185,7 @@ public class SessionHandleState
 					//note: we keep all branches - if the new current branch is a Subtransaction 
 					//then it will not terminate early and needs to stay around
 					try {
-						currentContext.checkEnlistBeforeUse ( ct , hmsg );
+						currentContext.checkEnlistBeforeUse ( ct );
 					} catch ( UnexpectedTransactionContextException e )  {
 						String msg = "Unexpected error in session handle";
 						LOGGER.logWarning ( msg , e );

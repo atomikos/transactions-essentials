@@ -215,9 +215,6 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
         // NOTE: this must be done BEFORE calling notifications
         // to make sure that active recovery works for early prepares 
         if ( ct_.isLocalRoot() ) {
-
-        	ct_.getCoordinatorImp().addTag(ct_.tag_);
-
         	Enumeration enumm = ct_.getExtent().getParticipants().elements();
         	while ( enumm.hasMoreElements () ) {
         		Participant part = (Participant) enumm.nextElement();

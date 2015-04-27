@@ -32,7 +32,6 @@ import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeurMixedException;
 import com.atomikos.icatch.HeurRollbackException;
-import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.Participant;
 import com.atomikos.icatch.RollbackException;
 import com.atomikos.icatch.SysException;
@@ -107,11 +106,11 @@ public class ActiveStateHandler extends CoordinatorStateHandler
                 		//treat activities (recoverable) as indoubts to make sure that anomalies
                 		//with early prepare etc. are treated as heuristics
                 		rollbackWithAfterCompletionNotification(new RollbackCallback() {
-							public HeuristicMessage[] doRollback()
+							public void doRollback()
 									throws HeurCommitException,
 									HeurMixedException, SysException,
 									HeurHazardException, IllegalStateException {
-								return rollbackFromWithinCallback(indoubt,false);
+								rollbackFromWithinCallback(indoubt,false);
 							}});
                 	}
                 }
@@ -145,15 +144,15 @@ public class ActiveStateHandler extends CoordinatorStateHandler
                         + getCoordinator ().getLocalSiblingCount () + " vs "
                         + globalSiblingCount_ + " - forcing rollback." );
                 rollbackWithAfterCompletionNotification(new RollbackCallback() {
-					public HeuristicMessage[] doRollback()
+					public void doRollback()
 							throws HeurCommitException,
 							HeurMixedException, SysException,
 							HeurHazardException, IllegalStateException {
-						return rollbackFromWithinCallback(getCoordinator().isRecoverableWhileActive().booleanValue(),false);
+						rollbackFromWithinCallback(getCoordinator().isRecoverableWhileActive().booleanValue(),false);
 					}});
 
             } catch ( HeurCommitException hc ) {
-                throw new HeurMixedException ( hc.getHeuristicMessages() );
+                throw new HeurMixedException();
             }
 
             throw new RollbackException ( "Orphans detected." );
@@ -168,16 +167,16 @@ public class ActiveStateHandler extends CoordinatorStateHandler
         		LOGGER.logWarning ( msg , error );
         		try {
 					rollbackWithAfterCompletionNotification(new RollbackCallback() {
-						public HeuristicMessage[] doRollback()
+						public void doRollback()
 								throws HeurCommitException,
 								HeurMixedException, SysException,
 								HeurHazardException, IllegalStateException {
-							return rollbackFromWithinCallback(getCoordinator().isRecoverableWhileActive().booleanValue(),false);
+							rollbackFromWithinCallback(getCoordinator().isRecoverableWhileActive().booleanValue(),false);
 						}});
 					throw new RollbackException ( msg , error);
         		} catch ( HeurCommitException e ) {
 					LOGGER.logWarning ( "Illegal heuristic commit during rollback before prepare:" + e );
-					throw new HeurMixedException ( e.getHeuristicMessages() );
+					throw new HeurMixedException();
 				}
         	}
             count = participants.size ();
@@ -209,11 +208,11 @@ public class ActiveStateHandler extends CoordinatorStateHandler
                
                 try {
                     rollbackWithAfterCompletionNotification(new RollbackCallback() {
-						public HeuristicMessage[] doRollback()
+						public void doRollback()
 								throws HeurCommitException,
 								HeurMixedException, SysException,
 								HeurHazardException, IllegalStateException {
-							return rollbackFromWithinCallback(true,false);
+							rollbackFromWithinCallback(true,false);
 						}});
                 } catch ( HeurCommitException hc ) {
                     // should not happen:
@@ -254,12 +253,11 @@ public class ActiveStateHandler extends CoordinatorStateHandler
 	}
 
 
-	protected HeuristicMessage[] commit ( boolean onePhase )
+	protected void commit ( boolean onePhase )
             throws HeurRollbackException, HeurMixedException,
             HeurHazardException, java.lang.IllegalStateException,
             RollbackException, SysException
     {
-        HeuristicMessage[] result = new HeuristicMessage[0];
         if ( !onePhase )
             throw new IllegalStateException (
                     "Illegal state for commit: ACTIVE!" );
@@ -275,43 +273,41 @@ public class ActiveStateHandler extends CoordinatorStateHandler
 
             setGlobalSiblingCount ( 1 );
             prepareResult = prepare ();
-            // make sure to only do 2PC commit if NOT read only
-            if ( prepareResult == Participant.READ_ONLY ) result = getHeuristicMessages ();
-            else {
-            	result = commitWithAfterCompletionNotification ( new CommitCallback() {
-            		public HeuristicMessage[] doCommit()
+            
+            if ( prepareResult != Participant.READ_ONLY ) {
+            	commitWithAfterCompletionNotification ( new CommitCallback() {
+            		public void doCommit()
             				throws HeurRollbackException, HeurMixedException,
             				HeurHazardException, IllegalStateException,
             				RollbackException, SysException {
-            			return commitFromWithinCallback ( false, false );
+            			 commitFromWithinCallback ( false, false );
             		}          	
             	});
             }
         } else {
-        	result = commitWithAfterCompletionNotification ( new CommitCallback() {
-        		public HeuristicMessage[] doCommit()
+        	commitWithAfterCompletionNotification ( new CommitCallback() {
+        		public void doCommit()
         				throws HeurRollbackException, HeurMixedException,
         				HeurHazardException, IllegalStateException,
         				RollbackException, SysException {
-        			return commitFromWithinCallback ( false, true );
+        			 commitFromWithinCallback ( false, true );
         		}          	
         	});
         }
-        return result;
 
     }
 
-    protected HeuristicMessage[] rollback ()
+    protected void rollback ()
             throws HeurCommitException, HeurMixedException, SysException,
             HeurHazardException, java.lang.IllegalStateException
     {
 
-        return rollbackWithAfterCompletionNotification(new RollbackCallback() {
-			public HeuristicMessage[] doRollback()
+        rollbackWithAfterCompletionNotification(new RollbackCallback() {
+			public void doRollback()
 					throws HeurCommitException,
 					HeurMixedException, SysException,
 					HeurHazardException, IllegalStateException {
-				return rollbackFromWithinCallback(getCoordinator().isRecoverableWhileActive().booleanValue(),false);
+				 rollbackFromWithinCallback(getCoordinator().isRecoverableWhileActive().booleanValue(),false);
 			}});
     }
 

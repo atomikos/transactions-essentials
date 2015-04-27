@@ -211,16 +211,6 @@ public interface CompositeTransaction
      
 	 public int getLocalSubTxCount();
      
-	/**
-	 * Sets the tag for this transaction. This is returned as a summary of
-	 * the local work in case the transaction was imported from a remote
-	 * client TM.
-	 * 
-	 * @param tag
-	 */
-     
-	public void setTag ( HeuristicMessage tag ) ;
-
 
 	/**
 	 * 

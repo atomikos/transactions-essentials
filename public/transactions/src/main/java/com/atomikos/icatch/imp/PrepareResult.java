@@ -92,22 +92,15 @@ class PrepareResult extends Result
                 Exception err = reply.getException ();
                 if ( err instanceof HeurMixedException ) {
                     heurmixed = true;
-                    HeurMixedException hm = (HeurMixedException) err;
-                    addMessages ( hm.getHeuristicMessages () );
                 } else if ( err instanceof HeurCommitException ) {
                     heurcommits = true;
-                    HeurCommitException hc = (HeurCommitException) err;
-                    addMessages ( hc.getHeuristicMessages () );
                     heurmixed = (heurmixed || heurhazards);
                 } else if ( err instanceof HeurHazardException ) {
                     heurhazards = true;
                     heurmixed = (heurmixed || heurcommits);
-                    HeurHazardException hr = (HeurHazardException) err;
-                    indoubts_.put ( reply.getParticipant (),
-                            new Boolean ( true ) );
+                    indoubts_.put ( reply.getParticipant (), Boolean.TRUE);
                     // REMEMBER: might be indoubt, so HAS to be notified
                     // during rollback!
-                    addMessages ( hr.getHeuristicMessages () );
                 }
 
             }// if failed
@@ -121,12 +114,8 @@ class PrepareResult extends Result
                 yes = (readonly || answer.booleanValue ());
 
                 // if readonly: remember this fact for logging and second phase
-                if ( readonly )
-                    readonlytable_.put ( reply.getParticipant (), new Boolean (
-                            true ) );
-                else
-                    indoubts_.put ( reply.getParticipant (),
-                            new Boolean ( true ) );
+                if ( readonly ) readonlytable_.put ( reply.getParticipant (), Boolean.TRUE);
+                else indoubts_.put ( reply.getParticipant (), Boolean.TRUE);
             }
 
             allYes = (allYes && yes);

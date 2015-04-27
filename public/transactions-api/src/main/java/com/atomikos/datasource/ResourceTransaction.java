@@ -25,7 +25,6 @@
 
 package com.atomikos.datasource;
 
-import com.atomikos.icatch.HeuristicMessage;
 
 /**
  * The notion of a local transaction executed on a resource.
@@ -34,24 +33,6 @@ import com.atomikos.icatch.HeuristicMessage;
  
 public interface ResourceTransaction 
 {
-
-  
-    /**
-     * Adds heuristic resolution information.
-     * @param mesg The heuristic message.
-     * @exception IllegalStateException If no longer active.
-     */
-
-    public void addHeuristicMessage(HeuristicMessage mesg)
-        throws IllegalStateException;
-    
-   
-    /**
-     *
-     * @return HeuristicMessage[] An array of messages, or null if none.
-     */
-
-    public HeuristicMessage[] getHeuristicMessages();
 
 
     /**

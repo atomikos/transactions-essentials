@@ -28,7 +28,7 @@ package com.atomikos.icatch.imp;
 import com.atomikos.icatch.Participant;
 
 /**
- * A forget message implemenation.
+ * A forget message implementation.
  */
 
 class ForgetMessage extends PropagationMessage

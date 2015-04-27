@@ -35,6 +35,7 @@ import javax.naming.NameNotFoundException;
 import javax.naming.NamingException;
 import javax.naming.Reference;
 import javax.naming.Referenceable;
+import javax.sql.DataSource;
 
 import com.atomikos.datasource.pool.ConnectionFactory;
 import com.atomikos.datasource.pool.ConnectionPool;
@@ -42,8 +43,6 @@ import com.atomikos.datasource.pool.ConnectionPoolException;
 import com.atomikos.datasource.pool.ConnectionPoolProperties;
 import com.atomikos.datasource.pool.CreateConnectionException;
 import com.atomikos.datasource.pool.PoolExhaustedException;
-import com.atomikos.icatch.HeuristicMessage;
-import com.atomikos.icatch.StringHeuristicMessage;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 import com.atomikos.util.IntraVmObjectFactory;
@@ -58,7 +57,7 @@ import com.atomikos.util.IntraVmObjectRegistry;
   */
 
 public abstract class AbstractDataSourceBean 
-implements HeuristicDataSource, ConnectionPoolProperties, Referenceable, Serializable
+implements DataSource, ConnectionPoolProperties, Referenceable, Serializable
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(AbstractDataSourceBean.class);
 	
@@ -331,15 +330,15 @@ implements HeuristicDataSource, ConnectionPoolProperties, Referenceable, Seriali
 
 	/* DataSource impl */
 
-	public Connection getConnection ( HeuristicMessage msg ) throws SQLException 
+	public Connection getConnection() throws SQLException 
 	{
-		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": getConnection ( " + msg + " )..." );
+		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": getConnection()..." );
 		Connection connection = null;
 		
 		init();
 		
 		try {
-			connection = (Connection) connectionPool.borrowConnection ( msg );
+			connection = (Connection) connectionPool.borrowConnection();
 			
 		} catch (CreateConnectionException ex) {
 			throwAtomikosSQLException("Failed to grow the connection pool", ex);
@@ -387,33 +386,6 @@ implements HeuristicDataSource, ConnectionPoolProperties, Referenceable, Seriali
 	{	
 		return IntraVmObjectFactory.createReference ( this , getUniqueResourceName() );		
 	}
-	
-	public Connection getConnection() throws SQLException
-	{
-		StringHeuristicMessage m = null;
-		return getConnection ( m );
-	}
-
-    public Connection getConnection ( String msg ) throws SQLException
-    {
-    	return getConnection ( new StringHeuristicMessage ( msg ) );
-    }
-
-
-    public Connection getConnection ( String user , String passwd , String msg )
-            throws SQLException
-    {
-    	LOGGER.logWarning ( this + ": getConnection ( user , password , msg ) ignores authentication - returning default connection" );
-    	return getConnection ( msg );
-    }
-
-  
-    public Connection getConnection ( String user , String passwd ,
-            HeuristicMessage msg ) throws SQLException
-    {
-    	LOGGER.logWarning ( this + ": getConnection ( user , password , msg ) ignores authentication - returning default connection" );
-    	return getConnection ( msg );
-    }
 
 	/**
 	 * Sets the default isolation level of connections returned by this datasource.

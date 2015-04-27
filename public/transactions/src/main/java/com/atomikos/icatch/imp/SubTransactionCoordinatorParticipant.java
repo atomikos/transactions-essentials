@@ -35,10 +35,8 @@ import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeurMixedException;
 import com.atomikos.icatch.HeurRollbackException;
-import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.Participant;
 import com.atomikos.icatch.RollbackException;
-import com.atomikos.icatch.StringHeuristicMessage;
 import com.atomikos.icatch.SysException;
 import com.atomikos.icatch.TransactionService;
 import com.atomikos.icatch.config.Configuration;
@@ -60,8 +58,6 @@ public class SubTransactionCoordinatorParticipant implements Participant,DataSer
     private String subordinateId;
     // the id to recover the participant of the subordinate
 
-    private HeuristicMessage[] msgs;
-    // buffer messages in case recovery fails
 
     private boolean prepareCalled;
     // if true: heuristics on failure of rollback
@@ -71,7 +67,6 @@ public class SubTransactionCoordinatorParticipant implements Participant,DataSer
     {
         this.subordinateCoordinator = subordinateCoordinator;
         this.subordinateId = subordinateCoordinator.getCoordinatorId ();
-        this.msgs = subordinateCoordinator.getHeuristicMessages ();
         this.prepareCalled = false;
     }
 
@@ -130,39 +125,35 @@ public class SubTransactionCoordinatorParticipant implements Participant,DataSer
     /**
      * @see com.atomikos.icatch.Participant#commit(boolean)
      */
-    public HeuristicMessage[] commit ( boolean onePhase )
+    public void commit ( boolean onePhase )
             throws HeurRollbackException, HeurHazardException,
             HeurMixedException, RollbackException, SysException
     {
-        HeuristicMessage[] ret = getHeuristicMessages ();
         if ( subordinateCoordinator != null )
             subordinateCoordinator.commit ( onePhase );
         else if ( prepareCalled ) {
-            throw new HeurHazardException ( ret );
+            throw new HeurHazardException ();
         } else {
             // prepare NOT called -> subordinate timed out
             // and must have rolled back
             throw new RollbackException ();
         }
-        return ret;
     }
 
     /**
      * @see com.atomikos.icatch.Participant#rollback()
      */
-    public HeuristicMessage[] rollback () throws HeurCommitException,
+    public void rollback () throws HeurCommitException,
             HeurMixedException, HeurHazardException, SysException
     {
-        HeuristicMessage[] ret = getHeuristicMessages ();
         if ( subordinateCoordinator != null ) {
             subordinateCoordinator.rollback ();
         } else if ( prepareCalled ) {
             // heuristic: coordinator not recovered?!
-            throw new HeurHazardException ( ret );
+            throw new HeurHazardException();
         }
         // if prepare not called then the subordinate will
         // not be committed, so rollback is correct then
-        return ret;
     }
 
     /**
@@ -173,35 +164,14 @@ public class SubTransactionCoordinatorParticipant implements Participant,DataSer
         if ( subordinateCoordinator != null ) subordinateCoordinator.forget ();
     }
 
-    /**
-     * @see com.atomikos.icatch.Participant#getHeuristicMessages()
-     */
-    public HeuristicMessage[] getHeuristicMessages ()
-    {
-        if ( subordinateCoordinator != null ) { //null if recovery failed
-            msgs = subordinateCoordinator.getHeuristicMessages ();
-        }
-
-        return msgs;
-    }
-
 	public void writeData(DataOutput out) throws IOException {
 		out.writeUTF(subordinateId);
-		out.writeInt(msgs.length);
-		for (int i = 0; i < msgs.length; i++) {
-			out.writeUTF(msgs[i].toString());
-		}
 		out.writeBoolean(prepareCalled);
 	}
 
 	public void readData(DataInput in) throws IOException {
 		subordinateId=in.readUTF();
-		int size=in.readInt();
-		msgs=new HeuristicMessage[size];
-
-		for (int i = 0; i < msgs.length; i++) {
-			msgs[i]=new StringHeuristicMessage(in.readUTF());
-		}
+		int size=in.readInt();		
 		prepareCalled=in.readBoolean();
 	}
 
