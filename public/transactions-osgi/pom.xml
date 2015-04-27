@@ -27,7 +27,7 @@
 						<id>bundle-manifest</id>
 						<phase>compile</phase>
 						<goals>
-							<goal>bundle</goal>
+							<goal>manifest</goal>
 						</goals>
 						<configuration>
 						<unpackBundle>true</unpackBundle>
