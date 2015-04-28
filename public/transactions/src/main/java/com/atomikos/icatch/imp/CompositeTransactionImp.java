@@ -25,6 +25,7 @@
 
 package com.atomikos.icatch.imp;
 
+import java.util.Dictionary;
 import java.util.Stack;
 
 import com.atomikos.finitestates.FSMEnterEvent;
@@ -53,7 +54,7 @@ import com.atomikos.logging.LoggerFactory;
 
 public class CompositeTransactionImp
 extends AbstractCompositeTransaction implements
-        TransactionControl, FSMEnterListener
+        CompositeTerminator, TransactionControl, FSMEnterListener
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(CompositeTransactionImp.class);
 
@@ -265,7 +266,7 @@ extends AbstractCompositeTransaction implements
 
     public CompositeTerminator getTerminator ()
     {
-        return new CompositeTerminatorImp ( txservice, this, coordinator );
+        return this;
     }
 
     /**
@@ -333,9 +334,36 @@ extends AbstractCompositeTransaction implements
             HeurHazardException, SysException, SecurityException,
             RollbackException
     {
-        getTerminator().commit();
+        doCommit ();
+        setSiblingInfoForIncoming1pcRequestFromRemoteClient();
+        
+        if ( isRoot () ) {
+            try {
+                coordinator.terminate ( true );
+            }
+
+            catch ( RollbackException rb ) {
+                throw rb;
+            } catch ( HeurHazardException hh ) {
+                throw hh;
+            } catch ( HeurRollbackException hr ) {
+                throw hr;
+            } catch ( HeurMixedException hm ) {
+                throw hm;
+            } catch ( SysException se ) {
+                throw se;
+            } catch ( Exception e ) {
+                throw new SysException (
+                        "Unexpected error: " + e.getMessage (), e );
+            }
+        }
     }
 
+    private void setSiblingInfoForIncoming1pcRequestFromRemoteClient() {
+		Dictionary cascadelist = getExtent ().getRemoteParticipants ();
+        coordinator.setGlobalSiblingCount ( coordinator.getLocalSiblingCount () );
+        coordinator.setCascadeList ( cascadelist );
+	}
 
 
     /**
@@ -343,7 +371,14 @@ extends AbstractCompositeTransaction implements
      */
     public void rollback () throws IllegalStateException, SysException
     {
-        getTerminator().rollback();
+    	doRollback ();
+        if ( isRoot () ) {
+            try {
+                coordinator.terminate ( false );
+            } catch ( Exception e ) {
+                throw new SysException ( "Unexpected error in rollback: " + e.getMessage (), e );
+            }
+        }
     }
 
     /**
