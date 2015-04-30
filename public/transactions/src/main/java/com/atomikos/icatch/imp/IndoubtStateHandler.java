@@ -146,6 +146,8 @@ public class IndoubtStateHandler extends CoordinatorStateHandler
                 }
             } else {
                 if ( getCoordinator ().getSuperiorRecoveryCoordinator () == null ) {
+                	
+                	//TODO: delete this code, since indoubt states for root transactions are no longer logged?
 
                     // root tx, where terminator did not issue commit after prepare -> decide abort.
                     // NOTE: if not recovered then this is a heuristic decision
