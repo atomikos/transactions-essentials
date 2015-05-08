@@ -48,6 +48,12 @@ public interface JmxTransactionMBean
      */
 
     public String getState ();
+    
+    /**
+     * Retrieves the descriptive details for each participant involved in this transaction.
+     */
+
+    public String[] getParticipantDetails();
 
 
 }

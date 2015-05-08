@@ -112,15 +112,17 @@ public class ReadOnlyParticipant implements Participant,DataSerializable {
 	}
 
 	public void writeData(DataOutput out) throws IOException {
-		// FIXME @Guy not sure what to do here...
-
+		
 	}
 
 	public void readData(DataInput in) throws IOException {
-		// FIXME @Guy not sure what to do here...
-
+		
 	}
 
+	@Override
+	public String toString() {
+		return "ReadOnlyParticipant";
+	}
 
 
 }

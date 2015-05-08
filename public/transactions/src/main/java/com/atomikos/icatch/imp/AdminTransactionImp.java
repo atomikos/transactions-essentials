@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2015 Atomikos <info@atomikos.com>
  *
  * This code ("Atomikos TransactionsEssentials"), by itself,
  * is being distributed under the
@@ -24,6 +24,8 @@
  */
 
 package com.atomikos.icatch.imp;
+
+import java.util.Vector;
 
 import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.HeurHazardException;
@@ -201,5 +203,15 @@ class AdminTransactionImp implements AdminTransaction
     {
         coord_.forget ();
     }
+
+	@Override
+	public String[] getParticipantDetails() {
+		Vector participants = coord_.getParticipants();
+		String[] ret = new String[participants.size()];
+		for (int i = 0 ; i < ret.length ; i++) {
+			ret[i] = participants.get(i).toString();
+		}
+		return ret;
+	}
 
 }

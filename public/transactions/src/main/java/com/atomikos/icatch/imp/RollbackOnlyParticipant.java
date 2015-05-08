@@ -138,4 +138,9 @@ public class RollbackOnlyParticipant implements Participant,DataSerializable
 	public void readData(DataInput in) throws IOException {
 	}
 
+	@Override
+	public String toString() {
+		return "RollbackOnlyParticipant";
+	}
+	
 }

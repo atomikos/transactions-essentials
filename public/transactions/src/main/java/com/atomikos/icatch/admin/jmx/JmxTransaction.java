@@ -25,6 +25,8 @@
 
 package com.atomikos.icatch.admin.jmx;
 
+import java.util.Vector;
+
 import javax.management.MBeanRegistration;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -190,5 +192,10 @@ public abstract class JmxTransaction implements JmxTransactionMBean,
         // nothing to do
 
     }
+    
+	@Override
+	public String[] getParticipantDetails() {
+		return adminTransaction.getParticipantDetails();
+	}
 
 }

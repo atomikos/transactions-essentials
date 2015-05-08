@@ -67,6 +67,7 @@ public class AtomikosNonXAParticipant implements Participant, Serializable,DataS
 
 	private boolean readOnly;
 
+	private String name;
 
     public AtomikosNonXAParticipant() {
 	}
@@ -77,6 +78,7 @@ public class AtomikosNonXAParticipant implements Participant, Serializable,DataS
     public AtomikosNonXAParticipant ( JtaAwareNonXaConnection connection , String name )
     {
         this.connection = connection;
+        this.name = name;
     }
 
     /**
@@ -200,4 +202,9 @@ public class AtomikosNonXAParticipant implements Participant, Serializable,DataS
 		readOnly=in.readBoolean();
 	}
 
+	@Override
+	public String toString() {
+		return "Non-XA resource '" + name +
+        "': warning: this resource does not support two-phase commit";
+	}
 }

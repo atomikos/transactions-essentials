@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2015 Atomikos <info@atomikos.com>
  *
  * This code ("Atomikos TransactionsEssentials"), by itself,
  * is being distributed under the
@@ -142,5 +142,11 @@ public interface AdminTransaction extends Serializable
        */
 
       public void forceForget();
+      
+      /**
+       * Retrieves the descriptive details for each participant involved in this transaction.
+       */
 
+      public String[] getParticipantDetails();
+      
 }
