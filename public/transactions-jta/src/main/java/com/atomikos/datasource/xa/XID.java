@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2015 Atomikos <info@atomikos.com>
  *
  * This code ("Atomikos TransactionsEssentials"), by itself,
  * is being distributed under the
@@ -31,9 +31,7 @@ import java.util.Arrays;
 import javax.transaction.xa.Xid;
 
 /**
- *
- *
- * An adaptor class for mapping a String to Xid type.
+ * Our Xid class with correct equals and hashCode.
  */
 
 public class XID implements Serializable, Xid
@@ -41,32 +39,24 @@ public class XID implements Serializable, Xid
 
 	private static final long serialVersionUID = 4796496938014754464L;
 
-	private String meAsString;
-    // cached result of toString(), to gain performance
-
+	private static final int DEFAULT_FORMAT = ('A' << 24) + ('T' << 16)
+			+ ('O' << 8) + 'M';
+	
+	// same formatID for each transaction
+	// -1 for null Xid, 0 for OSI CCR and positive for proprietary format...
+	
+	private String cachedToStringForPerformance;
     private int formatId;
-    // required for Xid implementation
-    private int branchUsed = 0;
-    // how many bytes in branch array are used
-    private int globalUsed = 0;
-    // how many bytes in global array are used
     private byte[] branchQualifier = new byte[Xid.MAXBQUALSIZE];
-    // for Xid
     private byte[] globalTransactionId = new byte[Xid.MAXGTRIDSIZE];
-    // for Xid
-    private static final int DEFAULT_FORMAString = ('A' << 24) + ('T' << 16)
-            + ('O' << 8) + 'M';
-
-    // same formatID for each transaction
-    // -1 for null Xid, 0 for OSI CCR and positive for proprietary format...
 
     private XID ( String tid )
     {
-        this.formatId = DEFAULT_FORMAString;
+        this.formatId = DEFAULT_FORMAT;
         this.branchQualifier[0] = 0;
-        this.branchUsed = 1;
         this.globalTransactionId = tid.toString ().getBytes ();
-        this.globalUsed = tid.toString ().getBytes ().length;
+        if ( this.globalTransactionId.length > Xid.MAXGTRIDSIZE )
+        	throw new RuntimeException ( "Max global tid length exceeded." );
     }
 
     /**
@@ -87,12 +77,9 @@ public class XID implements Serializable, Xid
     {
         this ( tid );
         this.branchQualifier = resourceURL.getBytes ();
-        this.branchUsed = this.branchQualifier.length;
         if ( this.branchQualifier.length > Xid.MAXBQUALSIZE )
             throw new RuntimeException (
                     "Max branch qualifier length exceeded." );
-        if ( this.globalUsed > Xid.MAXGTRIDSIZE )
-            throw new RuntimeException ( "Max global tid length exceeded." );
 
     }
 
@@ -109,9 +96,7 @@ public class XID implements Serializable, Xid
     {
         this.formatId = xid.getFormatId ();
         this.globalTransactionId = xid.getGlobalTransactionId ();
-        this.globalUsed = xid.getGlobalTransactionId ().length;
         this.branchQualifier = xid.getBranchQualifier ();
-        this.branchUsed = xid.getBranchQualifier ().length;
     }
 
     @Override
@@ -149,12 +134,20 @@ public class XID implements Serializable, Xid
     @Override
 	public String toString ()
     {
-        if ( this.meAsString == null ) {
-            this.meAsString = new String ( getGlobalTransactionId () )
-                    + new String ( getBranchQualifier () );
+        if ( this.cachedToStringForPerformance == null ) {
+            this.cachedToStringForPerformance = getGlobalTransactionIdAsString()
+                    + getBranchQualifierAsString();
         }
-        return this.meAsString;
+        return this.cachedToStringForPerformance;
     }
+
+	public String getBranchQualifierAsString() {
+		return new String ( getBranchQualifier () );
+	}
+
+	public String getGlobalTransactionIdAsString() {
+		return new String ( getGlobalTransactionId () );
+	}
 
     @Override
 	public int hashCode ()
