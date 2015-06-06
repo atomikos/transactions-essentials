@@ -135,18 +135,18 @@ public class XID implements Serializable, Xid
 	public String toString ()
     {
         if ( this.cachedToStringForPerformance == null ) {
-            this.cachedToStringForPerformance = getGlobalTransactionIdAsString()
-                    + getBranchQualifierAsString();
+            this.cachedToStringForPerformance = getGlobalTransactionIdAsString(this)
+                    + getBranchQualifierAsString(this);
         }
         return this.cachedToStringForPerformance;
     }
 
-	public String getBranchQualifierAsString() {
-		return new String ( getBranchQualifier () );
+	public static String getBranchQualifierAsString(Xid xid) {
+		return new String ( xid.getBranchQualifier() );
 	}
 
-	public String getGlobalTransactionIdAsString() {
-		return new String ( getGlobalTransactionId () );
+	public static String getGlobalTransactionIdAsString(Xid xid) {
+		return new String ( xid.getGlobalTransactionId() );
 	}
 
     @Override
