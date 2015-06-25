@@ -25,8 +25,6 @@
 
 package com.atomikos.icatch.admin;
 
-import java.io.Serializable;
-
 import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeurMixedException;
@@ -39,7 +37,7 @@ import com.atomikos.icatch.SysException;
   * as well as forced two-phase commit methods.
   */
 
-public interface AdminTransaction extends Serializable
+public interface AdminTransaction
 {
 	 public static final int STATE_ACTIVE = -3;
 
