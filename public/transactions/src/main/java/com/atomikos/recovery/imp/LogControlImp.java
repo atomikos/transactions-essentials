@@ -7,6 +7,7 @@ import java.util.Set;
 
 import com.atomikos.icatch.admin.AdminTransaction;
 import com.atomikos.recovery.AdminLog;
+import com.atomikos.recovery.CoordinatorLogEntry;
 
 public class LogControlImp implements com.atomikos.icatch.admin.LogControl {
 
@@ -19,25 +20,30 @@ public class LogControlImp implements com.atomikos.icatch.admin.LogControl {
 
 	@Override
 	public AdminTransaction[] getAdminTransactions() {
-		String[] tids=adminLog.getPendingCoordinatorIds();
+		CoordinatorLogEntry[] tids=adminLog.getCoordinatorLogEntries();
 		AdminTransaction[] ret = new AdminTransaction[tids.length];
 		for (int i = 0; i < tids.length; i++) {
-			ret[i]= new AdminTransactionImp(tids[i]);
+			ret[i] = convertToAdminTransaction(tids[i]);
 		}
 		
 		
 		return ret;
 	}
 
+	private AdminTransactionImp convertToAdminTransaction(
+			CoordinatorLogEntry coordinatorLogEntry) {
+		return new AdminTransactionImp(coordinatorLogEntry);
+	}
+
 	@Override
 	public AdminTransaction[] getAdminTransactions(String[] tids) {
 		List<String> tidsToFind = Arrays.asList(tids);
-		String[] pendingCoordinatorIds=adminLog.getPendingCoordinatorIds();
+		CoordinatorLogEntry[] pendingCoordinatorEntries=adminLog.getCoordinatorLogEntries();
 		
 		Set<AdminTransaction> adminTransactions = new HashSet<AdminTransaction>();
-		for (String pendingCoordinatorId : pendingCoordinatorIds) {
-			if(tidsToFind.contains(pendingCoordinatorId)) {
-				adminTransactions.add(new AdminTransactionImp(pendingCoordinatorId));
+		for (CoordinatorLogEntry pendingCoordinatorEntry : pendingCoordinatorEntries) {
+			if(tidsToFind.contains(pendingCoordinatorEntry.coordinatorId)) {
+				adminTransactions.add(convertToAdminTransaction(pendingCoordinatorEntry));
 			}
 			
 		}

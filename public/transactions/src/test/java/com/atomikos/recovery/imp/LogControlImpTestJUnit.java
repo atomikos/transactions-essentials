@@ -1,13 +1,16 @@
 package com.atomikos.recovery.imp;
 
+import static org.junit.Assert.*;
 import junit.framework.Assert;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import com.atomikos.icatch.TxState;
 import com.atomikos.icatch.admin.AdminTransaction;
 import com.atomikos.recovery.AdminLog;
+import com.atomikos.recovery.CoordinatorLogEntry;
 
 public class LogControlImpTestJUnit {
 
@@ -37,18 +40,29 @@ public class LogControlImpTestJUnit {
 		whenGetAdminTransactions();
 		thenAdminTransactionHasCorrectTid();
 	}
-	
+
 	@Test
 	public void getFilteredAdminTransactions() throws Exception {
-		
+
 		givenPendingTransactionInLog();
 		whenGetFilteredAdminTransactions();
 		thenActiveCoordinatorsRetrievedFromAdminLog();
+
+	}
+	@Test
+	public void getState() throws Exception {
+		givenPendingTransactionInLog();
+		whenGetAdminTransactions();
+		thenAdminTransactionHasCorrectState();
+	}
+
+	private void thenAdminTransactionHasCorrectState() {
+		Assert.assertEquals(AdminTransaction.STATE_COMMITTING, adminTransaction.getState());
 		
 	}
 
 	private void whenGetFilteredAdminTransactions() {
-		String[] tids= new String[1];
+		String[] tids = new String[1];
 		tids[0] = TID;
 		AdminTransaction[] adminTransactions = sut.getAdminTransactions(tids);
 		adminTransaction = adminTransactions[0];
@@ -60,7 +74,7 @@ public class LogControlImpTestJUnit {
 
 	private void thenActiveCoordinatorsRetrievedFromAdminLog() {
 
-		Mockito.verify(adminLog, Mockito.times(1)).getPendingCoordinatorIds();
+		Mockito.verify(adminLog, Mockito.times(1)).getCoordinatorLogEntries();
 		Assert.assertNotNull(adminTransaction);
 
 	}
@@ -71,8 +85,8 @@ public class LogControlImpTestJUnit {
 	}
 
 	private void givenPendingTransactionInLog() {
-		String[] result = new String[1];
-		result[0] = TID;
-		Mockito.when(adminLog.getPendingCoordinatorIds()).thenReturn(result);
+		CoordinatorLogEntry[] result = new CoordinatorLogEntry[1];
+		result[0] = new CoordinatorLogEntry(TID, TxState.COMMITTING);
+		Mockito.when(adminLog.getCoordinatorLogEntries()).thenReturn(result);
 	}
 }
