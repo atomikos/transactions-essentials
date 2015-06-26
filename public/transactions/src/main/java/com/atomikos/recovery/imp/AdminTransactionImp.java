@@ -42,8 +42,7 @@ class AdminTransactionImp implements AdminTransaction {
 
 	@Override
 	public boolean wasCommitted() {
-		// TODO Auto-generated method stub
-		return false;
+		return coordinatorLogEntry.wasCommitted;
 	}
 
 	@Override

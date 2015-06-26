@@ -52,6 +52,30 @@ public class LogControlImpTestJUnit {
 		whenGetAdminTransactions();
 		thenAdminTransactionHasCorrectState();
 	}
+	
+	@Test
+	public void testWasNotCommitted() throws Exception {
+		givenPendingTransactionInLog(false);
+		whenGetAdminTransactions();
+		thenAdminTransactionWasCommitted(false);
+	}
+	
+	@Test
+	public void testWasCommitted() throws Exception {
+		givenPendingTransactionInLog(true);
+		whenGetAdminTransactions();
+		thenAdminTransactionWasCommitted(true);
+	}
+
+	private void thenAdminTransactionWasCommitted(boolean value) {
+		Assert.assertEquals(value, adminTransaction.wasCommitted());
+	}
+
+	private void givenPendingTransactionInLog(boolean wasCommitted) {
+		CoordinatorLogEntry[] result = new CoordinatorLogEntry[1];
+		result[0] = new CoordinatorLogEntry(TID, TxState.COMMITTING, wasCommitted);
+		Mockito.when(adminLog.getCoordinatorLogEntries()).thenReturn(result);
+	}
 
 	private void thenAdminTransactionHasCorrectState() {
 		Assert.assertEquals(AdminTransaction.STATE_COMMITTING, adminTransaction.getState());
