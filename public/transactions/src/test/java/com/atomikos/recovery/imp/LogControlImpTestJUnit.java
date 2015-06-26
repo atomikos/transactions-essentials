@@ -19,11 +19,14 @@ public class LogControlImpTestJUnit {
 	private AdminLog adminLog;
 
 	private AdminTransaction adminTransaction;
+	private String[] participantDetails = new String[2];
 
 	@Before
 	public void configure() {
 		adminLog = Mockito.mock(AdminLog.class);
 		sut = new LogControlImp(adminLog);
+		participantDetails[0] = "one";
+		participantDetails[1] = "two";
 	}
 
 	@Test
@@ -46,25 +49,40 @@ public class LogControlImpTestJUnit {
 		whenGetFilteredAdminTransactions();
 		thenActiveCoordinatorsRetrievedFromAdminLog();
 	}
+
 	@Test
 	public void testGetState() throws Exception {
 		givenPendingTransactionInLog();
 		whenGetAdminTransactions();
 		thenAdminTransactionHasCorrectState();
 	}
-	
+
 	@Test
 	public void testWasNotCommitted() throws Exception {
 		givenPendingTransactionInLog(false);
 		whenGetAdminTransactions();
 		thenAdminTransactionWasCommitted(false);
 	}
-	
+
 	@Test
 	public void testWasCommitted() throws Exception {
 		givenPendingTransactionInLog(true);
 		whenGetAdminTransactions();
 		thenAdminTransactionWasCommitted(true);
+	}
+
+	@Test
+	public void getParticipantDetails() throws Exception {
+		givenPendingTransactionInLog();
+		whenGetAdminTransactions();
+		thenAdminTransactionHasCorrectParticipantDetails();
+	}
+
+	private void thenAdminTransactionHasCorrectParticipantDetails() {
+
+		Assert.assertEquals(participantDetails,
+				adminTransaction.getParticipantDetails());
+
 	}
 
 	private void thenAdminTransactionWasCommitted(boolean value) {
@@ -73,13 +91,16 @@ public class LogControlImpTestJUnit {
 
 	private void givenPendingTransactionInLog(boolean wasCommitted) {
 		CoordinatorLogEntry[] result = new CoordinatorLogEntry[1];
-		result[0] = new CoordinatorLogEntry(TID, TxState.COMMITTING, wasCommitted);
+
+		result[0] = new CoordinatorLogEntry(TID, TxState.COMMITTING,
+				wasCommitted, participantDetails);
 		Mockito.when(adminLog.getCoordinatorLogEntries()).thenReturn(result);
 	}
 
 	private void thenAdminTransactionHasCorrectState() {
-		Assert.assertEquals(AdminTransaction.STATE_COMMITTING, adminTransaction.getState());
-		
+		Assert.assertEquals(AdminTransaction.STATE_COMMITTING,
+				adminTransaction.getState());
+
 	}
 
 	private void whenGetFilteredAdminTransactions() {
@@ -107,7 +128,8 @@ public class LogControlImpTestJUnit {
 
 	private void givenPendingTransactionInLog() {
 		CoordinatorLogEntry[] result = new CoordinatorLogEntry[1];
-		result[0] = new CoordinatorLogEntry(TID, TxState.COMMITTING);
+		result[0] = new CoordinatorLogEntry(TID, TxState.COMMITTING,
+				participantDetails);
 		Mockito.when(adminLog.getCoordinatorLogEntries()).thenReturn(result);
 	}
 }

@@ -48,27 +48,23 @@ class AdminTransactionImp implements AdminTransaction {
 	@Override
 	public void forceCommit() throws HeurRollbackException,
 			HeurHazardException, HeurMixedException, SysException {
-		// TODO Auto-generated method stub
-
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public void forceRollback() throws HeurCommitException, HeurMixedException,
 			HeurHazardException, SysException {
-		// TODO Auto-generated method stub
-
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public void forceForget() {
-		// TODO Auto-generated method stub
-
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public String[] getParticipantDetails() {
-		// TODO Auto-generated method stub
-		return null;
+		return coordinatorLogEntry.participantDetails;
 	}
 
 }
