@@ -5,7 +5,6 @@ import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeurMixedException;
 import com.atomikos.icatch.HeurRollbackException;
 import com.atomikos.icatch.SysException;
-import com.atomikos.icatch.TxState;
 import com.atomikos.icatch.admin.AdminTransaction;
 import com.atomikos.recovery.CoordinatorLogEntry;
 

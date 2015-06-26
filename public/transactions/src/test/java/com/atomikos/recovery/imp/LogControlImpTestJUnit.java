@@ -1,6 +1,5 @@
 package com.atomikos.recovery.imp;
 
-import static org.junit.Assert.*;
 import junit.framework.Assert;
 
 import org.junit.Before;
