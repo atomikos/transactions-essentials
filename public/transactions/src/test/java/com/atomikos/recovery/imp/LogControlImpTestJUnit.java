@@ -27,29 +27,27 @@ public class LogControlImpTestJUnit {
 	}
 
 	@Test
-	public void getAdminTransactions() throws Exception {
+	public void testGetAdminTransactions() throws Exception {
 		givenPendingTransactionInLog();
 		whenGetAdminTransactions();
 		thenActiveCoordinatorsRetrievedFromAdminLog();
 	}
 
 	@Test
-	public void getTid() throws Exception {
+	public void testGetTid() throws Exception {
 		givenPendingTransactionInLog();
 		whenGetAdminTransactions();
 		thenAdminTransactionHasCorrectTid();
 	}
 
 	@Test
-	public void getFilteredAdminTransactions() throws Exception {
-
+	public void testGetFilteredAdminTransactions() throws Exception {
 		givenPendingTransactionInLog();
 		whenGetFilteredAdminTransactions();
 		thenActiveCoordinatorsRetrievedFromAdminLog();
-
 	}
 	@Test
-	public void getState() throws Exception {
+	public void testGetState() throws Exception {
 		givenPendingTransactionInLog();
 		whenGetAdminTransactions();
 		thenAdminTransactionHasCorrectState();
