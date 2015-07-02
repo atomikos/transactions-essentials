@@ -610,7 +610,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
         recoverCoordinators ();
 
         shutdownInProgress_ = false;
-        control_ = new LogControlImp ( this );
+        control_ = new com.atomikos.recovery.imp.LogControlImp ( this );
         
         recover(); //ensure that remote participants can start inquiring and replay
     }
@@ -930,8 +930,9 @@ public class TransactionServiceImp implements TransactionServiceProvider,
 			for (Participant pariticipant : coordinatorImp.getParticipants()) {
 				participantDetailAsList.add(pariticipant.toString());
 			}
+			
 			String[] participantDetails = participantDetailAsList.toArray(new String[participantDetailAsList.size()]); 
-			coordinatorLogEntries.add(new CoordinatorLogEntry((String)coordinatorImp.getId(), coordinatorImp.getState(), participantDetails));
+			coordinatorLogEntries.add(new CoordinatorLogEntry((String)coordinatorImp.getId(), coordinatorImp.getState(),coordinatorImp.isCommitted(), participantDetails));
 			
 		}
 		return coordinatorLogEntries.toArray(new CoordinatorLogEntry[coordinatorLogEntries.size()]);

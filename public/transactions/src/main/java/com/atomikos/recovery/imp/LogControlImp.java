@@ -13,7 +13,7 @@ public class LogControlImp implements com.atomikos.icatch.admin.LogControl {
 
 	private final AdminLog adminLog;
 	
-    LogControlImp ( AdminLog adminLog )
+	public LogControlImp ( AdminLog adminLog )
     {
         this.adminLog = adminLog;
     }
