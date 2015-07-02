@@ -9,11 +9,11 @@ import javax.transaction.xa.Xid;
 
 public class RecoveryScan {
 	
-	static interface XidSelector {
+	public static interface XidSelector {
 		boolean selects(Xid xid);
 	}
 	
-	static List<Xid> recoverXids(XAResource xaResource, XidSelector selector) throws XAException {
+	public static List<Xid> recoverXids(XAResource xaResource, XidSelector selector) throws XAException {
 		List<Xid> ret = new ArrayList<Xid>();
 
         boolean done = false;
