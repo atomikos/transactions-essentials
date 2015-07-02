@@ -25,9 +25,11 @@
 
 package com.atomikos.icatch.imp;
 
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
 import java.util.Stack;
 import java.util.Vector;
@@ -53,6 +55,8 @@ import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 import com.atomikos.persistence.LogException;
 import com.atomikos.persistence.StateRecoveryManager;
+import com.atomikos.recovery.AdminLog;
+import com.atomikos.recovery.CoordinatorLogEntry;
 import com.atomikos.thread.InterruptedExceptionHelper;
 import com.atomikos.thread.TaskManager;
 import com.atomikos.util.UniqueIdMgr;
@@ -62,7 +66,7 @@ import com.atomikos.util.UniqueIdMgr;
  */
 
 public class TransactionServiceImp implements TransactionServiceProvider,
-        FSMEnterListener<TxState>, SubTxAwareParticipant, RecoveryService
+        FSMEnterListener<TxState>, SubTxAwareParticipant, RecoveryService, AdminLog
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(TransactionServiceImp.class);
     private static final int NUMLATCHES = 97;
@@ -210,7 +214,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
      *         none.
      */
 
-    Vector getCoordinatorImpVector ()
+    Vector<CoordinatorImp> getCoordinatorImpVector ()
     {
         Vector ret = new Vector ();
         Enumeration tids = rootToCoordinatorMap_.keys ();
@@ -915,6 +919,32 @@ public class TransactionServiceImp implements TransactionServiceProvider,
 	@Override
 	public RecoveryService getRecoveryService() {
 		return this;
+	}
+
+	@Override
+	public CoordinatorLogEntry[] getCoordinatorLogEntries() {
+		Vector<CoordinatorImp> coordinatorImpVector = getCoordinatorImpVector();
+		List<CoordinatorLogEntry> coordinatorLogEntries = new ArrayList<CoordinatorLogEntry>(coordinatorImpVector.size());
+		for (CoordinatorImp coordinatorImp : coordinatorImpVector) {
+			List<String> participantDetailAsList = new ArrayList<String>();
+			for (Participant pariticipant : coordinatorImp.getParticipants()) {
+				participantDetailAsList.add(pariticipant.toString());
+			}
+			String[] participantDetails = participantDetailAsList.toArray(new String[participantDetailAsList.size()]); 
+			coordinatorLogEntries.add(new CoordinatorLogEntry((String)coordinatorImp.getId(), coordinatorImp.getState(), participantDetails));
+			
+		}
+		return coordinatorLogEntries.toArray(new CoordinatorLogEntry[coordinatorLogEntries.size()]);
+	}
+
+	@Override
+	public void remove(String coordinatorId) {
+		Vector<CoordinatorImp> coordinatorImpVector = getCoordinatorImpVector();
+		for (CoordinatorImp coordinatorImp : coordinatorImpVector) {
+			if(coordinatorImp.getId().equals(coordinatorId)){
+				coordinatorImp.forget();
+			}
+		}
 	}
 
 }

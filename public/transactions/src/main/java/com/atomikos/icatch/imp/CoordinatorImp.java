@@ -263,7 +263,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
         return superiorCoordinator_;
     }
 
-    Vector<Participant> getParticipants ()
+    public Vector<Participant> getParticipants ()
     {
         return participants_;
     }
