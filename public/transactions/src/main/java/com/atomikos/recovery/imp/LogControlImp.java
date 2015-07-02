@@ -32,7 +32,7 @@ public class LogControlImp implements com.atomikos.icatch.admin.LogControl {
 
 	private AdminTransactionImp convertToAdminTransaction(
 			CoordinatorLogEntry coordinatorLogEntry) {
-		return new AdminTransactionImp(coordinatorLogEntry);
+		return new AdminTransactionImp(coordinatorLogEntry, adminLog);
 	}
 
 	@Override

@@ -72,10 +72,26 @@ public class LogControlImpTestJUnit {
 	}
 
 	@Test
-	public void getParticipantDetails() throws Exception {
+	public void testGetParticipantDetails() throws Exception {
 		givenPendingTransactionInLog();
 		whenGetAdminTransactions();
 		thenAdminTransactionHasCorrectParticipantDetails();
+	}
+	
+	@Test
+	public void testForceForget() {
+		givenPendingTransactionInLog(true);
+		whenForceForget();
+		thenCoordinatorWasRemovedFromAdminLog();
+	}
+
+	private void thenCoordinatorWasRemovedFromAdminLog() {
+		Mockito.verify(adminLog, Mockito.times(1)).remove(adminTransaction.getTid());
+	}
+
+	private void whenForceForget() {
+		whenGetAdminTransactions();
+		adminTransaction.forceForget();
 	}
 
 	private void thenAdminTransactionHasCorrectParticipantDetails() {

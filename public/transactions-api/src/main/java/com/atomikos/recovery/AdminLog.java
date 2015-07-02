@@ -4,4 +4,6 @@ public interface AdminLog {
 
 	CoordinatorLogEntry[] getCoordinatorLogEntries();
 
+	void remove(String coordinatorId);
+
 }

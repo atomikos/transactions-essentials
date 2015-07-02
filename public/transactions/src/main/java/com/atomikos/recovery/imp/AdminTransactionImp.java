@@ -6,14 +6,17 @@ import com.atomikos.icatch.HeurMixedException;
 import com.atomikos.icatch.HeurRollbackException;
 import com.atomikos.icatch.SysException;
 import com.atomikos.icatch.admin.AdminTransaction;
+import com.atomikos.recovery.AdminLog;
 import com.atomikos.recovery.CoordinatorLogEntry;
 
 class AdminTransactionImp implements AdminTransaction {
 
 	private final CoordinatorLogEntry coordinatorLogEntry;
+	private AdminLog adminLog;
 
-	public AdminTransactionImp(CoordinatorLogEntry coordinatorLogEntry) {
+	public AdminTransactionImp(CoordinatorLogEntry coordinatorLogEntry, AdminLog adminLog) {
 		this.coordinatorLogEntry = coordinatorLogEntry;
+		this.adminLog = adminLog;
 	}
 
 	@Override
@@ -59,7 +62,7 @@ class AdminTransactionImp implements AdminTransaction {
 
 	@Override
 	public void forceForget() {
-		throw new UnsupportedOperationException();
+		adminLog.remove(coordinatorLogEntry.coordinatorId);
 	}
 
 	@Override
