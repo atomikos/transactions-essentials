@@ -37,6 +37,9 @@ class AdminTransactionImp implements AdminTransaction {
 			return STATE_HEUR_HAZARD;
 		case HEUR_MIXED:
 			return STATE_HEUR_MIXED;
+		case IN_DOUBT:
+			return STATE_PREPARED;
+			
 		default:
 			return STATE_UNKNOWN;
 		}
