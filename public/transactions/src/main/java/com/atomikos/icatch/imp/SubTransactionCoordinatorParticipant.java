@@ -1,0 +1,178 @@
+/**
+ * Copyright (C) 2000-2012 Atomikos <info@atomikos.com>
+ *
+ * This code ("Atomikos TransactionsEssentials"), by itself,
+ * is being distributed under the
+ * Apache License, Version 2.0 ("License"), a copy of which may be found at
+ * http://www.atomikos.com/licenses/apache-license-2.0.txt .
+ * You may not use this file except in compliance with the License.
+ *
+ * While the License grants certain patent license rights,
+ * those patent license rights only extend to the use of
+ * Atomikos TransactionsEssentials by itself.
+ *
+ * This code (Atomikos TransactionsEssentials) contains certain interfaces
+ * in package (namespace) com.atomikos.icatch
+ * (including com.atomikos.icatch.Participant) which, if implemented, may
+ * infringe one or more patents held by Atomikos.
+ * It should be appreciated that you may NOT implement such interfaces;
+ * licensing to implement these interfaces must be obtained separately from Atomikos.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ */
+
+package com.atomikos.icatch.imp;
+
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+import java.util.Dictionary;
+
+import com.atomikos.icatch.DataSerializable;
+import com.atomikos.icatch.HeurCommitException;
+import com.atomikos.icatch.HeurHazardException;
+import com.atomikos.icatch.HeurMixedException;
+import com.atomikos.icatch.HeurRollbackException;
+import com.atomikos.icatch.Participant;
+import com.atomikos.icatch.RollbackException;
+import com.atomikos.icatch.SysException;
+import com.atomikos.icatch.TransactionService;
+import com.atomikos.icatch.config.Configuration;
+
+/**
+ * A participant for registering a subtx coordinator as a subordinate in 2PC of
+ * the parent transaction coordinator.
+ */
+
+public class SubTransactionCoordinatorParticipant implements Participant,DataSerializable
+{
+
+    private static final long serialVersionUID = -321213151844934630L;
+
+    private transient Participant subordinateCoordinator;
+    // the participant role of the subtx coordinator
+    // NOT serializable -> recover by ID
+
+    private String subordinateId;
+    // the id to recover the participant of the subordinate
+
+
+    private boolean prepareCalled;
+    // if true: heuristics on failure of rollback
+
+    public SubTransactionCoordinatorParticipant (
+            CoordinatorImp subordinateCoordinator )
+    {
+        this.subordinateCoordinator = subordinateCoordinator;
+        this.subordinateId = subordinateCoordinator.getCoordinatorId ();
+        this.prepareCalled = false;
+    }
+
+    /**
+     * @see com.atomikos.icatch.Participant#recover()
+     */
+    public boolean recover () throws SysException
+    {
+        TransactionService ts = Configuration.getTransactionService ();
+        subordinateCoordinator = ts.getParticipant ( subordinateId );
+        return subordinateCoordinator != null;
+    }
+
+    /**
+     * @see com.atomikos.icatch.Participant#getURI()
+     */
+    public String getURI ()
+    {
+        return subordinateId;
+    }
+
+    /**
+     * @see com.atomikos.icatch.Participant#setCascadeList(java.util.Dictionary)
+     */
+    public void setCascadeList ( Dictionary allParticipants )
+            throws SysException
+    {
+        // delegate to subordinate, in order to propagate to remote
+        // work (even though the subordinate itself is local, its
+        // registered participants may be remote!)
+        subordinateCoordinator.setCascadeList ( allParticipants );
+
+    }
+
+    /**
+     * @see com.atomikos.icatch.Participant#setGlobalSiblingCount(int)
+     */
+    public void setGlobalSiblingCount ( int count )
+    {
+        // delegate to subordinate, in order to propagate
+        // to remote work
+        subordinateCoordinator.setGlobalSiblingCount ( count );
+
+    }
+
+    /**
+     * @see com.atomikos.icatch.Participant#prepare()
+     */
+    public int prepare () throws RollbackException, HeurHazardException,
+            HeurMixedException, SysException
+    {
+        prepareCalled = true;
+        return subordinateCoordinator.prepare ();
+    }
+
+    /**
+     * @see com.atomikos.icatch.Participant#commit(boolean)
+     */
+    public void commit ( boolean onePhase )
+            throws HeurRollbackException, HeurHazardException,
+            HeurMixedException, RollbackException, SysException
+    {
+        if ( subordinateCoordinator != null )
+            subordinateCoordinator.commit ( onePhase );
+        else if ( prepareCalled ) {
+            throw new HeurHazardException ();
+        } else {
+            // prepare NOT called -> subordinate timed out
+            // and must have rolled back
+            throw new RollbackException ();
+        }
+    }
+
+    /**
+     * @see com.atomikos.icatch.Participant#rollback()
+     */
+    public void rollback () throws HeurCommitException,
+            HeurMixedException, HeurHazardException, SysException
+    {
+        if ( subordinateCoordinator != null ) {
+            subordinateCoordinator.rollback ();
+        } else if ( prepareCalled ) {
+            // heuristic: coordinator not recovered?!
+            throw new HeurHazardException();
+        }
+        // if prepare not called then the subordinate will
+        // not be committed, so rollback is correct then
+    }
+
+    /**
+     * @see com.atomikos.icatch.Participant#forget()
+     */
+    public void forget ()
+    {
+        if ( subordinateCoordinator != null ) subordinateCoordinator.forget ();
+    }
+
+	public void writeData(DataOutput out) throws IOException {
+		out.writeUTF(subordinateId);
+		out.writeBoolean(prepareCalled);
+	}
+
+	public void readData(DataInput in) throws IOException {
+		subordinateId=in.readUTF();
+		int size=in.readInt();		
+		prepareCalled=in.readBoolean();
+	}
+
+}
