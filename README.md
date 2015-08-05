@@ -3,7 +3,9 @@
 
 [![Build Status](https://travis-ci.org/pascalleclercq/transactions-essentials.svg?branch=master)](https://travis-ci.org/pascalleclercq/transactions-essentials)
 
-A light-weight, embeddable transaction manager for instant reliability without design efforts in your code. If you are reading this file then you are probably looking at our new project fork on GitHub, meant to allow community members to fork and contribute. This new GitHub project is merged and updated regularly with our internal development repository.
+A light-weight, embeddable transaction manager for instant reliability without design efforts in your code. If you are reading this file then you are probably looking at our new project fork on GitHub, meant to allow community members to fork and contribute. By contributing here, you can help steer the future direction of Atomikos TransactionsEssentials. 
+
+This new GitHub project is merged and updated regularly with our internal development repository (“trunk”) to work towards our next open source release (note: stable maintenance releases and our commercial power features are managed outside GitHub). 
 
 ### Getting Started
 
