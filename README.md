@@ -5,9 +5,9 @@
 
 A light-weight, embeddable transaction manager for instant reliability without design efforts in your code. If you are reading this file then you are probably looking at our project fork on GitHub, meant to allow community members to fork and contribute. By contributing here, you can help steer the future direction of Atomikos TransactionsEssentials. 
 
-This GitHub project is merged and updated regularly with our internal development repository (“trunk”) to work towards our next open source release (note: stable maintenance releases and our commercial power features are managed outside GitHub).
+This GitHub project is merged and updated regularly with our internal development repository (“trunk”) to work towards our next open source release (note: stable maintenance releases and our commercial power features are managed outside GitHub). 
 
-IMPORTANT: this new repository was not yet publicly announced in the Atomikos community so it appears a bit lonely. Don’t let that discourage you towards contributing - it will be announced soon enough.
+IMPORTANT: this new repository was not yet publicly announced in the Atomikos community so it appears a bit lonely. Don’t let that discourage you towards contributing - it will be announced soon enough. Also, we don’t develop on GitHub ourselves so you won’t see a lot of our commits here - only refreshes when we merge + push to GitHub. That is because at least initially, the sole purpose of this project is to allow interested GitHub community members to fork and contribute to what we have.
 
 ### Getting Started
 
