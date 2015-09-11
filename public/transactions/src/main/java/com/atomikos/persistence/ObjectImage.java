@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2015 Atomikos <info@atomikos.com>
  *
  * This code ("Atomikos TransactionsEssentials"), by itself,
  * is being distributed under the
@@ -45,11 +45,4 @@ public interface ObjectImage extends Externalizable, Identifiable
      */
 
     public Recoverable restore ();
-//    
-//    /**
-//     *
-//     * @return True iff the image requires immediate syncing. 
-//     */
-//    
-//    public boolean requiresSync();
 }
