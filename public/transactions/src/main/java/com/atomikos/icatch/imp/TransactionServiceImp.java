@@ -27,10 +27,12 @@ package com.atomikos.icatch.imp;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 import java.util.Stack;
 import java.util.Vector;
 
@@ -361,23 +363,16 @@ public class TransactionServiceImp implements TransactionServiceProvider,
 
     private void startlistening ( CoordinatorImp coordinator )
     {
-        Hashtable<TxState,Object> forgetStates = new Hashtable<TxState,Object> ();
-        // forgetStates are those that lead to a removal of the coordinator
-        // such that it only exists in the log but no longer in CM
-
-        forgetStates.put ( TxState.TERMINATED, new Object () );
-
-        TxState[] finalStates = coordinator.getFinalStates ();
-        for ( int i = 0; i < finalStates.length; i++ ) {
-            forgetStates.put ( finalStates[i], new Object () );
-        }
-
-        Enumeration<TxState> enumm = forgetStates.keys ();
-
-        while ( enumm.hasMoreElements () ) {
-            TxState state = (TxState)enumm.nextElement ();
-            coordinator.addFSMEnterListener ( this, state );
-        }
+        Set<TxState>  forgetStates = new HashSet<TxState>();
+        for (TxState txState : TxState.values()) {
+			if(txState.isFinalState()) {
+				forgetStates.add(txState);
+			}
+		}
+        
+        for (TxState txState : forgetStates) {
+        	 coordinator.addFSMEnterListener ( this, txState );
+		}
 
         // on recovery, the end states might have been reached
         // BEFORE listener added -> check and remove if so.

@@ -42,27 +42,6 @@ public interface StateRecoverable<T> extends Recoverable, FSMPreEnterEventSource
 {
 
     /**
-     * Get the states that should be recoverable.
-     * 
-     * @return Object[] An array of states that are meant to be recoverable. For
-     *         efficiency, this should also include a state where the logimage
-     *         is forgettable!
-     * 
-     */
-
-    public T[] getRecoverableStates ();
-
-    /**
-     * Needed by the Recovery system to determine when a logged state can be
-     * forgotten. If the instance reaches one of these states, then it will no
-     * longer be recoverable.
-     * 
-     * @return Object[] The list of final states.
-     */
-
-    public T[] getFinalStates ();
-
-    /**
      * Get an object image for the given state.
      * 
      * @param state

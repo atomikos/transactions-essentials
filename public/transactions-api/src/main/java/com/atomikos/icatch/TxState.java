@@ -25,12 +25,43 @@
 
 package com.atomikos.icatch;
 
-
 /**
  * The states for a distributed transaction system.
  */
 
 public enum TxState {
-	ACTIVE ,MARKED_ABORT,LOCALLY_DONE,PREPARING,IN_DOUBT,ABORTING,COMMITTING,SUSPENDED,HEUR_COMMITTED,HEUR_ABORTED,HEUR_MIXED,HEUR_HAZARD,TERMINATED,COMMITTED,ABORTED;
+	//@formatter:off
+	ACTIVE 		 	(true, 	false),
+	MARKED_ABORT 	(false, false),
+	LOCALLY_DONE 	(false, false),
+	PREPARING 	 	(false, false),
+	IN_DOUBT  	 	(true, 	false),
+	ABORTING 	 	(false, false),
+	COMMITTING 		(true, 	false),
+	SUSPENDED 		(false, false),
+	HEUR_COMMITTED 	(true, 	false),
+	HEUR_ABORTED 	(true, 	false),
+	HEUR_MIXED 		(true, 	false),
+	HEUR_HAZARD 	(true, 	false),
+	TERMINATED 		(false, true),
+	COMMITTED 		(false, false),
+	ABORTED 		(false, false);
 
+	private boolean recoverableState;
+	
+	private boolean finalState;
+	
+	TxState(boolean recoverableState, boolean finalState){
+		this.finalState=finalState;
+		this.recoverableState=recoverableState;
+	}
+	
+	public boolean isFinalState() {
+		return finalState;
+	}
+	
+	public boolean isRecoverableState() {
+		return recoverableState;
+	}
+	
 }

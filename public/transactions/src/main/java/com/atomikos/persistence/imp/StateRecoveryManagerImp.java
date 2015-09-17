@@ -70,16 +70,12 @@ public class StateRecoveryManagerImp  implements StateRecoveryManager, FSMPreEnt
 	 */
 	public void register(StateRecoverable<TxState> staterecoverable) {
 		Assert.notNull("illegal attempt to register null staterecoverable", staterecoverable);
-		TxState[] states = staterecoverable.getRecoverableStates();
-		if (states != null) {
-			for (int i = 0; i < states.length; i++) {
-				staterecoverable.addFSMPreEnterListener(this, states[i]);
+		TxState[] states = TxState.values();
+		for (TxState txState : states) {
+			if (txState.isRecoverableState() || txState.isFinalState()) {
+				staterecoverable.addFSMPreEnterListener(this, txState);
 			}
-			states = staterecoverable.getFinalStates();
-			for (int i = 0; i < states.length; i++) {
-				staterecoverable.addFSMPreEnterListener(this, states[i]);
-			}
-		}
+		}	
 	}
 
 	/**
@@ -92,19 +88,15 @@ public class StateRecoveryManagerImp  implements StateRecoveryManager, FSMPreEnt
 		if (img != null) {
 			// null images are not logged as per the Recoverable contract
 			StateObjectImage simg = new StateObjectImage(img);
-			Object[] finalstates = source.getFinalStates();
-			boolean delete = false;
-
-			for (int i = 0; i < finalstates.length; i++) {
-				if (state.equals(finalstates[i]))
-					delete = true;
-			}
-
+			boolean delete = state.isFinalState();
 			try {
-				if (!delete)
+				if (!delete) {
 					objectlog_.flush(simg);
-				else
+				}
+				else {
 					objectlog_.delete(simg.getId());
+				}
+					
 			} catch (LogException le) {
 				le.printStackTrace();
 				throw new IllegalStateException("could not flush state image " + le.getMessage() + " " + le.getClass().getName());

@@ -62,20 +62,15 @@ public class VolatileStateRecoveryManager implements StateRecoveryManager,
     /**
      * @see StateRecoveryManager
      */
-
     public void register ( StateRecoverable<TxState> staterecoverable )
     {
     	Assert.notNull("illegal attempt to register null staterecoverable", staterecoverable);		
-        TxState[] states = staterecoverable.getRecoverableStates ();
-        if ( states != null ) {
-            for ( int i = 0; i < states.length; i++ ) {
-                staterecoverable.addFSMPreEnterListener ( this, states[i] );
-            }
-            states = staterecoverable.getFinalStates ();
-            for ( int i = 0; i < states.length; i++ ) {
-                staterecoverable.addFSMPreEnterListener ( this, states[i] );
-            }
-        }
+        TxState[] states = TxState.values();
+		for (TxState txState : states) {
+			if (txState.isRecoverableState() || txState.isFinalState()) {
+				staterecoverable.addFSMPreEnterListener(this, txState);
+			}
+		}
     }
 
     /**
@@ -91,18 +86,15 @@ public class VolatileStateRecoveryManager implements StateRecoveryManager,
         //if img null: do nothing (BUG FIX 10041)
         if ( img != null ) {
 	        	StateObjectImage simg = new StateObjectImage ( img );
-	        	TxState[] finalstates = source.getFinalStates ();
-	        boolean delete = false;
-
-	        for ( int i = 0; i < finalstates.length; i++ ) {
-	            if ( state.equals ( finalstates[i] ) )
-	                delete = true;
+	        boolean delete = state.isFinalState();
+	        if ( !delete ) {
+	        	idToElementMap.put ( simg.getId (), simg );
 	        }
-
-	        if ( !delete )
-	            idToElementMap.put ( simg.getId (), simg );
-	        else
-	            idToElementMap.remove ( simg.getId () );
+	            
+	        else {
+	        	idToElementMap.remove ( simg.getId () );
+	        }
+	            
         }
 
     }

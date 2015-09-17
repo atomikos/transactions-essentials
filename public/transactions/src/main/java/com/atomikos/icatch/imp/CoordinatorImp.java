@@ -811,38 +811,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 		return ret;
 	}
 
-    /**
-     * @see com.atomikos.persistence.StateRecoverable
-     */
-
-    public TxState[] getRecoverableStates ()
-    {
-        // NOTE: make sure COMMITTING is recoverable as well,
-        // in order to be able to recover the commit decision!
-        // This also prevents anomalous notification of participants
-        // when immediate shutdown leaves active coordinator threads
-        // behind, because the forced log write on COMMIT will prevent
-        // pending coordinators' commit decisions if the log service is down!
-    	
-        // NOTE:: active state is recoverable, but if feature is disabled then
-        // a null image will be returned to avoid log overhead
-
-        return new TxState[] { TxState.ACTIVE , TxState.IN_DOUBT, TxState.COMMITTING,
-                TxState.HEUR_COMMITTED, TxState.HEUR_ABORTED,
-                TxState.HEUR_HAZARD, TxState.HEUR_MIXED };
-
-
-    }
-
-    /**
-     * @see com.atomikos.persistence.StateRecoverable
-     */
-
-    public TxState[] getFinalStates ()
-    {
-        return new TxState[] { TxState.TERMINATED };
-    }
-
+    
     /**
      * @see com.atomikos.persistence.Recoverable
      */
