@@ -42,7 +42,7 @@ import com.atomikos.persistence.LogException;
 import com.atomikos.persistence.LogStream;
 import com.atomikos.persistence.ObjectImage;
 import com.atomikos.persistence.ObjectLog;
-import com.atomikos.persistence.StateRecoverable;
+import com.atomikos.persistence.RecoverableCoordinator;
 import com.atomikos.persistence.StateRecoveryManager;
 import com.atomikos.util.Assert;
 import com.atomikos.util.ClassLoadingHelper;
@@ -68,7 +68,7 @@ public class StateRecoveryManagerImp  implements StateRecoveryManager, FSMPreEnt
 	/**
 	 * @see StateRecoveryManager
 	 */
-	public void register(StateRecoverable<TxState> staterecoverable) {
+	public void register(RecoverableCoordinator<TxState> staterecoverable) {
 		Assert.notNull("illegal attempt to register null staterecoverable", staterecoverable);
 		TxState[] states = TxState.values();
 		for (TxState txState : states) {
@@ -83,7 +83,7 @@ public class StateRecoveryManagerImp  implements StateRecoveryManager, FSMPreEnt
 	 */
 	public void preEnter(FSMEnterEvent<TxState> event) throws IllegalStateException {
 		TxState state = event.getState();
-		StateRecoverable<TxState> source = (StateRecoverable<TxState>) event.getSource();
+		RecoverableCoordinator<TxState> source = (RecoverableCoordinator<TxState>) event.getSource();
 		ObjectImage img = source.getObjectImage(state);
 		if (img != null) {
 			// null images are not logged as per the Recoverable contract
@@ -116,8 +116,8 @@ public class StateRecoveryManagerImp  implements StateRecoveryManager, FSMPreEnt
 	/**
 	 * @see StateRecoveryManager
 	 */
-	public StateRecoverable<TxState> recover(Object id) throws LogException {
-		StateRecoverable<TxState> srec = (StateRecoverable<TxState>) objectlog_.recover(id);
+	public RecoverableCoordinator<TxState> recover(Object id) throws LogException {
+		RecoverableCoordinator<TxState> srec = (RecoverableCoordinator<TxState>) objectlog_.recover(id);
 		if (srec != null) {// null if not found!
 			register(srec);
 		} 
@@ -127,11 +127,11 @@ public class StateRecoveryManagerImp  implements StateRecoveryManager, FSMPreEnt
 	/**
 	 * @see StateRecoveryManager
 	 */
-	public Vector<StateRecoverable<TxState>> recover() throws LogException {
-		Vector<StateRecoverable<TxState>> ret = objectlog_.recover();
-		Enumeration<StateRecoverable<TxState>> enumm = ret.elements();
+	public Vector<RecoverableCoordinator<TxState>> recover() throws LogException {
+		Vector<RecoverableCoordinator<TxState>> ret = objectlog_.recover();
+		Enumeration<RecoverableCoordinator<TxState>> enumm = ret.elements();
 		while (enumm.hasMoreElements()) {
-			StateRecoverable<TxState> srec = (StateRecoverable<TxState>) enumm.nextElement();
+			RecoverableCoordinator<TxState> srec = (RecoverableCoordinator<TxState>) enumm.nextElement();
 			register(srec);
 		}
 		return ret;

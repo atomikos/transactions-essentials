@@ -36,7 +36,7 @@ import com.atomikos.finitestates.FSMPreEnterListener;
 import com.atomikos.icatch.TxState;
 import com.atomikos.persistence.LogException;
 import com.atomikos.persistence.ObjectImage;
-import com.atomikos.persistence.StateRecoverable;
+import com.atomikos.persistence.RecoverableCoordinator;
 import com.atomikos.persistence.StateRecoveryManager;
 import com.atomikos.util.Assert;
 
@@ -62,7 +62,7 @@ public class VolatileStateRecoveryManager implements StateRecoveryManager,
     /**
      * @see StateRecoveryManager
      */
-    public void register ( StateRecoverable<TxState> staterecoverable )
+    public void register ( RecoverableCoordinator<TxState> staterecoverable )
     {
     	Assert.notNull("illegal attempt to register null staterecoverable", staterecoverable);		
         TxState[] states = TxState.values();
@@ -81,7 +81,7 @@ public class VolatileStateRecoveryManager implements StateRecoveryManager,
             throws IllegalStateException
     {
     	TxState state = event.getState ();
-        StateRecoverable<TxState> source = (StateRecoverable<TxState>) event.getSource ();
+        RecoverableCoordinator<TxState> source = (RecoverableCoordinator<TxState>) event.getSource ();
         ObjectImage img = source.getObjectImage ( state );
         //if img null: do nothing (BUG FIX 10041)
         if ( img != null ) {
@@ -112,12 +112,12 @@ public class VolatileStateRecoveryManager implements StateRecoveryManager,
      * @see StateRecoveryManager
      */
 
-    public StateRecoverable<TxState> recover ( Object id ) throws LogException
+    public RecoverableCoordinator<TxState> recover ( Object id ) throws LogException
     {
-        StateRecoverable<TxState> ret = null;
+        RecoverableCoordinator<TxState> ret = null;
 
         StateObjectImage simg = (StateObjectImage) idToElementMap.get ( id );
-        if (simg != null) ret = (StateRecoverable<TxState>) simg.restore ();
+        if (simg != null) ret = (RecoverableCoordinator<TxState>) simg.restore ();
         return ret;
     }
 
@@ -125,15 +125,15 @@ public class VolatileStateRecoveryManager implements StateRecoveryManager,
      * @see StateRecoveryManager
      */
 
-    public Vector<StateRecoverable<TxState>> recover () throws LogException
+    public Vector<RecoverableCoordinator<TxState>> recover () throws LogException
     {
-        Vector<StateRecoverable<TxState>> ret = new Vector<StateRecoverable<TxState>> ();
+        Vector<RecoverableCoordinator<TxState>> ret = new Vector<RecoverableCoordinator<TxState>> ();
         Iterator<Object> keys = idToElementMap.keySet ().iterator ();
         while ( keys.hasNext () ) {
             Object key = keys.next ();
             StateObjectImage simg = (StateObjectImage) idToElementMap
                     .get ( key );
-            ret.add ( (StateRecoverable<TxState>)simg.restore () );
+            ret.add ( (RecoverableCoordinator<TxState>)simg.restore () );
         }
         return ret;
     }

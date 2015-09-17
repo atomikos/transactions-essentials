@@ -45,7 +45,7 @@ public interface StateRecoveryManager
      *                If the log fails.
      */
 
-    public Vector<StateRecoverable<TxState>> recover () throws LogException;
+    public Vector<RecoverableCoordinator<TxState>> recover () throws LogException;
 
 
     /**
@@ -63,7 +63,7 @@ public interface StateRecoveryManager
      *            The object that wants recoverable states.
      */
 
-    public void register ( StateRecoverable<TxState> staterecoverable );
+    public void register ( RecoverableCoordinator<TxState> staterecoverable );
 
     /**
      * Reconstruct an instance of a staterecoverable.
@@ -75,7 +75,7 @@ public interface StateRecoveryManager
      *                If underlying object log fails.
      */
 
-    public StateRecoverable<TxState> recover ( Object id ) throws LogException;
+    public RecoverableCoordinator<TxState> recover ( Object id ) throws LogException;
 
     /**
      * Shutdown.

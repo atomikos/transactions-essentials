@@ -38,7 +38,7 @@ import com.atomikos.finitestates.FSMPreEnterEventSource;
  * should take this into account.
  */
 
-public interface StateRecoverable<T> extends Recoverable, FSMPreEnterEventSource<T>
+public interface RecoverableCoordinator<TxState> extends Recoverable, FSMPreEnterEventSource<TxState>
 {
 
     /**
@@ -53,5 +53,5 @@ public interface StateRecoverable<T> extends Recoverable, FSMPreEnterEventSource
      *         state, even if the state was returned as one of the recoverable states.
      */
 
-    public ObjectImage getObjectImage ( T state );
+    public ObjectImage getObjectImage ( TxState state );
 }

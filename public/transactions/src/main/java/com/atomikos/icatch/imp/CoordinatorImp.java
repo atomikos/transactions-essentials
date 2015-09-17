@@ -58,7 +58,7 @@ import com.atomikos.icatch.event.transaction.TransactionReadOnlyEvent;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 import com.atomikos.persistence.ObjectImage;
-import com.atomikos.persistence.StateRecoverable;
+import com.atomikos.persistence.RecoverableCoordinator;
 import com.atomikos.publish.EventPublisher;
 import com.atomikos.thread.TaskManager;
 import com.atomikos.timing.AlarmTimer;
@@ -72,7 +72,7 @@ import com.atomikos.timing.PooledAlarmTimer;
  */
 
 public class CoordinatorImp implements CompositeCoordinator, Participant,
-        RecoveryCoordinator, StateRecoverable<TxState>, AlarmTimerListener, Stateful<TxState>,
+        RecoveryCoordinator, RecoverableCoordinator<TxState>, AlarmTimerListener, Stateful<TxState>,
         FSMPreEnterListener<TxState>, FSMTransitionListener<TxState>, FSMEnterListener<TxState>
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(CoordinatorImp.class);
@@ -762,7 +762,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     }
 
     /**
-     * @see com.atomikos.persistence.StateRecoverable
+     * @see com.atomikos.persistence.RecoverableCoordinator
      */
 
     public ObjectImage getObjectImage ( TxState state )
