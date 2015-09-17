@@ -369,8 +369,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
      * @see FSMEnterEventSource.
      */
 
-    public void addFSMEnterListener ( FSMEnterListener l ,
-    		TxState state )
+    public void addFSMEnterListener ( FSMEnterListener<TxState> l, TxState state )
     {
         fsm_.addFSMEnterListener ( l, state );
 
@@ -381,10 +380,9 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
      * @see FSMPreEnterEventSource.
      */
 
-    public void addFSMPreEnterListener ( FSMPreEnterListener l ,
-    		TxState state )
+    public void addFSMPreEnterListener ( FSMPreEnterListener<TxState> l, TxState state )
     {
-        fsm_.addFSMPreEnterListener ( l, (TxState)state );
+        fsm_.addFSMPreEnterListener ( l, state );
 
     }
 
@@ -534,9 +532,9 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 
 		synchronized ( fsm_ ) {
 			// cf case 61686 and case 62217: avoid concurrent enlists while recovering
-			Iterator parts = getParticipants().iterator();
+			Iterator<Participant> parts = getParticipants().iterator();
 			while (parts.hasNext()) {
-				Participant next = (Participant) parts.next();
+				Participant next =  parts.next();
 				boolean recoveredParticipant = false;
 				try {
 					recoveredParticipant = next.recover();
