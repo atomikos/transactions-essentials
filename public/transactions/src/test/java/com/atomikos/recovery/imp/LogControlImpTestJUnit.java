@@ -8,6 +8,7 @@ import org.mockito.Mockito;
 
 import com.atomikos.icatch.TxState;
 import com.atomikos.icatch.admin.AdminTransaction;
+import com.atomikos.icatch.admin.imp.LogControlImp;
 import com.atomikos.recovery.AdminLog;
 import com.atomikos.recovery.CoordinatorLogEntry;
 

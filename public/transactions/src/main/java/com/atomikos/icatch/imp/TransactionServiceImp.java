@@ -610,7 +610,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
         recoverCoordinators ();
 
         shutdownInProgress_ = false;
-        control_ = new com.atomikos.recovery.imp.LogControlImp ( this );
+        control_ = new com.atomikos.icatch.admin.imp.LogControlImp ( this );
         
         recover(); //ensure that remote participants can start inquiring and replay
     }

@@ -1,4 +1,4 @@
-package com.atomikos.recovery.imp;
+package com.atomikos.icatch.admin.imp;
 
 import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.HeurHazardException;

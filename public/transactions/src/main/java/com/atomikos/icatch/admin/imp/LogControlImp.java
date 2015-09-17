@@ -1,4 +1,4 @@
-package com.atomikos.recovery.imp;
+package com.atomikos.icatch.admin.imp;
 
 import java.util.Arrays;
 import java.util.HashSet;
