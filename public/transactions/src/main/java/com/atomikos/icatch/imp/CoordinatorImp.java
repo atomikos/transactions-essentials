@@ -525,6 +525,8 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 
     public boolean recover () throws SysException
     {
+    	if (true) return false;
+    	
         boolean allOK = true;
         boolean ret;
     	 if ( LOGGER.isDebugEnabled() ){
@@ -965,6 +967,10 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     			return coordinatorLogEntry;
     		}	
     	}
+	}
+
+	public CoordinatorLogEntry getCoordinatorLogEntry() {
+		return getCoordinatorLogEntry(getState());
 	}
 
 }
