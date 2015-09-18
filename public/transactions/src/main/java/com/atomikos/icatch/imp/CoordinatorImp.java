@@ -26,8 +26,11 @@
 package com.atomikos.icatch.imp;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 import com.atomikos.finitestates.FSM;
@@ -61,6 +64,7 @@ import com.atomikos.persistence.ObjectImage;
 import com.atomikos.persistence.RecoverableCoordinator;
 import com.atomikos.publish.EventPublisher;
 import com.atomikos.recovery.CoordinatorLogEntry;
+import com.atomikos.recovery.ParticipantLogEntry;
 import com.atomikos.thread.TaskManager;
 import com.atomikos.timing.AlarmTimer;
 import com.atomikos.timing.AlarmTimerListener;
@@ -969,6 +973,21 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 
 	public CoordinatorLogEntry getCoordinatorLogEntry() {
 		return getCoordinatorLogEntry(getState());
+	}
+
+	public Collection<ParticipantLogEntry> getParticipantLogEntries() {
+		Set<ParticipantLogEntry> ret = new HashSet<ParticipantLogEntry>();
+		long expires = getExpires();
+		for(Participant p : getParticipants()) {
+			ParticipantLogEntry ple = new ParticipantLogEntry(getCoordinatorId(), p.getURI(), expires);
+			ret.add(ple);
+		}
+		
+		return ret;
+	}
+
+	private long getExpires() {
+		return System.currentTimeMillis() + getTimeOut();
 	}
 
 }

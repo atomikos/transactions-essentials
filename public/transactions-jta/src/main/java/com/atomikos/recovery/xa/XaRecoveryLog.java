@@ -4,6 +4,8 @@ import java.util.Set;
 
 import javax.transaction.xa.Xid;
 
+import com.atomikos.recovery.RecoveryException;
+
 
 public interface XaRecoveryLog {
 
@@ -32,7 +34,7 @@ public interface XaRecoveryLog {
 	 */
 	public void terminated(Xid xid);
 
-	public Set<Xid> getExpiredCommittingXids();
+	public Set<Xid> getExpiredCommittingXids() throws RecoveryException;
 
 	public void terminatedWithHeuristicHazardByResource(Xid xid);
 

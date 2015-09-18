@@ -11,6 +11,7 @@ import javax.transaction.xa.Xid;
 
 import com.atomikos.datasource.xa.RecoveryScan;
 import com.atomikos.datasource.xa.RecoveryScan.XidSelector;
+import com.atomikos.recovery.RecoveryException;
 
 public class XaResourceRecoveryManager {
 
@@ -22,13 +23,18 @@ public class XaResourceRecoveryManager {
 
 	public void recover(XAResource xaResource) {
 		List<Xid> xidsToRecover = retrievePreparedXidsFromXaResource(xaResource);
-		Collection<Xid> xidsToCommit = retrieveExpiredCommittingXidsFromLog();
-		for (Xid xid : xidsToRecover) {
-			if (xidsToCommit.contains(xid)) {
-				replayCommit(xid, xaResource);
-			} else {
-				attemptPresumedAbort(xid, xaResource);
+		Collection<Xid> xidsToCommit;
+		try {
+			xidsToCommit = retrieveExpiredCommittingXidsFromLog();
+			for (Xid xid : xidsToRecover) {
+				if (xidsToCommit.contains(xid)) {
+					replayCommit(xid, xaResource);
+				} else {
+					attemptPresumedAbort(xid, xaResource);
+				}
 			}
+		} catch (RecoveryException couldNotRetrieveCommittingXids) {
+			//TODO log warning and retry later
 		}
 	}
 
@@ -92,7 +98,7 @@ public class XaResourceRecoveryManager {
 		}
 	}
 
-	private Set<Xid> retrieveExpiredCommittingXidsFromLog() {
+	private Set<Xid> retrieveExpiredCommittingXidsFromLog() throws RecoveryException {
 		return log.getExpiredCommittingXids();
 	}
 

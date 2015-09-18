@@ -9,7 +9,7 @@ public interface RecoveryLog {
 
 	void terminatedWithHeuristicRollback(ParticipantLogEntry entry);
 
-	Collection<ParticipantLogEntry> getCommittingParticipants();
+	Collection<ParticipantLogEntry> getCommittingParticipants() throws RecoveryException;
 
 	void presumedAborting(ParticipantLogEntry entry) throws IllegalStateException;
 

@@ -15,6 +15,7 @@ import org.mockito.Mockito;
 
 import com.atomikos.datasource.xa.XID;
 import com.atomikos.recovery.ParticipantLogEntry;
+import com.atomikos.recovery.RecoveryException;
 import com.atomikos.recovery.RecoveryLog;
 import com.atomikos.recovery.xa.DefaultXaRecoveryLog;
 
@@ -75,7 +76,7 @@ public class DefaultXaRecoveryLogTestJUnit {
 	}
 
 	@Test
-	public void testGetCommittingXids() {
+	public void testGetCommittingXids() throws RecoveryException {
 		ParticipantLogEntry entry = givenCommittingParticipantLogEntryInGenericLog();
 		Xid xid = whenGetExpiredCommittingXids();
 		thenGtidEqualsCoordinatorId(entry, xid);
@@ -83,13 +84,13 @@ public class DefaultXaRecoveryLogTestJUnit {
 	}
 	
 	@Test
-	public void testTccParticipantLogEntryIsIgnored() {
+	public void testTccParticipantLogEntryIsIgnored() throws RecoveryException {
 		givenCommittingTccParticipantLogEntryInGenericLog();
 		Xid xid = whenGetExpiredCommittingXids();
 		assertNull(xid);
 	}
 	
-	private void givenCommittingTccParticipantLogEntryInGenericLog() {
+	private void givenCommittingTccParticipantLogEntryInGenericLog() throws RecoveryException {
 		ParticipantLogEntry entry = new ParticipantLogEntry("tid", "http://uri", 0);
 		Collection<ParticipantLogEntry> c = new HashSet<ParticipantLogEntry>();
 		c.add(entry);
@@ -105,7 +106,7 @@ public class DefaultXaRecoveryLogTestJUnit {
 		Assert.assertEquals(entry.coordinatorId, XID.getGlobalTransactionIdAsString(xid));
 	}
 
-	private Xid whenGetExpiredCommittingXids() {
+	private Xid whenGetExpiredCommittingXids() throws RecoveryException {
 		Xid ret = null;
 		Set<Xid> xids = sut.getExpiredCommittingXids();
 		if (!xids.isEmpty()) {
@@ -114,7 +115,7 @@ public class DefaultXaRecoveryLogTestJUnit {
 		return ret;
 	}
 
-	private ParticipantLogEntry givenCommittingParticipantLogEntryInGenericLog() {
+	private ParticipantLogEntry givenCommittingParticipantLogEntryInGenericLog() throws RecoveryException {
 		Xid xid = givenSomeXid();
 		ParticipantLogEntry entry = new ParticipantLogEntry(XID.getGlobalTransactionIdAsString(xid), xid.toString(), 0);
 		Collection<ParticipantLogEntry> c = new HashSet<ParticipantLogEntry>();

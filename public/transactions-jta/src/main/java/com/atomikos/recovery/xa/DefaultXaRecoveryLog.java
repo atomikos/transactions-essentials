@@ -8,6 +8,7 @@ import javax.transaction.xa.Xid;
 
 import com.atomikos.datasource.xa.XID;
 import com.atomikos.recovery.ParticipantLogEntry;
+import com.atomikos.recovery.RecoveryException;
 import com.atomikos.recovery.RecoveryLog;
 
 public class DefaultXaRecoveryLog implements XaRecoveryLog {
@@ -39,7 +40,7 @@ public class DefaultXaRecoveryLog implements XaRecoveryLog {
 	}
 
 	@Override
-	public Set<Xid> getExpiredCommittingXids() {
+	public Set<Xid> getExpiredCommittingXids() throws RecoveryException {
 		Set<Xid> ret = new HashSet<Xid>();
 		Collection<ParticipantLogEntry> entries = log.getCommittingParticipants();
 		for (ParticipantLogEntry entry : entries) {
