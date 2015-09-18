@@ -795,7 +795,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
         return ret;
     }
     
-	boolean excludedFromLogging(TxState state) {
+	private boolean excludedFromLogging(TxState state) {
 		boolean ret = false;
 		if (state.equals ( TxState.ACTIVE ) && !recoverableWhileActive_) {
 				ret = true;
