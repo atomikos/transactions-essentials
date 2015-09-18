@@ -969,7 +969,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     				i++;
     			}
 		
-    			CoordinatorLogEntry coordinatorLogEntry = new CoordinatorLogEntry(this.getCoordinatorId(), state, participantDetails);
+    			CoordinatorLogEntry coordinatorLogEntry = new CoordinatorLogEntry(this.getCoordinatorId(), participantDetails);
     			return coordinatorLogEntry;
     		}	
     	}

@@ -111,7 +111,7 @@ public class LogControlImpTestJUnit {
 	private void givenPendingTransactionInLog(boolean wasCommitted) {
 		CoordinatorLogEntry[] result = new CoordinatorLogEntry[1];
 
-		result[0] = new CoordinatorLogEntry(TID, TxState.COMMITTING,
+		result[0] = new CoordinatorLogEntry(TID, 
 				wasCommitted, participantDetails);
 		Mockito.when(adminLog.getCoordinatorLogEntries()).thenReturn(result);
 	}
@@ -147,7 +147,7 @@ public class LogControlImpTestJUnit {
 
 	private void givenPendingTransactionInLog() {
 		CoordinatorLogEntry[] result = new CoordinatorLogEntry[1];
-		result[0] = new CoordinatorLogEntry(TID, TxState.COMMITTING,
+		result[0] = new CoordinatorLogEntry(TID, 
 				participantDetails);
 		Mockito.when(adminLog.getCoordinatorLogEntries()).thenReturn(result);
 	}

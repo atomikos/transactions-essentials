@@ -6,22 +6,25 @@ public class CoordinatorLogEntry {
 
 	public final String coordinatorId;
 
-	public final TxState state;
-
 	public final boolean wasCommitted;
 
 	public ParticipantLogEntry[] participantDetails;
 
-	public CoordinatorLogEntry(String coordinatorId, TxState state,
+	public CoordinatorLogEntry(String coordinatorId, 
 			ParticipantLogEntry[] participantDetails) {
-		this(coordinatorId, state, false, participantDetails);
+		this(coordinatorId, false, participantDetails);
 	}
 
-	public CoordinatorLogEntry(String coordinatorId, TxState state,
+	public CoordinatorLogEntry(String coordinatorId, 
 			boolean wasCommitted, ParticipantLogEntry[] participantDetails) {
 		this.coordinatorId = coordinatorId;
-		this.state = state;
 		this.wasCommitted = wasCommitted;
 		this.participantDetails = participantDetails;
+	}
+	
+	public TxState getState() {
+		TxState ret = TxState.IN_DOUBT;
+		
+		return ret;
 	}
 }
