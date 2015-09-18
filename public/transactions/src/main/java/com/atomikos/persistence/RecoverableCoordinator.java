@@ -26,6 +26,7 @@
 package com.atomikos.persistence;
 
 import com.atomikos.finitestates.FSMPreEnterEventSource;
+import com.atomikos.recovery.CoordinatorLogEntry;
 
 /**
  * A type of stateful objects whose state is guaranteed to be recoverable. The
@@ -52,6 +53,10 @@ public interface RecoverableCoordinator<TxState> extends Recoverable, FSMPreEnte
      *         In other words, if null is returned that logging is not done for the given
      *         state, even if the state was returned as one of the recoverable states.
      */
-
-    public ObjectImage getObjectImage ( TxState state );
+    ObjectImage getObjectImage ( TxState state );
+    
+    
+    
+    CoordinatorLogEntry getCoordinatorLogEntry(TxState state);
+    
 }

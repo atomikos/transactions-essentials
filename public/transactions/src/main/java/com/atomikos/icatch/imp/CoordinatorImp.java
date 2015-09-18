@@ -60,6 +60,7 @@ import com.atomikos.logging.LoggerFactory;
 import com.atomikos.persistence.ObjectImage;
 import com.atomikos.persistence.RecoverableCoordinator;
 import com.atomikos.publish.EventPublisher;
+import com.atomikos.recovery.CoordinatorLogEntry;
 import com.atomikos.thread.TaskManager;
 import com.atomikos.timing.AlarmTimer;
 import com.atomikos.timing.AlarmTimerListener;
@@ -794,7 +795,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
         return ret;
     }
     
-	private boolean excludedFromLogging(Object state) {
+	boolean excludedFromLogging(TxState state) {
 		boolean ret = false;
 		if (state.equals ( TxState.ACTIVE ) && !recoverableWhileActive_) {
 				ret = true;
@@ -941,5 +942,29 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 		}
 	}
 
+	@Override
+	public CoordinatorLogEntry getCoordinatorLogEntry(TxState state) {
+    	synchronized ( fsm_ ) {
+
+    		if ( excludedFromLogging(state)) {
+    				//merely return null to avoid logging overhead
+    				return null;
+    		}
+    		else {
+    			String[] participantDetails = new String[getParticipants().size()];
+		
+    			Iterator<Participant> participants= getParticipants().iterator();
+    			int i=0;
+    			while (participants.hasNext()) {
+    				Participant participant = participants.next();
+    				participantDetails[i] = participant.toString();
+    				i++;
+    			}
+		
+    			CoordinatorLogEntry coordinatorLogEntry = new CoordinatorLogEntry(this.getCoordinatorId(), state, participantDetails);
+    			return coordinatorLogEntry;
+    		}	
+    	}
+	}
 
 }
