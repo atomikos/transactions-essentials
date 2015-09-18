@@ -10,15 +10,15 @@ public class CoordinatorLogEntry {
 
 	public final boolean wasCommitted;
 
-	public String[] participantDetails;
+	public ParticipantLogEntry[] participantDetails;
 
 	public CoordinatorLogEntry(String coordinatorId, TxState state,
-			String[] participantDetails) {
+			ParticipantLogEntry[] participantDetails) {
 		this(coordinatorId, state, false, participantDetails);
 	}
 
 	public CoordinatorLogEntry(String coordinatorId, TxState state,
-			boolean wasCommitted, String[] participantDetails) {
+			boolean wasCommitted, ParticipantLogEntry[] participantDetails) {
 		this.coordinatorId = coordinatorId;
 		this.state = state;
 		this.wasCommitted = wasCommitted;

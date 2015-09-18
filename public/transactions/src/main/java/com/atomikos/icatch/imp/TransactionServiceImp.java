@@ -921,14 +921,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
 		Vector<CoordinatorImp> coordinatorImpVector = getCoordinatorImpVector();
 		List<CoordinatorLogEntry> coordinatorLogEntries = new ArrayList<CoordinatorLogEntry>(coordinatorImpVector.size());
 		for (CoordinatorImp coordinatorImp : coordinatorImpVector) {
-			List<String> participantDetailAsList = new ArrayList<String>();
-			for (Participant pariticipant : coordinatorImp.getParticipants()) {
-				participantDetailAsList.add(pariticipant.toString());
-			}
-			
-			String[] participantDetails = participantDetailAsList.toArray(new String[participantDetailAsList.size()]); 
-			coordinatorLogEntries.add(new CoordinatorLogEntry((String)coordinatorImp.getId(), coordinatorImp.getState(),coordinatorImp.isCommitted(), participantDetails));
-			
+			coordinatorLogEntries.add(coordinatorImp.getCoordinatorLogEntry());
 		}
 		return coordinatorLogEntries.toArray(new CoordinatorLogEntry[coordinatorLogEntries.size()]);
 	}

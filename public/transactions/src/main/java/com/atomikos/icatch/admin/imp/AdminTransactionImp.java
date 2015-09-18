@@ -8,6 +8,7 @@ import com.atomikos.icatch.SysException;
 import com.atomikos.icatch.admin.AdminTransaction;
 import com.atomikos.recovery.AdminLog;
 import com.atomikos.recovery.CoordinatorLogEntry;
+import com.atomikos.recovery.ParticipantLogEntry;
 
 class AdminTransactionImp implements AdminTransaction {
 
@@ -70,7 +71,13 @@ class AdminTransactionImp implements AdminTransaction {
 
 	@Override
 	public String[] getParticipantDetails() {
-		return coordinatorLogEntry.participantDetails;
+		String[] ret = new String[coordinatorLogEntry.participantDetails.length];
+		int i = 0;
+		for (ParticipantLogEntry ple : coordinatorLogEntry.participantDetails) {
+			ret[i] = ple.description;
+			i++;
+		}
+		return ret;
 	}
 
 }

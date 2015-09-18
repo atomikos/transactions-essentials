@@ -11,6 +11,7 @@ import com.atomikos.icatch.admin.AdminTransaction;
 import com.atomikos.icatch.admin.imp.LogControlImp;
 import com.atomikos.recovery.AdminLog;
 import com.atomikos.recovery.CoordinatorLogEntry;
+import com.atomikos.recovery.ParticipantLogEntry;
 
 public class LogControlImpTestJUnit {
 
@@ -20,14 +21,14 @@ public class LogControlImpTestJUnit {
 	private AdminLog adminLog;
 
 	private AdminTransaction adminTransaction;
-	private String[] participantDetails = new String[2];
+	private ParticipantLogEntry[] participantDetails = new ParticipantLogEntry[2];
 
 	@Before
 	public void configure() {
 		adminLog = Mockito.mock(AdminLog.class);
 		sut = new LogControlImp(adminLog);
-		participantDetails[0] = "one";
-		participantDetails[1] = "two";
+		participantDetails[0] = new ParticipantLogEntry(TID, "one", 1000, "one", TxState.COMMITTING);
+		participantDetails[1] = new ParticipantLogEntry(TID, "two", 1000, "two", TxState.COMMITTING);
 	}
 
 	@Test
@@ -97,8 +98,9 @@ public class LogControlImpTestJUnit {
 
 	private void thenAdminTransactionHasCorrectParticipantDetails() {
 
-		Assert.assertEquals(participantDetails,
-				adminTransaction.getParticipantDetails());
+		Assert.assertEquals(2, adminTransaction.getParticipantDetails().length);
+		Assert.assertEquals(participantDetails[0].description, adminTransaction.getParticipantDetails()[0]);
+		Assert.assertEquals(participantDetails[1].description, adminTransaction.getParticipantDetails()[1]);
 
 	}
 

@@ -26,7 +26,7 @@ public class RecoveryLogImp implements RecoveryLog {
 	@Override
 	public void terminated(ParticipantLogEntry entry) {
 		// TODO Auto-generated method stub
-
+		
 	}
 
 	@Override

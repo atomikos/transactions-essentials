@@ -2,6 +2,8 @@ package com.atomikos.recovery;
 
 import java.io.Serializable;
 
+import com.atomikos.icatch.TxState;
+
 public class ParticipantLogEntry implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -22,11 +24,25 @@ public class ParticipantLogEntry implements Serializable {
 	 * When does this participant expire (expressed in millis since Jan 1, 1970)? 
 	 */
 	
-	public long expires;
+	public final long expires;
 	
-	public ParticipantLogEntry(String coordinatorId, String participantUri, long expires) {
+	/**
+	 * Best-known state of the participant.
+	 */
+	public final TxState state;
+	
+	/**
+	 * Useful description for administration purposes.
+	 */
+	public final String description;
+	
+	public ParticipantLogEntry(String coordinatorId, String participantUri, 
+			long expires, String description, TxState state) {
 		this.coordinatorId = coordinatorId;
 		this.participantUri = participantUri;
+		this.expires = expires;
+		this.description = description;
+		this.state = state;
 	}
 	
 	

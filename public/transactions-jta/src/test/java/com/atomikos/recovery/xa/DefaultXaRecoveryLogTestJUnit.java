@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import com.atomikos.datasource.xa.XID;
+import com.atomikos.icatch.TxState;
 import com.atomikos.recovery.ParticipantLogEntry;
 import com.atomikos.recovery.RecoveryException;
 import com.atomikos.recovery.RecoveryLog;
@@ -91,7 +92,7 @@ public class DefaultXaRecoveryLogTestJUnit {
 	}
 	
 	private void givenCommittingTccParticipantLogEntryInGenericLog() throws RecoveryException {
-		ParticipantLogEntry entry = new ParticipantLogEntry("tid", "http://uri", 0);
+		ParticipantLogEntry entry = new ParticipantLogEntry("tid", "http://uri", 0, "desc", TxState.COMMITTING);
 		Collection<ParticipantLogEntry> c = new HashSet<ParticipantLogEntry>();
 		c.add(entry);
 		Mockito.when(mock.getCommittingParticipants()).thenReturn(c);		
@@ -117,7 +118,7 @@ public class DefaultXaRecoveryLogTestJUnit {
 
 	private ParticipantLogEntry givenCommittingParticipantLogEntryInGenericLog() throws RecoveryException {
 		Xid xid = givenSomeXid();
-		ParticipantLogEntry entry = new ParticipantLogEntry(XID.getGlobalTransactionIdAsString(xid), xid.toString(), 0);
+		ParticipantLogEntry entry = new ParticipantLogEntry(XID.getGlobalTransactionIdAsString(xid), xid.toString(), 0, "desc", TxState.COMMITTING);
 		Collection<ParticipantLogEntry> c = new HashSet<ParticipantLogEntry>();
 		c.add(entry);
 		Mockito.when(mock.getCommittingParticipants()).thenReturn(c);
@@ -166,7 +167,7 @@ public class DefaultXaRecoveryLogTestJUnit {
 	}
 
 	private ParticipantLogEntry convertXidToParticipantLogEntry(Xid xid) {
-		return new ParticipantLogEntry(XID.getGlobalTransactionIdAsString(xid), XID.getBranchQualifierAsString(xid), 0);
+		return new ParticipantLogEntry(XID.getGlobalTransactionIdAsString(xid), XID.getBranchQualifierAsString(xid), 0, "desc", TxState.COMMITTING);
 	}
 
 	private void whenPresumedAborting(Xid xid) {

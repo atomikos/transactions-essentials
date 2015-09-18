@@ -26,6 +26,7 @@
 package com.atomikos.icatch.imp;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -955,13 +956,16 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     				return null;
     		}
     		else {
-    			String[] participantDetails = new String[getParticipants().size()];
+    			ParticipantLogEntry[] participantDetails = new ParticipantLogEntry[getParticipants().size()];
 		
     			Iterator<Participant> participants= getParticipants().iterator();
     			int i=0;
     			while (participants.hasNext()) {
     				Participant participant = participants.next();
-    				participantDetails[i] = participant.toString();
+    				ParticipantLogEntry ple = 
+    						new ParticipantLogEntry(getCoordinatorId(), participant.getURI(), getExpires(), 
+    								participant.toString(), state);
+    				participantDetails[i] = ple;
     				i++;
     			}
 		
@@ -976,14 +980,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 	}
 
 	public Collection<ParticipantLogEntry> getParticipantLogEntries() {
-		Set<ParticipantLogEntry> ret = new HashSet<ParticipantLogEntry>();
-		long expires = getExpires();
-		for(Participant p : getParticipants()) {
-			ParticipantLogEntry ple = new ParticipantLogEntry(getCoordinatorId(), p.getURI(), expires);
-			ret.add(ple);
-		}
-		
-		return ret;
+		return Arrays.asList(getCoordinatorLogEntry().participantDetails);
 	}
 
 	private long getExpires() {
