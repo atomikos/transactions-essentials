@@ -138,7 +138,7 @@ public abstract class JmxTransaction implements JmxTransactionMBean,
     }
 
     /**
-     * @see com.atomikos.icatch.admin.jmx.TransactionMBean#getState()
+     * @see com.atomikos.icatch.admin.jmx.TransactionMBean#getCombinedState()
      */
 
     public String getState ()
