@@ -12,32 +12,28 @@ public class CoordinatorLogEntryTestJUnit {
 	
 	private CoordinatorLogEntry coordinatorLogEntry;
 
-	private TxState combined;
 	
 	 
 	private void givenCoordinatorLogEntryWithParticipantStates(TxState... states) {
 		coordinatorLogEntry = createCoordinatorLogEntryWithParticipantsInState(states);
 	}
 	
-	private void whenCombinedStateIsGotten() {
-		combined = coordinatorLogEntry.getCommitResult();
-	}
+	
 	
 	private void thenCombinedStateIs(TxState expected) {
+		TxState combined = coordinatorLogEntry.getCommitResult();
 		assertEquals(expected, combined);
 	}
 	
 	@Test
 	public void atLeastOneCommittingParticipantMeansCommitResultCommitting() {
 		givenCoordinatorLogEntryWithParticipantStates(TxState.HEUR_MIXED, TxState.COMMITTING);
-		whenCombinedStateIsGotten();
 		thenCombinedStateIs(TxState.COMMITTING);
 	}
 	
 	@Test
 	public void allParticipantsTerminatedMeansCommitResultTerminated() throws Exception {
 		givenCoordinatorLogEntryWithParticipantStates(TxState.TERMINATED, TxState.TERMINATED);
-		whenCombinedStateIsGotten();
 		thenCombinedStateIs(TxState.TERMINATED);
 	}
 	
@@ -45,14 +41,12 @@ public class CoordinatorLogEntryTestJUnit {
 	@Test
 	public void allParticipantsHeurHazardMeansCommitResultHeurHazard() throws Exception {
 		givenCoordinatorLogEntryWithParticipantStates(TxState.HEUR_HAZARD, TxState.HEUR_HAZARD);
-		whenCombinedStateIsGotten();
 		thenCombinedStateIs(TxState.HEUR_HAZARD);
 	}
 
 	@Test
 	public void allParticipantsHeurAbortedMeansCommitResultHeurAborted() throws Exception {
 		givenCoordinatorLogEntryWithParticipantStates(TxState.HEUR_ABORTED, TxState.HEUR_ABORTED);
-		whenCombinedStateIsGotten();
 		thenCombinedStateIs(TxState.HEUR_ABORTED);
 	}
 
@@ -61,7 +55,6 @@ public class CoordinatorLogEntryTestJUnit {
 	public void defaultMeansCommitResultHeurMixed() throws Exception {
 		
 		givenCoordinatorLogEntryWithParticipantStates(TxState.TERMINATED, TxState.HEUR_HAZARD,TxState.HEUR_ABORTED);
-		whenCombinedStateIsGotten();
 		thenCombinedStateIs(TxState.HEUR_MIXED);
 	}
 	
