@@ -50,6 +50,11 @@ public class CoordinatorLogEntryTestJUnit {
 		thenCombinedStateIs(TxState.HEUR_ABORTED);
 	}
 
+	@Test
+	public void testAllParticipantsIndoubtMeansCommitResultIndoubt() throws Exception {
+		givenCoordinatorLogEntryWithParticipantStates(TxState.IN_DOUBT, TxState.IN_DOUBT);
+		thenCombinedStateIs(TxState.IN_DOUBT);
+	}
 	
 	@Test
 	public void testDefaultMeansCommitResultHeurMixed() throws Exception {

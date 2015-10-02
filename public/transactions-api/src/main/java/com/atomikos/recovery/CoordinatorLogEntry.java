@@ -32,6 +32,8 @@ public class CoordinatorLogEntry {
 			return HEUR_HAZARD;
 		} else if (allParticipantsInState(HEUR_ABORTED)) {
 			return HEUR_ABORTED;
+		} else if (allParticipantsInState(IN_DOUBT)) {
+			return IN_DOUBT;
 		}
 		// the default
 		return HEUR_MIXED;
