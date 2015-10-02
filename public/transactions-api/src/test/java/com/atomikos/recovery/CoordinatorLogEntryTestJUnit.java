@@ -21,43 +21,54 @@ public class CoordinatorLogEntryTestJUnit {
 	
 	
 	private void thenCombinedStateIs(TxState expected) {
-		TxState combined = coordinatorLogEntry.getCommitResult();
+		TxState combined = coordinatorLogEntry.getResultingState();
 		assertEquals(expected, combined);
 	}
 	
 	@Test
-	public void testAtLeastOneCommittingParticipantMeansCommitResultCommitting() {
+	public void testAtLeastOneCommittingParticipantMeansResultCommitting() {
 		givenCoordinatorLogEntryWithParticipantStates(TxState.HEUR_MIXED, TxState.COMMITTING);
 		thenCombinedStateIs(TxState.COMMITTING);
 	}
 	
 	@Test
-	public void testAllParticipantsTerminatedMeansCommitResultTerminated() throws Exception {
+	public void testAtLeastOneAbortingParticipantMeansResultAborting() {
+		givenCoordinatorLogEntryWithParticipantStates(TxState.ABORTING, TxState.HEUR_HAZARD, TxState.HEUR_MIXED);
+		thenCombinedStateIs(TxState.ABORTING);
+	}
+	@Test
+	public void testAllParticipantsTerminatedMeansResultTerminated() throws Exception {
 		givenCoordinatorLogEntryWithParticipantStates(TxState.TERMINATED, TxState.TERMINATED);
 		thenCombinedStateIs(TxState.TERMINATED);
 	}
 	
-	
 	@Test
-	public void testAllParticipantsHeurHazardMeansCommitResultHeurHazard() throws Exception {
+	public void testAllParticipantsHeurHazardMeansResultHeurHazard() throws Exception {
 		givenCoordinatorLogEntryWithParticipantStates(TxState.HEUR_HAZARD, TxState.HEUR_HAZARD);
 		thenCombinedStateIs(TxState.HEUR_HAZARD);
 	}
 
 	@Test
-	public void testAllParticipantsHeurAbortedMeansCommitResultHeurAborted() throws Exception {
+	public void testAllParticipantsHeurAbortedMeansResultHeurAborted() throws Exception {
 		givenCoordinatorLogEntryWithParticipantStates(TxState.HEUR_ABORTED, TxState.HEUR_ABORTED);
 		thenCombinedStateIs(TxState.HEUR_ABORTED);
 	}
 
 	@Test
-	public void testAllParticipantsIndoubtMeansCommitResultIndoubt() throws Exception {
+	public void testAllParticipantsHeurCommittedMeansResultHeurCommitted() throws Exception {
+		givenCoordinatorLogEntryWithParticipantStates(TxState.HEUR_COMMITTED, TxState.HEUR_COMMITTED);
+		thenCombinedStateIs(TxState.HEUR_COMMITTED);
+	}
+	
+	
+	@Test
+	public void testAllParticipantsIndoubtMeansResultIndoubt() throws Exception {
 		givenCoordinatorLogEntryWithParticipantStates(TxState.IN_DOUBT, TxState.IN_DOUBT);
 		thenCombinedStateIs(TxState.IN_DOUBT);
 	}
 	
 	@Test
-	public void testDefaultMeansCommitResultHeurMixed() throws Exception {
+	public void testDefaultMeansResultHeurMixed() throws Exception {
 		
 		givenCoordinatorLogEntryWithParticipantStates(TxState.TERMINATED, TxState.HEUR_HAZARD,TxState.HEUR_ABORTED);
 		thenCombinedStateIs(TxState.HEUR_MIXED);

@@ -23,15 +23,19 @@ public class CoordinatorLogEntry {
 		this.participantDetails = participantDetails;
 	}
 
-	public TxState getCommitResult() {
+	public TxState getResultingState() {
 		if (oneParticipantInState(COMMITTING)) {
 			return COMMITTING;
+		} else if (oneParticipantInState(ABORTING)) {
+			return ABORTING;	
 		} else if (allParticipantsInState(TERMINATED)) {
 			return TERMINATED;
 		} else if (allParticipantsInState(HEUR_HAZARD)) {
 			return HEUR_HAZARD;
 		} else if (allParticipantsInState(HEUR_ABORTED)) {
 			return HEUR_ABORTED;
+		} else if (allParticipantsInState(HEUR_COMMITTED)) {
+			return HEUR_COMMITTED;	
 		} else if (allParticipantsInState(IN_DOUBT)) {
 			return IN_DOUBT;
 		}

@@ -27,7 +27,7 @@ class AdminTransactionImp implements AdminTransaction {
 
 	@Override
 	public int getState() {
-		switch (coordinatorLogEntry.getCommitResult()) {
+		switch (coordinatorLogEntry.getResultingState()) {
 		case COMMITTING:
 			return STATE_COMMITTING;
 		case HEUR_COMMITTED:
