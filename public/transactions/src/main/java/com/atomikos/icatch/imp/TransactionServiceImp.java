@@ -921,7 +921,11 @@ public class TransactionServiceImp implements TransactionServiceProvider,
 		Vector<CoordinatorImp> coordinatorImpVector = getCoordinatorImpVector();
 		List<CoordinatorLogEntry> coordinatorLogEntries = new ArrayList<CoordinatorLogEntry>(coordinatorImpVector.size());
 		for (CoordinatorImp coordinatorImp : coordinatorImpVector) {
-			coordinatorLogEntries.add(coordinatorImp.getCoordinatorLogEntry());
+			CoordinatorLogEntry coordinatorLogEntry = coordinatorImp.getCoordinatorLogEntry();
+			if (coordinatorLogEntry != null) {
+				coordinatorLogEntries.add(coordinatorLogEntry);	
+			}
+			
 		}
 		return coordinatorLogEntries.toArray(new CoordinatorLogEntry[coordinatorLogEntries.size()]);
 	}
