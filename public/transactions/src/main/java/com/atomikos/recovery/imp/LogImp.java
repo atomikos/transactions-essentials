@@ -5,7 +5,7 @@ import com.atomikos.recovery.CoordinatorLogEntryRepository;
 import com.atomikos.recovery.OltpLog;
 import com.atomikos.recovery.OltpLogException;
 
-public class LogImpl implements OltpLog {
+public class LogImp implements OltpLog {
 
 	private CoordinatorLogEntryRepository repository;
 	

@@ -12,13 +12,13 @@ import com.atomikos.recovery.ParticipantLogEntry;
 
 public class LogImpTestJunit {
 
-	private LogImpl sut;
+	private LogImp sut;
 	private CoordinatorLogEntryRepository logRepository;
 
 
 	@Before
 	public void configure() {
-		sut = new LogImpl();
+		sut = new LogImp();
 		logRepository = Mockito.mock(CoordinatorLogEntryRepository.class);
 		sut.setRepository(logRepository);
 	}
