@@ -2,6 +2,7 @@ package com.atomikos.recovery;
 
 import static org.junit.Assert.*;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.atomikos.icatch.TxState;
@@ -74,6 +75,71 @@ public class CoordinatorLogEntryTestJUnit {
 		thenCombinedStateIs(TxState.HEUR_MIXED);
 	}
 	
+
+	@Test
+	public void testTransitionFromNullToAbortingIsNotAllowed() throws Exception {
+		givenCoordinatorLogEntryWithParticipantStates(TxState.ABORTING);
+		thenTransitionNotAllowedFrom(null);
+	}
+	
+	@Test
+	public void testTransitionFromInDoubtToAbortingIsAllowed() throws Exception {
+		givenCoordinatorLogEntryWithParticipantStates(TxState.ABORTING);
+		thenTransitionAllowedFrom(createCoordinatorLogEntryWithParticipantsInState(TxState.IN_DOUBT));
+	}
+	
+	
+	@Test
+	public void testTransitionFromInDoubtToCommittingIsAllowed() throws Exception {
+		givenCoordinatorLogEntryWithParticipantStates(TxState.COMMITTING);
+		thenTransitionAllowedFrom(createCoordinatorLogEntryWithParticipantsInState(TxState.IN_DOUBT));
+	}
+	
+	@Test
+	public void testTransitionFromCommittingToCommittingIsAllowed() throws Exception {
+		givenCoordinatorLogEntryWithParticipantStates(TxState.COMMITTING);
+		thenTransitionAllowedFrom(createCoordinatorLogEntryWithParticipantsInState(TxState.COMMITTING));
+	}
+	
+	@Test
+	public void testTransitionFromAbortingToAbortingIsAllowed() throws Exception {
+		givenCoordinatorLogEntryWithParticipantStates(TxState.ABORTING);
+		thenTransitionAllowedFrom(createCoordinatorLogEntryWithParticipantsInState(TxState.ABORTING));
+	}
+	
+	@Test
+	public void testTransitionFromCommittingToAbortingIsNotAllowed() throws Exception {
+		givenCoordinatorLogEntryWithParticipantStates(TxState.ABORTING);
+		thenTransitionNotAllowedFrom(createCoordinatorLogEntryWithParticipantsInState(TxState.COMMITTING));
+	}
+	
+	@Test
+	public void testTransitionFromNullToCommittingIsAllowed() throws Exception {
+		givenCoordinatorLogEntryWithParticipantStates(TxState.COMMITTING);
+		thenTransitionAllowedFrom(null);
+	}
+	
+	@Test
+	public void testTransitionFromNullToInDoubtIsAllowed() throws Exception {
+		givenCoordinatorLogEntryWithParticipantStates(TxState.IN_DOUBT);
+		thenTransitionAllowedFrom(null);
+	}
+	
+
+	@Test
+	public void testTransitionFromAbortingToCommittingIsNotAllowed() throws Exception {
+		givenCoordinatorLogEntryWithParticipantStates(TxState.COMMITTING);
+		thenTransitionNotAllowedFrom(createCoordinatorLogEntryWithParticipantsInState(TxState.ABORTING));
+	}
+
+	
+	private void thenTransitionAllowedFrom(CoordinatorLogEntry prior) {
+		assertTrue(coordinatorLogEntry.transitionAllowedFrom(prior));
+	}
+
+	private void thenTransitionNotAllowedFrom(CoordinatorLogEntry prior) {
+		assertFalse(coordinatorLogEntry.transitionAllowedFrom(prior));
+	}
 	
 	
 
@@ -84,4 +150,6 @@ public class CoordinatorLogEntryTestJUnit {
 		}
 		return new CoordinatorLogEntry(tid,participantDetails);
 	}
+	
+	
 }

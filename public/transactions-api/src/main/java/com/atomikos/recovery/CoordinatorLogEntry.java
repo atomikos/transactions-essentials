@@ -1,6 +1,7 @@
 package com.atomikos.recovery;
 
 import static com.atomikos.icatch.TxState.*;
+
 import com.atomikos.icatch.TxState;
 
 public class CoordinatorLogEntry {
@@ -59,6 +60,31 @@ public class CoordinatorLogEntry {
 			}
 		}
 		return false;
+	}
+	
+	public boolean transitionAllowedFrom(CoordinatorLogEntry existing) {
+		TxState thisState = getResultingState();
+		switch (thisState) {
+		case ABORTING:
+			if (existing == null) {
+				return false;
+
+			} else if (existing.getResultingState() == TxState.COMMITTING) {
+				return false;
+			}
+			break;
+		case COMMITTING:
+			if (existing == null) {
+				return true;
+			} else if (existing.getResultingState() == TxState.ABORTING) {
+				return false;
+			}
+			break;
+		default:
+			return true;
+		}
+		//the default
+		return true;
 	}
 
 }
