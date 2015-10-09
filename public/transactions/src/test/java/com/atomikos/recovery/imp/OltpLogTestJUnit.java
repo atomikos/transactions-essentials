@@ -10,7 +10,7 @@ import com.atomikos.recovery.CoordinatorLogEntryRepository;
 import com.atomikos.recovery.OltpLogException;
 import com.atomikos.recovery.ParticipantLogEntry;
 
-public class OltpLogTestJunit {
+public class OltpLogTestJUnit {
 
 	private LogImp sut;
 	private CoordinatorLogEntryRepository logRepository;

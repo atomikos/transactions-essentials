@@ -1,8 +1,7 @@
 package com.atomikos.recovery;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
+import junit.framework.Assert;
 
 import org.junit.Test;
 
@@ -278,6 +277,34 @@ public class CoordinatorLogEntryTestJUnit {
 		givenCoordinatorLogEntryWithParticipantStates(TxState.TERMINATED);
 		thenTransitionAllowedFrom(createCoordinatorLogEntryWithParticipantsInState(TxState.HEUR_COMMITTED));
 	}
+	
+	@Test
+	public void thenCoordinatorLogEntryExpiresIsTheMinimumOfAllParticipantExpires() throws Exception {
+		long expiresMin = System.currentTimeMillis()+10000L;
+		long expiresMax = System.currentTimeMillis()+10000000L;
+		givenCoordinatorLogEntryWithParticipantExpires(expiresMin,expiresMax);
+		
+		thenCoordinatorLogEntryExpiresAt(expiresMin);
+	}
+	private void thenCoordinatorLogEntryExpiresAt(long expiresMin) {
+		Assert.assertEquals(expiresMin, coordinatorLogEntry.expires());
+		
+	}
+
+
+
+	private void givenCoordinatorLogEntryWithParticipantExpires(long... expires) {
+		ParticipantLogEntry[] participantDetails = new ParticipantLogEntry[expires.length];
+		for (int i = 0; i < participantDetails.length; i++) {
+			participantDetails[i] = new ParticipantLogEntry(tid, "uri", expires[i],"description", TxState.IN_DOUBT);
+		}
+		
+		coordinatorLogEntry = new CoordinatorLogEntry(tid, participantDetails);
+		
+	}
+
+
+
 	private void thenTransitionAllowedFrom(CoordinatorLogEntry prior) {
 		assertTrue(coordinatorLogEntry.transitionAllowedFrom(prior));
 	}

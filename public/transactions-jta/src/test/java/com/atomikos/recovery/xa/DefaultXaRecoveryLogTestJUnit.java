@@ -11,10 +11,12 @@ import javax.transaction.xa.Xid;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
 import com.atomikos.datasource.xa.XID;
 import com.atomikos.icatch.TxState;
+import com.atomikos.recovery.CoordinatorLogEntry;
 import com.atomikos.recovery.ParticipantLogEntry;
 import com.atomikos.recovery.RecoveryException;
 import com.atomikos.recovery.RecoveryLog;
@@ -162,8 +164,9 @@ public class DefaultXaRecoveryLogTestJUnit {
 	}
 
 	private void thenPresumedAbortingInUnderlyingGenericLog(Xid xid) {
-		ParticipantLogEntry entry = convertXidToParticipantLogEntry(xid);
-		Mockito.verify(mock,Mockito.times(1)).presumedAborting(entry);
+		ArgumentCaptor<ParticipantLogEntry> captor = ArgumentCaptor.forClass(ParticipantLogEntry.class);
+		Mockito.verify(mock,Mockito.times(1)).presumedAborting(captor.capture());
+		Assert.assertEquals(TxState.IN_DOUBT, captor.getValue().state);
 	}
 
 	private ParticipantLogEntry convertXidToParticipantLogEntry(Xid xid) {

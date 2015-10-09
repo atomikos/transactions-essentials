@@ -19,6 +19,27 @@ public class CoordinatorLogEntry {
 
 	public final ParticipantLogEntry[] participantDetails;
 
+	private CoordinatorLogEntry(CoordinatorLogEntry toCopy,
+			ParticipantLogEntry participantLogEntry) {
+		this(toCopy.coordinatorId, toCopy.wasCommitted, copy(
+				toCopy.participantDetails, participantLogEntry));
+	}
+
+	private static ParticipantLogEntry[] copy(ParticipantLogEntry[] origin,
+			ParticipantLogEntry toUpdate) {
+		ParticipantLogEntry[] ret = new ParticipantLogEntry[origin.length];
+		for (int i = 0; i < origin.length; i++) {
+			ParticipantLogEntry participantLogEntry = origin[i];
+			if (participantLogEntry.equals(toUpdate)) {
+				ret[i] = toUpdate;
+			} else {
+				ret[i] = new ParticipantLogEntry(participantLogEntry.coordinatorId, participantLogEntry.participantUri, participantLogEntry.expires, participantLogEntry.description, participantLogEntry.state);
+			}
+
+		}
+		return ret;
+	}
+
 	public CoordinatorLogEntry(String coordinatorId,
 			ParticipantLogEntry[] participantDetails) {
 		this(coordinatorId, false, participantDetails);
@@ -75,17 +96,17 @@ public class CoordinatorLogEntry {
 		case ABORTING:
 			if (existing == null) {
 				return false;
-			} 
+			}
 			return existing.getResultingState().transitionAllowedTo(thisState);
 		case COMMITTING:
 			if (existing == null) {
 				return true;
-			} 
+			}
 			return existing.getResultingState().transitionAllowedTo(thisState);
 		case IN_DOUBT:
 			if (existing == null) {
 				return true;
-			} 
+			}
 			return existing.getResultingState().transitionAllowedTo(thisState);
 		case TERMINATED:
 			if (existing == null) {
@@ -98,7 +119,7 @@ public class CoordinatorLogEntry {
 		case HEUR_MIXED:
 			if (existing == null) {
 				return false;
-			}	
+			}
 			return existing.getResultingState().transitionAllowedTo(thisState);
 		default:
 			return false;
@@ -106,5 +127,28 @@ public class CoordinatorLogEntry {
 		// the default
 	}
 
+	
+	
+	public CoordinatorLogEntry presumedAborting(ParticipantLogEntry entry) throws IllegalStateException {
+		
+		if (expires() > System.currentTimeMillis()) {
+			throw new IllegalStateException();
+		}
+		
+		CoordinatorLogEntry ret = new CoordinatorLogEntry(this,
+				new ParticipantLogEntry(entry.coordinatorId,
+						entry.participantUri, entry.expires, entry.description,
+						TxState.ABORTING));
+
+		return ret;
+	}
+
+	public long expires() {
+		long expires = Long.MAX_VALUE;
+		for (ParticipantLogEntry participantLogEntry : participantDetails) {
+			expires = Math.min(expires, participantLogEntry.expires);
+		}
+		return expires;
+	}
 
 }

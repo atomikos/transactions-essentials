@@ -22,7 +22,7 @@ public class DefaultXaRecoveryLog implements XaRecoveryLog {
 
 	@Override
 	public void presumedAborting(Xid xid) throws IllegalStateException {
-		ParticipantLogEntry entry = convertXidToParticipantLogEntry(xid, TxState.ABORTING);
+		ParticipantLogEntry entry = convertXidToParticipantLogEntry(xid, TxState.IN_DOUBT);
 		log.presumedAborting(entry);
 	}
 
