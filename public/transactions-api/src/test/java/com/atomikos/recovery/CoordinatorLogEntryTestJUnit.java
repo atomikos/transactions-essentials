@@ -1,8 +1,9 @@
 package com.atomikos.recovery;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import com.atomikos.icatch.TxState;
@@ -101,10 +102,18 @@ public class CoordinatorLogEntryTestJUnit {
 		thenTransitionAllowedFrom(createCoordinatorLogEntryWithParticipantsInState(TxState.COMMITTING));
 	}
 	
+	
+	
 	@Test
 	public void testTransitionFromAbortingToAbortingIsAllowed() throws Exception {
 		givenCoordinatorLogEntryWithParticipantStates(TxState.ABORTING);
 		thenTransitionAllowedFrom(createCoordinatorLogEntryWithParticipantsInState(TxState.ABORTING));
+	}
+	
+	@Test
+	public void testTransitionFromInDoubtToInDoubtIsAllowed() throws Exception {
+		givenCoordinatorLogEntryWithParticipantStates(TxState.IN_DOUBT);
+		thenTransitionAllowedFrom(createCoordinatorLogEntryWithParticipantsInState(TxState.IN_DOUBT));
 	}
 	
 	@Test
@@ -131,8 +140,144 @@ public class CoordinatorLogEntryTestJUnit {
 		givenCoordinatorLogEntryWithParticipantStates(TxState.COMMITTING);
 		thenTransitionNotAllowedFrom(createCoordinatorLogEntryWithParticipantsInState(TxState.ABORTING));
 	}
-
 	
+	@Test
+	public void testTransitionFromNullToTerminatedIsNotAllowed() throws Exception {
+		givenCoordinatorLogEntryWithParticipantStates(TxState.TERMINATED);
+		thenTransitionNotAllowedFrom(null);
+	}
+	
+	@Test
+	public void testTransitionFromCommittingToTerminatedIsAllowed() throws Exception {
+		givenCoordinatorLogEntryWithParticipantStates(TxState.TERMINATED);
+		thenTransitionAllowedFrom(createCoordinatorLogEntryWithParticipantsInState(TxState.COMMITTING));
+	}
+
+	@Test
+	public void testTransitionFromAbortingToTerminatedIsAllowed() throws Exception {
+		givenCoordinatorLogEntryWithParticipantStates(TxState.TERMINATED);
+		thenTransitionAllowedFrom(createCoordinatorLogEntryWithParticipantsInState(TxState.ABORTING));
+	}
+	
+	@Test
+	public void testTransitionFromNullToHeurAbortedIsNotAllowed() throws Exception {
+		givenCoordinatorLogEntryWithParticipantStates(TxState.HEUR_ABORTED);
+		thenTransitionNotAllowedFrom(null);
+	}
+	
+	@Test
+	public void testTransitionFromAbortingToHeurAbortedIsAllowed() throws Exception {
+		givenCoordinatorLogEntryWithParticipantStates(TxState.HEUR_ABORTED);
+		thenTransitionAllowedFrom(createCoordinatorLogEntryWithParticipantsInState(TxState.ABORTING));
+	}
+	
+	@Test
+	public void testTransitionFromNullToHeurCommittedIsNotAllowed() throws Exception {
+		givenCoordinatorLogEntryWithParticipantStates(TxState.HEUR_COMMITTED);
+		thenTransitionNotAllowedFrom(null);
+	}
+	@Test
+	public void testTransitionFromAbortingToHeurCommittedIsAllowed() throws Exception {
+		givenCoordinatorLogEntryWithParticipantStates(TxState.HEUR_COMMITTED);
+		thenTransitionAllowedFrom(createCoordinatorLogEntryWithParticipantsInState(TxState.ABORTING));
+	}
+	@Test
+	public void testTransitionFromNullToHeurHazardIsNotAllowed() throws Exception {
+		givenCoordinatorLogEntryWithParticipantStates(TxState.HEUR_HAZARD);
+		thenTransitionNotAllowedFrom(null);
+	}
+	@Test
+	public void testTransitionFromAbortingToHeurHazardIsAllowed() throws Exception {
+		givenCoordinatorLogEntryWithParticipantStates(TxState.HEUR_HAZARD);
+		thenTransitionAllowedFrom(createCoordinatorLogEntryWithParticipantsInState(TxState.ABORTING));
+	}
+	
+	@Test
+	public void testTransitionFromNullToHeurMixedIsNotAllowed() throws Exception {
+		givenCoordinatorLogEntryWithParticipantStates(TxState.HEUR_MIXED);
+		thenTransitionNotAllowedFrom(null);
+	}
+	@Test
+	public void testTransitionFromCommittingToHeurMixedIsAllowed() throws Exception {
+		givenCoordinatorLogEntryWithParticipantStates(TxState.HEUR_MIXED);
+		thenTransitionAllowedFrom(createCoordinatorLogEntryWithParticipantsInState(TxState.COMMITTING));
+	}
+
+	@Test
+	public void testTransitionFromCommittingToHeurAbortedIsAllowed() throws Exception {
+		givenCoordinatorLogEntryWithParticipantStates(TxState.HEUR_ABORTED);
+		thenTransitionAllowedFrom(createCoordinatorLogEntryWithParticipantsInState(TxState.COMMITTING));
+	}
+	
+	
+	@Test
+	public void testTransitionFromCommittingToHeurCommittedIsAllowed() throws Exception {
+		givenCoordinatorLogEntryWithParticipantStates(TxState.HEUR_COMMITTED);
+		thenTransitionAllowedFrom(createCoordinatorLogEntryWithParticipantsInState(TxState.COMMITTING));
+	}
+	
+	@Test
+	public void testTransitionFromComittingToHeurHazardIsAllowed() throws Exception {
+		givenCoordinatorLogEntryWithParticipantStates(TxState.HEUR_HAZARD);
+		thenTransitionAllowedFrom(createCoordinatorLogEntryWithParticipantsInState(TxState.COMMITTING));
+	}
+	
+	
+	@Test
+	public void testTransitionFromAbortingToHeurMixedIsAllowed() throws Exception {
+		givenCoordinatorLogEntryWithParticipantStates(TxState.HEUR_MIXED);
+		thenTransitionAllowedFrom(createCoordinatorLogEntryWithParticipantsInState(TxState.ABORTING));
+	}
+
+	@Test
+	public void testTransitionFromHeurMixedToHeurMixedIsAllowed() throws Exception {
+		givenCoordinatorLogEntryWithParticipantStates(TxState.HEUR_MIXED);
+		thenTransitionAllowedFrom(createCoordinatorLogEntryWithParticipantsInState(TxState.HEUR_MIXED));
+	}
+	
+	@Test
+	public void testTransitionFromHeurAbortedToHeurAbortedIsAllowed() throws Exception {
+		givenCoordinatorLogEntryWithParticipantStates(TxState.HEUR_ABORTED);
+		thenTransitionAllowedFrom(createCoordinatorLogEntryWithParticipantsInState(TxState.HEUR_ABORTED));
+	}
+	@Test
+	public void testTransitionFromHeurCommittedToHeurCommittedIsAllowed() throws Exception {
+		givenCoordinatorLogEntryWithParticipantStates(TxState.HEUR_COMMITTED);
+		thenTransitionAllowedFrom(createCoordinatorLogEntryWithParticipantsInState(TxState.HEUR_COMMITTED));
+	}
+	
+	@Test
+	public void testTransitionFromHeurHazardToHeurHeurHazardIsAllowed() throws Exception {
+		givenCoordinatorLogEntryWithParticipantStates(TxState.HEUR_HAZARD);
+		thenTransitionAllowedFrom(createCoordinatorLogEntryWithParticipantsInState(TxState.HEUR_HAZARD));
+	}
+	@Test
+	public void testTransitionFromTerminatedToTerminatedIsAllowed() throws Exception {
+		givenCoordinatorLogEntryWithParticipantStates(TxState.TERMINATED);
+		thenTransitionAllowedFrom(createCoordinatorLogEntryWithParticipantsInState(TxState.TERMINATED));
+	}
+	
+	@Test
+	public void testTransitionFromHeurMixedToTerminatedIsAllowed() throws Exception {
+		givenCoordinatorLogEntryWithParticipantStates(TxState.TERMINATED);
+		thenTransitionAllowedFrom(createCoordinatorLogEntryWithParticipantsInState(TxState.HEUR_MIXED));
+	}
+	
+	@Test
+	public void testTransitionFromHeurAbortedToTerminatedIsAllowed() throws Exception {
+		givenCoordinatorLogEntryWithParticipantStates(TxState.TERMINATED);
+		thenTransitionAllowedFrom(createCoordinatorLogEntryWithParticipantsInState(TxState.HEUR_ABORTED));
+	}
+	@Test
+	public void testTransitionFromHeurHazardToTerminatedIsAllowed() throws Exception {
+		givenCoordinatorLogEntryWithParticipantStates(TxState.TERMINATED);
+		thenTransitionAllowedFrom(createCoordinatorLogEntryWithParticipantsInState(TxState.HEUR_HAZARD));
+	}
+	@Test
+	public void testTransitionFromHeurCommittedToTerminatedIsAllowed() throws Exception {
+		givenCoordinatorLogEntryWithParticipantStates(TxState.TERMINATED);
+		thenTransitionAllowedFrom(createCoordinatorLogEntryWithParticipantsInState(TxState.HEUR_COMMITTED));
+	}
 	private void thenTransitionAllowedFrom(CoordinatorLogEntry prior) {
 		assertTrue(coordinatorLogEntry.transitionAllowedFrom(prior));
 	}

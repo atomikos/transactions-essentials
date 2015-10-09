@@ -73,7 +73,6 @@ public class LogImpTestJunit {
 
 	private void whenDeleteInOltp(String tid) throws OltpLogException {
 		sut.remove(tid);
-		
 	}
 
 	private void thenDeleteCalledInRepository(String tid) {

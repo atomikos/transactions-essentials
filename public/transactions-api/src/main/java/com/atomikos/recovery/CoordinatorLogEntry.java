@@ -1,6 +1,13 @@
 package com.atomikos.recovery;
 
-import static com.atomikos.icatch.TxState.*;
+import static com.atomikos.icatch.TxState.ABORTING;
+import static com.atomikos.icatch.TxState.COMMITTING;
+import static com.atomikos.icatch.TxState.HEUR_ABORTED;
+import static com.atomikos.icatch.TxState.HEUR_COMMITTED;
+import static com.atomikos.icatch.TxState.HEUR_HAZARD;
+import static com.atomikos.icatch.TxState.HEUR_MIXED;
+import static com.atomikos.icatch.TxState.IN_DOUBT;
+import static com.atomikos.icatch.TxState.TERMINATED;
 
 import com.atomikos.icatch.TxState;
 
@@ -28,7 +35,7 @@ public class CoordinatorLogEntry {
 		if (oneParticipantInState(COMMITTING)) {
 			return COMMITTING;
 		} else if (oneParticipantInState(ABORTING)) {
-			return ABORTING;	
+			return ABORTING;
 		} else if (allParticipantsInState(TERMINATED)) {
 			return TERMINATED;
 		} else if (allParticipantsInState(HEUR_HAZARD)) {
@@ -36,7 +43,7 @@ public class CoordinatorLogEntry {
 		} else if (allParticipantsInState(HEUR_ABORTED)) {
 			return HEUR_ABORTED;
 		} else if (allParticipantsInState(HEUR_COMMITTED)) {
-			return HEUR_COMMITTED;	
+			return HEUR_COMMITTED;
 		} else if (allParticipantsInState(IN_DOUBT)) {
 			return IN_DOUBT;
 		}
@@ -61,30 +68,43 @@ public class CoordinatorLogEntry {
 		}
 		return false;
 	}
-	
+
 	public boolean transitionAllowedFrom(CoordinatorLogEntry existing) {
 		TxState thisState = getResultingState();
 		switch (thisState) {
 		case ABORTING:
 			if (existing == null) {
 				return false;
-
-			} else if (existing.getResultingState() == TxState.COMMITTING) {
-				return false;
-			}
-			break;
+			} 
+			return existing.getResultingState().transitionAllowedTo(thisState);
 		case COMMITTING:
 			if (existing == null) {
 				return true;
-			} else if (existing.getResultingState() == TxState.ABORTING) {
+			} 
+			return existing.getResultingState().transitionAllowedTo(thisState);
+		case IN_DOUBT:
+			if (existing == null) {
+				return true;
+			} 
+			return existing.getResultingState().transitionAllowedTo(thisState);
+		case TERMINATED:
+			if (existing == null) {
 				return false;
 			}
-			break;
+			return existing.getResultingState().transitionAllowedTo(thisState);
+		case HEUR_ABORTED:
+		case HEUR_COMMITTED:
+		case HEUR_HAZARD:
+		case HEUR_MIXED:
+			if (existing == null) {
+				return false;
+			}	
+			return existing.getResultingState().transitionAllowedTo(thisState);
 		default:
-			return true;
+			return false;
 		}
-		//the default
-		return true;
+		// the default
 	}
+
 
 }

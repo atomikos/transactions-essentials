@@ -25,6 +25,7 @@
 
 package com.atomikos.icatch;
 
+
 /**
  * The states for a distributed transaction system.
  */
@@ -35,15 +36,15 @@ public enum TxState {
 	MARKED_ABORT 	(false, false),
 	LOCALLY_DONE 	(false, false),
 	PREPARING 	 	(false, false),
-	IN_DOUBT  	 	(true, 	false),
-	ABORTING 	 	(false, false),
-	COMMITTING 		(true, 	false),
 	SUSPENDED 		(false, false),
-	HEUR_COMMITTED 	(true, 	false),
-	HEUR_ABORTED 	(true, 	false),
-	HEUR_MIXED 		(true, 	false),
-	HEUR_HAZARD 	(true, 	false),
 	TERMINATED 		(false, true),
+	HEUR_COMMITTED 	(true, 	false, TERMINATED),
+	HEUR_HAZARD 	(true, 	false, TERMINATED),
+	HEUR_ABORTED 	(true, 	false, TERMINATED),
+	HEUR_MIXED 		(true, 	false, TERMINATED),
+	COMMITTING 		(true, 	false, TERMINATED, HEUR_ABORTED, HEUR_COMMITTED, HEUR_HAZARD, HEUR_MIXED),
+	ABORTING 	 	(false, false, TERMINATED, HEUR_ABORTED, HEUR_COMMITTED, HEUR_HAZARD, HEUR_MIXED),
+	IN_DOUBT  	 	(true, 	false, ABORTING, COMMITTING),
 	COMMITTED 		(false, false),
 	ABORTED 		(false, false);
 
@@ -51,9 +52,18 @@ public enum TxState {
 	
 	private boolean finalState;
 	
+	
+	private TxState[] legalNextStates;
+	
 	TxState(boolean recoverableState, boolean finalState){
 		this.finalState=finalState;
 		this.recoverableState=recoverableState;
+		legalNextStates = new TxState[0];
+	}
+	TxState(boolean recoverableState, boolean finalState,TxState... legalNextStates){
+		this.finalState=finalState;
+		this.recoverableState=recoverableState;
+		this.legalNextStates=legalNextStates;
 	}
 	
 	public boolean isFinalState() {
@@ -62,6 +72,20 @@ public enum TxState {
 	
 	public boolean isRecoverableState() {
 		return recoverableState;
+	}
+	
+	public boolean transitionAllowedTo(TxState nextState) {
+		//transition to the same state...
+		if(nextState == this) {
+			return true;
+		}
+			
+		for (TxState txState : legalNextStates) {
+			if(txState == nextState) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 }
