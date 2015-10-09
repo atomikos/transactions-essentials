@@ -32,19 +32,21 @@ package com.atomikos.icatch;
 
 public enum TxState {
 	//@formatter:off
-	ACTIVE 		 	(true, 	false),
 	MARKED_ABORT 	(false, false),
 	LOCALLY_DONE 	(false, false),
-	PREPARING 	 	(false, false),
 	SUSPENDED 		(false, false),
 	TERMINATED 		(false, true),
+	
 	HEUR_COMMITTED 	(true, 	false, TERMINATED),
 	HEUR_HAZARD 	(true, 	false, TERMINATED),
 	HEUR_ABORTED 	(true, 	false, TERMINATED),
-	HEUR_MIXED 		(true, 	false, TERMINATED),
+	HEUR_MIXED 		(true, 	false, TERMINATED),	
 	COMMITTING 		(true, 	false, TERMINATED, HEUR_ABORTED, HEUR_COMMITTED, HEUR_HAZARD, HEUR_MIXED),
 	ABORTING 	 	(false, false, TERMINATED, HEUR_ABORTED, HEUR_COMMITTED, HEUR_HAZARD, HEUR_MIXED),
 	IN_DOUBT  	 	(true, 	false, ABORTING, COMMITTING),
+	PREPARING 	 	(false, false, TERMINATED, IN_DOUBT, ABORTING),
+	ACTIVE 		 	(true, 	false, ABORTING, COMMITTING, PREPARING),
+	
 	COMMITTED 		(false, false),
 	ABORTED 		(false, false);
 
