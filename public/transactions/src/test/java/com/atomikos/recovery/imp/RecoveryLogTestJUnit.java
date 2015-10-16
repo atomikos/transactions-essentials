@@ -140,7 +140,39 @@ public class RecoveryLogTestJUnit {
 		thenRepositoryWasUpdated();
 	}
 
+	@Test
+	public void testHeuristicRollbackForNonExistingCoordinatorDoesNothing() throws Exception {
+		givenEmptyRepository();
+		whenTerminatedWithHeuristicRollback();
+		thenRepositoryWasNotUpdated();
+	}
 	
+	
+	@Test
+	public void testHeuristicRollbackOfExistingCoordinatorResultingAbortedRemovesFromLog() throws Exception {
+		givenCoordinatorInRepository(TxState.ABORTED, NON_EXPIRED);
+		whenTerminatedWithHeuristicRollback();
+		thenRemoveWasCalledOnRepository();
+	}
+	
+	@Test
+	public void testHeuristicRollbackOfExistingCoordinatorHeurAbortedRemovesFromLog() throws Exception {
+		givenCoordinatorInRepository(TxState.COMMITTING, NON_EXPIRED,TxState.HEUR_ABORTED);
+		whenTerminatedWithHeuristicRollback();
+		thenRemoveWasCalledOnRepository();
+	}
+	
+	@Test
+	public void testHeuristicRollbackOfExistingCoordinatorCommittingRemovesFromLog() throws Exception {
+		givenCoordinatorInRepository(TxState.COMMITTING, NON_EXPIRED,TxState.COMMITTING);
+		whenTerminatedWithHeuristicRollback();
+		thenRepositoryWasUpdated();
+	}
+	
+	private void whenTerminatedWithHeuristicRollback() {
+		sut.terminatedWithHeuristicRollback(participantLogEntry);
+	}
+
 	private void whenTerminatedWithHeuristicMixed() {
 		sut.terminatedWithHeuristicMixed(participantLogEntry);
 	}

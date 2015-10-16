@@ -66,8 +66,22 @@ public class LogImp implements OltpLog, RecoveryLog {
 
 	@Override
 	public void terminatedWithHeuristicRollback(ParticipantLogEntry entry) {
-		// TODO Auto-generated method stub
 
+		CoordinatorLogEntry coordinatorLogEntry = repository
+				.get(entry.coordinatorId);
+		if (coordinatorLogEntry == null) {
+			LOGGER.logWarning("terminatedWithHeuristicRollback called on non existent Coordinator " + entry.coordinatorId + " " + entry.participantUri);
+		} else {
+			CoordinatorLogEntry updated = coordinatorLogEntry.terminatedWithHeuristicRollback(entry);
+			
+			TxState resultingState = updated.getResultingState();
+			System.out.println(resultingState);
+			if (resultingState == TxState.HEUR_MIXED || resultingState == TxState.HEUR_ABORTED) {
+				repository.remove(updated.coordinatorId);
+			} else {
+				repository.put(updated.coordinatorId, updated);
+			}
+		}
 	}
 
 	@Override
@@ -129,10 +143,12 @@ public class LogImp implements OltpLog, RecoveryLog {
 		CoordinatorLogEntry coordinatorLogEntry = repository
 				.get(entry.coordinatorId);
 		if (coordinatorLogEntry == null) {
-			LOGGER.logWarning("terminatedWithHeuristicMixed called on non existent Coordinator "+ entry.coordinatorId + " " + entry.participantUri);
+			LOGGER.logWarning("terminatedWithHeuristicMixed called on non existent Coordinator "
+					+ entry.coordinatorId + " " + entry.participantUri);
 		} else {
 
-			CoordinatorLogEntry updated = coordinatorLogEntry.terminatedWithHeuristicMixed(entry);
+			CoordinatorLogEntry updated = coordinatorLogEntry
+					.terminatedWithHeuristicMixed(entry);
 			TxState resultingState = updated.getResultingState();
 			if (resultingState == TxState.HEUR_MIXED) {
 				repository.remove(updated.coordinatorId);
