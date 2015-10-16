@@ -70,7 +70,6 @@ public class CoordinatorLogEntryTestJUnit {
 	
 	@Test
 	public void testDefaultMeansResultHeurMixed() throws Exception {
-		
 		givenCoordinatorLogEntryWithParticipantStates(TxState.TERMINATED, TxState.HEUR_HAZARD,TxState.HEUR_ABORTED);
 		thenCombinedStateIs(TxState.HEUR_MIXED);
 	}

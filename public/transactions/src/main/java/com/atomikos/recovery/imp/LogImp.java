@@ -2,6 +2,9 @@ package com.atomikos.recovery.imp;
 
 import java.util.Collection;
 
+import com.atomikos.icatch.TxState;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 import com.atomikos.recovery.CoordinatorLogEntry;
 import com.atomikos.recovery.CoordinatorLogEntryRepository;
 import com.atomikos.recovery.OltpLog;
@@ -12,6 +15,7 @@ import com.atomikos.recovery.RecoveryLog;
 
 public class LogImp implements OltpLog, RecoveryLog {
 
+	private static final Logger LOGGER = LoggerFactory.createLogger(LogImp.class);
 	private CoordinatorLogEntryRepository repository;
 
 	public void setRepository(CoordinatorLogEntryRepository repository) {
@@ -43,8 +47,18 @@ public class LogImp implements OltpLog, RecoveryLog {
 
 	@Override
 	public void terminated(ParticipantLogEntry entry) {
-		// TODO Auto-generated method stub
-
+		CoordinatorLogEntry coordinatorLogEntry = repository.get(entry.coordinatorId);
+		if(coordinatorLogEntry == null) {
+			LOGGER.logWarning("termination called on non existent Coordinator "+entry.coordinatorId+" "+entry.participantUri);
+			return;
+		}
+		CoordinatorLogEntry updated = coordinatorLogEntry.terminated(entry);
+		if(updated.getResultingState() == TxState.TERMINATED) {
+			repository.remove(updated.coordinatorId);
+		} else {
+			repository.put(updated.coordinatorId, updated);	
+		}
+		
 	}
 
 	@Override

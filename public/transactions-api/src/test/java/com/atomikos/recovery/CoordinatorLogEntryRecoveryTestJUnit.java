@@ -41,6 +41,18 @@ public class CoordinatorLogEntryRecoveryTestJUnit {
 		whenPresumedAborting();
 	}
 	
+	@Test
+	public void testPresumedAbortingWorksForExpiredAborting() throws Exception {
+		givenExpiredCoordinatorLogEntryWithParticipantStates(TxState.ABORTING);
+		whenPresumedAborting();
+		thenPresumedAbortingReturnsAbortingCoordinator();
+	}
+	
+	@Test(expected=IllegalStateException.class)
+	public void testPresumedAbortingThrowsForNonExpiredAborting() throws Exception {
+		givenNonExpiredCoordinatorLogEntryWithParticipantStates(TxState.ABORTING);
+		whenPresumedAborting();
+	}
 	
 	private void givenNonExpiredCoordinatorLogEntryWithParticipantStates(TxState states) {
 		coordinatorLogEntryBeforeRecovery = createCoordinatorLogEntryWithParticipantsInState(Long.MAX_VALUE, states);

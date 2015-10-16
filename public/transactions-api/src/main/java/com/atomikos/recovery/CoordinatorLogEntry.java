@@ -155,4 +155,12 @@ public class CoordinatorLogEntry {
 		return expires;
 	}
 
+	public CoordinatorLogEntry terminated(ParticipantLogEntry entry) {
+		CoordinatorLogEntry ret =  new CoordinatorLogEntry(this,
+				new ParticipantLogEntry(entry.coordinatorId,
+						entry.participantUri, entry.expires, entry.description,
+						TxState.TERMINATED));
+		return ret;
+	}
+
 }
