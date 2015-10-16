@@ -131,6 +131,10 @@ public class CoordinatorLogEntry {
 	
 	public CoordinatorLogEntry presumedAborting(ParticipantLogEntry entry) throws IllegalStateException {
 		
+		if(!getResultingState().transitionAllowedTo(TxState.ABORTING)) {
+			throw new IllegalStateException();
+		}
+		
 		if (expires() > System.currentTimeMillis()) {
 			throw new IllegalStateException();
 		}
