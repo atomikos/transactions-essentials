@@ -50,14 +50,15 @@ public class LogImp implements OltpLog, RecoveryLog {
 		CoordinatorLogEntry coordinatorLogEntry = repository.get(entry.coordinatorId);
 		if(coordinatorLogEntry == null) {
 			LOGGER.logWarning("termination called on non existent Coordinator "+entry.coordinatorId+" "+entry.participantUri);
-			return;
-		}
-		CoordinatorLogEntry updated = coordinatorLogEntry.terminated(entry);
-		if(updated.getResultingState() == TxState.TERMINATED) {
-			repository.remove(updated.coordinatorId);
 		} else {
-			repository.put(updated.coordinatorId, updated);	
+			CoordinatorLogEntry updated = coordinatorLogEntry.terminated(entry);
+			if(updated.getResultingState() == TxState.TERMINATED) {
+				repository.remove(updated.coordinatorId);
+			} else {
+				repository.put(updated.coordinatorId, updated);	
+			}	
 		}
+		
 		
 	}
 
@@ -94,7 +95,19 @@ public class LogImp implements OltpLog, RecoveryLog {
 
 	@Override
 	public void terminatedWithHeuristicCommit(ParticipantLogEntry entry) {
-		// TODO Auto-generated method stub
+		CoordinatorLogEntry coordinatorLogEntry = repository.get(entry.coordinatorId);
+		if (coordinatorLogEntry == null) {
+			LOGGER.logWarning("terminatedWithHeuristicCommit called on non existent Coordinator "+entry.coordinatorId+" "+entry.participantUri);
+		} else {
+			CoordinatorLogEntry updated = coordinatorLogEntry.terminatedWithHeuristicCommit(entry);
+			TxState resultingState = updated.getResultingState();
+			if (resultingState == TxState.HEUR_MIXED ||resultingState == TxState.HEUR_COMMITTED) {
+				repository.remove(updated.coordinatorId);
+			} else {
+				repository.put(updated.coordinatorId, updated);	
+			}	
+		}
+		
 
 	}
 

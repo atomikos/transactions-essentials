@@ -33,7 +33,12 @@ public class CoordinatorLogEntry {
 			if (participantLogEntry.equals(toUpdate)) {
 				ret[i] = toUpdate;
 			} else {
-				ret[i] = new ParticipantLogEntry(participantLogEntry.coordinatorId, participantLogEntry.participantUri, participantLogEntry.expires, participantLogEntry.description, participantLogEntry.state);
+				ret[i] = new ParticipantLogEntry(
+						participantLogEntry.coordinatorId,
+						participantLogEntry.participantUri,
+						participantLogEntry.expires,
+						participantLogEntry.description,
+						participantLogEntry.state);
 			}
 
 		}
@@ -92,53 +97,23 @@ public class CoordinatorLogEntry {
 
 	public boolean transitionAllowedFrom(CoordinatorLogEntry existing) {
 		TxState thisState = getResultingState();
-		switch (thisState) {
-		case ABORTING:
-			if (existing == null) {
-				return false;
-			}
-			return existing.getResultingState().transitionAllowedTo(thisState);
-		case COMMITTING:
-			if (existing == null) {
-				return true;
-			}
-			return existing.getResultingState().transitionAllowedTo(thisState);
-		case IN_DOUBT:
-			if (existing == null) {
-				return true;
-			}
-			return existing.getResultingState().transitionAllowedTo(thisState);
-		case TERMINATED:
-			if (existing == null) {
-				return false;
-			}
-			return existing.getResultingState().transitionAllowedTo(thisState);
-		case HEUR_ABORTED:
-		case HEUR_COMMITTED:
-		case HEUR_HAZARD:
-		case HEUR_MIXED:
-			if (existing == null) {
-				return false;
-			}
-			return existing.getResultingState().transitionAllowedTo(thisState);
-		default:
-			return false;
+		if (existing == null) {
+			return (thisState == COMMITTING || thisState == IN_DOUBT);
 		}
-		// the default
+		return existing.getResultingState().transitionAllowedTo(thisState);
 	}
 
-	
-	
-	public CoordinatorLogEntry presumedAborting(ParticipantLogEntry entry) throws IllegalStateException {
-		
-		if(!getResultingState().transitionAllowedTo(TxState.ABORTING)) {
+	public CoordinatorLogEntry presumedAborting(ParticipantLogEntry entry)
+			throws IllegalStateException {
+
+		if (!getResultingState().transitionAllowedTo(TxState.ABORTING)) {
 			throw new IllegalStateException();
 		}
-		
+
 		if (expires() > System.currentTimeMillis()) {
 			throw new IllegalStateException();
 		}
-		
+
 		CoordinatorLogEntry ret = new CoordinatorLogEntry(this,
 				new ParticipantLogEntry(entry.coordinatorId,
 						entry.participantUri, entry.expires, entry.description,
@@ -156,10 +131,19 @@ public class CoordinatorLogEntry {
 	}
 
 	public CoordinatorLogEntry terminated(ParticipantLogEntry entry) {
-		CoordinatorLogEntry ret =  new CoordinatorLogEntry(this,
+		CoordinatorLogEntry ret = new CoordinatorLogEntry(this,
 				new ParticipantLogEntry(entry.coordinatorId,
 						entry.participantUri, entry.expires, entry.description,
 						TxState.TERMINATED));
+		return ret;
+	}
+
+	public CoordinatorLogEntry terminatedWithHeuristicCommit(
+			ParticipantLogEntry entry) {
+		CoordinatorLogEntry ret = new CoordinatorLogEntry(this,
+				new ParticipantLogEntry(entry.coordinatorId,
+						entry.participantUri, entry.expires, entry.description,
+						TxState.HEUR_COMMITTED));
 		return ret;
 	}
 

@@ -1,7 +1,5 @@
 package com.atomikos.recovery.imp;
 
-import static org.junit.Assert.*;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -84,7 +82,6 @@ public class RecoveryLogTestJUnit {
 		givenCoordinatorInRepository(TxState.COMMITTING, NON_EXPIRED, TxState.TERMINATED);
 		whenTerminated();
 		thenRemoveWasCalledOnRepository();
-
 	}
 
 	@Test
@@ -93,6 +90,39 @@ public class RecoveryLogTestJUnit {
 		whenTerminated();
 		thenRepositoryWasNotUpdated();
 	}
+	
+	@Test
+	public void testHeuristicCommitForNonExistingCoordinatorDoesNothing() throws Exception {
+		givenEmptyRepository();
+		whenTerminatedWithHeuristicCommit();
+		thenRepositoryWasNotUpdated();
+	}
+	
+	@Test
+	public void testHeuristicCommitOfParticipantForExistingCoordinatorUpdatesLog() throws Exception {
+		givenCoordinatorInRepository(TxState.HEUR_COMMITTED, NON_EXPIRED, TxState.COMMITTING);
+		whenTerminatedWithHeuristicCommit();
+		thenRepositoryWasUpdated();
+	}
+	
+	@Test
+	public void testHeuristicCommitOfExistingCoordinatorResultingInHeurCommittedRemovesFromLog() throws Exception {
+		givenCoordinatorInRepository(TxState.HEUR_COMMITTED, NON_EXPIRED, TxState.HEUR_COMMITTED);
+		whenTerminatedWithHeuristicCommit();
+		thenRemoveWasCalledOnRepository();
+	}
+	
+	@Test
+	public void testHeuristicCommitOfExistingCoordinatorResultingInHeurMixedRemovesFromLog() throws Exception {
+		givenCoordinatorInRepository(TxState.HEUR_COMMITTED, NON_EXPIRED, TxState.HEUR_MIXED);
+		whenTerminatedWithHeuristicCommit();
+		thenRemoveWasCalledOnRepository();
+	}
+	
+	private void whenTerminatedWithHeuristicCommit() {
+		sut.terminatedWithHeuristicCommit(participantLogEntry);
+	}
+
 	private void thenRepositoryWasNotUpdated() {
 		Mockito.verify(logRepository, Mockito.never()).remove(
 				Mockito.anyString());
@@ -138,7 +168,6 @@ public class RecoveryLogTestJUnit {
 		ParticipantLogEntry[] participantLogEntries = new ParticipantLogEntry[otherParticipantsStates.length + 1];
 		participantLogEntry = newParticipantLogEntryInState(state, expired);
 		participantLogEntries[0] = participantLogEntry;
-		System.out.println(participantLogEntries[0].state);
 		for (int i = 0; i < otherParticipantsStates.length; i++) {
 			participantLogEntries[i + 1] = newParticipantLogEntryInState(
 					otherParticipantsStates[i], expired);
