@@ -38,6 +38,10 @@ public enum TxState {
 	TERMINATED 		(false, true),
 	
 	HEUR_COMMITTED 	(true, 	false, TERMINATED),
+	
+	/**
+	 * @deprecated TODO replace by COMMITING or ABORTING where relevant
+	 */
 	HEUR_HAZARD 	(true, 	false, TERMINATED),
 	HEUR_ABORTED 	(true, 	false, TERMINATED),
 	HEUR_MIXED 		(true, 	false, TERMINATED),	
