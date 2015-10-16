@@ -15,7 +15,8 @@ import com.atomikos.recovery.RecoveryLog;
 
 public class LogImp implements OltpLog, RecoveryLog {
 
-	private static final Logger LOGGER = LoggerFactory.createLogger(LogImp.class);
+	private static final Logger LOGGER = LoggerFactory
+			.createLogger(LogImp.class);
 	private CoordinatorLogEntryRepository repository;
 
 	public void setRepository(CoordinatorLogEntryRepository repository) {
@@ -47,19 +48,20 @@ public class LogImp implements OltpLog, RecoveryLog {
 
 	@Override
 	public void terminated(ParticipantLogEntry entry) {
-		CoordinatorLogEntry coordinatorLogEntry = repository.get(entry.coordinatorId);
-		if(coordinatorLogEntry == null) {
-			LOGGER.logWarning("termination called on non existent Coordinator "+entry.coordinatorId+" "+entry.participantUri);
+		CoordinatorLogEntry coordinatorLogEntry = repository
+				.get(entry.coordinatorId);
+		if (coordinatorLogEntry == null) {
+			LOGGER.logWarning("termination called on non existent Coordinator "
+					+ entry.coordinatorId + " " + entry.participantUri);
 		} else {
 			CoordinatorLogEntry updated = coordinatorLogEntry.terminated(entry);
-			if(updated.getResultingState() == TxState.TERMINATED) {
+			if (updated.getResultingState() == TxState.TERMINATED) {
 				repository.remove(updated.coordinatorId);
 			} else {
-				repository.put(updated.coordinatorId, updated);	
-			}	
+				repository.put(updated.coordinatorId, updated);
+			}
 		}
-		
-		
+
 	}
 
 	@Override
@@ -78,36 +80,41 @@ public class LogImp implements OltpLog, RecoveryLog {
 	@Override
 	public void presumedAborting(ParticipantLogEntry entry)
 			throws IllegalStateException {
-		CoordinatorLogEntry coordinatorLogEntry = repository.get(entry.coordinatorId);
+		CoordinatorLogEntry coordinatorLogEntry = repository
+				.get(entry.coordinatorId);
 		if (coordinatorLogEntry == null) {
 			ParticipantLogEntry[] participantDetails = new ParticipantLogEntry[1];
 			participantDetails[0] = entry;
-			coordinatorLogEntry = new CoordinatorLogEntry(entry.coordinatorId, participantDetails);
+			coordinatorLogEntry = new CoordinatorLogEntry(entry.coordinatorId,
+					participantDetails);
 			repository.put(entry.coordinatorId, coordinatorLogEntry);
 			throw new IllegalStateException();
 		} else {
-			CoordinatorLogEntry updated = coordinatorLogEntry.presumedAborting(entry);
+			CoordinatorLogEntry updated = coordinatorLogEntry
+					.presumedAborting(entry);
 			repository.put(updated.coordinatorId, updated);
 		}
-		
-			
+
 	}
 
 	@Override
 	public void terminatedWithHeuristicCommit(ParticipantLogEntry entry) {
-		CoordinatorLogEntry coordinatorLogEntry = repository.get(entry.coordinatorId);
+		CoordinatorLogEntry coordinatorLogEntry = repository
+				.get(entry.coordinatorId);
 		if (coordinatorLogEntry == null) {
-			LOGGER.logWarning("terminatedWithHeuristicCommit called on non existent Coordinator "+entry.coordinatorId+" "+entry.participantUri);
+			LOGGER.logWarning("terminatedWithHeuristicCommit called on non existent Coordinator "
+					+ entry.coordinatorId + " " + entry.participantUri);
 		} else {
-			CoordinatorLogEntry updated = coordinatorLogEntry.terminatedWithHeuristicCommit(entry);
+			CoordinatorLogEntry updated = coordinatorLogEntry
+					.terminatedWithHeuristicCommit(entry);
 			TxState resultingState = updated.getResultingState();
-			if (resultingState == TxState.HEUR_MIXED ||resultingState == TxState.HEUR_COMMITTED) {
+			if (resultingState == TxState.HEUR_MIXED
+					|| resultingState == TxState.HEUR_COMMITTED) {
 				repository.remove(updated.coordinatorId);
 			} else {
-				repository.put(updated.coordinatorId, updated);	
-			}	
+				repository.put(updated.coordinatorId, updated);
+			}
 		}
-		
 
 	}
 
@@ -119,8 +126,20 @@ public class LogImp implements OltpLog, RecoveryLog {
 
 	@Override
 	public void terminatedWithHeuristicMixed(ParticipantLogEntry entry) {
-		// TODO Auto-generated method stub
+		CoordinatorLogEntry coordinatorLogEntry = repository
+				.get(entry.coordinatorId);
+		if (coordinatorLogEntry == null) {
+			LOGGER.logWarning("terminatedWithHeuristicMixed called on non existent Coordinator "+ entry.coordinatorId + " " + entry.participantUri);
+		} else {
 
+			CoordinatorLogEntry updated = coordinatorLogEntry.terminatedWithHeuristicMixed(entry);
+			TxState resultingState = updated.getResultingState();
+			if (resultingState == TxState.HEUR_MIXED) {
+				repository.remove(updated.coordinatorId);
+			} else {
+				repository.put(updated.coordinatorId, updated);
+			}
+		}
 	}
 
 }

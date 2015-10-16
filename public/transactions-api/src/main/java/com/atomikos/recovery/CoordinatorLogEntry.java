@@ -147,4 +147,13 @@ public class CoordinatorLogEntry {
 		return ret;
 	}
 
+	public CoordinatorLogEntry terminatedWithHeuristicMixed(
+			ParticipantLogEntry entry) {
+		CoordinatorLogEntry ret = new CoordinatorLogEntry(this,
+				new ParticipantLogEntry(entry.coordinatorId,
+						entry.participantUri, entry.expires, entry.description,
+						TxState.HEUR_MIXED));
+		return ret;
+	}
+
 }
