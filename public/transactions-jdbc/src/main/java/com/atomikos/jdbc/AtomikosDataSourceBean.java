@@ -73,7 +73,8 @@ extends AbstractDataSourceBean
 			while ( it.hasMoreElements() ) {
 				if ( ! first ) ret.append ( "," );
 				String name = ( String ) it.nextElement();
-				String value = xaProperties.getProperty( name);
+				String value = xaProperties.getProperty( name );
+				if ( name.equalsIgnoreCase ( "password" ) && value != null ) value = "********";
 				ret.append ( name ); ret.append ( "=" ); ret.append ( value );
 				first = false;
 			}
