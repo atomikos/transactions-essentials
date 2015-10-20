@@ -71,10 +71,10 @@ extends AbstractDataSourceBean
 			ret.append ( "[" );
 			boolean first = true;
 			while ( it.hasMoreElements() ) {
-				String name = ( String ) it.nextElement();
-				if ( name.equals ( "password" ) ) continue;
 				if ( ! first ) ret.append ( "," );
+				String name = ( String ) it.nextElement();
 				String value = xaProperties.getProperty( name );
+				if ( name.equalsIgnoreCase ( "password" ) && value != null ) value = "********";
 				ret.append ( name ); ret.append ( "=" ); ret.append ( value );
 				first = false;
 			}

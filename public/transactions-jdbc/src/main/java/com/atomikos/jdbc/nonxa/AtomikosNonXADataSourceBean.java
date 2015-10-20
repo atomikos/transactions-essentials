@@ -184,6 +184,7 @@ public class AtomikosNonXADataSourceBean extends AbstractDataSourceBean
 				" testQuery=" + getTestQuery() + "," +
 				" driverClassName=" + getDriverClassName() + "," +
 				" user=" + getUser() + "," +
+				" password=" + ( getPassword() != null ? "********" : null ) + "," +
 				" url=" + getUrl() + 
 				" loginTimeout=" + getLoginTimeout() +
 				"]"
