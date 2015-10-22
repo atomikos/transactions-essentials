@@ -1,5 +1,8 @@
 package com.atomikos.recovery.imp;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -10,6 +13,7 @@ import com.atomikos.icatch.TxState;
 import com.atomikos.recovery.CoordinatorLogEntry;
 import com.atomikos.recovery.CoordinatorLogEntryRepository;
 import com.atomikos.recovery.ParticipantLogEntry;
+import com.atomikos.recovery.RecoveryException;
 import com.atomikos.util.UniqueIdMgr;
 
 public class RecoveryLogTestJUnit {
@@ -19,6 +23,8 @@ public class RecoveryLogTestJUnit {
 	private LogImp sut;
 	private CoordinatorLogEntryRepository logRepository;
 	ParticipantLogEntry participantLogEntry;
+	
+	Collection<ParticipantLogEntry> committingParticipants;
 
 	private UniqueIdMgr uniqueIdMgr = new UniqueIdMgr(getClass().getName());
 
@@ -169,6 +175,36 @@ public class RecoveryLogTestJUnit {
 		thenRepositoryWasUpdated();
 	}
 	
+	
+	@Test
+	public void testExistingCommittingParticipantsMustBefound() throws Exception {
+		givenCoordinatorInRepository(TxState.COMMITTING, NON_EXPIRED);
+		whenGetCommittingParticipants();
+		thenCommittingParticipantsAreFoundInRepository();
+	}
+	
+	@Test
+	public void testNonExistingCommittingParticipantsMustBefound() throws Exception {
+		givenCoordinatorInRepository(TxState.IN_DOUBT, NON_EXPIRED);
+		whenGetCommittingParticipants();
+		thenCommittingParticipantsAreNotFoundInRepository();
+	}
+
+	private void thenCommittingParticipantsAreNotFoundInRepository() {
+		Assert.assertFalse( committingParticipants.contains(participantLogEntry));		
+	}
+
+	private void thenCommittingParticipantsAreFoundInRepository() {
+		Assert.assertTrue( committingParticipants.contains(participantLogEntry));
+	}
+
+	private Collection<ParticipantLogEntry> whenGetCommittingParticipants()
+			throws RecoveryException {
+		committingParticipants = sut.getCommittingParticipants();
+		return committingParticipants;
+	}
+	
+	
 	private void whenTerminatedWithHeuristicRollback() {
 		sut.terminatedWithHeuristicRollback(participantLogEntry);
 	}
@@ -218,6 +254,9 @@ public class RecoveryLogTestJUnit {
 
 		Mockito.when(logRepository.get(Mockito.anyString())).thenReturn(
 				coordinatorLogEntry);
+		if(state == TxState.COMMITTING) {
+			Mockito.when(logRepository.findAllCommittingParticipants()).thenReturn(Arrays.asList(participantLogEntry));
+		}
 
 	}
 

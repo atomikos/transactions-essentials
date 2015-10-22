@@ -61,5 +61,15 @@ public class ParticipantLogEntry implements Serializable {
 	public int hashCode() {
 		return coordinatorId.hashCode();
 	}
-	
+
+
+
+	@Override
+	public String toString() {
+		return "ParticipantLogEntry [coordinatorId=" + coordinatorId
+				+ ", participantUri=" + participantUri + ", expires=" + expires
+				+ ", state=" + state + ", description=" + description + "]";
+	}
+
+
 }

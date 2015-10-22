@@ -15,8 +15,8 @@ import com.atomikos.recovery.RecoveryLog;
 
 public class LogImp implements OltpLog, RecoveryLog {
 
-	private static final Logger LOGGER = LoggerFactory
-			.createLogger(LogImp.class);
+	private static final Logger LOGGER = LoggerFactory.createLogger(LogImp.class);
+	
 	private CoordinatorLogEntryRepository repository;
 
 	public void setRepository(CoordinatorLogEntryRepository repository) {
@@ -70,13 +70,16 @@ public class LogImp implements OltpLog, RecoveryLog {
 		CoordinatorLogEntry coordinatorLogEntry = repository
 				.get(entry.coordinatorId);
 		if (coordinatorLogEntry == null) {
-			LOGGER.logWarning("terminatedWithHeuristicRollback called on non existent Coordinator " + entry.coordinatorId + " " + entry.participantUri);
+			LOGGER.logWarning("terminatedWithHeuristicRollback called on non existent Coordinator "
+					+ entry.coordinatorId + " " + entry.participantUri);
 		} else {
-			CoordinatorLogEntry updated = coordinatorLogEntry.terminatedWithHeuristicRollback(entry);
-			
+			CoordinatorLogEntry updated = coordinatorLogEntry
+					.terminatedWithHeuristicRollback(entry);
+
 			TxState resultingState = updated.getResultingState();
 			System.out.println(resultingState);
-			if (resultingState == TxState.HEUR_MIXED || resultingState == TxState.HEUR_ABORTED) {
+			if (resultingState == TxState.HEUR_MIXED
+					|| resultingState == TxState.HEUR_ABORTED) {
 				repository.remove(updated.coordinatorId);
 			} else {
 				repository.put(updated.coordinatorId, updated);
@@ -87,8 +90,8 @@ public class LogImp implements OltpLog, RecoveryLog {
 	@Override
 	public Collection<ParticipantLogEntry> getCommittingParticipants()
 			throws RecoveryException {
-		// TODO Auto-generated method stub
-		return null;
+
+		return repository.findAllCommittingParticipants();
 	}
 
 	@Override
@@ -134,8 +137,7 @@ public class LogImp implements OltpLog, RecoveryLog {
 
 	@Override
 	public void terminatedWithHeuristicHazard(ParticipantLogEntry entry) {
-		// TODO Auto-generated method stub
-
+		LOGGER.logWarning("terminatedWithHeuristicHazard " + entry);
 	}
 
 	@Override

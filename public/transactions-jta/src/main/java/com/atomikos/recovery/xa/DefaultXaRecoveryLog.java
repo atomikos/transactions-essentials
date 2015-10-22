@@ -33,6 +33,7 @@ public class DefaultXaRecoveryLog implements XaRecoveryLog {
 	}
 
 	private ParticipantLogEntry convertXidToParticipantLogEntry(Xid xid, TxState state) {
+		//TODO : description should include unique resource name...
 		ParticipantLogEntry entry = new ParticipantLogEntry(
 				XID.getGlobalTransactionIdAsString(xid),
 				XID.getBranchQualifierAsString(xid), 0, xid.toString(),
