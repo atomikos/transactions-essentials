@@ -7,17 +7,17 @@ public interface RecoveryLog {
 
 	void terminated(ParticipantLogEntry entry);
 
-	void terminatedWithHeuristicRollback(ParticipantLogEntry entry);
+	void terminatedWithHeuristicRollback(ParticipantLogEntry entry) throws LogWriteException;
 
-	Collection<ParticipantLogEntry> getCommittingParticipants() throws RecoveryException;
+	Collection<ParticipantLogEntry> getCommittingParticipants() throws LogReadException;
 
-	void presumedAborting(ParticipantLogEntry entry) throws IllegalStateException;
+	void presumedAborting(ParticipantLogEntry entry) throws IllegalStateException, LogWriteException;
 
-	void terminatedWithHeuristicCommit(ParticipantLogEntry entry);
+	void terminatedWithHeuristicCommit(ParticipantLogEntry entry) throws LogWriteException;
 
-	void terminatedWithHeuristicHazard(ParticipantLogEntry entry);
+	void terminatedWithHeuristicHazard(ParticipantLogEntry entry) throws LogWriteException;
 
-	void terminatedWithHeuristicMixed(ParticipantLogEntry entry);
+	void terminatedWithHeuristicMixed(ParticipantLogEntry entry) throws LogWriteException;
 
 	
 }

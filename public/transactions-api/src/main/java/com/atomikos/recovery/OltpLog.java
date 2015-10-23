@@ -2,7 +2,7 @@ package com.atomikos.recovery;
 
 public interface OltpLog {
 
-	void write(CoordinatorLogEntry coordinatorLogEntry) throws OltpLogException,IllegalStateException;
+	void write(CoordinatorLogEntry coordinatorLogEntry) throws LogWriteException,IllegalStateException;
 	
-	void remove(String coordinatorId) throws OltpLogException;
+	void remove(String coordinatorId) throws LogWriteException;
 }

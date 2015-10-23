@@ -11,11 +11,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.atomikos.datasource.xa.XID;
 import com.atomikos.datasource.xa.RecoveryScan.XidSelector;
-import com.atomikos.recovery.RecoveryException;
-import com.atomikos.recovery.xa.XaRecoveryLog;
-import com.atomikos.recovery.xa.XaResourceRecoveryManager;
+import com.atomikos.datasource.xa.XID;
+import com.atomikos.recovery.LogReadException;
 
 public class XaResourceRecoveryManagerTestJUnit {
 
@@ -277,7 +275,7 @@ public class XaResourceRecoveryManagerTestJUnit {
 		// do nothing: don't make log mock throw on presumedAborting
 	}
 
-	private void givenExpiredCommittingXidInLog(Xid xid) throws RecoveryException {
+	private void givenExpiredCommittingXidInLog(Xid xid) throws LogReadException {
 		Set<Xid> toReturn = new HashSet<Xid>();
 		toReturn.add(xid);
 		Mockito.when(log.getExpiredCommittingXids()).thenReturn(toReturn);

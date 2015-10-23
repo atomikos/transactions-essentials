@@ -16,11 +16,9 @@ import org.mockito.Mockito;
 
 import com.atomikos.datasource.xa.XID;
 import com.atomikos.icatch.TxState;
-import com.atomikos.recovery.CoordinatorLogEntry;
+import com.atomikos.recovery.LogReadException;
 import com.atomikos.recovery.ParticipantLogEntry;
-import com.atomikos.recovery.RecoveryException;
 import com.atomikos.recovery.RecoveryLog;
-import com.atomikos.recovery.xa.DefaultXaRecoveryLog;
 
 public class DefaultXaRecoveryLogTestJUnit {
 
@@ -79,7 +77,7 @@ public class DefaultXaRecoveryLogTestJUnit {
 	}
 
 	@Test
-	public void testGetCommittingXids() throws RecoveryException {
+	public void testGetCommittingXids() throws LogReadException {
 		ParticipantLogEntry entry = givenCommittingParticipantLogEntryInGenericLog();
 		Xid xid = whenGetExpiredCommittingXids();
 		thenGtidEqualsCoordinatorId(entry, xid);
@@ -87,13 +85,13 @@ public class DefaultXaRecoveryLogTestJUnit {
 	}
 	
 	@Test
-	public void testTccParticipantLogEntryIsIgnored() throws RecoveryException {
+	public void testTccParticipantLogEntryIsIgnored() throws LogReadException {
 		givenCommittingTccParticipantLogEntryInGenericLog();
 		Xid xid = whenGetExpiredCommittingXids();
 		assertNull(xid);
 	}
 	
-	private void givenCommittingTccParticipantLogEntryInGenericLog() throws RecoveryException {
+	private void givenCommittingTccParticipantLogEntryInGenericLog() throws LogReadException {
 		ParticipantLogEntry entry = new ParticipantLogEntry("tid", "http://uri", 0, "desc", TxState.COMMITTING);
 		Collection<ParticipantLogEntry> c = new HashSet<ParticipantLogEntry>();
 		c.add(entry);
@@ -109,7 +107,7 @@ public class DefaultXaRecoveryLogTestJUnit {
 		Assert.assertEquals(entry.coordinatorId, XID.getGlobalTransactionIdAsString(xid));
 	}
 
-	private Xid whenGetExpiredCommittingXids() throws RecoveryException {
+	private Xid whenGetExpiredCommittingXids() throws LogReadException {
 		Xid ret = null;
 		Set<Xid> xids = sut.getExpiredCommittingXids();
 		if (!xids.isEmpty()) {
@@ -118,7 +116,7 @@ public class DefaultXaRecoveryLogTestJUnit {
 		return ret;
 	}
 
-	private ParticipantLogEntry givenCommittingParticipantLogEntryInGenericLog() throws RecoveryException {
+	private ParticipantLogEntry givenCommittingParticipantLogEntryInGenericLog() throws LogReadException {
 		Xid xid = givenSomeXid();
 		ParticipantLogEntry entry = new ParticipantLogEntry(XID.getGlobalTransactionIdAsString(xid), xid.toString(), 0, "desc", TxState.COMMITTING);
 		Collection<ParticipantLogEntry> c = new HashSet<ParticipantLogEntry>();
