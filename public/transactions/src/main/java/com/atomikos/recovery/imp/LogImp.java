@@ -7,10 +7,10 @@ import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 import com.atomikos.recovery.CoordinatorLogEntry;
 import com.atomikos.recovery.CoordinatorLogEntryRepository;
+import com.atomikos.recovery.LogReadException;
+import com.atomikos.recovery.LogWriteException;
 import com.atomikos.recovery.OltpLog;
-import com.atomikos.recovery.OltpLogException;
 import com.atomikos.recovery.ParticipantLogEntry;
-import com.atomikos.recovery.RecoveryException;
 import com.atomikos.recovery.RecoveryLog;
 
 public class LogImp implements OltpLog, RecoveryLog {
@@ -25,13 +25,13 @@ public class LogImp implements OltpLog, RecoveryLog {
 
 	@Override
 	public void write(CoordinatorLogEntry coordinatorLogEntry)
-			throws IllegalStateException {
-		if (entryAllowed(coordinatorLogEntry)) {
-			repository.put(coordinatorLogEntry.coordinatorId,
-					coordinatorLogEntry);
-		} else {
+			throws IllegalStateException, LogWriteException {
+		if (!entryAllowed(coordinatorLogEntry)) {
 			throw new IllegalStateException();
 		}
+		
+		repository.put(coordinatorLogEntry.coordinatorId, coordinatorLogEntry);
+		
 
 	}
 
@@ -42,12 +42,12 @@ public class LogImp implements OltpLog, RecoveryLog {
 	}
 
 	@Override
-	public void remove(String coordinatorId) throws OltpLogException {
+	public void remove(String coordinatorId) throws LogWriteException {
 		repository.remove(coordinatorId);
 	}
 
 	@Override
-	public void terminated(ParticipantLogEntry entry) {
+	public void terminated(ParticipantLogEntry entry)  {
 		CoordinatorLogEntry coordinatorLogEntry = repository
 				.get(entry.coordinatorId);
 		if (coordinatorLogEntry == null) {
@@ -55,17 +55,26 @@ public class LogImp implements OltpLog, RecoveryLog {
 					+ entry.coordinatorId + " " + entry.participantUri);
 		} else {
 			CoordinatorLogEntry updated = coordinatorLogEntry.terminated(entry);
-			if (updated.getResultingState() == TxState.TERMINATED) {
-				repository.remove(updated.coordinatorId);
-			} else {
-				repository.put(updated.coordinatorId, updated);
+			try {
+				updateRepository(updated,TxState.TERMINATED);
+			} catch (LogWriteException e) {
+				LOGGER.logWarning("Unable to write to repository "+entry+" ignoring");
 			}
 		}
 
 	}
 
+	private void updateRepository(CoordinatorLogEntry updated, TxState... stateForRemoval)
+			throws LogWriteException {
+		if (updated.getResultingState().isOneOf(stateForRemoval)) {
+			repository.remove(updated.coordinatorId);
+		} else {
+			repository.put(updated.coordinatorId, updated);
+		}
+	}
+
 	@Override
-	public void terminatedWithHeuristicRollback(ParticipantLogEntry entry) {
+	public void terminatedWithHeuristicRollback(ParticipantLogEntry entry) throws LogWriteException {
 
 		CoordinatorLogEntry coordinatorLogEntry = repository
 				.get(entry.coordinatorId);
@@ -73,30 +82,21 @@ public class LogImp implements OltpLog, RecoveryLog {
 			LOGGER.logWarning("terminatedWithHeuristicRollback called on non existent Coordinator "
 					+ entry.coordinatorId + " " + entry.participantUri);
 		} else {
-			CoordinatorLogEntry updated = coordinatorLogEntry
-					.terminatedWithHeuristicRollback(entry);
-
-			TxState resultingState = updated.getResultingState();
-			System.out.println(resultingState);
-			if (resultingState == TxState.HEUR_MIXED
-					|| resultingState == TxState.HEUR_ABORTED) {
-				repository.remove(updated.coordinatorId);
-			} else {
-				repository.put(updated.coordinatorId, updated);
-			}
+			CoordinatorLogEntry updated = coordinatorLogEntry.terminatedWithHeuristicRollback(entry);
+			updateRepository(updated,TxState.HEUR_MIXED,TxState.HEUR_ABORTED);
 		}
 	}
 
 	@Override
 	public Collection<ParticipantLogEntry> getCommittingParticipants()
-			throws RecoveryException {
+			throws LogReadException {
 
 		return repository.findAllCommittingParticipants();
 	}
 
 	@Override
 	public void presumedAborting(ParticipantLogEntry entry)
-			throws IllegalStateException {
+			throws IllegalStateException, LogWriteException {
 		CoordinatorLogEntry coordinatorLogEntry = repository
 				.get(entry.coordinatorId);
 		if (coordinatorLogEntry == null) {
@@ -115,7 +115,7 @@ public class LogImp implements OltpLog, RecoveryLog {
 	}
 
 	@Override
-	public void terminatedWithHeuristicCommit(ParticipantLogEntry entry) {
+	public void terminatedWithHeuristicCommit(ParticipantLogEntry entry) throws LogWriteException {
 		CoordinatorLogEntry coordinatorLogEntry = repository
 				.get(entry.coordinatorId);
 		if (coordinatorLogEntry == null) {
@@ -124,13 +124,9 @@ public class LogImp implements OltpLog, RecoveryLog {
 		} else {
 			CoordinatorLogEntry updated = coordinatorLogEntry
 					.terminatedWithHeuristicCommit(entry);
-			TxState resultingState = updated.getResultingState();
-			if (resultingState == TxState.HEUR_MIXED
-					|| resultingState == TxState.HEUR_COMMITTED) {
-				repository.remove(updated.coordinatorId);
-			} else {
-				repository.put(updated.coordinatorId, updated);
-			}
+			
+			updateRepository(updated,TxState.HEUR_MIXED,TxState.HEUR_COMMITTED);
+			
 		}
 
 	}
@@ -141,7 +137,7 @@ public class LogImp implements OltpLog, RecoveryLog {
 	}
 
 	@Override
-	public void terminatedWithHeuristicMixed(ParticipantLogEntry entry) {
+	public void terminatedWithHeuristicMixed(ParticipantLogEntry entry) throws LogWriteException {
 		CoordinatorLogEntry coordinatorLogEntry = repository
 				.get(entry.coordinatorId);
 		if (coordinatorLogEntry == null) {
@@ -151,12 +147,7 @@ public class LogImp implements OltpLog, RecoveryLog {
 
 			CoordinatorLogEntry updated = coordinatorLogEntry
 					.terminatedWithHeuristicMixed(entry);
-			TxState resultingState = updated.getResultingState();
-			if (resultingState == TxState.HEUR_MIXED) {
-				repository.remove(updated.coordinatorId);
-			} else {
-				repository.put(updated.coordinatorId, updated);
-			}
+			updateRepository(updated,TxState.HEUR_MIXED);
 		}
 	}
 

@@ -12,8 +12,9 @@ import org.mockito.Mockito;
 import com.atomikos.icatch.TxState;
 import com.atomikos.recovery.CoordinatorLogEntry;
 import com.atomikos.recovery.CoordinatorLogEntryRepository;
+import com.atomikos.recovery.LogReadException;
+import com.atomikos.recovery.LogWriteException;
 import com.atomikos.recovery.ParticipantLogEntry;
-import com.atomikos.recovery.RecoveryException;
 import com.atomikos.util.UniqueIdMgr;
 
 public class RecoveryLogTestJUnit {
@@ -199,7 +200,7 @@ public class RecoveryLogTestJUnit {
 	}
 
 	private Collection<ParticipantLogEntry> whenGetCommittingParticipants()
-			throws RecoveryException {
+			throws LogReadException {
 		committingParticipants = sut.getCommittingParticipants();
 		return committingParticipants;
 	}
@@ -217,7 +218,7 @@ public class RecoveryLogTestJUnit {
 		sut.terminatedWithHeuristicCommit(participantLogEntry);
 	}
 
-	private void thenRepositoryWasNotUpdated() {
+	private void thenRepositoryWasNotUpdated() throws IllegalArgumentException, LogWriteException {
 		Mockito.verify(logRepository, Mockito.never()).remove(
 				Mockito.anyString());
 		Mockito.verify(logRepository, Mockito.never()).put(
@@ -230,7 +231,7 @@ public class RecoveryLogTestJUnit {
 				Mockito.anyString());
 	}
 
-	private void thenRepositoryWasUpdated() {
+	private void thenRepositoryWasUpdated() throws IllegalArgumentException, LogWriteException {
 		Mockito.verify(logRepository, Mockito.times(1)).put(
 				Mockito.anyString(), (CoordinatorLogEntry) Mockito.any());
 
@@ -241,7 +242,7 @@ public class RecoveryLogTestJUnit {
 		sut.terminated(participantLogEntry);
 	}
 
-	private void thenPutWasNotCalledOnRepository() {
+	private void thenPutWasNotCalledOnRepository() throws IllegalArgumentException, LogWriteException {
 		Mockito.verify(logRepository, Mockito.never()).put(Mockito.anyString(),
 				(CoordinatorLogEntry) Mockito.any());
 	}
@@ -279,7 +280,7 @@ public class RecoveryLogTestJUnit {
 
 	}
 
-	private void thenRepositoryContainsCoordinatorLogEntry(TxState state) {
+	private void thenRepositoryContainsCoordinatorLogEntry(TxState state) throws IllegalArgumentException, LogWriteException {
 		ArgumentCaptor<CoordinatorLogEntry> captor = ArgumentCaptor
 				.forClass(CoordinatorLogEntry.class);
 		Mockito.verify(logRepository, Mockito.times(1))

@@ -7,7 +7,7 @@ import org.mockito.Mockito;
 import com.atomikos.icatch.TxState;
 import com.atomikos.recovery.CoordinatorLogEntry;
 import com.atomikos.recovery.CoordinatorLogEntryRepository;
-import com.atomikos.recovery.OltpLogException;
+import com.atomikos.recovery.LogWriteException;
 import com.atomikos.recovery.ParticipantLogEntry;
 
 public class OltpLogTestJUnit {
@@ -103,40 +103,40 @@ public class OltpLogTestJUnit {
 	
 	
 	
-	private void thenWriteInDoubtFails() throws OltpLogException {
+	private void thenWriteInDoubtFails() throws LogWriteException {
 		CoordinatorLogEntry coordinatorLogEntry = createCoordinatorLogEntryInState(TxState.IN_DOUBT);
 		whenWriteInOltp(coordinatorLogEntry);		
 	}
 	
 	
 
-	private void thenWriteCommittingFails() throws OltpLogException {
+	private void thenWriteCommittingFails() throws LogWriteException {
 		CoordinatorLogEntry coordinatorLogEntry = createCoordinatorLogEntryInState(TxState.COMMITTING);
 		whenWriteInOltp(coordinatorLogEntry);
 		
 	}
 
-	private void thenWriteAbortingFails() throws OltpLogException {
+	private void thenWriteAbortingFails() throws LogWriteException {
 		CoordinatorLogEntry coordinatorLogEntry = createCoordinatorLogEntryInState(TxState.ABORTING);
 		whenWriteInOltp(coordinatorLogEntry);
 		
 	}
-	private void thenWriteInDoubtWorks() throws OltpLogException {
+	private void thenWriteInDoubtWorks() throws LogWriteException {
 		CoordinatorLogEntry coordinatorLogEntry = createCoordinatorLogEntryInState(TxState.IN_DOUBT);
 		whenWriteInOltp(coordinatorLogEntry);
 		
 	}
-	private void thenWriteAbortingWorks() throws OltpLogException {
+	private void thenWriteAbortingWorks() throws LogWriteException {
 		CoordinatorLogEntry coordinatorLogEntry = createCoordinatorLogEntryInState(TxState.ABORTING);
 		whenWriteInOltp(coordinatorLogEntry);
 	}
-	private void thenWriteCommittingWorks() throws OltpLogException {
+	private void thenWriteCommittingWorks() throws LogWriteException {
 		CoordinatorLogEntry coordinatorLogEntry = createCoordinatorLogEntryInState(TxState.COMMITTING);
 		whenWriteInOltp(coordinatorLogEntry);
 		
 	}
 
-	private void whenDeleteInOltp(String tid) throws OltpLogException {
+	private void whenDeleteInOltp(String tid) throws LogWriteException {
 		sut.remove(tid);
 	}
 
@@ -145,11 +145,11 @@ public class OltpLogTestJUnit {
 	}
 
 	
-	private void thenPutCalledInRepository(CoordinatorLogEntry coordinatorLogEntry) {
+	private void thenPutCalledInRepository(CoordinatorLogEntry coordinatorLogEntry) throws IllegalArgumentException, LogWriteException {
 		Mockito.verify(logRepository).put(coordinatorLogEntry.coordinatorId,coordinatorLogEntry);
 	}
 
-	private void whenWriteInOltp(CoordinatorLogEntry coordinatorLogEntry) throws OltpLogException {
+	private void whenWriteInOltp(CoordinatorLogEntry coordinatorLogEntry) throws LogWriteException {
 		sut.write(coordinatorLogEntry);
 	}
 
