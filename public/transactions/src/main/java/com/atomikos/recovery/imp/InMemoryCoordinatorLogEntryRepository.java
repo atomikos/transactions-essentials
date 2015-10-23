@@ -3,6 +3,7 @@ package com.atomikos.recovery.imp;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -16,6 +17,11 @@ public class InMemoryCoordinatorLogEntryRepository implements
 
 	private  Map<String, CoordinatorLogEntry> storage = new ConcurrentHashMap<String, CoordinatorLogEntry>();
 
+	
+	@Override
+	public void init(Properties properties) {
+	}
+	
 	@Override
 	public synchronized void put(String id, CoordinatorLogEntry coordinatorLogEntry)
 			throws IllegalArgumentException {
@@ -51,5 +57,11 @@ public class InMemoryCoordinatorLogEntryRepository implements
 		}
 		return res;
 	}
+
+	@Override
+	public void close() {
+		
+	}
+
 
 }
