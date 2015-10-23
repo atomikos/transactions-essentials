@@ -94,4 +94,12 @@ public enum TxState {
 		return false;
 	}
 	
+	public boolean isOneOf(TxState... state) {
+		for (int i = 0; i < state.length; i++) {
+			if(this==state[i])
+				return true;
+		}
+		return false;
+	}
+	
 }
