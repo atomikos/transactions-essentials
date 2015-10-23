@@ -11,7 +11,7 @@ import javax.transaction.xa.Xid;
 
 import com.atomikos.datasource.xa.RecoveryScan;
 import com.atomikos.datasource.xa.RecoveryScan.XidSelector;
-import com.atomikos.recovery.RecoveryException;
+import com.atomikos.recovery.LogReadException;
 
 public class XaResourceRecoveryManager {
 
@@ -33,7 +33,7 @@ public class XaResourceRecoveryManager {
 					attemptPresumedAbort(xid, xaResource);
 				}
 			}
-		} catch (RecoveryException couldNotRetrieveCommittingXids) {
+		} catch (LogReadException couldNotRetrieveCommittingXids) {
 			//TODO log warning and retry later
 		}
 	}
@@ -98,7 +98,7 @@ public class XaResourceRecoveryManager {
 		}
 	}
 
-	private Set<Xid> retrieveExpiredCommittingXidsFromLog() throws RecoveryException {
+	private Set<Xid> retrieveExpiredCommittingXidsFromLog() throws LogReadException {
 		return log.getExpiredCommittingXids();
 	}
 
