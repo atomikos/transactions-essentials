@@ -58,6 +58,7 @@ public class LogImp implements OltpLog, RecoveryLog {
 			try {
 				updateRepository(updated,TxState.TERMINATED);
 			} catch (LogWriteException e) {
+				//TODO coordinator will remain committing in log - clean up by admin tools?
 				LOGGER.logWarning("Unable to write to repository "+entry+" ignoring");
 			}
 		}
@@ -76,8 +77,7 @@ public class LogImp implements OltpLog, RecoveryLog {
 	@Override
 	public void terminatedWithHeuristicRollback(ParticipantLogEntry entry) throws LogWriteException {
 
-		CoordinatorLogEntry coordinatorLogEntry = repository
-				.get(entry.coordinatorId);
+		CoordinatorLogEntry coordinatorLogEntry = repository.get(entry.coordinatorId);
 		if (coordinatorLogEntry == null) {
 			LOGGER.logWarning("terminatedWithHeuristicRollback called on non existent Coordinator "
 					+ entry.coordinatorId + " " + entry.participantUri);
@@ -97,21 +97,25 @@ public class LogImp implements OltpLog, RecoveryLog {
 	@Override
 	public void presumedAborting(ParticipantLogEntry entry)
 			throws IllegalStateException, LogWriteException {
-		CoordinatorLogEntry coordinatorLogEntry = repository
-				.get(entry.coordinatorId);
+		CoordinatorLogEntry coordinatorLogEntry = repository.get(entry.coordinatorId);
 		if (coordinatorLogEntry == null) {
-			ParticipantLogEntry[] participantDetails = new ParticipantLogEntry[1];
-			participantDetails[0] = entry;
-			coordinatorLogEntry = new CoordinatorLogEntry(entry.coordinatorId,
-					participantDetails);
-			repository.put(entry.coordinatorId, coordinatorLogEntry);
+			coordinatorLogEntry = createCoordinatorLogEntry(entry);
+			write(coordinatorLogEntry);
 			throw new IllegalStateException();
 		} else {
-			CoordinatorLogEntry updated = coordinatorLogEntry
-					.presumedAborting(entry);
-			repository.put(updated.coordinatorId, updated);
+			CoordinatorLogEntry updated = coordinatorLogEntry.presumedAborting(entry);
+			write(updated);
 		}
+	}
 
+	private CoordinatorLogEntry createCoordinatorLogEntry(
+			ParticipantLogEntry entry) {
+		CoordinatorLogEntry coordinatorLogEntry;
+		ParticipantLogEntry[] participantDetails = new ParticipantLogEntry[1];
+		participantDetails[0] = entry;
+		coordinatorLogEntry = new CoordinatorLogEntry(entry.coordinatorId,
+				participantDetails);
+		return coordinatorLogEntry;
 	}
 
 	@Override

@@ -206,15 +206,15 @@ public class RecoveryLogTestJUnit {
 	}
 	
 	
-	private void whenTerminatedWithHeuristicRollback() {
+	private void whenTerminatedWithHeuristicRollback() throws LogWriteException {
 		sut.terminatedWithHeuristicRollback(participantLogEntry);
 	}
 
-	private void whenTerminatedWithHeuristicMixed() {
+	private void whenTerminatedWithHeuristicMixed() throws LogWriteException {
 		sut.terminatedWithHeuristicMixed(participantLogEntry);
 	}
 
-	private void whenTerminatedWithHeuristicCommit() {
+	private void whenTerminatedWithHeuristicCommit() throws LogWriteException {
 		sut.terminatedWithHeuristicCommit(participantLogEntry);
 	}
 
@@ -293,7 +293,7 @@ public class RecoveryLogTestJUnit {
 		participantLogEntry = newParticipantLogEntryInState(TxState.IN_DOUBT, NON_EXPIRED);
 	}
 
-	private void whenPresumedAborting() {
+	private void whenPresumedAborting() throws IllegalStateException, LogWriteException {
 		sut.presumedAborting(participantLogEntry);
 	}
 

@@ -11,10 +11,14 @@ import javax.transaction.xa.Xid;
 
 import com.atomikos.datasource.xa.RecoveryScan;
 import com.atomikos.datasource.xa.RecoveryScan.XidSelector;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 import com.atomikos.recovery.LogReadException;
+import com.atomikos.recovery.LogWriteException;
 
 public class XaResourceRecoveryManager {
 
+	private static final Logger LOGGER = LoggerFactory.createLogger(XaResourceRecoveryManager.class);
 	private XaRecoveryLog log;
 
 	private XidSelector xidSelector;
@@ -45,8 +49,7 @@ public class XaResourceRecoveryManager {
 		} catch (XAException e) {
 			// TODO log error
 			if (alreadyHeuristicallyTerminatedByResource(e)) {
-				notifyLogOfHeuristic(xid, e);
-				forgetXidInXaResourceIfAllowed(xid, xaResource);
+				handleHeuristicTerminationByResource(xid, xaResource, e);
 			} else if (xidTerminatedInResourceByConcurrentCommit(e)) {
 				log.terminated(xid);
 			} else {
@@ -54,6 +57,17 @@ public class XaResourceRecoveryManager {
 				// TODO log warning
 			}
 		}
+	}
+
+	private void handleHeuristicTerminationByResource(Xid xid,
+			XAResource xaResource, XAException e) {
+		try {
+			notifyLogOfHeuristic(xid, e);
+			forgetXidInXaResourceIfAllowed(xid, xaResource);
+		} catch (LogWriteException transientLogWriteException) {
+			LOGGER.logWarning("Failed to log heuristic termination of Xid: "+xid+" - ignoring to retry later", transientLogWriteException);
+		}
+		
 	}
 
 	private boolean xidTerminatedInResourceByConcurrentRollback(XAException e) {
@@ -124,21 +138,21 @@ public class XaResourceRecoveryManager {
 										// get TID :-)
 			} catch (XAException e) {
 				if (alreadyHeuristicallyTerminatedByResource(e)) {
-					notifyLogOfHeuristic(xid, e);
-					forgetXidInXaResourceIfAllowed(xid, xaResource);
+					handleHeuristicTerminationByResource(xid, xaResource, e);
 				} else if (xidTerminatedInResourceByConcurrentRollback(e)) {
 					log.terminated(xid);
 				} else {
-					// temporary: retry later
-					// TODO log warning
+					LOGGER.logWarning("Unexpected exception during recovery - ignoring to retry later", e);
 				}
 			}
 		} catch (IllegalStateException presumedAbortNotAllowedInCurrentLogState) {
-			// ignore
+			// ignore to retry later if necessary
+		} catch (LogWriteException logWriteException) {
+			LOGGER.logWarning("log write failed for Xid: "+xid+", ignoring to retry later", logWriteException);
 		}
 	}
 
-	private void notifyLogOfHeuristic(Xid xid, XAException e) {
+	private void notifyLogOfHeuristic(Xid xid, XAException e) throws LogWriteException {
 		switch (e.errorCode) {
 		case XAException.XA_HEURHAZ:
 			log.terminatedWithHeuristicHazardByResource(xid);

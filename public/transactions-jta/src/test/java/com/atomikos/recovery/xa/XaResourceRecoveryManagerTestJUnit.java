@@ -14,6 +14,7 @@ import org.mockito.Mockito;
 import com.atomikos.datasource.xa.RecoveryScan.XidSelector;
 import com.atomikos.datasource.xa.XID;
 import com.atomikos.recovery.LogReadException;
+import com.atomikos.recovery.LogWriteException;
 
 public class XaResourceRecoveryManagerTestJUnit {
 
@@ -83,7 +84,7 @@ public class XaResourceRecoveryManagerTestJUnit {
 
 	@Test
 	public void preparingRelevantXidsAreNotRolledbackBeforeExpiryToMinimizeInterferenceWithOltpCommit()
-			throws XAException, InterruptedException {
+			throws Exception {
 		Xid xid = createRelevantXid();
 		givenXaResourceWithPreparedXid(xid);
 		givenUnexpiredPreparingXidInLog(xid);
@@ -247,19 +248,19 @@ public class XaResourceRecoveryManagerTestJUnit {
 		Mockito.verify(log, Mockito.times(1)).terminated(xid);
 	}
 
-	private void thenHeuristicHazardReportedToLog(Xid xid) {
+	private void thenHeuristicHazardReportedToLog(Xid xid) throws LogWriteException {
 		Mockito.verify(log, Mockito.times(1)).terminatedWithHeuristicHazardByResource(xid);
 	}
 
-	private void thenHeuristicMixedReportedToLog(Xid xid) {
+	private void thenHeuristicMixedReportedToLog(Xid xid) throws LogWriteException {
 		Mockito.verify(log, Mockito.times(1)).terminatedWithHeuristicMixedByResource(xid);
 	}
 
-	private void thenHeuristicCommitReportedToLog(Xid xid) {
+	private void thenHeuristicCommitReportedToLog(Xid xid) throws LogWriteException {
 		Mockito.verify(log, Mockito.times(1)).terminatedWithHeuristicCommitByResource(xid);
 	}
 
-	private void thenHeuristicRollbackReportedToLog(Xid xid) {
+	private void thenHeuristicRollbackReportedToLog(Xid xid) throws LogWriteException {
 		Mockito.verify(log, Mockito.times(1)).terminatedWithHeuristicRollbackByResource(xid);
 	}
 
@@ -267,7 +268,7 @@ public class XaResourceRecoveryManagerTestJUnit {
 		Mockito.verify(xaResource, Mockito.times(1)).commit(xid, false);
 	}
 
-	private void givenUnexpiredPreparingXidInLog(Xid xid) {
+	private void givenUnexpiredPreparingXidInLog(Xid xid) throws IllegalStateException, LogWriteException {
 		Mockito.doThrow(new IllegalStateException()).when(log).presumedAborting(xid);
 	}
 
@@ -281,7 +282,7 @@ public class XaResourceRecoveryManagerTestJUnit {
 		Mockito.when(log.getExpiredCommittingXids()).thenReturn(toReturn);
 	}
 
-	private void givenIntermediateCommitByOltp(Xid xid) {
+	private void givenIntermediateCommitByOltp(Xid xid) throws IllegalStateException, LogWriteException {
 		Mockito.doThrow(new IllegalStateException()).when(log).presumedAborting(xid);
 	}
 
