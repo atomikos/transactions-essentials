@@ -38,6 +38,16 @@ public class CachedCoordinatorLogEntryRepositoryTestJUnit {
 		sut.put(tid, coordinatorLogEntry);
 		thenGetDoesNotAccessBackup();
 	}
+	
+	
+	@Test
+	public void testSuccessfulGetClearsStaleCache() throws Exception {
+		testFailingPutImpliesGetOnBackupRepositoryOnNextGet();
+		Mockito.reset(backupCoordinatorLogEntryRepository);
+		thenGetDoesNotAccessBackup();	
+	}
+	
+	
 	@Test
 	public void testPutUpdatesBothRepositories() throws Exception {
 		givenExistingCoordinatorLogEntry();
