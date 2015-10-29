@@ -82,6 +82,18 @@ public class CachedCoordinatorLogEntryRepositoryTestJUnit {
 		thenGetDoesNotAccessBackup();
 	}
 
+	@Test
+	public void testSucceedingSecondRemoveOnBackupImpliesNoGetOnBackupRepositoryOnNextGet() throws Exception {
+		givenExistingCoordinatorLogEntry();
+		whenRemoveFailsOnBackup();
+		whenRemoveSucceedsOnBackup();
+		thenGetDoesNotAccessBackup();
+	}
+
+	private void whenRemoveSucceedsOnBackup() {
+		 Mockito.reset(backupCoordinatorLogEntryRepository);
+		 sut.remove(tid);
+	}
 
 	private void whenPutSucceedsOnBackup() throws IllegalArgumentException, LogWriteException {
         Mockito.reset(backupCoordinatorLogEntryRepository);

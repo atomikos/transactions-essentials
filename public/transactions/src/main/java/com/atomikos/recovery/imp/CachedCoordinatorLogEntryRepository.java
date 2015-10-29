@@ -50,6 +50,7 @@ public class CachedCoordinatorLogEntryRepository implements
 		try {
 			inMemoryCoordinatorLogEntryRepository.remove(id);
 			backupCoordinatorLogEntryRepository.remove(id);
+			staleInCache.remove(id);
 		} catch (Exception e) {
 			staleInCache.add(id);
 			
