@@ -1,5 +1,7 @@
 package com.atomikos.recovery.imp;
 
+import static org.junit.Assert.*;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -98,6 +100,32 @@ public class CachedCoordinatorLogEntryRepositoryTestJUnit {
 		whenRemoveFailsOnBackup();
 		whenRemoveSucceedsOnBackup();
 		thenGetDoesNotAccessBackup();
+	}
+	
+	@Test
+	public void testIfStaleIsEmptyThenRetrievalDoesNotAccessBackup() throws Exception {
+		givenExistingCoordinatorLogEntry();
+		sut.put(tid, coordinatorLogEntry);
+		thenFindCommittigParticipantsDoesNotAccessBackup();
+	}
+
+	
+	@Test
+	public void testCommittingParticipantRefreshesInMemoryCache() throws Exception {
+		givenExistingCoordinatorLogEntry();
+		whenPutFailsOnBackup();
+		thenFindCommittingParticipantsRefreshesInMemoryCache();
+	}
+	
+	private void thenFindCommittingParticipantsRefreshesInMemoryCache() {
+		sut.findAllCommittingParticipants();
+		Mockito.verify(backupCoordinatorLogEntryRepository, Mockito.never()).findAllCommittingParticipants();
+	}
+
+	private void thenFindCommittigParticipantsDoesNotAccessBackup() {
+		sut.findAllCommittingParticipants();
+		Mockito.verify(backupCoordinatorLogEntryRepository, Mockito.never()).findAllCommittingParticipants();
+		
 	}
 
 	private void whenRemoveSucceedsOnBackup() {

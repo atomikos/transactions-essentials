@@ -59,20 +59,34 @@ public class CachedCoordinatorLogEntryRepository implements
 
 	@Override
 	public CoordinatorLogEntry get(String coordinatorId) {
+		refreshInMemoryCoordinatorLogEntryRepository();
+		return inMemoryCoordinatorLogEntryRepository.get(coordinatorId);
+	}
+
+	private void reloadFromBackupIfNecessary(String coordinatorId) {
 		if (staleInCache.contains(coordinatorId)) {
 			CoordinatorLogEntry backedUpCoordinatorLogEntry = backupCoordinatorLogEntryRepository.get(coordinatorId);
 			if (backedUpCoordinatorLogEntry != null) {
 				inMemoryCoordinatorLogEntryRepository.put(coordinatorId,backedUpCoordinatorLogEntry);
+			} else  {
+				inMemoryCoordinatorLogEntryRepository.remove(coordinatorId);
 			}
-			staleInCache.remove(coordinatorId);
 		}
-		return inMemoryCoordinatorLogEntryRepository.get(coordinatorId);
 	}
 
 	@Override
 	public Collection<ParticipantLogEntry> findAllCommittingParticipants() {
-		// TODO Auto-generated method stub
-		return null;
+		if(!staleInCache.isEmpty()){
+			refreshInMemoryCoordinatorLogEntryRepository();			
+		}
+		return inMemoryCoordinatorLogEntryRepository.findAllCommittingParticipants();
+	}
+
+	private void refreshInMemoryCoordinatorLogEntryRepository() {
+		for (String staleCoordinatorId : staleInCache) {
+			reloadFromBackupIfNecessary(staleCoordinatorId);
+		}
+		staleInCache.clear();
 	}
 
 	@Override
