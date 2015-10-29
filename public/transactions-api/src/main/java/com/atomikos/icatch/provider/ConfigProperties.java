@@ -16,6 +16,7 @@ public final class ConfigProperties {
 	public static final String THREADED_2PC_PROPERTY_NAME = "com.atomikos.icatch.threaded_2pc";
 	public static final String FORCE_SHUTDOWN_ON_VM_EXIT_PROPERTY_NAME = "com.atomikos.icatch.force_shutdown_on_vm_exit";
 	public static final String FILE_PATH_PROPERTY_NAME = "com.atomikos.icatch.file";
+	public static final String CHECKPOINT_INTERVAL = "com.atomikos.icatch.checkpoint_interval";
 
 
 	/**
@@ -172,6 +173,10 @@ public final class ConfigProperties {
 
 	public boolean getThreaded2pc() {
 		return getAsBoolean(THREADED_2PC_PROPERTY_NAME);
+	}
+	
+	public long getCheckpointInterval(){
+		return getAsLong(CHECKPOINT_INTERVAL);
 	}
 
 	public void applyUserSpecificProperties(Properties userSpecificProperties) {
