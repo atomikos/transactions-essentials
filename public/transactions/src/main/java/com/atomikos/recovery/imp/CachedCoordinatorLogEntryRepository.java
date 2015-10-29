@@ -38,6 +38,7 @@ public class CachedCoordinatorLogEntryRepository implements
 		try {
 			backupCoordinatorLogEntryRepository.put(id, coordinatorLogEntry);
 			inMemoryCoordinatorLogEntryRepository.put(id, coordinatorLogEntry);
+			staleInCache.remove(id);
 		} catch (Exception e) {
 			staleInCache.add(id);
 			
@@ -46,8 +47,13 @@ public class CachedCoordinatorLogEntryRepository implements
 
 	@Override
 	public void remove(String id) {
-		// TODO Auto-generated method stub
-
+		try {
+			inMemoryCoordinatorLogEntryRepository.remove(id);
+			backupCoordinatorLogEntryRepository.remove(id);
+		} catch (Exception e) {
+			staleInCache.add(id);
+			
+		}
 	}
 
 	@Override

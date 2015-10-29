@@ -56,13 +56,12 @@ public class LogImp implements OltpLog, RecoveryLog {
 		} else {
 			CoordinatorLogEntry updated = coordinatorLogEntry.terminated(entry);
 			try {
-				updateRepository(updated,TxState.TERMINATED);
+				updateRepository(updated, TxState.TERMINATED);
 			} catch (LogWriteException e) {
 				//TODO coordinator will remain committing in log - clean up by admin tools?
 				LOGGER.logWarning("Unable to write to repository "+entry+" ignoring");
 			}
 		}
-
 	}
 
 	private void updateRepository(CoordinatorLogEntry updated, TxState... stateForRemoval)
