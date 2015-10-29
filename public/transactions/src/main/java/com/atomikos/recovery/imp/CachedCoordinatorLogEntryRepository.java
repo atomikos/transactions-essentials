@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Properties;
 
+import com.atomikos.icatch.provider.ConfigProperties;
 import com.atomikos.recovery.CoordinatorLogEntry;
 import com.atomikos.recovery.CoordinatorLogEntryRepository;
 import com.atomikos.recovery.LogWriteException;
@@ -27,9 +27,11 @@ public class CachedCoordinatorLogEntryRepository implements
 	}
 
 	@Override
-	public void init(Properties properties) {
-		// TODO Auto-generated method stub
-
+	public void init(ConfigProperties configProperties) {
+		//populate inMemoryCoordinatorLogEntryRepository with backup data
+		
+		
+			
 	}
 
 	@Override
@@ -53,7 +55,6 @@ public class CachedCoordinatorLogEntryRepository implements
 			staleInCache.remove(id);
 		} catch (Exception e) {
 			staleInCache.add(id);
-			
 		}
 	}
 
@@ -93,6 +94,11 @@ public class CachedCoordinatorLogEntryRepository implements
 	public void close() {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public Collection<CoordinatorLogEntry> getAllCoordinatorLogEntries() {
+		throw new UnsupportedOperationException();
 	}
 
 }

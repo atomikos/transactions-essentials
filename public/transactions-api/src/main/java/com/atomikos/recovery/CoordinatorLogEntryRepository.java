@@ -1,12 +1,13 @@
 package com.atomikos.recovery;
 
 import java.util.Collection;
-import java.util.Properties;
+
+import com.atomikos.icatch.provider.ConfigProperties;
 
 public interface CoordinatorLogEntryRepository {
 
 	
-	void init(Properties properties);
+	void init(ConfigProperties configProperties);
 	/**
 	 * @throws IllegalArgumentException If the same coordinatorLogEntry is already in the repository. 
 	 */
@@ -17,6 +18,8 @@ public interface CoordinatorLogEntryRepository {
 	CoordinatorLogEntry get(String coordinatorId);
 
 	Collection<ParticipantLogEntry> findAllCommittingParticipants();
+	
+	Collection<CoordinatorLogEntry> getAllCoordinatorLogEntries();
 	
 	void close();
 }

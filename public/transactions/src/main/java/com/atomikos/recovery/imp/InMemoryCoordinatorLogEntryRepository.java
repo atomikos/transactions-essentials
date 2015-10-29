@@ -3,11 +3,11 @@ package com.atomikos.recovery.imp;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.atomikos.icatch.TxState;
+import com.atomikos.icatch.provider.ConfigProperties;
 import com.atomikos.recovery.CoordinatorLogEntry;
 import com.atomikos.recovery.CoordinatorLogEntryRepository;
 import com.atomikos.recovery.ParticipantLogEntry;
@@ -19,7 +19,7 @@ public class InMemoryCoordinatorLogEntryRepository implements
 
 	
 	@Override
-	public void init(Properties properties) {
+	public void init(ConfigProperties configProperties) {
 	}
 	
 	@Override
@@ -61,6 +61,11 @@ public class InMemoryCoordinatorLogEntryRepository implements
 	@Override
 	public void close() {
 		
+	}
+
+	@Override
+	public Collection<CoordinatorLogEntry> getAllCoordinatorLogEntries() {
+		throw new UnsupportedOperationException();
 	}
 
 
