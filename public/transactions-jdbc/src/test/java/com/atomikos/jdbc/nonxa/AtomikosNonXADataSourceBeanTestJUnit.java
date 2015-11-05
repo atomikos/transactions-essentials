@@ -9,7 +9,6 @@ import static org.junit.Assert.fail;
 import java.sql.SQLException;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -34,7 +33,7 @@ public class AtomikosNonXADataSourceBeanTestJUnit
 	@Test
 	public void testDriverClassName() 
 	{
-		Assert.assertNull ( ds.getDriverClassName() );
+		assertNull ( ds.getDriverClassName() );
 		String name = "driver";
 		ds.setDriverClassName ( name );
 		assertEquals ( name , ds.getDriverClassName() );
