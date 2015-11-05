@@ -25,13 +25,14 @@
 
 package com.atomikos.jdbc;
 
-import java.util.Enumeration;
+import java.sql.SQLException;
 import java.util.Properties;
 
 import javax.sql.XADataSource;
 
 import com.atomikos.beans.PropertyUtils;
 import com.atomikos.datasource.RecoverableResource;
+import com.atomikos.datasource.xa.XAProperties;
 import com.atomikos.datasource.xa.jdbc.JdbcTransactionalResource;
 import com.atomikos.icatch.config.Configuration;
 import com.atomikos.logging.Logger;
@@ -55,31 +56,35 @@ extends AbstractDataSourceBean
 	
 	private static final long serialVersionUID = 1L;
 	
-	private Properties xaProperties = null;
+	private XAProperties xaProperties = null;
 	private String xaDataSourceClassName;
 	private transient XADataSource xaDataSource;
 	public AtomikosDataSourceBean() 
 	{
-		this.xaProperties = new Properties();
+		this.xaProperties = new XAProperties();
 	}
-	
+
+	protected String printProperties() throws SQLException
+	{
+		return "[" +
+				" xaDataSourceClassName=" + xaDataSourceClassName + "," +
+				" uniqueResourceName=" + getUniqueResourceName() + "," +
+				" maxPoolSize=" + getMaxPoolSize() + "," +
+				" minPoolSize=" + getMinPoolSize() + "," +
+				" borrowConnectionTimeout=" + getBorrowConnectionTimeout() + "," +
+				" maxIdleTime=" + getMaxIdleTime() + "," +
+				" reapTimeout=" + getReapTimeout() + "," +
+				" maintenanceInterval=" + getMaintenanceInterval() + "," +
+				" testQuery=" + getTestQuery() + "," +
+				" xaProperties=" + printXaProperties() + "," +
+				" loginTimeout=" + getLoginTimeout() + "," + 
+				" maxLifetime=" + getMaxLifetime() +
+				"]";
+	}
+
 	protected String printXaProperties()
 	{
-		StringBuffer ret = new StringBuffer();
-		if ( xaProperties != null ) {
-			Enumeration it = xaProperties.propertyNames();
-			ret.append ( "[" );
-			boolean first = true;
-			while ( it.hasMoreElements() ) {
-				if ( ! first ) ret.append ( "," );
-				String name = ( String ) it.nextElement();
-				String value = xaProperties.getProperty( name);
-				ret.append ( name ); ret.append ( "=" ); ret.append ( value );
-				first = false;
-			}
-			ret.append ( "]" );
-		}
-		return ret.toString();
+		return xaProperties.printProperties();
 	}
 	
 	/**
@@ -89,7 +94,7 @@ extends AbstractDataSourceBean
 	
 	public Properties getXaProperties()
 	{
-		return xaProperties;
+		return xaProperties.getProperties();
 	}
 
 	/**
@@ -102,7 +107,7 @@ extends AbstractDataSourceBean
 	 */
 	public void setXaProperties ( Properties xaProperties ) 
 	{
-		this.xaProperties = xaProperties;
+		this.xaProperties = new XAProperties( xaProperties );
 	}
 
 	/**
@@ -155,49 +160,34 @@ extends AbstractDataSourceBean
 		}
 		
 		
-		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo(
-				this + ": initializing with [" +
-				" xaDataSourceClassName=" + xaDataSourceClassName + "," +
-				" uniqueResourceName=" + getUniqueResourceName() + "," +
-				" maxPoolSize=" + getMaxPoolSize() + "," +
-				" minPoolSize=" + getMinPoolSize() + "," +
-				" borrowConnectionTimeout=" + getBorrowConnectionTimeout() + "," +
-				" maxIdleTime=" + getMaxIdleTime() + "," +
-				" reapTimeout=" + getReapTimeout() + "," +
-				" maintenanceInterval=" + getMaintenanceInterval() + "," +
-				" testQuery=" + getTestQuery() + "," +
-				" xaProperties=" + printXaProperties() + "," +
-				" loginTimeout=" + getLoginTimeout() + "," + 
-				" maxLifetime=" + getMaxLifetime() +
-				"]"
-				);
+		if ( LOGGER.isInfoEnabled() )
+			LOGGER.logInfo(this + ": initializing with " + printProperties());
 		
-		
-			if (xaDataSource == null)
-			{
-				try {
-					Class<XADataSource> xadsClass = ClassLoadingHelper.loadClass ( getXaDataSourceClassName() );
-					xaDataSource =  xadsClass.newInstance();
-					
-				} catch ( ClassNotFoundException nf ) {
-					AtomikosSQLException.throwAtomikosSQLException ( "The class '" + getXaDataSourceClassName() +
-							"' specified by property 'xaDataSourceClassName' could not be found in the classpath. Please make sure the spelling is correct, and that the required jar(s) are in the classpath." , nf );
-				} catch (ClassCastException cce) {
-					AtomikosSQLException.throwAtomikosSQLException (
-							 "The class '" + getXaDataSourceClassName() +
-								"' specified by property 'xaDataSourceClassName' does not implement the required interface javax.jdbc.XADataSource. Please make sure the spelling is correct, and check your JDBC driver vendor's documentation.");
-				}
-				xaDataSource.setLoginTimeout ( getLoginTimeout() );
-				xaDataSource.setLogWriter ( getLogWriter() );
-				PropertyUtils.setProperties(xaDataSource, xaProperties );
+		if (xaDataSource == null)
+		{
+			try {
+				Class<XADataSource> xadsClass = ClassLoadingHelper.loadClass ( getXaDataSourceClassName() );
+				xaDataSource =  xadsClass.newInstance();
 				
+			} catch ( ClassNotFoundException nf ) {
+				AtomikosSQLException.throwAtomikosSQLException ( "The class '" + getXaDataSourceClassName() +
+						"' specified by property 'xaDataSourceClassName' could not be found in the classpath. Please make sure the spelling is correct, and that the required jar(s) are in the classpath." , nf );
+			} catch (ClassCastException cce) {
+				AtomikosSQLException.throwAtomikosSQLException (
+						 "The class '" + getXaDataSourceClassName() +
+							"' specified by property 'xaDataSourceClassName' does not implement the required interface javax.jdbc.XADataSource. Please make sure the spelling is correct, and check your JDBC driver vendor's documentation.");
 			}
+			xaDataSource.setLoginTimeout ( getLoginTimeout() );
+			xaDataSource.setLogWriter ( getLogWriter() );
+			PropertyUtils.setProperties( xaDataSource, getXaProperties() );
 			
-			JdbcTransactionalResource tr = new JdbcTransactionalResource(getUniqueResourceName() , xaDataSource);
-			com.atomikos.datasource.pool.ConnectionFactory cf = new com.atomikos.jdbc.AtomikosXAConnectionFactory(xaDataSource, tr, this);
-			Configuration.addResource ( tr );
-			
-			return cf;
+		}
+		
+		JdbcTransactionalResource tr = new JdbcTransactionalResource(getUniqueResourceName() , xaDataSource);
+		com.atomikos.datasource.pool.ConnectionFactory cf = new com.atomikos.jdbc.AtomikosXAConnectionFactory(xaDataSource, tr, this);
+		Configuration.addResource ( tr );
+		
+		return cf;
 	}
 	
 	protected void doClose() 

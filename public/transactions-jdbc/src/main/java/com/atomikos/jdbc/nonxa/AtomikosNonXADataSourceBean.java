@@ -57,7 +57,25 @@ public class AtomikosNonXADataSourceBean extends AbstractDataSourceBean
 	private String driverClassName;
 	
 	private boolean readOnly;
-	
+
+	protected String printProperties() throws SQLException
+	{
+		return "[" +
+				" uniqueResourceName=" + getUniqueResourceName() + "," +
+				" maxPoolSize=" + getMaxPoolSize() + "," +
+				" minPoolSize=" + getMinPoolSize() + "," +
+				" borrowConnectionTimeout=" + getBorrowConnectionTimeout() + "," +
+				" maxIdleTime=" + getMaxIdleTime() + "," +
+				" reapTimeout=" + getReapTimeout() + "," +
+				" maintenanceInterval=" + getMaintenanceInterval() + "," +
+				" testQuery=" + getTestQuery() + "," +
+				" driverClassName=" + getDriverClassName() + "," +
+				" user=" + getUser() + "," +
+				" url=" + getUrl() + 
+				" loginTimeout=" + getLoginTimeout() +
+				"]";
+	}
+
 	/**
      * Sets the URL to use for getting connections. Required.
      * 
@@ -172,23 +190,8 @@ public class AtomikosNonXADataSourceBean extends AbstractDataSourceBean
 	protected ConnectionFactory doInit() throws Exception 
 	{
 		AtomikosNonXAConnectionFactory ret = null;
-		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo(
-				this + ": initializing with [" +
-				" uniqueResourceName=" + getUniqueResourceName() + "," +
-				" maxPoolSize=" + getMaxPoolSize() + "," +
-				" minPoolSize=" + getMinPoolSize() + "," +
-				" borrowConnectionTimeout=" + getBorrowConnectionTimeout() + "," +
-				" maxIdleTime=" + getMaxIdleTime() + "," +
-				" reapTimeout=" + getReapTimeout() + "," +
-				" maintenanceInterval=" + getMaintenanceInterval() + "," +
-				" testQuery=" + getTestQuery() + "," +
-				" driverClassName=" + getDriverClassName() + "," +
-				" user=" + getUser() + "," +
-				" url=" + getUrl() + 
-				" loginTimeout=" + getLoginTimeout() +
-				"]"
-				);
-		
+		if ( LOGGER.isInfoEnabled() )
+			LOGGER.logInfo( this + ": initializing with " + printProperties() );
 		
 		ret = new com.atomikos.jdbc.nonxa.AtomikosNonXAConnectionFactory ( this , url , driverClassName , user , password , getLoginTimeout() , readOnly ) ;
 		ret.init();

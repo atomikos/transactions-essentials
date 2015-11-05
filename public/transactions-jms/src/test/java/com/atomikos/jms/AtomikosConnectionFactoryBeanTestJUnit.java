@@ -1,24 +1,33 @@
 package com.atomikos.jms;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Properties;
 
 import javax.naming.Reference;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
 
 import com.atomikos.util.IntraVmObjectFactory;
 
-public class AtomikosConnectionFactoryBeanTestJUnit extends TestCase 
+public class AtomikosConnectionFactoryBeanTestJUnit 
 {
 
 	private AtomikosConnectionFactoryBean bean;
 	
-	protected void setUp() throws Exception 
+	@Before
+	public void setUp() throws Exception 
 	{
-		super.setUp();
 		bean = new AtomikosConnectionFactoryBean();
 	}
 	
+	@Test
 	public void testMinPoolSize() 
 	{
 		assertEquals ( 1 , bean.getMinPoolSize() );
@@ -26,6 +35,7 @@ public class AtomikosConnectionFactoryBeanTestJUnit extends TestCase
 		assertEquals ( 2 , bean.getMinPoolSize() );
 	}
 	
+	@Test
 	public void testMaxPoolSize()
 	{
 		assertEquals ( 1 , bean.getMaxPoolSize() );
@@ -33,6 +43,7 @@ public class AtomikosConnectionFactoryBeanTestJUnit extends TestCase
 		assertEquals ( 3 , bean.getMaxPoolSize() );
 	}
 	
+	@Test
 	public void testPoolSize() 
 	{
 		assertEquals ( 1 , bean.getMaxPoolSize() );
@@ -43,6 +54,7 @@ public class AtomikosConnectionFactoryBeanTestJUnit extends TestCase
 
 	}
 
+	@Test
 	public void testXaConnectionFactoryClassName() 
 	{
 		assertEquals ( null , bean.getXaConnectionFactoryClassName() );
@@ -51,6 +63,7 @@ public class AtomikosConnectionFactoryBeanTestJUnit extends TestCase
 		assertEquals ( name , bean.getXaConnectionFactoryClassName() );
 	}
 	
+	@Test
 	public void testXaProperties()
 	{
 		assertTrue ( bean.getXaProperties().isEmpty() );
@@ -64,14 +77,16 @@ public class AtomikosConnectionFactoryBeanTestJUnit extends TestCase
 		assertEquals ( p.size() , bean.getXaProperties().size() );
 	}
 	
+	@Test
 	public void testBorrowConnectionTimeout()
 	{
 		assertEquals ( 30 , bean.getBorrowConnectionTimeout() );
 		int timeout = 45;
 		bean.setBorrowConnectionTimeout ( timeout );
-		assertEquals ( 45 , bean.getBorrowConnectionTimeout() );
+		assertEquals ( timeout , bean.getBorrowConnectionTimeout() );
 	}
 	
+	@Test
 	public void testMaintenanceInterval()
 	{
 		assertEquals ( 60 , bean.getMaintenanceInterval() );
@@ -80,6 +95,7 @@ public class AtomikosConnectionFactoryBeanTestJUnit extends TestCase
 		assertEquals ( interval , bean.getMaintenanceInterval() );
 	}
 	
+	@Test
 	public void testMaxIdleTime() 
 	{
 		assertEquals ( 60 , bean.getMaxIdleTime() );
@@ -88,15 +104,16 @@ public class AtomikosConnectionFactoryBeanTestJUnit extends TestCase
 		assertEquals ( time , bean.getMaxIdleTime() );
 	}
 	
+	@Test
 	public void testReapTimeout()
 	{
 		assertEquals ( 0 , bean.getReapTimeout() );
 		int timeout = 200;
 		bean.setReapTimeout ( timeout );
 		assertEquals ( timeout , bean.getReapTimeout() );
-
 	}
 	
+	@Test
 	public void testReferenceable() throws Exception 
 	{
 		bean.setUniqueResourceName ( "testReferenceable" );
@@ -109,6 +126,7 @@ public class AtomikosConnectionFactoryBeanTestJUnit extends TestCase
 		assertSame ( bean , res );
 	}
 	
+	@Test
 	public void testUniqueResourceName()
 	{
 		assertNull ( bean.getUniqueResourceName() );
@@ -117,6 +135,7 @@ public class AtomikosConnectionFactoryBeanTestJUnit extends TestCase
 		assertEquals ( name , bean.getUniqueResourceName() );
 	}
 	
+	@Test
 	public void testLocalTransactionMode() 
 	{
 		assertFalse ( bean.getLocalTransactionMode() );
@@ -126,12 +145,35 @@ public class AtomikosConnectionFactoryBeanTestJUnit extends TestCase
 		assertFalse ( bean.getLocalTransactionMode() );
 	}
 	
-	public void testIgnoreSessionTransactedFlag() {
-		assertTrue(bean.getIgnoreSessionTransactedFlag());
-		bean.setIgnoreSessionTransactedFlag(false);
-		assertFalse(bean.getIgnoreSessionTransactedFlag());
-		bean.setIgnoreSessionTransactedFlag(true);
-		assertTrue(bean.getIgnoreSessionTransactedFlag());
-
+	@Test
+	public void testIgnoreSessionTransactedFlag()
+	{
+		assertTrue ( bean.getIgnoreSessionTransactedFlag() );
+		bean.setIgnoreSessionTransactedFlag ( false );
+		assertFalse ( bean.getIgnoreSessionTransactedFlag() );
+		bean.setIgnoreSessionTransactedFlag( true );
+		assertTrue ( bean.getIgnoreSessionTransactedFlag() );
 	}
+
+	@Test
+	public void testMaxLifetime() 
+	{
+		assertEquals ( 0 , bean.getMaxLifetime() );
+		int time = 99;
+		bean.setMaxLifetime ( time );
+		assertEquals ( time , bean.getMaxLifetime() );
+	}
+	
+	@Test
+	public void testPrintPropertiesSkipsPassword() throws Exception
+	{
+		Properties xaProperties = new Properties();
+		xaProperties.setProperty ( "username", "johndoe" );
+		xaProperties.setProperty ( "password", "secret" );
+		bean.setXaProperties ( xaProperties );
+		String s = bean.printProperties();
+		assertTrue ( s.contains( "username=johndoe" ) );
+		assertFalse ( s.contains( "password=secret" ) );
+	}
+
 }

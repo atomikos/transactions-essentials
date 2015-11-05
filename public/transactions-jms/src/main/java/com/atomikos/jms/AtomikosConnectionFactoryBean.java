@@ -26,7 +26,6 @@
 package com.atomikos.jms;
 
 import java.io.Serializable;
-import java.util.Enumeration;
 import java.util.Properties;
 
 import javax.jms.Connection;
@@ -45,6 +44,7 @@ import com.atomikos.datasource.pool.ConnectionPoolException;
 import com.atomikos.datasource.pool.ConnectionPoolProperties;
 import com.atomikos.datasource.pool.CreateConnectionException;
 import com.atomikos.datasource.pool.PoolExhaustedException;
+import com.atomikos.datasource.xa.XAProperties;
 import com.atomikos.datasource.xa.jms.JmsTransactionalResource;
 import com.atomikos.icatch.config.Configuration;
 import com.atomikos.logging.Logger;
@@ -144,7 +144,7 @@ Referenceable, Serializable {
 	private int minPoolSize;
 	private String xaConnectionFactoryClassName; 
 	private int borrowConnectionTimeout;
-	private Properties xaProperties = null;
+	private XAProperties xaProperties = null;
 	private transient ConnectionPool connectionPool;
 	private transient XAConnectionFactory xaConnectionFactory;
 	private int maintenanceInterval;
@@ -164,7 +164,7 @@ Referenceable, Serializable {
 		maxIdleTime = 60;
 		reapTimeout = 0;
 		ignoreSessionTransactedFlag = true;
-		xaProperties = new Properties();
+		xaProperties = new XAProperties();
 	}
 	
 	protected void throwAtomikosJMSException ( String msg ) throws AtomikosJMSException 
@@ -283,7 +283,7 @@ Referenceable, Serializable {
 	 */
 	public Properties getXaProperties()
 	{
-		return xaProperties;
+		return xaProperties != null ? xaProperties.getProperties() : null;
 	}
 	
 	/**
@@ -296,7 +296,7 @@ Referenceable, Serializable {
 	
 	public void setXaProperties(Properties xaProperties)
 	{
-		this.xaProperties = xaProperties;
+		this.xaProperties = new XAProperties( xaProperties );
 	}
 	
 	/**
@@ -371,37 +371,10 @@ Referenceable, Serializable {
 		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": init done." );
 
 	}
-	
-	protected String printXaProperties() {
-		StringBuffer ret = new StringBuffer();
-		if ( xaProperties != null ) {
-			Enumeration it = xaProperties.propertyNames();
-			ret.append ( "[" );
-			boolean first = true;
-			while ( it.hasMoreElements() ) {
-				if ( ! first ) ret.append ( "," );
-				String name = ( String ) it.nextElement();
-				String value = xaProperties.getProperty( name);
-				ret.append ( name ); ret.append ( "=" ); ret.append ( value );
-				first = false;
-			}
-			ret.append ( "]" );
-		}
-		return ret.toString();
-	}
-	
-	protected com.atomikos.datasource.pool.ConnectionFactory doInit() throws Exception 
+
+	protected String printProperties()
 	{
-		if (xaConnectionFactory == null) {
-			if (xaConnectionFactoryClassName == null)
-				throwAtomikosJMSException("Property 'xaConnectionFactoryClassName' of class AtomikosConnectionFactoryBean cannot be null.");
-			if (xaProperties == null)
-				throwAtomikosJMSException("Property 'xaProperties' of class AtomikosConnectionFactoryBean cannot be null.");
-		}
-		
-		
-		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo(
-				this + ": initializing with [" +
+		return "[" +
 				" xaConnectionFactory=" + xaConnectionFactory + "," +
 				" xaConnectionFactoryClassName=" + xaConnectionFactoryClassName + "," +
 				" uniqueResourceName=" + getUniqueResourceName() + "," +
@@ -415,8 +388,25 @@ Referenceable, Serializable {
 				" localTransactionMode=" + localTransactionMode + "," + 
 				" maxLifetime=" + maxLifetime + "," +
 				" ignoreSessionTransactedFlag=" + ignoreSessionTransactedFlag +
-				"]"
-				);
+				"]";
+	}
+	
+	protected String printXaProperties()
+	{
+		return xaProperties.printProperties();
+	}
+	
+	protected com.atomikos.datasource.pool.ConnectionFactory doInit() throws Exception 
+	{
+		if (xaConnectionFactory == null) {
+			if (xaConnectionFactoryClassName == null)
+				throwAtomikosJMSException("Property 'xaConnectionFactoryClassName' of class AtomikosConnectionFactoryBean cannot be null.");
+			if (xaProperties == null)
+				throwAtomikosJMSException("Property 'xaProperties' of class AtomikosConnectionFactoryBean cannot be null.");
+		}
+		
+		if ( LOGGER.isInfoEnabled() )
+			LOGGER.logInfo( this + ": initializing with " + printProperties() );
 		
 		if (xaConnectionFactory == null) {
 			try {
@@ -432,7 +422,7 @@ Referenceable, Serializable {
 						"Please make sure the spelling in your setup is correct, and check your JMS driver vendor's documentation." );
 			}
 			
-			PropertyUtils.setProperties(xaConnectionFactory, xaProperties );
+			PropertyUtils.setProperties( xaConnectionFactory, getXaProperties() );
 		}
 			
 		JmsTransactionalResource tr = new JmsTransactionalResource(getUniqueResourceName() , xaConnectionFactory);

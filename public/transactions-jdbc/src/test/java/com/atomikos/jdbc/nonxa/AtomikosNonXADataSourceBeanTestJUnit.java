@@ -1,23 +1,36 @@
 package com.atomikos.jdbc.nonxa;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.sql.SQLException;
 
-import junit.framework.TestCase;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import com.atomikos.jdbc.AtomikosSQLException;
 
-public class AtomikosNonXADataSourceBeanTestJUnit extends TestCase 
+public class AtomikosNonXADataSourceBeanTestJUnit
 {
 	private AtomikosNonXADataSourceBean ds;
 	
-	protected void setUp() {
+	@Before
+	public void setUp()
+	{
 		ds = new AtomikosNonXADataSourceBean();
 	}
 	
-	protected void tearDown() {
+	@After
+	public void tearDown()
+	{
 		if ( ds != null ) ds.close();
 	}
 	
+	@Test
 	public void testDriverClassName() 
 	{
 		assertNull ( ds.getDriverClassName() );
@@ -26,6 +39,7 @@ public class AtomikosNonXADataSourceBeanTestJUnit extends TestCase
 		assertEquals ( name , ds.getDriverClassName() );
 	}
 	
+	@Test
 	public void testPassword()
 	{
 		assertNull ( ds.getPassword() );
@@ -34,6 +48,7 @@ public class AtomikosNonXADataSourceBeanTestJUnit extends TestCase
 		assertEquals ( pw , ds.getPassword() );
 	}
 	
+	@Test
 	public void testUrl()
 	{
 		assertNull ( ds.getUrl() );
@@ -42,6 +57,7 @@ public class AtomikosNonXADataSourceBeanTestJUnit extends TestCase
 		assertEquals ( url , ds.getUrl() );
 	}
 	
+	@Test
 	public void testUser()
 	{
 		assertNull ( ds.getUser() );
@@ -51,6 +67,7 @@ public class AtomikosNonXADataSourceBeanTestJUnit extends TestCase
 		
 	}
 	
+	@Test
 	public void testBorrowConnectionTimeout()
 	{
 		assertEquals ( 30 , ds.getBorrowConnectionTimeout() );
@@ -58,6 +75,7 @@ public class AtomikosNonXADataSourceBeanTestJUnit extends TestCase
 		assertEquals ( 14 , ds.getBorrowConnectionTimeout() );
 	}
 	
+	@Test
 	public void testLoginTimeout () throws SQLException
 	{
 		assertEquals ( 0 , ds.getLoginTimeout() );
@@ -65,6 +83,7 @@ public class AtomikosNonXADataSourceBeanTestJUnit extends TestCase
 		assertEquals ( 5 , ds.getLoginTimeout() );
 	}
 	
+	@Test
 	public void testMaintenanceInterval()
 	{
 		assertEquals ( 60 , ds.getMaintenanceInterval() );
@@ -72,6 +91,7 @@ public class AtomikosNonXADataSourceBeanTestJUnit extends TestCase
 		assertEquals ( 13 , ds.getMaintenanceInterval() );
 	}
 	
+	@Test
 	public void testMaxIdleTime()
 	{
 		assertEquals ( 60 , ds.getMaxIdleTime() );
@@ -79,6 +99,7 @@ public class AtomikosNonXADataSourceBeanTestJUnit extends TestCase
 		assertEquals ( 11 , ds.getMaxIdleTime() );
 	}
 	
+	@Test
 	public void testMaxPoolSize() 
 	{
 		assertEquals ( 1 , ds.getMaxPoolSize() );
@@ -86,6 +107,7 @@ public class AtomikosNonXADataSourceBeanTestJUnit extends TestCase
 		assertEquals ( 3 , ds.getMaxPoolSize() );
 	}
 	
+	@Test
 	public void testMinPoolSize() 
 	{
 		assertEquals ( 1 , ds.getMinPoolSize() );
@@ -93,6 +115,7 @@ public class AtomikosNonXADataSourceBeanTestJUnit extends TestCase
 		assertEquals ( 4 , ds.getMinPoolSize() );
 	}
 	
+	@Test
 	public void testPoolSize()
 	{
 		assertEquals ( 1 , ds.getMinPoolSize() );
@@ -103,6 +126,7 @@ public class AtomikosNonXADataSourceBeanTestJUnit extends TestCase
 		
 	}
 	
+	@Test
 	public void testReapTimeout()
 	{
 		assertEquals ( 0 , ds.getReapTimeout() );
@@ -110,6 +134,7 @@ public class AtomikosNonXADataSourceBeanTestJUnit extends TestCase
 		assertEquals ( 33 , ds.getReapTimeout() );
 	}
 	
+	@Test
 	public void testTestQuery()
 	{
 		assertNull ( ds.getTestQuery() );
@@ -118,6 +143,7 @@ public class AtomikosNonXADataSourceBeanTestJUnit extends TestCase
 		assertEquals ( query , ds.getTestQuery() );
 	}
 	
+	@Test
 	public void testUniqueResourceName() 
 	{
 		assertNull ( ds.getUniqueResourceName() );
@@ -126,6 +152,7 @@ public class AtomikosNonXADataSourceBeanTestJUnit extends TestCase
 		assertEquals ( name , ds.getUniqueResourceName()  );
 	}
 	
+	@Test
 	public void testInitWithDriverClassNotFoundThrowsMeaningfulException () throws SQLException
 	{
 		ds.setUniqueResourceName( "test" );
@@ -140,6 +167,7 @@ public class AtomikosNonXADataSourceBeanTestJUnit extends TestCase
 		}		
 	}
 	
+	@Test
 	public void testInitWithInvalidDriverClassThrowsMeaningfulException () throws SQLException
 	{
 		ds.setUniqueResourceName( "test" );
@@ -154,6 +182,7 @@ public class AtomikosNonXADataSourceBeanTestJUnit extends TestCase
 		}		
 	}
 	
+	@Test
 	public void testReadOnly() throws Exception 
 	{
 		assertFalse ( ds.getReadOnly() );
@@ -163,11 +192,22 @@ public class AtomikosNonXADataSourceBeanTestJUnit extends TestCase
 		assertFalse ( ds.getReadOnly() );
 	}
 	
+	@Test
 	public void testDefaultIsolationLevel() throws Exception 
 	{	
 		assertEquals ( -1 , ds.getDefaultIsolationLevel() );
 		ds.setDefaultIsolationLevel( 0 );
 		assertEquals ( 0 , ds.getDefaultIsolationLevel() );
+	}
+
+	@Test
+	public void testPrintPropertiesSkipsPassword() throws Exception
+	{
+		ds.setUser( "johndoe" );
+		ds.setPassword( "secret" );
+		String s = ds.printProperties();
+		assertTrue( s.contains( "user=johndoe" ) );
+		assertFalse( s.contains( "password=secret" ) );
 	}
 
 }
