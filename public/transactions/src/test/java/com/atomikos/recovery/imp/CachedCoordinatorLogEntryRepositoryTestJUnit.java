@@ -147,6 +147,15 @@ public class CachedCoordinatorLogEntryRepositoryTestJUnit {
 		thenCloseInvokedOnInMemory();
 	}
 	
+	@Test
+	public void testWriteCheckpointOnBackup() throws Exception {
+		givenExistingCoordinatorLogEntry();
+		whenPutSucceedsOnBackup();
+		whenPutSucceedsOnBackup();
+		//then checkpoint was triggered
+		Mockito.verify(backupCoordinatorLogEntryRepository,Mockito.times(1)).writeCheckpoint(Mockito.anyCollection());
+	}
+
 	
 	
 	private void thenCloseInvokedOnInMemory() {
@@ -164,17 +173,7 @@ public class CachedCoordinatorLogEntryRepositoryTestJUnit {
 		
 	}
 
-	@Ignore
-	@Test
-	public void testWriteCheckpointOnBackup() throws Exception {
-		
-		givenExistingCoordinatorLogEntry();
-		whenPutSucceedsOnBackup();
-		
-		//then checkpoint was triggered
-		
-		Mockito.verify(backupCoordinatorLogEntryRepository,Mockito.times(1)).writeCheckpoint(Mockito.anyCollection());
-	}
+	
 
 
 	private void thenCacheWasPopulatedFromBackup() {

@@ -30,7 +30,6 @@ public class FileSystemCoordinatorLogEntryRepositoryTestJUnit {
 		Properties properties = new Properties();
 		properties.put("com.atomikos.icatch.log_base_dir", ClassLoader.getSystemClassLoader().getResource(".").getFile());
 		properties.put("com.atomikos.icatch.log_base_name", name.getMethodName());
-		//properties.put("com.atomikos.icatch.checkpoint_interval", "10000");
 		configProperties =new ConfigProperties(properties);
 		sut.init(configProperties);
 	}
