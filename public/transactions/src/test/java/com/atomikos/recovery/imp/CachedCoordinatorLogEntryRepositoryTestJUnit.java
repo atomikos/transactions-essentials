@@ -2,6 +2,8 @@ package com.atomikos.recovery.imp;
 
 import static org.junit.Assert.*;
 
+import java.util.Collections;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -115,6 +117,26 @@ public class CachedCoordinatorLogEntryRepositoryTestJUnit {
 		givenExistingCoordinatorLogEntry();
 		whenPutFailsOnBackup();
 		thenFindCommittingParticipantsRefreshesInMemoryCache();
+	}
+	
+	@Test
+	public void testInitPopulatesCacheFromBackup() throws Exception {
+		givenExistingCoordinatorLogEntryInBackup();
+		whenInit();
+		thenCacheWasPopulatedFromBackup();
+	}
+
+	private void thenCacheWasPopulatedFromBackup() {
+		Assert.assertEquals(coordinatorLogEntry, inMemoryCoordinatorLogEntryRepository.get(tid));
+	}
+
+	private void whenInit() {
+		sut.init(null);
+	}
+
+	private void givenExistingCoordinatorLogEntryInBackup() {
+		givenExistingCoordinatorLogEntry();
+		Mockito.when(backupCoordinatorLogEntryRepository.getAllCoordinatorLogEntries()).thenReturn(Collections.singleton(coordinatorLogEntry));
 	}
 	
 	private void thenFindCommittingParticipantsRefreshesInMemoryCache() {

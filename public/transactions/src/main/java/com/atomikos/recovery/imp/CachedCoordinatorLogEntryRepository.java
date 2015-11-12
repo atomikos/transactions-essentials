@@ -29,8 +29,10 @@ public class CachedCoordinatorLogEntryRepository implements
 	@Override
 	public void init(ConfigProperties configProperties) {
 		//populate inMemoryCoordinatorLogEntryRepository with backup data
-		
-		
+		Collection<CoordinatorLogEntry> coordinatorLogEntries =	backupCoordinatorLogEntryRepository.getAllCoordinatorLogEntries();
+		for (CoordinatorLogEntry coordinatorLogEntry : coordinatorLogEntries) {
+			inMemoryCoordinatorLogEntryRepository.put(coordinatorLogEntry.coordinatorId, coordinatorLogEntry);
+		}
 			
 	}
 
