@@ -101,7 +101,7 @@ public class VersionedFileTestJUnit extends TestCase {
 	
 	
 	
-	public void testCallingOpenNewVersionForWritingTwiceThrowsException() throws FileNotFoundException 
+	public void testCallingOpenNewVersionForWritingTwiceThrowsException() throws IOException 
 	{
 		file.openNewVersionForWriting();
 		try {
@@ -120,7 +120,7 @@ public class VersionedFileTestJUnit extends TestCase {
 		} catch ( IllegalStateException ok ) {}
 	}
 	
-	public void testCallingOpenLastValidVersionForReadingFailsIfWriting() throws FileNotFoundException 
+	public void testCallingOpenLastValidVersionForReadingFailsIfWriting() throws IOException 
 	{
 		file.openNewVersionForWriting();
 		try {

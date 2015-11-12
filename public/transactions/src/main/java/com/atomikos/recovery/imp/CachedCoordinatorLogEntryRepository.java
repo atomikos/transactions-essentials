@@ -19,6 +19,8 @@ public class CachedCoordinatorLogEntryRepository implements
 
 	private final CoordinatorLogEntryRepository backupCoordinatorLogEntryRepository;
 
+	private volatile long numberOfPutsSinceLastCheckpoint = 0;
+	private long checkpointInterval;
 	public CachedCoordinatorLogEntryRepository(
 			InMemoryCoordinatorLogEntryRepository inMemoryCoordinatorLogEntryRepository,
 			CoordinatorLogEntryRepository backupCoordinatorLogEntryRepository) {
@@ -33,20 +35,29 @@ public class CachedCoordinatorLogEntryRepository implements
 		for (CoordinatorLogEntry coordinatorLogEntry : coordinatorLogEntries) {
 			inMemoryCoordinatorLogEntryRepository.put(coordinatorLogEntry.coordinatorId, coordinatorLogEntry);
 		}
-			
+		checkpointInterval = configProperties.getCheckpointInterval();		
 	}
 
 	@Override
 	public void put(String id, CoordinatorLogEntry coordinatorLogEntry)
 			throws IllegalArgumentException, LogWriteException {
+		
 		try {
+			if(needsCheckpoint()){
+				backupCoordinatorLogEntryRepository.writeCheckpoint(inMemoryCoordinatorLogEntryRepository.getAllCoordinatorLogEntries());
+			}
 			backupCoordinatorLogEntryRepository.put(id, coordinatorLogEntry);
 			inMemoryCoordinatorLogEntryRepository.put(id, coordinatorLogEntry);
 			staleInCache.remove(id);
+			numberOfPutsSinceLastCheckpoint++;
 		} catch (Exception e) {
 			staleInCache.add(id);
 			
 		}
+	}
+
+	private boolean needsCheckpoint() {
+		return numberOfPutsSinceLastCheckpoint>=checkpointInterval;
 	}
 
 	@Override
@@ -94,12 +105,18 @@ public class CachedCoordinatorLogEntryRepository implements
 
 	@Override
 	public void close() {
-		// TODO Auto-generated method stub
-
+		backupCoordinatorLogEntryRepository.close();
+		inMemoryCoordinatorLogEntryRepository.close();
 	}
 
 	@Override
 	public Collection<CoordinatorLogEntry> getAllCoordinatorLogEntries() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void writeCheckpoint(
+			Collection<CoordinatorLogEntry> checkpointContent) {
 		throw new UnsupportedOperationException();
 	}
 

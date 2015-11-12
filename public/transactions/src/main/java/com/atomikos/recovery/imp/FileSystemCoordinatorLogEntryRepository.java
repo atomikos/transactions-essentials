@@ -1,11 +1,16 @@
 package com.atomikos.recovery.imp;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
-import com.atomikos.icatch.config.Configuration;
 import com.atomikos.icatch.provider.ConfigProperties;
 import com.atomikos.recovery.CoordinatorLogEntry;
 import com.atomikos.recovery.CoordinatorLogEntryRepository;
@@ -17,34 +22,58 @@ public class FileSystemCoordinatorLogEntryRepository implements
 		CoordinatorLogEntryRepository {
 
 	private VersionedFile file;
-	private long checkpointInterval;
-	private FileOutputStream fos;
+	private FileChannel rwChannel =null;
+	
+	
 	@Override
 	public void init(ConfigProperties configProperties) {
 		String baseDir = configProperties.getLogBaseDir();
 		String baseName = configProperties.getLogBaseName();
 		file = new VersionedFile(baseDir, baseName, ".log");
-		checkpointInterval = configProperties.getCheckpointInterval();
-		//read file
-		//write 
+	
+	}
+
+	private Serializer serializer = new Serializer(); 
+	int position = 0;
+	@Override
+	public void put(String id, CoordinatorLogEntry coordinatorLogEntry)
+			throws IllegalArgumentException, LogWriteException {
+		
+		if (rwChannel==null) {
+			rwChannel = initializeOutput();
+		}
+		
+		
+		write(coordinatorLogEntry);
+
+	}
+	private void write(CoordinatorLogEntry coordinatorLogEntry) {
 		try {
-			fos = file.openNewVersionForWriting();
-		} catch (FileNotFoundException e) {
+			String str = serializer.toJSON(coordinatorLogEntry);
+			byte[] buffer = str.getBytes();
+			ByteBuffer wrBuf = rwChannel.map(FileChannel.MapMode.READ_WRITE, position, buffer.length );
+			wrBuf.put(buffer);
+			rwChannel.force(false);			
+			position+=buffer.length;
+		
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-
-	@Override
-	public void put(String id, CoordinatorLogEntry coordinatorLogEntry)
-			throws IllegalArgumentException, LogWriteException {
+	private FileChannel initializeOutput() {
+		FileChannel rwChannel =null;
 		try {
-			fos.write(10);
-			fos.getFD().sync();
-		} catch (IOException e) {
-			throw new LogWriteException();
+			rwChannel=file.openNewVersionForNioWriting();
+			position=0;
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-
+		return rwChannel;
 	}
 
 	@Override
@@ -67,16 +96,79 @@ public class FileSystemCoordinatorLogEntryRepository implements
 
 	@Override
 	public void close() {
-		// TODO Auto-generated method stub
+		try {
+			rwChannel.close();
+			file.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 
 	}
 
 	@Override
 	public Collection<CoordinatorLogEntry> getAllCoordinatorLogEntries() {
+		Map<String,CoordinatorLogEntry> coordinatorLogEntries = new HashMap<String,CoordinatorLogEntry>();
 		// TODO Open File for reading
 		//perform a checkpoint
+		//read file
+		try {
+			String line;
+			FileInputStream fis = file.openLastValidVersionForReading();
+		    InputStreamReader isr = new InputStreamReader(fis);
+		    BufferedReader br = new BufferedReader(isr);
 		
-		return null;
+		    while ((line = br.readLine()) != null) {
+		    	CoordinatorLogEntry coordinatorLogEntry = deserialize(line);
+		    	coordinatorLogEntries.put(coordinatorLogEntry.coordinatorId, coordinatorLogEntry);
+		    }
+		    br.close();
+			
+		} catch (IllegalStateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
+		return coordinatorLogEntries.values();
+	}
+
+	private	Deserializer deserializer = new Deserializer();
+	private CoordinatorLogEntry deserialize(String line) {
+		return deserializer.fromJSON(line);
+	}
+	
+	protected void closeOutput() throws IllegalStateException {
+		
+		// try to close the previous output stream, if any.
+		try {
+			if (file != null) {
+				file.close();
+			}
+		} catch (IOException e) {
+	
+			throw new IllegalStateException("Error closing previous output", e);
+		}
+		
+	}
+
+	@Override
+	public void writeCheckpoint(
+			Collection<CoordinatorLogEntry> checkpointContent) throws IllegalStateException, IOException {
+		closeOutput();
+		
+		rwChannel = file.openNewVersionForNioWriting();
+		for (CoordinatorLogEntry coordinatorLogEntry : checkpointContent) {
+			write(coordinatorLogEntry);
+		}
+		file.discardBackupVersion();
+		position=0;
 	}
 
 }

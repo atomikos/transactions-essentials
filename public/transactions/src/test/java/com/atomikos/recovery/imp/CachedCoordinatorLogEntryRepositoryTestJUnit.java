@@ -1,15 +1,16 @@
 package com.atomikos.recovery.imp;
 
-import static org.junit.Assert.*;
-
 import java.util.Collections;
+import java.util.Properties;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
 import com.atomikos.icatch.TxState;
+import com.atomikos.icatch.provider.ConfigProperties;
 import com.atomikos.recovery.CoordinatorLogEntry;
 import com.atomikos.recovery.CoordinatorLogEntryRepository;
 import com.atomikos.recovery.LogWriteException;
@@ -25,6 +26,16 @@ public class CachedCoordinatorLogEntryRepositoryTestJUnit {
 	@Before
 	public void configure() {
 		sut = new CachedCoordinatorLogEntryRepository(inMemoryCoordinatorLogEntryRepository,backupCoordinatorLogEntryRepository);
+		doInit();
+	}
+
+	private void doInit() {
+		Properties properties = new Properties();
+		properties.put("com.atomikos.icatch.checkpoint_interval", "1");
+		ConfigProperties configProperties =new ConfigProperties(properties);		
+		sut.init(configProperties);
+		inMemoryCoordinatorLogEntryRepository.init(configProperties);
+		
 	}
 	
 	@Test
@@ -125,13 +136,54 @@ public class CachedCoordinatorLogEntryRepositoryTestJUnit {
 		whenInit();
 		thenCacheWasPopulatedFromBackup();
 	}
+	
+	@Test
+	public void testClose() throws Exception {
+		givenExistingCoordinatorLogEntry();
+		sut.put(tid, coordinatorLogEntry);
+
+		whenClose();
+		thenCloseInvokedOnBackup();
+		thenCloseInvokedOnInMemory();
+	}
+	
+	
+	
+	private void thenCloseInvokedOnInMemory() {
+		Assert.assertTrue(inMemoryCoordinatorLogEntryRepository.isClosed());
+	}
+
+	private void thenCloseInvokedOnBackup() {
+		Mockito.verify(backupCoordinatorLogEntryRepository).close();
+		
+		
+	}
+
+	private void whenClose() {
+		sut.close();
+		
+	}
+
+	@Ignore
+	@Test
+	public void testWriteCheckpointOnBackup() throws Exception {
+		
+		givenExistingCoordinatorLogEntry();
+		whenPutSucceedsOnBackup();
+		
+		//then checkpoint was triggered
+		
+		Mockito.verify(backupCoordinatorLogEntryRepository,Mockito.times(1)).writeCheckpoint(Mockito.anyCollection());
+	}
+
 
 	private void thenCacheWasPopulatedFromBackup() {
 		Assert.assertEquals(coordinatorLogEntry, inMemoryCoordinatorLogEntryRepository.get(tid));
 	}
 
 	private void whenInit() {
-		sut.init(null);
+		sut.close();
+		doInit();
 	}
 
 	private void givenExistingCoordinatorLogEntryInBackup() {

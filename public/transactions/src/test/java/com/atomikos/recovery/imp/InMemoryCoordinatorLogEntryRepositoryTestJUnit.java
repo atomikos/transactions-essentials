@@ -1,5 +1,7 @@
 package com.atomikos.recovery.imp;
 
+import static org.junit.Assert.*;
+
 import java.util.Collection;
 
 import org.junit.Assert;
@@ -51,6 +53,23 @@ public class InMemoryCoordinatorLogEntryRepositoryTestJUnit {
 		whenFindAllCommittingParticipants();
 		thenCommittingParticipantsFoundInRepository();
 	}
+	
+	@Test
+	public void testClose() throws Exception {
+		Assert.assertTrue(sut.isClosed());
+		sut.init(null);
+		Assert.assertFalse(sut.isClosed());
+		testPut();
+		sut.close();
+		Assert.assertTrue(sut.isClosed());
+		Assert.assertTrue(sut.getAllCoordinatorLogEntries().isEmpty());
+		sut.init(null);
+		Assert.assertFalse(sut.isClosed());
+	}
+	
+	
+	
+	
 	private void thenCommittingParticipantsFoundInRepository() {
 		ParticipantLogEntry committingParticipantLogEntry = coordinatorLogEntry.participantDetails[0];
 		

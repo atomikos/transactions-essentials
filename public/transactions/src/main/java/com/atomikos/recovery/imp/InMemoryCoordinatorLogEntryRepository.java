@@ -18,8 +18,10 @@ public class InMemoryCoordinatorLogEntryRepository implements
 	private  Map<String, CoordinatorLogEntry> storage = new ConcurrentHashMap<String, CoordinatorLogEntry>();
 
 	
+	private boolean closed = true;
 	@Override
 	public void init(ConfigProperties configProperties) {
+		closed=false;
 	}
 	
 	@Override
@@ -60,12 +62,26 @@ public class InMemoryCoordinatorLogEntryRepository implements
 
 	@Override
 	public void close() {
-		
+		storage.clear();
+		closed=true;
 	}
 
 	@Override
 	public Collection<CoordinatorLogEntry> getAllCoordinatorLogEntries() {
+		return storage.values();
+	}
+
+	@Override
+	public void writeCheckpoint(
+			Collection<CoordinatorLogEntry> checkpointContent) {
 		throw new UnsupportedOperationException();
+		
+	}
+
+	
+
+	public boolean isClosed() {
+		return closed;
 	}
 
 
