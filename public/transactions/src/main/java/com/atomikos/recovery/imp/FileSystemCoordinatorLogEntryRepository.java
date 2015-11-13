@@ -5,7 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.ByteBuffer;
+import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.Collection;
 import java.util.HashMap;
@@ -51,9 +51,11 @@ public class FileSystemCoordinatorLogEntryRepository implements
 		try {
 			String str = serializer.toJSON(coordinatorLogEntry);
 			byte[] buffer = str.getBytes();
-			ByteBuffer wrBuf = rwChannel.map(FileChannel.MapMode.READ_WRITE, position, buffer.length );
+			MappedByteBuffer wrBuf = rwChannel.map(FileChannel.MapMode.READ_WRITE, position, buffer.length );
 			wrBuf.put(buffer);
-			rwChannel.force(false);			
+			if(coordinatorLogEntry.shouldSync()) {
+				wrBuf.force();
+			}
 			position+=buffer.length;
 		
 		} catch (IllegalAccessException e) {
