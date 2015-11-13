@@ -72,3 +72,9 @@ syntax: regexp
 ^public/transactions-api/src/test/java/com/atomikos/recovery/DeserializeTestJUnit\.java$
 syntax: regexp
 ^public/transactions-api/src/test/java/com/atomikos/recovery/SerializeTestJunit\.java$
+syntax: regexp
+^public/transactions-api/src/test/java/com/atomikos/recovery/Serializer\.java$
+syntax: regexp
+^public/transactions-api/src/test/java/com/atomikos/recovery/Deserializer\.java$
+syntax: regexp
+^public/transactions-api/json\.txt$

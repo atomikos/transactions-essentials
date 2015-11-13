@@ -182,7 +182,7 @@ public class VersionedFile
 	 */
 	public FileOutputStream openNewVersionForWriting() throws IOException
 	{
-		if ( randomAccessFile != null ) throw new IllegalStateException ( "Already writing a new version." );
+		openNewVersionForNioWriting();
 		return new FileOutputStream(randomAccessFile.getFD());
 	}
 
