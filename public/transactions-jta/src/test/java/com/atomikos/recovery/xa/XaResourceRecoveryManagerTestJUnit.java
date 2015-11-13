@@ -13,8 +13,7 @@ import org.mockito.Mockito;
 
 import com.atomikos.datasource.xa.RecoveryScan.XidSelector;
 import com.atomikos.datasource.xa.XID;
-import com.atomikos.recovery.LogReadException;
-import com.atomikos.recovery.LogWriteException;
+import com.atomikos.recovery.LogException;
 
 public class XaResourceRecoveryManagerTestJUnit {
 
@@ -248,19 +247,19 @@ public class XaResourceRecoveryManagerTestJUnit {
 		Mockito.verify(log, Mockito.times(1)).terminated(xid);
 	}
 
-	private void thenHeuristicHazardReportedToLog(Xid xid) throws LogWriteException {
+	private void thenHeuristicHazardReportedToLog(Xid xid) throws LogException {
 		Mockito.verify(log, Mockito.times(1)).terminatedWithHeuristicHazardByResource(xid);
 	}
 
-	private void thenHeuristicMixedReportedToLog(Xid xid) throws LogWriteException {
+	private void thenHeuristicMixedReportedToLog(Xid xid) throws LogException {
 		Mockito.verify(log, Mockito.times(1)).terminatedWithHeuristicMixedByResource(xid);
 	}
 
-	private void thenHeuristicCommitReportedToLog(Xid xid) throws LogWriteException {
+	private void thenHeuristicCommitReportedToLog(Xid xid) throws LogException {
 		Mockito.verify(log, Mockito.times(1)).terminatedWithHeuristicCommitByResource(xid);
 	}
 
-	private void thenHeuristicRollbackReportedToLog(Xid xid) throws LogWriteException {
+	private void thenHeuristicRollbackReportedToLog(Xid xid) throws LogException {
 		Mockito.verify(log, Mockito.times(1)).terminatedWithHeuristicRollbackByResource(xid);
 	}
 
@@ -268,7 +267,7 @@ public class XaResourceRecoveryManagerTestJUnit {
 		Mockito.verify(xaResource, Mockito.times(1)).commit(xid, false);
 	}
 
-	private void givenUnexpiredPreparingXidInLog(Xid xid) throws IllegalStateException, LogWriteException {
+	private void givenUnexpiredPreparingXidInLog(Xid xid) throws IllegalStateException, LogException {
 		Mockito.doThrow(new IllegalStateException()).when(log).presumedAborting(xid);
 	}
 
@@ -276,13 +275,13 @@ public class XaResourceRecoveryManagerTestJUnit {
 		// do nothing: don't make log mock throw on presumedAborting
 	}
 
-	private void givenExpiredCommittingXidInLog(Xid xid) throws LogReadException {
+	private void givenExpiredCommittingXidInLog(Xid xid) throws LogException {
 		Set<Xid> toReturn = new HashSet<Xid>();
 		toReturn.add(xid);
 		Mockito.when(log.getExpiredCommittingXids()).thenReturn(toReturn);
 	}
 
-	private void givenIntermediateCommitByOltp(Xid xid) throws IllegalStateException, LogWriteException {
+	private void givenIntermediateCommitByOltp(Xid xid) throws IllegalStateException, LogException {
 		Mockito.doThrow(new IllegalStateException()).when(log).presumedAborting(xid);
 	}
 

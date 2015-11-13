@@ -12,6 +12,7 @@ import com.atomikos.icatch.TxState;
 import com.atomikos.icatch.provider.ConfigProperties;
 import com.atomikos.recovery.CoordinatorLogEntry;
 import com.atomikos.recovery.CoordinatorLogEntryRepository;
+import com.atomikos.recovery.LogReadException;
 import com.atomikos.recovery.LogWriteException;
 import com.atomikos.recovery.ParticipantLogEntry;
 
@@ -55,14 +56,6 @@ public class CachedCoordinatorLogEntryRepositoryTestJUnit {
 	
 	
 	@Test
-	public void testSuccessfulGetClearsStaleCache() throws Exception {
-		testFailingPutImpliesGetOnBackupRepositoryOnNextGet();
-		Mockito.reset(backupCoordinatorLogEntryRepository);
-		thenGetDoesNotAccessBackup();	
-	}
-	
-	
-	@Test
 	public void testPutUpdatesBothRepositories() throws Exception {
 		givenExistingCoordinatorLogEntry();
 		sut.put(tid, coordinatorLogEntry);
@@ -74,13 +67,6 @@ public class CachedCoordinatorLogEntryRepositoryTestJUnit {
 		givenExistingCoordinatorLogEntry();
 		whenPutFailsOnBackup();
 		thenInMemoryRepositoryWasNotUpdated();
-	}
-	
-	@Test
-	public void testFailingPutImpliesGetOnBackupRepositoryOnNextGet() throws Exception {
-		givenExistingCoordinatorLogEntry();
-		whenPutFailsOnBackup();
-		thenGetAccessesBackup();
 	}
 	
 	@Test
@@ -136,7 +122,7 @@ public class CachedCoordinatorLogEntryRepositoryTestJUnit {
 	}
 
 	private void thenCheckpointWasTriggeredOnBackup() throws LogWriteException {
-		Mockito.verify(backupCoordinatorLogEntryRepository,Mockito.times(1)).writeCheckpoint(Mockito.anyCollection());
+		Mockito.verify(backupCoordinatorLogEntryRepository,Mockito.atLeastOnce()).writeCheckpoint(Mockito.anyCollection());
 	}
 	
 	@Test
@@ -146,6 +132,32 @@ public class CachedCoordinatorLogEntryRepositoryTestJUnit {
 		thenCheckpointWasTriggeredOnBackup();
 	}
 
+	@Test(expected=LogWriteException.class)
+	public void testCorruptedRepositoryThrowsOnPut() throws Exception {
+		givenCorruptedInstance();
+		sut.put(tid, coordinatorLogEntry);
+	}
+
+	@Test(expected=LogReadException.class)
+	public void testCorruptedRepositoryThrowsOnGet() throws Exception {
+		givenCorruptedInstance();
+		sut.get(tid);
+	}
+	
+	@Test(expected=LogReadException.class)
+	public void testCorruptedRepositoryThrowsOnFindAllCommittingParticipants() throws Exception {
+		givenCorruptedInstance();
+		sut.findAllCommittingParticipants();
+	}
+	private void givenCorruptedInstance() throws Exception {
+		givenExistingCoordinatorLogEntry();
+		Mockito.doThrow(new RuntimeException()).when(backupCoordinatorLogEntryRepository).put(tid, coordinatorLogEntry);
+		Mockito.doThrow(new LogWriteException()).when(backupCoordinatorLogEntryRepository).writeCheckpoint(Mockito.anyCollection());
+		try {
+			sut.put(tid, coordinatorLogEntry);
+		} catch (Exception e) {
+		}
+	}
 	
 	
 	private void thenCloseInvokedOnInMemory() {
@@ -154,16 +166,11 @@ public class CachedCoordinatorLogEntryRepositoryTestJUnit {
 
 	private void thenCloseInvokedOnBackup() {
 		Mockito.verify(backupCoordinatorLogEntryRepository).close();
-		
-		
 	}
 
 	private void whenClose() {
 		sut.close();
 	}
-
-	
-
 
 	private void thenCacheWasPopulatedFromBackup() {
 		Assert.assertEquals(coordinatorLogEntry, inMemoryCoordinatorLogEntryRepository.get(tid));
@@ -179,12 +186,12 @@ public class CachedCoordinatorLogEntryRepositoryTestJUnit {
 		Mockito.when(backupCoordinatorLogEntryRepository.getAllCoordinatorLogEntries()).thenReturn(Collections.singleton(coordinatorLogEntry));
 	}
 	
-	private void thenFindCommittingParticipantsRefreshesInMemoryCache() {
+	private void thenFindCommittingParticipantsRefreshesInMemoryCache() throws LogReadException {
 		sut.findAllCommittingParticipants();
 		Mockito.verify(backupCoordinatorLogEntryRepository, Mockito.never()).findAllCommittingParticipants();
 	}
 
-	private void thenFindCommittigParticipantsDoesNotAccessBackup() {
+	private void thenFindCommittigParticipantsDoesNotAccessBackup() throws LogReadException {
 		sut.findAllCommittingParticipants();
 		Mockito.verify(backupCoordinatorLogEntryRepository, Mockito.never()).findAllCommittingParticipants();
 		
@@ -197,18 +204,12 @@ public class CachedCoordinatorLogEntryRepositoryTestJUnit {
         sut.put(tid, coordinatorLogEntry);
 	}
 
-	private void thenGetAccessesBackup() {
-		sut.get(tid);
-		Mockito.verify(backupCoordinatorLogEntryRepository,Mockito.times(1)).get(Mockito.anyString());
-		
-	}
-
-	private void thenGetAccessesCache() {
+	private void thenGetAccessesCache() throws LogReadException {
 		CoordinatorLogEntry retrieved = sut.get(tid);
 		Assert.assertEquals(coordinatorLogEntry,retrieved);
 	}
 	
-	private void thenGetDoesNotAccessBackup() {
+	private void thenGetDoesNotAccessBackup() throws LogReadException {
 		sut.get(tid);
 		Mockito.verify(backupCoordinatorLogEntryRepository,Mockito.never()).get(Mockito.anyString());
 	}
@@ -224,13 +225,13 @@ public class CachedCoordinatorLogEntryRepositoryTestJUnit {
 	private void thenPutWasCalledOnBothCoordinatorLogEntryRepositories() throws Exception {
 		CoordinatorLogEntry retrieved = sut.get(tid);
 		Assert.assertEquals(coordinatorLogEntry,retrieved);
-		Mockito.verify(backupCoordinatorLogEntryRepository,Mockito.times(1)).put(Mockito.eq(tid), Mockito.any(CoordinatorLogEntry.class));
+		Mockito.verify(backupCoordinatorLogEntryRepository,Mockito.atLeast(1)).put(Mockito.eq(tid), Mockito.any(CoordinatorLogEntry.class));
 		
 	}
 
 	
 
-	private void thenInMemoryRepositoryWasNotUpdated() {
+	private void thenInMemoryRepositoryWasNotUpdated() throws LogReadException {
 		CoordinatorLogEntry retrieved = sut.get(tid);
 		Assert.assertNull(retrieved);
 	}

@@ -12,6 +12,7 @@ import org.mockito.Mockito;
 import com.atomikos.icatch.TxState;
 import com.atomikos.recovery.CoordinatorLogEntry;
 import com.atomikos.recovery.CoordinatorLogEntryRepository;
+import com.atomikos.recovery.LogException;
 import com.atomikos.recovery.LogReadException;
 import com.atomikos.recovery.LogWriteException;
 import com.atomikos.recovery.ParticipantLogEntry;
@@ -55,12 +56,12 @@ public class RecoveryLogTestJUnit {
 	}
 	
 	@Test(expected = IllegalArgumentException.class)
-	public void testPresumedAbortingThrowsForNullEntry() throws IllegalStateException, LogWriteException {
+	public void testPresumedAbortingThrowsForNullEntry() throws IllegalStateException, LogException {
 		sut.presumedAborting(null);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void testPresumedAbortingThrowsIfNotIndoubt() throws IllegalStateException, LogWriteException {
+	public void testPresumedAbortingThrowsIfNotIndoubt() throws IllegalStateException, LogException {
 		participantLogEntry = newParticipantLogEntryInState(TxState.ABORTING, NON_EXPIRED);
 		sut.presumedAborting(participantLogEntry);
 	}
@@ -150,15 +151,15 @@ public class RecoveryLogTestJUnit {
 	}
 	
 	
-	private void whenTerminatedWithHeuristicRollback() throws LogWriteException {
+	private void whenTerminatedWithHeuristicRollback() throws LogException {
 		sut.terminatedWithHeuristicRollback(participantLogEntry);
 	}
 
-	private void whenTerminatedWithHeuristicMixed() throws LogWriteException {
+	private void whenTerminatedWithHeuristicMixed() throws LogException {
 		sut.terminatedWithHeuristicMixed(participantLogEntry);
 	}
 
-	private void whenTerminatedWithHeuristicCommit() throws LogWriteException {
+	private void whenTerminatedWithHeuristicCommit() throws LogException {
 		sut.terminatedWithHeuristicCommit(participantLogEntry);
 	}
 
@@ -173,12 +174,12 @@ public class RecoveryLogTestJUnit {
 		sut.terminated(participantLogEntry);
 	}
 
-	private void thenPutWasNotCalledOnRepository() throws IllegalArgumentException, LogWriteException {
+	private void thenPutWasNotCalledOnRepository() throws IllegalArgumentException, LogException {
 		Mockito.verify(logRepository, Mockito.never()).put(Mockito.anyString(),
 				(CoordinatorLogEntry) Mockito.any());
 	}
 
-	private void givenCoordinatorInRepository(TxState state, boolean expired) {
+	private void givenCoordinatorInRepository(TxState state, boolean expired) throws LogReadException {
 		participantLogEntry = newParticipantLogEntryInState(state, expired);
 		ParticipantLogEntry[] participantLogEntries = { participantLogEntry };
 		CoordinatorLogEntry coordinatorLogEntry = new CoordinatorLogEntry(
@@ -193,7 +194,7 @@ public class RecoveryLogTestJUnit {
 	}
 
 	private void givenCoordinatorInRepository(TxState state, boolean expired,
-			TxState... otherParticipantsStates) {
+			TxState... otherParticipantsStates) throws LogReadException {
 		ParticipantLogEntry[] participantLogEntries = new ParticipantLogEntry[otherParticipantsStates.length + 1];
 		participantLogEntry = newParticipantLogEntryInState(state, expired);
 		participantLogEntries[0] = participantLogEntry;
@@ -224,7 +225,7 @@ public class RecoveryLogTestJUnit {
 		participantLogEntry = newParticipantLogEntryInState(TxState.IN_DOUBT, NON_EXPIRED);
 	}
 
-	private void whenPresumedAborting() throws IllegalStateException, LogWriteException {
+	private void whenPresumedAborting() throws IllegalStateException, LogException {
 		ParticipantLogEntry entry = createEquivalentParticipantLogEntryForPresumedAbort();
 		sut.presumedAborting(entry);
 	}

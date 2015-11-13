@@ -7,8 +7,8 @@ import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 import com.atomikos.recovery.CoordinatorLogEntry;
 import com.atomikos.recovery.CoordinatorLogEntryRepository;
+import com.atomikos.recovery.LogException;
 import com.atomikos.recovery.LogReadException;
-import com.atomikos.recovery.LogWriteException;
 import com.atomikos.recovery.OltpLog;
 import com.atomikos.recovery.ParticipantLogEntry;
 import com.atomikos.recovery.RecoveryLog;
@@ -25,14 +25,14 @@ public class LogImp implements OltpLog, RecoveryLog {
 
 	@Override
 	public void write(CoordinatorLogEntry coordinatorLogEntry)
-			throws IllegalStateException, LogWriteException {
+			throws IllegalStateException, LogException {
 		if (!entryAllowed(coordinatorLogEntry)) {
 			throw new IllegalStateException();
 		}
 		repository.put(coordinatorLogEntry.coordinatorId, coordinatorLogEntry);
 	}
 
-	private boolean entryAllowed(CoordinatorLogEntry coordinatorLogEntry) {
+	private boolean entryAllowed(CoordinatorLogEntry coordinatorLogEntry) throws LogReadException {
 		CoordinatorLogEntry existing = repository
 				.get(coordinatorLogEntry.coordinatorId);
 		return coordinatorLogEntry.transitionAllowedFrom(existing);
@@ -42,26 +42,29 @@ public class LogImp implements OltpLog, RecoveryLog {
 
 	@Override
 	public void terminated(ParticipantLogEntry entry)  {
-		CoordinatorLogEntry coordinatorLogEntry = repository
-				.get(entry.coordinatorId);
-		if (coordinatorLogEntry == null) {
-			LOGGER.logWarning("termination called on non existent Coordinator "
-					+ entry.coordinatorId + " " + entry.participantUri);
-		} else {
-			CoordinatorLogEntry updated = coordinatorLogEntry.terminated(entry);
-			try {
+		try {
+			CoordinatorLogEntry coordinatorLogEntry =null;
+				coordinatorLogEntry = repository.get(entry.coordinatorId);
+			if (coordinatorLogEntry == null) {
+				LOGGER.logWarning("termination called on non existent Coordinator "
+						+ entry.coordinatorId + " " + entry.participantUri);
+			} else {
+				CoordinatorLogEntry updated = coordinatorLogEntry.terminated(entry);
 				repository.put(updated.coordinatorId, updated);
-			} catch (LogWriteException e) {
-				//TODO coordinator will remain committing in log - clean up by admin tools?
-				LOGGER.logWarning("Unable to write to repository "+entry+" ignoring");
 			}
-		}
+		} catch (LogException e) {
+			//TODO coordinator will remain committing in log - clean up by admin tools?
+			LOGGER.logWarning("Unable to write to repository "+entry+" ignoring");
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
 	}
 
 	
 
 	@Override
-	public void terminatedWithHeuristicRollback(ParticipantLogEntry entry) throws LogWriteException {
+	public void terminatedWithHeuristicRollback(ParticipantLogEntry entry) throws LogException {
 
 		CoordinatorLogEntry coordinatorLogEntry = repository.get(entry.coordinatorId);
 		if (coordinatorLogEntry == null) {
@@ -82,7 +85,7 @@ public class LogImp implements OltpLog, RecoveryLog {
 
 	@Override
 	public void presumedAborting(ParticipantLogEntry entry)
-			throws IllegalStateException, LogWriteException {
+			throws IllegalStateException, LogException {
 		if (entry == null || entry.state != TxState.IN_DOUBT) {
 			throw new IllegalArgumentException();
 		}
@@ -109,7 +112,7 @@ public class LogImp implements OltpLog, RecoveryLog {
 	}
 
 	@Override
-	public void terminatedWithHeuristicCommit(ParticipantLogEntry entry) throws LogWriteException {
+	public void terminatedWithHeuristicCommit(ParticipantLogEntry entry) throws LogException {
 		CoordinatorLogEntry coordinatorLogEntry = repository
 				.get(entry.coordinatorId);
 		if (coordinatorLogEntry == null) {
@@ -129,7 +132,7 @@ public class LogImp implements OltpLog, RecoveryLog {
 	}
 
 	@Override
-	public void terminatedWithHeuristicMixed(ParticipantLogEntry entry) throws LogWriteException {
+	public void terminatedWithHeuristicMixed(ParticipantLogEntry entry) throws LogException {
 		CoordinatorLogEntry coordinatorLogEntry = repository
 				.get(entry.coordinatorId);
 		if (coordinatorLogEntry == null) {

@@ -17,7 +17,7 @@ import org.mockito.Mockito;
 import com.atomikos.datasource.xa.XID;
 import com.atomikos.icatch.TxState;
 import com.atomikos.recovery.LogReadException;
-import com.atomikos.recovery.LogWriteException;
+import com.atomikos.recovery.LogException;
 import com.atomikos.recovery.ParticipantLogEntry;
 import com.atomikos.recovery.RecoveryLog;
 
@@ -43,35 +43,35 @@ public class DefaultXaRecoveryLogTestJUnit {
 	}
 	
 	@Test
-	public void testPresumedAborting() throws IllegalStateException, LogWriteException {
+	public void testPresumedAborting() throws IllegalStateException, LogException {
 		Xid xid = givenSomeXid();
 		whenPresumedAborting(xid);
 		thenPresumedAbortingInUnderlyingGenericLog(xid);
 	}
 	
 	@Test
-	public void testHeuristicRollbackByResource() throws IllegalStateException, LogWriteException {
+	public void testHeuristicRollbackByResource() throws IllegalStateException, LogException {
 		Xid xid = givenSomeXid();
 		whenHeuristicRollback(xid);
 		thenHeuristicRollbackInUnderlyingGenericLog(xid);
 	}
 	
 	@Test
-	public void testHeuristicCommitByResource() throws IllegalStateException, LogWriteException {
+	public void testHeuristicCommitByResource() throws IllegalStateException, LogException {
 		Xid xid = givenSomeXid();
 		whenHeuristicCommit(xid);
 		thenHeuristicCommitInUnderlyingGenericLog(xid);
 	}
 	
 	@Test
-	public void testHeuristicHazardByResource() throws IllegalStateException, LogWriteException {
+	public void testHeuristicHazardByResource() throws IllegalStateException, LogException {
 		Xid xid = givenSomeXid();
 		whenHeuristicHazard(xid);
 		thenHeuristicHazardInUnderlyingGenericLog(xid);
 	}
 	
 	@Test
-	public void testHeuristicMixedByResource() throws IllegalStateException, LogWriteException {
+	public void testHeuristicMixedByResource() throws IllegalStateException, LogException {
 		Xid xid = givenSomeXid();
 		whenHeuristicMixed(xid);
 		thenHeuristicMixedInUnderlyingGenericLog(xid);
@@ -126,43 +126,43 @@ public class DefaultXaRecoveryLogTestJUnit {
 		return entry;
 	}
 
-	private void thenHeuristicMixedInUnderlyingGenericLog(Xid xid) throws LogWriteException {
+	private void thenHeuristicMixedInUnderlyingGenericLog(Xid xid) throws LogException {
 		ParticipantLogEntry entry = convertXidToParticipantLogEntry(xid);
 		Mockito.verify(mock,Mockito.times(1)).terminatedWithHeuristicMixed(entry);
 	}
 
-	private void whenHeuristicMixed(Xid xid) throws LogWriteException {
+	private void whenHeuristicMixed(Xid xid) throws LogException {
 		sut.terminatedWithHeuristicMixedByResource(xid);
 	}
 
-	private void thenHeuristicHazardInUnderlyingGenericLog(Xid xid) throws LogWriteException {
+	private void thenHeuristicHazardInUnderlyingGenericLog(Xid xid) throws LogException {
 		ParticipantLogEntry entry = convertXidToParticipantLogEntry(xid);
 		Mockito.verify(mock,Mockito.times(1)).terminatedWithHeuristicHazard(entry);
 	}
 
-	private void whenHeuristicHazard(Xid xid) throws LogWriteException {
+	private void whenHeuristicHazard(Xid xid) throws LogException {
 		sut.terminatedWithHeuristicHazardByResource(xid);
 	}
 
-	private void thenHeuristicCommitInUnderlyingGenericLog(Xid xid) throws LogWriteException {
+	private void thenHeuristicCommitInUnderlyingGenericLog(Xid xid) throws LogException {
 		ParticipantLogEntry entry = convertXidToParticipantLogEntry(xid);
 		Mockito.verify(mock,Mockito.times(1)).terminatedWithHeuristicCommit(entry);
 	}
 
-	private void whenHeuristicCommit(Xid xid) throws LogWriteException {
+	private void whenHeuristicCommit(Xid xid) throws LogException {
 		sut.terminatedWithHeuristicCommitByResource(xid);
 	}
 
-	private void thenHeuristicRollbackInUnderlyingGenericLog(Xid xid) throws LogWriteException {
+	private void thenHeuristicRollbackInUnderlyingGenericLog(Xid xid) throws LogException {
 		ParticipantLogEntry entry = convertXidToParticipantLogEntry(xid);
 		Mockito.verify(mock,Mockito.times(1)).terminatedWithHeuristicRollback(entry);
 	}
 
-	private void whenHeuristicRollback(Xid xid) throws LogWriteException {
+	private void whenHeuristicRollback(Xid xid) throws LogException {
 		sut.terminatedWithHeuristicRollbackByResource(xid);
 	}
 
-	private void thenPresumedAbortingInUnderlyingGenericLog(Xid xid) throws IllegalStateException, LogWriteException {
+	private void thenPresumedAbortingInUnderlyingGenericLog(Xid xid) throws IllegalStateException, LogException {
 		ArgumentCaptor<ParticipantLogEntry> captor = ArgumentCaptor.forClass(ParticipantLogEntry.class);
 		Mockito.verify(mock,Mockito.times(1)).presumedAborting(captor.capture());
 		Assert.assertEquals(TxState.IN_DOUBT, captor.getValue().state);
@@ -172,7 +172,7 @@ public class DefaultXaRecoveryLogTestJUnit {
 		return new ParticipantLogEntry(XID.getGlobalTransactionIdAsString(xid), XID.getBranchQualifierAsString(xid), 0, "desc", TxState.COMMITTING);
 	}
 
-	private void whenPresumedAborting(Xid xid) throws IllegalStateException, LogWriteException {
+	private void whenPresumedAborting(Xid xid) throws IllegalStateException, LogException {
 		sut.presumedAborting(xid);
 	}
 

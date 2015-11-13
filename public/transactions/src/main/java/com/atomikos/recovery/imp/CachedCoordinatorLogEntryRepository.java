@@ -8,13 +8,14 @@ import java.util.List;
 import com.atomikos.icatch.provider.ConfigProperties;
 import com.atomikos.recovery.CoordinatorLogEntry;
 import com.atomikos.recovery.CoordinatorLogEntryRepository;
+import com.atomikos.recovery.LogReadException;
 import com.atomikos.recovery.LogWriteException;
 import com.atomikos.recovery.ParticipantLogEntry;
 
 public class CachedCoordinatorLogEntryRepository implements
 		CoordinatorLogEntryRepository {
 
-	private List<String> staleInCache = Collections.synchronizedList(new ArrayList<String>()) ; 
+	private boolean corrupt = false; 
 	private final InMemoryCoordinatorLogEntryRepository inMemoryCoordinatorLogEntryRepository;
 
 	private final CoordinatorLogEntryRepository backupCoordinatorLogEntryRepository;
@@ -48,11 +49,17 @@ public class CachedCoordinatorLogEntryRepository implements
 			}
 			backupCoordinatorLogEntryRepository.put(id, coordinatorLogEntry);
 			inMemoryCoordinatorLogEntryRepository.put(id, coordinatorLogEntry);
-			staleInCache.remove(id);
 			numberOfPutsSinceLastCheckpoint++;
 		} catch (Exception e) {
-			staleInCache.add(id);
-			backupCoordinatorLogEntryRepository.writeCheckpoint(inMemoryCoordinatorLogEntryRepository.getAllCoordinatorLogEntries());
+			try {
+				backupCoordinatorLogEntryRepository.writeCheckpoint(inMemoryCoordinatorLogEntryRepository.getAllCoordinatorLogEntries());
+			} catch (LogWriteException corrupted) {
+				corrupt = true;
+				throw corrupted;	
+			} catch (Exception corrupted) {
+				corrupt = true;
+				throw new LogWriteException(corrupted);
+			}
 		}
 	}
 
@@ -61,34 +68,24 @@ public class CachedCoordinatorLogEntryRepository implements
 	}
 
 	@Override
-	public CoordinatorLogEntry get(String coordinatorId) {
-		refreshInMemoryCoordinatorLogEntryRepository();
+	public CoordinatorLogEntry get(String coordinatorId) throws LogReadException  {
+		if(corrupt){
+			throw new LogReadException();
+		}
 		return inMemoryCoordinatorLogEntryRepository.get(coordinatorId);
 	}
 
-	private void reloadFromBackupIfNecessary(String coordinatorId) {
-		if (staleInCache.contains(coordinatorId)) {
-			CoordinatorLogEntry backedUpCoordinatorLogEntry = backupCoordinatorLogEntryRepository.get(coordinatorId);
-			if (backedUpCoordinatorLogEntry != null) {
-				inMemoryCoordinatorLogEntryRepository.put(coordinatorId,backedUpCoordinatorLogEntry);
-			} 
-		}
-	}
+	
 
 	@Override
-	public Collection<ParticipantLogEntry> findAllCommittingParticipants() {
-		if(!staleInCache.isEmpty()){
-			refreshInMemoryCoordinatorLogEntryRepository();			
+	public Collection<ParticipantLogEntry> findAllCommittingParticipants() throws LogReadException {
+		if(corrupt){
+			throw new LogReadException();
 		}
 		return inMemoryCoordinatorLogEntryRepository.findAllCommittingParticipants();
 	}
 
-	private void refreshInMemoryCoordinatorLogEntryRepository() {
-		for (String staleCoordinatorId : staleInCache) {
-			reloadFromBackupIfNecessary(staleCoordinatorId);
-		}
-		staleInCache.clear();
-	}
+	
 
 	@Override
 	public void close() {

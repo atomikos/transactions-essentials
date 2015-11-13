@@ -13,8 +13,7 @@ import com.atomikos.datasource.xa.RecoveryScan;
 import com.atomikos.datasource.xa.RecoveryScan.XidSelector;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
-import com.atomikos.recovery.LogReadException;
-import com.atomikos.recovery.LogWriteException;
+import com.atomikos.recovery.LogException;
 
 public class XaResourceRecoveryManager {
 
@@ -37,7 +36,7 @@ public class XaResourceRecoveryManager {
 					attemptPresumedAbort(xid, xaResource);
 				}
 			}
-		} catch (LogReadException couldNotRetrieveCommittingXids) {
+		} catch (LogException couldNotRetrieveCommittingXids) {
 			//TODO log warning and retry later
 		}
 	}
@@ -64,7 +63,7 @@ public class XaResourceRecoveryManager {
 		try {
 			notifyLogOfHeuristic(xid, e);
 			forgetXidInXaResourceIfAllowed(xid, xaResource);
-		} catch (LogWriteException transientLogWriteException) {
+		} catch (LogException transientLogWriteException) {
 			LOGGER.logWarning("Failed to log heuristic termination of Xid: "+xid+" - ignoring to retry later", transientLogWriteException);
 		}
 		
@@ -112,7 +111,7 @@ public class XaResourceRecoveryManager {
 		}
 	}
 
-	private Set<Xid> retrieveExpiredCommittingXidsFromLog() throws LogReadException {
+	private Set<Xid> retrieveExpiredCommittingXidsFromLog() throws LogException {
 		return log.getExpiredCommittingXids();
 	}
 
@@ -147,12 +146,12 @@ public class XaResourceRecoveryManager {
 			}
 		} catch (IllegalStateException presumedAbortNotAllowedInCurrentLogState) {
 			// ignore to retry later if necessary
-		} catch (LogWriteException logWriteException) {
+		} catch (LogException logWriteException) {
 			LOGGER.logWarning("log write failed for Xid: "+xid+", ignoring to retry later", logWriteException);
 		}
 	}
 
-	private void notifyLogOfHeuristic(Xid xid, XAException e) throws LogWriteException {
+	private void notifyLogOfHeuristic(Xid xid, XAException e) throws LogException {
 		switch (e.errorCode) {
 		case XAException.XA_HEURHAZ:
 			log.terminatedWithHeuristicHazardByResource(xid);

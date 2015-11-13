@@ -13,9 +13,9 @@ public interface CoordinatorLogEntryRepository {
 	 */
 	void put(String id,CoordinatorLogEntry coordinatorLogEntry) throws IllegalArgumentException,LogWriteException;
 	
-	CoordinatorLogEntry get(String coordinatorId);
+	CoordinatorLogEntry get(String coordinatorId) throws LogReadException;
 
-	Collection<ParticipantLogEntry> findAllCommittingParticipants();
+	Collection<ParticipantLogEntry> findAllCommittingParticipants() throws LogReadException;
 	
 	Collection<CoordinatorLogEntry> getAllCoordinatorLogEntries();
 

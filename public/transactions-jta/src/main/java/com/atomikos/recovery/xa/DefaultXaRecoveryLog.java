@@ -8,8 +8,8 @@ import javax.transaction.xa.Xid;
 
 import com.atomikos.datasource.xa.XID;
 import com.atomikos.icatch.TxState;
+import com.atomikos.recovery.LogException;
 import com.atomikos.recovery.LogReadException;
-import com.atomikos.recovery.LogWriteException;
 import com.atomikos.recovery.ParticipantLogEntry;
 import com.atomikos.recovery.RecoveryLog;
 
@@ -22,7 +22,7 @@ public class DefaultXaRecoveryLog implements XaRecoveryLog {
 	}
 
 	@Override
-	public void presumedAborting(Xid xid) throws IllegalStateException, LogWriteException {
+	public void presumedAborting(Xid xid) throws IllegalStateException, LogException {
 		ParticipantLogEntry entry = convertXidToParticipantLogEntry(xid, TxState.IN_DOUBT);
 		log.presumedAborting(entry);
 	}
@@ -66,25 +66,25 @@ public class DefaultXaRecoveryLog implements XaRecoveryLog {
 	}
 
 	@Override
-	public void terminatedWithHeuristicHazardByResource(Xid xid) throws LogWriteException {
+	public void terminatedWithHeuristicHazardByResource(Xid xid) throws LogException {
 		ParticipantLogEntry entry = convertXidToParticipantLogEntry(xid, TxState.HEUR_HAZARD);
 		log.terminatedWithHeuristicHazard(entry);
 	}
 
 	@Override
-	public void terminatedWithHeuristicCommitByResource(Xid xid) throws LogWriteException {
+	public void terminatedWithHeuristicCommitByResource(Xid xid) throws LogException {
 		ParticipantLogEntry entry = convertXidToParticipantLogEntry(xid, TxState.HEUR_COMMITTED);
 		log.terminatedWithHeuristicCommit(entry);
 	}
 
 	@Override
-	public void terminatedWithHeuristicMixedByResource(Xid xid) throws LogWriteException {
+	public void terminatedWithHeuristicMixedByResource(Xid xid) throws LogException {
 		ParticipantLogEntry entry = convertXidToParticipantLogEntry(xid, TxState.HEUR_MIXED);
 		log.terminatedWithHeuristicMixed(entry);
 	}
 
 	@Override
-	public void terminatedWithHeuristicRollbackByResource(Xid xid) throws LogWriteException {
+	public void terminatedWithHeuristicRollbackByResource(Xid xid) throws LogException {
 		ParticipantLogEntry entry = convertXidToParticipantLogEntry(xid, TxState.HEUR_ABORTED);
 		log.terminatedWithHeuristicRollback(entry);
 	}
