@@ -42,8 +42,8 @@ public class TxStateTestJUnit {
 	public void testFinalStates() {
 		TxState[] states = TxState.values();
 		for (TxState txState : states) {
-			
-			if (txState.isOneOf(TxState.TERMINATED,TxState.HEUR_ABORTED,TxState.HEUR_COMMITTED,TxState.HEUR_MIXED)) {
+			//,TxState.HEUR_ABORTED,TxState.HEUR_COMMITTED,TxState.HEUR_MIXED
+			if (txState.isOneOf(TxState.TERMINATED)) {
 				Assert.assertTrue(txState.isFinalState());
 			} else {
 				Assert.assertFalse(txState.isFinalState());
