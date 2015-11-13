@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.ByteBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.Collection;
@@ -34,7 +35,6 @@ public class FileSystemCoordinatorLogEntryRepository implements
 	}
 
 	private Serializer serializer = new Serializer(); 
-	int position = 0;
 	@Override
 	public void put(String id, CoordinatorLogEntry coordinatorLogEntry)
 			throws IllegalArgumentException, LogWriteException {
@@ -51,13 +51,13 @@ public class FileSystemCoordinatorLogEntryRepository implements
 		try {
 			String str = serializer.toJSON(coordinatorLogEntry);
 			byte[] buffer = str.getBytes();
-			MappedByteBuffer wrBuf = rwChannel.map(FileChannel.MapMode.READ_WRITE, position, buffer.length );
-			wrBuf.put(buffer);
-			if(coordinatorLogEntry.shouldSync()) {
-				wrBuf.force();
+			ByteBuffer buff = ByteBuffer.allocateDirect(buffer.length);
+			buff.put(buffer);
+			buff.rewind();
+			rwChannel.write(buff);
+			if (coordinatorLogEntry.shouldSync() ) {
+				rwChannel.force(false);
 			}
-			position+=buffer.length;
-		
 		} catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -70,7 +70,6 @@ public class FileSystemCoordinatorLogEntryRepository implements
 		FileChannel rwChannel =null;
 		try {
 			rwChannel=file.openNewVersionForNioWriting();
-			position=0;
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -170,7 +169,7 @@ public class FileSystemCoordinatorLogEntryRepository implements
 			write(coordinatorLogEntry);
 		}
 		file.discardBackupVersion();
-		position=0;
+		
 	}
 
 }
