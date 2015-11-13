@@ -125,11 +125,25 @@ public class CachedCoordinatorLogEntryRepositoryTestJUnit {
 	
 	@Test
 	public void testWriteCheckpointOnBackup() throws Exception {
+		
 		givenExistingCoordinatorLogEntry();
 		whenPutSucceedsOnBackup();
+		
+		givenExistingCoordinatorLogEntry();
 		whenPutSucceedsOnBackup();
-		//then checkpoint was triggered
+		
+		thenCheckpointWasTriggeredOnBackup();
+	}
+
+	private void thenCheckpointWasTriggeredOnBackup() throws LogWriteException {
 		Mockito.verify(backupCoordinatorLogEntryRepository,Mockito.times(1)).writeCheckpoint(Mockito.anyCollection());
+	}
+	
+	@Test
+	public void testFailingPutOnBackupTriggersWriteCheckpoint() throws Exception{
+		givenExistingCoordinatorLogEntry();
+		whenPutFailsOnBackup();
+		thenCheckpointWasTriggeredOnBackup();
 	}
 
 	
@@ -146,7 +160,6 @@ public class CachedCoordinatorLogEntryRepositoryTestJUnit {
 
 	private void whenClose() {
 		sut.close();
-		
 	}
 
 	

@@ -52,7 +52,7 @@ public class CachedCoordinatorLogEntryRepository implements
 			numberOfPutsSinceLastCheckpoint++;
 		} catch (Exception e) {
 			staleInCache.add(id);
-			
+			backupCoordinatorLogEntryRepository.writeCheckpoint(inMemoryCoordinatorLogEntryRepository.getAllCoordinatorLogEntries());
 		}
 	}
 

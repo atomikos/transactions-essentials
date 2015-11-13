@@ -1,6 +1,5 @@
 package com.atomikos.recovery;
 
-import java.io.IOException;
 import java.util.Collection;
 
 import com.atomikos.icatch.provider.ConfigProperties;
@@ -20,7 +19,7 @@ public interface CoordinatorLogEntryRepository {
 	
 	Collection<CoordinatorLogEntry> getAllCoordinatorLogEntries();
 
-	void writeCheckpoint(Collection<CoordinatorLogEntry> checkpointContent) throws IllegalStateException, IOException;
+	void writeCheckpoint(Collection<CoordinatorLogEntry> checkpointContent) throws LogWriteException;
 	
 	void close();
 }

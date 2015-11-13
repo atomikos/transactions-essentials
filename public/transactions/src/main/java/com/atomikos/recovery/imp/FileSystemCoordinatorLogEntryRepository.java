@@ -11,7 +11,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.atomikos.icatch.TxState;
 import com.atomikos.icatch.provider.ConfigProperties;
 import com.atomikos.recovery.CoordinatorLogEntry;
 import com.atomikos.recovery.CoordinatorLogEntryRepository;
@@ -31,25 +30,29 @@ public class FileSystemCoordinatorLogEntryRepository implements
 		String baseDir = configProperties.getLogBaseDir();
 		String baseName = configProperties.getLogBaseName();
 		file = new VersionedFile(baseDir, baseName, ".log");
-	
+		if (rwChannel==null) {
+			rwChannel = initializeOutput();
+		}
 	}
 
 	private Serializer serializer = new Serializer(); 
 	@Override
 	public void put(String id, CoordinatorLogEntry coordinatorLogEntry)
-			throws IllegalArgumentException, LogWriteException {
-		
-		if (rwChannel==null) {
-			rwChannel = initializeOutput();
-		}
-		
-		
-		write(coordinatorLogEntry);
-
-	}
-	private void write(CoordinatorLogEntry coordinatorLogEntry) {
+			throws LogWriteException {
 		try {
-			String str = serializer.toJSON(coordinatorLogEntry);
+			write(coordinatorLogEntry);
+		} catch (IOException e) {
+			throw new LogWriteException(e);
+		}
+	}
+	
+	private void write(CoordinatorLogEntry coordinatorLogEntry) throws IOException {
+			String str;
+			try {
+				str = serializer.toJSON(coordinatorLogEntry);
+			} catch (IllegalAccessException e) {
+				throw new IOException(e);
+			}
 			byte[] buffer = str.getBytes();
 			ByteBuffer buff = ByteBuffer.allocateDirect(buffer.length);
 			buff.put(buffer);
@@ -58,13 +61,6 @@ public class FileSystemCoordinatorLogEntryRepository implements
 			if (coordinatorLogEntry.shouldSync() ) {
 				rwChannel.force(false);
 			}
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 	private FileChannel initializeOutput() {
 		FileChannel rwChannel =null;
@@ -80,14 +76,12 @@ public class FileSystemCoordinatorLogEntryRepository implements
 
 	@Override
 	public CoordinatorLogEntry get(String coordinatorId) {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public Collection<ParticipantLogEntry> findAllCommittingParticipants() {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -156,14 +150,18 @@ public class FileSystemCoordinatorLogEntryRepository implements
 
 	@Override
 	public void writeCheckpoint(
-			Collection<CoordinatorLogEntry> checkpointContent) throws IllegalStateException, IOException {
-		closeOutput();
-		
-		rwChannel = file.openNewVersionForNioWriting();
-		for (CoordinatorLogEntry coordinatorLogEntry : checkpointContent) {
-			write(coordinatorLogEntry);
+			Collection<CoordinatorLogEntry> checkpointContent) throws  LogWriteException {
+		try {
+			closeOutput();
+			
+			rwChannel = file.openNewVersionForNioWriting();
+			for (CoordinatorLogEntry coordinatorLogEntry : checkpointContent) {
+					write(coordinatorLogEntry);
+			}
+			file.discardBackupVersion();
+		} catch (Exception e) {
+			throw new LogWriteException(e);
 		}
-		file.discardBackupVersion();
 		
 	}
 
