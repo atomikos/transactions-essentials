@@ -281,7 +281,7 @@ public class RecoveryLogTestJUnit {
 		for (int i = 0; i < otherParticipantsStates.length; i++) {
 			participantLogEntries[i + 1] = newParticipantLogEntryInState(
 					otherParticipantsStates[i], expired);
-			System.out.println(participantLogEntries[i + 1].state);
+			//System.out.println(participantLogEntries[i + 1].state);
 		}
 
 		CoordinatorLogEntry coordinatorLogEntry = new CoordinatorLogEntry(
@@ -306,8 +306,16 @@ public class RecoveryLogTestJUnit {
 	}
 
 	private void whenPresumedAborting() throws IllegalStateException, LogWriteException {
-		participantLogEntry = newParticipantLogEntryInState(TxState.IN_DOUBT, NON_EXPIRED);
-		sut.presumedAborting(participantLogEntry);
+		ParticipantLogEntry entry = createEquivalentParticipantLogEntryForPresumedAbort();
+		sut.presumedAborting(entry);
+	}
+
+	private ParticipantLogEntry createEquivalentParticipantLogEntryForPresumedAbort() {
+		ParticipantLogEntry ret = new ParticipantLogEntry(
+				participantLogEntry.coordinatorId, participantLogEntry.participantUri, 
+				0, "bla", TxState.IN_DOUBT);
+		
+		return ret;
 	}
 
 	private ParticipantLogEntry newParticipantLogEntryInState(TxState state,
