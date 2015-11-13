@@ -285,6 +285,45 @@ public class CoordinatorLogEntryTestJUnit {
 		
 		thenCoordinatorLogEntryExpiresAt(expiresMin);
 	}
+	
+	@Test
+	public void testCommittingShouldSync() throws Exception {
+		givenCoordinatorLogEntryWithParticipantStates(TxState.COMMITTING);
+		thenCoordinatorLogEntryShouldSync();
+	}
+
+	@Test
+	public void testInDoubtShouldNotSync() throws Exception {
+		givenCoordinatorLogEntryWithParticipantStates(TxState.IN_DOUBT);
+		thenCoordinatorLogEntryShouldNotSync();
+	}
+
+	@Test
+	public void testAbortingShouldNotSync() throws Exception {
+		givenCoordinatorLogEntryWithParticipantStates(TxState.ABORTING);
+		thenCoordinatorLogEntryShouldNotSync();
+	}
+	
+	@Test
+	public void testTerminatedShouldNotSync() throws Exception {
+		givenCoordinatorLogEntryWithParticipantStates(TxState.TERMINATED);
+		thenCoordinatorLogEntryShouldNotSync();
+	}
+	
+	private void thenCoordinatorLogEntryShouldNotSync() {
+		Assert.assertFalse(coordinatorLogEntry.shouldSync());
+		
+	}
+
+
+
+	private void thenCoordinatorLogEntryShouldSync() {
+		Assert.assertTrue(coordinatorLogEntry.shouldSync());
+		
+	}
+
+
+
 	private void thenCoordinatorLogEntryExpiresAt(long expiresMin) {
 		Assert.assertEquals(expiresMin, coordinatorLogEntry.expires());
 		
