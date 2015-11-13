@@ -45,21 +45,25 @@ public class CachedCoordinatorLogEntryRepository implements
 		
 		try {
 			if(needsCheckpoint()){
-				backupCoordinatorLogEntryRepository.writeCheckpoint(inMemoryCoordinatorLogEntryRepository.getAllCoordinatorLogEntries());
+				performCheckpoint();
 			}
 			backupCoordinatorLogEntryRepository.put(id, coordinatorLogEntry);
 			inMemoryCoordinatorLogEntryRepository.put(id, coordinatorLogEntry);
 			numberOfPutsSinceLastCheckpoint++;
 		} catch (Exception e) {
-			try {
-				backupCoordinatorLogEntryRepository.writeCheckpoint(inMemoryCoordinatorLogEntryRepository.getAllCoordinatorLogEntries());
-			} catch (LogWriteException corrupted) {
-				corrupt = true;
-				throw corrupted;	
-			} catch (Exception corrupted) {
-				corrupt = true;
-				throw new LogWriteException(corrupted);
-			}
+			performCheckpoint();
+		}
+	}
+
+	private void performCheckpoint() throws LogWriteException {
+		try {
+			backupCoordinatorLogEntryRepository.writeCheckpoint(inMemoryCoordinatorLogEntryRepository.getAllCoordinatorLogEntries());
+		} catch (LogWriteException corrupted) {
+			corrupt = true;
+			throw corrupted;	
+		} catch (Exception corrupted) {
+			corrupt = true;
+			throw new LogWriteException(corrupted);
 		}
 	}
 
