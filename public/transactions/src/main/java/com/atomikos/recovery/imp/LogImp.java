@@ -96,6 +96,10 @@ public class LogImp implements OltpLog, RecoveryLog {
 	@Override
 	public void presumedAborting(ParticipantLogEntry entry)
 			throws IllegalStateException, LogWriteException {
+		if (entry == null || entry.state != TxState.IN_DOUBT) {
+			throw new IllegalArgumentException();
+		}
+		
 		CoordinatorLogEntry coordinatorLogEntry = repository.get(entry.coordinatorId);
 		if (coordinatorLogEntry == null) {
 			coordinatorLogEntry = createCoordinatorLogEntry(entry);
