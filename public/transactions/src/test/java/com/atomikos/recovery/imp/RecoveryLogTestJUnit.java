@@ -6,6 +6,7 @@ import java.util.Collection;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Categories.ExcludeCategory;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
@@ -53,7 +54,18 @@ public class RecoveryLogTestJUnit {
 		givenEmptyRepository();
 		whenPresumedAborting();
 	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void testPresumedAbortingThrowsForNullEntry() throws IllegalStateException, LogWriteException {
+		sut.presumedAborting(null);
+	}
 
+	@Test(expected = IllegalArgumentException.class)
+	public void testPresumedAbortingThrowsIfNotIndoubt() throws IllegalStateException, LogWriteException {
+		participantLogEntry = newParticipantLogEntryInState(TxState.ABORTING, NON_EXPIRED);
+		sut.presumedAborting(participantLogEntry);
+	}
+	
 	@Test
 	public void testPresumedAbortingOfExpiredInDoubtCoordinatorCreatesAbortingCoordinatorLogEntry()
 			throws Exception {
@@ -294,6 +306,7 @@ public class RecoveryLogTestJUnit {
 	}
 
 	private void whenPresumedAborting() throws IllegalStateException, LogWriteException {
+		participantLogEntry = newParticipantLogEntryInState(TxState.IN_DOUBT, NON_EXPIRED);
 		sut.presumedAborting(participantLogEntry);
 	}
 
