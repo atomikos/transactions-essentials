@@ -165,4 +165,16 @@ public class CoordinatorLogEntry {
 		return ret;
 	}
 
+	public boolean shouldSync() {
+		TxState state = getResultingState();
+		switch (state) {
+		case IN_DOUBT:
+		case ABORTING:
+		case TERMINATED:
+			return false; // sub-transactions: root will sync COMMITTING entry in same log later which will also sync this entry
+		default:
+			return true;
+		}
+	}
+
 }
