@@ -5,7 +5,6 @@ import java.util.Properties;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -85,21 +84,6 @@ public class CachedCoordinatorLogEntryRepositoryTestJUnit {
 	}
 	
 	@Test
-	public void testRemoveUpdatesBothRepositories() throws Exception {
-		givenExistingCoordinatorLogEntry();
-		sut.remove(tid);
-		thenRemoveWasCalledOnBothCoordinatorLogEntryRepositories();
-	}
-
-	@Test
-	public void testFailingRemoveImpliesGetOnBackupRepositoryOnNextGet() throws Exception {
-		givenExistingCoordinatorLogEntry();
-		sut.put(tid, coordinatorLogEntry);
-		whenRemoveFailsOnBackup();
-		thenGetAccessesBackup();
-	}
-	
-	@Test
 	public void testSucceedingSecondPutOnBackupImpliesNoGetOnBackupRepositoryOnNextGet() throws Exception {
 		givenExistingCoordinatorLogEntry();
 		whenPutFailsOnBackup();
@@ -107,14 +91,6 @@ public class CachedCoordinatorLogEntryRepositoryTestJUnit {
 		thenGetDoesNotAccessBackup();
 	}
 
-	@Test
-	public void testSucceedingSecondRemoveOnBackupImpliesNoGetOnBackupRepositoryOnNextGet() throws Exception {
-		givenExistingCoordinatorLogEntry();
-		whenRemoveFailsOnBackup();
-		whenRemoveSucceedsOnBackup();
-		thenGetDoesNotAccessBackup();
-	}
-	
 	@Test
 	public void testIfStaleIsEmptyThenRetrievalDoesNotAccessBackup() throws Exception {
 		givenExistingCoordinatorLogEntry();
@@ -201,28 +177,11 @@ public class CachedCoordinatorLogEntryRepositoryTestJUnit {
 		
 	}
 
-	private void whenRemoveSucceedsOnBackup() {
-		 Mockito.reset(backupCoordinatorLogEntryRepository);
-		 sut.remove(tid);
-	}
+	
 
 	private void whenPutSucceedsOnBackup() throws IllegalArgumentException, LogWriteException {
         Mockito.reset(backupCoordinatorLogEntryRepository);
         sut.put(tid, coordinatorLogEntry);
-	}
-
-	private void whenRemoveFailsOnBackup() {
-		Mockito.doThrow(new RuntimeException()).when(backupCoordinatorLogEntryRepository).remove(tid);;
-		try {
-			sut.remove(tid);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	private void thenRemoveWasCalledOnBothCoordinatorLogEntryRepositories() {
-		Mockito.verify(backupCoordinatorLogEntryRepository,Mockito.times(1)).remove(Mockito.anyString());
 	}
 
 	private void thenGetAccessesBackup() {

@@ -6,7 +6,6 @@ import java.util.Collection;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.experimental.categories.Categories.ExcludeCategory;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
@@ -95,27 +94,7 @@ public class RecoveryLogTestJUnit {
 
 	}
 
-	@Test
-	public void testTerminatedOfExistingCoordinatorRemovesFromLog()
-			throws Exception {
-		givenCoordinatorInRepository(TxState.COMMITTING, NON_EXPIRED, TxState.TERMINATED);
-		whenTerminated();
-		thenRemoveWasCalledOnRepository();
-	}
-
-	@Test
-	public void testTerminatedForNonExistingCoordinatorDoesNothing() throws Exception {
-		givenEmptyRepository();
-		whenTerminated();
-		thenRepositoryWasNotUpdated();
-	}
 	
-	@Test
-	public void testHeuristicCommitForNonExistingCoordinatorDoesNothing() throws Exception {
-		givenEmptyRepository();
-		whenTerminatedWithHeuristicCommit();
-		thenRepositoryWasNotUpdated();
-	}
 	
 	@Test
 	public void testHeuristicCommitOfParticipantForExistingCoordinatorUpdatesLog() throws Exception {
@@ -124,33 +103,7 @@ public class RecoveryLogTestJUnit {
 		thenRepositoryWasUpdated();
 	}
 	
-	@Test
-	public void testHeuristicCommitOfExistingCoordinatorResultingInHeurCommittedRemovesFromLog() throws Exception {
-		givenCoordinatorInRepository(TxState.HEUR_COMMITTED, NON_EXPIRED, TxState.HEUR_COMMITTED);
-		whenTerminatedWithHeuristicCommit();
-		thenRemoveWasCalledOnRepository();
-	}
 	
-	@Test
-	public void testHeuristicCommitOfExistingCoordinatorResultingInHeurMixedRemovesFromLog() throws Exception {
-		givenCoordinatorInRepository(TxState.HEUR_COMMITTED, NON_EXPIRED, TxState.HEUR_MIXED);
-		whenTerminatedWithHeuristicCommit();
-		thenRemoveWasCalledOnRepository();
-	}
-	
-	@Test
-	public void testHeuristicMixedForNonExistingCoordinatorDoesNothing() throws Exception {
-		givenEmptyRepository();
-		whenTerminatedWithHeuristicMixed();
-		thenRepositoryWasNotUpdated();
-	}
-	
-	@Test
-	public void testHeuristicMixedOfExistingCoordinatorResultingInHeurMixedRemovesFromLog() throws Exception {
-		givenCoordinatorInRepository(TxState.HEUR_MIXED, NON_EXPIRED);
-		whenTerminatedWithHeuristicMixed();
-		thenRemoveWasCalledOnRepository();
-	}
 	
 	@Test
 	public void testHeuristicMixedOfExistingCoordinatorNotResultingInHeurMixedUpdatesLog() throws Exception {
@@ -159,27 +112,6 @@ public class RecoveryLogTestJUnit {
 		thenRepositoryWasUpdated();
 	}
 
-	@Test
-	public void testHeuristicRollbackForNonExistingCoordinatorDoesNothing() throws Exception {
-		givenEmptyRepository();
-		whenTerminatedWithHeuristicRollback();
-		thenRepositoryWasNotUpdated();
-	}
-	
-	
-	@Test
-	public void testHeuristicRollbackOfExistingCoordinatorResultingAbortedRemovesFromLog() throws Exception {
-		givenCoordinatorInRepository(TxState.ABORTED, NON_EXPIRED);
-		whenTerminatedWithHeuristicRollback();
-		thenRemoveWasCalledOnRepository();
-	}
-	
-	@Test
-	public void testHeuristicRollbackOfExistingCoordinatorHeurAbortedRemovesFromLog() throws Exception {
-		givenCoordinatorInRepository(TxState.COMMITTING, NON_EXPIRED,TxState.HEUR_ABORTED);
-		whenTerminatedWithHeuristicRollback();
-		thenRemoveWasCalledOnRepository();
-	}
 	
 	@Test
 	public void testHeuristicRollbackOfExistingCoordinatorCommittingRemovesFromLog() throws Exception {
@@ -228,19 +160,6 @@ public class RecoveryLogTestJUnit {
 
 	private void whenTerminatedWithHeuristicCommit() throws LogWriteException {
 		sut.terminatedWithHeuristicCommit(participantLogEntry);
-	}
-
-	private void thenRepositoryWasNotUpdated() throws IllegalArgumentException, LogWriteException {
-		Mockito.verify(logRepository, Mockito.never()).remove(
-				Mockito.anyString());
-		Mockito.verify(logRepository, Mockito.never()).put(
-				Mockito.anyString(), (CoordinatorLogEntry) Mockito.any());
-		
-	}
-
-	private void thenRemoveWasCalledOnRepository() {
-		Mockito.verify(logRepository, Mockito.times(1)).remove(
-				Mockito.anyString());
 	}
 
 	private void thenRepositoryWasUpdated() throws IllegalArgumentException, LogWriteException {

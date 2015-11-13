@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.util.HashSet;
 import java.util.Set;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.junit.Test;
 
@@ -42,7 +42,8 @@ public class TxStateTestJUnit {
 	public void testFinalStates() {
 		TxState[] states = TxState.values();
 		for (TxState txState : states) {
-			if (TxState.TERMINATED.equals(txState)) {
+			
+			if (txState.isOneOf(TxState.TERMINATED,TxState.HEUR_ABORTED,TxState.HEUR_COMMITTED,TxState.HEUR_MIXED)) {
 				Assert.assertTrue(txState.isFinalState());
 			} else {
 				Assert.assertFalse(txState.isFinalState());

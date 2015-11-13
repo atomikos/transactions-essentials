@@ -31,13 +31,6 @@ public class OltpLogTestJUnit {
 	}
 
 	@Test
-	public void testRemoveInOltpLogRemovesFromRepository() throws Exception {
-		CoordinatorLogEntry coordinatorLogEntry = createAnyCoordinatorLogEntry();
-		whenDeleteInOltp(coordinatorLogEntry.coordinatorId);
-		thenDeleteCalledInRepository(coordinatorLogEntry.coordinatorId);
-	}
-	
-	@Test
 	public void testTransitionFromInDoubtToCommittingIsAllowed() throws Exception {
 		CoordinatorLogEntry coordinatorLogEntry = createCoordinatorLogEntryInState(TxState.IN_DOUBT);
 		Mockito.when(logRepository.get(coordinatorLogEntry.coordinatorId)).thenReturn(coordinatorLogEntry);
@@ -136,13 +129,6 @@ public class OltpLogTestJUnit {
 		
 	}
 
-	private void whenDeleteInOltp(String tid) throws LogWriteException {
-		sut.remove(tid);
-	}
-
-	private void thenDeleteCalledInRepository(String tid) {
-		Mockito.verify(logRepository).remove(tid);
-	}
 
 	
 	private void thenPutCalledInRepository(CoordinatorLogEntry coordinatorLogEntry) throws IllegalArgumentException, LogWriteException {

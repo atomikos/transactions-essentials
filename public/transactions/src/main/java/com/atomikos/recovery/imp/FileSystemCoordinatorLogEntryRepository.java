@@ -6,12 +6,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
-import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.atomikos.icatch.TxState;
 import com.atomikos.icatch.provider.ConfigProperties;
 import com.atomikos.recovery.CoordinatorLogEntry;
 import com.atomikos.recovery.CoordinatorLogEntryRepository;
@@ -77,11 +77,6 @@ public class FileSystemCoordinatorLogEntryRepository implements
 		return rwChannel;
 	}
 
-	@Override
-	public void remove(String id) {
-		// TODO Auto-generated method stub
-
-	}
 
 	@Override
 	public CoordinatorLogEntry get(String coordinatorId) {

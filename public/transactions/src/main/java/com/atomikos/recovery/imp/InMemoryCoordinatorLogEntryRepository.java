@@ -31,14 +31,11 @@ public class InMemoryCoordinatorLogEntryRepository implements
 		if (existing != null && existing == coordinatorLogEntry) {
 			throw new IllegalArgumentException("cannot put the same coordinatorLogEntry twice");
 		}
-		storage.put(id, coordinatorLogEntry);
-
-	}
-
-	@Override
-	public synchronized void remove(String id) {
-		storage.remove(id);
-
+		if(coordinatorLogEntry.getResultingState().isFinalState()){
+			storage.remove(id);
+		} else {
+			storage.put(id, coordinatorLogEntry);	
+		}
 	}
 
 	@Override

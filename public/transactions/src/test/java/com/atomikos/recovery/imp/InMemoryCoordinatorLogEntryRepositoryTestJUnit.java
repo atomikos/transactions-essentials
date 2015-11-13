@@ -1,7 +1,5 @@
 package com.atomikos.recovery.imp;
 
-import static org.junit.Assert.*;
-
 import java.util.Collection;
 
 import org.junit.Assert;
@@ -35,13 +33,6 @@ public class InMemoryCoordinatorLogEntryRepositoryTestJUnit {
 	}
 	
 
-	@Test
-	public void testRemove() throws Exception {
-		givenCoordinatorLogEntryInRepository();
-		whenCoordinatorLogEntryRemovedFromRepository();
-		thenCoordinatorLogEntryNotFoundInRepository();
-	}
-	
 	@Test
 	public void testFind() throws Exception {
 		testPut();
@@ -87,15 +78,6 @@ public class InMemoryCoordinatorLogEntryRepositoryTestJUnit {
 		sut.put(TID, coordinatorLogEntry);
 	}
 	
-	private void thenCoordinatorLogEntryNotFoundInRepository() {
-		CoordinatorLogEntry actual = sut.get(TID);
-		Assert.assertNull(actual);
-		
-	}
-	private void whenCoordinatorLogEntryRemovedFromRepository() {
-		sut.remove(TID);
-		
-	}
 	private void whenCoordinatorLogEntryPutInRepository() {
 		sut.put(TID, coordinatorLogEntry);
 	}

@@ -175,7 +175,7 @@ public class CoordinatorLogEntry  implements Serializable {
 		case TERMINATED:
 			return false; // sub-transactions: root will sync COMMITTING entry in same log later which will also sync this entry
 		default:
-			return true;
+			return !state.isFinalState();
 		}
 	}
 

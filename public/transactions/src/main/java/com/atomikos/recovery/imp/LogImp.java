@@ -29,10 +29,7 @@ public class LogImp implements OltpLog, RecoveryLog {
 		if (!entryAllowed(coordinatorLogEntry)) {
 			throw new IllegalStateException();
 		}
-		
 		repository.put(coordinatorLogEntry.coordinatorId, coordinatorLogEntry);
-		
-
 	}
 
 	private boolean entryAllowed(CoordinatorLogEntry coordinatorLogEntry) {
@@ -41,10 +38,7 @@ public class LogImp implements OltpLog, RecoveryLog {
 		return coordinatorLogEntry.transitionAllowedFrom(existing);
 	}
 
-	@Override
-	public void remove(String coordinatorId) throws LogWriteException {
-		repository.remove(coordinatorId);
-	}
+	
 
 	@Override
 	public void terminated(ParticipantLogEntry entry)  {
@@ -56,7 +50,7 @@ public class LogImp implements OltpLog, RecoveryLog {
 		} else {
 			CoordinatorLogEntry updated = coordinatorLogEntry.terminated(entry);
 			try {
-				updateRepository(updated, TxState.TERMINATED);
+				repository.put(updated.coordinatorId, updated);
 			} catch (LogWriteException e) {
 				//TODO coordinator will remain committing in log - clean up by admin tools?
 				LOGGER.logWarning("Unable to write to repository "+entry+" ignoring");
@@ -64,14 +58,7 @@ public class LogImp implements OltpLog, RecoveryLog {
 		}
 	}
 
-	private void updateRepository(CoordinatorLogEntry updated, TxState... stateForRemoval)
-			throws LogWriteException {
-		if (updated.getResultingState().isOneOf(stateForRemoval)) {
-			repository.remove(updated.coordinatorId);
-		} else {
-			repository.put(updated.coordinatorId, updated);
-		}
-	}
+	
 
 	@Override
 	public void terminatedWithHeuristicRollback(ParticipantLogEntry entry) throws LogWriteException {
@@ -82,7 +69,7 @@ public class LogImp implements OltpLog, RecoveryLog {
 					+ entry.coordinatorId + " " + entry.participantUri);
 		} else {
 			CoordinatorLogEntry updated = coordinatorLogEntry.terminatedWithHeuristicRollback(entry);
-			updateRepository(updated,TxState.HEUR_MIXED,TxState.HEUR_ABORTED);
+			repository.put(updated.coordinatorId, updated);
 		}
 	}
 
@@ -129,10 +116,8 @@ public class LogImp implements OltpLog, RecoveryLog {
 			LOGGER.logWarning("terminatedWithHeuristicCommit called on non existent Coordinator "
 					+ entry.coordinatorId + " " + entry.participantUri);
 		} else {
-			CoordinatorLogEntry updated = coordinatorLogEntry
-					.terminatedWithHeuristicCommit(entry);
-			
-			updateRepository(updated,TxState.HEUR_MIXED,TxState.HEUR_COMMITTED);
+			CoordinatorLogEntry updated = coordinatorLogEntry.terminatedWithHeuristicCommit(entry);
+			repository.put(updated.coordinatorId, updated);
 			
 		}
 
@@ -152,9 +137,9 @@ public class LogImp implements OltpLog, RecoveryLog {
 					+ entry.coordinatorId + " " + entry.participantUri);
 		} else {
 
-			CoordinatorLogEntry updated = coordinatorLogEntry
-					.terminatedWithHeuristicMixed(entry);
-			updateRepository(updated,TxState.HEUR_MIXED);
+			CoordinatorLogEntry updated = coordinatorLogEntry.terminatedWithHeuristicMixed(entry);
+			repository.put(updated.coordinatorId, updated);
+			
 		}
 	}
 

@@ -61,17 +61,6 @@ public class CachedCoordinatorLogEntryRepository implements
 	}
 
 	@Override
-	public void remove(String id) {
-		try {
-			inMemoryCoordinatorLogEntryRepository.remove(id);
-			backupCoordinatorLogEntryRepository.remove(id);
-			staleInCache.remove(id);
-		} catch (Exception e) {
-			staleInCache.add(id);
-		}
-	}
-
-	@Override
 	public CoordinatorLogEntry get(String coordinatorId) {
 		refreshInMemoryCoordinatorLogEntryRepository();
 		return inMemoryCoordinatorLogEntryRepository.get(coordinatorId);
@@ -82,9 +71,7 @@ public class CachedCoordinatorLogEntryRepository implements
 			CoordinatorLogEntry backedUpCoordinatorLogEntry = backupCoordinatorLogEntryRepository.get(coordinatorId);
 			if (backedUpCoordinatorLogEntry != null) {
 				inMemoryCoordinatorLogEntryRepository.put(coordinatorId,backedUpCoordinatorLogEntry);
-			} else  {
-				inMemoryCoordinatorLogEntryRepository.remove(coordinatorId);
-			}
+			} 
 		}
 	}
 
