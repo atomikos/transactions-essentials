@@ -28,7 +28,7 @@ public class FileSystemCoordinatorLogEntryRepositoryTestJUnit {
 	@Before
 	public void initFileSystemCoordinatorLogEntryRepository() throws Exception {
 		Properties properties = new Properties();
-		properties.put("com.atomikos.icatch.log_base_dir", ClassLoader.getSystemClassLoader().getResource(".").getFile());
+		properties.put("com.atomikos.icatch.log_base_dir", ClassLoader.getSystemClassLoader().getResource(".").getFile().replaceAll("%20", " "));
 		properties.put("com.atomikos.icatch.log_base_name", name.getMethodName());
 		configProperties =new ConfigProperties(properties);
 		sut.init(configProperties);
