@@ -16,7 +16,7 @@ import com.atomikos.recovery.ParticipantLogEntry;
 
 public class SerializeTestJUnit {
 
-	private static final int NB_ITER = 1000000;
+	private static final int NB_ITER = 10000;
 	String tid = "TID";
 
 	Serializer serializer = new Serializer();
