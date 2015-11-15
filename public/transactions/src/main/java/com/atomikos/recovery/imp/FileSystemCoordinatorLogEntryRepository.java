@@ -47,12 +47,7 @@ public class FileSystemCoordinatorLogEntryRepository implements
 	}
 	
 	private void write(CoordinatorLogEntry coordinatorLogEntry) throws IOException {
-			String str;
-			try {
-				str = serializer.toJSON(coordinatorLogEntry);
-			} catch (IllegalAccessException e) {
-				throw new IOException(e);
-			}
+			String str = serializer.toJSON(coordinatorLogEntry);
 			byte[] buffer = str.getBytes();
 			ByteBuffer buff = ByteBuffer.allocateDirect(buffer.length);
 			buff.put(buffer);
