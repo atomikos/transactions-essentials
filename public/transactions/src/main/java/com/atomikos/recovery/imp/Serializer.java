@@ -45,6 +45,7 @@ public class Serializer {
 			strBuilder.append(END_ARRAY);
 		}
 		strBuilder.append(END_OBJECT);
+		strBuilder.append("\n");
 	}
 
 }
