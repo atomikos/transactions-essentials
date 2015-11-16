@@ -30,30 +30,30 @@ public class FileSystemCoordinatorLogEntryRepository implements
 		String baseDir = configProperties.getLogBaseDir();
 		String baseName = configProperties.getLogBaseName();
 		file = new VersionedFile(baseDir, baseName, ".log");
-		if (rwChannel==null) {
-			rwChannel = initializeOutput();
-		}
 	}
 
 	private Serializer serializer = new Serializer(); 
 	@Override
 	public void put(String id, CoordinatorLogEntry coordinatorLogEntry)
 			throws LogWriteException {
+		if (rwChannel==null) {
+			rwChannel = initializeOutput();
+		}
 		try {
-			write(coordinatorLogEntry);
+			write(coordinatorLogEntry, true);
 		} catch (IOException e) {
 			throw new LogWriteException(e);
 		}
 	}
 	
-	private void write(CoordinatorLogEntry coordinatorLogEntry) throws IOException {
+	private void write(CoordinatorLogEntry coordinatorLogEntry, boolean flushImmediatly) throws IOException {
 			String str = serializer.toJSON(coordinatorLogEntry);
 			byte[] buffer = str.getBytes();
-			ByteBuffer buff = ByteBuffer.allocateDirect(buffer.length);
+			ByteBuffer buff = ByteBuffer.wrap(buffer);
 			buff.put(buffer);
 			buff.rewind();
 			rwChannel.write(buff);
-			if (coordinatorLogEntry.shouldSync() ) {
+			if (coordinatorLogEntry.shouldSync() && flushImmediatly) {
 				rwChannel.force(false);
 			}
 	}
@@ -144,15 +144,16 @@ public class FileSystemCoordinatorLogEntryRepository implements
 	}
 
 	@Override
-	public void writeCheckpoint(
+	public synchronized void writeCheckpoint(
 			Collection<CoordinatorLogEntry> checkpointContent) throws  LogWriteException {
 		try {
 			closeOutput();
 			
 			rwChannel = file.openNewVersionForNioWriting();
 			for (CoordinatorLogEntry coordinatorLogEntry : checkpointContent) {
-					write(coordinatorLogEntry);
+					write(coordinatorLogEntry, false);
 			}
+			rwChannel.force(false);
 			file.discardBackupVersion();
 		} catch (Exception e) {
 			throw new LogWriteException(e);
