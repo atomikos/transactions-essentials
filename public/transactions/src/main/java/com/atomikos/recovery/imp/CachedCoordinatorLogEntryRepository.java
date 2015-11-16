@@ -55,6 +55,7 @@ public class CachedCoordinatorLogEntryRepository implements
 	private void performCheckpoint() throws LogWriteException {
 		try {
 			backupCoordinatorLogEntryRepository.writeCheckpoint(inMemoryCoordinatorLogEntryRepository.getAllCoordinatorLogEntries());
+			numberOfPutsSinceLastCheckpoint=0;
 		} catch (LogWriteException corrupted) {
 			corrupt = true;
 			throw corrupted;	
