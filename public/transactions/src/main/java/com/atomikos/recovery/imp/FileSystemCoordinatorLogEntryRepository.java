@@ -33,29 +33,40 @@ public class FileSystemCoordinatorLogEntryRepository implements
 	}
 
 	private Serializer serializer = new Serializer(); 
+	
+	
 	@Override
 	public void put(String id, CoordinatorLogEntry coordinatorLogEntry)
 			throws LogWriteException {
-		if (rwChannel==null) {
-			rwChannel = initializeOutput();
-		}
+		initChannelIfNecessary();
 		try {
 			write(coordinatorLogEntry, true);
 		} catch (IOException e) {
 			throw new LogWriteException(e);
 		}
 	}
+
+	private synchronized void initChannelIfNecessary() {
+		if (rwChannel==null) {
+			rwChannel = initializeOutput();
+		}
+	}
 	
-	private void write(CoordinatorLogEntry coordinatorLogEntry, boolean flushImmediatly) throws IOException {
+	private void write(CoordinatorLogEntry coordinatorLogEntry, boolean flushImmediately) throws IOException {
 			String str = serializer.toJSON(coordinatorLogEntry);
 			byte[] buffer = str.getBytes();
 			ByteBuffer buff = ByteBuffer.wrap(buffer);
 			buff.put(buffer);
 			buff.rewind();
-			rwChannel.write(buff);
-			if (coordinatorLogEntry.shouldSync() && flushImmediatly) {
-				rwChannel.force(false);
-			}
+			writeToFile(buff, coordinatorLogEntry.shouldSync() && flushImmediately);
+	}
+	
+	private synchronized void writeToFile(ByteBuffer buff,boolean force) throws IOException {
+		rwChannel.write(buff);
+		if (force) {
+			rwChannel.force(false);
+		}
+		
 	}
 	private FileChannel initializeOutput() {
 		FileChannel rwChannel =null;
@@ -113,9 +124,8 @@ public class FileSystemCoordinatorLogEntryRepository implements
 		} catch (IllegalStateException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (FileNotFoundException firstStart) {
+			// merely return empty collection
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -146,6 +156,7 @@ public class FileSystemCoordinatorLogEntryRepository implements
 	@Override
 	public synchronized void writeCheckpoint(
 			Collection<CoordinatorLogEntry> checkpointContent) throws  LogWriteException {
+		
 		try {
 			closeOutput();
 			
