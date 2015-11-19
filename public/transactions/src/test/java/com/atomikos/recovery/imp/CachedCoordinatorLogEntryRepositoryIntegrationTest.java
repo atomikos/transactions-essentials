@@ -85,7 +85,6 @@ public class CachedCoordinatorLogEntryRepositoryIntegrationTest {
 		
 		int numberOfLinesFoundInFile = perform(r);
 		
-		Thread.sleep(5000);
 		Assert.assertEquals(NB_OF_THREADS*NUMBER_OF_ENTRIES_PER_THREAD, numberOfLinesFoundInFile);
 	}
 	
