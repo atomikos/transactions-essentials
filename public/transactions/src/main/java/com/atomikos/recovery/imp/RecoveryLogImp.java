@@ -9,36 +9,18 @@ import com.atomikos.recovery.CoordinatorLogEntry;
 import com.atomikos.recovery.CoordinatorLogEntryRepository;
 import com.atomikos.recovery.LogException;
 import com.atomikos.recovery.LogReadException;
-import com.atomikos.recovery.OltpLog;
 import com.atomikos.recovery.ParticipantLogEntry;
 import com.atomikos.recovery.RecoveryLog;
 
-public class LogImp implements OltpLog, RecoveryLog {
+public class RecoveryLogImp implements RecoveryLog {
 
-	private static final Logger LOGGER = LoggerFactory.createLogger(LogImp.class);
+	private static final Logger LOGGER = LoggerFactory.createLogger(RecoveryLogImp.class);
 	
 	private CoordinatorLogEntryRepository repository;
 
 	public void setRepository(CoordinatorLogEntryRepository repository) {
 		this.repository = repository;
 	}
-
-	@Override
-	public void write(CoordinatorLogEntry coordinatorLogEntry)
-			throws IllegalStateException, LogException {
-		if (!entryAllowed(coordinatorLogEntry)) {
-			throw new IllegalStateException();
-		}
-		repository.put(coordinatorLogEntry.coordinatorId, coordinatorLogEntry);
-	}
-
-	private boolean entryAllowed(CoordinatorLogEntry coordinatorLogEntry) throws LogReadException {
-		CoordinatorLogEntry existing = repository
-				.get(coordinatorLogEntry.coordinatorId);
-		return coordinatorLogEntry.transitionAllowedFrom(existing);
-	}
-
-	
 
 	@Override
 	public void terminated(ParticipantLogEntry entry)  {
@@ -82,6 +64,21 @@ public class LogImp implements OltpLog, RecoveryLog {
 
 		return repository.findAllCommittingParticipants();
 	}
+
+	private void write(CoordinatorLogEntry coordinatorLogEntry)
+			throws IllegalStateException, LogException {
+		if (!entryAllowed(coordinatorLogEntry)) {
+			throw new IllegalStateException();
+		}
+		repository.put(coordinatorLogEntry.coordinatorId, coordinatorLogEntry);
+	}
+
+	private boolean entryAllowed(CoordinatorLogEntry coordinatorLogEntry) throws LogReadException {
+		CoordinatorLogEntry existing = repository
+				.get(coordinatorLogEntry.coordinatorId);
+		return coordinatorLogEntry.transitionAllowedFrom(existing);
+	}
+
 
 	@Override
 	public void presumedAborting(ParticipantLogEntry entry)

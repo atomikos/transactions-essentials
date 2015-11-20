@@ -78,7 +78,7 @@ public class CachedCoordinatorLogEntryRepositoryIntegrationTest {
 	public void testCreateUniqueCommittingEntries() throws Exception {
 		Runnable r = new Runnable() {
 			public void run() {
-				CoordinatorLogEntry[] coordinatorLogEntries = createUniqueCommittingEntries(NUMBER_OF_ENTRIES_PER_THREAD);
+				CoordinatorLogEntry[] coordinatorLogEntries = createUniqueEntriesInState(TxState.COMMITTING);
 				putAll(coordinatorLogEntries);
 			}
 		};
@@ -92,7 +92,7 @@ public class CachedCoordinatorLogEntryRepositoryIntegrationTest {
 	public void testCreateUniqueTerminatedEntries() throws Exception {
 		Runnable r = new Runnable() {
 			public void run() {
-				CoordinatorLogEntry[] coordinatorLogEntries = createUniqueTerminatedEntries(NUMBER_OF_ENTRIES_PER_THREAD);
+				CoordinatorLogEntry[] coordinatorLogEntries = createUniqueEntriesInState(TxState.TERMINATED);
 				putAll(coordinatorLogEntries);
 			}
 		};
@@ -126,25 +126,25 @@ public class CachedCoordinatorLogEntryRepositoryIntegrationTest {
 		return numberOfLinesFoundInFile;
 	}
 
-	private CoordinatorLogEntry[] createUniqueCommittingEntries(int nb) {
+	private CoordinatorLogEntry[] createUniqueEntriesInState(TxState state) {
 		String threadName=Thread.currentThread().getName();
-		CoordinatorLogEntry[] coordinatorLogEntries = new CoordinatorLogEntry[nb];
+		CoordinatorLogEntry[] coordinatorLogEntries = new CoordinatorLogEntry[NUMBER_OF_ENTRIES_PER_THREAD];
 		for (int i = 0; i < coordinatorLogEntries.length; i++) {
 			String coordinatorId = threadName+"_"+i;
-			coordinatorLogEntries[i] = createCoordinatorLogEntryWithParticipantsInState(coordinatorId,TxState.COMMITTING, TxState.COMMITTING);
+			coordinatorLogEntries[i] = createCoordinatorLogEntryWithParticipantsInState(coordinatorId,state, state);
 		}
 		return coordinatorLogEntries;
 	}
-	
-	private CoordinatorLogEntry[] createUniqueTerminatedEntries(int nb) {
-		String threadName=Thread.currentThread().getName();
-		CoordinatorLogEntry[] coordinatorLogEntries = new CoordinatorLogEntry[nb];
-		for (int i = 0; i < coordinatorLogEntries.length; i++) {
-			String coordinatorId = threadName+"_"+i;
-				coordinatorLogEntries[i] = createCoordinatorLogEntryWithParticipantsInState(coordinatorId,TxState.TERMINATED, TxState.TERMINATED);
-		}
-		return coordinatorLogEntries;
-	}
+//	
+//	private CoordinatorLogEntry[] createUniqueTerminatedEntries() {
+//		String threadName=Thread.currentThread().getName();
+//		CoordinatorLogEntry[] coordinatorLogEntries = new CoordinatorLogEntry[NUMBER_OF_ENTRIES_PER_THREAD];
+//		for (int i = 0; i < coordinatorLogEntries.length; i++) {
+//			String coordinatorId = threadName+"_"+i;
+//				coordinatorLogEntries[i] = createCoordinatorLogEntryWithParticipantsInState(coordinatorId,TxState.TERMINATED, TxState.TERMINATED);
+//		}
+//		return coordinatorLogEntries;
+//	}
 	private CoordinatorLogEntry createCoordinatorLogEntryWithParticipantsInState(String coordinatorId,
 			TxState... states) {
 		

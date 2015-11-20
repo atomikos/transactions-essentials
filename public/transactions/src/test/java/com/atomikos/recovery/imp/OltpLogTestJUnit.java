@@ -13,13 +13,13 @@ import com.atomikos.recovery.ParticipantLogEntry;
 
 public class OltpLogTestJUnit {
 
-	private LogImp sut;
+	private OltpLogImp sut;
 	private CoordinatorLogEntryRepository logRepository;
 
 
 	@Before
 	public void configure() {
-		sut = new LogImp();
+		sut = new OltpLogImp();
 		logRepository = Mockito.mock(CoordinatorLogEntryRepository.class);
 		sut.setRepository(logRepository);
 	}

@@ -22,7 +22,7 @@ public class RecoveryLogTestJUnit {
 
 	private static final boolean EXPIRED = true;
 	private static final boolean NON_EXPIRED = false;
-	private LogImp sut;
+	private RecoveryLogImp sut;
 	private CoordinatorLogEntryRepository logRepository;
 	ParticipantLogEntry participantLogEntry;
 	
@@ -32,7 +32,7 @@ public class RecoveryLogTestJUnit {
 
 	@Before
 	public void configure() {
-		sut = new LogImp();
+		sut = new RecoveryLogImp();
 		logRepository = Mockito.mock(CoordinatorLogEntryRepository.class);
 		sut.setRepository(logRepository);
 	}
