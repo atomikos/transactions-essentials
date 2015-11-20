@@ -55,12 +55,16 @@ import com.atomikos.icatch.provider.TransactionServicePlugin;
 import com.atomikos.icatch.provider.TransactionServiceProvider;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
-import com.atomikos.persistence.LogException;
 import com.atomikos.persistence.StateRecoveryManager;
 import com.atomikos.recovery.AdminLog;
 import com.atomikos.recovery.CoordinatorLogEntry;
+import com.atomikos.recovery.LogException;
+import com.atomikos.recovery.RecoveryLog;
 import com.atomikos.thread.InterruptedExceptionHelper;
 import com.atomikos.thread.TaskManager;
+import com.atomikos.timing.AlarmTimer;
+import com.atomikos.timing.AlarmTimerListener;
+import com.atomikos.timing.PooledAlarmTimer;
 import com.atomikos.util.UniqueIdMgr;
 
 /**
@@ -94,6 +98,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
     private String tmUniqueName_;
     private Properties initProperties_;
     private boolean single_threaded_2pc_;
+	private RecoveryLog recoveryLog;
 
     /**
      * Create a new instance, with orphan checking set.
@@ -116,10 +121,10 @@ public class TransactionServiceImp implements TransactionServiceProvider,
 
     public TransactionServiceImp ( String name ,
             StateRecoveryManager recoverymanager , UniqueIdMgr tidmgr ,
-            long maxtimeout , int maxActives , boolean single_threaded_2pc )
+            long maxtimeout , int maxActives , boolean single_threaded_2pc, RecoveryLog recoveryLog )
     {
         this ( name , recoverymanager , tidmgr  , maxtimeout , true ,
-                maxActives , single_threaded_2pc );
+                maxActives , single_threaded_2pc, recoveryLog  );
     }
 
     /**
@@ -144,13 +149,14 @@ public class TransactionServiceImp implements TransactionServiceProvider,
      *            configurations that do not support orphan detection.
      * @param single_threaded_2pc
      *            Whether 2PC commit should happen in the same thread that started the tx.
+     * @param recoveryLog2 
      *
      */
 
     public TransactionServiceImp ( String name ,
             StateRecoveryManager recoverymanager , UniqueIdMgr tidmgr ,
              long maxtimeout , boolean checkorphans ,
-            int maxActives , boolean single_threaded_2pc )
+            int maxActives , boolean single_threaded_2pc, RecoveryLog recoveryLog )
     {
         maxNumberOfActiveTransactions_ = maxActives;
         if ( !checkorphans ) otsOverride_ = true;
@@ -172,6 +178,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
         tmUniqueName_ = name;
         tsListeners_ = new Vector();
         single_threaded_2pc_ = single_threaded_2pc;
+        this.recoveryLog  = recoveryLog;
     }
 
     /**
@@ -544,6 +551,9 @@ public class TransactionServiceImp implements TransactionServiceProvider,
 
         return control_;
     }
+    
+    
+    
 
     /**
      * @see TransactionService
@@ -587,6 +597,8 @@ public class TransactionServiceImp implements TransactionServiceProvider,
         if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug  ( "Removed TSListener: " + listener );
 
     }
+    
+    PooledAlarmTimer legacyAndObsoleteExecutorService;
 
     /**
      * @see TransactionService
@@ -602,12 +614,32 @@ public class TransactionServiceImp implements TransactionServiceProvider,
             throw new SysException ( "Error in init: " + le.getMessage (),
                     le );
         }
-        recoverCoordinators ();
 
         shutdownInProgress_ = false;
         control_ = new com.atomikos.icatch.admin.imp.LogControlImp ( this );
         
-        recover(); //ensure that remote participants can start inquiring and replay
+        legacyAndObsoleteExecutorService = new PooledAlarmTimer(1000);
+        
+        legacyAndObsoleteExecutorService.addAlarmTimerListener(new AlarmTimerListener() {
+			
+			@Override
+			public void alarm(AlarmTimer timer) {
+				
+				Enumeration<RecoverableResource> resources= Configuration.getResources();
+				while (resources.hasMoreElements()) {
+					RecoverableResource recoverableResource =  resources.nextElement();
+					try {
+						recoverableResource.recover();
+					} catch (Throwable e) {
+						LOGGER.logWarning(e.getMessage(),e);
+					}
+				}
+				
+			}
+		});
+        
+        TaskManager.getInstance().executeTask(legacyAndObsoleteExecutorService);
+        
     }
 
     /**
@@ -770,6 +802,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
             IllegalStateException
     {
 
+    	
         boolean wasShuttingDown = false;
         if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Transaction Service: Entering shutdown ( "
                 + force + " )..." );
@@ -802,7 +835,6 @@ public class TransactionServiceImp implements TransactionServiceProvider,
         	LOGGER.logDebug ( "Transaction Service: Shutdown acquired lock on waiter." );
             wasShuttingDown = shutdownInProgress_;
             shutdownInProgress_ = true;
-
             // check for active coordinators (who might be indoubt)
             // NOTE: should be thread safe, since createCC
             // is also a synchronized method.
@@ -851,7 +883,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
                     throw new SysException ( "Error in shutdown: "
                             + le.getMessage (), le );
                 }
-              
+                legacyAndObsoleteExecutorService.stop();
             } 
 
         }
@@ -938,6 +970,11 @@ public class TransactionServiceImp implements TransactionServiceProvider,
 				coordinatorImp.forget();
 			}
 		}
+	}
+
+	@Override
+	public RecoveryLog getRecoveryLog() {
+		return this.recoveryLog;
 	}
 
 }

@@ -25,6 +25,8 @@
 
 package com.atomikos.icatch;
 
+import com.atomikos.recovery.RecoveryLog;
+
 
 /**
  * A handle to the TM that resources can use to recover.
@@ -56,4 +58,7 @@ public interface RecoveryService
 	 */
 	
 	public String getName();
+	
+	
+	RecoveryLog getRecoveryLog();
 }

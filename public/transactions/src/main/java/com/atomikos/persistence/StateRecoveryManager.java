@@ -45,7 +45,7 @@ public interface StateRecoveryManager
      *                If the log fails.
      */
 
-    public Vector<RecoverableCoordinator<TxState>> recover () throws LogException;
+    public Vector<RecoverableCoordinator<TxState>> recover () throws  com.atomikos.recovery.LogException;
 
 
     /**
@@ -55,7 +55,7 @@ public interface StateRecoveryManager
      *                If the underlying log fails.
      */
 
-    public void init (Properties properties) throws LogException;
+    public void init (Properties properties) throws com.atomikos.recovery.LogException;
     /**
      * Register a staterecoverable with the recovery manager service.
      * 
@@ -75,7 +75,7 @@ public interface StateRecoveryManager
      *                If underlying object log fails.
      */
 
-    public RecoverableCoordinator<TxState> recover ( Object id ) throws LogException;
+    public RecoverableCoordinator<TxState> recover ( Object id ) throws com.atomikos.recovery.LogException;
 
     /**
      * Shutdown.
@@ -84,7 +84,7 @@ public interface StateRecoveryManager
      *                For underlying log failure.
      */
 
-    public void close () throws LogException;
+    public void close () throws com.atomikos.recovery.LogException;
 
     /**
      * Deletes a given image from the underlying logs.
@@ -95,6 +95,6 @@ public interface StateRecoveryManager
      *                On failure.
      */
 
-    public void delete ( Object id ) throws LogException;
+    public void delete ( Object id ) throws com.atomikos.recovery.LogException;
 
 }

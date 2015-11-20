@@ -93,8 +93,10 @@ public class FileSystemCoordinatorLogEntryRepository implements
 	@Override
 	public void close() {
 		try {
-			rwChannel.close();
-			file.close();
+			if(file!=null) {
+				file.close();	
+			}
+			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

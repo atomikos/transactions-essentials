@@ -11,6 +11,7 @@ import javax.transaction.xa.Xid;
 
 import com.atomikos.datasource.xa.RecoveryScan;
 import com.atomikos.datasource.xa.RecoveryScan.XidSelector;
+import com.atomikos.datasource.xa.XID;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 import com.atomikos.recovery.LogException;
@@ -23,6 +24,36 @@ public class XaResourceRecoveryManager {
 	private XidSelector xidSelector;
 
 	private boolean autoForget = true;
+	
+	private XaResourceRecoveryManager(XaRecoveryLog log, final String tmUniqueName) {
+		this.log=log;
+		this.xidSelector=new XidSelector() {
+			@Override
+			public boolean selects(Xid vendorXid) {
+				boolean ret = false;
+				String branch = new String ( vendorXid.getBranchQualifier () );
+				Xid xid = wrapWithOurOwnXidToHaveCorrectEqualsAndHashCode ( vendorXid );
+                if ( branch.startsWith ( tmUniqueName ) ) {
+                	ret = true;
+                    if(LOGGER.isInfoEnabled()){
+                    	LOGGER.logInfo("Resource " + tmUniqueName + " recovering XID: " + xid);
+                    }
+                } else {
+                	if(LOGGER.isInfoEnabled()){
+                		LOGGER.logInfo("Resource " + tmUniqueName + ": XID " + xid + 
+                		" with branch " + branch + " is not under my responsibility");
+                	}
+                }
+                return ret;
+			}
+
+			private Xid wrapWithOurOwnXidToHaveCorrectEqualsAndHashCode(Xid xid) {
+				return new XID(xid);
+			}						
+		}; 
+	}
+	
+	
 
 	public void recover(XAResource xaResource) {
 		List<Xid> xidsToRecover = retrievePreparedXidsFromXaResource(xaResource);
@@ -181,5 +212,21 @@ public class XaResourceRecoveryManager {
 	public void setAutoForgetHeuristicsOnRecovery(boolean value) {
 		autoForget  = value;
 	}
+	
+	private static XaResourceRecoveryManager instance;
 
+	public static XaResourceRecoveryManager getInstance() {
+		return instance;
+	}
+	
+	public static void installXaResourceRecoveryManager(XaRecoveryLog xaRecoveryLog, String tmUniqueName) {
+		if (xaRecoveryLog == null) {
+			instance = null;
+		} else {
+			instance = new XaResourceRecoveryManager(xaRecoveryLog, tmUniqueName);
+			
+		}
+	}
+
+	
 }

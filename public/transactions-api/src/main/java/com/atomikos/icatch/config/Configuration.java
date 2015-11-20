@@ -46,6 +46,7 @@ import com.atomikos.icatch.provider.Assembler;
 import com.atomikos.icatch.provider.ConfigProperties;
 import com.atomikos.icatch.provider.TransactionServicePlugin;
 import com.atomikos.icatch.provider.TransactionServiceProvider;
+import com.atomikos.recovery.RecoveryLog;
 
 /**
  * Configuration is a facade for the icatch transaction management facilities.
@@ -380,7 +381,7 @@ public final class Configuration
      * @return Enumeration The resources.
      */
 
-    public static Enumeration getResources ()
+    public static Enumeration<RecoverableResource> getResources ()
     {
         // clone to avoid concurrency problems with
         // add/removeResource (new recovery makes this possible)
@@ -527,6 +528,10 @@ public final class Configuration
 		service_ = assembler.assembleTransactionService(configProperties);
 		recoveryService_ = service_.getRecoveryService();
 		ctxmgr_ = assembler.assembleCompositeTransactionManager();
+	}
+	
+	public static RecoveryLog getRecoveryLog() {
+		return recoveryService_.getRecoveryLog();
 	}
 	
 	private static class ForceShutdownHook extends Thread

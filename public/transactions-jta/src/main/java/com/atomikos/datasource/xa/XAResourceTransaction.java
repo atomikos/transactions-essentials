@@ -932,8 +932,7 @@ public class XAResourceTransaction implements ResourceTransaction,
 	 */
 	@Override
 	public String getURI() {
-
-		return null;
+		return XID.getBranchQualifierAsString(xid);
 	}
 
 	String getResourceName() {

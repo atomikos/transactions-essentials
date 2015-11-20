@@ -131,4 +131,6 @@ public interface RecoverableResource
     
         
 
+    void recover();
+    
 }

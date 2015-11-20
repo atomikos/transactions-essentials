@@ -100,7 +100,7 @@ public class CoordinatorLogEntry  implements Serializable {
 	public boolean transitionAllowedFrom(CoordinatorLogEntry existing) {
 		TxState thisState = getResultingState();
 		if (existing == null) {
-			return (thisState == COMMITTING || thisState == IN_DOUBT);
+			return thisState.isOneOf(COMMITTING, IN_DOUBT, TERMINATED);
 		}
 		return existing.getResultingState().transitionAllowedTo(thisState);
 	}

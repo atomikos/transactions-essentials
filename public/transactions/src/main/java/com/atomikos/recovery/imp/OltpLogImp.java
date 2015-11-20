@@ -32,4 +32,10 @@ public class OltpLogImp implements OltpLog {
 	}
 
 
+	@Override
+	public void close() {
+		repository.close();
+	}
+
+
 }

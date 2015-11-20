@@ -8,6 +8,10 @@ public class LogException extends Exception {
 		super();
 	}
 
+	public LogException(String message) {
+		super(message);
+	}
+
 	public LogException(Throwable cause) {
 		super(cause);
 	}

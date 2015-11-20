@@ -11,7 +11,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.atomikos.datasource.xa.RecoveryScan.XidSelector;
 import com.atomikos.datasource.xa.XID;
 import com.atomikos.recovery.LogException;
 
@@ -20,7 +19,7 @@ public class XaResourceRecoveryManagerTestJUnit {
 	private static final String XARESOURCE_QUALIFIER = "XARESOURCE_QUALIFIER";
 
 	// SUT
-	XaResourceRecoveryManager xaResourceRecoveryManager = new XaResourceRecoveryManager();
+	XaResourceRecoveryManager xaResourceRecoveryManager;
 
 	private XAResource xaResource;
 
@@ -30,23 +29,8 @@ public class XaResourceRecoveryManagerTestJUnit {
 	public void initMocks() {
 		xaResource = Mockito.mock(XAResource.class);
 		log = Mockito.mock(XaRecoveryLog.class);
-		xaResourceRecoveryManager.setXaRecoveryLog(log);
-
-		XidSelector recoverySelector = new XidSelector() {
-			// TODO check with existing recovery code
-			// (com.atomikos.datasource.xa.XATransactionalResource.recover())
-			@Override
-			public boolean selects(Xid vendorXid) {
-				boolean ret = false;
-				String branch = new String(vendorXid.getBranchQualifier());
-				if (branch.startsWith(XARESOURCE_QUALIFIER)) {
-					ret = true;
-				}
-				return ret;
-			}
-		};
-
-		xaResourceRecoveryManager.setXidSelector(recoverySelector);
+		XaResourceRecoveryManager.installXaResourceRecoveryManager(log, XARESOURCE_QUALIFIER);
+		xaResourceRecoveryManager = XaResourceRecoveryManager.getInstance();
 	}
 
 	@Test

@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Enumeration;
+import java.util.Map.Entry;
 import java.util.Properties;
 
 import com.atomikos.icatch.CompositeTransactionManager;
@@ -19,6 +19,14 @@ import com.atomikos.logging.LoggerFactory;
 import com.atomikos.persistence.StateRecoveryManager;
 import com.atomikos.persistence.imp.StateRecoveryManagerImp;
 import com.atomikos.persistence.imp.VolatileStateRecoveryManager;
+import com.atomikos.recovery.CoordinatorLogEntryRepository;
+import com.atomikos.recovery.OltpLog;
+import com.atomikos.recovery.RecoveryLog;
+import com.atomikos.recovery.imp.CachedCoordinatorLogEntryRepository;
+import com.atomikos.recovery.imp.FileSystemCoordinatorLogEntryRepository;
+import com.atomikos.recovery.imp.InMemoryCoordinatorLogEntryRepository;
+import com.atomikos.recovery.imp.OltpLogImp;
+import com.atomikos.recovery.imp.RecoveryLogImp;
 import com.atomikos.util.ClassLoadingHelper;
 import com.atomikos.util.UniqueIdMgr;
 
@@ -98,27 +106,39 @@ public class AssemblerImp implements Assembler {
 
 
 	private void logProperties(Properties properties) {
-		Enumeration propertyNames = properties.propertyNames();
-		while (propertyNames.hasMoreElements()) {
-			String name = (String) propertyNames.nextElement();			
-			LOGGER.logInfo("USING: " + name + " = " + properties.getProperty(name));		}
+		for (Entry<Object, Object> entry : properties.entrySet()) {
+			LOGGER.logInfo("USING: " + entry.getKey() + " = " + entry.getValue());
+		}
 	}
 
 	@Override
 	public TransactionServiceProvider assembleTransactionService(
 			ConfigProperties configProperties) {
+		RecoveryLog recoveryLog =null;
 		logProperties(configProperties.getCompletedProperties());
 		String tmUniqueName = configProperties.getTmUniqueName();
 		boolean enableLogging = configProperties.getEnableLogging();
 		long maxTimeout = configProperties.getMaxTimeout();
 		int maxActives = configProperties.getMaxActives();
 		boolean threaded2pc = configProperties.getThreaded2pc();
+		CoordinatorLogEntryRepository repository = createCoordinatorLogEntryRepository(configProperties);
 		StateRecoveryManager recMgr = null;
 		if (enableLogging) {
-			recMgr = new StateRecoveryManagerImp();
+			OltpLog oltpLog = createOltpLog(repository);
+			StateRecoveryManagerImp	recoveryManager = new StateRecoveryManagerImp();
+			recoveryManager.setOltpLog(oltpLog);
+			recMgr=recoveryManager;
+			//??? Assemble recoveryLog
+			recoveryLog = createRecoveryLog(repository);
 		} else {
 			recMgr = new VolatileStateRecoveryManager();
 		}
+		
+		
+
+	
+			
+		
 		UniqueIdMgr idMgr = new UniqueIdMgr ( tmUniqueName );
 		int overflow = idMgr.getMaxIdLengthInBytes() - MAX_TID_LENGTH;
 		if ( overflow > 0 ) {
@@ -127,8 +147,30 @@ public class AssemblerImp implements Assembler {
 			LOGGER.logWarning ( msg );
 			throw new SysException(msg);
 		}
-		return new TransactionServiceImp(tmUniqueName, recMgr, idMgr, maxTimeout, maxActives, !threaded2pc);
-		
+		return new TransactionServiceImp(tmUniqueName, recMgr, idMgr, maxTimeout, maxActives, !threaded2pc, recoveryLog);
+	}
+
+	private RecoveryLog createRecoveryLog(CoordinatorLogEntryRepository repository) {
+		RecoveryLogImp recoveryLog = new RecoveryLogImp();
+		recoveryLog.setRepository(repository);
+		return recoveryLog;
+	}
+
+	private OltpLog createOltpLog(CoordinatorLogEntryRepository repository) {
+		OltpLogImp oltpLog = new OltpLogImp();
+		oltpLog.setRepository(repository);
+		return oltpLog;
+	}
+
+	private CachedCoordinatorLogEntryRepository createCoordinatorLogEntryRepository(
+			ConfigProperties configProperties) {
+		InMemoryCoordinatorLogEntryRepository inMemoryCoordinatorLogEntryRepository = new InMemoryCoordinatorLogEntryRepository();
+		inMemoryCoordinatorLogEntryRepository.init(configProperties);
+		FileSystemCoordinatorLogEntryRepository backupCoordinatorLogEntryRepository = new FileSystemCoordinatorLogEntryRepository();
+		backupCoordinatorLogEntryRepository.init(configProperties);
+		CachedCoordinatorLogEntryRepository repository = new CachedCoordinatorLogEntryRepository(inMemoryCoordinatorLogEntryRepository, backupCoordinatorLogEntryRepository);
+		repository.init(configProperties);
+		return repository;
 	}
 
 

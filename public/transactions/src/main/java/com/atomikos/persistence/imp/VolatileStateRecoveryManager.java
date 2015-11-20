@@ -34,10 +34,10 @@ import java.util.Vector;
 import com.atomikos.finitestates.FSMEnterEvent;
 import com.atomikos.finitestates.FSMPreEnterListener;
 import com.atomikos.icatch.TxState;
-import com.atomikos.persistence.LogException;
 import com.atomikos.persistence.ObjectImage;
 import com.atomikos.persistence.RecoverableCoordinator;
 import com.atomikos.persistence.StateRecoveryManager;
+import com.atomikos.recovery.LogException;
 import com.atomikos.util.Assert;
 
 /**
