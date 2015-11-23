@@ -3,6 +3,7 @@ package com.atomikos.recovery;
 import static org.junit.Assert.*;
 import junit.framework.Assert;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.atomikos.icatch.TxState;
@@ -140,6 +141,7 @@ public class CoordinatorLogEntryTestJUnit {
 	}
 	
 	@Test
+	@Ignore("required for aborting transactions")
 	public void testTransitionFromNullToTerminatedIsNotAllowed() throws Exception {
 		givenCoordinatorLogEntryWithParticipantStates(TxState.TERMINATED);
 		thenTransitionNotAllowedFrom(null);
