@@ -640,6 +640,9 @@ public class TransactionServiceImp implements TransactionServiceProvider,
         
         TaskManager.getInstance().executeTask(legacyAndObsoleteExecutorService);
         
+        initialized_ = true;
+       
+        
     }
 
     /**
