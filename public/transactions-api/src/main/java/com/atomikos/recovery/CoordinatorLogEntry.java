@@ -180,11 +180,11 @@ public class CoordinatorLogEntry  implements Serializable {
 	}
 
 	public CoordinatorLogEntry markAsTerminated() {
-		CoordinatorLogEntry coordinatorLogEntry = null;
+		CoordinatorLogEntry coordinatorLogEntry = this;
 		for (ParticipantLogEntry participantLogEntry : participantDetails) {
-			coordinatorLogEntry = terminated(participantLogEntry);
+			coordinatorLogEntry = coordinatorLogEntry.terminated(participantLogEntry);
 		}
-		//not null since at least one participant entry must be present
+		//not "this" since at least one participant entry must be present
 		return coordinatorLogEntry;
 		
 	}
