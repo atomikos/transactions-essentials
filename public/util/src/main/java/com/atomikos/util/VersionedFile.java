@@ -72,6 +72,9 @@ public class VersionedFile
 	 */
 	public VersionedFile ( String baseDir , String baseName , String suffix )
 	{
+		if(!baseDir.endsWith("/")) {
+			baseDir+="/";
+		}
 		this.baseDir = baseDir;
 		this.suffix = suffix;
 		this.baseName = baseName;
