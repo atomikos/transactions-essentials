@@ -312,6 +312,21 @@ public class CoordinatorLogEntryTestJUnit {
 		thenCoordinatorLogEntryShouldNotSync();
 	}
 	
+	@Test
+	public void testMarkAsTerminated() throws Exception {
+		givenCoordinatorLogEntryWithParticipantStates(TxState.COMMITTING,TxState.COMMITTING);
+		
+		thenMarkAsTerminatedYieldsFinalState();
+	}
+	
+	private void thenMarkAsTerminatedYieldsFinalState() {
+		coordinatorLogEntry = coordinatorLogEntry.markAsTerminated();
+		Assert.assertTrue(coordinatorLogEntry.getResultingState().isFinalState());
+		
+	}
+
+
+
 	private void thenCoordinatorLogEntryShouldNotSync() {
 		Assert.assertFalse(coordinatorLogEntry.shouldSync());
 		
