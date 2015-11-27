@@ -179,4 +179,14 @@ public class CoordinatorLogEntry  implements Serializable {
 		}
 	}
 
+	public CoordinatorLogEntry markAsTerminated() {
+		CoordinatorLogEntry coordinatorLogEntry = null;
+		for (ParticipantLogEntry participantLogEntry : participantDetails) {
+			coordinatorLogEntry = terminated(participantLogEntry);
+		}
+		//not null since at least one participant entry must be present
+		return coordinatorLogEntry;
+		
+	}
+
 }

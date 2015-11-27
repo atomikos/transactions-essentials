@@ -97,7 +97,7 @@ public class CachedCoordinatorLogEntryRepository implements
 
 	@Override
 	public Collection<CoordinatorLogEntry> getAllCoordinatorLogEntries() {
-		throw new UnsupportedOperationException();
+		return inMemoryCoordinatorLogEntryRepository.getAllCoordinatorLogEntries();
 	}
 
 	@Override
