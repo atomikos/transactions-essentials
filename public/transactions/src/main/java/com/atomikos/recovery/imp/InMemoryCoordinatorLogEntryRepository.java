@@ -46,10 +46,10 @@ public class InMemoryCoordinatorLogEntryRepository implements
 	@Override
 	public synchronized Collection<ParticipantLogEntry> findAllCommittingParticipants() {
 		Set<ParticipantLogEntry> res = new HashSet<ParticipantLogEntry>();
-		Collection<CoordinatorLogEntry> allCoordinatorLogEntry = storage.values();
+		Collection<CoordinatorLogEntry> allCoordinatorLogEntry = storage.values();	
 		for (CoordinatorLogEntry coordinatorLogEntry : allCoordinatorLogEntry) {
-			for (ParticipantLogEntry participantLogEntry : coordinatorLogEntry.participantDetails) {
-				if(participantLogEntry.state==TxState.COMMITTING){
+			if(coordinatorLogEntry.getResultingState() == TxState.COMMITTING){
+				for (ParticipantLogEntry participantLogEntry : coordinatorLogEntry.participantDetails) {
 					res.add(participantLogEntry);
 				}
 			}
