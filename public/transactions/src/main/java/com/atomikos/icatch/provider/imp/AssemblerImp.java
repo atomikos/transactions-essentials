@@ -121,21 +121,22 @@ public class AssemblerImp implements Assembler {
 		long maxTimeout = configProperties.getMaxTimeout();
 		int maxActives = configProperties.getMaxActives();
 		boolean threaded2pc = configProperties.getThreaded2pc();
-		CoordinatorLogEntryRepository repository = createCoordinatorLogEntryRepository(configProperties);
-		StateRecoveryManager recMgr = null;
+		
+		OltpLog oltpLog=null;
 		if (enableLogging) {
-			OltpLog oltpLog = createOltpLog(repository);
-			StateRecoveryManagerImp	recoveryManager = new StateRecoveryManagerImp();
-			recoveryManager.setOltpLog(oltpLog);
-			recMgr=recoveryManager;
+			CoordinatorLogEntryRepository repository = createCoordinatorLogEntryRepository(configProperties);
+			oltpLog = createOltpLog(repository);
 			//??? Assemble recoveryLog
 			recoveryLog = createRecoveryLog(repository);
 		} else {
-			recMgr = new VolatileStateRecoveryManager();
+			CoordinatorLogEntryRepository volatileRepository = createInMemoryCoordinatorLogEntryRepository(configProperties);;
+			oltpLog = createOltpLog(volatileRepository);
+			//??? Assemble recoveryLog
+			recoveryLog = createRecoveryLog(volatileRepository);
 		}
 		
-		
-
+		StateRecoveryManagerImp	recoveryManager = new StateRecoveryManagerImp();
+		recoveryManager.setOltpLog(oltpLog);
 	
 			
 		
@@ -147,7 +148,14 @@ public class AssemblerImp implements Assembler {
 			LOGGER.logWarning ( msg );
 			throw new SysException(msg);
 		}
-		return new TransactionServiceImp(tmUniqueName, recMgr, idMgr, maxTimeout, maxActives, !threaded2pc, recoveryLog);
+		return new TransactionServiceImp(tmUniqueName, recoveryManager, idMgr, maxTimeout, maxActives, !threaded2pc, recoveryLog);
+	}
+
+	private CoordinatorLogEntryRepository createInMemoryCoordinatorLogEntryRepository(
+			ConfigProperties configProperties) {
+		InMemoryCoordinatorLogEntryRepository inMemoryCoordinatorLogEntryRepository = new InMemoryCoordinatorLogEntryRepository();
+		inMemoryCoordinatorLogEntryRepository.init(configProperties);
+		return inMemoryCoordinatorLogEntryRepository;
 	}
 
 	private RecoveryLog createRecoveryLog(CoordinatorLogEntryRepository repository) {
