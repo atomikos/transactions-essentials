@@ -123,9 +123,7 @@ public class LogControlImpTestJUnit {
 	}
 
 	private void whenGetFilteredAdminTransactions() {
-		String[] tids = new String[1];
-		tids[0] = TID;
-		AdminTransaction[] adminTransactions = sut.getAdminTransactions(tids);
+		AdminTransaction[] adminTransactions = sut.getAdminTransactions(TID);
 		adminTransaction = adminTransactions[0];
 	}
 

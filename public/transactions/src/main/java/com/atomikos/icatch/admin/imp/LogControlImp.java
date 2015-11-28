@@ -36,7 +36,7 @@ public class LogControlImp implements com.atomikos.icatch.admin.LogControl {
 	}
 
 	@Override
-	public AdminTransaction[] getAdminTransactions(String[] tids) {
+	public AdminTransaction[] getAdminTransactions(String... tids) {
 		List<String> tidsToFind = Arrays.asList(tids);
 		CoordinatorLogEntry[] pendingCoordinatorEntries=adminLog.getCoordinatorLogEntries();
 		
