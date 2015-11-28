@@ -48,6 +48,7 @@ import java.nio.channels.FileChannel;
 public class VersionedFile
 {
 
+	private static final String FILE_SEPARATOR = System.getProperty("file.separator");
 	private String baseDir;
 	private String suffix;
 	private String baseName;
@@ -56,7 +57,6 @@ public class VersionedFile
 
 	private long version;
 	private FileInputStream inputStream;
-//	private FileOutputStream outputStream;
 
 	private RandomAccessFile randomAccessFile;
 
@@ -72,8 +72,8 @@ public class VersionedFile
 	 */
 	public VersionedFile ( String baseDir , String baseName , String suffix )
 	{
-		if(!baseDir.endsWith("/")) {
-			baseDir+="/";
+		if(!baseDir.endsWith(FILE_SEPARATOR)) {
+			baseDir += FILE_SEPARATOR;
 		}
 		this.baseDir = baseDir;
 		this.suffix = suffix;

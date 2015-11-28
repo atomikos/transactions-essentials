@@ -42,6 +42,10 @@ public class VersionedFileTestJUnit extends TestCase {
 		assertEquals ( getBaseUrl() , file.getBaseUrl() );
 	}
 	
+	public void testAppendFileSeparator() {
+		file = new VersionedFile ( "." , getBaseName() , SUFFIX );
+		testGetBaseUrl();
+	}
 	public void testGetBaseName() 
 	{
 		assertEquals ( getBaseName() , file.getBaseName() );
