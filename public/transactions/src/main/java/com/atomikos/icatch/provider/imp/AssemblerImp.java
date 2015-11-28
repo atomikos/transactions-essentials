@@ -122,24 +122,17 @@ public class AssemblerImp implements Assembler {
 		int maxActives = configProperties.getMaxActives();
 		boolean threaded2pc = configProperties.getThreaded2pc();
 		
-		OltpLog oltpLog=null;
+		CoordinatorLogEntryRepository repository;
 		if (enableLogging) {
-			CoordinatorLogEntryRepository repository = createCoordinatorLogEntryRepository(configProperties);
-			oltpLog = createOltpLog(repository);
-			//??? Assemble recoveryLog
-			recoveryLog = createRecoveryLog(repository);
+			repository = createCoordinatorLogEntryRepository(configProperties);
 		} else {
-			CoordinatorLogEntryRepository volatileRepository = createInMemoryCoordinatorLogEntryRepository(configProperties);;
-			oltpLog = createOltpLog(volatileRepository);
-			//??? Assemble recoveryLog
-			recoveryLog = createRecoveryLog(volatileRepository);
+			repository = createInMemoryCoordinatorLogEntryRepository(configProperties);;
 		}
-		
+		OltpLog oltpLog = createOltpLog(repository);
+		//??? Assemble recoveryLog
+		recoveryLog = createRecoveryLog(repository);
 		StateRecoveryManagerImp	recoveryManager = new StateRecoveryManagerImp();
 		recoveryManager.setOltpLog(oltpLog);
-	
-			
-		
 		UniqueIdMgr idMgr = new UniqueIdMgr ( tmUniqueName );
 		int overflow = idMgr.getMaxIdLengthInBytes() - MAX_TID_LENGTH;
 		if ( overflow > 0 ) {
