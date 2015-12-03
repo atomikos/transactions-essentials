@@ -96,7 +96,9 @@ public class JtaTransactionServicePluginTestJUnit {
 	@Test
 	public void testAfterInitInstallsJtaTransactionManager() {
 		Configuration.installCompositeTransactionManager(new CompositeTransactionManagerImp());
+		Configuration.init();
 		plugin.afterInit();
 		Assert.assertNotNull(TransactionManagerImp.getTransactionManager());
+		Configuration.shutdown(true);
 	}
 }
