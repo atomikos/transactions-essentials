@@ -92,7 +92,7 @@ public class ActiveStateHandler extends CoordinatorStateHandler
                 // first check if we are still the current state!
                 // otherwise, a COMMITTING tx could be rolled back
                 // in case of 1PC!!!
-                if ( getCoordinator ().getState ().equals ( getState () ) ) {
+                if ( getCoordinator().getState() == TxState.ACTIVE) {
                 	if ( getCoordinator().prefersSingleThreaded2PC() ) {
                 		//cf case 71748
                 		if (!wasSetToRollbackOnly) {
@@ -113,6 +113,9 @@ public class ActiveStateHandler extends CoordinatorStateHandler
 								rollbackFromWithinCallback(indoubt,false);
 							}});
                 	}
+                } else if (getCoordinator().getState() == TxState.PREPARING)  {
+                	//pending coordinator after failed prepare: cleanup to remove from TransactionServiceImp
+                	removePendingOltpCoordinatorFromTransactionService();
                 }
             }
         } catch ( Exception e ) {

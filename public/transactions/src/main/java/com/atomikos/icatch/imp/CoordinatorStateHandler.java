@@ -486,7 +486,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable,DataSe
             try {
             	coordinator_.setState ( TxState.COMMITTING );
             } catch ( RuntimeException error ) {
-        		String msg = "Error in committing: " + error.getMessage() + " - leaving cleanup to recovery";
+        		String msg = "Error in committing: " + error.getMessage() + " - leaving cleanup to recovery / JVM needs to reboot";
         		LOGGER.logWarning ( msg , error );
         		throw new RollbackException ( msg , error );
         	}
@@ -836,4 +836,8 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable,DataSe
     	
     }
     
+    protected void removePendingOltpCoordinatorFromTransactionService() {
+		CoordinatorStateHandler nextStateHandler = new TerminatedStateHandler ( this );
+		getCoordinator().setStateHandler ( nextStateHandler );
+	}
 }

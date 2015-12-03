@@ -146,42 +146,8 @@ public class IndoubtStateHandler extends CoordinatorStateHandler
                 }
             } else {
                 if ( getCoordinator ().getSuperiorRecoveryCoordinator () == null ) {
-                	
-                	//TODO: delete this code, since indoubt states for root transactions are no longer logged?
-
-                    // root tx, where terminator did not issue commit after prepare -> decide abort.
-                    // NOTE: if not recovered then this is a heuristic decision
-                    // because the decision needs to be detectable
-                    // by the client terminator.
-                    // otherwise, state would be TERMINATED, and a late
-                    // commit from terminator would return OK -> BAD!
-
-                    rollbackWithAfterCompletionNotification(new RollbackCallback() {
-						public void doRollback()
-								throws HeurCommitException,
-								HeurMixedException, SysException,
-								HeurHazardException, IllegalStateException {
-							 rollbackFromWithinCallback(true,!recovered_);
-						}});
-                }
-                // heuristic decision
-                else if ( getCoordinator ().prefersHeuristicCommit () ) {
-                	commitWithAfterCompletionNotification ( new CommitCallback() {
-                		public void doCommit()
-                				throws HeurRollbackException, HeurMixedException,
-                				HeurHazardException, IllegalStateException,
-                				RollbackException, SysException {
-                			commitFromWithinCallback ( true, false );
-                		}          	
-                	});
-                } else { 
-                	rollbackWithAfterCompletionNotification(new RollbackCallback() {
-						public void doRollback()
-								throws HeurCommitException,
-								HeurMixedException, SysException,
-								HeurHazardException, IllegalStateException {
-							rollbackFromWithinCallback(true,true);
-						}});
+                	//pending coordinator after failed commit: cleanup to remove from TransactionServiceImp
+                	removePendingOltpCoordinatorFromTransactionService();
                 }
             } // else
         } catch ( Exception e ) {
@@ -189,6 +155,8 @@ public class IndoubtStateHandler extends CoordinatorStateHandler
 
         }
     }
+
+	
 
     protected void setGlobalSiblingCount ( int count )
     {

@@ -93,10 +93,9 @@ public class TransactionServiceImp implements TransactionServiceProvider,
     // in that case no creation preferences are taken into account
     // concerning orphan checks
 
-    private Vector tsListeners_;
+    private Vector<TransactionServicePlugin> tsListeners_;
     private int maxNumberOfActiveTransactions_;
     private String tmUniqueName_;
-    private Properties initProperties_;
     private boolean single_threaded_2pc_;
 	private RecoveryLog recoveryLog;
 
@@ -176,7 +175,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
 
         maxTimeout_ = maxtimeout;
         tmUniqueName_ = name;
-        tsListeners_ = new Vector();
+        tsListeners_ = new Vector<TransactionServicePlugin>();
         single_threaded_2pc_ = single_threaded_2pc;
         this.recoveryLog  = recoveryLog;
     }
@@ -606,7 +605,6 @@ public class TransactionServiceImp implements TransactionServiceProvider,
 
     public synchronized void init ( Properties properties ) throws SysException
     {
-        this.initProperties_ = properties;
 
         try {
             recoverymanager_.init (properties);
