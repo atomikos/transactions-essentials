@@ -121,24 +121,18 @@ public class AssemblerImp implements Assembler {
 		long maxTimeout = configProperties.getMaxTimeout();
 		int maxActives = configProperties.getMaxActives();
 		boolean threaded2pc = configProperties.getThreaded2pc();
-		CoordinatorLogEntryRepository repository = createCoordinatorLogEntryRepository(configProperties);
-		StateRecoveryManager recMgr = null;
+		
+		CoordinatorLogEntryRepository repository;
 		if (enableLogging) {
-			OltpLog oltpLog = createOltpLog(repository);
-			StateRecoveryManagerImp	recoveryManager = new StateRecoveryManagerImp();
-			recoveryManager.setOltpLog(oltpLog);
-			recMgr=recoveryManager;
-			//??? Assemble recoveryLog
-			recoveryLog = createRecoveryLog(repository);
+			repository = createCoordinatorLogEntryRepository(configProperties);
 		} else {
-			recMgr = new VolatileStateRecoveryManager();
+			repository = createInMemoryCoordinatorLogEntryRepository(configProperties);;
 		}
-		
-		
-
-	
-			
-		
+		OltpLog oltpLog = createOltpLog(repository);
+		//??? Assemble recoveryLog
+		recoveryLog = createRecoveryLog(repository);
+		StateRecoveryManagerImp	recoveryManager = new StateRecoveryManagerImp();
+		recoveryManager.setOltpLog(oltpLog);
 		UniqueIdMgr idMgr = new UniqueIdMgr ( tmUniqueName );
 		int overflow = idMgr.getMaxIdLengthInBytes() - MAX_TID_LENGTH;
 		if ( overflow > 0 ) {
@@ -147,7 +141,14 @@ public class AssemblerImp implements Assembler {
 			LOGGER.logWarning ( msg );
 			throw new SysException(msg);
 		}
-		return new TransactionServiceImp(tmUniqueName, recMgr, idMgr, maxTimeout, maxActives, !threaded2pc, recoveryLog);
+		return new TransactionServiceImp(tmUniqueName, recoveryManager, idMgr, maxTimeout, maxActives, !threaded2pc, recoveryLog);
+	}
+
+	private CoordinatorLogEntryRepository createInMemoryCoordinatorLogEntryRepository(
+			ConfigProperties configProperties) {
+		InMemoryCoordinatorLogEntryRepository inMemoryCoordinatorLogEntryRepository = new InMemoryCoordinatorLogEntryRepository();
+		inMemoryCoordinatorLogEntryRepository.init(configProperties);
+		return inMemoryCoordinatorLogEntryRepository;
 	}
 
 	private RecoveryLog createRecoveryLog(CoordinatorLogEntryRepository repository) {

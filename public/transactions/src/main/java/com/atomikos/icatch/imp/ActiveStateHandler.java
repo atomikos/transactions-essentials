@@ -203,29 +203,8 @@ public class ActiveStateHandler extends CoordinatorStateHandler
             allReadOnly = result.allReadOnly ();
 
             if ( !voteOK ) {
-
-                int res = result.getResult ();
-               
-                try {
-                    rollbackWithAfterCompletionNotification(new RollbackCallback() {
-						public void doRollback()
-								throws HeurCommitException,
-								HeurMixedException, SysException,
-								HeurHazardException, IllegalStateException {
-							rollbackFromWithinCallback(true,false);
-						}});
-                } catch ( HeurCommitException hc ) {
-                    // should not happen:
-                    // means that ALL subordinate work committed heuristically.
-                    // this is impossible since it assumes that ALL
-                    // participants voted YES in the first place,
-                    // which contradicts the fact that we are dealing with
-                    // !voteOK
-                    throw new SysException ( "Unexpected heuristic: "
-                            + hc.getMessage (), hc );
-                }
+                // let recovery clean up in the background
                 throw new RollbackException ( "Prepare: " + "NO vote" );
-             
             }
         } catch ( RuntimeException runerr ) {
             throw new SysException ( "Error in prepare: " + runerr.getMessage (), runerr );

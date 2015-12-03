@@ -486,16 +486,9 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable,DataSe
             try {
             	coordinator_.setState ( TxState.COMMITTING );
             } catch ( RuntimeException error ) {
-        		//See case 23334
-        		String msg = "Error in committing: " + error.getMessage() + " - rolling back instead";
+        		String msg = "Error in committing: " + error.getMessage() + " - leaving cleanup to recovery";
         		LOGGER.logWarning ( msg , error );
-        		try {
-					rollbackFromWithinCallback(getCoordinator().isRecoverableWhileActive().booleanValue(),false);
-					throw new RollbackException ( msg , error );
-        		} catch ( HeurCommitException e ) {
-					LOGGER.logWarning ( "Illegal heuristic commit during rollback:" + e );
-					throw new HeurMixedException();
-				}
+        		throw new RollbackException ( msg , error );
         	}
 
 

@@ -616,7 +616,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
         }
 
         shutdownInProgress_ = false;
-        control_ = new com.atomikos.icatch.admin.imp.LogControlImp ( this );
+        control_ = new com.atomikos.icatch.admin.imp.LogControlImp ( (AdminLog) this.recoveryLog );
         
         legacyAndObsoleteExecutorService = new PooledAlarmTimer(1000);
         

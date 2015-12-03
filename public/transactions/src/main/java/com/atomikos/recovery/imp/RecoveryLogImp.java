@@ -5,14 +5,16 @@ import java.util.Collection;
 import com.atomikos.icatch.TxState;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
+import com.atomikos.recovery.AdminLog;
 import com.atomikos.recovery.CoordinatorLogEntry;
 import com.atomikos.recovery.CoordinatorLogEntryRepository;
 import com.atomikos.recovery.LogException;
 import com.atomikos.recovery.LogReadException;
+import com.atomikos.recovery.LogWriteException;
 import com.atomikos.recovery.ParticipantLogEntry;
 import com.atomikos.recovery.RecoveryLog;
 
-public class RecoveryLogImp implements RecoveryLog {
+public class RecoveryLogImp implements RecoveryLog, AdminLog {
 
 	private static final Logger LOGGER = LoggerFactory.createLogger(RecoveryLogImp.class);
 	
@@ -141,6 +143,31 @@ public class RecoveryLogImp implements RecoveryLog {
 			repository.put(updated.coordinatorId, updated);
 			
 		}
+	}
+
+	@Override
+	public CoordinatorLogEntry[] getCoordinatorLogEntries() {
+		Collection<CoordinatorLogEntry> allCoordinatorLogEntries= repository.getAllCoordinatorLogEntries();
+		return allCoordinatorLogEntries.toArray(new CoordinatorLogEntry[allCoordinatorLogEntries.size()]);
+	}
+
+	@Override
+	public void remove(String coordinatorId) {
+		CoordinatorLogEntry toRemove = null;
+		try {
+			 toRemove =	repository.get(coordinatorId);
+		} catch (LogReadException e) {
+			LOGGER.logWarning("Could not retrieve coordinator to remove: "+coordinatorId+" - ignoring", e);	
+		}
+		if (toRemove != null) {
+			toRemove = toRemove.markAsTerminated();
+			try {
+				repository.put(coordinatorId, toRemove);
+			} catch (Exception e) {
+				LOGGER.logWarning("Could not remove coordinator: "+coordinatorId+" - ignoring", e);
+			} 
+		}
+		
 	}
 
 }

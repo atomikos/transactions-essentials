@@ -24,7 +24,6 @@ public class TxStateTestJUnit {
 		recoverableStates.add(TxState.COMMITTING);
 		recoverableStates.add(TxState.HEUR_COMMITTED);
 		recoverableStates.add(TxState.HEUR_ABORTED);
-		recoverableStates.add(TxState.HEUR_HAZARD);
 		recoverableStates.add(TxState.HEUR_MIXED);
 
 		TxState[] states = TxState.values();
