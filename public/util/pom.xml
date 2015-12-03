@@ -16,13 +16,6 @@
 			<artifactId>transactions-api</artifactId>
 			<version>4.0.0-SNAPSHOT</version>
 		</dependency>
-	<!-- only for HtmlBeanWizard -->
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>2.2</version>
-			<scope>provided</scope>
-		</dependency>
 		<!-- optional dependencies -->
  		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -35,12 +28,6 @@
 			<artifactId>log4j</artifactId>
 			<version>1.2.6</version>
 			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-all</artifactId>
-			<version>1.9.0</version>
-			<scope>test</scope>
 		</dependency>
 	</dependencies>
 </project>
