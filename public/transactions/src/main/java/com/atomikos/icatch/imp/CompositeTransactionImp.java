@@ -409,7 +409,6 @@ extends AbstractCompositeTransaction implements
             	}
 
             } catch ( Exception e ) {
-            	e.printStackTrace();
                 // ignore but log
             	LOGGER.logDebug("Ignoring error during event callback",e);
             }

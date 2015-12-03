@@ -788,7 +788,6 @@ public class TransactionServiceImp implements TransactionServiceProvider,
             ct = createCT ( tid, cc, lineage, serial );
 
         } catch ( Exception e ) {
-            e.printStackTrace ();
             throw new SysException ( "Error in recreate.", e );
         }
 
@@ -880,7 +879,6 @@ public class TransactionServiceImp implements TransactionServiceProvider,
                 try {
                     recoverymanager_.close ();
                 } catch ( LogException le ) {
-                    le.printStackTrace();
                     throw new SysException ( "Error in shutdown: "
                             + le.getMessage (), le );
                 }
