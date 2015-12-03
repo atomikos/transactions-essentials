@@ -28,6 +28,7 @@ public class OltpLogImp implements OltpLog {
 	private boolean entryAllowed(CoordinatorLogEntry coordinatorLogEntry) throws LogReadException {
 		CoordinatorLogEntry existing = repository
 				.get(coordinatorLogEntry.coordinatorId);
+		
 		return coordinatorLogEntry.transitionAllowedFrom(existing);
 	}
 
