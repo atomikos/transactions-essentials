@@ -79,7 +79,7 @@ public class XaResourceRecoveryManager {
 		} catch (XAException e) {
 			// TODO log error
 			if (alreadyHeuristicallyTerminatedByResource(e)) {
-				handleHeuristicTerminationByResource(xid, xaResource, e);
+				handleHeuristicTerminationByResource(xid, xaResource, e, true);
 			} else if (xidTerminatedInResourceByConcurrentCommit(e)) {
 				log.terminated(xid);
 			} else {
@@ -90,9 +90,9 @@ public class XaResourceRecoveryManager {
 	}
 
 	private void handleHeuristicTerminationByResource(Xid xid,
-			XAResource xaResource, XAException e) {
+			XAResource xaResource, XAException e, boolean commitDesired) {
 		try {
-			notifyLogOfHeuristic(xid, e);
+			notifyLogOfHeuristic(xid, e, commitDesired);
 			forgetXidInXaResourceIfAllowed(xid, xaResource);
 		} catch (LogException transientLogWriteException) {
 			LOGGER.logWarning("Failed to log heuristic termination of Xid: "+xid+" - ignoring to retry later", transientLogWriteException);
@@ -168,7 +168,7 @@ public class XaResourceRecoveryManager {
 										// get TID :-)
 			} catch (XAException e) {
 				if (alreadyHeuristicallyTerminatedByResource(e)) {
-					handleHeuristicTerminationByResource(xid, xaResource, e);
+					handleHeuristicTerminationByResource(xid, xaResource, e, false);
 				} else if (xidTerminatedInResourceByConcurrentRollback(e)) {
 					log.terminated(xid);
 				} else {
@@ -182,19 +182,27 @@ public class XaResourceRecoveryManager {
 		}
 	}
 
-	private void notifyLogOfHeuristic(Xid xid, XAException e) throws LogException {
+	private void notifyLogOfHeuristic(Xid xid, XAException e, boolean commitDesired ) throws LogException {
 		switch (e.errorCode) {
 		case XAException.XA_HEURHAZ:
 			log.terminatedWithHeuristicHazardByResource(xid);
 			break;
 		case XAException.XA_HEURCOM:
-			log.terminatedWithHeuristicCommitByResource(xid);
+			if(commitDesired){
+				log.terminated(xid);
+			} else {
+				log.terminatedWithHeuristicCommitByResource(xid);	
+			}
 			break;
 		case XAException.XA_HEURMIX:
 			log.terminatedWithHeuristicMixedByResource(xid);
 			break;
 		case XAException.XA_HEURRB:
-			log.terminatedWithHeuristicRollbackByResource(xid);
+			if(commitDesired) {
+				log.terminatedWithHeuristicRollbackByResource(xid);	
+			} else {
+				log.terminated(xid);
+			}
 			break;
 		default:
 			break;
