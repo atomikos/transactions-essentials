@@ -19,17 +19,22 @@ public class OltpLogImp implements OltpLog {
 	@Override
 	public void write(CoordinatorLogEntry coordinatorLogEntry)
 			throws IllegalStateException, LogException {
-		if (!entryAllowed(coordinatorLogEntry)) {
-			throw new IllegalStateException();
-		}
+		assertEntryIsAllowedInCurrentState(coordinatorLogEntry);
 		repository.put(coordinatorLogEntry.coordinatorId, coordinatorLogEntry);
 	}
 
-	private boolean entryAllowed(CoordinatorLogEntry coordinatorLogEntry) throws LogReadException {
+	private void assertEntryIsAllowedInCurrentState(CoordinatorLogEntry coordinatorLogEntry) throws IllegalStateException, LogReadException {
 		CoordinatorLogEntry existing = repository
 				.get(coordinatorLogEntry.coordinatorId);
 		
-		return coordinatorLogEntry.transitionAllowedFrom(existing);
+		if (!coordinatorLogEntry.transitionAllowedFrom(existing)) {
+			String existingState = "NONE";
+			if (existing != null) {
+				existingState = existing.getResultingState().toString();
+			}
+			throw new IllegalStateException("Existing entry: " + existingState + 
+					" incompatible with new entry: " + coordinatorLogEntry.getResultingState());
+		}
 	}
 
 
