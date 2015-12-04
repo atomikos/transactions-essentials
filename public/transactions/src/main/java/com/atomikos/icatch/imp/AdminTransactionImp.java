@@ -161,11 +161,9 @@ class AdminTransactionImp implements AdminTransaction
      * @see AdminTransaction
      */
 
-    public int getState ()
+    public TxState getState ()
     {
-    	TxState state = coord_.getState ();
-
-        return convertState ( state );
+    	return coord_.getState ();
     }
   
 

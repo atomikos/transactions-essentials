@@ -30,6 +30,7 @@ import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeurMixedException;
 import com.atomikos.icatch.HeurRollbackException;
 import com.atomikos.icatch.SysException;
+import com.atomikos.icatch.TxState;
 
  /**
   * An administration interface for a transaction.
@@ -79,7 +80,7 @@ public interface AdminTransaction
         * because instances need to be Serializable.
         */
 
-      public int getState();
+      public TxState getState();
 
        /**
         * Tests if the transaction's 2PC outcome was commit.
