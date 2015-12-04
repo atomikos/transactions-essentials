@@ -18,15 +18,12 @@ public class LogControlImp implements com.atomikos.icatch.admin.LogControl {
         this.adminLog = adminLog;
     }
 
-	@Override
-	public AdminTransaction[] getAdminTransactions() {
+	private AdminTransaction[] getAdminTransactions() {
 		CoordinatorLogEntry[] tids=adminLog.getCoordinatorLogEntries();
 		AdminTransaction[] ret = new AdminTransaction[tids.length];
 		for (int i = 0; i < tids.length; i++) {
 			ret[i] = convertToAdminTransaction(tids[i]);
 		}
-		
-		
 		return ret;
 	}
 
@@ -37,6 +34,9 @@ public class LogControlImp implements com.atomikos.icatch.admin.LogControl {
 
 	@Override
 	public AdminTransaction[] getAdminTransactions(String... tids) {
+		if (tids.length == 0) {
+			return getAdminTransactions();
+		}
 		List<String> tidsToFind = Arrays.asList(tids);
 		CoordinatorLogEntry[] pendingCoordinatorEntries=adminLog.getCoordinatorLogEntries();
 		
