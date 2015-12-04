@@ -14,6 +14,8 @@ eclipse/
 .project
 .settings/
 
+testoutput*
+
 .DS_Store
 *.bak
 *.orig
