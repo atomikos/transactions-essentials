@@ -70,7 +70,7 @@ class LogControlImp implements com.atomikos.icatch.admin.LogControl
      * @see LogControl
      */
 
-    public AdminTransaction[] getAdminTransactions ( String[] tids )
+    public AdminTransaction[] getAdminTransactions ( String... tids )
     {
         AdminTransaction[] ret = null;
         AdminTransaction[] temp = new AdminTransaction[0];
