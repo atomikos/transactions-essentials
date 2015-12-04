@@ -810,6 +810,11 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 			}					
 		}
 		
+		if (state.isOneOf(TxState.HEUR_ABORTED, TxState.HEUR_COMMITTED, TxState.HEUR_HAZARD, TxState.HEUR_MIXED)) {
+			//new recovery: don't log heuristics - let recovery clean them up
+			ret = true;
+		}
+		
 		return ret;
 	}
 
