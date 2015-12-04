@@ -46,59 +46,6 @@ public abstract class JmxTransaction implements JmxTransactionMBean,
     private ObjectName name;
 
     /**
-     * Converts the given int state.
-     *
-     * @param state
-     *            The given int state.
-     * @return String The string state, or null if not found.
-     */
-
-    protected static String convertState ( int state )
-    {
-        String ret = "UNKNOWN";
-
-        switch ( state ) {
-        case AdminTransaction.STATE_ACTIVE:
-            ret = "ACTIVE";
-            break;
-        case AdminTransaction.STATE_PREPARING:
-            ret = "PREPARING";
-            break;
-        case AdminTransaction.STATE_PREPARED:
-            ret = "PREPARED";
-            break;
-        case AdminTransaction.STATE_HEUR_MIXED:
-            ret = "HEURISTIC MIXED";
-            break;
-        case AdminTransaction.STATE_HEUR_HAZARD:
-            ret = "HEURISTIC HAZARD";
-            break;
-        case AdminTransaction.STATE_HEUR_COMMITTED:
-            ret = "HEURISTIC COMMIT";
-            break;
-        case AdminTransaction.STATE_HEUR_ABORTED:
-            ret = "HEURISTIC ROLLBACK";
-            break;
-        case AdminTransaction.STATE_COMMITTING:
-            ret = "COMMITTING";
-            break;
-        case AdminTransaction.STATE_ABORTING:
-            ret = "ROLLING BACK";
-            break;
-        case AdminTransaction.STATE_TERMINATED:
-            ret = "TERMINATED";
-            break;
-
-        default:
-            break;
-        }
-
-        return ret;
-    }
-
-    
-
-    /**
      * Wraps an existing AdminTransaction instance as an MBean.
      *
      * @param adminTransaction

@@ -40,29 +40,6 @@ import com.atomikos.icatch.TxState;
 
 public interface AdminTransaction
 {
-	 public static final int STATE_ACTIVE = -3;
-
-	 public static final int STATE_PREPARING = -2;
-
-     public static final int STATE_UNKNOWN = -1;
-
-     public static final int STATE_PREPARED = 0;
-
-     public static final int STATE_HEUR_COMMITTED = 1;
-
-     public static final int STATE_HEUR_ABORTED = 2;
-
-     public static final int STATE_HEUR_HAZARD = 3;
-
-     public static final int STATE_HEUR_MIXED = 4;
-
-     public static final int STATE_ABORTING = 5;
-
-     public static final int STATE_COMMITTING = 6;
-
-     public static final int STATE_TERMINATED = 7;
-
-
 
        /**
         * Gets the transaction identifier.

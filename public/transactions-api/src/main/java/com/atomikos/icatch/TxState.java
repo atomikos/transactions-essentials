@@ -37,7 +37,7 @@ public enum TxState {
 	SUSPENDED 		(false, false),
 	TERMINATED 		(false, true),
 	
-	HEUR_COMMITTED 	("HEURISTIC COMMIT", true, 		false, TERMINATED),
+	HEUR_COMMITTED 	("HEURISTIC COMMIT", 	true, 		false, TERMINATED),
 	
 	/**
 	 * @deprecated TODO replace by COMMITING or ABORTING where relevant
@@ -46,8 +46,8 @@ public enum TxState {
 	HEUR_ABORTED 	("HEURISTIC ROLLBACK", 	true, 	false, TERMINATED),
 	HEUR_MIXED 		("HEURISTIC MIXED", 	true, 	false, TERMINATED),	
 	COMMITTING 		(						true, 	false, TERMINATED, HEUR_ABORTED, HEUR_COMMITTED, HEUR_HAZARD, HEUR_MIXED),
-	ABORTING 	 	(						false, 	false, TERMINATED, HEUR_ABORTED, HEUR_COMMITTED, HEUR_HAZARD, HEUR_MIXED),
-	IN_DOUBT  	 	(						true, 	false, ABORTING, COMMITTING, TERMINATED),
+	ABORTING 	 	("ROLLING BACK",		false, 	false, TERMINATED, HEUR_ABORTED, HEUR_COMMITTED, HEUR_HAZARD, HEUR_MIXED),
+	IN_DOUBT  	 	("PREPARED", 			true, 	false, ABORTING, COMMITTING, TERMINATED),
 	PREPARING 	 	(						false, 	false, TERMINATED, IN_DOUBT, ABORTING),
 	ACTIVE 		 	(						true, 	false, ABORTING, COMMITTING, PREPARING),
 	

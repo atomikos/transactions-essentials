@@ -117,7 +117,7 @@ public class LogControlImpTestJUnit {
 	}
 
 	private void thenAdminTransactionHasCorrectState() {
-		Assert.assertEquals(AdminTransaction.STATE_COMMITTING,
+		Assert.assertEquals(TxState.COMMITTING,
 				adminTransaction.getState());
 
 	}
