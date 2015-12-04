@@ -37,36 +37,39 @@ public enum TxState {
 	SUSPENDED 		(false, false),
 	TERMINATED 		(false, true),
 	
-	HEUR_COMMITTED 	(true, 	false, TERMINATED),
+	HEUR_COMMITTED 	("HEURISTIC COMMIT", true, 		false, TERMINATED),
 	
 	/**
 	 * @deprecated TODO replace by COMMITING or ABORTING where relevant
 	 */
-	HEUR_HAZARD 	(false, false, TERMINATED),
-	HEUR_ABORTED 	(true, 	false, TERMINATED),
-	HEUR_MIXED 		(true, 	false, TERMINATED),	
-	COMMITTING 		(true, 	false, TERMINATED, HEUR_ABORTED, HEUR_COMMITTED, HEUR_HAZARD, HEUR_MIXED),
-	ABORTING 	 	(false, false, TERMINATED, HEUR_ABORTED, HEUR_COMMITTED, HEUR_HAZARD, HEUR_MIXED),
-	IN_DOUBT  	 	(true, 	false, ABORTING, COMMITTING, TERMINATED),
-	PREPARING 	 	(false, false, TERMINATED, IN_DOUBT, ABORTING),
-	ACTIVE 		 	(true, 	false, ABORTING, COMMITTING, PREPARING),
+	HEUR_HAZARD 	("HEURISTIC HAZARD", 	false, 	false, TERMINATED),
+	HEUR_ABORTED 	("HEURISTIC ROLLBACK", 	true, 	false, TERMINATED),
+	HEUR_MIXED 		("HEURISTIC MIXED", 	true, 	false, TERMINATED),	
+	COMMITTING 		(						true, 	false, TERMINATED, HEUR_ABORTED, HEUR_COMMITTED, HEUR_HAZARD, HEUR_MIXED),
+	ABORTING 	 	(						false, 	false, TERMINATED, HEUR_ABORTED, HEUR_COMMITTED, HEUR_HAZARD, HEUR_MIXED),
+	IN_DOUBT  	 	(						true, 	false, ABORTING, COMMITTING, TERMINATED),
+	PREPARING 	 	(						false, 	false, TERMINATED, IN_DOUBT, ABORTING),
+	ACTIVE 		 	(						true, 	false, ABORTING, COMMITTING, PREPARING),
 	
 	COMMITTED 		(false, false),
 	ABORTED 		(false, false);
 
+	private String label;
+	
 	private boolean recoverableState;
 	
 	private boolean finalState;
 	
-	
 	private TxState[] legalNextStates;
 	
-	TxState(boolean recoverableState, boolean finalState){
+	TxState (boolean recoverableState, boolean finalState, TxState... legalNextStates) {
+		this.label=name();
 		this.finalState=finalState;
 		this.recoverableState=recoverableState;
-		legalNextStates = new TxState[0];
+		this.legalNextStates=legalNextStates;
 	}
-	TxState(boolean recoverableState, boolean finalState,TxState... legalNextStates){
+	TxState (String label, boolean recoverableState, boolean finalState, TxState... legalNextStates) {
+		this.label=label;
 		this.finalState=finalState;
 		this.recoverableState=recoverableState;
 		this.legalNextStates=legalNextStates;
@@ -100,6 +103,10 @@ public enum TxState {
 				return true;
 		}
 		return false;
+	}
+	
+	public String label() {
+		return label;
 	}
 	
 }

@@ -144,7 +144,7 @@ public abstract class JmxTransaction implements JmxTransactionMBean,
     public String getState ()
     {
 
-        return adminTransaction.getState().name();
+        return adminTransaction.getState().label();
     }
 
 
