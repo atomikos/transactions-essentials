@@ -137,7 +137,7 @@ abstract class ConsumerProducerSupport
 			transactionStatesIndicatingConnectionReusability.put(TxState.HEUR_MIXED,TxState.HEUR_MIXED);
 		}
 
-		public void afterCompletion(Object txstate) {
+		public void afterCompletion(TxState txstate) {
 			if ( afterCompletionDone ) return;
 			
 			if ( transactionStatesIndicatingConnectionReusability.containsKey(txstate) ) {
