@@ -37,7 +37,7 @@ public enum TxState {
 	SUSPENDED 		(false, false),
 	TERMINATED 		(false, true),
 	
-	HEUR_COMMITTED 	("HEURISTIC COMMIT", 	true, 		false, TERMINATED),
+	HEUR_COMMITTED 	("HEURISTIC COMMIT", 	true, 	false, TERMINATED),
 	
 	/**
 	 * @deprecated TODO replace by COMMITING or ABORTING where relevant
@@ -107,6 +107,10 @@ public enum TxState {
 	
 	public String label() {
 		return label;
+	}
+	
+	public boolean isHeuristic() {
+		return isOneOf(HEUR_ABORTED, HEUR_COMMITTED, HEUR_HAZARD, HEUR_MIXED);
 	}
 	
 }

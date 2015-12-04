@@ -290,7 +290,7 @@ class AtomikosConnectionProxy extends AbstractConnectionProxy
 			this.afterCompletionDone = false;
 		}
 
-		public void afterCompletion(Object state) {
+		public void afterCompletion(TxState state) {
 
 			if ( afterCompletionDone ) return;
 
@@ -300,11 +300,7 @@ class AtomikosConnectionProxy extends AbstractConnectionProxy
 				forceCloseAllPendingStatements ( true );
 			}
 
-			if ( state.equals ( TxState.TERMINATED )
-	                || state.equals ( TxState.HEUR_MIXED )
-	                || state.equals ( TxState.HEUR_HAZARD )
-	                || state.equals ( TxState.HEUR_ABORTED )
-	                || state.equals ( TxState.HEUR_COMMITTED ) ) {
+			if ( state.equals ( TxState.TERMINATED ) || state.isHeuristic()) {
 
 	            // connection is reusable!
 				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug(  proxy + ": detected termination of transaction " + compositeTransaction );

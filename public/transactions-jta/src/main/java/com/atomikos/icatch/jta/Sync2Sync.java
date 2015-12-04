@@ -57,7 +57,7 @@ class Sync2Sync implements com.atomikos.icatch.Synchronization
 	}
 
     @Override
-	public void afterCompletion ( Object state )
+	public void afterCompletion ( TxState state )
     {
         if ( state.equals ( TxState.TERMINATED ) ) {
             if ( this.committed == null ) { //readonly: unknown

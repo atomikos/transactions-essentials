@@ -498,11 +498,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     {
     	TxState state = event.getState ();
 
-        if ( state.equals ( TxState.TERMINATED )
-                || state.equals ( TxState.HEUR_ABORTED )
-                || state.equals ( TxState.HEUR_COMMITTED )
-                || state.equals ( TxState.HEUR_HAZARD )
-                || state.equals ( TxState.HEUR_MIXED ) ) {
+        if ( state.equals ( TxState.TERMINATED ) || state.isHeuristic()) {
 
             if ( !state.equals ( TxState.TERMINATED ) )
             	LOGGER.logWarning ( "Local heuristic termination of coordinator "
@@ -810,7 +806,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 			}					
 		}
 		
-		if (state.isOneOf(TxState.HEUR_ABORTED, TxState.HEUR_COMMITTED, TxState.HEUR_HAZARD, TxState.HEUR_MIXED)) {
+		if (state.isHeuristic()) {
 			//new recovery: don't log heuristics - let recovery clean them up
 			ret = true;
 		}
@@ -941,11 +937,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 	@Override
 	public void entered(FSMEnterEvent<TxState> e) {
 		TxState state = e.getState();
-		if ( TxState.HEUR_ABORTED.equals(state) ||
-		     TxState.HEUR_COMMITTED.equals(state) ||
-			 TxState.HEUR_HAZARD.equals(state) ||
-			 TxState.HEUR_MIXED.equals(state)
-			) {
+		if (state.isHeuristic()) {
 			publishDomainEvent(new TransactionHeuristicEvent(root_));
 		}
 	}
