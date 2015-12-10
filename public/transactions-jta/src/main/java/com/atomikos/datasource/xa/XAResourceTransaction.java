@@ -375,7 +375,6 @@ public class XAResourceTransaction implements ResourceTransaction,
 	@Override
 	public synchronized void resume() throws ResourceException {
 		int flag = 0;
-		Stack errors = new Stack();
 		String logFlag = "";
 		if (this.state.equals(TxState.LOCALLY_DONE)) {// reused instance
 			flag = XAResource.TMJOIN;

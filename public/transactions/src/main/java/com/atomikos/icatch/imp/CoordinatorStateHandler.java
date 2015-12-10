@@ -837,7 +837,8 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable,DataSe
     }
     
     protected void removePendingOltpCoordinatorFromTransactionService() {
-		CoordinatorStateHandler nextStateHandler = new TerminatedStateHandler ( this );
-		getCoordinator().setStateHandler ( nextStateHandler );
+    	getCoordinator().setState(TxState.ABANDONED);
+//		CoordinatorStateHandler nextStateHandler = new TerminatedStateHandler ( this );
+//		getCoordinator().setStateHandler ( nextStateHandler );
 	}
 }

@@ -86,6 +86,11 @@ public enum TxState {
 		return finalState;
 	}
 	
+	
+	public boolean isFinalStateForOltp() {
+		return isFinalState() || this == ABANDONED;
+	}
+	
 	public boolean isRecoverableState() {
 		return recoverableState;
 	}

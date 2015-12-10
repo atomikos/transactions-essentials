@@ -224,7 +224,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
 
     Vector<CoordinatorImp> getCoordinatorImpVector ()
     {
-        Vector ret = new Vector ();
+        Vector<CoordinatorImp> ret = new Vector<CoordinatorImp> ();
         Enumeration tids = rootToCoordinatorMap_.keys ();
         while ( tids.hasMoreElements () ) {
             String next = (String) tids.nextElement ();
@@ -371,7 +371,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
     {
         Set<TxState>  forgetStates = new HashSet<TxState>();
         for (TxState txState : TxState.values()) {
-			if(txState.isFinalState()) {
+			if(txState.isFinalStateForOltp()) {
 				forgetStates.add(txState);
 			}
 		}
