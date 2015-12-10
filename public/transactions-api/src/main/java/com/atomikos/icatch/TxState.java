@@ -71,13 +71,13 @@ public enum TxState {
 	
 	TxState (boolean recoverableState, boolean finalState, TxState... legalNextStates) {
 		this.label=name();
-		this.finalState=legalNextStates.length==0;
+		this.finalState=finalState;
 		this.recoverableState=recoverableState;
 		this.legalNextStates=legalNextStates;
 	}
 	TxState (String label, boolean recoverableState, boolean finalState, TxState... legalNextStates) {
 		this.label=label;
-		this.finalState=legalNextStates.length==0;
+		this.finalState=finalState;
 		this.recoverableState=recoverableState;
 		this.legalNextStates=legalNextStates;
 	}
