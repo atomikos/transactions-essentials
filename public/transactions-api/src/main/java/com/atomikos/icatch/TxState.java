@@ -25,18 +25,25 @@
 
 package com.atomikos.icatch;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 
 /**
  * The states for a distributed transaction system.
  */
-
+//@formatter:off
 public enum TxState {
-	//@formatter:off
+	//OLTP States
 	MARKED_ABORT 	(false, false),
 	LOCALLY_DONE 	(false, false),
-	SUSPENDED 		(false, false),
-	TERMINATED 		(false, true),
+	COMMITTED 		(false, false),
+	ABORTED 		(false, false),
+	ABANDONED		(false, false),
 	
+	
+	//Recoverable States
+	TERMINATED 		(false, true),
 	HEUR_COMMITTED 	("HEURISTIC COMMIT", 	true, 	false, TERMINATED),
 	
 	/**
@@ -49,10 +56,7 @@ public enum TxState {
 	ABORTING 	 	("ROLLING BACK",		false, 	false, TERMINATED, HEUR_ABORTED, HEUR_COMMITTED, HEUR_HAZARD, HEUR_MIXED),
 	IN_DOUBT  	 	("PREPARED", 			true, 	false, ABORTING, COMMITTING, TERMINATED),
 	PREPARING 	 	(						false, 	false, TERMINATED, IN_DOUBT, ABORTING),
-	ACTIVE 		 	(						true, 	false, ABORTING, COMMITTING, PREPARING),
-	
-	COMMITTED 		(false, false),
-	ABORTED 		(false, false);
+	ACTIVE 		 	(						true, 	false, ABORTING, COMMITTING, PREPARING);
 
 	private String label;
 	
@@ -62,15 +66,18 @@ public enum TxState {
 	
 	private TxState[] legalNextStates;
 	
+	private static Set<TxState> exclusivelyForOltp = EnumSet.of(MARKED_ABORT, LOCALLY_DONE, ABANDONED, COMMITTED, ABORTED);
+	private static Set<TxState> recoverableStates = EnumSet.of(HEUR_COMMITTED,HEUR_HAZARD,HEUR_MIXED, HEUR_ABORTED,COMMITTING,ABORTING,IN_DOUBT,PREPARING,ACTIVE);
+	
 	TxState (boolean recoverableState, boolean finalState, TxState... legalNextStates) {
 		this.label=name();
-		this.finalState=finalState;
+		this.finalState=legalNextStates.length==0;
 		this.recoverableState=recoverableState;
 		this.legalNextStates=legalNextStates;
 	}
 	TxState (String label, boolean recoverableState, boolean finalState, TxState... legalNextStates) {
 		this.label=label;
-		this.finalState=finalState;
+		this.finalState=legalNextStates.length==0;
 		this.recoverableState=recoverableState;
 		this.legalNextStates=legalNextStates;
 	}
