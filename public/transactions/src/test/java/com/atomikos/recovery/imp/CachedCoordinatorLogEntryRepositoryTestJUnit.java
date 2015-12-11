@@ -243,7 +243,6 @@ public class CachedCoordinatorLogEntryRepositoryTestJUnit {
 		try {
 			sut.put(tid, coordinatorLogEntry);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

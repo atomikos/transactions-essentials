@@ -36,6 +36,7 @@ public class FileSystemCoordinatorLogEntryRepository implements
 		String baseDir = configProperties.getLogBaseDir();
 		String baseName = configProperties.getLogBaseName();
 		file = new VersionedFile(baseDir, baseName, ".log");
+		
 	}
 
 	private Serializer serializer = new Serializer();
@@ -97,19 +98,7 @@ public class FileSystemCoordinatorLogEntryRepository implements
 		throw new UnsupportedOperationException();
 	}
 
-	@Override
-	public void close() {
-		try {
-			if (file != null) {
-				file.close();
-			}
 
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-	}
 
 	@Override
 	public Collection<CoordinatorLogEntry> getAllCoordinatorLogEntries()
@@ -169,18 +158,22 @@ public class FileSystemCoordinatorLogEntryRepository implements
 		return deserializer.fromJSON(line);
 	}
 
+	@Override
+	public void close() {
+		try {
+			closeOutput();
+		} catch (Exception e) {
+			LOGGER.logWarning("Error closing file - ignoring",e);
+		}
+	}
 	protected void closeOutput() throws IllegalStateException {
-
-		// try to close the previous output stream, if any.
 		try {
 			if (file != null) {
 				file.close();
 			}
 		} catch (IOException e) {
-
 			throw new IllegalStateException("Error closing previous output", e);
 		}
-
 	}
 
 	@Override

@@ -63,12 +63,8 @@ public class CachedCoordinatorLogEntryRepositoryIntegrationTest {
 		for (CoordinatorLogEntry coordinatorLogEntry : coordinatorLogEntries) {
 			try {
 				sut.put(coordinatorLogEntry.coordinatorId,coordinatorLogEntry);
-			} catch (IllegalArgumentException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (LogWriteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			} catch (Exception ignore) {
+				ignore.printStackTrace();
 			}
 		}
 	}

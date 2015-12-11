@@ -68,7 +68,7 @@ public class XaResourceRecoveryManager {
 				}
 			}
 		} catch (LogException couldNotRetrieveCommittingXids) {
-			//TODO log warning and retry later
+			LOGGER.logWarning("Transient error while recovering - will retry later...", couldNotRetrieveCommittingXids);
 		}
 	}
 
@@ -77,14 +77,12 @@ public class XaResourceRecoveryManager {
 			xaResource.commit(xid, false);
 			log.terminated(xid);
 		} catch (XAException e) {
-			// TODO log error
 			if (alreadyHeuristicallyTerminatedByResource(e)) {
 				handleHeuristicTerminationByResource(xid, xaResource, e, true);
 			} else if (xidTerminatedInResourceByConcurrentCommit(e)) {
 				log.terminated(xid);
 			} else {
-				// temporary: retry later
-				// TODO log warning
+				LOGGER.logWarning("Transient error while replaying commit - will retry later...", e);
 			}
 		}
 	}
@@ -136,7 +134,7 @@ public class XaResourceRecoveryManager {
 			if (autoForget)
 				xaResource.forget(xid);
 		} catch (XAException e) {
-			// TODO: log
+			LOGGER.logWarning("Unexpected error during forget - ignoring", e);
 			// ignore: worst case, heuristic xid is presented again on next
 			// recovery scan
 		}
@@ -152,8 +150,7 @@ public class XaResourceRecoveryManager {
 		try {
 			ret = RecoveryScan.recoverXids(xaResource, xidSelector);
 		} catch (XAException e) {
-			// TODO log or publish warning
-			// ignore: retry on next recovery pass
+			LOGGER.logWarning("Error while retrieving xids from resource - will retry later...");
 		}
 		return ret;
 	}
@@ -172,7 +169,7 @@ public class XaResourceRecoveryManager {
 				} else if (xidTerminatedInResourceByConcurrentRollback(e)) {
 					log.terminated(xid);
 				} else {
-					LOGGER.logWarning("Unexpected exception during recovery - ignoring to retry later", e);
+					LOGGER.logWarning("Unexpected exception during recovery - ignoring to retry later...", e);
 				}
 			}
 		} catch (IllegalStateException presumedAbortNotAllowedInCurrentLogState) {

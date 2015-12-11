@@ -40,8 +40,7 @@ public class RecoveryLogImp implements RecoveryLog, AdminLog {
 			//TODO coordinator will remain committing in log - clean up by admin tools?
 			LOGGER.logWarning("Unable to write to repository "+entry+" ignoring");
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOGGER.logWarning("Unexpected error while terminating participant entry - ignoring (may result in orphaned log entry)", e);
 		} 
 	}
 

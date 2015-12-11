@@ -3,7 +3,6 @@ package com.atomikos.recovery.imp;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import com.atomikos.icatch.TxState;
 import com.atomikos.icatch.provider.ConfigProperties;
@@ -11,6 +10,7 @@ import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 import com.atomikos.recovery.CoordinatorLogEntry;
 import com.atomikos.recovery.CoordinatorLogEntryRepository;
+import com.atomikos.recovery.LogException;
 import com.atomikos.recovery.LogReadException;
 import com.atomikos.recovery.LogWriteException;
 
@@ -42,7 +42,8 @@ public class CachedCoordinatorLogEntryRepository implements
 				inMemoryCoordinatorLogEntryRepository.put(coordinatorLogEntry.coordinatorId, coordinatorLogEntry);
 			}
 			
-		} catch (LogReadException e) {
+			performCheckpoint();
+		} catch (LogException e) {
 			LOGGER.logWarning("Corrupted log file - restart JVM");
 			corrupt = true;
 		}
