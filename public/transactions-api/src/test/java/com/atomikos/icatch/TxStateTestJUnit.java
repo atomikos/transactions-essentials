@@ -1,12 +1,17 @@
 package com.atomikos.icatch;
 
+import static com.atomikos.icatch.TxState.COMMITTING;
+import static com.atomikos.icatch.TxState.HEUR_ABORTED;
+import static com.atomikos.icatch.TxState.HEUR_COMMITTED;
+import static com.atomikos.icatch.TxState.HEUR_MIXED;
+import static com.atomikos.icatch.TxState.IN_DOUBT;
+import static com.atomikos.icatch.TxState.TERMINATED;
 import static org.junit.Assert.assertEquals;
 
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.Set;
 
 import org.junit.Assert;
-
 import org.junit.Test;
 
 public class TxStateTestJUnit {
@@ -18,16 +23,8 @@ public class TxStateTestJUnit {
 
 	@Test
 	public void testRecoverableStates() throws Exception {
-		Set<TxState> recoverableStates = new HashSet<TxState>();
-		recoverableStates.add(TxState.ACTIVE);
-		recoverableStates.add(TxState.IN_DOUBT);
-		recoverableStates.add(TxState.COMMITTING);
-		recoverableStates.add(TxState.HEUR_COMMITTED);
-		recoverableStates.add(TxState.HEUR_ABORTED);
-		recoverableStates.add(TxState.HEUR_MIXED);
-
+		Set<TxState> recoverableStates = EnumSet.of(IN_DOUBT, COMMITTING, HEUR_COMMITTED, HEUR_ABORTED, HEUR_MIXED);
 		TxState[] states = TxState.values();
-
 		for (TxState txState : states) {
 			if (recoverableStates.contains(txState)) {
 				Assert.assertTrue(txState.isRecoverableState());
@@ -39,10 +36,10 @@ public class TxStateTestJUnit {
 
 	@Test
 	public void testFinalStates() {
+		Set<TxState> finalStates = EnumSet.of(TERMINATED);
 		TxState[] states = TxState.values();
 		for (TxState txState : states) {
-			//,TxState.HEUR_ABORTED,TxState.HEUR_COMMITTED,TxState.HEUR_MIXED
-			if (txState.isOneOf(TxState.TERMINATED)) {
+			if (finalStates.contains(txState)) {
 				Assert.assertTrue(txState.isFinalState());
 			} else {
 				Assert.assertFalse(txState.isFinalState());
