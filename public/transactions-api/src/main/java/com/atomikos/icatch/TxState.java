@@ -56,7 +56,7 @@ public enum TxState {
 	ABORTING 	 	("ROLLING BACK",		false, 	false, TERMINATED, HEUR_ABORTED, HEUR_COMMITTED, HEUR_HAZARD, HEUR_MIXED),
 	IN_DOUBT  	 	("PREPARED", 			true, 	false, ABORTING, COMMITTING, TERMINATED),
 	PREPARING 	 	(						false, 	false, TERMINATED, IN_DOUBT, ABORTING),
-	ACTIVE 		 	(						true, 	false, ABORTING, COMMITTING, PREPARING);
+	ACTIVE 		 	(						false, 	false, ABORTING, COMMITTING, PREPARING);
 
 	private String label;
 	
