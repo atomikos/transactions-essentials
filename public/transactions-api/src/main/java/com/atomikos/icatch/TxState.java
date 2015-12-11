@@ -24,11 +24,6 @@
  */
 
 package com.atomikos.icatch;
-
-import java.util.EnumSet;
-import java.util.Set;
-
-
 /**
  * The states for a distributed transaction system.
  */
@@ -52,10 +47,10 @@ public enum TxState {
 	HEUR_HAZARD 	("HEURISTIC HAZARD", 	false, 	false, TERMINATED),
 	HEUR_ABORTED 	("HEURISTIC ROLLBACK", 	true, 	false, TERMINATED),
 	HEUR_MIXED 		("HEURISTIC MIXED", 	true, 	false, TERMINATED),	
-	COMMITTING 		(						true, 	false, TERMINATED, HEUR_ABORTED, HEUR_COMMITTED, HEUR_HAZARD, HEUR_MIXED),
-	ABORTING 	 	("ROLLING BACK",		false, 	false, TERMINATED, HEUR_ABORTED, HEUR_COMMITTED, HEUR_HAZARD, HEUR_MIXED),
+	COMMITTING 		(						true, 	false, HEUR_ABORTED, HEUR_COMMITTED, HEUR_HAZARD, HEUR_MIXED, TERMINATED),
+	ABORTING 	 	("ROLLING BACK",		false, 	false, HEUR_ABORTED, HEUR_COMMITTED, HEUR_HAZARD, HEUR_MIXED, TERMINATED),
 	IN_DOUBT  	 	("PREPARED", 			true, 	false, ABORTING, COMMITTING, TERMINATED),
-	PREPARING 	 	(						false, 	false, TERMINATED, IN_DOUBT, ABORTING),
+	PREPARING 	 	(						false, 	false, IN_DOUBT, ABORTING, TERMINATED),
 	ACTIVE 		 	(						false, 	false, ABORTING, COMMITTING, PREPARING);
 
 	private String label;
@@ -65,9 +60,6 @@ public enum TxState {
 	private boolean finalState;
 	
 	private TxState[] legalNextStates;
-	
-	private static Set<TxState> exclusivelyForOltp = EnumSet.of(MARKED_ABORT, LOCALLY_DONE, ABANDONED, COMMITTED, ABORTED);
-	private static Set<TxState> recoverableStates = EnumSet.of(HEUR_COMMITTED,HEUR_HAZARD,HEUR_MIXED, HEUR_ABORTED,COMMITTING,ABORTING,IN_DOUBT,PREPARING,ACTIVE);
 	
 	TxState (boolean recoverableState, boolean finalState, TxState... legalNextStates) {
 		this.label=name();
@@ -88,7 +80,7 @@ public enum TxState {
 	
 	
 	public boolean isFinalStateForOltp() {
-		return isFinalState() || this == ABANDONED;
+		return isFinalState() || this == ABANDONED || isHeuristic();
 	}
 	
 	public boolean isRecoverableState() {
