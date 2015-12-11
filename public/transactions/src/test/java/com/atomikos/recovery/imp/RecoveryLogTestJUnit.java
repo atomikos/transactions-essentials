@@ -188,7 +188,7 @@ public class RecoveryLogTestJUnit {
 		Mockito.when(logRepository.get(Mockito.anyString())).thenReturn(
 				coordinatorLogEntry);
 		if(state == TxState.COMMITTING) {
-			Mockito.when(logRepository.findAllCommittingParticipants()).thenReturn(Arrays.asList(participantLogEntry));
+			Mockito.when(logRepository.findAllCommittingCoordinatorLogEntries()).thenReturn(Arrays.asList(coordinatorLogEntry));
 		}
 
 	}

@@ -13,6 +13,7 @@ import org.junit.rules.TestName;
 import com.atomikos.icatch.TxState;
 import com.atomikos.icatch.provider.ConfigProperties;
 import com.atomikos.recovery.CoordinatorLogEntry;
+import com.atomikos.recovery.LogReadException;
 import com.atomikos.recovery.LogWriteException;
 import com.atomikos.recovery.ParticipantLogEntry;
 
@@ -51,7 +52,7 @@ public class FileSystemCoordinatorLogEntryRepositoryTestJUnit {
 
 	
 	
-	private void whenGetAllCoordinatorLogEntries() {
+	private void whenGetAllCoordinatorLogEntries() throws LogReadException {
 		coordinatorLogEntries = sut.getAllCoordinatorLogEntries();
 		
 	}
@@ -70,7 +71,7 @@ public class FileSystemCoordinatorLogEntryRepositoryTestJUnit {
 	}
 
 
-	private void thenCoordinatorLogEntryWasReadFromFile() {
+	private void thenCoordinatorLogEntryWasReadFromFile() throws LogReadException {
 		Assert.assertFalse(sut.getAllCoordinatorLogEntries().isEmpty());
 		//TODO functional comparaison
 		

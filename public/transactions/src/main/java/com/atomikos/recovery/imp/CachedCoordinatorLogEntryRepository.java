@@ -3,15 +3,17 @@ package com.atomikos.recovery.imp;
 import java.util.Collection;
 
 import com.atomikos.icatch.provider.ConfigProperties;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 import com.atomikos.recovery.CoordinatorLogEntry;
 import com.atomikos.recovery.CoordinatorLogEntryRepository;
 import com.atomikos.recovery.LogReadException;
 import com.atomikos.recovery.LogWriteException;
-import com.atomikos.recovery.ParticipantLogEntry;
 
 public class CachedCoordinatorLogEntryRepository implements
 		CoordinatorLogEntryRepository {
 
+	private static final Logger LOGGER = LoggerFactory.createLogger(CachedCoordinatorLogEntryRepository.class);
 	private boolean corrupt = false; 
 	private final InMemoryCoordinatorLogEntryRepository inMemoryCoordinatorLogEntryRepository;
 
@@ -29,10 +31,17 @@ public class CachedCoordinatorLogEntryRepository implements
 	@Override
 	public void init(ConfigProperties configProperties) {
 		//populate inMemoryCoordinatorLogEntryRepository with backup data
-		Collection<CoordinatorLogEntry> coordinatorLogEntries =	backupCoordinatorLogEntryRepository.getAllCoordinatorLogEntries();
-		for (CoordinatorLogEntry coordinatorLogEntry : coordinatorLogEntries) {
-			inMemoryCoordinatorLogEntryRepository.put(coordinatorLogEntry.coordinatorId, coordinatorLogEntry);
+		try {
+			Collection<CoordinatorLogEntry> coordinatorLogEntries = backupCoordinatorLogEntryRepository.getAllCoordinatorLogEntries();
+			for (CoordinatorLogEntry coordinatorLogEntry : coordinatorLogEntries) {
+				inMemoryCoordinatorLogEntryRepository.put(coordinatorLogEntry.coordinatorId, coordinatorLogEntry);
+			}
+			
+		} catch (LogReadException e) {
+			LOGGER.logWarning("Corrupted log file - restart JVM");
+			corrupt = true;
 		}
+		
 		checkpointInterval = configProperties.getCheckpointInterval();		
 	}
 
@@ -71,20 +80,22 @@ public class CachedCoordinatorLogEntryRepository implements
 
 	@Override
 	public CoordinatorLogEntry get(String coordinatorId) throws LogReadException  {
-		if(corrupt){
-			throw new LogReadException();
-		}
+		assertNotCorrupted();
 		return inMemoryCoordinatorLogEntryRepository.get(coordinatorId);
+	}
+
+	protected void assertNotCorrupted() throws LogReadException {
+		if(corrupt){
+			throw new LogReadException("Log corrupted - restart JVM");
+		}
 	}
 
 	
 
 	@Override
-	public Collection<ParticipantLogEntry> findAllCommittingParticipants() throws LogReadException {
-		if(corrupt){
-			throw new LogReadException();
-		}
-		return inMemoryCoordinatorLogEntryRepository.findAllCommittingParticipants();
+	public Collection<CoordinatorLogEntry> findAllCommittingCoordinatorLogEntries() throws LogReadException {
+		assertNotCorrupted();
+		return inMemoryCoordinatorLogEntryRepository.findAllCommittingCoordinatorLogEntries();
 	}
 
 	

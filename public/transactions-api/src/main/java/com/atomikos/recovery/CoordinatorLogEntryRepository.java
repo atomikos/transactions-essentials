@@ -15,9 +15,9 @@ public interface CoordinatorLogEntryRepository {
 	
 	CoordinatorLogEntry get(String coordinatorId) throws LogReadException;
 
-	Collection<ParticipantLogEntry> findAllCommittingParticipants() throws LogReadException;
+	Collection<CoordinatorLogEntry> findAllCommittingCoordinatorLogEntries() throws LogReadException;
 	
-	Collection<CoordinatorLogEntry> getAllCoordinatorLogEntries();
+	Collection<CoordinatorLogEntry> getAllCoordinatorLogEntries() throws LogReadException;
 
 	void writeCheckpoint(Collection<CoordinatorLogEntry> checkpointContent) throws LogWriteException;
 	

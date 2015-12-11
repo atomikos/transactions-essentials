@@ -25,9 +25,6 @@
 
 package com.atomikos.jms;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.jms.JMSException;
 
 import com.atomikos.datasource.xa.session.InvalidSessionHandleStateException;

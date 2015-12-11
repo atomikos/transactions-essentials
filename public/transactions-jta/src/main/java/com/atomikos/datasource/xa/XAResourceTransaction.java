@@ -34,7 +34,6 @@ import java.io.ObjectOutput;
 import java.io.OptionalDataException;
 import java.io.Serializable;
 import java.util.Enumeration;
-import java.util.Stack;
 
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;

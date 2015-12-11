@@ -1,6 +1,7 @@
 package com.atomikos.recovery.imp;
 
 import java.util.Collection;
+import java.util.HashSet;
 
 import com.atomikos.icatch.TxState;
 import com.atomikos.logging.Logger;
@@ -62,8 +63,15 @@ public class RecoveryLogImp implements RecoveryLog, AdminLog {
 	@Override
 	public Collection<ParticipantLogEntry> getCommittingParticipants()
 			throws LogReadException {
-
-		return repository.findAllCommittingParticipants();
+		Collection<ParticipantLogEntry> committingParticipants = new HashSet<ParticipantLogEntry>();
+		Collection<CoordinatorLogEntry> committingCoordinatorLogEntries = repository.findAllCommittingCoordinatorLogEntries();
+		
+		for (CoordinatorLogEntry coordinatorLogEntry : committingCoordinatorLogEntries) {
+			for (ParticipantLogEntry participantLogEntry : coordinatorLogEntry.participantDetails) {
+				committingParticipants.add(participantLogEntry);
+			}
+		}
+		return committingParticipants;
 	}
 
 	private void write(CoordinatorLogEntry coordinatorLogEntry)
@@ -146,8 +154,14 @@ public class RecoveryLogImp implements RecoveryLog, AdminLog {
 
 	@Override
 	public CoordinatorLogEntry[] getCoordinatorLogEntries() {
-		Collection<CoordinatorLogEntry> allCoordinatorLogEntries= repository.getAllCoordinatorLogEntries();
-		return allCoordinatorLogEntries.toArray(new CoordinatorLogEntry[allCoordinatorLogEntries.size()]);
+		try {
+			Collection<CoordinatorLogEntry> allCoordinatorLogEntries= repository.getAllCoordinatorLogEntries();
+			return allCoordinatorLogEntries.toArray(new CoordinatorLogEntry[allCoordinatorLogEntries.size()]);
+		} catch (LogReadException e) {
+			LOGGER.logWarning("Could not retrieve coordinators - returning empty array", e);	
+		}
+		
+		return new CoordinatorLogEntry[0];
 	}
 
 	@Override

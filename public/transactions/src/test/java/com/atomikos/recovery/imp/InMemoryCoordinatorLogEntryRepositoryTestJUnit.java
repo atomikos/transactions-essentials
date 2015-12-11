@@ -1,5 +1,6 @@
 package com.atomikos.recovery.imp;
 
+import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.Assert;
@@ -63,14 +64,15 @@ public class InMemoryCoordinatorLogEntryRepositoryTestJUnit {
 	
 	private void thenCommittingParticipantsFoundInRepository() {
 		ParticipantLogEntry committingParticipantLogEntry = coordinatorLogEntry.participantDetails[0];
+		for (CoordinatorLogEntry coordinatorLogEntry : committingParticipantLogEntries) {
+			Assert.assertTrue(Arrays.asList(coordinatorLogEntry.participantDetails).contains(committingParticipantLogEntry));	
+		}
 		
-		Assert.assertTrue(participantLogEntries.contains(committingParticipantLogEntry));
 	}
 	
-	Collection<ParticipantLogEntry> participantLogEntries;
-	
+	Collection<CoordinatorLogEntry> committingParticipantLogEntries;
 	private void whenFindAllCommittingParticipants() {
-		participantLogEntries=sut.findAllCommittingParticipants();
+		committingParticipantLogEntries=sut.findAllCommittingCoordinatorLogEntries();
 		
 	}
 	private void givenCommittingCoordinatorLogEntry() {

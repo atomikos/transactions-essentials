@@ -10,7 +10,6 @@ import com.atomikos.icatch.TxState;
 import com.atomikos.icatch.provider.ConfigProperties;
 import com.atomikos.recovery.CoordinatorLogEntry;
 import com.atomikos.recovery.CoordinatorLogEntryRepository;
-import com.atomikos.recovery.ParticipantLogEntry;
 
 public class InMemoryCoordinatorLogEntryRepository implements
 		CoordinatorLogEntryRepository {
@@ -44,14 +43,12 @@ public class InMemoryCoordinatorLogEntryRepository implements
 	}
 
 	@Override
-	public synchronized Collection<ParticipantLogEntry> findAllCommittingParticipants() {
-		Set<ParticipantLogEntry> res = new HashSet<ParticipantLogEntry>();
+	public synchronized Collection<CoordinatorLogEntry> findAllCommittingCoordinatorLogEntries() {
+		Set<CoordinatorLogEntry> res = new HashSet<CoordinatorLogEntry>();
 		Collection<CoordinatorLogEntry> allCoordinatorLogEntry = storage.values();	
 		for (CoordinatorLogEntry coordinatorLogEntry : allCoordinatorLogEntry) {
 			if(coordinatorLogEntry.getResultingState() == TxState.COMMITTING){
-				for (ParticipantLogEntry participantLogEntry : coordinatorLogEntry.participantDetails) {
-					res.add(participantLogEntry);
-				}
+					res.add(coordinatorLogEntry);
 			}
 		}
 		return res;
