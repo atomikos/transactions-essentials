@@ -149,25 +149,6 @@ public class IndoubtStateHandler extends CoordinatorStateHandler
                 	//pending coordinator after failed commit or rollback: cleanup to remove from TransactionServiceImp
                 	removePendingOltpCoordinatorFromTransactionService();
                 }
-                // heuristic decision
-                else if ( getCoordinator ().prefersHeuristicCommit () ) {
-                	commitWithAfterCompletionNotification ( new CommitCallback() {
-                		public void doCommit()
-                				throws HeurRollbackException, HeurMixedException,
-                				HeurHazardException, IllegalStateException,
-                				RollbackException, SysException {
-                			commitFromWithinCallback ( true, false );
-                		}          	
-                	});
-                } else { 
-                	rollbackWithAfterCompletionNotification(new RollbackCallback() {
-						public void doRollback()
-								throws HeurCommitException,
-								HeurMixedException, SysException,
-								HeurHazardException, IllegalStateException {
-							rollbackFromWithinCallback(true,true);
-						}});
-                }
             } // else
         } catch ( Exception e ) {
         	LOGGER.logWarning("Error in timeout of INDOUBT state: " + e.getMessage () );
