@@ -32,7 +32,8 @@ public class CachedCoordinatorLogEntryRepositoryTestJUnit {
 	private void doInit() {
 		Properties properties = new Properties();
 		properties.put("com.atomikos.icatch.checkpoint_interval", "1");
-		ConfigProperties configProperties =new ConfigProperties(properties);		
+		properties.put("com.atomikos.icatch.forget_orphaned_log_entries_delay", "1800000");
+		ConfigProperties configProperties = new ConfigProperties(properties);		
 		sut.init(configProperties);
 		inMemoryCoordinatorLogEntryRepository.init(configProperties);
 		

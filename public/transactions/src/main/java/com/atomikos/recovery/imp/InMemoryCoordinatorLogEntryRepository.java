@@ -68,7 +68,10 @@ public class InMemoryCoordinatorLogEntryRepository implements
 	@Override
 	public void writeCheckpoint(
 			Collection<CoordinatorLogEntry> checkpointContent) {
-		throw new UnsupportedOperationException();
+		storage.clear();
+		for (CoordinatorLogEntry coordinatorLogEntry : checkpointContent) {
+			storage.put(coordinatorLogEntry.coordinatorId, coordinatorLogEntry);
+		}
 		
 	}
 

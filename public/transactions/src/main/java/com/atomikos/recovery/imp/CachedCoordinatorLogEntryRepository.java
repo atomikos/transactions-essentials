@@ -1,7 +1,11 @@
 package com.atomikos.recovery.imp;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
+import com.atomikos.icatch.TxState;
 import com.atomikos.icatch.provider.ConfigProperties;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
@@ -21,6 +25,7 @@ public class CachedCoordinatorLogEntryRepository implements
 
 	private volatile long numberOfPutsSinceLastCheckpoint = 0;
 	private long checkpointInterval;
+	private long forgetOrphanedLogEntriesDelay;
 	public CachedCoordinatorLogEntryRepository(
 			InMemoryCoordinatorLogEntryRepository inMemoryCoordinatorLogEntryRepository,
 			CoordinatorLogEntryRepository backupCoordinatorLogEntryRepository) {
@@ -42,7 +47,8 @@ public class CachedCoordinatorLogEntryRepository implements
 			corrupt = true;
 		}
 		
-		checkpointInterval = configProperties.getCheckpointInterval();		
+		checkpointInterval = configProperties.getCheckpointInterval();
+		forgetOrphanedLogEntriesDelay = configProperties.getForgetOrphanedLogEntriesDelay();
 	}
 
 	@Override
@@ -61,9 +67,11 @@ public class CachedCoordinatorLogEntryRepository implements
 		}
 	}
 
-	private void performCheckpoint() throws LogWriteException {
+	private synchronized void performCheckpoint() throws LogWriteException {
 		try {
-			backupCoordinatorLogEntryRepository.writeCheckpoint(inMemoryCoordinatorLogEntryRepository.getAllCoordinatorLogEntries());
+			Collection<CoordinatorLogEntry> coordinatorLogEntries =	purgeExpiredCoordinatorLogEntriesInStateAborting();
+			backupCoordinatorLogEntryRepository.writeCheckpoint(coordinatorLogEntries);
+			inMemoryCoordinatorLogEntryRepository.writeCheckpoint(coordinatorLogEntries);
 			numberOfPutsSinceLastCheckpoint=0;
 		} catch (LogWriteException corrupted) {
 			corrupt = true;
@@ -72,6 +80,24 @@ public class CachedCoordinatorLogEntryRepository implements
 			corrupt = true;
 			throw new LogWriteException(corrupted);
 		}
+	}
+
+	private Collection<CoordinatorLogEntry> purgeExpiredCoordinatorLogEntriesInStateAborting() {
+		Set<CoordinatorLogEntry> ret = new HashSet<CoordinatorLogEntry>();
+		long now = System.currentTimeMillis();
+		Collection<CoordinatorLogEntry> coordinatorLogEntries = inMemoryCoordinatorLogEntryRepository.getAllCoordinatorLogEntries();
+		for (CoordinatorLogEntry coordinatorLogEntry : coordinatorLogEntries) {
+			if (!canBeForgotten(now, coordinatorLogEntry)){
+				ret.add(coordinatorLogEntry);
+			}
+		}
+		return ret;
+	}
+
+	protected boolean canBeForgotten(long now,
+			CoordinatorLogEntry coordinatorLogEntry) {
+		return TxState.ABORTING == coordinatorLogEntry.getResultingState()
+				&& (coordinatorLogEntry.expires()+forgetOrphanedLogEntriesDelay) > now;
 	}
 
 	private boolean needsCheckpoint() {

@@ -18,6 +18,7 @@ public final class ConfigProperties {
 	public static final String FILE_PATH_PROPERTY_NAME = "com.atomikos.icatch.file";
 	public static final String CHECKPOINT_INTERVAL = "com.atomikos.icatch.checkpoint_interval";
 
+	private static final String FORGET_ORPHANED_LOG_ENTRIES_DELAY = "com.atomikos.icatch.forget_orphaned_log_entries_delay";
 
 	/**
 	 * Replace ${...} sequence with the referenced value from the given properties or 
@@ -206,6 +207,10 @@ public final class ConfigProperties {
 
 	public boolean getForceShutdownOnVmExit() {
 		return getAsBoolean(FORCE_SHUTDOWN_ON_VM_EXIT_PROPERTY_NAME);
+	}
+
+	public long getForgetOrphanedLogEntriesDelay() {
+		return getAsLong(FORGET_ORPHANED_LOG_ENTRIES_DELAY);
 	}
 
 }
