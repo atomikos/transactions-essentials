@@ -190,6 +190,9 @@ public class FileSystemCoordinatorLogEntryRepository implements
 			}
 			rwChannel.force(false);
 			file.discardBackupVersion();
+		} catch (FileNotFoundException firstStart) {
+			// the file could not be opened for reading;
+			// merely return the default empty vector
 		} catch (Exception e) {
 			throw new LogWriteException(e);
 		}
