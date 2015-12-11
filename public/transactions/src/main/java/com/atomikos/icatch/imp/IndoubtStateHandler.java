@@ -146,7 +146,7 @@ public class IndoubtStateHandler extends CoordinatorStateHandler
                 }
             } else {
                 if ( getCoordinator ().getSuperiorRecoveryCoordinator () == null ) {
-                	//pending coordinator after failed commit: cleanup to remove from TransactionServiceImp
+                	//pending coordinator after failed commit or rollback: cleanup to remove from TransactionServiceImp
                 	removePendingOltpCoordinatorFromTransactionService();
                 }
                 // heuristic decision

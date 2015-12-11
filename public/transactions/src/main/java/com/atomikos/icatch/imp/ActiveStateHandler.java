@@ -113,7 +113,7 @@ public class ActiveStateHandler extends CoordinatorStateHandler
 								rollbackFromWithinCallback(indoubt,false);
 							}});
                 	}
-                } else if (getCoordinator().getState() == TxState.PREPARING)  {
+                } else if (getCoordinator().getState().isOneOf(TxState.PREPARING, TxState.COMMITTING, TxState.ABORTING))  {
                 	//pending coordinator after failed prepare: cleanup to remove from TransactionServiceImp
                 	removePendingOltpCoordinatorFromTransactionService();
                 }
