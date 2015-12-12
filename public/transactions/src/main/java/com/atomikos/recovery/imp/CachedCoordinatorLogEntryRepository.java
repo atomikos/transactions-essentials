@@ -107,7 +107,6 @@ public class CachedCoordinatorLogEntryRepository implements
 			}
 			else if (!entryState.isHeuristic()) {
 				LOGGER.logWarning("Unexpected long-lived entry found in log: " + coordinatorLogEntry );
-				//TODO log what to do: shorten resource MTTBF, increase forgetOrphanedLogEntriesDelay or report a bug
 			}
 			
 		}
