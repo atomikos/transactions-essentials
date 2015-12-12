@@ -97,8 +97,21 @@ public class CachedCoordinatorLogEntryRepository implements
 
 	protected boolean canBeForgotten(long now,
 			CoordinatorLogEntry coordinatorLogEntry) {
-		return TxState.ABORTING == coordinatorLogEntry.getResultingState()
-				&& (coordinatorLogEntry.expires()+forgetOrphanedLogEntriesDelay) > now;
+		boolean ret = false;
+		if ((coordinatorLogEntry.expires()+forgetOrphanedLogEntriesDelay) > now) {
+			TxState entryState = coordinatorLogEntry.getResultingState();
+			if ( TxState.ABORTING == entryState ) {
+				// pending ABORTING: happens during presumed abort on recovery, 
+				// when rollback OK in resource but subsequent delete from log fails
+				ret = true;
+			}
+			else if (!entryState.isHeuristic()) {
+				LOGGER.logWarning("Unexpected long-lived entry found in log: " + coordinatorLogEntry );
+				//TODO log what to do: shorten resource MTTBF, increase forgetOrphanedLogEntriesDelay or report a bug
+			}
+			
+		}
+		return ret;
 	}
 
 	private boolean needsCheckpoint() {
