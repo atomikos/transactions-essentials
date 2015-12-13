@@ -1,8 +1,8 @@
 package com.atomikos.icatch.provider;
 
 import java.net.UnknownHostException;
-import java.util.Enumeration;
 import java.util.Properties;
+import java.util.Set;
 
 public final class ConfigProperties {
 
@@ -96,9 +96,8 @@ public final class ConfigProperties {
 
 	private void applySystemProperties() {
 		Properties systemProperties = System.getProperties();
-		Enumeration<?> propertyNames = systemProperties.propertyNames();
-		while (propertyNames.hasMoreElements()) {
-			String name = (String) propertyNames.nextElement();
+		Set<String> propertyNames = systemProperties.stringPropertyNames();
+		for (String name : propertyNames) {
 			if (name.startsWith("com.atomikos")) {
 				properties.setProperty(name, systemProperties.getProperty(name));
 			}
@@ -107,9 +106,8 @@ public final class ConfigProperties {
 
 	private void substitutePlaceHolderValues() {
 		//resolve referenced values with ant-like ${...} syntax
-		java.util.Enumeration allProps= properties.propertyNames();
-		while ( allProps.hasMoreElements() ) {
-			String key = ( String ) allProps.nextElement();
+		Set<String> allProps= properties.stringPropertyNames();
+		for (String key : allProps) {
 			String raw = properties.getProperty ( key );
 			String value= evaluateReference ( raw , properties );
 			if ( !raw.equals ( value ) ) {
@@ -126,8 +124,7 @@ public final class ConfigProperties {
 		return ret;
 	}
 
-	public void setProperty(String name,
-			String value) {
+	public void setProperty(String name, String value) {
 		properties.setProperty(name, value);		
 	}
 
@@ -181,9 +178,8 @@ public final class ConfigProperties {
 	}
 
 	public void applyUserSpecificProperties(Properties userSpecificProperties) {
-		Enumeration names = userSpecificProperties.propertyNames();
-		while (names.hasMoreElements()) {
-			String name = (String) names.nextElement();
+		Set<String> names = userSpecificProperties.stringPropertyNames();
+		for (String name : names) {
 			properties.setProperty(name, userSpecificProperties.getProperty(name));
 		}
 	}
@@ -191,9 +187,8 @@ public final class ConfigProperties {
 	public Properties getCompletedProperties() {
 		Properties ret = new Properties();
 		completeProperties();
-		Enumeration propertyNames = properties.propertyNames();
-		while (propertyNames.hasMoreElements()) {
-			String name = (String) propertyNames.nextElement();
+		Set<String> propertyNames = properties.stringPropertyNames();
+		for (String name : propertyNames) {
 			ret.setProperty(name, getProperty(name));
 		}
 		return ret;
