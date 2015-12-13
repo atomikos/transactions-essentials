@@ -486,7 +486,8 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable,DataSe
             try {
             	coordinator_.setState ( TxState.COMMITTING );
             } catch ( RuntimeException error ) {
-        		String msg = "Error in committing: " + error.getMessage() + " - leaving cleanup to recovery / JVM needs to reboot";
+            	//happens if interleaving recovery has done rollback, or if disk is full and log cannot be written
+        		String msg = "Error in committing: " + error.getMessage() + " - recovery will clean up in the background";
         		LOGGER.logWarning ( msg , error );
         		throw new RollbackException ( msg , error );
         	}

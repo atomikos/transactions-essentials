@@ -96,7 +96,9 @@ public class RecoveryLogImp implements RecoveryLog, AdminLog {
 		}
 		
 		CoordinatorLogEntry coordinatorLogEntry = repository.get(entry.coordinatorId);
-		if (coordinatorLogEntry == null) {
+		if (coordinatorLogEntry == null) { 
+			//first time this participant is found in resource: write IN_DOUBT entry in log to do presumed abort on next scan
+			//this gives any concurrent OLTP 2-phase commit a reasonable delay to proceed without interference of recovery
 			coordinatorLogEntry = createCoordinatorLogEntry(entry);
 			write(coordinatorLogEntry);
 			throw new IllegalStateException();
