@@ -18,7 +18,6 @@ import org.junit.rules.TestName;
 import com.atomikos.icatch.TxState;
 import com.atomikos.icatch.provider.ConfigProperties;
 import com.atomikos.recovery.CoordinatorLogEntry;
-import com.atomikos.recovery.LogWriteException;
 import com.atomikos.recovery.ParticipantLogEntry;
 import com.atomikos.util.VersionedFile;
 

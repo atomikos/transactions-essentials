@@ -26,13 +26,9 @@
 package com.atomikos.jdbc.nonxa;
 
 
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.Dictionary;
 
-import com.atomikos.icatch.DataSerializable;
 import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeurMixedException;
@@ -57,7 +53,7 @@ import com.atomikos.logging.LoggerFactory;
  *
  */
 
-public class AtomikosNonXAParticipant implements Participant, Serializable,DataSerializable
+public class AtomikosNonXAParticipant implements Participant, Serializable
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(AtomikosNonXAParticipant.class);
 
@@ -193,14 +189,6 @@ public class AtomikosNonXAParticipant implements Participant, Serializable,DataS
 		this.readOnly = readOnly;
 	}
 
-	public void writeData(DataOutput out) throws IOException {
-		out.writeBoolean(readOnly);
-
-	}
-
-	public void readData(DataInput in) throws IOException {
-		readOnly=in.readBoolean();
-	}
 
 	@Override
 	public String toString() {

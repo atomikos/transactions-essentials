@@ -25,9 +25,6 @@
 
 package com.atomikos.icatch.imp;
 
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Stack;
@@ -41,7 +38,6 @@ import com.atomikos.icatch.RollbackException;
 import com.atomikos.icatch.SysException;
 import com.atomikos.icatch.TxState;
 import com.atomikos.thread.InterruptedExceptionHelper;
-import com.atomikos.util.SerializationUtils;
 
 /** 
  * A state handler for the heuristic mixed coordinator state.
@@ -174,21 +170,5 @@ public class HeurMixedStateHandler extends CoordinatorStateHandler
     {
 
         throw new HeurMixedException();
-    }
-
-    @Override
-    public void writeData(DataOutput out) throws IOException {
-    	super.writeData(out);
-    	byte[] content = SerializationUtils.serialize(hazards_);
-    	out.writeInt(content.length);
-    	out.write(content);
-    }
-    
-    @Override
-    public void readData(DataInput in) throws IOException {
-    	super.readData(in);
-    	byte[] content = new byte [in.readInt()];
-    	in.readFully(content);
-    	hazards_= (Hashtable<Participant,TxState>) SerializationUtils.deserialize(content);
     }
 }

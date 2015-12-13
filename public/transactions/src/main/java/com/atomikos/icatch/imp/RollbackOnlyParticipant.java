@@ -25,11 +25,6 @@
 
 package com.atomikos.icatch.imp;
 
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
-
-import com.atomikos.icatch.DataSerializable;
 import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeurMixedException;
@@ -45,7 +40,7 @@ import com.atomikos.logging.LoggerFactory;
  * never allow commit.
  */
 
-public class RollbackOnlyParticipant implements Participant,DataSerializable
+public class RollbackOnlyParticipant implements Participant
 {
 
 	private static final Logger LOG = LoggerFactory.createLogger(RollbackOnlyParticipant.class);
@@ -131,12 +126,6 @@ public class RollbackOnlyParticipant implements Participant,DataSerializable
     {      
     }
 
-
-	public void writeData(DataOutput out) throws IOException {
-	}
-
-	public void readData(DataInput in) throws IOException {
-	}
 
 	@Override
 	public String toString() {

@@ -25,9 +25,6 @@
 
 package com.atomikos.icatch.imp;
 
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
@@ -203,20 +200,4 @@ public class IndoubtStateHandler extends CoordinatorStateHandler
 			}});
     }
 
-    
-    @Override
-    public void writeData(DataOutput out) throws IOException {
-    
-    	super.writeData(out);
-    	out.writeInt(inquiries_);
-    	out.writeBoolean(recovered_);
-    }
-    
-    @Override
-    public void readData(DataInput in) throws IOException {
-    
-    	super.readData(in);
-    	inquiries_=in.readInt();
-    	recovered_=in.readBoolean();
-    }
 }

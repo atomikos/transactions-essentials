@@ -25,8 +25,6 @@
 
 package com.atomikos.datasource.xa;
 
-import java.io.DataInput;
-import java.io.DataOutput;
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
@@ -43,7 +41,6 @@ import com.atomikos.datasource.RecoverableResource;
 import com.atomikos.datasource.ResourceException;
 import com.atomikos.datasource.ResourceTransaction;
 import com.atomikos.icatch.CompositeTransaction;
-import com.atomikos.icatch.DataSerializable;
 import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeurMixedException;
@@ -56,7 +53,6 @@ import com.atomikos.icatch.TxState;
 import com.atomikos.icatch.config.Configuration;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
-import com.atomikos.util.SerializationUtils;
 
 /**
  * 
@@ -65,7 +61,7 @@ import com.atomikos.util.SerializationUtils;
  */
 
 public class XAResourceTransaction implements ResourceTransaction,
-		Externalizable, Participant, DataSerializable {
+		Externalizable, Participant {
 	private static final Logger LOGGER = LoggerFactory
 			.createLogger(XAResourceTransaction.class);
 
@@ -939,53 +935,6 @@ public class XAResourceTransaction implements ResourceTransaction,
 
 	XAResource getXAResource() {
 		return this.xaresource;
-	}
-
-	@Override
-	public void writeData(DataOutput out) throws IOException {
-		byte[] data = SerializationUtils.serialize((Serializable) this.xid);
-		out.writeInt(data.length);
-		out.write(data);
-		out.writeUTF(this.tid);
-		out.writeUTF(this.root);
-		out.writeUTF(this.state.toString());
-		out.writeUTF(this.resourcename);
-		if (this.xaresource instanceof Serializable) {
-			// cf case 59238
-			out.writeBoolean(true);
-			byte[] bytes = SerializationUtils
-					.serialize((Serializable) this.xaresource);
-			out.writeInt(bytes.length);
-			out.write(bytes);
-		} else {
-			out.writeBoolean(false);
-		}
-
-	}
-
-	@Override
-	public void readData(DataInput in) throws IOException {
-		// xid_ ???
-
-		// String branchQualifier = in.readUTF();
-		int len = in.readInt();
-		byte[] data = new byte[len];
-		in.readFully(data);
-		this.xid = SerializationUtils.deserialize(data);
-
-		this.tid = in.readUTF();
-		setXid(this.xid);
-
-		this.root = in.readUTF();
-		this.state = TxState.valueOf(in.readUTF());
-		this.resourcename = in.readUTF();
-		boolean xaresourceSerializable = in.readBoolean();
-		if (xaresourceSerializable) {
-			int size = in.readInt();
-			byte[] bytes = new byte[size];
-			in.readFully(bytes);
-			this.xaresource = SerializationUtils.deserialize(bytes);
-		}
 	}
 
 }

@@ -25,22 +25,15 @@
 
 package com.atomikos.icatch.imp;
 
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 import java.util.Stack;
 import java.util.Vector;
 
-import com.atomikos.icatch.DataSerializable;
 import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeurMixedException;
@@ -52,7 +45,6 @@ import com.atomikos.icatch.TxState;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 import com.atomikos.thread.InterruptedExceptionHelper;
-import com.atomikos.util.ClassLoadingHelper;
 
 /**
  * Application of the state pattern to the transaction coordinator: each
@@ -64,7 +56,7 @@ import com.atomikos.util.ClassLoadingHelper;
  * this class.</b>
  */
 
-abstract class CoordinatorStateHandler implements Serializable, Cloneable,DataSerializable
+abstract class CoordinatorStateHandler implements Serializable, Cloneable
 {
 	
 	private static final long serialVersionUID = 5510459174124363958L;
@@ -805,36 +797,6 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable,DataSe
 				commitFromWithinCallback(true,false);
 			}
 		});
-    }
-    
-    public void writeData(DataOutput out) throws IOException {
-    	out.writeBoolean(committed_==null?false:committed_);
-    	//readOnlyTable_
-    	out.writeInt(readOnlyTable_.size());
-    	 Set<Map.Entry<Participant,Boolean>> entries= readOnlyTable_.entrySet();
-    	 for (Entry<Participant, Boolean> entry : entries) {
-			out.writeUTF(entry.getKey().getClass().getName());
-			((DataSerializable)entry.getKey() ).writeData(out);
-			out.writeBoolean(entry.getValue());
-		}
-
-    	
-    	 
-    }
-    
-    public void readData(DataInput in) throws IOException {
-    	committed_=in.readBoolean();
-    	int size = in.readInt();
-    	readOnlyTable_ = new Hashtable<Participant, Boolean>(size);
-    	for (int i = 0; i < size; i++) {
-			String participantClassName=in.readUTF();
-			Participant participant=(Participant)ClassLoadingHelper.newInstance(participantClassName);
-			((DataSerializable)participant).readData(in);
-			boolean value=in.readBoolean();
-			readOnlyTable_.put(participant, value);
-			
-		}
-    	
     }
     
     protected void removePendingOltpCoordinatorFromTransactionService() {
