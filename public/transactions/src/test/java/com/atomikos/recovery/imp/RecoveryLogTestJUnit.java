@@ -48,7 +48,7 @@ public class RecoveryLogTestJUnit {
 			whenPresumedAborting();
 		} catch (IllegalStateException ok) {
 		}
-		thenCoordinatorLogEntryWasPutInRepository(TxState.IN_DOUBT);
+		thenCoordinatorLogEntryWasPutInRepository(TID,TxState.IN_DOUBT);
 	}
 
 	@Test(expected = IllegalStateException.class)
@@ -74,7 +74,7 @@ public class RecoveryLogTestJUnit {
 			throws Exception {
 		givenCoordinatorInRepository(TxState.IN_DOUBT, EXPIRED);
 		whenPresumedAborting();
-		thenCoordinatorLogEntryWasPutInRepository(TxState.ABORTING);
+		thenCoordinatorLogEntryWasPutInRepository(TID,TxState.ABORTING);
 	}
 
 	@Test
@@ -142,7 +142,7 @@ public class RecoveryLogTestJUnit {
 	@Test
 	public void testRecoveryOfPendingInDoubtSubTx() throws Exception {
 		givenActivePendingTransactionWithIndoubtSubTx();
-		whenSubTxRecovered();
+		whenSubTxRecovered(false);
 		thenSubTxWasTerminated();
 	}
 	
@@ -150,13 +150,43 @@ public class RecoveryLogTestJUnit {
 	public void testRecoveryOfInDoubtSubTxForInDoubtParent() throws Exception {
 		givenInDoubtParentTxWithInDoubtSubTx();
 		try {
-			whenSubTxRecovered();
+			whenSubTxRecovered(false);
 		} catch (IllegalStateException ok) {
 		}
 		thenSubTxIsStillInDoubt();
 	}
 	
+	@Test
+	public void testRecoveryOfInDoubtSubTxForCommittingParent() throws Exception {
+		givenCommittingParentTxWithInDoubtSubTx();
+		whenSubTxRecovered(true);
+		thenParentTxWasTerminated();
+		thenSubTxWasTerminated();
+	}
 	
+
+	
+
+	private void thenParentTxWasTerminated() throws IllegalArgumentException, LogWriteException {
+		thenCoordinatorLogEntryWasPutInRepository("superiorCoordId",TxState.TERMINATED);
+	}
+
+	private void givenCommittingParentTxWithInDoubtSubTx() throws LogReadException {
+		//parent : expired, indoubt parent Tx
+		givenParentTransactionInState(TxState.COMMITTING);
+		//SubTx
+		givenCoordinatorInRepository("superiorCoordId", TxState.IN_DOUBT, EXPIRED);
+	}
+	CoordinatorLogEntry parentCoordinatorLogEntry;
+	protected void givenParentTransactionInState(TxState state) throws LogReadException {
+		ParticipantLogEntry	parentParticipantLogEntry =  new ParticipantLogEntry("superiorCoordId", TID, 0,
+						"description", state);
+		ParticipantLogEntry[] parentParticipantLogEntries = { parentParticipantLogEntry };
+		parentCoordinatorLogEntry = new CoordinatorLogEntry(
+						"superiorCoordId",false, parentParticipantLogEntries);
+				
+		Mockito.when(logRepository.get("superiorCoordId")).thenReturn(parentCoordinatorLogEntry);
+	}
 
 	private void thenSubTxIsStillInDoubt() throws IllegalArgumentException, LogWriteException {
 		thenRepositoryWasNotUpdated();
@@ -169,14 +199,7 @@ public class RecoveryLogTestJUnit {
 
 	private void givenInDoubtParentTxWithInDoubtSubTx() throws LogReadException {
 		//parent : expired, indoubt parent Tx
-		ParticipantLogEntry	parentParticipantLogEntry =  new ParticipantLogEntry("superiorCoordId", TID, 0,
-				"description", TxState.IN_DOUBT);
-		ParticipantLogEntry[] parentParticipantLogEntries = { parentParticipantLogEntry };
-		CoordinatorLogEntry parentCoordinatorLogEntry = new CoordinatorLogEntry(
-				"superiorCoordId",false, parentParticipantLogEntries);
-		
-		Mockito.when(logRepository.get("superiorCoordId")).thenReturn(parentCoordinatorLogEntry);
-
+		givenParentTransactionInState(TxState.IN_DOUBT);
 		
 		//SubTx
 		givenCoordinatorInRepository("superiorCoordId", TxState.IN_DOUBT, EXPIRED);
@@ -186,16 +209,16 @@ public class RecoveryLogTestJUnit {
 	}
 
 	private void thenSubTxWasTerminated() throws IllegalArgumentException, LogWriteException {
-		thenRepositoryDoesNotContainCoordinatorLogEntry();
+		thenCoordinatorLogEntryWasPutInRepository(TID,TxState.TERMINATED);
 		
 	}
 
-	private void thenRepositoryDoesNotContainCoordinatorLogEntry() {
-		Assert.assertTrue(sut.getCoordinatorLogEntries().length==0);
-	}
+	
 
-	private void whenSubTxRecovered() throws LogException {
-		whenPresumedAborting();
+	private void whenSubTxRecovered(boolean recoveryShouldCommit) throws LogException {
+		if (!recoveryShouldCommit){
+			whenPresumedAborting();
+		}
 		whenTerminated();
 	}
 
@@ -286,11 +309,11 @@ public class RecoveryLogTestJUnit {
 
 	}
 
-	private void thenCoordinatorLogEntryWasPutInRepository(TxState state) throws IllegalArgumentException, LogWriteException {
+	private void thenCoordinatorLogEntryWasPutInRepository(String coordinatorId,TxState state) throws IllegalArgumentException, LogWriteException {
 		ArgumentCaptor<CoordinatorLogEntry> captor = ArgumentCaptor
 				.forClass(CoordinatorLogEntry.class);
 		Mockito.verify(logRepository, Mockito.times(1))
-				.put(Mockito.eq(TID),
+				.put(Mockito.eq(coordinatorId),
 						captor.capture());
 		Assert.assertEquals(state, captor.getValue().getResultingState());
 	}

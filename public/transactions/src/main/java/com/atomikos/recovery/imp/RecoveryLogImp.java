@@ -33,6 +33,15 @@ public class RecoveryLogImp implements RecoveryLog, AdminLog {
 				LOGGER.logWarning("termination called on non existent Coordinator "
 						+ entry.coordinatorId + " " + entry.participantUri);
 			} else {
+				//terminate parent ?
+				if (coordinatorLogEntry.superiorCoordinatorId!=null) {
+					CoordinatorLogEntry parentCoordinatorLogEntry = repository.get(coordinatorLogEntry.superiorCoordinatorId);
+					if (parentCoordinatorLogEntry!=null) {
+						CoordinatorLogEntry parentUpdated = parentCoordinatorLogEntry.terminated(new ParticipantLogEntry(coordinatorLogEntry.superiorCoordinatorId, coordinatorLogEntry.coordinatorId, coordinatorLogEntry.expires(), "", coordinatorLogEntry.getResultingState()));
+						repository.put(parentUpdated.coordinatorId, parentUpdated);	
+					}
+				}
+					
 				CoordinatorLogEntry updated = coordinatorLogEntry.terminated(entry);
 				repository.put(updated.coordinatorId, updated);
 			}
@@ -102,6 +111,7 @@ public class RecoveryLogImp implements RecoveryLog, AdminLog {
 			write(coordinatorLogEntry);
 			throw new IllegalStateException();
 		} else if (coordinatorLogEntry.superiorCoordinatorId != null) {
+			
 			CoordinatorLogEntry parentCoordinatorLogEntry =	repository.get(coordinatorLogEntry.superiorCoordinatorId );
 			if(parentCoordinatorLogEntry!=null && parentCoordinatorLogEntry.getResultingState() == TxState.IN_DOUBT){
 				throw new IllegalStateException();
