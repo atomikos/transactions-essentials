@@ -1,5 +1,7 @@
 package com.atomikos.recovery.imp;
 
+import static org.junit.Assert.*;
+
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -135,6 +137,38 @@ public class RecoveryLogTestJUnit {
 		whenGetCommittingParticipants();
 		thenCommittingParticipantsAreNotFoundInRepository();
 	}
+	
+	@Test
+	public void testRecoveryOfPendingInDoubtSubTx() throws Exception {
+		givenActivePendingTransactionWithIndoubtSubTx();
+		whenSubTxRecovered();
+		thenSubTxWasTerminated();
+	}
+	
+	
+	
+
+	private void thenSubTxWasTerminated() throws IllegalArgumentException, LogWriteException {
+		thenRepositoryDoesNotContainCoordinatorLogEntry();
+		
+	}
+
+	private void thenRepositoryDoesNotContainCoordinatorLogEntry() {
+		Assert.assertTrue(sut.getCoordinatorLogEntries().length==0);
+	}
+
+	private void whenSubTxRecovered() throws LogException {
+		whenPresumedAborting();
+		whenTerminated();
+	}
+
+	private void givenActivePendingTransactionWithIndoubtSubTx() throws LogReadException {
+		// 1 Participant "InDoubt" and superiorCoordId not null
+		givenCoordinatorInRepository("superiorCoordId",TxState.IN_DOUBT, EXPIRED);
+		
+	}
+
+	
 
 	private void thenCommittingParticipantsAreNotFoundInRepository() {
 		Assert.assertFalse( committingParticipants.contains(participantLogEntry));		
@@ -178,12 +212,15 @@ public class RecoveryLogTestJUnit {
 		Mockito.verify(logRepository, Mockito.never()).put(Mockito.anyString(),
 				(CoordinatorLogEntry) Mockito.any());
 	}
-
 	private void givenCoordinatorInRepository(TxState state, boolean expired) throws LogReadException {
+		givenCoordinatorInRepository(null, state, expired);	
+	}
+
+	private void givenCoordinatorInRepository(String superioCoordinatorId, TxState state, boolean expired) throws LogReadException {
 		participantLogEntry = newParticipantLogEntryInState(state, expired);
 		ParticipantLogEntry[] participantLogEntries = { participantLogEntry };
 		CoordinatorLogEntry coordinatorLogEntry = new CoordinatorLogEntry(
-				participantLogEntry.coordinatorId, participantLogEntries);
+				participantLogEntry.coordinatorId,false, participantLogEntries, superioCoordinatorId);
 
 		Mockito.when(logRepository.get(Mockito.anyString())).thenReturn(
 				coordinatorLogEntry);
