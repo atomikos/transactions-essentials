@@ -32,18 +32,16 @@ public class RecoveryLogImp implements RecoveryLog, AdminLog {
 			if (coordinatorLogEntry == null) {
 				LOGGER.logWarning("termination called on non existent Coordinator "
 						+ entry.coordinatorId + " " + entry.participantUri);
-			} else {
-				//terminate parent ?
+			} else {	
+				CoordinatorLogEntry updated = coordinatorLogEntry.terminated(entry);
+				repository.put(updated.coordinatorId, updated);
 				if (coordinatorLogEntry.superiorCoordinatorId!=null) {
 					CoordinatorLogEntry parentCoordinatorLogEntry = repository.get(coordinatorLogEntry.superiorCoordinatorId);
 					if (parentCoordinatorLogEntry!=null) {
 						CoordinatorLogEntry parentUpdated = parentCoordinatorLogEntry.terminated(new ParticipantLogEntry(coordinatorLogEntry.superiorCoordinatorId, coordinatorLogEntry.coordinatorId, coordinatorLogEntry.expires(), "", coordinatorLogEntry.getResultingState()));
-						repository.put(parentUpdated.coordinatorId, parentUpdated);	
+						repository.put(parentUpdated.coordinatorId, parentUpdated);	//TODO deal with disk full -> pending parent
 					}
 				}
-					
-				CoordinatorLogEntry updated = coordinatorLogEntry.terminated(entry);
-				repository.put(updated.coordinatorId, updated);
 			}
 		} catch (LogException e) {
 			LOGGER.logWarning("Unable to write to repository: "+entry+" - leaving cleanup to recovery housekeeping...", e);
