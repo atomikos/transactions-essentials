@@ -975,7 +975,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 	}
 
 	public Collection<ParticipantLogEntry> getParticipantLogEntries() {
-		return Arrays.asList(getCoordinatorLogEntry().participantDetails);
+		return Arrays.asList(getCoordinatorLogEntry().participants);
 	}
 
 	private long getExpires() {

@@ -39,7 +39,7 @@ public class CachedCoordinatorLogEntryRepository implements
 		try {
 			Collection<CoordinatorLogEntry> coordinatorLogEntries = backupCoordinatorLogEntryRepository.getAllCoordinatorLogEntries();
 			for (CoordinatorLogEntry coordinatorLogEntry : coordinatorLogEntries) {
-				inMemoryCoordinatorLogEntryRepository.put(coordinatorLogEntry.coordinatorId, coordinatorLogEntry);
+				inMemoryCoordinatorLogEntryRepository.put(coordinatorLogEntry.id, coordinatorLogEntry);
 			}
 			
 			performCheckpoint();

@@ -61,7 +61,7 @@ public class CachedCoordinatorLogEntryRepositoryIntegrationTest {
 	private void putAll(CoordinatorLogEntry[] coordinatorLogEntries) {
 		for (CoordinatorLogEntry coordinatorLogEntry : coordinatorLogEntries) {
 			try {
-				sut.put(coordinatorLogEntry.coordinatorId,coordinatorLogEntry);
+				sut.put(coordinatorLogEntry.id,coordinatorLogEntry);
 			} catch (Exception ignore) {
 				ignore.printStackTrace();
 			}

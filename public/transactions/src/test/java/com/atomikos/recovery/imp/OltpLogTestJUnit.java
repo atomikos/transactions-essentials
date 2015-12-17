@@ -34,7 +34,7 @@ public class OltpLogTestJUnit {
 	@Test
 	public void testTransitionFromInDoubtToCommittingIsAllowed() throws Exception {
 		CoordinatorLogEntry coordinatorLogEntry = createCoordinatorLogEntryInState(TxState.IN_DOUBT);
-		Mockito.when(logRepository.get(coordinatorLogEntry.coordinatorId)).thenReturn(coordinatorLogEntry);
+		Mockito.when(logRepository.get(coordinatorLogEntry.id)).thenReturn(coordinatorLogEntry);
 		thenWriteCommittingWorks();
 	}
 	
@@ -43,7 +43,7 @@ public class OltpLogTestJUnit {
 	@Test
 	public void testTransitionFromInDoubtToAbortingIsAllowed() throws Exception {
 		CoordinatorLogEntry coordinatorLogEntry = createCoordinatorLogEntryInState(TxState.IN_DOUBT);
-		Mockito.when(logRepository.get(coordinatorLogEntry.coordinatorId)).thenReturn(coordinatorLogEntry);
+		Mockito.when(logRepository.get(coordinatorLogEntry.id)).thenReturn(coordinatorLogEntry);
 		thenWriteAbortingWorks();
 	}
 	
@@ -66,14 +66,14 @@ public class OltpLogTestJUnit {
 	@Test(expected=IllegalStateException.class)
 	public void testTransitionFromAbortingToInDoubtMustFail() throws Exception {
 		CoordinatorLogEntry coordinatorLogEntry = createCoordinatorLogEntryInState(TxState.ABORTING);
-		Mockito.when(logRepository.get(coordinatorLogEntry.coordinatorId)).thenReturn(coordinatorLogEntry);
+		Mockito.when(logRepository.get(coordinatorLogEntry.id)).thenReturn(coordinatorLogEntry);
 		thenWriteInDoubtFails();
 	}
 	
 	@Test(expected=IllegalStateException.class)
 	public void testTransitionFromCommittingToInDoubtMustFail() throws Exception {
 		CoordinatorLogEntry coordinatorLogEntry = createCoordinatorLogEntryInState(TxState.ABORTING);
-		Mockito.when(logRepository.get(coordinatorLogEntry.coordinatorId)).thenReturn(coordinatorLogEntry);
+		Mockito.when(logRepository.get(coordinatorLogEntry.id)).thenReturn(coordinatorLogEntry);
 		thenWriteCommittingFails();
 	}
 	
@@ -81,7 +81,7 @@ public class OltpLogTestJUnit {
 	@Test(expected=IllegalStateException.class)
 	public void testTransitionFromAbortingToCommittingMustFail() throws Exception {
 		CoordinatorLogEntry coordinatorLogEntry = createCoordinatorLogEntryInState(TxState.ABORTING);
-		Mockito.when(logRepository.get(coordinatorLogEntry.coordinatorId)).thenReturn(coordinatorLogEntry);
+		Mockito.when(logRepository.get(coordinatorLogEntry.id)).thenReturn(coordinatorLogEntry);
 		thenWriteCommittingFails();
 	}
 	
@@ -89,7 +89,7 @@ public class OltpLogTestJUnit {
 	@Test(expected=IllegalStateException.class)
 	public void testTransitionFromCommittingToAbortingMustFail() throws Exception {
 		CoordinatorLogEntry coordinatorLogEntry = createCoordinatorLogEntryInState(TxState.COMMITTING);
-		Mockito.when(logRepository.get(coordinatorLogEntry.coordinatorId)).thenReturn(coordinatorLogEntry);
+		Mockito.when(logRepository.get(coordinatorLogEntry.id)).thenReturn(coordinatorLogEntry);
 		thenWriteAbortingFails();
 	}
 	
@@ -133,7 +133,7 @@ public class OltpLogTestJUnit {
 
 	
 	private void thenPutCalledInRepository(CoordinatorLogEntry coordinatorLogEntry) throws IllegalArgumentException, LogWriteException {
-		Mockito.verify(logRepository).put(coordinatorLogEntry.coordinatorId,coordinatorLogEntry);
+		Mockito.verify(logRepository).put(coordinatorLogEntry.id,coordinatorLogEntry);
 	}
 
 	private void whenWriteInOltp(CoordinatorLogEntry coordinatorLogEntry) throws LogException {

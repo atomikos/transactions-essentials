@@ -20,12 +20,12 @@ public class OltpLogImp implements OltpLog {
 	public void write(CoordinatorLogEntry coordinatorLogEntry)
 			throws IllegalStateException, LogException {
 		assertEntryIsAllowedInCurrentState(coordinatorLogEntry);
-		repository.put(coordinatorLogEntry.coordinatorId, coordinatorLogEntry);
+		repository.put(coordinatorLogEntry.id, coordinatorLogEntry);
 	}
 
 	private void assertEntryIsAllowedInCurrentState(CoordinatorLogEntry coordinatorLogEntry) throws IllegalStateException, LogReadException {
 		CoordinatorLogEntry existing = repository
-				.get(coordinatorLogEntry.coordinatorId);
+				.get(coordinatorLogEntry.id);
 		
 		if (!coordinatorLogEntry.transitionAllowedFrom(existing)) {
 			String existingState = "NONE";

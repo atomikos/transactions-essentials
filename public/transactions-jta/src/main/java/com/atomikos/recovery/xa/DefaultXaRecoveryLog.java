@@ -49,7 +49,7 @@ public class DefaultXaRecoveryLog implements XaRecoveryLog {
 		Collection<ParticipantLogEntry> entries = log.getCommittingParticipants();
 		for (ParticipantLogEntry entry : entries) {
 			if (expired(entry) && !http(entry)) {
-				XID xid = new XID(entry.coordinatorId, entry.participantUri);
+				XID xid = new XID(entry.id, entry.uri);
 				ret.add(xid);
 			}
 		}
@@ -57,7 +57,7 @@ public class DefaultXaRecoveryLog implements XaRecoveryLog {
 	}
 
 	private boolean http(ParticipantLogEntry entry) {
-		return entry.participantUri.startsWith("http");
+		return entry.uri.startsWith("http");
 	}
 
 	private boolean expired(ParticipantLogEntry entry) {

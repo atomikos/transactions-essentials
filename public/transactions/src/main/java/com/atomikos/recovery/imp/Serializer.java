@@ -16,7 +16,7 @@ public class Serializer {
 	public String toJSON(CoordinatorLogEntry coordinatorLogEntry) {
 		StringBuilder strBuilder = new StringBuilder(600);
 		strBuilder.append(START_OBJECT);
-		strBuilder.append(QUOTE).append("coordinatorId").append(QUOTE).append(":").append(QUOTE).append(coordinatorLogEntry.coordinatorId).append(QUOTE);
+		strBuilder.append(QUOTE).append("id").append(QUOTE).append(":").append(QUOTE).append(coordinatorLogEntry.id).append(QUOTE);
 		strBuilder.append(PROPERTY_SEPARATOR);
 		strBuilder.append(QUOTE).append("wasCommitted").append(QUOTE).append(":").append(coordinatorLogEntry.wasCommitted);
 		strBuilder.append(PROPERTY_SEPARATOR);
@@ -25,15 +25,15 @@ public class Serializer {
 			strBuilder.append(PROPERTY_SEPARATOR);
 		}
 		String prefix = "";
-		if(coordinatorLogEntry.participantDetails.length>0){
-			strBuilder.append(QUOTE).append("participantDetails").append(QUOTE);
+		if(coordinatorLogEntry.participants.length>0){
+			strBuilder.append(QUOTE).append("participants").append(QUOTE);
 			strBuilder.append(":");
 			strBuilder.append(START_ARRAY);
-			for (ParticipantLogEntry participantLogEntry : coordinatorLogEntry.participantDetails) {
+			for (ParticipantLogEntry participantLogEntry : coordinatorLogEntry.participants) {
 				strBuilder.append(prefix);
 				prefix = PROPERTY_SEPARATOR;
 				strBuilder.append(START_OBJECT);
-				strBuilder.append(QUOTE).append("participantUri").append(QUOTE).append(":").append(QUOTE).append(participantLogEntry.participantUri).append(QUOTE);
+				strBuilder.append(QUOTE).append("participantUri").append(QUOTE).append(":").append(QUOTE).append(participantLogEntry.uri).append(QUOTE);
 				strBuilder.append(PROPERTY_SEPARATOR);
 				strBuilder.append(QUOTE).append("state").append(QUOTE).append(":").append(QUOTE).append(participantLogEntry.state).append(QUOTE);
 				strBuilder.append(PROPERTY_SEPARATOR);

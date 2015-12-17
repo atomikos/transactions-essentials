@@ -101,11 +101,11 @@ public class DefaultXaRecoveryLogTestJUnit {
 
 	private void thenParticipantEqualsXidBranchQualifierToString(ParticipantLogEntry entry,
 			Xid xid) {
-		Assert.assertEquals(entry.participantUri, XID.getBranchQualifierAsString(xid));
+		Assert.assertEquals(entry.uri, XID.getBranchQualifierAsString(xid));
 	}
 
 	private void thenGtidEqualsCoordinatorId(ParticipantLogEntry entry, Xid xid) {
-		Assert.assertEquals(entry.coordinatorId, XID.getGlobalTransactionIdAsString(xid));
+		Assert.assertEquals(entry.id, XID.getGlobalTransactionIdAsString(xid));
 	}
 
 	private Xid whenGetExpiredCommittingXids() throws LogReadException {

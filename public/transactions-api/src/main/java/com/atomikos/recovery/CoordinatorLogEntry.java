@@ -15,7 +15,7 @@ import com.atomikos.icatch.TxState;
 
 public class CoordinatorLogEntry  implements Serializable {
 
-	public final String coordinatorId;
+	public final String id;
 
 	public final boolean wasCommitted;
 
@@ -24,12 +24,12 @@ public class CoordinatorLogEntry  implements Serializable {
 	 */
 	public final String superiorCoordinatorId;
 	
-	public final ParticipantLogEntry[] participantDetails;
+	public final ParticipantLogEntry[] participants;
 
 	private CoordinatorLogEntry(CoordinatorLogEntry toCopy,
 			ParticipantLogEntry participantLogEntry) {
-		this(toCopy.coordinatorId, toCopy.wasCommitted, copy(
-				toCopy.participantDetails, participantLogEntry));
+		this(toCopy.id, toCopy.wasCommitted, copy(
+				toCopy.participants, participantLogEntry));
 	}
 
 	private static ParticipantLogEntry[] copy(ParticipantLogEntry[] origin,
@@ -41,8 +41,8 @@ public class CoordinatorLogEntry  implements Serializable {
 				ret[i] = toUpdate;
 			} else {
 				ret[i] = new ParticipantLogEntry(
-						participantLogEntry.coordinatorId,
-						participantLogEntry.participantUri,
+						participantLogEntry.id,
+						participantLogEntry.uri,
 						participantLogEntry.expires,
 						participantLogEntry.description,
 						participantLogEntry.state);
@@ -58,18 +58,18 @@ public class CoordinatorLogEntry  implements Serializable {
 	}
 
 	public CoordinatorLogEntry(String coordinatorId, boolean wasCommitted,
-			ParticipantLogEntry[] participantDetails) {
-		this.coordinatorId = coordinatorId;
+			ParticipantLogEntry[] participants) {
+		this.id = coordinatorId;
 		this.wasCommitted = wasCommitted;
-		this.participantDetails = participantDetails;
+		this.participants = participants;
 		this.superiorCoordinatorId = null;
 	}
 	
 	public CoordinatorLogEntry(String coordinatorId, boolean wasCommitted,
-			ParticipantLogEntry[] participantDetails, String superiorCoordinatorId) {
-		this.coordinatorId = coordinatorId;
+			ParticipantLogEntry[] participants, String superiorCoordinatorId) {
+		this.id = coordinatorId;
 		this.wasCommitted = wasCommitted;
-		this.participantDetails = participantDetails;
+		this.participants = participants;
 		this.superiorCoordinatorId = superiorCoordinatorId;
 	}
 
@@ -94,8 +94,8 @@ public class CoordinatorLogEntry  implements Serializable {
 	}
 
 	private boolean allParticipantsInState(TxState state) {
-		for (ParticipantLogEntry participantDetail : participantDetails) {
-			if (!participantDetail.state.equals(state)) {
+		for (ParticipantLogEntry participantLogEntry : participants) {
+			if (!(participantLogEntry.state == state)) {
 				return false;
 			}
 		}
@@ -103,8 +103,8 @@ public class CoordinatorLogEntry  implements Serializable {
 	}
 
 	private boolean oneParticipantInState(TxState state) {
-		for (ParticipantLogEntry participantDetail : participantDetails) {
-			if (participantDetail.state.equals(state)) {
+		for (ParticipantLogEntry ParticipantLogEntry : participants) {
+			if (ParticipantLogEntry.state == state) {
 				return true;
 			}
 		}
@@ -131,8 +131,8 @@ public class CoordinatorLogEntry  implements Serializable {
 		}
 
 		CoordinatorLogEntry ret = new CoordinatorLogEntry(this,
-				new ParticipantLogEntry(entry.coordinatorId,
-						entry.participantUri, entry.expires, entry.description,
+				new ParticipantLogEntry(entry.id,
+						entry.uri, entry.expires, entry.description,
 						TxState.ABORTING));
 
 		return ret;
@@ -140,16 +140,16 @@ public class CoordinatorLogEntry  implements Serializable {
 
 	public long expires() {
 		long expires = Long.MAX_VALUE;
-		for (ParticipantLogEntry participantLogEntry : participantDetails) {
-			expires = Math.min(expires, participantLogEntry.expires);
+		for (ParticipantLogEntry participant : participants) {
+			expires = Math.min(expires, participant.expires);
 		}
 		return expires;
 	}
 
 	public CoordinatorLogEntry terminated(ParticipantLogEntry entry) {
 		CoordinatorLogEntry ret = new CoordinatorLogEntry(this,
-				new ParticipantLogEntry(entry.coordinatorId,
-						entry.participantUri, entry.expires, entry.description,
+				new ParticipantLogEntry(entry.id,
+						entry.uri, entry.expires, entry.description,
 						TxState.TERMINATED));
 		return ret;
 	}
@@ -157,8 +157,8 @@ public class CoordinatorLogEntry  implements Serializable {
 	public CoordinatorLogEntry terminatedWithHeuristicCommit(
 			ParticipantLogEntry entry) {
 		CoordinatorLogEntry ret = new CoordinatorLogEntry(this,
-				new ParticipantLogEntry(entry.coordinatorId,
-						entry.participantUri, entry.expires, entry.description,
+				new ParticipantLogEntry(entry.id,
+						entry.uri, entry.expires, entry.description,
 						TxState.HEUR_COMMITTED));
 		return ret;
 	}
@@ -166,8 +166,8 @@ public class CoordinatorLogEntry  implements Serializable {
 	public CoordinatorLogEntry terminatedWithHeuristicMixed(
 			ParticipantLogEntry entry) {
 		CoordinatorLogEntry ret = new CoordinatorLogEntry(this,
-				new ParticipantLogEntry(entry.coordinatorId,
-						entry.participantUri, entry.expires, entry.description,
+				new ParticipantLogEntry(entry.id,
+						entry.uri, entry.expires, entry.description,
 						TxState.HEUR_MIXED));
 		return ret;
 	}
@@ -175,27 +175,28 @@ public class CoordinatorLogEntry  implements Serializable {
 	public CoordinatorLogEntry terminatedWithHeuristicRollback(
 			ParticipantLogEntry entry) {
 		CoordinatorLogEntry ret = new CoordinatorLogEntry(this,
-				new ParticipantLogEntry(entry.coordinatorId,
-						entry.participantUri, entry.expires, entry.description,
+				new ParticipantLogEntry(entry.id,
+						entry.uri, entry.expires, entry.description,
 						TxState.HEUR_ABORTED));
 		return ret;
 	}
 
 	public boolean shouldSync() {
 		TxState state = getResultingState();
+		//return !state.isOneOf(IN_DOUBT,ABORTING,TERMINATED);
 		switch (state) {
-		case IN_DOUBT:
-		case ABORTING:
-		case TERMINATED:
-			return false; // sub-transactions: root will sync COMMITTING entry in same log later which will also sync this entry
-		default:
-			return !state.isFinalState();
+			case IN_DOUBT:
+			case ABORTING:
+			case TERMINATED:
+				return false; // sub-transactions: root will sync COMMITTING entry in same log later which will also sync this entry
+			default:
+				return !state.isFinalState();
 		}
 	}
 
 	public CoordinatorLogEntry markAsTerminated() {
 		CoordinatorLogEntry coordinatorLogEntry = this;
-		for (ParticipantLogEntry participantLogEntry : participantDetails) {
+		for (ParticipantLogEntry participantLogEntry : participants) {
 			coordinatorLogEntry = coordinatorLogEntry.terminated(participantLogEntry);
 		}
 		//not "this" since at least one participant entry must be present

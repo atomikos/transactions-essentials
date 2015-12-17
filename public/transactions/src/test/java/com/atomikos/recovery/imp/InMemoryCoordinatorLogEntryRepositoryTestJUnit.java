@@ -63,9 +63,9 @@ public class InMemoryCoordinatorLogEntryRepositoryTestJUnit {
 	
 	
 	private void thenCommittingParticipantsFoundInRepository() {
-		ParticipantLogEntry committingParticipantLogEntry = coordinatorLogEntry.participantDetails[0];
+		ParticipantLogEntry committingParticipantLogEntry = coordinatorLogEntry.participants[0];
 		for (CoordinatorLogEntry coordinatorLogEntry : committingParticipantLogEntries) {
-			Assert.assertTrue(Arrays.asList(coordinatorLogEntry.participantDetails).contains(committingParticipantLogEntry));	
+			Assert.assertTrue(Arrays.asList(coordinatorLogEntry.participants).contains(committingParticipantLogEntry));	
 		}
 		
 	}

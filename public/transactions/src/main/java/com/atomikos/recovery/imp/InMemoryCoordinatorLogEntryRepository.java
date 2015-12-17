@@ -70,7 +70,7 @@ public class InMemoryCoordinatorLogEntryRepository implements
 			Collection<CoordinatorLogEntry> checkpointContent) {
 		storage.clear();
 		for (CoordinatorLogEntry coordinatorLogEntry : checkpointContent) {
-			storage.put(coordinatorLogEntry.coordinatorId, coordinatorLogEntry);
+			storage.put(coordinatorLogEntry.id, coordinatorLogEntry);
 		}
 		
 	}

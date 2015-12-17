@@ -23,7 +23,7 @@ class AdminTransactionImp implements AdminTransaction {
 
 	@Override
 	public String getTid() {
-		return coordinatorLogEntry.coordinatorId;
+		return coordinatorLogEntry.id;
 	}
 
 	@Override
@@ -50,14 +50,14 @@ class AdminTransactionImp implements AdminTransaction {
 
 	@Override
 	public void forceForget() {
-		adminLog.remove(coordinatorLogEntry.coordinatorId);
+		adminLog.remove(coordinatorLogEntry.id);
 	}
 
 	@Override
 	public String[] getParticipantDetails() {
-		String[] ret = new String[coordinatorLogEntry.participantDetails.length];
+		String[] ret = new String[coordinatorLogEntry.participants.length];
 		int i = 0;
-		for (ParticipantLogEntry ple : coordinatorLogEntry.participantDetails) {
+		for (ParticipantLogEntry ple : coordinatorLogEntry.participants) {
 			ret[i] = ple.description;
 			i++;
 		}

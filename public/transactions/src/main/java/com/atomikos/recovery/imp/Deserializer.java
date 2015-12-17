@@ -41,7 +41,7 @@ public class Deserializer {
 	}
 	public CoordinatorLogEntry fromJSON(String coordinatorLogEntryStr) {
 		Map<String, String> header = extractHeader(coordinatorLogEntryStr);
-		String coordinatorId = header.get("coordinatorId");
+		String coordinatorId = header.get("id");
 		String arrayContent = extractArrayPart(coordinatorLogEntryStr);
 		List<String> elements = tokenize(arrayContent);
 		
@@ -52,7 +52,7 @@ public class Deserializer {
 		}
 		
 		
-		CoordinatorLogEntry actual = new CoordinatorLogEntry(header.get("coordinatorId"),Boolean.valueOf(header.get("wasCommitted")),  participantLogEntries,header.get("superiorCoordinatorId"));
+		CoordinatorLogEntry actual = new CoordinatorLogEntry(header.get("id"),Boolean.valueOf(header.get("wasCommitted")),  participantLogEntries,header.get("superiorCoordinatorId"));
 		return actual;
 	}
 

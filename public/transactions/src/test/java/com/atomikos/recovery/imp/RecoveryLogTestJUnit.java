@@ -302,7 +302,7 @@ public class RecoveryLogTestJUnit {
 		}
 
 		CoordinatorLogEntry coordinatorLogEntry = new CoordinatorLogEntry(
-				participantLogEntry.coordinatorId, participantLogEntries);
+				participantLogEntry.id, participantLogEntries);
 
 		Mockito.when(logRepository.get(Mockito.anyString())).thenReturn(
 				coordinatorLogEntry);
@@ -329,7 +329,7 @@ public class RecoveryLogTestJUnit {
 
 	private ParticipantLogEntry createEquivalentParticipantLogEntryForPresumedAbort() {
 		ParticipantLogEntry ret = new ParticipantLogEntry(
-				participantLogEntry.coordinatorId, participantLogEntry.participantUri, 
+				participantLogEntry.id, participantLogEntry.uri, 
 				0, "bla", TxState.IN_DOUBT);
 		
 		return ret;

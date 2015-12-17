@@ -42,7 +42,7 @@ public class LogControlImp implements com.atomikos.icatch.admin.LogControl {
 		
 		Set<AdminTransaction> adminTransactions = new HashSet<AdminTransaction>();
 		for (CoordinatorLogEntry pendingCoordinatorEntry : pendingCoordinatorEntries) {
-			if(tidsToFind.contains(pendingCoordinatorEntry.coordinatorId)) {
+			if(tidsToFind.contains(pendingCoordinatorEntry.id)) {
 				adminTransactions.add(convertToAdminTransaction(pendingCoordinatorEntry));
 			}
 			

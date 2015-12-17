@@ -25,9 +25,9 @@ public class DeserializeTestJUnit {
 
 	//@formatter:off
 	private String record="{"
-							+ "\"coordinatorId\":\"TID\"," 
+							+ "\"id\":\"TID\"," 
 							+ "\"wasCommitted\":true,"    
-						    + "\"participantDetails\":"
+						    + "\"participants\":"
 						    + "["
 						    	+ "{"
 						    		+  "\"participantUri\":\"uri\","
@@ -46,10 +46,10 @@ public class DeserializeTestJUnit {
 						   + "}";
 	
 	private String withSuperiorCoordinatorId="{"
-			+ "\"coordinatorId\":\"TID\"," 
+			+ "\"id\":\"TID\"," 
 			+ "\"wasCommitted\":true," 
 			+ "\"superiorCoordinatorId\":SUPERIOR," 
-		    + "\"participantDetails\":"
+		    + "\"participants\":"
 		    + "["
 		    	+ "{"
 		    		+  "\"participantUri\":\"uri\","

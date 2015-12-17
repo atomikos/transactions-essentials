@@ -116,7 +116,7 @@ public class FileSystemCoordinatorLogEntryRepository implements
 
 			while ((line = br.readLine()) != null) {
 				CoordinatorLogEntry coordinatorLogEntry = deserialize(line);
-				coordinatorLogEntries.put(coordinatorLogEntry.coordinatorId,
+				coordinatorLogEntries.put(coordinatorLogEntry.id,
 						coordinatorLogEntry);
 			}
 			br.close();
