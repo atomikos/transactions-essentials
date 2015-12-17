@@ -108,7 +108,7 @@ public class RecoveryLogImp implements RecoveryLog, AdminLog {
 			throw new IllegalStateException();
 		} else if (coordinatorLogEntry.superiorCoordinatorId != null) {		
 			CoordinatorLogEntry parentCoordinatorLogEntry =	repository.get(coordinatorLogEntry.superiorCoordinatorId );
-			if(parentCoordinatorLogEntry != null && parentCoordinatorLogEntry.getResultingState() == TxState.IN_DOUBT){
+			if (parentCoordinatorLogEntry != null && parentCoordinatorLogEntry.getResultingState() == TxState.IN_DOUBT) {
 				throw new IllegalStateException();
 			}
 			
@@ -123,8 +123,7 @@ public class RecoveryLogImp implements RecoveryLog, AdminLog {
 		CoordinatorLogEntry coordinatorLogEntry;
 		ParticipantLogEntry[] participantDetails = new ParticipantLogEntry[1];
 		participantDetails[0] = entry;
-		coordinatorLogEntry = new CoordinatorLogEntry(entry.id,
-				participantDetails);
+		coordinatorLogEntry = new CoordinatorLogEntry(entry.id, participantDetails);
 		return coordinatorLogEntry;
 	}
 
@@ -161,7 +160,7 @@ public class RecoveryLogImp implements RecoveryLog, AdminLog {
 	@Override
 	public CoordinatorLogEntry[] getCoordinatorLogEntries() {
 		try {
-			Collection<CoordinatorLogEntry> allCoordinatorLogEntries= repository.getAllCoordinatorLogEntries();
+			Collection<CoordinatorLogEntry> allCoordinatorLogEntries = repository.getAllCoordinatorLogEntries();
 			return allCoordinatorLogEntries.toArray(new CoordinatorLogEntry[allCoordinatorLogEntries.size()]);
 		} catch (LogReadException e) {
 			LOGGER.logWarning("Could not retrieve coordinators - returning empty array", e);	

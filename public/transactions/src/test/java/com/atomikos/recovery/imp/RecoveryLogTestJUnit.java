@@ -1,7 +1,5 @@
 package com.atomikos.recovery.imp;
 
-import static org.junit.Assert.*;
-
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -172,9 +170,7 @@ public class RecoveryLogTestJUnit {
 	}
 
 	private void givenCommittingParentTxWithInDoubtSubTx() throws LogReadException {
-		//parent : expired, indoubt parent Tx
 		givenParentTransactionInState(TxState.COMMITTING);
-		//SubTx
 		givenCoordinatorInRepository("superiorCoordId", TxState.IN_DOUBT, EXPIRED);
 	}
 	CoordinatorLogEntry parentCoordinatorLogEntry;
@@ -198,19 +194,12 @@ public class RecoveryLogTestJUnit {
 	}
 
 	private void givenInDoubtParentTxWithInDoubtSubTx() throws LogReadException {
-		//parent : expired, indoubt parent Tx
 		givenParentTransactionInState(TxState.IN_DOUBT);
-		
-		//SubTx
 		givenCoordinatorInRepository("superiorCoordId", TxState.IN_DOUBT, EXPIRED);
-		
-	
-		
 	}
 
 	private void thenSubTxWasTerminated() throws IllegalArgumentException, LogWriteException {
-		thenCoordinatorLogEntryWasPutInRepository(TID,TxState.TERMINATED);
-		
+		thenCoordinatorLogEntryWasPutInRepository(TID,TxState.TERMINATED);	
 	}
 
 	
@@ -223,9 +212,7 @@ public class RecoveryLogTestJUnit {
 	}
 
 	private void givenActivePendingTransactionWithIndoubtSubTx() throws LogReadException {
-		// 1 Participant "InDoubt" and superiorCoordId not null
 		givenCoordinatorInRepository("superiorCoordId",TxState.IN_DOUBT, EXPIRED);
-		
 	}
 
 	
@@ -298,7 +285,6 @@ public class RecoveryLogTestJUnit {
 		for (int i = 0; i < otherParticipantsStates.length; i++) {
 			participantLogEntries[i + 1] = newParticipantLogEntryInState(
 					otherParticipantsStates[i], expired);
-			//System.out.println(participantLogEntries[i + 1].state);
 		}
 
 		CoordinatorLogEntry coordinatorLogEntry = new CoordinatorLogEntry(
