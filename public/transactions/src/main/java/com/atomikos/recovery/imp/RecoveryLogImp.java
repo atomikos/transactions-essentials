@@ -30,8 +30,7 @@ public class RecoveryLogImp implements RecoveryLog, AdminLog {
 			CoordinatorLogEntry coordinatorLogEntry =null;
 			coordinatorLogEntry = repository.get(entry.id);
 		if (coordinatorLogEntry == null) {
-			LOGGER.logWarning("termination called on non existent Coordinator "
-					+ entry.id + " " + entry.uri);
+			LOGGER.logWarning("termination called on non existent Coordinator "+ entry.id + " " + entry.uri);
 		} else {	
 			CoordinatorLogEntry updated = coordinatorLogEntry.terminated(entry);
 			repository.put(updated.id, updated);
