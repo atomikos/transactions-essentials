@@ -28,23 +28,21 @@ public class RecoveryLogImp implements RecoveryLog, AdminLog {
 	public void terminated(ParticipantLogEntry entry)  {
 		try {
 			CoordinatorLogEntry coordinatorLogEntry =null;
-				coordinatorLogEntry = repository.get(entry.id);
-			if (coordinatorLogEntry == null) {
-				LOGGER.logWarning("termination called on non existent Coordinator "
-						+ entry.id + " " + entry.uri);
-			} else {
-				//terminate parent ?
-				if (coordinatorLogEntry.superiorCoordinatorId!=null) {
-					CoordinatorLogEntry parentCoordinatorLogEntry = repository.get(coordinatorLogEntry.superiorCoordinatorId);
-					if (parentCoordinatorLogEntry!=null) {
-						CoordinatorLogEntry parentUpdated = parentCoordinatorLogEntry.terminated(new ParticipantLogEntry(coordinatorLogEntry.superiorCoordinatorId, coordinatorLogEntry.id, coordinatorLogEntry.expires(), "", coordinatorLogEntry.getResultingState()));
-						repository.put(parentUpdated.id, parentUpdated);	
-					}
+			coordinatorLogEntry = repository.get(entry.id);
+		if (coordinatorLogEntry == null) {
+			LOGGER.logWarning("termination called on non existent Coordinator "
+					+ entry.id + " " + entry.uri);
+		} else {	
+			CoordinatorLogEntry updated = coordinatorLogEntry.terminated(entry);
+			repository.put(updated.id, updated);
+			if (coordinatorLogEntry.superiorCoordinatorId!=null) {
+				CoordinatorLogEntry parentCoordinatorLogEntry = repository.get(coordinatorLogEntry.superiorCoordinatorId);
+				if (parentCoordinatorLogEntry!=null) {
+					CoordinatorLogEntry parentUpdated = parentCoordinatorLogEntry.terminated(new ParticipantLogEntry(coordinatorLogEntry.superiorCoordinatorId, coordinatorLogEntry.id, coordinatorLogEntry.expires(), "", coordinatorLogEntry.getResultingState()));
+					repository.put(parentUpdated.id, parentUpdated);	//TODO deal with disk full -> pending parent
 				}
-					
-				CoordinatorLogEntry updated = coordinatorLogEntry.terminated(entry);
-				repository.put(updated.id, updated);
 			}
+		}
 		} catch (LogException e) {
 			LOGGER.logWarning("Unable to write to repository: "+entry+" - leaving cleanup to recovery housekeeping...", e);
 		} catch (IllegalArgumentException e) {
