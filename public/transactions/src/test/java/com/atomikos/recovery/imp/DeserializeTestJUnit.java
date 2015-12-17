@@ -45,6 +45,28 @@ public class DeserializeTestJUnit {
 						    + "]"
 						   + "}";
 	
+	private String withSuperiorCoordinatorId="{"
+			+ "\"coordinatorId\":\"TID\"," 
+			+ "\"wasCommitted\":true," 
+			+ "\"superiorCoordinatorId\":SUPERIOR," 
+		    + "\"participantDetails\":"
+		    + "["
+		    	+ "{"
+		    		+  "\"participantUri\":\"uri\","
+		    		+ "\"expires\":0,"
+		    		+ "\"state\":\"HEUR_MIXED\","
+		    		+ "\"description\":\"description\""
+		    	+ "}"
+		    	+ ","
+		    	+ "{"
+		    		+ "\"participantUri\":\"uri\","
+		    		+ "\"expires\":0,"
+		    		+ "\"state\":\"COMMITTING\","
+		    		+ "\"description\":\"description\""
+		    	+ "}"
+		    + "]"
+		   + "}";
+	
 	@Test
 	public void recreateCoordinatorLogEntry() throws Exception {
 		
@@ -57,6 +79,18 @@ public class DeserializeTestJUnit {
 		Assert.assertTrue(EqualsBuilder.reflectionEquals(expected,actual));
 	}
 	
+	@Test
+	public void recreateCoordinatorLogEntryWithSuperiorCoordinatorId() throws Exception {
+		
+		ParticipantLogEntry[] participantLogEntries = new ParticipantLogEntry[2];
+		participantLogEntries[0] = new ParticipantLogEntry("TID","uri",0,"description",TxState.HEUR_MIXED);
+		participantLogEntries[1] = new ParticipantLogEntry("TID","uri",0,"description",TxState.COMMITTING);
+		CoordinatorLogEntry expected = new CoordinatorLogEntry("TID",true, participantLogEntries,"SUPERIOR");
+		
+		CoordinatorLogEntry actual = sut.fromJSON(withSuperiorCoordinatorId);
+		Assert.assertTrue(EqualsBuilder.reflectionEquals(expected,actual));
+	}
+		
 	@Test
 	public void extractArrayFromRecord() throws Exception {
 	 String expected="{"

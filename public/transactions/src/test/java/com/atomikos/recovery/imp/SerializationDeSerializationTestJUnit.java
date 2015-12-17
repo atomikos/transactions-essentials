@@ -21,7 +21,18 @@ public class SerializationDeSerializationTestJUnit {
 		whenSerializeDeserialize();
 		thenContentAreTheSame();
 	}
+	@Test
+	public void testWithSuperiorCoordinatorId() throws Exception {
+		givenCoordinatorLogEntryWithSuperiorCoordinatorId();
+		whenSerializeDeserialize();
+		thenContentAreTheSame();
+	}
+	private void givenCoordinatorLogEntryWithSuperiorCoordinatorId() {
+		coordinatorLogEntry = createCoordinatorLogEntryWithParticipantsInState("SUPERIOR", TxState.COMMITTING,TxState.COMMITTING);
+		
+	}
 	private void thenContentAreTheSame() {
+		
 		Assert.assertTrue(EqualsBuilder.reflectionEquals(coordinatorLogEntry, deserialized));
 		
 	}
@@ -35,18 +46,18 @@ public class SerializationDeSerializationTestJUnit {
 	
 
 	private void givenCoordinatorLogEntry() {
-		coordinatorLogEntry = createCoordinatorLogEntryWithParticipantsInState(TxState.COMMITTING,TxState.COMMITTING);
+		coordinatorLogEntry = createCoordinatorLogEntryWithParticipantsInState(null, TxState.COMMITTING,TxState.COMMITTING);
 		
 	}
 
 
 
-	private CoordinatorLogEntry createCoordinatorLogEntryWithParticipantsInState(TxState... states) {
+	private CoordinatorLogEntry createCoordinatorLogEntryWithParticipantsInState(String superiorCoordinatorId,TxState... states) {
 		ParticipantLogEntry[] participantDetails = new ParticipantLogEntry[states.length];
 		for (int i = 0; i < participantDetails.length; i++) {
 			participantDetails[i] = new ParticipantLogEntry(tid, "uri"+i+System.nanoTime(), i,
 					"description"+i+"-"+"-"+System.nanoTime(), states[i]);
 		}
-		return new CoordinatorLogEntry(tid, participantDetails);
+		return new CoordinatorLogEntry(tid, false, participantDetails, superiorCoordinatorId);
 	}
 }

@@ -52,7 +52,7 @@ public class Deserializer {
 		}
 		
 		
-		CoordinatorLogEntry actual = new CoordinatorLogEntry(header.get("coordinatorId"),Boolean.valueOf(header.get("wasCommitted")),  participantLogEntries);
+		CoordinatorLogEntry actual = new CoordinatorLogEntry(header.get("coordinatorId"),Boolean.valueOf(header.get("wasCommitted")),  participantLogEntries,header.get("superiorCoordinatorId"));
 		return actual;
 	}
 

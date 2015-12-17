@@ -20,6 +20,10 @@ public class Serializer {
 		strBuilder.append(PROPERTY_SEPARATOR);
 		strBuilder.append(QUOTE).append("wasCommitted").append(QUOTE).append(":").append(coordinatorLogEntry.wasCommitted);
 		strBuilder.append(PROPERTY_SEPARATOR);
+		if (coordinatorLogEntry.superiorCoordinatorId!=null) {
+			strBuilder.append(QUOTE).append("superiorCoordinatorId").append(QUOTE).append(":").append(coordinatorLogEntry.superiorCoordinatorId);
+			strBuilder.append(PROPERTY_SEPARATOR);
+		}
 		String prefix = "";
 		if(coordinatorLogEntry.participantDetails.length>0){
 			strBuilder.append(QUOTE).append("participantDetails").append(QUOTE);

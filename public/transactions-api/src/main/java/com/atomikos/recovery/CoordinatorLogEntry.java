@@ -19,6 +19,11 @@ public class CoordinatorLogEntry  implements Serializable {
 
 	public final boolean wasCommitted;
 
+	/**
+	 * Only for subtransactions, null otherwise.
+	 */
+	public final String superiorCoordinatorId;
+	
 	public final ParticipantLogEntry[] participantDetails;
 
 	private CoordinatorLogEntry(CoordinatorLogEntry toCopy,
@@ -49,7 +54,7 @@ public class CoordinatorLogEntry  implements Serializable {
 
 	public CoordinatorLogEntry(String coordinatorId,
 			ParticipantLogEntry[] participantDetails) {
-		this(coordinatorId, false, participantDetails);
+		this(coordinatorId, false, participantDetails, null);
 	}
 
 	public CoordinatorLogEntry(String coordinatorId, boolean wasCommitted,
@@ -57,6 +62,15 @@ public class CoordinatorLogEntry  implements Serializable {
 		this.coordinatorId = coordinatorId;
 		this.wasCommitted = wasCommitted;
 		this.participantDetails = participantDetails;
+		this.superiorCoordinatorId = null;
+	}
+	
+	public CoordinatorLogEntry(String coordinatorId, boolean wasCommitted,
+			ParticipantLogEntry[] participantDetails, String superiorCoordinatorId) {
+		this.coordinatorId = coordinatorId;
+		this.wasCommitted = wasCommitted;
+		this.participantDetails = participantDetails;
+		this.superiorCoordinatorId = superiorCoordinatorId;
 	}
 
 	public TxState getResultingState() {
