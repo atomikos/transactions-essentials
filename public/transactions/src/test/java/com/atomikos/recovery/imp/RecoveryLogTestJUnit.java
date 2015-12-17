@@ -22,6 +22,7 @@ import com.atomikos.util.UniqueIdMgr;
 
 public class RecoveryLogTestJUnit {
 
+	private static final String TID = "tid";
 	private static final boolean EXPIRED = true;
 	private static final boolean NON_EXPIRED = false;
 	private RecoveryLogImp sut;
@@ -47,7 +48,7 @@ public class RecoveryLogTestJUnit {
 			whenPresumedAborting();
 		} catch (IllegalStateException ok) {
 		}
-		thenRepositoryContainsCoordinatorLogEntry(TxState.IN_DOUBT);
+		thenCoordinatorLogEntryWasPutInRepository(TxState.IN_DOUBT);
 	}
 
 	@Test(expected = IllegalStateException.class)
@@ -73,7 +74,7 @@ public class RecoveryLogTestJUnit {
 			throws Exception {
 		givenCoordinatorInRepository(TxState.IN_DOUBT, EXPIRED);
 		whenPresumedAborting();
-		thenRepositoryContainsCoordinatorLogEntry(TxState.ABORTING);
+		thenCoordinatorLogEntryWasPutInRepository(TxState.ABORTING);
 	}
 
 	@Test
@@ -145,8 +146,44 @@ public class RecoveryLogTestJUnit {
 		thenSubTxWasTerminated();
 	}
 	
+	@Test
+	public void testRecoveryOfInDoubtSubTxForInDoubtParent() throws Exception {
+		givenInDoubtParentTxWithInDoubtSubTx();
+		try {
+			whenSubTxRecovered();
+		} catch (IllegalStateException ok) {
+		}
+		thenSubTxIsStillInDoubt();
+	}
 	
 	
+
+	private void thenSubTxIsStillInDoubt() throws IllegalArgumentException, LogWriteException {
+		thenRepositoryWasNotUpdated();
+	}
+
+	private void thenRepositoryWasNotUpdated() throws IllegalArgumentException, LogWriteException {
+		Mockito.verify(logRepository, Mockito.never()).put(
+				Mockito.eq(TID), (CoordinatorLogEntry) Mockito.any());
+	}
+
+	private void givenInDoubtParentTxWithInDoubtSubTx() throws LogReadException {
+		//parent : expired, indoubt parent Tx
+		ParticipantLogEntry	parentParticipantLogEntry =  new ParticipantLogEntry("superiorCoordId", TID, 0,
+				"description", TxState.IN_DOUBT);
+		ParticipantLogEntry[] parentParticipantLogEntries = { parentParticipantLogEntry };
+		CoordinatorLogEntry parentCoordinatorLogEntry = new CoordinatorLogEntry(
+				"superiorCoordId",false, parentParticipantLogEntries);
+		
+		Mockito.when(logRepository.get("superiorCoordId")).thenReturn(parentCoordinatorLogEntry);
+
+		
+		//SubTx
+		givenCoordinatorInRepository("superiorCoordId", TxState.IN_DOUBT, EXPIRED);
+		
+	
+		
+	}
 
 	private void thenSubTxWasTerminated() throws IllegalArgumentException, LogWriteException {
 		thenRepositoryDoesNotContainCoordinatorLogEntry();
@@ -220,9 +257,9 @@ public class RecoveryLogTestJUnit {
 		participantLogEntry = newParticipantLogEntryInState(state, expired);
 		ParticipantLogEntry[] participantLogEntries = { participantLogEntry };
 		CoordinatorLogEntry coordinatorLogEntry = new CoordinatorLogEntry(
-				participantLogEntry.coordinatorId,false, participantLogEntries, superioCoordinatorId);
+				TID,false, participantLogEntries, superioCoordinatorId);
 
-		Mockito.when(logRepository.get(Mockito.anyString())).thenReturn(
+		Mockito.when(logRepository.get(TID)).thenReturn(
 				coordinatorLogEntry);
 		if(state == TxState.COMMITTING) {
 			Mockito.when(logRepository.findAllCommittingCoordinatorLogEntries()).thenReturn(Arrays.asList(coordinatorLogEntry));
@@ -249,11 +286,11 @@ public class RecoveryLogTestJUnit {
 
 	}
 
-	private void thenRepositoryContainsCoordinatorLogEntry(TxState state) throws IllegalArgumentException, LogWriteException {
+	private void thenCoordinatorLogEntryWasPutInRepository(TxState state) throws IllegalArgumentException, LogWriteException {
 		ArgumentCaptor<CoordinatorLogEntry> captor = ArgumentCaptor
 				.forClass(CoordinatorLogEntry.class);
 		Mockito.verify(logRepository, Mockito.times(1))
-				.put(Mockito.eq(participantLogEntry.coordinatorId),
+				.put(Mockito.eq(TID),
 						captor.capture());
 		Assert.assertEquals(state, captor.getValue().getResultingState());
 	}
@@ -281,7 +318,7 @@ public class RecoveryLogTestJUnit {
 		if (expired) {
 			expires = 0;
 		}
-		return new ParticipantLogEntry("tid", uniqueIdMgr.get(), expires,
+		return new ParticipantLogEntry(TID, uniqueIdMgr.get(), expires,
 				"description", state);
 
 	}

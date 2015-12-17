@@ -101,8 +101,15 @@ public class RecoveryLogImp implements RecoveryLog, AdminLog {
 			coordinatorLogEntry = createCoordinatorLogEntry(entry);
 			write(coordinatorLogEntry);
 			throw new IllegalStateException();
+		} else if (coordinatorLogEntry.superiorCoordinatorId != null) {
+			CoordinatorLogEntry parentCoordinatorLogEntry =	repository.get(coordinatorLogEntry.superiorCoordinatorId );
+			if(parentCoordinatorLogEntry!=null && parentCoordinatorLogEntry.getResultingState() == TxState.IN_DOUBT){
+				throw new IllegalStateException();
+			}
+			
 		} else {
 			CoordinatorLogEntry updated = coordinatorLogEntry.presumedAborting(entry);
+			
 			write(updated);
 		}
 	}
