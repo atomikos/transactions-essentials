@@ -37,7 +37,7 @@ public class ParticipantLogEntryTestJUnit {
 	@Test
 	public void testToString() throws Exception {
 		ParticipantLogEntry e1 = new ParticipantLogEntry(COORD, PART, EXPIRES, "desc", TxState.ABORTING);
-		String expected="ParticipantLogEntry [coordinatorId=coord, participantUri=part, expires=0, state=ABORTING, description=desc]";
+		String expected="ParticipantLogEntry [id=coord, uri=part, expires=0, state=ABORTING, description=desc]";
 		assertEquals(expected,e1.toString());
 	}
 }
