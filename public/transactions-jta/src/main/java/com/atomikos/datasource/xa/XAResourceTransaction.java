@@ -696,9 +696,7 @@ public class XAResourceTransaction implements ResourceTransaction,
 			throw new com.atomikos.icatch.RollbackException(re.getMessage());
 		}
 
-		if (!(this.state.equals(TxState.LOCALLY_DONE)
-				|| this.state.equals(TxState.IN_DOUBT) || this.state
-					.equals(TxState.HEUR_HAZARD)))
+		if (!(this.state.isOneOf(TxState.LOCALLY_DONE, TxState.IN_DOUBT, TxState.HEUR_HAZARD)))
 			throw new SysException("Wrong state for commit: " + this.state);
 		try {
 			// refresh xaresource for MQSeries: seems to close XAResource after
