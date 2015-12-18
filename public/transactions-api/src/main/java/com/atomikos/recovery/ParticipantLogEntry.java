@@ -12,7 +12,7 @@ public class ParticipantLogEntry implements Serializable {
 	 * The ID of the global transaction as known by the transaction core.
 	 */
 	
-	public final String id;
+	public final String coordinatorId;
 	
 	/**
 	 * Identifies the participant within the global transaction.
@@ -36,9 +36,9 @@ public class ParticipantLogEntry implements Serializable {
 	 */
 	public final String description;
 	
-	public ParticipantLogEntry(String id, String uri, 
+	public ParticipantLogEntry(String coordinatorId, String uri, 
 			long expires, String description, TxState state) {
-		this.id = id;
+		this.coordinatorId = coordinatorId;
 		this.uri = uri;
 		this.expires = expires;
 		this.description = description;
@@ -52,21 +52,21 @@ public class ParticipantLogEntry implements Serializable {
 		boolean ret = false;
 		if (other instanceof ParticipantLogEntry) {
 			ParticipantLogEntry o = (ParticipantLogEntry) other;
-			if (o.id.equals(id) && o.uri.equals(uri)) ret = true;
+			if (o.coordinatorId.equals(coordinatorId) && o.uri.equals(uri)) ret = true;
 		}
 		return ret;
 	}
 	
 	@Override
 	public int hashCode() {
-		return id.hashCode();
+		return coordinatorId.hashCode();
 	}
 
 
 
 	@Override
 	public String toString() {
-		return "ParticipantLogEntry [id=" + id
+		return "ParticipantLogEntry [id=" + coordinatorId
 				+ ", uri=" + uri + ", expires=" + expires
 				+ ", state=" + state + ", description=" + description + "]";
 	}

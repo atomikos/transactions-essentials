@@ -41,7 +41,7 @@ public class CoordinatorLogEntry  implements Serializable {
 				ret[i] = toUpdate;
 			} else {
 				ret[i] = new ParticipantLogEntry(
-						participantLogEntry.id,
+						participantLogEntry.coordinatorId,
 						participantLogEntry.uri,
 						participantLogEntry.expires,
 						participantLogEntry.description,
@@ -131,7 +131,7 @@ public class CoordinatorLogEntry  implements Serializable {
 		}
 
 		CoordinatorLogEntry ret = new CoordinatorLogEntry(this,
-				new ParticipantLogEntry(entry.id,
+				new ParticipantLogEntry(entry.coordinatorId,
 						entry.uri, entry.expires, entry.description,
 						TxState.ABORTING));
 
@@ -148,7 +148,7 @@ public class CoordinatorLogEntry  implements Serializable {
 
 	public CoordinatorLogEntry terminated(ParticipantLogEntry entry) {
 		CoordinatorLogEntry ret = new CoordinatorLogEntry(this,
-				new ParticipantLogEntry(entry.id,
+				new ParticipantLogEntry(entry.coordinatorId,
 						entry.uri, entry.expires, entry.description,
 						TxState.TERMINATED));
 		return ret;
@@ -157,7 +157,7 @@ public class CoordinatorLogEntry  implements Serializable {
 	public CoordinatorLogEntry terminatedWithHeuristicCommit(
 			ParticipantLogEntry entry) {
 		CoordinatorLogEntry ret = new CoordinatorLogEntry(this,
-				new ParticipantLogEntry(entry.id,
+				new ParticipantLogEntry(entry.coordinatorId,
 						entry.uri, entry.expires, entry.description,
 						TxState.HEUR_COMMITTED));
 		return ret;
@@ -166,7 +166,7 @@ public class CoordinatorLogEntry  implements Serializable {
 	public CoordinatorLogEntry terminatedWithHeuristicMixed(
 			ParticipantLogEntry entry) {
 		CoordinatorLogEntry ret = new CoordinatorLogEntry(this,
-				new ParticipantLogEntry(entry.id,
+				new ParticipantLogEntry(entry.coordinatorId,
 						entry.uri, entry.expires, entry.description,
 						TxState.HEUR_MIXED));
 		return ret;
@@ -175,7 +175,7 @@ public class CoordinatorLogEntry  implements Serializable {
 	public CoordinatorLogEntry terminatedWithHeuristicRollback(
 			ParticipantLogEntry entry) {
 		CoordinatorLogEntry ret = new CoordinatorLogEntry(this,
-				new ParticipantLogEntry(entry.id,
+				new ParticipantLogEntry(entry.coordinatorId,
 						entry.uri, entry.expires, entry.description,
 						TxState.HEUR_ABORTED));
 		return ret;
@@ -203,5 +203,6 @@ public class CoordinatorLogEntry  implements Serializable {
 		return coordinatorLogEntry;
 		
 	}
+
 
 }

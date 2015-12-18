@@ -105,7 +105,7 @@ public class DefaultXaRecoveryLogTestJUnit {
 	}
 
 	private void thenGtidEqualsCoordinatorId(ParticipantLogEntry entry, Xid xid) {
-		Assert.assertEquals(entry.id, XID.getGlobalTransactionIdAsString(xid));
+		Assert.assertEquals(entry.coordinatorId, XID.getGlobalTransactionIdAsString(xid));
 	}
 
 	private Xid whenGetExpiredCommittingXids() throws LogReadException {

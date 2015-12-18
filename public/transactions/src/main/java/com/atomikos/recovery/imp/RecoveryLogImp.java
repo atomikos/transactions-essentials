@@ -11,6 +11,7 @@ import com.atomikos.recovery.CoordinatorLogEntry;
 import com.atomikos.recovery.CoordinatorLogEntryRepository;
 import com.atomikos.recovery.LogException;
 import com.atomikos.recovery.LogReadException;
+import com.atomikos.recovery.LogWriteException;
 import com.atomikos.recovery.ParticipantLogEntry;
 import com.atomikos.recovery.RecoveryLog;
 
@@ -26,20 +27,17 @@ public class RecoveryLogImp implements RecoveryLog, AdminLog {
 
 	@Override
 	public void terminated(ParticipantLogEntry entry)  {
+		
 		try {
 			CoordinatorLogEntry coordinatorLogEntry =null;
-			coordinatorLogEntry = repository.get(entry.id);
+			coordinatorLogEntry = repository.get(entry.coordinatorId);
 			if (coordinatorLogEntry == null) {
-				LOGGER.logWarning("termination called on non existent Coordinator "+ entry.id + " " + entry.uri);
+				LOGGER.logWarning("termination called on non existent Coordinator "+ entry.coordinatorId + " " + entry.uri);
 			} else {	
 				CoordinatorLogEntry updated = coordinatorLogEntry.terminated(entry);
 				repository.put(updated.id, updated);
 				if (coordinatorLogEntry.superiorCoordinatorId != null) {
-					CoordinatorLogEntry parentCoordinatorLogEntry = repository.get(coordinatorLogEntry.superiorCoordinatorId);
-					if (parentCoordinatorLogEntry != null) {
-						CoordinatorLogEntry parentUpdated = parentCoordinatorLogEntry.terminated(new ParticipantLogEntry(coordinatorLogEntry.superiorCoordinatorId, coordinatorLogEntry.id, coordinatorLogEntry.expires(), "", coordinatorLogEntry.getResultingState()));
-						repository.put(parentUpdated.id, parentUpdated);	//TODO deal with disk full -> pending parent
-					}
+					terminateParentTx(coordinatorLogEntry);
 				}
 			}
 		} catch (LogException e) {
@@ -49,14 +47,28 @@ public class RecoveryLogImp implements RecoveryLog, AdminLog {
 		} 
 	}
 
+	protected void terminateParentTx(CoordinatorLogEntry coordinatorLogEntry)
+			throws LogReadException, LogWriteException {
+		CoordinatorLogEntry parentCoordinatorLogEntry = repository.get(coordinatorLogEntry.superiorCoordinatorId);
+		if (parentCoordinatorLogEntry != null) {
+			CoordinatorLogEntry parentUpdated = parentCoordinatorLogEntry.terminated(createSubTransactionCoordinatorParticipant(coordinatorLogEntry));
+			repository.put(parentUpdated.id, parentUpdated);	//TODO deal with disk full -> pending parent
+		}
+	}
+
+	protected ParticipantLogEntry createSubTransactionCoordinatorParticipant(
+			CoordinatorLogEntry subTransaction) {
+		return new ParticipantLogEntry(subTransaction.superiorCoordinatorId, subTransaction.id, subTransaction.expires(), "subtransaction participant", subTransaction.getResultingState());
+	}
+
 	
 
 	@Override
 	public void terminatedWithHeuristicRollback(ParticipantLogEntry entry) throws LogException {
 
-		CoordinatorLogEntry coordinatorLogEntry = repository.get(entry.id);
+		CoordinatorLogEntry coordinatorLogEntry = repository.get(entry.coordinatorId);
 		if (coordinatorLogEntry == null) {
-			LOGGER.logWarning("terminatedWithHeuristicRollback called on non existent Coordinator " + entry.id + " " + entry.uri);
+			LOGGER.logWarning("terminatedWithHeuristicRollback called on non existent Coordinator " + entry.coordinatorId + " " + entry.uri);
 		} else {
 			CoordinatorLogEntry updated = coordinatorLogEntry.terminatedWithHeuristicRollback(entry);
 			repository.put(updated.id, updated);
@@ -99,22 +111,25 @@ public class RecoveryLogImp implements RecoveryLog, AdminLog {
 			throw new IllegalArgumentException();
 		}
 		
-		CoordinatorLogEntry coordinatorLogEntry = repository.get(entry.id);
+		CoordinatorLogEntry coordinatorLogEntry = repository.get(entry.coordinatorId);
 		if (coordinatorLogEntry == null) { 
 			//first time this participant is found in resource: write IN_DOUBT entry in log to do presumed abort on next scan
 			//this gives any concurrent OLTP 2-phase commit a reasonable delay to proceed without interference of recovery
 			coordinatorLogEntry = createCoordinatorLogEntry(entry);
 			write(coordinatorLogEntry);
 			throw new IllegalStateException();
-		} else if (coordinatorLogEntry.superiorCoordinatorId != null) {		
-			CoordinatorLogEntry parentCoordinatorLogEntry =	repository.get(coordinatorLogEntry.superiorCoordinatorId );
-			if (parentCoordinatorLogEntry != null && parentCoordinatorLogEntry.getResultingState() == TxState.IN_DOUBT) {
-				throw new IllegalStateException();
-			}
-			
 		} else {
+			if (coordinatorLogEntry.superiorCoordinatorId != null) {		
+				CoordinatorLogEntry parentCoordinatorLogEntry =	repository.get(coordinatorLogEntry.superiorCoordinatorId );
+				if (parentCoordinatorLogEntry != null && parentCoordinatorLogEntry.getResultingState() == TxState.IN_DOUBT) {
+					ParticipantLogEntry subTransaction = createSubTransactionCoordinatorParticipant(coordinatorLogEntry);
+					presumedAborting(subTransaction);
+				}
+				
+			}
 			CoordinatorLogEntry updated = coordinatorLogEntry.presumedAborting(entry);			
 			write(updated);
+		
 		}
 	}
 
@@ -123,15 +138,15 @@ public class RecoveryLogImp implements RecoveryLog, AdminLog {
 		CoordinatorLogEntry coordinatorLogEntry;
 		ParticipantLogEntry[] participantDetails = new ParticipantLogEntry[1];
 		participantDetails[0] = entry;
-		coordinatorLogEntry = new CoordinatorLogEntry(entry.id, participantDetails);
+		coordinatorLogEntry = new CoordinatorLogEntry(entry.coordinatorId, participantDetails);
 		return coordinatorLogEntry;
 	}
 
 	@Override
 	public void terminatedWithHeuristicCommit(ParticipantLogEntry entry) throws LogException {
-		CoordinatorLogEntry coordinatorLogEntry = repository.get(entry.id);
+		CoordinatorLogEntry coordinatorLogEntry = repository.get(entry.coordinatorId);
 		if (coordinatorLogEntry == null) {
-			LOGGER.logWarning("terminatedWithHeuristicCommit called on non existent Coordinator " + entry.id + " " + entry.uri);
+			LOGGER.logWarning("terminatedWithHeuristicCommit called on non existent Coordinator " + entry.coordinatorId + " " + entry.uri);
 		} else {
 			CoordinatorLogEntry updated = coordinatorLogEntry.terminatedWithHeuristicCommit(entry);
 			repository.put(updated.id, updated);
@@ -147,9 +162,9 @@ public class RecoveryLogImp implements RecoveryLog, AdminLog {
 
 	@Override
 	public void terminatedWithHeuristicMixed(ParticipantLogEntry entry) throws LogException {
-		CoordinatorLogEntry coordinatorLogEntry = repository.get(entry.id);
+		CoordinatorLogEntry coordinatorLogEntry = repository.get(entry.coordinatorId);
 		if (coordinatorLogEntry == null) {
-			LOGGER.logWarning("terminatedWithHeuristicMixed called on non existent Coordinator " + entry.id + " " + entry.uri);
+			LOGGER.logWarning("terminatedWithHeuristicMixed called on non existent Coordinator " + entry.coordinatorId + " " + entry.uri);
 		} else {
 			CoordinatorLogEntry updated = coordinatorLogEntry.terminatedWithHeuristicMixed(entry);
 			repository.put(updated.id, updated);
