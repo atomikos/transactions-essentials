@@ -64,4 +64,9 @@ class AdminTransactionImp implements AdminTransaction {
 		return ret;
 	}
 
+	@Override
+	public boolean hasExpired() {
+		return coordinatorLogEntry.hasExpired();
+	}
+
 }

@@ -204,5 +204,9 @@ public class CoordinatorLogEntry  implements Serializable {
 		
 	}
 
+	public boolean hasExpired() {
+		return expires() < System.currentTimeMillis();
+	}
+
 
 }

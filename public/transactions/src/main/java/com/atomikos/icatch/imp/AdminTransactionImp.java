@@ -131,4 +131,10 @@ class AdminTransactionImp implements AdminTransaction
 		return ret;
 	}
 
+	@Override
+	public boolean hasExpired() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

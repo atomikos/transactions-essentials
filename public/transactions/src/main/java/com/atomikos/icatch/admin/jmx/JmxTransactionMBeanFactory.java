@@ -34,7 +34,8 @@ public class JmxTransactionMBeanFactory {
 		List<AdminTransaction> ret = new ArrayList<AdminTransaction>();
 		for ( int i = 0 ; i < txs.length ; i++ ) {
 			AdminTransaction next = txs[i];
-			if (next.getState().isOneOf(TxState.HEUR_ABORTED,TxState.HEUR_COMMITTED, TxState.HEUR_HAZARD, TxState.HEUR_MIXED)) {
+			if (next.getState().isOneOf(TxState.HEUR_ABORTED,TxState.HEUR_COMMITTED, TxState.HEUR_HAZARD, TxState.HEUR_MIXED) 
+					|| (next.getState()== TxState.COMMITTING && next.hasExpired())) {
 				ret.add ( next );
 			}
 		}
