@@ -159,9 +159,7 @@ public class XaResourceRecoveryManager {
 			log.presumedAborting(xid);
 			try {
 				xaResource.rollback(xid);
-				log.terminated(xid); // TODO add coordinator ID as parameter for
-										// fast log update? better: parse Xid to
-										// get TID :-)
+				log.terminated(xid); 
 			} catch (XAException e) {
 				if (alreadyHeuristicallyTerminatedByResource(e)) {
 					handleHeuristicTerminationByResource(xid, xaResource, e, false);

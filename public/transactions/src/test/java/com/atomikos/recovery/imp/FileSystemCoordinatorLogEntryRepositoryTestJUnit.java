@@ -73,8 +73,6 @@ public class FileSystemCoordinatorLogEntryRepositoryTestJUnit {
 
 	private void thenCoordinatorLogEntryWasReadFromFile() throws LogReadException {
 		Assert.assertFalse(sut.getAllCoordinatorLogEntries().isEmpty());
-		//TODO functional comparaison
-		
 	}
 
 

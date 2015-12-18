@@ -4,6 +4,8 @@ import java.util.Vector;
 
 import com.atomikos.icatch.TxState;
 import com.atomikos.icatch.imp.CoordinatorImp;
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
 import com.atomikos.persistence.RecoverableCoordinator;
 import com.atomikos.persistence.StateRecoveryManager;
 import com.atomikos.recovery.AdminLog;
@@ -12,6 +14,7 @@ import com.atomikos.recovery.LogException;
 
 public class AdminLogImp implements AdminLog {
 	
+	private static final Logger LOGGER = LoggerFactory.createLogger(AdminLogImp.class);
 	private StateRecoveryManager srm;
 	
 	public AdminLogImp(StateRecoveryManager srm) {
@@ -31,7 +34,6 @@ public class AdminLogImp implements AdminLog {
 				i++;
 			}
 		} catch (LogException couldNotRetrieveCoordinators) {
-			//TODO log
 		}
 		return ret;
 	}
@@ -41,7 +43,7 @@ public class AdminLogImp implements AdminLog {
 		try {
 			srm.delete(coordinatorId);
 		} catch (LogException e) {
-			//TODO log
+			LOGGER.logWarning("Failed to delete coordinator "+ coordinatorId,e);
 		}
 	}
 
