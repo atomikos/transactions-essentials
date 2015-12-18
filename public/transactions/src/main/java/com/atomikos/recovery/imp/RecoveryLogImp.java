@@ -52,7 +52,7 @@ public class RecoveryLogImp implements RecoveryLog, AdminLog {
 		CoordinatorLogEntry parentCoordinatorLogEntry = repository.get(coordinatorLogEntry.superiorCoordinatorId);
 		if (parentCoordinatorLogEntry != null) {
 			CoordinatorLogEntry parentUpdated = parentCoordinatorLogEntry.terminated(createSubTransactionCoordinatorParticipant(coordinatorLogEntry));
-			repository.put(parentUpdated.id, parentUpdated);	//TODO deal with disk full -> pending parent
+			repository.put(parentUpdated.id, parentUpdated);	
 		}
 	}
 

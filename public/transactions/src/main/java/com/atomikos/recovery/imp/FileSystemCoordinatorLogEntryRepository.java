@@ -104,9 +104,6 @@ public class FileSystemCoordinatorLogEntryRepository implements
 	public Collection<CoordinatorLogEntry> getAllCoordinatorLogEntries()
 			throws LogReadException {
 		Map<String, CoordinatorLogEntry> coordinatorLogEntries = new HashMap<String, CoordinatorLogEntry>();
-		// TODO Open File for reading
-		// perform a checkpoint
-		// read file
 		FileInputStream fis = null;
 		try {
 			String line;
