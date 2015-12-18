@@ -203,14 +203,42 @@ public class RecoveryLogTestJUnit {
 		thenSubTxWasHeurMixed();
 	}
 	
+	@Test
+	public void testRecoveryOfInDoubtSubTxForExpiredInDoubtParentWithHeuristicMixed() throws Exception {
+		givenExpiredInDoubtParentTxWithInDoubtSubTx();
+		whenSubTxRecoveredWithHeuristicMixed();
+		thenParentTxWasHeurMixed();
+		thenSubTxWasHeurMixed();
+	}
+
+	@Test
+	public void testRecoveryOfInDoubtSubTxForExpiredInDoubtParentWithHeuristicCommit() throws Exception {
+		givenExpiredInDoubtParentTxWithInDoubtSubTx();
+		whenSubTxRecoveredWithHeuristicCommit();
+		thenParentTxWasHeurCommit();
+		thenSubTxWasHeurCommit();
+	}
+
+	private void thenSubTxWasHeurCommit() throws LogException {
+		whenTerminatedWithHeuristicMixed();
+		
+	}
+
+	private void thenParentTxWasHeurCommit() throws IllegalArgumentException, LogWriteException {
+		thenCoordinatorLogEntryWasPutInRepository(PARENT_COORD_ID,1, TxState.HEUR_COMMITTED);
+	}
+
+	private void whenSubTxRecoveredWithHeuristicCommit() throws LogException {
+		whenTerminatedWithHeuristicCommit();
+	}
 
 	private void thenSubTxWasHeurMixed() throws IllegalArgumentException, LogWriteException {
-		thenCoordinatorLogEntryWasPutInRepository(PARENT_COORD_ID,1, TxState.HEUR_MIXED);
+		thenCoordinatorLogEntryWasPutInRepository(TID,1, TxState.HEUR_MIXED);
 		
 	}
 
 	private void thenParentTxWasHeurMixed() throws IllegalArgumentException, LogWriteException {
-		thenCoordinatorLogEntryWasPutInRepository(TID,1, TxState.HEUR_MIXED);
+		thenCoordinatorLogEntryWasPutInRepository(PARENT_COORD_ID,1, TxState.HEUR_MIXED);
 	}
 
 	private void whenSubTxRecoveredWithHeuristicMixed() throws LogException {
