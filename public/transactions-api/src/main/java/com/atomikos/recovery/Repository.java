@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import com.atomikos.icatch.provider.ConfigProperties;
 
-public interface CoordinatorLogEntryRepository {
+public interface Repository {
 
 	
 	void init(ConfigProperties configProperties);

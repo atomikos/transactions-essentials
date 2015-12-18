@@ -9,10 +9,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.atomikos.icatch.TxState;
 import com.atomikos.icatch.provider.ConfigProperties;
 import com.atomikos.recovery.CoordinatorLogEntry;
-import com.atomikos.recovery.CoordinatorLogEntryRepository;
+import com.atomikos.recovery.Repository;
 
-public class InMemoryCoordinatorLogEntryRepository implements
-		CoordinatorLogEntryRepository {
+public class InMemoryRepository implements
+		Repository {
 
 	private  Map<String, CoordinatorLogEntry> storage = new ConcurrentHashMap<String, CoordinatorLogEntry>();
 

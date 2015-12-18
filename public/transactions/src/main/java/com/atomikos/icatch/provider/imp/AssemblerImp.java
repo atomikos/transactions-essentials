@@ -17,12 +17,12 @@ import com.atomikos.icatch.provider.ConfigProperties;
 import com.atomikos.icatch.provider.TransactionServiceProvider;
 import com.atomikos.logging.LoggerFactory;
 import com.atomikos.persistence.imp.StateRecoveryManagerImp;
-import com.atomikos.recovery.CoordinatorLogEntryRepository;
+import com.atomikos.recovery.Repository;
 import com.atomikos.recovery.OltpLog;
 import com.atomikos.recovery.RecoveryLog;
-import com.atomikos.recovery.imp.CachedCoordinatorLogEntryRepository;
-import com.atomikos.recovery.imp.FileSystemCoordinatorLogEntryRepository;
-import com.atomikos.recovery.imp.InMemoryCoordinatorLogEntryRepository;
+import com.atomikos.recovery.imp.CachedRepository;
+import com.atomikos.recovery.imp.FileSystemRepository;
+import com.atomikos.recovery.imp.InMemoryRepository;
 import com.atomikos.recovery.imp.OltpLogImp;
 import com.atomikos.recovery.imp.RecoveryLogImp;
 import com.atomikos.util.ClassLoadingHelper;
@@ -120,7 +120,7 @@ public class AssemblerImp implements Assembler {
 		int maxActives = configProperties.getMaxActives();
 		boolean threaded2pc = configProperties.getThreaded2pc();
 		
-		CoordinatorLogEntryRepository repository;
+		Repository repository;
 		if (enableLogging) {
 			repository = createCoordinatorLogEntryRepository(configProperties);
 		} else {
@@ -142,32 +142,32 @@ public class AssemblerImp implements Assembler {
 		return new TransactionServiceImp(tmUniqueName, recoveryManager, idMgr, maxTimeout, maxActives, !threaded2pc, recoveryLog);
 	}
 
-	private CoordinatorLogEntryRepository createInMemoryCoordinatorLogEntryRepository(
+	private Repository createInMemoryCoordinatorLogEntryRepository(
 			ConfigProperties configProperties) {
-		InMemoryCoordinatorLogEntryRepository inMemoryCoordinatorLogEntryRepository = new InMemoryCoordinatorLogEntryRepository();
+		InMemoryRepository inMemoryCoordinatorLogEntryRepository = new InMemoryRepository();
 		inMemoryCoordinatorLogEntryRepository.init(configProperties);
 		return inMemoryCoordinatorLogEntryRepository;
 	}
 
-	private RecoveryLog createRecoveryLog(CoordinatorLogEntryRepository repository) {
+	private RecoveryLog createRecoveryLog(Repository repository) {
 		RecoveryLogImp recoveryLog = new RecoveryLogImp();
 		recoveryLog.setRepository(repository);
 		return recoveryLog;
 	}
 
-	private OltpLog createOltpLog(CoordinatorLogEntryRepository repository) {
+	private OltpLog createOltpLog(Repository repository) {
 		OltpLogImp oltpLog = new OltpLogImp();
 		oltpLog.setRepository(repository);
 		return oltpLog;
 	}
 
-	private CachedCoordinatorLogEntryRepository createCoordinatorLogEntryRepository(
+	private CachedRepository createCoordinatorLogEntryRepository(
 			ConfigProperties configProperties) {
-		InMemoryCoordinatorLogEntryRepository inMemoryCoordinatorLogEntryRepository = new InMemoryCoordinatorLogEntryRepository();
+		InMemoryRepository inMemoryCoordinatorLogEntryRepository = new InMemoryRepository();
 		inMemoryCoordinatorLogEntryRepository.init(configProperties);
-		FileSystemCoordinatorLogEntryRepository backupCoordinatorLogEntryRepository = new FileSystemCoordinatorLogEntryRepository();
+		FileSystemRepository backupCoordinatorLogEntryRepository = new FileSystemRepository();
 		backupCoordinatorLogEntryRepository.init(configProperties);
-		CachedCoordinatorLogEntryRepository repository = new CachedCoordinatorLogEntryRepository(inMemoryCoordinatorLogEntryRepository, backupCoordinatorLogEntryRepository);
+		CachedRepository repository = new CachedRepository(inMemoryCoordinatorLogEntryRepository, backupCoordinatorLogEntryRepository);
 		repository.init(configProperties);
 		return repository;
 	}

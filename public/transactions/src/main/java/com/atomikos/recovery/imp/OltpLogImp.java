@@ -1,7 +1,7 @@
 package com.atomikos.recovery.imp;
 
 import com.atomikos.recovery.CoordinatorLogEntry;
-import com.atomikos.recovery.CoordinatorLogEntryRepository;
+import com.atomikos.recovery.Repository;
 import com.atomikos.recovery.LogException;
 import com.atomikos.recovery.LogReadException;
 import com.atomikos.recovery.OltpLog;
@@ -9,9 +9,9 @@ import com.atomikos.recovery.OltpLog;
 public class OltpLogImp implements OltpLog {
 
 
-	private CoordinatorLogEntryRepository repository;
+	private Repository repository;
 
-	public void setRepository(CoordinatorLogEntryRepository repository) {
+	public void setRepository(Repository repository) {
 		this.repository = repository;
 	}
 

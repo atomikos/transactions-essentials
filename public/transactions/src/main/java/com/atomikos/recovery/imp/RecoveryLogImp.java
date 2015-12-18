@@ -8,7 +8,7 @@ import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 import com.atomikos.recovery.AdminLog;
 import com.atomikos.recovery.CoordinatorLogEntry;
-import com.atomikos.recovery.CoordinatorLogEntryRepository;
+import com.atomikos.recovery.Repository;
 import com.atomikos.recovery.LogException;
 import com.atomikos.recovery.LogReadException;
 import com.atomikos.recovery.LogWriteException;
@@ -19,9 +19,9 @@ public class RecoveryLogImp implements RecoveryLog, AdminLog {
 
 	private static final Logger LOGGER = LoggerFactory.createLogger(RecoveryLogImp.class);
 	
-	private CoordinatorLogEntryRepository repository;
+	private Repository repository;
 
-	public void setRepository(CoordinatorLogEntryRepository repository) {
+	public void setRepository(Repository repository) {
 		this.repository = repository;
 	}
 

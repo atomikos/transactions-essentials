@@ -18,16 +18,16 @@ import com.atomikos.icatch.provider.ConfigProperties;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 import com.atomikos.recovery.CoordinatorLogEntry;
-import com.atomikos.recovery.CoordinatorLogEntryRepository;
+import com.atomikos.recovery.Repository;
 import com.atomikos.recovery.LogReadException;
 import com.atomikos.recovery.LogWriteException;
 import com.atomikos.util.VersionedFile;
 
-public class FileSystemCoordinatorLogEntryRepository implements
-		CoordinatorLogEntryRepository {
+public class FileSystemRepository implements
+		Repository {
 
 	private static final Logger LOGGER = LoggerFactory
-			.createLogger(FileSystemCoordinatorLogEntryRepository.class);
+			.createLogger(FileSystemRepository.class);
 	private VersionedFile file;
 	private FileChannel rwChannel = null;
 

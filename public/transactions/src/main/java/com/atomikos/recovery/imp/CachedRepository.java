@@ -9,26 +9,25 @@ import com.atomikos.icatch.provider.ConfigProperties;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 import com.atomikos.recovery.CoordinatorLogEntry;
-import com.atomikos.recovery.CoordinatorLogEntryRepository;
+import com.atomikos.recovery.Repository;
 import com.atomikos.recovery.LogException;
 import com.atomikos.recovery.LogReadException;
 import com.atomikos.recovery.LogWriteException;
 
-public class CachedCoordinatorLogEntryRepository implements
-		CoordinatorLogEntryRepository {
+public class CachedRepository implements Repository {
 
-	private static final Logger LOGGER = LoggerFactory.createLogger(CachedCoordinatorLogEntryRepository.class);
+	private static final Logger LOGGER = LoggerFactory.createLogger(CachedRepository.class);
 	private boolean corrupt = false; 
-	private final InMemoryCoordinatorLogEntryRepository inMemoryCoordinatorLogEntryRepository;
+	private final InMemoryRepository inMemoryCoordinatorLogEntryRepository;
 
-	private final CoordinatorLogEntryRepository backupCoordinatorLogEntryRepository;
+	private final Repository backupCoordinatorLogEntryRepository;
 
 	private volatile long numberOfPutsSinceLastCheckpoint = 0;
 	private long checkpointInterval;
 	private long forgetOrphanedLogEntriesDelay;
-	public CachedCoordinatorLogEntryRepository(
-			InMemoryCoordinatorLogEntryRepository inMemoryCoordinatorLogEntryRepository,
-			CoordinatorLogEntryRepository backupCoordinatorLogEntryRepository) {
+	public CachedRepository(
+			InMemoryRepository inMemoryCoordinatorLogEntryRepository,
+			Repository backupCoordinatorLogEntryRepository) {
 		this.inMemoryCoordinatorLogEntryRepository = inMemoryCoordinatorLogEntryRepository;
 		this.backupCoordinatorLogEntryRepository = backupCoordinatorLogEntryRepository;
 	}
