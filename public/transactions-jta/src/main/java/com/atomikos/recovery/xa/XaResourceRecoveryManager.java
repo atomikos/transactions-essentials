@@ -119,7 +119,6 @@ public class XaResourceRecoveryManager {
 	}
 
 	private boolean xidNoLongerKnownByResource(XAException e) {
-		// TODO check with latest 3.9 code
 		boolean ret = false;
 		switch (e.errorCode) {
 		case XAException.XAER_NOTA:

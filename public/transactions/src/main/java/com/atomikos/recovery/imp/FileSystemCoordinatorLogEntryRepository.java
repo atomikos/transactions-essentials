@@ -44,17 +44,18 @@ public class FileSystemCoordinatorLogEntryRepository implements
 	@Override
 	public void put(String id, CoordinatorLogEntry coordinatorLogEntry)
 			throws LogWriteException {
-		initChannelIfNecessary();
+		
 		try {
+			initChannelIfNecessary();
 			write(coordinatorLogEntry, true);
 		} catch (IOException e) {
 			throw new LogWriteException(e);
 		}
 	}
 
-	private synchronized void initChannelIfNecessary() {
+	private synchronized void initChannelIfNecessary() throws FileNotFoundException {
 		if (rwChannel == null) {
-			rwChannel = initializeOutput();
+			rwChannel = file.openNewVersionForNioWriting();
 		}
 	}
 
@@ -77,16 +78,6 @@ public class FileSystemCoordinatorLogEntryRepository implements
 
 	}
 
-	private FileChannel initializeOutput() {
-		FileChannel rwChannel = null;
-		try {
-			rwChannel = file.openNewVersionForNioWriting();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return rwChannel;
-	}
 
 	@Override
 	public CoordinatorLogEntry get(String coordinatorId) {

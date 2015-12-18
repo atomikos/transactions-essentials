@@ -133,7 +133,6 @@ class AdminTransactionImp implements AdminTransaction
 
 	@Override
 	public boolean hasExpired() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
