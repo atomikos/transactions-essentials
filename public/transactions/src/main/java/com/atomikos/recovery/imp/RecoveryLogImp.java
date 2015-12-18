@@ -172,7 +172,10 @@ public class RecoveryLogImp implements RecoveryLog, AdminLog {
 		} else {
 			CoordinatorLogEntry updated = coordinatorLogEntry.terminatedWithHeuristicMixed(entry);
 			repository.put(updated.id, updated);
-			
+			if (coordinatorLogEntry.superiorCoordinatorId!=null) {
+				ParticipantLogEntry subTransaction = createSubTransactionCoordinatorParticipant(coordinatorLogEntry);
+				terminatedWithHeuristicMixed(subTransaction);
+			}
 		}
 	}
 

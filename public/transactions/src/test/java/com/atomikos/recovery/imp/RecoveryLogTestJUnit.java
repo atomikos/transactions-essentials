@@ -20,6 +20,7 @@ import com.atomikos.util.UniqueIdMgr;
 
 public class RecoveryLogTestJUnit {
 
+	private static final String PARENT_COORD_ID = "superiorCoordId";
 	private static final String TID = "tid";
 	private static final boolean EXPIRED = true;
 	private static final boolean NON_EXPIRED = false;
@@ -189,14 +190,32 @@ public class RecoveryLogTestJUnit {
 	@Test
 	public void testRecoveryOfCommittingSubTxWithHeuristicAbort() throws Exception {
 		givenCommittingParentTxWithCommittingSubTx();
-		
 		whenSubTxRecoveredWithHeuristicRollback();
-		
 		thenParentTxWasHeurAborted();
 		thenSubTxWasHeurAborted();
 	}
 
+	@Test
+	public void testRecoveryOfCommittingSubTxWithHeuristicMixed() throws Exception {
+		givenCommittingParentTxWithCommittingSubTx();
+		whenSubTxRecoveredWithHeuristicMixed();
+		thenParentTxWasHeurMixed();
+		thenSubTxWasHeurMixed();
+	}
 	
+
+	private void thenSubTxWasHeurMixed() throws IllegalArgumentException, LogWriteException {
+		thenCoordinatorLogEntryWasPutInRepository(PARENT_COORD_ID,1, TxState.HEUR_MIXED);
+		
+	}
+
+	private void thenParentTxWasHeurMixed() throws IllegalArgumentException, LogWriteException {
+		thenCoordinatorLogEntryWasPutInRepository(TID,1, TxState.HEUR_MIXED);
+	}
+
+	private void whenSubTxRecoveredWithHeuristicMixed() throws LogException {
+		whenTerminatedWithHeuristicMixed();
+	}
 
 	private void thenSubTxWasHeurAborted() throws IllegalArgumentException, LogWriteException {
 		thenCoordinatorLogEntryWasPutInRepository(TID,1, TxState.HEUR_ABORTED);
@@ -204,7 +223,7 @@ public class RecoveryLogTestJUnit {
 	}
 
 	private void thenParentTxWasHeurAborted() throws IllegalArgumentException, LogWriteException {
-		thenCoordinatorLogEntryWasPutInRepository("superiorCoordId",1, TxState.HEUR_ABORTED);
+		thenCoordinatorLogEntryWasPutInRepository(PARENT_COORD_ID,1, TxState.HEUR_ABORTED);
 		
 	}
 
@@ -216,18 +235,18 @@ public class RecoveryLogTestJUnit {
 
 	private void givenCommittingParentTxWithCommittingSubTx() throws LogReadException {
 		givenParentTransactionInState(TxState.COMMITTING, NON_EXPIRED);
-		givenCoordinatorInRepository("superiorCoordId", TxState.COMMITTING, NON_EXPIRED);
+		givenCoordinatorInRepository(PARENT_COORD_ID, TxState.COMMITTING, NON_EXPIRED);
 		
 	}
 
 	private void thenParentTxWasTerminated(boolean recoveryShouldCommit) throws IllegalArgumentException, LogWriteException {
 		int expectedNumberOfInvocations = recoveryShouldCommit ? 1 : 2;
-		thenCoordinatorLogEntryWasPutInRepository("superiorCoordId", expectedNumberOfInvocations,TxState.TERMINATED);
+		thenCoordinatorLogEntryWasPutInRepository(PARENT_COORD_ID, expectedNumberOfInvocations,TxState.TERMINATED);
 	}
 
 	private void givenCommittingParentTxWithInDoubtSubTx() throws LogReadException {
 		givenParentTransactionInState(TxState.COMMITTING, NON_EXPIRED);
-		givenCoordinatorInRepository("superiorCoordId", TxState.IN_DOUBT, EXPIRED);
+		givenCoordinatorInRepository(PARENT_COORD_ID, TxState.IN_DOUBT, EXPIRED);
 	}
 	CoordinatorLogEntry parentCoordinatorLogEntry;
 	protected void givenParentTransactionInState(TxState state, boolean expired) throws LogReadException {
@@ -236,13 +255,13 @@ public class RecoveryLogTestJUnit {
 			expires = 0;
 		}
 		
-		ParticipantLogEntry	parentParticipantLogEntry =  new ParticipantLogEntry("superiorCoordId", TID, expires,
+		ParticipantLogEntry	parentParticipantLogEntry =  new ParticipantLogEntry(PARENT_COORD_ID, TID, expires,
 						"description", state);
 		ParticipantLogEntry[] parentParticipantLogEntries = { parentParticipantLogEntry };
 		parentCoordinatorLogEntry = new CoordinatorLogEntry(
-						"superiorCoordId",false, parentParticipantLogEntries);
+						PARENT_COORD_ID,false, parentParticipantLogEntries);
 				
-		Mockito.when(logRepository.get("superiorCoordId")).thenReturn(parentCoordinatorLogEntry);
+		Mockito.when(logRepository.get(PARENT_COORD_ID)).thenReturn(parentCoordinatorLogEntry);
 	}
 
 	private void thenSubTxIsStillInDoubt() throws IllegalArgumentException, LogWriteException {
@@ -256,12 +275,12 @@ public class RecoveryLogTestJUnit {
 
 	private void givenNonExpiredInDoubtParentTxWithInDoubtSubTx() throws LogReadException {
 		givenParentTransactionInState(TxState.IN_DOUBT, NON_EXPIRED);
-		givenCoordinatorInRepository("superiorCoordId", TxState.IN_DOUBT, EXPIRED);
+		givenCoordinatorInRepository(PARENT_COORD_ID, TxState.IN_DOUBT, EXPIRED);
 	}
 
 	private void givenExpiredInDoubtParentTxWithInDoubtSubTx() throws LogReadException {
 		givenParentTransactionInState(TxState.IN_DOUBT, EXPIRED);
-		givenCoordinatorInRepository("superiorCoordId", TxState.IN_DOUBT, EXPIRED);
+		givenCoordinatorInRepository(PARENT_COORD_ID, TxState.IN_DOUBT, EXPIRED);
 	}
 	
 	private void thenSubTxWasTerminated(boolean commitExpected) throws IllegalArgumentException, LogWriteException {
@@ -279,7 +298,7 @@ public class RecoveryLogTestJUnit {
 	}
 
 	private void givenActivePendingTransactionWithIndoubtSubTx() throws LogReadException {
-		givenCoordinatorInRepository("superiorCoordId",TxState.IN_DOUBT, EXPIRED);
+		givenCoordinatorInRepository(PARENT_COORD_ID,TxState.IN_DOUBT, EXPIRED);
 	}
 
 	
