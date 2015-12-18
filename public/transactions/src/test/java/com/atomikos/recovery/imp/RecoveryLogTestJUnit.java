@@ -177,7 +177,48 @@ public class RecoveryLogTestJUnit {
 		thenSubTxWasTerminated(recoveryShouldCommit);
 	}
 
+	@Test
+	public void testRecoveryOfCommittingSubTxForCommittingParent() throws Exception {
+		boolean recoveryShouldCommit = true;
+		givenCommittingParentTxWithCommittingSubTx();
+		whenSubTxRecovered(recoveryShouldCommit);
+		thenParentTxWasTerminated(recoveryShouldCommit);
+		thenSubTxWasTerminated(recoveryShouldCommit);
+	}
+
+	@Test
+	public void testRecoveryOfCommittingSubTxWithHeuristicAbort() throws Exception {
+		givenCommittingParentTxWithCommittingSubTx();
+		
+		whenSubTxRecoveredWithHeuristicRollback();
+		
+		thenParentTxWasHeurAborted();
+		thenSubTxWasHeurAborted();
+	}
+
 	
+
+	private void thenSubTxWasHeurAborted() throws IllegalArgumentException, LogWriteException {
+		thenCoordinatorLogEntryWasPutInRepository(TID,1, TxState.HEUR_ABORTED);
+		
+	}
+
+	private void thenParentTxWasHeurAborted() throws IllegalArgumentException, LogWriteException {
+		thenCoordinatorLogEntryWasPutInRepository("superiorCoordId",1, TxState.HEUR_ABORTED);
+		
+	}
+
+	
+
+	private void whenSubTxRecoveredWithHeuristicRollback() throws LogException {
+		whenTerminatedWithHeuristicRollback();
+	}
+
+	private void givenCommittingParentTxWithCommittingSubTx() throws LogReadException {
+		givenParentTransactionInState(TxState.COMMITTING, NON_EXPIRED);
+		givenCoordinatorInRepository("superiorCoordId", TxState.COMMITTING, NON_EXPIRED);
+		
+	}
 
 	private void thenParentTxWasTerminated(boolean recoveryShouldCommit) throws IllegalArgumentException, LogWriteException {
 		int expectedNumberOfInvocations = recoveryShouldCommit ? 1 : 2;
