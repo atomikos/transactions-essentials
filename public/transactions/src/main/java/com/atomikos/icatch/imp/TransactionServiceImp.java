@@ -51,6 +51,7 @@ import com.atomikos.icatch.TransactionService;
 import com.atomikos.icatch.TxState;
 import com.atomikos.icatch.admin.LogControl;
 import com.atomikos.icatch.config.Configuration;
+import com.atomikos.icatch.provider.ConfigProperties;
 import com.atomikos.icatch.provider.TransactionServicePlugin;
 import com.atomikos.icatch.provider.TransactionServiceProvider;
 import com.atomikos.logging.Logger;
@@ -597,7 +598,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
 
     }
     
-    PooledAlarmTimer legacyAndObsoleteExecutorService;
+    PooledAlarmTimer recoveryTimer;
 
     /**
      * @see TransactionService
@@ -615,10 +616,14 @@ public class TransactionServiceImp implements TransactionServiceProvider,
 
         shutdownInProgress_ = false;
         control_ = new com.atomikos.icatch.admin.imp.LogControlImp ( (AdminLog) this.recoveryLog );
+
+		ConfigProperties configProperties = new ConfigProperties(properties);
+		long recoveryDelay = configProperties.getAsLong("com.atomikos.icatch.recovery_delay");
+
         
-        legacyAndObsoleteExecutorService = new PooledAlarmTimer(1000);
+        recoveryTimer = new PooledAlarmTimer(recoveryDelay);
         
-        legacyAndObsoleteExecutorService.addAlarmTimerListener(new AlarmTimerListener() {
+        recoveryTimer.addAlarmTimerListener(new AlarmTimerListener() {
 			
 			@Override
 			public void alarm(AlarmTimer timer) {
@@ -636,7 +641,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
 			}
 		});
         
-        TaskManager.getInstance().executeTask(legacyAndObsoleteExecutorService);
+        TaskManager.getInstance().executeTask(recoveryTimer);
         
         initialized_ = true;
        
@@ -882,7 +887,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
                     throw new SysException ( "Error in shutdown: "
                             + le.getMessage (), le );
                 }
-                legacyAndObsoleteExecutorService.stop();
+                recoveryTimer.stop();
             } 
 
         }
