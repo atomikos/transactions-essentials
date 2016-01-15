@@ -99,8 +99,8 @@ public class LogControlImpTestJUnit {
 	private void thenAdminTransactionHasCorrectParticipantDetails() {
 
 		Assert.assertEquals(2, adminTransaction.getParticipantDetails().length);
-		Assert.assertEquals(participantDetails[0].description, adminTransaction.getParticipantDetails()[0]);
-		Assert.assertEquals(participantDetails[1].description, adminTransaction.getParticipantDetails()[1]);
+		Assert.assertEquals(participantDetails[0].resourceName, adminTransaction.getParticipantDetails()[0]);
+		Assert.assertEquals(participantDetails[1].resourceName, adminTransaction.getParticipantDetails()[1]);
 
 	}
 

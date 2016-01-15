@@ -44,7 +44,7 @@ public class CoordinatorLogEntry  implements Serializable {
 						participantLogEntry.coordinatorId,
 						participantLogEntry.uri,
 						participantLogEntry.expires,
-						participantLogEntry.description,
+						participantLogEntry.resourceName,
 						participantLogEntry.state);
 			}
 
@@ -132,7 +132,7 @@ public class CoordinatorLogEntry  implements Serializable {
 
 		CoordinatorLogEntry ret = new CoordinatorLogEntry(this,
 				new ParticipantLogEntry(entry.coordinatorId,
-						entry.uri, entry.expires, entry.description,
+						entry.uri, entry.expires, entry.resourceName,
 						TxState.ABORTING));
 
 		return ret;
@@ -149,7 +149,7 @@ public class CoordinatorLogEntry  implements Serializable {
 	public CoordinatorLogEntry terminated(ParticipantLogEntry entry) {
 		CoordinatorLogEntry ret = new CoordinatorLogEntry(this,
 				new ParticipantLogEntry(entry.coordinatorId,
-						entry.uri, entry.expires, entry.description,
+						entry.uri, entry.expires, entry.resourceName,
 						TxState.TERMINATED));
 		return ret;
 	}
@@ -158,7 +158,7 @@ public class CoordinatorLogEntry  implements Serializable {
 			ParticipantLogEntry entry) {
 		CoordinatorLogEntry ret = new CoordinatorLogEntry(this,
 				new ParticipantLogEntry(entry.coordinatorId,
-						entry.uri, entry.expires, entry.description,
+						entry.uri, entry.expires, entry.resourceName,
 						TxState.HEUR_COMMITTED));
 		return ret;
 	}
@@ -167,7 +167,7 @@ public class CoordinatorLogEntry  implements Serializable {
 			ParticipantLogEntry entry) {
 		CoordinatorLogEntry ret = new CoordinatorLogEntry(this,
 				new ParticipantLogEntry(entry.coordinatorId,
-						entry.uri, entry.expires, entry.description,
+						entry.uri, entry.expires, entry.resourceName,
 						TxState.HEUR_MIXED));
 		return ret;
 	}
@@ -176,7 +176,7 @@ public class CoordinatorLogEntry  implements Serializable {
 			ParticipantLogEntry entry) {
 		CoordinatorLogEntry ret = new CoordinatorLogEntry(this,
 				new ParticipantLogEntry(entry.coordinatorId,
-						entry.uri, entry.expires, entry.description,
+						entry.uri, entry.expires, entry.resourceName,
 						TxState.HEUR_ABORTED));
 		return ret;
 	}

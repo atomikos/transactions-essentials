@@ -58,7 +58,7 @@ class AdminTransactionImp implements AdminTransaction {
 		String[] ret = new String[coordinatorLogEntry.participants.length];
 		int i = 0;
 		for (ParticipantLogEntry ple : coordinatorLogEntry.participants) {
-			ret[i] = ple.description;
+			ret[i] = ple.resourceName;
 			i++;
 		}
 		return ret;

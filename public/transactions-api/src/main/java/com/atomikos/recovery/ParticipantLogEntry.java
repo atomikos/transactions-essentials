@@ -32,16 +32,16 @@ public class ParticipantLogEntry implements Serializable {
 	public final TxState state;
 	
 	/**
-	 * Useful description for administration purposes.
+	 * For diagnostic purposes, null if not relevant.
 	 */
-	public final String description;
+	public final String resourceName;
 	
 	public ParticipantLogEntry(String coordinatorId, String uri, 
-			long expires, String description, TxState state) {
+			long expires, String resourceName, TxState state) {
 		this.coordinatorId = coordinatorId;
 		this.uri = uri;
 		this.expires = expires;
-		this.description = description;
+		this.resourceName = resourceName;
 		this.state = state;
 	}
 	
@@ -68,7 +68,7 @@ public class ParticipantLogEntry implements Serializable {
 	public String toString() {
 		return "ParticipantLogEntry [id=" + coordinatorId
 				+ ", uri=" + uri + ", expires=" + expires
-				+ ", state=" + state + ", description=" + description + "]";
+				+ ", state=" + state + ", resourceName=" + resourceName + "]";
 	}
 
 

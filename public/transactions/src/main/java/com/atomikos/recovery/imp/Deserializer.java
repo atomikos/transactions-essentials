@@ -81,7 +81,7 @@ public class Deserializer {
 		}
 		
 		ParticipantLogEntry actual = new ParticipantLogEntry(coordinatorId,
-				content.get("participantUri"), Long.valueOf(content.get("expires")), content.get("description"), TxState.valueOf(content.get("state")));
+				content.get("uri"), Long.valueOf(content.get("expires")), content.get("resourceName"), TxState.valueOf(content.get("state")));
 		return actual;
 	}
 }
