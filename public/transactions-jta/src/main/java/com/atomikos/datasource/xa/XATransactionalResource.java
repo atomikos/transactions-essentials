@@ -44,6 +44,7 @@ import com.atomikos.icatch.RecoveryService;
 import com.atomikos.icatch.SysException;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
+import com.atomikos.recovery.xa.XaResourceRecoveryManager;
 
 
 /**
@@ -490,7 +491,7 @@ public abstract class XATransactionalResource implements TransactionalResource
      *                If a failure occurs.
      */
 
-    protected void recover() throws ResourceException
+    protected void recoverTheDeprecatedWay() throws ResourceException
     {
         this.recoveredXidMap = new Hashtable ();
        
@@ -588,7 +589,7 @@ public abstract class XATransactionalResource implements TransactionalResource
 	}
 
 	private void recoverXidsFromResourceIfNecessary() {
-		if (this.recoveredXidMap == null) recover();
+		if (this.recoveredXidMap == null) recoverTheDeprecatedWay();
 	}
 
     /**
@@ -614,4 +615,11 @@ public abstract class XATransactionalResource implements TransactionalResource
         return getXidFactory().createXid (tid , this.branchIdentifier);
     }
 
+    @Override
+    public void recover() {
+    	XaResourceRecoveryManager xaResourceRecoveryManager = XaResourceRecoveryManager.getInstance();
+    	if (xaResourceRecoveryManager != null) { //null for LogCloud recovery
+    		xaResourceRecoveryManager.recover(getXAResource());
+    	}
+    }
 }

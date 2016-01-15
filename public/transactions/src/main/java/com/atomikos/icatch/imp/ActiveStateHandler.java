@@ -92,7 +92,7 @@ public class ActiveStateHandler extends CoordinatorStateHandler
                 // first check if we are still the current state!
                 // otherwise, a COMMITTING tx could be rolled back
                 // in case of 1PC!!!
-                if ( getCoordinator ().getState ().equals ( getState () ) ) {
+                if ( getCoordinator().getState() == TxState.ACTIVE) {
                 	if ( getCoordinator().prefersSingleThreaded2PC() ) {
                 		//cf case 71748
                 		if (!wasSetToRollbackOnly) {
@@ -113,6 +113,9 @@ public class ActiveStateHandler extends CoordinatorStateHandler
 								rollbackFromWithinCallback(indoubt,false);
 							}});
                 	}
+                } else if (getCoordinator().getState().isOneOf(TxState.PREPARING, TxState.COMMITTING, TxState.ABORTING))  {
+                	//pending coordinator after failed prepare: cleanup to remove from TransactionServiceImp
+                	removePendingOltpCoordinatorFromTransactionService();
                 }
             }
         } catch ( Exception e ) {
@@ -203,8 +206,7 @@ public class ActiveStateHandler extends CoordinatorStateHandler
             allReadOnly = result.allReadOnly ();
 
             if ( !voteOK ) {
-
-                int res = result.getResult ();
+             int res = result.getResult ();
                
                 try {
                     rollbackWithAfterCompletionNotification(new RollbackCallback() {
@@ -224,8 +226,8 @@ public class ActiveStateHandler extends CoordinatorStateHandler
                     throw new SysException ( "Unexpected heuristic: "
                             + hc.getMessage (), hc );
                 }
+                // let recovery clean up in the background
                 throw new RollbackException ( "Prepare: " + "NO vote" );
-             
             }
         } catch ( RuntimeException runerr ) {
             throw new SysException ( "Error in prepare: " + runerr.getMessage (), runerr );

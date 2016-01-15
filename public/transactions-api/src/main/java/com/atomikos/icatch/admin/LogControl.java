@@ -33,14 +33,7 @@ package com.atomikos.icatch.admin;
 
 public interface LogControl 
 {
-         /**
-          * Gets a list of active transactions.
-          * @return AdminTransaction[] The list of active transactions,   
-          * or an empty array if none.
-          */
-            
-        public AdminTransaction[] getAdminTransactions();
-        
+ 
          /** 
           * Gets the list of active transactions for a given set of 
           * transaction identifiers only.
@@ -53,7 +46,7 @@ public interface LogControl
           * terminated in the meantime will not be returned.
           */
           
-        public AdminTransaction[] getAdminTransactions ( String[] tids );
+        public AdminTransaction[] getAdminTransactions(String... tids );
         
          
     

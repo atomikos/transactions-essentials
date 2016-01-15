@@ -8,7 +8,7 @@ import java.nio.channels.OverlappingFileLockException;
 
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
-import com.atomikos.persistence.LogException;
+import com.atomikos.recovery.LogException;
 
 public class LogFileLock {
 	

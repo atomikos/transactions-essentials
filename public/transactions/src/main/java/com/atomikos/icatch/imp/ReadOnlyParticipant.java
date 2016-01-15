@@ -25,12 +25,8 @@
 
 package com.atomikos.icatch.imp;
 
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
 import java.util.Dictionary;
 
-import com.atomikos.icatch.DataSerializable;
 import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeurMixedException;
@@ -40,7 +36,7 @@ import com.atomikos.icatch.RollbackException;
 import com.atomikos.icatch.SysException;
 
 
-public class ReadOnlyParticipant implements Participant,DataSerializable {
+public class ReadOnlyParticipant implements Participant {
 
 
 	//force set UID for backward log compatibility
@@ -111,17 +107,18 @@ public class ReadOnlyParticipant implements Participant,DataSerializable {
 		return ret;
 	}
 
-	public void writeData(DataOutput out) throws IOException {
-		
-	}
-
-	public void readData(DataInput in) throws IOException {
-		
-	}
-
 	@Override
 	public String toString() {
 		return "ReadOnlyParticipant";
+	}
+	
+	@Override
+	public boolean isRecoverable() {
+		return false;
+	}
+	@Override
+	public String getResourceName() {
+		return null;
 	}
 
 

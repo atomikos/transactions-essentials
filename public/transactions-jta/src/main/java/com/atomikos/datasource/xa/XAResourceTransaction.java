@@ -25,8 +25,6 @@
 
 package com.atomikos.datasource.xa;
 
-import java.io.DataInput;
-import java.io.DataOutput;
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
@@ -34,7 +32,6 @@ import java.io.ObjectOutput;
 import java.io.OptionalDataException;
 import java.io.Serializable;
 import java.util.Enumeration;
-import java.util.Stack;
 
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
@@ -44,7 +41,6 @@ import com.atomikos.datasource.RecoverableResource;
 import com.atomikos.datasource.ResourceException;
 import com.atomikos.datasource.ResourceTransaction;
 import com.atomikos.icatch.CompositeTransaction;
-import com.atomikos.icatch.DataSerializable;
 import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeurMixedException;
@@ -57,7 +53,6 @@ import com.atomikos.icatch.TxState;
 import com.atomikos.icatch.config.Configuration;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
-import com.atomikos.util.SerializationUtils;
 
 /**
  * 
@@ -66,7 +61,7 @@ import com.atomikos.util.SerializationUtils;
  */
 
 public class XAResourceTransaction implements ResourceTransaction,
-		Externalizable, Participant, DataSerializable {
+		Externalizable, Participant {
 	private static final Logger LOGGER = LoggerFactory
 			.createLogger(XAResourceTransaction.class);
 
@@ -375,7 +370,6 @@ public class XAResourceTransaction implements ResourceTransaction,
 	@Override
 	public synchronized void resume() throws ResourceException {
 		int flag = 0;
-		Stack errors = new Stack();
 		String logFlag = "";
 		if (this.state.equals(TxState.LOCALLY_DONE)) {// reused instance
 			flag = XAResource.TMJOIN;
@@ -702,9 +696,7 @@ public class XAResourceTransaction implements ResourceTransaction,
 			throw new com.atomikos.icatch.RollbackException(re.getMessage());
 		}
 
-		if (!(this.state.equals(TxState.LOCALLY_DONE)
-				|| this.state.equals(TxState.IN_DOUBT) || this.state
-					.equals(TxState.HEUR_HAZARD)))
+		if (!(this.state.isOneOf(TxState.LOCALLY_DONE, TxState.IN_DOUBT, TxState.HEUR_HAZARD)))
 			throw new SysException("Wrong state for commit: " + this.state);
 		try {
 			// refresh xaresource for MQSeries: seems to close XAResource after
@@ -932,11 +924,10 @@ public class XAResourceTransaction implements ResourceTransaction,
 	 */
 	@Override
 	public String getURI() {
-
-		return null;
+		return XID.getBranchQualifierAsString(xid);
 	}
 
-	String getResourceName() {
+	public String getResourceName() {
 		return this.resourcename;
 	}
 
@@ -945,50 +936,8 @@ public class XAResourceTransaction implements ResourceTransaction,
 	}
 
 	@Override
-	public void writeData(DataOutput out) throws IOException {
-		byte[] data = SerializationUtils.serialize((Serializable) this.xid);
-		out.writeInt(data.length);
-		out.write(data);
-		out.writeUTF(this.tid);
-		out.writeUTF(this.root);
-		out.writeUTF(this.state.toString());
-		out.writeUTF(this.resourcename);
-		if (this.xaresource instanceof Serializable) {
-			// cf case 59238
-			out.writeBoolean(true);
-			byte[] bytes = SerializationUtils
-					.serialize((Serializable) this.xaresource);
-			out.writeInt(bytes.length);
-			out.write(bytes);
-		} else {
-			out.writeBoolean(false);
-		}
-
-	}
-
-	@Override
-	public void readData(DataInput in) throws IOException {
-		// xid_ ???
-
-		// String branchQualifier = in.readUTF();
-		int len = in.readInt();
-		byte[] data = new byte[len];
-		in.readFully(data);
-		this.xid = SerializationUtils.deserialize(data);
-
-		this.tid = in.readUTF();
-		setXid(this.xid);
-
-		this.root = in.readUTF();
-		this.state = TxState.valueOf(in.readUTF());
-		this.resourcename = in.readUTF();
-		boolean xaresourceSerializable = in.readBoolean();
-		if (xaresourceSerializable) {
-			int size = in.readInt();
-			byte[] bytes = new byte[size];
-			in.readFully(bytes);
-			this.xaresource = SerializationUtils.deserialize(bytes);
-		}
+	public boolean isRecoverable() {
+		return true;
 	}
 
 }

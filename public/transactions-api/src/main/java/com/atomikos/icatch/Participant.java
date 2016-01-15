@@ -47,6 +47,8 @@ public interface Participant extends java.io.Serializable
 
     public static final int READ_ONLY=0x00;
 
+    
+    
      /**
       *
       * Called by the transaction manager (TM)
@@ -201,5 +203,18 @@ public interface Participant extends java.io.Serializable
 
     public void forget();
 
+    
+	/**
+	 * Is this instance recoverable or not? 
+	 * 
+	 * @return True in most cases, false only for particular border cases that do not need recovery, such as read-only instances.
+	 */
+	public boolean isRecoverable();
+
+	
+	/**
+	 * @return The (unique) name of the recoverable resource as known in the configuration. Null if not relevant.
+	 */
+	public String getResourceName();
 }
 

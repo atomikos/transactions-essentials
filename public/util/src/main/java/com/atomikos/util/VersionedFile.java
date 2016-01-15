@@ -31,6 +31,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.channels.FileChannel;
 
 
  /**
@@ -46,6 +48,7 @@ import java.io.IOException;
 public class VersionedFile
 {
 
+	private static final String FILE_SEPARATOR = String.valueOf(File.separatorChar);
 	private String baseDir;
 	private String suffix;
 	private String baseName;
@@ -54,8 +57,8 @@ public class VersionedFile
 
 	private long version;
 	private FileInputStream inputStream;
-	private FileOutputStream outputStream;
 
+	private RandomAccessFile randomAccessFile;
 
 
 	/**
@@ -69,6 +72,10 @@ public class VersionedFile
 	 */
 	public VersionedFile ( String baseDir , String baseName , String suffix )
 	{
+		
+		if(!baseDir.endsWith(FILE_SEPARATOR)) {
+			baseDir += FILE_SEPARATOR;
+		}
 		this.baseDir = baseDir;
 		this.suffix = suffix;
 		this.baseName = baseName;
@@ -161,7 +168,7 @@ public class VersionedFile
 	public FileInputStream openLastValidVersionForReading()
 	throws IllegalStateException, FileNotFoundException
 	{
-		if ( outputStream != null ) throw new IllegalStateException ( "Already started writing." );
+		if ( randomAccessFile != null ) throw new IllegalStateException ( "Already started writing." );
 		inputStream = new FileInputStream ( getCurrentVersionFileName() );
 		return inputStream;
 	}
@@ -173,21 +180,37 @@ public class VersionedFile
 	 * {@link #discardBackupVersion()} is called.
 	 *
 	 * @return A stream for writing to.
-	 * @throws FileNotFoundException
-	 * @throws FileNotFoundException
+	 * @throws IllegalStateException If called more than once
+	 * without a close in between.
+	 * @throws IOException If the file cannot be opened for writing.
+	 */
+	public FileOutputStream openNewVersionForWriting() throws IOException
+	{
+		openNewVersionForNioWriting();
+		return new FileOutputStream(randomAccessFile.getFD());
+	}
+
+	/**
+	 * Opens a new version for writing to. Note that
+	 * this new version is tentative and cannot be read
+	 * by {@link #openLastValidVersionForReading()} until
+	 * {@link #discardBackupVersion()} is called.
+	 *
+	 * @return A file for writing to.
+	 * @throws IOException
 	 *
 	 * @throws IllegalStateException If called more than once
 	 * without a close in between.
 	 * @throws FileNotFoundException If the file cannot be opened for writing.
+	 * @throws IOException 
 	 */
-	public FileOutputStream openNewVersionForWriting() throws FileNotFoundException
+	public FileChannel openNewVersionForNioWriting() throws FileNotFoundException
 	{
-		if ( outputStream != null ) throw new IllegalStateException ( "Already writing a new version." );
+		if ( randomAccessFile != null ) throw new IllegalStateException ( "Already writing a new version." );
 		version++;
-		outputStream = new FileOutputStream ( getCurrentVersionFileName() );
-		return outputStream;
+		randomAccessFile = new RandomAccessFile(getCurrentVersionFileName(), "rw");
+		return randomAccessFile.getChannel();
 	}
-
 	/**
 	 * Discards the backup version (if any).
 	 * After calling this method, the newer version
@@ -203,8 +226,9 @@ public class VersionedFile
 	 */
 	public void discardBackupVersion() throws IllegalStateException, IOException
 	{
-		if ( outputStream == null ) throw new IllegalStateException ( "No new version yet!" );
+		if ( randomAccessFile == null ) throw new IllegalStateException ( "No new version yet!" );
 		String fileName = getBackupVersionFileName();
+		
 		File temp = new File ( fileName );
         if ( temp.exists() && !temp.delete() ) throw new IOException ( "Failed to delete backup version: " + fileName );
 
@@ -228,11 +252,11 @@ public class VersionedFile
 				inputStream = null;
 			}
 		}
-		if ( outputStream != null ) {
+		if ( randomAccessFile != null ) {
 			try {
-				if ( outputStream.getFD().valid() ) outputStream.close();
+				if ( randomAccessFile.getFD().valid() ) randomAccessFile.close();
 			} finally {
-				outputStream = null;
+				randomAccessFile = null;
 			}
 		}
 	}

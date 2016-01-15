@@ -1,10 +1,9 @@
 package com.atomikos.icatch.provider;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 import junit.framework.Assert;
 
@@ -129,6 +128,12 @@ public class ConfigPropertiesTestJUnit {
 		Properties p = createDefaultProperties(ConfigProperties.TM_UNIQUE_NAME_PROPERTY_NAME, NAME);
 		props = new ConfigProperties(p);
 		assertEquals(NAME, props.getTmUniqueName());
+	}
+	@Test
+	public void testDefaultForgetOrphanedLogEntriesDelay() throws Exception {
+		props.setProperty("com.atomikos.icatch.forget_orphaned_log_entries_delay", "1800000");
+		
+		assertEquals(TimeUnit.MINUTES.toMillis(30), props.getForgetOrphanedLogEntriesDelay());
 	}
 }
 

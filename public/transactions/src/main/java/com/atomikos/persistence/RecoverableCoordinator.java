@@ -26,6 +26,7 @@
 package com.atomikos.persistence;
 
 import com.atomikos.finitestates.FSMPreEnterEventSource;
+import com.atomikos.icatch.CoordinatorLogEntry;
 
 /**
  * A type of stateful objects whose state is guaranteed to be recoverable. The
@@ -38,29 +39,8 @@ import com.atomikos.finitestates.FSMPreEnterEventSource;
  * should take this into account.
  */
 
-public interface StateRecoverable<T> extends Recoverable, FSMPreEnterEventSource<T>
+public interface RecoverableCoordinator<TxState> extends Recoverable, FSMPreEnterEventSource<TxState>
 {
-
-    /**
-     * Get the states that should be recoverable.
-     * 
-     * @return Object[] An array of states that are meant to be recoverable. For
-     *         efficiency, this should also include a state where the logimage
-     *         is forgettable!
-     * 
-     */
-
-    public T[] getRecoverableStates ();
-
-    /**
-     * Needed by the Recovery system to determine when a logged state can be
-     * forgotten. If the instance reaches one of these states, then it will no
-     * longer be recoverable.
-     * 
-     * @return Object[] The list of final states.
-     */
-
-    public T[] getFinalStates ();
 
     /**
      * Get an object image for the given state.
@@ -73,6 +53,10 @@ public interface StateRecoverable<T> extends Recoverable, FSMPreEnterEventSource
      *         In other words, if null is returned that logging is not done for the given
      *         state, even if the state was returned as one of the recoverable states.
      */
-
-    public ObjectImage getObjectImage ( T state );
+    ObjectImage getObjectImage ( TxState state );
+    
+    
+    
+    CoordinatorLogEntry getCoordinatorLogEntry(TxState state);
+    
 }

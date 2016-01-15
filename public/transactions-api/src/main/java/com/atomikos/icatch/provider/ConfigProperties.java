@@ -1,8 +1,8 @@
 package com.atomikos.icatch.provider;
 
 import java.net.UnknownHostException;
-import java.util.Enumeration;
 import java.util.Properties;
+import java.util.Set;
 
 public final class ConfigProperties {
 
@@ -16,7 +16,9 @@ public final class ConfigProperties {
 	public static final String THREADED_2PC_PROPERTY_NAME = "com.atomikos.icatch.threaded_2pc";
 	public static final String FORCE_SHUTDOWN_ON_VM_EXIT_PROPERTY_NAME = "com.atomikos.icatch.force_shutdown_on_vm_exit";
 	public static final String FILE_PATH_PROPERTY_NAME = "com.atomikos.icatch.file";
+	public static final String CHECKPOINT_INTERVAL = "com.atomikos.icatch.checkpoint_interval";
 
+	private static final String FORGET_ORPHANED_LOG_ENTRIES_DELAY = "com.atomikos.icatch.forget_orphaned_log_entries_delay";
 
 	/**
 	 * Replace ${...} sequence with the referenced value from the given properties or 
@@ -94,9 +96,8 @@ public final class ConfigProperties {
 
 	private void applySystemProperties() {
 		Properties systemProperties = System.getProperties();
-		Enumeration<?> propertyNames = systemProperties.propertyNames();
-		while (propertyNames.hasMoreElements()) {
-			String name = (String) propertyNames.nextElement();
+		Set<String> propertyNames = systemProperties.stringPropertyNames();
+		for (String name : propertyNames) {
 			if (name.startsWith("com.atomikos")) {
 				properties.setProperty(name, systemProperties.getProperty(name));
 			}
@@ -105,9 +106,8 @@ public final class ConfigProperties {
 
 	private void substitutePlaceHolderValues() {
 		//resolve referenced values with ant-like ${...} syntax
-		java.util.Enumeration allProps= properties.propertyNames();
-		while ( allProps.hasMoreElements() ) {
-			String key = ( String ) allProps.nextElement();
+		Set<String> allProps= properties.stringPropertyNames();
+		for (String key : allProps) {
 			String raw = properties.getProperty ( key );
 			String value= evaluateReference ( raw , properties );
 			if ( !raw.equals ( value ) ) {
@@ -124,8 +124,7 @@ public final class ConfigProperties {
 		return ret;
 	}
 
-	public void setProperty(String name,
-			String value) {
+	public void setProperty(String name, String value) {
 		properties.setProperty(name, value);		
 	}
 
@@ -173,11 +172,14 @@ public final class ConfigProperties {
 	public boolean getThreaded2pc() {
 		return getAsBoolean(THREADED_2PC_PROPERTY_NAME);
 	}
+	
+	public long getCheckpointInterval(){
+		return getAsLong(CHECKPOINT_INTERVAL);
+	}
 
 	public void applyUserSpecificProperties(Properties userSpecificProperties) {
-		Enumeration names = userSpecificProperties.propertyNames();
-		while (names.hasMoreElements()) {
-			String name = (String) names.nextElement();
+		Set<String> names = userSpecificProperties.stringPropertyNames();
+		for (String name : names) {
 			properties.setProperty(name, userSpecificProperties.getProperty(name));
 		}
 	}
@@ -185,9 +187,8 @@ public final class ConfigProperties {
 	public Properties getCompletedProperties() {
 		Properties ret = new Properties();
 		completeProperties();
-		Enumeration propertyNames = properties.propertyNames();
-		while (propertyNames.hasMoreElements()) {
-			String name = (String) propertyNames.nextElement();
+		Set<String> propertyNames = properties.stringPropertyNames();
+		for (String name : propertyNames) {
 			ret.setProperty(name, getProperty(name));
 		}
 		return ret;
@@ -201,6 +202,10 @@ public final class ConfigProperties {
 
 	public boolean getForceShutdownOnVmExit() {
 		return getAsBoolean(FORCE_SHUTDOWN_ON_VM_EXIT_PROPERTY_NAME);
+	}
+
+	public long getForgetOrphanedLogEntriesDelay() {
+		return getAsLong(FORGET_ORPHANED_LOG_ENTRIES_DELAY);
 	}
 
 }

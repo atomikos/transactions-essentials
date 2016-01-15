@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Enumeration;
+import java.util.Map.Entry;
 import java.util.Properties;
 
 import com.atomikos.icatch.CompositeTransactionManager;
@@ -16,9 +16,15 @@ import com.atomikos.icatch.provider.Assembler;
 import com.atomikos.icatch.provider.ConfigProperties;
 import com.atomikos.icatch.provider.TransactionServiceProvider;
 import com.atomikos.logging.LoggerFactory;
-import com.atomikos.persistence.StateRecoveryManager;
 import com.atomikos.persistence.imp.StateRecoveryManagerImp;
-import com.atomikos.persistence.imp.VolatileStateRecoveryManager;
+import com.atomikos.recovery.Repository;
+import com.atomikos.recovery.OltpLog;
+import com.atomikos.recovery.RecoveryLog;
+import com.atomikos.recovery.imp.CachedRepository;
+import com.atomikos.recovery.imp.FileSystemRepository;
+import com.atomikos.recovery.imp.InMemoryRepository;
+import com.atomikos.recovery.imp.OltpLogImp;
+import com.atomikos.recovery.imp.RecoveryLogImp;
 import com.atomikos.util.ClassLoadingHelper;
 import com.atomikos.util.UniqueIdMgr;
 
@@ -98,27 +104,33 @@ public class AssemblerImp implements Assembler {
 
 
 	private void logProperties(Properties properties) {
-		Enumeration propertyNames = properties.propertyNames();
-		while (propertyNames.hasMoreElements()) {
-			String name = (String) propertyNames.nextElement();			
-			LOGGER.logInfo("USING: " + name + " = " + properties.getProperty(name));		}
+		for (Entry<Object, Object> entry : properties.entrySet()) {
+			LOGGER.logInfo("USING: " + entry.getKey() + " = " + entry.getValue());
+		}
 	}
 
 	@Override
 	public TransactionServiceProvider assembleTransactionService(
 			ConfigProperties configProperties) {
+		RecoveryLog recoveryLog =null;
 		logProperties(configProperties.getCompletedProperties());
 		String tmUniqueName = configProperties.getTmUniqueName();
 		boolean enableLogging = configProperties.getEnableLogging();
 		long maxTimeout = configProperties.getMaxTimeout();
 		int maxActives = configProperties.getMaxActives();
 		boolean threaded2pc = configProperties.getThreaded2pc();
-		StateRecoveryManager recMgr = null;
+		
+		Repository repository;
 		if (enableLogging) {
-			recMgr = new StateRecoveryManagerImp();
+			repository = createCoordinatorLogEntryRepository(configProperties);
 		} else {
-			recMgr = new VolatileStateRecoveryManager();
+			repository = createInMemoryCoordinatorLogEntryRepository(configProperties);;
 		}
+		OltpLog oltpLog = createOltpLog(repository);
+		//??? Assemble recoveryLog
+		recoveryLog = createRecoveryLog(repository);
+		StateRecoveryManagerImp	recoveryManager = new StateRecoveryManagerImp();
+		recoveryManager.setOltpLog(oltpLog);
 		UniqueIdMgr idMgr = new UniqueIdMgr ( tmUniqueName );
 		int overflow = idMgr.getMaxIdLengthInBytes() - MAX_TID_LENGTH;
 		if ( overflow > 0 ) {
@@ -127,8 +139,37 @@ public class AssemblerImp implements Assembler {
 			LOGGER.logWarning ( msg );
 			throw new SysException(msg);
 		}
-		return new TransactionServiceImp(tmUniqueName, recMgr, idMgr, maxTimeout, maxActives, !threaded2pc);
-		
+		return new TransactionServiceImp(tmUniqueName, recoveryManager, idMgr, maxTimeout, maxActives, !threaded2pc, recoveryLog);
+	}
+
+	private Repository createInMemoryCoordinatorLogEntryRepository(
+			ConfigProperties configProperties) {
+		InMemoryRepository inMemoryCoordinatorLogEntryRepository = new InMemoryRepository();
+		inMemoryCoordinatorLogEntryRepository.init(configProperties);
+		return inMemoryCoordinatorLogEntryRepository;
+	}
+
+	private RecoveryLog createRecoveryLog(Repository repository) {
+		RecoveryLogImp recoveryLog = new RecoveryLogImp();
+		recoveryLog.setRepository(repository);
+		return recoveryLog;
+	}
+
+	private OltpLog createOltpLog(Repository repository) {
+		OltpLogImp oltpLog = new OltpLogImp();
+		oltpLog.setRepository(repository);
+		return oltpLog;
+	}
+
+	private CachedRepository createCoordinatorLogEntryRepository(
+			ConfigProperties configProperties) {
+		InMemoryRepository inMemoryCoordinatorLogEntryRepository = new InMemoryRepository();
+		inMemoryCoordinatorLogEntryRepository.init(configProperties);
+		FileSystemRepository backupCoordinatorLogEntryRepository = new FileSystemRepository();
+		backupCoordinatorLogEntryRepository.init(configProperties);
+		CachedRepository repository = new CachedRepository(inMemoryCoordinatorLogEntryRepository, backupCoordinatorLogEntryRepository);
+		repository.init(configProperties);
+		return repository;
 	}
 
 

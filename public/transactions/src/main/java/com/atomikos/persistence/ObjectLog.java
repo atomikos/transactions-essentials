@@ -67,7 +67,7 @@ public interface ObjectLog
      *         images.
      */
 
-    public Vector<StateRecoverable<TxState>> recover () throws LogException;
+    public Vector<RecoverableCoordinator<TxState>> recover () throws LogException;
 
     /**
      * Recovers the instance with given ID.

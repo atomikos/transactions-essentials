@@ -28,7 +28,6 @@
 package com.atomikos.icatch.config;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
@@ -149,21 +148,15 @@ public final class UserTransactionServiceImp
 
 
 	private void initialize() {
-		Iterator it = resources_.iterator();
-        while ( it.hasNext() ) {
-        	RecoverableResource nxt = ( RecoverableResource ) it.next();
-        	Configuration.addResource ( nxt );
-        }
-        it = logAdministrators_.iterator();
-        while  ( it.hasNext() ) {
-        	LogAdministrator nxt = ( LogAdministrator ) it.next();
-        	Configuration.addLogAdministrator ( nxt );
-        }
-        it = tsListeners_.iterator();
-        while ( it.hasNext() ) {
-        	TransactionServicePlugin nxt = ( TransactionServicePlugin ) it.next();
+		for (RecoverableResource resource : resources_) {
+			Configuration.addResource ( resource );
+		}
+		for (LogAdministrator logAdministrator : logAdministrators_) {
+			Configuration.addLogAdministrator ( logAdministrator );
+		}
+        for (TransactionServicePlugin nxt : tsListeners_) {
         	Configuration.registerTransactionServicePlugin ( nxt );
-        }
+		}
         ConfigProperties configProps = Configuration.getConfigProperties();
         configProps.applyUserSpecificProperties(properties_);
         Configuration.init();
@@ -288,6 +281,11 @@ public final class UserTransactionServiceImp
 	public void init ( Properties properties ) throws SysException {
 		properties_ = properties;
 		initialize();
+	}
+
+	@Override
+	public void shutdown(long maxWaitTime) throws IllegalStateException {
+		Configuration.shutdown(maxWaitTime);
 	}
 
 

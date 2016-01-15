@@ -24,18 +24,15 @@
  */
 package com.atomikos.persistence.imp;
 
-import java.io.DataInput;
-import java.io.DataOutput;
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
-import com.atomikos.icatch.DataSerializable;
 import com.atomikos.persistence.ObjectImage;
 import com.atomikos.persistence.Recoverable;
 
-public class SystemLogImage implements Recoverable, Externalizable, DataSerializable {
+public class SystemLogImage implements Recoverable, Externalizable {
 
 	// Force-set the serial version ID to make sure that log
 	// data can be read.
@@ -98,19 +95,6 @@ public class SystemLogImage implements Recoverable, Externalizable, DataSerializ
 		ObjectImage img = recoverable_.getObjectImage();
 		out.writeObject(img);
 		out.writeBoolean(forgettable_);
-	}
-
-	public void writeData(DataOutput out) throws IOException {
-		out.writeBoolean(forgettable_);
-		((DataSerializable) recoverable_).writeData(out);
-
-	}
-
-	public void readData(DataInput in) throws IOException {
-		forgettable_ = in.readBoolean();
-		recoverable_ = new StateObjectImage();
-		((DataSerializable) recoverable_).readData(in);
-
 	}
 
 }

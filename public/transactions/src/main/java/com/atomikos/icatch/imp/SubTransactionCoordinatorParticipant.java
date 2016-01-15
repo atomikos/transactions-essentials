@@ -25,12 +25,8 @@
 
 package com.atomikos.icatch.imp;
 
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
 import java.util.Dictionary;
 
-import com.atomikos.icatch.DataSerializable;
 import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeurMixedException;
@@ -46,7 +42,7 @@ import com.atomikos.icatch.config.Configuration;
  * the parent transaction coordinator.
  */
 
-public class SubTransactionCoordinatorParticipant implements Participant,DataSerializable
+public class SubTransactionCoordinatorParticipant implements Participant
 {
 
     private static final long serialVersionUID = -321213151844934630L;
@@ -164,15 +160,14 @@ public class SubTransactionCoordinatorParticipant implements Participant,DataSer
         if ( subordinateCoordinator != null ) subordinateCoordinator.forget ();
     }
 
-	public void writeData(DataOutput out) throws IOException {
-		out.writeUTF(subordinateId);
-		out.writeBoolean(prepareCalled);
+	@Override
+	public boolean isRecoverable() {
+		return true;
 	}
 
-	public void readData(DataInput in) throws IOException {
-		subordinateId=in.readUTF();
-		int size=in.readInt();		
-		prepareCalled=in.readBoolean();
+	@Override
+	public String getResourceName() {
+		return null;
 	}
 
 }

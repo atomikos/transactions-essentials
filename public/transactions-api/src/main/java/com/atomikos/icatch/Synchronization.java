@@ -48,5 +48,5 @@ package com.atomikos.icatch;
      * Equals either null ( readonly ), TxState.COMMITTING  or TxState.ABORTING.
      */
      
-    public void afterCompletion ( Object txstate );	
+    public void afterCompletion ( TxState txstate );	
  }

@@ -25,128 +25,99 @@
 
 package com.atomikos.icatch.admin;
 
-import java.io.Serializable;
-
 import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeurMixedException;
 import com.atomikos.icatch.HeurRollbackException;
 import com.atomikos.icatch.SysException;
+import com.atomikos.icatch.TxState;
 
- /**
-  * An administration interface for a transaction.
-  * Allows inspection of heuristic info,
-  * as well as forced two-phase commit methods.
-  */
+/**
+ * An administration interface for a transaction. Allows inspection of heuristic
+ * info, as well as forced two-phase commit methods.
+ */
 
-public interface AdminTransaction extends Serializable
-{
-	 public static final int STATE_ACTIVE = -3;
+ public interface AdminTransaction {
 
-	 public static final int STATE_PREPARING = -2;
+	/**
+	 * Gets the transaction identifier.
+	 *
+	 * @return String The unique id.
+	 */
 
-     public static final int STATE_UNKNOWN = -1;
+	 String getTid();
 
-     public static final int STATE_PREPARED = 0;
+	/**
+	 * Gets the transaction's state.
+	 *
+	 * @return int The state, one of the predefined states. NOTE: the state is
+	 *         an int rather than the generic Object, because instances need to
+	 *         be Serializable.
+	 */
 
-     public static final int STATE_HEUR_COMMITTED = 1;
+	 TxState getState();
 
-     public static final int STATE_HEUR_ABORTED = 2;
+	/**
+	 * Tests if the transaction's 2PC outcome was commit. Needed especially for
+	 * the heuristic states, if the desired outcome (instead of the actual
+	 * state) needs to be retrieved. For instance, if the state is
+	 * STATE_HEUR_HAZARD then extra information is needed for determining if the
+	 * desired outcome was commit or rollback. This method helps here.
+	 *
+	 *
+	 * @return True if commit was decided (either heuristically or by the super
+	 *         coordinator).
+	 */
 
-     public static final int STATE_HEUR_HAZARD = 3;
+	 boolean wasCommitted();
 
-     public static final int STATE_HEUR_MIXED = 4;
+	/**
+	 * Forces commit of the transaction.
+	 *
+	 * @exception HeurRollbackException
+	 *                If rolled back in the meantime.
+	 *
+	 * @exception HeurMixedException
+	 *                If part of it was rolled back.
+	 * @exception HeurHazardException
+	 *                On possible conflicts.
+	 * @exception SysException
+	 */
 
-     public static final int STATE_ABORTING = 5;
+	 void forceCommit() throws HeurRollbackException,
+			HeurHazardException, HeurMixedException, SysException;
 
-     public static final int STATE_COMMITTING = 6;
+	/**
+	 * Forces rollback of the transaction.
+	 *
+	 * @exception HeurCommitException
+	 *                If heuristically committed in the meantime.
+	 *
+	 * @exception HeurHazardException
+	 *                If the state is not certain.
+	 *
+	 * @exception HeurMixedException
+	 *                If partially rolled back.
+	 *
+	 * @exception SysException
+	 */
 
-     public static final int STATE_TERMINATED = 7;
+	 void forceRollback() throws HeurCommitException, HeurMixedException,
+			HeurHazardException, SysException;
 
+	/**
+	 * Forces the system to forget about the transaction.
+	 */
 
+	 void forceForget();
 
-       /**
-        * Gets the transaction identifier.
-        *
-        * @return String The unique id.
-        */
+	/**
+	 * Retrieves the descriptive details for each participant involved in this
+	 * transaction.
+	 */
 
-      public String getTid();
+	 String[] getParticipantDetails();
 
-       /**
-        *Gets the transaction's state.
-        *
-        * @return int The state, one of the predefined states.
-        * NOTE: the state is an int rather than the generic Object,
-        * because instances need to be Serializable.
-        */
+	 boolean hasExpired();
 
-      public int getState();
-
-       /**
-        * Tests if the transaction's 2PC outcome was commit.
-        * Needed especially for the heuristic states, if the
-        * desired outcome (instead of the actual state) needs
-        * to be retrieved. For instance, if the state is STATE_HEUR_HAZARD
-        * then extra information is needed for determining if the desired
-        * outcome was commit or rollback. This method helps here.
-        *
-        *
-        * @return True if commit was decided (either heuristically
-        * or by the super coordinator).
-        */
-
-      public boolean wasCommitted();
-
-
-      /**
-       * Forces commit of the transaction.
-       *
-       * @exception HeurRollbackException If rolled back in the meantime.
-       *
-       * @exception HeurMixedException If part of it was rolled back.
-       * @exception HeurHazardException On possible conflicts.
-       * @exception SysException
-       */
-
-
-      public void forceCommit()
-      throws HeurRollbackException,
-             HeurHazardException,
-             HeurMixedException,
-             SysException;
-
-
-      /**
-       * Forces rollback of the transaction.
-       *
-       * @exception HeurCommitException If heuristically committed in
-       * the meantime.
-       *
-       * @exception HeurHazardException If the state is not certain.
-       *
-       * @exception  HeurMixedException If partially rolled back.
-       *
-       * @exception SysException
-       */
-
-
-      public void forceRollback()
-      throws HeurCommitException,
-             HeurMixedException,
-             HeurHazardException,
-             SysException;
-
-      /**
-       *Forces the system to forget about the transaction.
-       */
-
-      public void forceForget();
-      
-      /**
-       * Retrieves the descriptive details for each participant involved in this transaction.
-       */
-
-      public String[] getParticipantDetails();
-      
 }

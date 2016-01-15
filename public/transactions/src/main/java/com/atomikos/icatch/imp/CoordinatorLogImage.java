@@ -25,21 +25,17 @@
 
 package com.atomikos.icatch.imp;
 
-import java.io.DataInput;
-import java.io.DataOutput;
 import java.io.IOException;
 import java.io.InvalidClassException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.Vector;
 
-import com.atomikos.icatch.DataSerializable;
 import com.atomikos.icatch.Participant;
 import com.atomikos.icatch.RecoveryCoordinator;
 import com.atomikos.icatch.TxState;
 import com.atomikos.persistence.ObjectImage;
 import com.atomikos.persistence.Recoverable;
-import com.atomikos.util.ClassLoadingHelper;
 
 /**
  *
@@ -47,7 +43,7 @@ import com.atomikos.util.ClassLoadingHelper;
  * A log image for CoordinatorImp instances.
  */
 
-public class CoordinatorLogImage implements ObjectImage,DataSerializable
+public class CoordinatorLogImage implements ObjectImage
 {
 
     // force serial version UID for backward log compatibility
@@ -216,95 +212,5 @@ public class CoordinatorLogImage implements ObjectImage,DataSerializable
     }
 
 
-	public void writeData(DataOutput out) throws IOException {
-
-		out.writeUTF(root_);
-		out.writeUTF(state_.toString());
-		// instead of: out.writeObject ( participants_.clone () );
-		out.writeBoolean(heuristicCommit_);
-		out.writeLong(maxInquiries_);
-
-		out.writeUTF(stateHandler_.getClass().getName());
-		((DataSerializable) stateHandler_).writeData(out);
-		// instead of: out.writeObject ( stateHandler_.clone () );
-
-		out.writeBoolean(activity_);
-		if (activity_) {
-			out.writeInt(localSiblingCount_);
-			out.writeBoolean(checkSiblings_);
-		}
-		out.writeBoolean(single_threaded_2pc_);
-
-		if (coordinator_ == null)
-			out.writeBoolean(false);
-		else {
-			out.writeBoolean(true);
-			out.writeUTF(coordinator_.getClass().getName());
-			// FIXME: Work with Guy for a better understanding on what to do here :
-			// Does all Impl of RecoveryCoordinator must implement DataSerializable ??? 
-			// out.writeObject ( coordinator_ );
-			((DataSerializable)coordinator_).writeData(out);
-		}
-		if (participants_ != null) {
-			out.writeBoolean(true);
-			out.writeInt(participants_.size());
-
-			for (Object participant : participants_) {
-				
-				out.writeUTF(participant.getClass().getName());
-				((DataSerializable) participant).writeData(out);
-			}
-		} else {
-			out.writeBoolean(false);
-		}
-	}
-
-	public void readData(DataInput in) throws IOException {
-
-		try {
-
-			root_ =  in.readUTF();
-			String state = in.readUTF();
-			state_ = TxState.valueOf(state);
-			heuristicCommit_ = in.readBoolean();
-			maxInquiries_ = in.readLong();
-
-			String stateHandlerClassName=in.readUTF();
-			
-			stateHandler_=(CoordinatorStateHandler) ClassLoadingHelper.newInstance(stateHandlerClassName);
-			stateHandler_.readData(in);
-			activity_ = in.readBoolean();
-			if (activity_) {
-				localSiblingCount_ = in.readInt();
-				checkSiblings_ = in.readBoolean();
-			}
-			single_threaded_2pc_ = in.readBoolean();
-			boolean hasCoordinator = in.readBoolean();
-			if(hasCoordinator){
-				String className=in.readUTF();
-				coordinator_=(RecoveryCoordinator)ClassLoadingHelper.newInstance(className);
-				((DataSerializable)coordinator_).readData(in);
-			}
-
-
-			boolean initialized = in.readBoolean();
-			if (initialized) {
-				participants_=new Vector<Participant>();
-				// intead of: participants_ = (Vector) in.readObject ();
-				int size = in.readInt();
-				for (int i = 0; i < size; i++) {
-					String participantClassName=in.readUTF();
-					DataSerializable participant = (DataSerializable) ClassLoadingHelper.newInstance(participantClassName);
-					participant.readData(in);
-					participants_.add((Participant)participant);
-				}
-			}
-
-		} catch (InvalidClassException ex) {
-			// fix for 22174
-			throw (IOException) new IOException("Object of class " + ex.classname + " in transaction log" + " not compatible with version found in classpath").initCause(ex);
-		}
-
-	}
-
+	
 }

@@ -41,7 +41,7 @@ public interface Propagation extends java.io.Serializable
      * @return Stack The ancestor transactions.
      */
 
-    public Stack getLineage();
+    public Stack<CompositeTransaction> getLineage();
     
     /**
      *

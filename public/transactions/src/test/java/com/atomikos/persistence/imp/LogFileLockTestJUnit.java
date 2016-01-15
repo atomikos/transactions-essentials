@@ -4,7 +4,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.atomikos.persistence.LogException;
+import com.atomikos.recovery.LogException;
+
 
 public class LogFileLockTestJUnit {
 

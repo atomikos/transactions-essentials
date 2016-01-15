@@ -7,6 +7,9 @@ import com.atomikos.icatch.provider.ConfigProperties;
 import com.atomikos.icatch.provider.TransactionServicePlugin;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
+import com.atomikos.recovery.RecoveryLog;
+import com.atomikos.recovery.xa.DefaultXaRecoveryLog;
+import com.atomikos.recovery.xa.XaResourceRecoveryManager;
 
 public class JtaTransactionServicePlugin implements TransactionServicePlugin {
 	
@@ -83,11 +86,17 @@ public class JtaTransactionServicePlugin implements TransactionServicePlugin {
 	public void afterShutdown() {
 		UserTransactionServerImp.getSingleton().shutdown();
 		TransactionManagerImp.installTransactionManager ( null, false );
+		XaResourceRecoveryManager.installXaResourceRecoveryManager(null, null);
 	}
 
 	@Override
 	public void afterInit() {
 		TransactionManagerImp.installTransactionManager(Configuration.getCompositeTransactionManager(), autoRegisterResources);
+		RecoveryLog recoveryLog = Configuration.getRecoveryLog();
+		if (recoveryLog != null) {
+			XaResourceRecoveryManager.installXaResourceRecoveryManager(new DefaultXaRecoveryLog(recoveryLog),Configuration.getConfigProperties().getTmUniqueName());
+		}
+		
 	}
 
 }

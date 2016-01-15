@@ -25,9 +25,6 @@
 
 package com.atomikos.jms;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.jms.JMSException;
 
 import com.atomikos.datasource.xa.session.InvalidSessionHandleStateException;
@@ -121,26 +118,18 @@ abstract class ConsumerProducerSupport
 	private class JmsRequeueSynchronization implements Synchronization {
 		private static final long serialVersionUID = 1L;
 		
-		
 		private CompositeTransaction compositeTransaction;
 		private boolean afterCompletionDone;
-		private Map<TxState,Object> transactionStatesIndicatingConnectionReusability;
 
 		public JmsRequeueSynchronization ( CompositeTransaction compositeTransaction) {
 			this.compositeTransaction = compositeTransaction;
 			this.afterCompletionDone = false;
-			transactionStatesIndicatingConnectionReusability = new HashMap<TxState,Object>();
-			transactionStatesIndicatingConnectionReusability.put(TxState.TERMINATED,TxState.TERMINATED);
-			transactionStatesIndicatingConnectionReusability.put(TxState.HEUR_ABORTED,TxState.HEUR_ABORTED);
-			transactionStatesIndicatingConnectionReusability.put(TxState.HEUR_COMMITTED,TxState.HEUR_COMMITTED);
-			transactionStatesIndicatingConnectionReusability.put(TxState.HEUR_HAZARD,TxState.HEUR_HAZARD);
-			transactionStatesIndicatingConnectionReusability.put(TxState.HEUR_MIXED,TxState.HEUR_MIXED);
 		}
 
-		public void afterCompletion(Object txstate) {
+		public void afterCompletion(TxState txState) {
 			if ( afterCompletionDone ) return;
 			
-			if ( transactionStatesIndicatingConnectionReusability.containsKey(txstate) ) {
+			if ( txState.isHeuristic() || txState == TxState.TERMINATED ) {
 				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug( "JmsRequeueSynchronization: detected termination of transaction " + compositeTransaction );
 				state.notifyTransactionTerminated(compositeTransaction);
 				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug( "JmsRequeueSynchronization: is in terminated state ? " + state.isTerminated() );			

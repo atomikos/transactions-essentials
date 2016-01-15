@@ -25,10 +25,14 @@
 
 package com.atomikos.icatch.imp;
 
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 import java.util.Stack;
 import java.util.Vector;
 
@@ -37,6 +41,7 @@ import com.atomikos.finitestates.FSMEnterEvent;
 import com.atomikos.finitestates.FSMEnterListener;
 import com.atomikos.icatch.CompositeCoordinator;
 import com.atomikos.icatch.CompositeTransaction;
+import com.atomikos.icatch.CoordinatorLogEntry;
 import com.atomikos.icatch.Participant;
 import com.atomikos.icatch.Propagation;
 import com.atomikos.icatch.RecoveryCoordinator;
@@ -47,14 +52,20 @@ import com.atomikos.icatch.TransactionService;
 import com.atomikos.icatch.TxState;
 import com.atomikos.icatch.admin.LogControl;
 import com.atomikos.icatch.config.Configuration;
+import com.atomikos.icatch.provider.ConfigProperties;
 import com.atomikos.icatch.provider.TransactionServicePlugin;
 import com.atomikos.icatch.provider.TransactionServiceProvider;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
-import com.atomikos.persistence.LogException;
 import com.atomikos.persistence.StateRecoveryManager;
+import com.atomikos.recovery.AdminLog;
+import com.atomikos.recovery.LogException;
+import com.atomikos.recovery.RecoveryLog;
 import com.atomikos.thread.InterruptedExceptionHelper;
 import com.atomikos.thread.TaskManager;
+import com.atomikos.timing.AlarmTimer;
+import com.atomikos.timing.AlarmTimerListener;
+import com.atomikos.timing.PooledAlarmTimer;
 import com.atomikos.util.UniqueIdMgr;
 
 /**
@@ -62,7 +73,7 @@ import com.atomikos.util.UniqueIdMgr;
  */
 
 public class TransactionServiceImp implements TransactionServiceProvider,
-        FSMEnterListener<TxState>, SubTxAwareParticipant, RecoveryService
+        FSMEnterListener<TxState>, SubTxAwareParticipant, RecoveryService, AdminLog
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(TransactionServiceImp.class);
     private static final int NUMLATCHES = 97;
@@ -83,11 +94,11 @@ public class TransactionServiceImp implements TransactionServiceProvider,
     // in that case no creation preferences are taken into account
     // concerning orphan checks
 
-    private Vector tsListeners_;
+    private Vector<TransactionServicePlugin> tsListeners_;
     private int maxNumberOfActiveTransactions_;
     private String tmUniqueName_;
-    private Properties initProperties_;
     private boolean single_threaded_2pc_;
+	private RecoveryLog recoveryLog;
 
     /**
      * Create a new instance, with orphan checking set.
@@ -110,10 +121,10 @@ public class TransactionServiceImp implements TransactionServiceProvider,
 
     public TransactionServiceImp ( String name ,
             StateRecoveryManager recoverymanager , UniqueIdMgr tidmgr ,
-            long maxtimeout , int maxActives , boolean single_threaded_2pc )
+            long maxtimeout , int maxActives , boolean single_threaded_2pc, RecoveryLog recoveryLog )
     {
         this ( name , recoverymanager , tidmgr  , maxtimeout , true ,
-                maxActives , single_threaded_2pc );
+                maxActives , single_threaded_2pc, recoveryLog  );
     }
 
     /**
@@ -138,13 +149,14 @@ public class TransactionServiceImp implements TransactionServiceProvider,
      *            configurations that do not support orphan detection.
      * @param single_threaded_2pc
      *            Whether 2PC commit should happen in the same thread that started the tx.
+     * @param recoveryLog2 
      *
      */
 
     public TransactionServiceImp ( String name ,
             StateRecoveryManager recoverymanager , UniqueIdMgr tidmgr ,
              long maxtimeout , boolean checkorphans ,
-            int maxActives , boolean single_threaded_2pc )
+            int maxActives , boolean single_threaded_2pc, RecoveryLog recoveryLog )
     {
         maxNumberOfActiveTransactions_ = maxActives;
         if ( !checkorphans ) otsOverride_ = true;
@@ -164,8 +176,9 @@ public class TransactionServiceImp implements TransactionServiceProvider,
 
         maxTimeout_ = maxtimeout;
         tmUniqueName_ = name;
-        tsListeners_ = new Vector();
+        tsListeners_ = new Vector<TransactionServicePlugin>();
         single_threaded_2pc_ = single_threaded_2pc;
+        this.recoveryLog  = recoveryLog;
     }
 
     /**
@@ -210,9 +223,9 @@ public class TransactionServiceImp implements TransactionServiceProvider,
      *         none.
      */
 
-    Vector getCoordinatorImpVector ()
+    Vector<CoordinatorImp> getCoordinatorImpVector ()
     {
-        Vector ret = new Vector ();
+        Vector<CoordinatorImp> ret = new Vector<CoordinatorImp> ();
         Enumeration tids = rootToCoordinatorMap_.keys ();
         while ( tids.hasMoreElements () ) {
             String next = (String) tids.nextElement ();
@@ -357,23 +370,16 @@ public class TransactionServiceImp implements TransactionServiceProvider,
 
     private void startlistening ( CoordinatorImp coordinator )
     {
-        Hashtable<TxState,Object> forgetStates = new Hashtable<TxState,Object> ();
-        // forgetStates are those that lead to a removal of the coordinator
-        // such that it only exists in the log but no longer in CM
-
-        forgetStates.put ( TxState.TERMINATED, new Object () );
-
-        TxState[] finalStates = coordinator.getFinalStates ();
-        for ( int i = 0; i < finalStates.length; i++ ) {
-            forgetStates.put ( finalStates[i], new Object () );
-        }
-
-        Enumeration<TxState> enumm = forgetStates.keys ();
-
-        while ( enumm.hasMoreElements () ) {
-            TxState state = (TxState)enumm.nextElement ();
-            coordinator.addFSMEnterListener ( this, state );
-        }
+        Set<TxState>  forgetStates = new HashSet<TxState>();
+        for (TxState txState : TxState.values()) {
+			if(txState.isFinalStateForOltp()) {
+				forgetStates.add(txState);
+			}
+		}
+        
+        for (TxState txState : forgetStates) {
+        	 coordinator.addFSMEnterListener ( this, txState );
+		}
 
         // on recovery, the end states might have been reached
         // BEFORE listener added -> check and remove if so.
@@ -545,6 +551,9 @@ public class TransactionServiceImp implements TransactionServiceProvider,
 
         return control_;
     }
+    
+    
+    
 
     /**
      * @see TransactionService
@@ -588,6 +597,8 @@ public class TransactionServiceImp implements TransactionServiceProvider,
         if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug  ( "Removed TSListener: " + listener );
 
     }
+    
+    PooledAlarmTimer recoveryTimer;
 
     /**
      * @see TransactionService
@@ -595,7 +606,6 @@ public class TransactionServiceImp implements TransactionServiceProvider,
 
     public synchronized void init ( Properties properties ) throws SysException
     {
-        this.initProperties_ = properties;
 
         try {
             recoverymanager_.init (properties);
@@ -603,14 +613,46 @@ public class TransactionServiceImp implements TransactionServiceProvider,
             throw new SysException ( "Error in init: " + le.getMessage (),
                     le );
         }
-        recoverCoordinators ();
 
         shutdownInProgress_ = false;
-        control_ = new LogControlImp ( this );
+        control_ = new com.atomikos.icatch.admin.imp.LogControlImp ( (AdminLog) this.recoveryLog );
+
+		ConfigProperties configProperties = new ConfigProperties(properties);
+		long recoveryDelay = configProperties.getAsLong("com.atomikos.icatch.recovery_delay");
+
         
-        recover(); //ensure that remote participants can start inquiring and replay
+        recoveryTimer = new PooledAlarmTimer(recoveryDelay);
+        
+        recoveryTimer.addAlarmTimerListener(new AlarmTimerListener() {
+			
+			@Override
+			public void alarm(AlarmTimer timer) {
+				
+				performRecovery();
+				
+			}
+
+			
+		});
+        
+        TaskManager.getInstance().executeTask(recoveryTimer);
+        
+        initialized_ = true;
+       
+        
     }
 
+    private void performRecovery() {
+		Enumeration<RecoverableResource> resources= Configuration.getResources();
+		while (resources.hasMoreElements()) {
+			RecoverableResource recoverableResource =  resources.nextElement();
+			try {
+				recoverableResource.recover();
+			} catch (Throwable e) {
+				LOGGER.logWarning(e.getMessage(),e);
+			}
+		}
+	}
     /**
      * @see TransactionService
      */
@@ -756,7 +798,6 @@ public class TransactionServiceImp implements TransactionServiceProvider,
             ct = createCT ( tid, cc, lineage, serial );
 
         } catch ( Exception e ) {
-            e.printStackTrace ();
             throw new SysException ( "Error in recreate.", e );
         }
 
@@ -767,10 +808,16 @@ public class TransactionServiceImp implements TransactionServiceProvider,
      * @see TransactionService
      */
 
-    public synchronized void shutdown ( boolean force ) throws SysException,
-            IllegalStateException
-    {
-
+    public void shutdown ( boolean force ) {
+    	shutdown(force, Long.MAX_VALUE);
+    }
+    
+    public void shutdown(long maxWaitTime) {
+    	shutdown(false, maxWaitTime);
+    }
+    
+    private void shutdown(boolean force, long maxWaitTime) {
+    	
         boolean wasShuttingDown = false;
         if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Transaction Service: Entering shutdown ( "
                 + force + " )..." );
@@ -803,7 +850,6 @@ public class TransactionServiceImp implements TransactionServiceProvider,
         	LOGGER.logDebug ( "Transaction Service: Shutdown acquired lock on waiter." );
             wasShuttingDown = shutdownInProgress_;
             shutdownInProgress_ = true;
-
             // check for active coordinators (who might be indoubt)
             // NOTE: should be thread safe, since createCC
             // is also a synchronized method.
@@ -813,31 +859,19 @@ public class TransactionServiceImp implements TransactionServiceProvider,
             // can not be indoubt.
 
             while ( !rootToCoordinatorMap_.isEmpty () && !force ) {
-                try {
-                	LOGGER.logWarning ( "Transaction Service: Waiting for non-terminated coordinators..." );
-                    //wait for max timeout to let actives finish
-                    shutdownSynchronizer_.wait ( maxTimeout_ );
-                    //PURGE to avoid issue 10079
-                    //use a clone to avoid concurrency interference
-                    if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Transaction Service: Purging coordinators for shutdown..." );
-                    Hashtable clone = ( Hashtable ) rootToCoordinatorMap_.clone();
-                    Enumeration coordinatorIds = clone.keys();
-                    while ( coordinatorIds.hasMoreElements() ) {
-                    		String id = ( String ) coordinatorIds.nextElement();
-                    		CoordinatorImp c = ( CoordinatorImp ) clone.get ( id );
-                    		if ( TxState.TERMINATED.equals ( c.getState() ) ) {
-                    			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Transaction Service: removing terminated coordinator: " + id );
-                    			rootToCoordinatorMap_.remove ( id );
-                    		}
-                    }
-                    //contine the loop: if not empty then wait again
+            	
+            	performRecovery();
+            	recoveryLog.close(maxWaitTime);
 
-                } catch ( InterruptedException inter ) {
-                	// cf bug 67457
-        			InterruptedExceptionHelper.handleInterruptedException ( inter );
-                    throw new SysException ( "Error in shutdown: "
-                            + inter.getMessage (), inter );
-                }
+            	//PURGE to avoid issue 10079
+            	//use a clone to avoid concurrency interference
+            	if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Transaction Service: Purging coordinators for shutdown..." );
+            	Hashtable clone = ( Hashtable ) rootToCoordinatorMap_.clone();
+            	Enumeration coordinatorIds = clone.keys();
+            	while ( coordinatorIds.hasMoreElements() ) {
+            		String id = ( String ) coordinatorIds.nextElement();	
+            		rootToCoordinatorMap_.remove ( id );
+            	}
             }
 
             initialized_ = false;
@@ -848,11 +882,10 @@ public class TransactionServiceImp implements TransactionServiceProvider,
                 try {
                     recoverymanager_.close ();
                 } catch ( LogException le ) {
-                    le.printStackTrace();
                     throw new SysException ( "Error in shutdown: "
                             + le.getMessage (), le );
                 }
-              
+                recoveryTimer.stop();
             } 
 
         }
@@ -915,6 +948,35 @@ public class TransactionServiceImp implements TransactionServiceProvider,
 	@Override
 	public RecoveryService getRecoveryService() {
 		return this;
+	}
+
+	@Override
+	public CoordinatorLogEntry[] getCoordinatorLogEntries() {
+		Vector<CoordinatorImp> coordinatorImpVector = getCoordinatorImpVector();
+		List<CoordinatorLogEntry> coordinatorLogEntries = new ArrayList<CoordinatorLogEntry>(coordinatorImpVector.size());
+		for (CoordinatorImp coordinatorImp : coordinatorImpVector) {
+			CoordinatorLogEntry coordinatorLogEntry = coordinatorImp.getCoordinatorLogEntry();
+			if (coordinatorLogEntry != null) {
+				coordinatorLogEntries.add(coordinatorLogEntry);	
+			}
+			
+		}
+		return coordinatorLogEntries.toArray(new CoordinatorLogEntry[coordinatorLogEntries.size()]);
+	}
+
+	@Override
+	public void remove(String coordinatorId) {
+		Vector<CoordinatorImp> coordinatorImpVector = getCoordinatorImpVector();
+		for (CoordinatorImp coordinatorImp : coordinatorImpVector) {
+			if(coordinatorImp.getId().equals(coordinatorId)){
+				coordinatorImp.forget();
+			}
+		}
+	}
+
+	@Override
+	public RecoveryLog getRecoveryLog() {
+		return this.recoveryLog;
 	}
 
 }

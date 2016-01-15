@@ -84,7 +84,7 @@ public class AcceptAllXATransactionalResource extends XATransactionalResource
         return true;
     }
 
-    protected void recover ()
+    protected void recoverTheDeprecatedWay ()
     {
         // nothing to do
     }

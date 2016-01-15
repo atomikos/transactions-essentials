@@ -52,6 +52,8 @@ public interface CompositeCoordinator extends java.io.Serializable
     
     
     /**
+     * @deprecated No longer needed for new TCC
+     * 
      * Checks whether the instance is recoverable
      * in the active state. Although active recoverability requires 
      * more logging overhead, some protocols may need this capability.
@@ -63,6 +65,8 @@ public interface CompositeCoordinator extends java.io.Serializable
    public Boolean isRecoverableWhileActive();
    
    /**
+    * @deprecated No longer needed for new TCC
+    * 
     * Sets this coordinator to be recoverable
     * while active. Ideally, this method is called
     * before any participants are added 

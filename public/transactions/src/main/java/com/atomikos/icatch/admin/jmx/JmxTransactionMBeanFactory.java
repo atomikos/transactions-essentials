@@ -3,6 +3,7 @@ package com.atomikos.icatch.admin.jmx;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.atomikos.icatch.TxState;
 import com.atomikos.icatch.admin.AdminTransaction;
 
 public class JmxTransactionMBeanFactory {
@@ -11,19 +12,13 @@ public class JmxTransactionMBeanFactory {
 	{
 	    JmxTransactionMBean ret = null;
 	    switch ( tx.getState () ) {
-	    case AdminTransaction.STATE_PREPARED:
+	    case IN_DOUBT:
 	        ret = new JmxPreparedTransaction ( tx );
 	        break;
-	    case AdminTransaction.STATE_HEUR_ABORTED:
-	        ret = new JmxHeuristicTransaction ( tx );
-	        break;
-	    case AdminTransaction.STATE_HEUR_COMMITTED:
-	        ret = new JmxHeuristicTransaction ( tx );
-	        break;
-	    case AdminTransaction.STATE_HEUR_HAZARD:
-	        ret = new JmxHeuristicTransaction ( tx );
-	        break;
-	    case AdminTransaction.STATE_HEUR_MIXED:
+	    case HEUR_ABORTED:
+	    case HEUR_COMMITTED:
+	    case HEUR_HAZARD:
+	    case HEUR_MIXED:
 	        ret = new JmxHeuristicTransaction ( tx );
 	        break;
 	    default:
@@ -39,20 +34,9 @@ public class JmxTransactionMBeanFactory {
 		List<AdminTransaction> ret = new ArrayList<AdminTransaction>();
 		for ( int i = 0 ; i < txs.length ; i++ ) {
 			AdminTransaction next = txs[i];
-			switch ( next.getState() ) {
-				case AdminTransaction.STATE_HEUR_ABORTED:
-					ret.add ( next );
-					break;
-				case AdminTransaction.STATE_HEUR_COMMITTED:
-					ret.add ( next );
-					break;
-				case AdminTransaction.STATE_HEUR_HAZARD:
-					ret.add ( next );
-					break;
-				case AdminTransaction.STATE_HEUR_MIXED:
-					ret.add ( next );
-					break;
-				default: break;
+			if (next.getState().isOneOf(TxState.HEUR_ABORTED,TxState.HEUR_COMMITTED, TxState.HEUR_HAZARD, TxState.HEUR_MIXED) 
+					|| (next.getState()== TxState.COMMITTING && next.hasExpired())) {
+				ret.add ( next );
 			}
 		}
 		return ( AdminTransaction[] ) ret.toArray ( new AdminTransaction[0] );

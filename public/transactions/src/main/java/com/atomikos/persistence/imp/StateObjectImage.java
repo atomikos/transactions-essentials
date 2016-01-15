@@ -25,16 +25,12 @@
 
 package com.atomikos.persistence.imp;
 
-import java.io.DataInput;
-import java.io.DataOutput;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
-import com.atomikos.icatch.DataSerializable;
 import com.atomikos.persistence.ObjectImage;
 import com.atomikos.persistence.Recoverable;
-import com.atomikos.util.ClassLoadingHelper;
 
 /**
  *
@@ -43,7 +39,7 @@ import com.atomikos.util.ClassLoadingHelper;
  * recovery mgr.
  */
 
-public class StateObjectImage implements Recoverable, ObjectImage, DataSerializable
+public class StateObjectImage implements Recoverable, ObjectImage
 {
 
     // force set serialUID to allow backward log compatibility.
@@ -86,14 +82,5 @@ public class StateObjectImage implements Recoverable, ObjectImage, DataSerializa
         out.writeObject ( img_ );
     }
 
-	public void writeData(DataOutput out) throws IOException {
-		out.writeUTF(img_.getClass().getName());
-		((DataSerializable)img_).writeData(out);
-	}
-
-	public void readData(DataInput in) throws IOException {
-		img_= (ObjectImage)ClassLoadingHelper.newInstance(in.readUTF());
-		((DataSerializable)img_).readData(in);
-
-	}
+	
 }
