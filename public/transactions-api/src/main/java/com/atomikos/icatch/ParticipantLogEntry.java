@@ -1,8 +1,6 @@
-package com.atomikos.recovery;
+package com.atomikos.icatch;
 
 import java.io.Serializable;
-
-import com.atomikos.icatch.TxState;
 
 public class ParticipantLogEntry implements Serializable {
 

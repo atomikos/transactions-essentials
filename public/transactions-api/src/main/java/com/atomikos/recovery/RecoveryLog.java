@@ -2,6 +2,8 @@ package com.atomikos.recovery;
 
 import java.util.Collection;
 
+import com.atomikos.icatch.ParticipantLogEntry;
+
 
 public interface RecoveryLog {
 

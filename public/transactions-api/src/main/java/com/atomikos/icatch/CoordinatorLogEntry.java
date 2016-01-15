@@ -1,4 +1,4 @@
-package com.atomikos.recovery;
+package com.atomikos.icatch;
 
 import static com.atomikos.icatch.TxState.ABORTING;
 import static com.atomikos.icatch.TxState.COMMITTING;
@@ -10,8 +10,6 @@ import static com.atomikos.icatch.TxState.IN_DOUBT;
 import static com.atomikos.icatch.TxState.TERMINATED;
 
 import java.io.Serializable;
-
-import com.atomikos.icatch.TxState;
 
 public class CoordinatorLogEntry  implements Serializable {
 

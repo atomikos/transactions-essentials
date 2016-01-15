@@ -1,7 +1,7 @@
 package com.atomikos.recovery.imp;
 
-import com.atomikos.recovery.CoordinatorLogEntry;
-import com.atomikos.recovery.ParticipantLogEntry;
+import com.atomikos.icatch.CoordinatorLogEntry;
+import com.atomikos.icatch.ParticipantLogEntry;
 
 public class Serializer {
 

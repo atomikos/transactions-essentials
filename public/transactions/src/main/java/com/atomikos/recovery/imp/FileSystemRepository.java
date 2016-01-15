@@ -14,10 +14,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.atomikos.icatch.CoordinatorLogEntry;
 import com.atomikos.icatch.provider.ConfigProperties;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
-import com.atomikos.recovery.CoordinatorLogEntry;
 import com.atomikos.recovery.Repository;
 import com.atomikos.recovery.LogReadException;
 import com.atomikos.recovery.LogWriteException;

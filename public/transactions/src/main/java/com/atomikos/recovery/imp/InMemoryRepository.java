@@ -6,9 +6,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.atomikos.icatch.CoordinatorLogEntry;
 import com.atomikos.icatch.TxState;
 import com.atomikos.icatch.provider.ConfigProperties;
-import com.atomikos.recovery.CoordinatorLogEntry;
 import com.atomikos.recovery.Repository;
 
 public class InMemoryRepository implements

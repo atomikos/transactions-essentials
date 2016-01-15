@@ -5,9 +5,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.atomikos.icatch.CoordinatorLogEntry;
 import com.atomikos.icatch.admin.AdminTransaction;
 import com.atomikos.recovery.AdminLog;
-import com.atomikos.recovery.CoordinatorLogEntry;
 
 public class LogControlImp implements com.atomikos.icatch.admin.LogControl {
 

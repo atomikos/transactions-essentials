@@ -7,10 +7,10 @@ import java.util.Set;
 import javax.transaction.xa.Xid;
 
 import com.atomikos.datasource.xa.XID;
+import com.atomikos.icatch.ParticipantLogEntry;
 import com.atomikos.icatch.TxState;
 import com.atomikos.recovery.LogException;
 import com.atomikos.recovery.LogReadException;
-import com.atomikos.recovery.ParticipantLogEntry;
 import com.atomikos.recovery.RecoveryLog;
 
 public class DefaultXaRecoveryLog implements XaRecoveryLog {

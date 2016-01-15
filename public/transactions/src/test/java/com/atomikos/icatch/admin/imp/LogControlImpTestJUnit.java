@@ -6,12 +6,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import com.atomikos.icatch.CoordinatorLogEntry;
+import com.atomikos.icatch.ParticipantLogEntry;
 import com.atomikos.icatch.TxState;
 import com.atomikos.icatch.admin.AdminTransaction;
 import com.atomikos.icatch.admin.imp.LogControlImp;
 import com.atomikos.recovery.AdminLog;
-import com.atomikos.recovery.CoordinatorLogEntry;
-import com.atomikos.recovery.ParticipantLogEntry;
 
 public class LogControlImpTestJUnit {
 

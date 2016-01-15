@@ -2,6 +2,7 @@ package com.atomikos.recovery;
 
 import java.util.Collection;
 
+import com.atomikos.icatch.CoordinatorLogEntry;
 import com.atomikos.icatch.provider.ConfigProperties;
 
 public interface Repository {
