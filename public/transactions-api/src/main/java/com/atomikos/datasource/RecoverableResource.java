@@ -67,39 +67,6 @@ public interface RecoverableResource
 	public void setRecoveryService ( RecoveryService recoveryService )
 	throws ResourceException;
 	
-    /**
-     * Recovers the partially reconstructed Participant.
-     * @param participant A partially recovered Participant.
-     * @exception ResourceException On failure.
-     * @return boolean True iff reconstruction was successful.
-     * If the resource is not responsible for the given participant,
-     * then this will return false.
-     * A Participant can use this to iterate over all resources in order
-     * to eventually recover itself. This is particularly
-     * useful if the Participant instance can not serialize 
-     * its full state, because some of it is on its backside 
-     * resource (as, for instance, in XA).
-     * This way, the TransactionalResource can be used to 
-     * assist in reconstruction of the Participant's state.
-     */
-     
-    public boolean recover ( Participant participant ) 
-        throws ResourceException;
-    
-    /**
-     * Notifies the resource that recovery is ended. 
-     * Called by TM at end of recovery; any remaining
-     * resourcetransactions (i.e., that have not been 
-     * associated with any recover call) should be rolled back.
-     * This is because if the were not recovered by the TM, 
-     * then surely they are not supposed to be indoubt
-     * (the TM recovers ALL indoubt work!) and should be
-     * rolled back.
-     *
-     * @exception ResourceException On failure.
-     */
-     
-    public void endRecovery () throws ResourceException;
     
     /**
      * Closes the resource for shutdown.
@@ -128,8 +95,6 @@ public interface RecoverableResource
      * @return boolean True if the resource is closed.
      */
     public boolean isClosed();
-    
-        
 
     void recover();
     

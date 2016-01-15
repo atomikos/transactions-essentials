@@ -206,5 +206,12 @@ public class CoordinatorLogEntry  implements Serializable {
 		return expires() < System.currentTimeMillis();
 	}
 
+	@Override
+	public String toString() {
+		return "CoordinatorLogEntry [id=" + id + ", wasCommitted=" + wasCommitted + ", state=" + getResultingState() + "]";
+	}
+	
+	
+
 
 }

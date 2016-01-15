@@ -420,52 +420,13 @@ public class XAResourceTransaction implements ResourceTransaction,
 	 */
 	@Override
 	public boolean recover() throws SysException {
-		boolean recovered = false;
-		// perform extra initialization
-
-		if (beforePrepare()) {
-			// see case 23364: recovery before prepare should do nothing
-			// and certainly not reset the xaresource
-			return false;
-		}
-
-		recovered = tryRecoverWithEveryResourceToEnsureOurXidIsNotEndedByPresumedAbort();
-
-		if (!recovered && getXAResource() != null) {
-			// cf case 59238: support serializable XAResource
-			recovered = true;
-		}
-		if (recovered)
-			this.knownInResource = true;
-		return recovered;
+		
+		return true;
 	}
 
 	private boolean beforePrepare() {
 		return TxState.ACTIVE.equals(this.state)
 				|| TxState.LOCALLY_DONE.equals(this.state);
-	}
-
-	/**
-	 * Recovered XIDs can be shared in two resources if they connect to the same
-	 * back-end RM (remember: we use the TM name for the branch!) So each
-	 * resource needs to know that our Xid can be recovered, or endRecovery in
-	 * one of them will incorrectly rollback.
-	 * 
-	 * @return True iff at least one resource was found that recovers this
-	 *         instance.
-	 */
-	private boolean tryRecoverWithEveryResourceToEnsureOurXidIsNotEndedByPresumedAbort() {
-		boolean ret = false;
-		Enumeration resources = Configuration.getResources();
-		while (resources.hasMoreElements()) {
-			RecoverableResource res = (RecoverableResource) resources
-					.nextElement();
-			if (res.recover(this)) {
-				ret = true;
-			}
-
-		}
-		return ret;
 	}
 
 	/**

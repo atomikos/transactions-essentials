@@ -25,7 +25,6 @@
 
 package com.atomikos.datasource.xa;
 
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Stack;
 
@@ -37,9 +36,7 @@ import com.atomikos.datasource.RecoverableResource;
 import com.atomikos.datasource.ResourceException;
 import com.atomikos.datasource.ResourceTransaction;
 import com.atomikos.datasource.TransactionalResource;
-import com.atomikos.datasource.xa.RecoveryScan.XidSelector;
 import com.atomikos.icatch.CompositeTransaction;
-import com.atomikos.icatch.Participant;
 import com.atomikos.icatch.RecoveryService;
 import com.atomikos.icatch.SysException;
 import com.atomikos.logging.Logger;
@@ -68,7 +65,6 @@ public abstract class XATransactionalResource implements TransactionalResource
 
     protected XAResource xares_;
     protected String servername;
-    protected Hashtable recoveredXidMap;
     protected Hashtable rootTransactionToSiblingMapperMap;
     protected XidFactory xidFact;
     private boolean closed;
@@ -443,156 +439,6 @@ public abstract class XATransactionalResource implements TransactionalResource
     }
 
     /**
-     * @see TransactionalResource
-     */
-
-    @Override
-	public synchronized boolean recover ( Participant participant )
-            throws ResourceException
-    {
-    	boolean recovered = true;
-    	
-        if ( this.closed ){ 
-        	throw new IllegalStateException ("XATransactionResource already closed");
-        }
-        if ( !(participant instanceof XAResourceTransaction) ) {
-            throw new ResourceException ( "Wrong argument class: " + participant.getClass ().getName () );
-        }
-        
-        XAResource xaresource = getXAResource ();
-        
-        if ( xaresource == null ) {
-            LOGGER.logWarning ( "XATransactionalResource " + getName() + ": XAResource is null" );
-            return false;
-        }
-
-        XAResourceTransaction xarestx = (XAResourceTransaction) participant;
-
-        recoverXidsFromResourceIfNecessary();
-
-        if ( !this.recoveredXidMap.containsKey ( xarestx.getXid() ) ) {
-            recovered = false;
-        }
-
-        if (recovered || 
-        	getName().equals (xarestx.getResourceName())) { //see case 21552
-        		xarestx.setRecoveredXAResource ( getXAResource () );
-        		xarestx.setResource(this);
-        }
-        this.recoveredXidMap.remove ( xarestx.getXid() );
-        return recovered;
-    }
-
-    /**
-     * Recover the contained XAResource, and retrieve the xid instances that
-     * start with our server's name.
-     *
-     * @exception ResourceException
-     *                If a failure occurs.
-     */
-
-    protected void recoverTheDeprecatedWay() throws ResourceException
-    {
-        this.recoveredXidMap = new Hashtable ();
-       
-        if (this.branchIdentifier == null) {
-        	LOGGER.logDebug("No recoveryService set yet!");
-        	return;
-        }
-        
-        if(LOGGER.isDebugEnabled()){
-        	LOGGER.logDebug( "recovery initiated for resource " + getName ()
-                    + " with branchIdentifier " + this.branchIdentifier);
-        }
-        
-        try {
-			RecoveryScan.recoverXids(getXAResource(), 
-					new XidSelector() {
-						@Override
-						public boolean selects(Xid vendorXid) {
-							boolean ret = false;
-							String branch = new String ( vendorXid.getBranchQualifier () );
-							Xid xid = wrapWithOurOwnXidToHaveCorrectEqualsAndHashCode ( vendorXid );
-	                        if ( branch.startsWith ( branchIdentifier ) ) {
-	                        	ret = true;
-	                            recoveredXidMap.put ( xid, new Object () );
-	                            if(LOGGER.isInfoEnabled()){
-	                            	LOGGER.logInfo("Resource " + servername + " recovering XID: " + xid);
-	                            }
-	                        } else {
-	                        	if(LOGGER.isInfoEnabled()){
-	                        		LOGGER.logInfo("Resource " + servername + ": XID " + xid + 
-	                        		" with branch " + branch + " is not under my responsibility");
-	                        	}
-	                        }
-	                        return ret;
-						}						
-					}
-			);
-        } catch ( NullPointerException ora ) {
-        	//Typical for Oracle without XA setup
-        	if ( getXAResource ().getClass ().getName ().toLowerCase ().indexOf ( "oracle" ) >= 0 ) {
-        		LOGGER.logWarning("ORACLE NOT CONFIGURED FOR XA? PLEASE CONTACT YOUR DBA TO FIX THIS...");
-        	}
-        	throw ora;
-
-        } catch ( XAException xaerr ) {
-        	LOGGER.logWarning ( "Error in recovery", xaerr );
-        	throw new ResourceException ( "Error in recovery", xaerr );
-        }
-    }
-
-
-    private Xid wrapWithOurOwnXidToHaveCorrectEqualsAndHashCode(Xid xid) {
-		return new XID(xid);
-	}
-
-	/**
-     * @see TransactionalResource.
-     */
-
-    @Override
-	public void endRecovery () throws ResourceException
-    {
-        if ( this.closed ) throw new IllegalStateException ( "XATransactionResource already closed" );
-
-        if (getXAResource() != null) {
-        	recoverXidsFromResourceIfNecessary();       
-        	performPresumedAbortForRemainingXids();
-        }
-    	resetForNextRecoveryScan();
-        
-        if(LOGGER.isDebugEnabled()){
-        	LOGGER.logDebug("endRecovery() done for resource " + getName ());
-        }
-    }
-
-	private void performPresumedAbortForRemainingXids() {
-		Enumeration toAbortList = this.recoveredXidMap.keys ();
-		XAResource xaresource = getXAResource();
-        while ( toAbortList.hasMoreElements () ) {
-            XID xid = (XID) toAbortList.nextElement ();
-            try {
-                xaresource.rollback ( xid );
-                if(LOGGER.isInfoEnabled()){
-                	LOGGER.logInfo("XAResource.rollback ( " + xid + " ) called " + "on resource " + this.servername);
-                }
-            } catch ( XAException xaerr ) {
-                // here, an indoubt tx might remain in resource; we do nothing
-                // to prevent this and leave it to admin tools
-            }
-        }
-	}
-
-	private void resetForNextRecoveryScan() {
-		this.recoveredXidMap = null;
-	}
-
-	private void recoverXidsFromResourceIfNecessary() {
-		if (this.recoveredXidMap == null) recoverTheDeprecatedWay();
-	}
-
-    /**
      * Set the XID factory, needed for online management tools.
      *
      * @param factory
@@ -619,7 +465,10 @@ public abstract class XATransactionalResource implements TransactionalResource
     public void recover() {
     	XaResourceRecoveryManager xaResourceRecoveryManager = XaResourceRecoveryManager.getInstance();
     	if (xaResourceRecoveryManager != null) { //null for LogCloud recovery
-    		xaResourceRecoveryManager.recover(getXAResource());
+    		if(getXAResource() != null) { //null if backend down
+    			xaResourceRecoveryManager.recover(getXAResource());	
+    		}
+    		
     	}
     }
 }
