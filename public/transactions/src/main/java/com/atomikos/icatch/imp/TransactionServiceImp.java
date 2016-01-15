@@ -479,31 +479,6 @@ public class TransactionServiceImp implements TransactionServiceProvider,
     }
 
     /**
-     * @see RecoveryService
-     *
-     */
-    public void recover ()
-    {
-
-        if ( ! initialized_ ) {
-        		initialized_ = true;
-        }
-
-        synchronized ( recoverySynchronizer_ ) {
-            // recovery MUST be synchronized to avoid erroneous presumed abort
-            // if two different threads interleave!!!
-            // for instance: if thread1 starts recovery, but thread2 ends it first, then
-            // thread1's endRecovery will REscan the resources in the middle of
-            // its recovery scan! this leads to erroneous presumed aborts (since
-            // recovery of the first half of the coordinators is no longer considered)
-            performRecovery();
-        }
-
-    }
-
-
-
-    /**
      * Get a LogControl for the service.
      *
      * @return LogControl The instance.

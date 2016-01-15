@@ -437,7 +437,7 @@ public abstract class XATransactionalResource implements TransactionalResource
             if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Installing recovery service on resource "
                     + getName () );
             this.branchIdentifier=recoveryService.getName();
-            recoveryService.recover ();
+            recover();
         }
 
     }
