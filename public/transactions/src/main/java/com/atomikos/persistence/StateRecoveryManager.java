@@ -26,7 +26,6 @@
 package com.atomikos.persistence;
 
 import java.util.Properties;
-import java.util.Vector;
 
 import com.atomikos.icatch.TxState;
 /**
@@ -55,18 +54,6 @@ public interface StateRecoveryManager
     public void register ( RecoverableCoordinator<TxState> staterecoverable );
 
     /**
-     * Reconstruct an instance of a staterecoverable.
-     * 
-     * @param Object
-     *            The staterecoverable's identifier.
-     * @return StateRecoverable The instance, or null if not found.
-     * @exception LogException
-     *                If underlying object log fails.
-     */
-
-    public RecoverableCoordinator<TxState> recover ( Object id ) throws com.atomikos.recovery.LogException;
-
-    /**
      * Shutdown.
      * 
      * @exception LogException
@@ -75,15 +62,5 @@ public interface StateRecoveryManager
 
     public void close () throws com.atomikos.recovery.LogException;
 
-    /**
-     * Deletes a given image from the underlying logs.
-     * 
-     * @param id
-     *            The id of the image to delete.
-     * @exception LogException
-     *                On failure.
-     */
-
-    public void delete ( Object id ) throws com.atomikos.recovery.LogException;
 
 }

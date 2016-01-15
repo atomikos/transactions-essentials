@@ -26,7 +26,6 @@
 package com.atomikos.persistence.imp;
 
 import java.util.Properties;
-import java.util.Vector;
 
 import com.atomikos.finitestates.FSMEnterEvent;
 import com.atomikos.finitestates.FSMPreEnterListener;
@@ -46,9 +45,6 @@ import com.atomikos.util.Assert;
 public class StateRecoveryManagerImp  implements StateRecoveryManager, FSMPreEnterListener<TxState>
 {
 
-	private static final String CHECKPOINT_INTERVAL_PROPERTY_NAME = "com.atomikos.icatch.checkpoint_interval";
-	private static final String LOG_BASE_DIR_PROPERTY_NAME = "com.atomikos.icatch.log_base_dir";
-	private static final String LOG_BASE_NAME_PROPERTY_NAME = "com.atomikos.icatch.log_base_name";
 	
 	private LogFileLock lock_;
 
@@ -94,33 +90,6 @@ public class StateRecoveryManagerImp  implements StateRecoveryManager, FSMPreEnt
 		oltpLog.close();
 		lock_.releaseLock();
 	}
-
-	/**
-	 * @deprecated obsolete by new recovery.
-	 * @see StateRecoveryManager
-	 */
-	public RecoverableCoordinator<TxState> recover(Object id) throws LogException {
-		
-		return null;
-	}
-
-	/**
-	 * @deprecated obsolete by new recovery.
-	 * @see StateRecoveryManager
-	 */
-	public Vector<RecoverableCoordinator<TxState>> recover() throws LogException {
-		Vector<RecoverableCoordinator<TxState>> ret = new Vector<RecoverableCoordinator<TxState>>();
-		return ret;
-	}
-
-	/**
-	 * @deprecated obsolete by new recovery.
-	 * @see StateRecoveryManager
-	 */
-	public void delete(Object id) throws LogException {
-	}
-
-	
 	
 	public void init(Properties p) throws LogException {
 		ConfigProperties configProperties = new ConfigProperties(p);

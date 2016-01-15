@@ -400,22 +400,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
             // deadlock, even if we don't seem to need it here
 
             synchronized ( getLatch ( root ) ) {
-                cc = (CoordinatorImp) rootToCoordinatorMap_.get ( root
-                        .intern () );
-                if ( cc == null ) {
-                    // swapped out already, or non-existing?
-                    try {
-                        cc = (CoordinatorImp) recoverymanager_.recover ( root );
-                    } catch ( LogException le ) {
-                        throw new SysException (
-                                "Error in getting coordinator: "
-                                        + le.getMessage (), le );
-                    }
-                    if ( cc != null ) {
-                        startlistening ( cc );
-                        rootToCoordinatorMap_.put ( root.intern (), cc );
-                    }
-                }
+                cc = (CoordinatorImp) rootToCoordinatorMap_.get ( root );   
             }
         }
 
