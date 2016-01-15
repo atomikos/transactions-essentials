@@ -14,5 +14,7 @@ public interface TransactionServiceProvider extends TransactionService {
     LogControl getLogControl();
     
     RecoveryService getRecoveryService();
+
+	void shutdown(long maxWaitTime);
     
 }

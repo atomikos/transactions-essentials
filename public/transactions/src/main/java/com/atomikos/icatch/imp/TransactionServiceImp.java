@@ -628,17 +628,11 @@ public class TransactionServiceImp implements TransactionServiceProvider,
 			@Override
 			public void alarm(AlarmTimer timer) {
 				
-				Enumeration<RecoverableResource> resources= Configuration.getResources();
-				while (resources.hasMoreElements()) {
-					RecoverableResource recoverableResource =  resources.nextElement();
-					try {
-						recoverableResource.recover();
-					} catch (Throwable e) {
-						LOGGER.logWarning(e.getMessage(),e);
-					}
-				}
+				performRecovery();
 				
 			}
+
+			
 		});
         
         TaskManager.getInstance().executeTask(recoveryTimer);
@@ -648,6 +642,17 @@ public class TransactionServiceImp implements TransactionServiceProvider,
         
     }
 
+    private void performRecovery() {
+		Enumeration<RecoverableResource> resources= Configuration.getResources();
+		while (resources.hasMoreElements()) {
+			RecoverableResource recoverableResource =  resources.nextElement();
+			try {
+				recoverableResource.recover();
+			} catch (Throwable e) {
+				LOGGER.logWarning(e.getMessage(),e);
+			}
+		}
+	}
     /**
      * @see TransactionService
      */
@@ -803,10 +808,15 @@ public class TransactionServiceImp implements TransactionServiceProvider,
      * @see TransactionService
      */
 
-    public synchronized void shutdown ( boolean force ) throws SysException,
-            IllegalStateException
-    {
-
+    public void shutdown ( boolean force ) {
+    	shutdown(force, Long.MAX_VALUE);
+    }
+    
+    public void shutdown(long maxWaitTime) {
+    	shutdown(false, maxWaitTime);
+    }
+    
+    private void shutdown(boolean force, long maxWaitTime) {
     	
         boolean wasShuttingDown = false;
         if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Transaction Service: Entering shutdown ( "
@@ -849,31 +859,19 @@ public class TransactionServiceImp implements TransactionServiceProvider,
             // can not be indoubt.
 
             while ( !rootToCoordinatorMap_.isEmpty () && !force ) {
-                try {
-                	LOGGER.logWarning ( "Transaction Service: Waiting for non-terminated coordinators..." );
-                    //wait for max timeout to let actives finish
-                    shutdownSynchronizer_.wait ( maxTimeout_ );
-                    //PURGE to avoid issue 10079
-                    //use a clone to avoid concurrency interference
-                    if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Transaction Service: Purging coordinators for shutdown..." );
-                    Hashtable clone = ( Hashtable ) rootToCoordinatorMap_.clone();
-                    Enumeration coordinatorIds = clone.keys();
-                    while ( coordinatorIds.hasMoreElements() ) {
-                    		String id = ( String ) coordinatorIds.nextElement();
-                    		CoordinatorImp c = ( CoordinatorImp ) clone.get ( id );
-                    		if ( TxState.TERMINATED.equals ( c.getState() ) ) {
-                    			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Transaction Service: removing terminated coordinator: " + id );
-                    			rootToCoordinatorMap_.remove ( id );
-                    		}
-                    }
-                    //contine the loop: if not empty then wait again
+            	
+            	performRecovery();
+            	recoveryLog.close(maxWaitTime);
 
-                } catch ( InterruptedException inter ) {
-                	// cf bug 67457
-        			InterruptedExceptionHelper.handleInterruptedException ( inter );
-                    throw new SysException ( "Error in shutdown: "
-                            + inter.getMessage (), inter );
-                }
+            	//PURGE to avoid issue 10079
+            	//use a clone to avoid concurrency interference
+            	if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Transaction Service: Purging coordinators for shutdown..." );
+            	Hashtable clone = ( Hashtable ) rootToCoordinatorMap_.clone();
+            	Enumeration coordinatorIds = clone.keys();
+            	while ( coordinatorIds.hasMoreElements() ) {
+            		String id = ( String ) coordinatorIds.nextElement();	
+            		rootToCoordinatorMap_.remove ( id );
+            	}
             }
 
             initialized_ = false;

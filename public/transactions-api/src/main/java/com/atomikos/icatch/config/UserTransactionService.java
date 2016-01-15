@@ -42,7 +42,9 @@ import com.atomikos.icatch.provider.TransactionServicePlugin;
 public interface UserTransactionService
 {
 	public void shutdown ( boolean force ) throws IllegalStateException;
-
+	
+	public void shutdown (long maxWaitTime) throws IllegalStateException;
+ 
 	public void registerResource ( RecoverableResource resource );
 
 	public void removeResource ( RecoverableResource res );

@@ -283,5 +283,10 @@ public final class UserTransactionServiceImp
 		initialize();
 	}
 
+	@Override
+	public void shutdown(long maxWaitTime) throws IllegalStateException {
+		Configuration.shutdown(maxWaitTime);
+	}
+
 
 }

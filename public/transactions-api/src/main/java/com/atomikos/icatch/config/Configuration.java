@@ -416,12 +416,18 @@ public final class Configuration
 	}
 	
 	public static synchronized void shutdown(boolean force) {
+		long maxWaitTime = 0;
+		if (!force) maxWaitTime = Long.MAX_VALUE;
+		shutdown(maxWaitTime);
+	}
+	
+	public static synchronized void shutdown(long maxWaitTime) {
 		if (service_ != null) {
 			removeLogAdministrators(service_.getLogControl());
-			service_.shutdown(force);
+			service_.shutdown(maxWaitTime);
 			notifyAfterShutdown();
 			removeShutdownHooks();
-			removeAndCloseResources(force);
+			removeAndCloseResources(maxWaitTime <= 0);
 			clearSystemComponents();
 		}
 	}

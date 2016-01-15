@@ -21,5 +21,5 @@ public interface RecoveryLog {
 
 	void terminatedWithHeuristicMixed(ParticipantLogEntry entry) throws LogException;
 
-	
+	void close(long timeout);
 }

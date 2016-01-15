@@ -14,6 +14,7 @@ import com.atomikos.recovery.LogException;
 import com.atomikos.recovery.LogReadException;
 import com.atomikos.recovery.LogWriteException;
 import com.atomikos.recovery.RecoveryLog;
+import com.atomikos.thread.InterruptedExceptionHelper;
 
 public class RecoveryLogImp implements RecoveryLog, AdminLog {
 
@@ -211,6 +212,40 @@ public class RecoveryLogImp implements RecoveryLog, AdminLog {
 			} 
 		}
 		
+	}
+
+	@Override
+	public void close(long maxWaitTime) {
+		if ( maxWaitTime > 0 ) {
+			waitForActiveTransactionsToFinish(maxWaitTime);
+		}
+		CoordinatorLogEntry[] pendingCoordinatorLogEntries = getCoordinatorLogEntries();
+		if (pendingCoordinatorLogEntries.length>0) {
+			LOGGER.logWarning("Shutdown leaves pending transactions in log - do NOT delete logfiles!");
+		} else {
+			LOGGER.logInfo("Shutdown leaves no pending transactions - ok to delete logfiles");
+		}
+		//don't close repository: OltpLog responsibility.
+	}
+
+	private synchronized void waitForActiveTransactionsToFinish(long maxWaitTime) {
+		CoordinatorLogEntry[] pendingCoordinatorLogEntries = getCoordinatorLogEntries();
+		long accumulatedWaitTime = 0;
+		int waitTime = 1000;
+		while (pendingCoordinatorLogEntries.length>0 && (accumulatedWaitTime < maxWaitTime)) {
+			LOGGER.logWarning("Waiting for termination of pending coordinators...");
+			synchronized(this) {
+				try {
+					this.wait (waitTime);
+				} catch (InterruptedException ex) {
+					InterruptedExceptionHelper.handleInterruptedException ( ex );
+					// ignore
+					if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": interrupted during wait" , ex );
+				}
+			}
+			accumulatedWaitTime+=waitTime;
+			pendingCoordinatorLogEntries = getCoordinatorLogEntries();
+		}
 	}
 
 }
