@@ -28,8 +28,10 @@ package com.atomikos.icatch.imp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 import com.atomikos.finitestates.FSM;
@@ -951,19 +953,21 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     				return null;
     		}
     		else {
-    			ParticipantLogEntry[] participantDetails = new ParticipantLogEntry[getParticipants().size()];
+    			Set<ParticipantLogEntry> participantLogEntries = new HashSet<ParticipantLogEntry>();
 		
     			Iterator<Participant> participants= getParticipants().iterator();
-    			int i=0;
     			while (participants.hasNext()) {
     				Participant participant = participants.next();
-    				ParticipantLogEntry ple = 
-    						new ParticipantLogEntry(getCoordinatorId(), participant.getURI(), getExpires(), 
-    								participant.toString(), state);
-    				participantDetails[i] = ple;
-    				i++;
+    				if(participant.isRecoverable()) {
+    					ParticipantLogEntry ple = 
+        						new ParticipantLogEntry(getCoordinatorId(), participant.getURI(), getExpires(), 
+        								participant.toString(), state);
+    					participantLogEntries.add(ple);
+    				} 
     			}
-		
+
+    			ParticipantLogEntry[] participantDetails = participantLogEntries.toArray(new ParticipantLogEntry[participantLogEntries.size()]);
+    			
     			CoordinatorLogEntry coordinatorLogEntry = new CoordinatorLogEntry(this.getCoordinatorId(), this.isCommitted(), participantDetails);
     			return coordinatorLogEntry;
     		}	
@@ -980,6 +984,11 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 
 	private long getExpires() {
 		return System.currentTimeMillis() + getTimeOut();
+	}
+
+	@Override
+	public boolean isRecoverable() {
+		return superiorCoordinator_ != null;
 	}
 
 }

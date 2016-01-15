@@ -131,5 +131,10 @@ public class RollbackOnlyParticipant implements Participant
 	public String toString() {
 		return "RollbackOnlyParticipant";
 	}
+
+	@Override
+	public boolean isRecoverable() {
+		return false;
+	}
 	
 }

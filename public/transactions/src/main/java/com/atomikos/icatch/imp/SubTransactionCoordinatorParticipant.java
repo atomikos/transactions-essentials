@@ -160,4 +160,9 @@ public class SubTransactionCoordinatorParticipant implements Participant
         if ( subordinateCoordinator != null ) subordinateCoordinator.forget ();
     }
 
+	@Override
+	public boolean isRecoverable() {
+		return true;
+	}
+
 }

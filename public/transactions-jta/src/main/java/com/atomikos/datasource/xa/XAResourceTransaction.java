@@ -935,4 +935,9 @@ public class XAResourceTransaction implements ResourceTransaction,
 		return this.xaresource;
 	}
 
+	@Override
+	public boolean isRecoverable() {
+		return true;
+	}
+
 }

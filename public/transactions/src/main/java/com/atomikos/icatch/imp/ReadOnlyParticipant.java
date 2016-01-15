@@ -107,11 +107,14 @@ public class ReadOnlyParticipant implements Participant {
 		return ret;
 	}
 
-	
-
 	@Override
 	public String toString() {
 		return "ReadOnlyParticipant";
+	}
+	
+	@Override
+	public boolean isRecoverable() {
+		return false;
 	}
 
 
