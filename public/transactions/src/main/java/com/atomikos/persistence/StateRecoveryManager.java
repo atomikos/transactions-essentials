@@ -36,17 +36,6 @@ import com.atomikos.icatch.TxState;
 
 public interface StateRecoveryManager 
 {
-    /**
-     * Recover all recorded recoverable instances in their latest state.
-     * 
-     * 
-     * @return Vector A vector of reconstructed StateRecoverables.
-     * @exception LogException
-     *                If the log fails.
-     */
-
-    public Vector<RecoverableCoordinator<TxState>> recover () throws  com.atomikos.recovery.LogException;
-
 
     /**
      * Initialize the recovery mgr before calling the other methods.

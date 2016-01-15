@@ -444,35 +444,6 @@ public class TransactionServiceImp implements TransactionServiceProvider,
         return recoverymanager_;
     }
 
-    /**
-     * Recover instances from a given recovery manager.
-     *
-     *
-     * @exception SysException
-     *                For unexpected failure.
-     */
-
-    protected synchronized void recoverCoordinators () throws SysException
-    {
-        try {
-            Vector recovered = recoverymanager_.recover ();
-            Enumeration enumm = recovered.elements ();
-            while ( enumm.hasMoreElements () ) {
-                CoordinatorImp coord = (CoordinatorImp) enumm.nextElement ();
-                synchronized ( getLatch ( coord.getCoordinatorId ().intern () ) ) {
-                    rootToCoordinatorMap_.put ( coord.getCoordinatorId ().intern (),
-                            coord );
-                }
-                startlistening ( coord );
-            }
-        } catch ( Exception e ) {
-            LOGGER.logWarning ( "Error in recoverCoordinators", e );
-            throw new SysException ( "Error in recoverCoordinators: "
-                    + e.getMessage (), e );
-        }
-
-    }
-
     public String getName ()
     {
         return tmUniqueName_;
