@@ -496,44 +496,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
             // thread1's endRecovery will REscan the resources in the middle of
             // its recovery scan! this leads to erroneous presumed aborts (since
             // recovery of the first half of the coordinators is no longer considered)
-
-            try {
-                Vector coordinators = getCoordinatorImpVector ();
-                Iterator it = coordinators.iterator ();
-                while ( it.hasNext () ) {
-                    CoordinatorImp coord = (CoordinatorImp) it.next ();
-                    try {
-                        if ( !coord.recover () && LOGGER.isInfoEnabled() )
-                        	LOGGER.logInfo ( "Coordinator not recoverable: "
-                                    + coord.getCoordinatorId () );
-                    } catch ( Exception e ) {
-                       // ignore (to avoid VM exit) but log
-                        LOGGER.logWarning (
-                                "Coordinator not recoverable: "
-                                        + coord.getCoordinatorId (), e );
-
-                    }
-                }
-
-                Enumeration reslist = Configuration.getResources ();
-                while ( reslist.hasMoreElements () ) {
-                    RecoverableResource res = (RecoverableResource) reslist
-                            .nextElement ();
-                    try {
-                        res.endRecovery ();
-                    } catch ( Exception error ) {
-                        LOGGER.logWarning ( "ERROR IN RECOVERY", error );
-                        // continue processing to avoid indoubts for other resources
-                    }
-                }
-            } catch ( Exception e ) {
-                LOGGER.logWarning ( "Error in recover: "
-                        + e.getClass ().getName () + e.getMessage (), e );
-
-                throw new SysException ( "Error in recovering: "
-                        + e.getMessage (), e );
-            }
-
+            performRecovery();
         }
 
     }
