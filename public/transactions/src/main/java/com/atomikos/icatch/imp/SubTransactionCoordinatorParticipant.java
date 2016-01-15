@@ -165,4 +165,9 @@ public class SubTransactionCoordinatorParticipant implements Participant
 		return true;
 	}
 
+	@Override
+	public String getResourceName() {
+		return null;
+	}
+
 }

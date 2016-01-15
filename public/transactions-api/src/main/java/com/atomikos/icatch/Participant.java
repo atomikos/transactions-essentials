@@ -211,5 +211,10 @@ public interface Participant extends java.io.Serializable
 	 */
 	public boolean isRecoverable();
 
+	
+	/**
+	 * @return The (unique) name of the recoverable resource as known in the configuration. Null if not relevant.
+	 */
+	public String getResourceName();
 }
 

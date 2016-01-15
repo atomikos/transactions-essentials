@@ -961,7 +961,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     				if(participant.isRecoverable()) {
     					ParticipantLogEntry ple = 
         						new ParticipantLogEntry(getCoordinatorId(), participant.getURI(), getExpires(), 
-        								participant.toString(), state);
+        								participant.getResourceName(), state);
     					participantLogEntries.add(ple);
     				} 
     			}
@@ -989,6 +989,11 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 	@Override
 	public boolean isRecoverable() {
 		return superiorCoordinator_ != null;
+	}
+
+	@Override
+	public String getResourceName() {
+		return null;
 	}
 
 }

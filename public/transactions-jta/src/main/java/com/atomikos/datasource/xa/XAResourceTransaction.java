@@ -927,7 +927,7 @@ public class XAResourceTransaction implements ResourceTransaction,
 		return XID.getBranchQualifierAsString(xid);
 	}
 
-	String getResourceName() {
+	public String getResourceName() {
 		return this.resourcename;
 	}
 

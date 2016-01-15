@@ -136,5 +136,10 @@ public class RollbackOnlyParticipant implements Participant
 	public boolean isRecoverable() {
 		return false;
 	}
+
+	@Override
+	public String getResourceName() {
+		return null;
+	}
 	
 }

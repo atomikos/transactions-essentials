@@ -38,8 +38,10 @@ public class Serializer {
 				strBuilder.append(QUOTE).append("state").append(QUOTE).append(":").append(QUOTE).append(participantLogEntry.state).append(QUOTE);
 				strBuilder.append(PROPERTY_SEPARATOR);
 				strBuilder.append(QUOTE).append("expires").append(QUOTE).append(":").append(participantLogEntry.expires);
-				strBuilder.append(PROPERTY_SEPARATOR);
-				strBuilder.append(QUOTE).append("resourceName").append(QUOTE).append(":").append(QUOTE).append(participantLogEntry.resourceName).append(QUOTE);
+				if (participantLogEntry.resourceName!=null) {
+					strBuilder.append(PROPERTY_SEPARATOR);
+					strBuilder.append(QUOTE).append("resourceName").append(QUOTE).append(":").append(QUOTE).append(participantLogEntry.resourceName).append(QUOTE);	
+				}
 				strBuilder.append(END_OBJECT);
 			}
 			strBuilder.append(END_ARRAY);

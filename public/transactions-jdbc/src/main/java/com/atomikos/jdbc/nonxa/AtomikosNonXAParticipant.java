@@ -201,4 +201,9 @@ public class AtomikosNonXAParticipant implements Participant, Serializable
 	public boolean isRecoverable() {
 		return false;
 	}
+
+	@Override
+	public String getResourceName() {
+		return name;
+	}
 }
