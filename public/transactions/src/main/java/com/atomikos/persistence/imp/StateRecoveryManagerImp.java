@@ -76,8 +76,7 @@ public class StateRecoveryManagerImp  implements StateRecoveryManager, FSMPreEnt
 				oltpLog.write(coordinatorLogEntry);
 
 			} catch (LogException le) {
-				le.printStackTrace();
-				throw new IllegalStateException("could not flush state image " + le.getMessage() + " " + le.getClass().getName());
+				throw new IllegalStateException("could not flush state image " + le.getMessage() + " " + le.getClass().getName(), le);
 			}
 		}
 

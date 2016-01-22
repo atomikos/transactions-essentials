@@ -43,7 +43,8 @@ public class CachedRepository implements Repository {
 			
 			performCheckpoint();
 		} catch (LogException e) {
-			LOGGER.logWarning("Corrupted log file - restart JVM");
+			e.printStackTrace();
+			LOGGER.logWarning("Corrupted log file - restart JVM", e);
 			corrupt = true;
 		}
 		
@@ -74,9 +75,11 @@ public class CachedRepository implements Repository {
 			inMemoryCoordinatorLogEntryRepository.writeCheckpoint(coordinatorLogEntries);
 			numberOfPutsSinceLastCheckpoint=0;
 		} catch (LogWriteException corrupted) {
+			LOGGER.logWarning("Corrupted log file - restart JVM", corrupted);
 			corrupt = true;
 			throw corrupted;	
 		} catch (Exception corrupted) {
+			LOGGER.logWarning("Corrupted log file - restart JVM", corrupted);
 			corrupt = true;
 			throw new LogWriteException(corrupted);
 		}
