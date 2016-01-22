@@ -302,17 +302,6 @@ public abstract class AbstractCompositeTransaction implements CompositeTransacti
     public void setSerial () throws IllegalStateException, SysException
     {
     	throw new UnsupportedOperationException();
-
-    }
-
-    /**
-     *
-     * @see com.atomikos.icatch.CompositeTransaction#getLocalSubTxCount()
-     */
-    public int getLocalSubTxCount ()
-    {
-
-        return 0;
     }
 
     /**

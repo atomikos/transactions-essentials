@@ -203,14 +203,6 @@ public interface CompositeTransaction
 	
 	public void setSerial() throws IllegalStateException, SysException;
 
-	     
-    
-	/**
-     * @deprecated This should not matter outside the core.
-	 */
-     
-	 public int getLocalSubTxCount();
-     
 
 	/**
 	 * 
