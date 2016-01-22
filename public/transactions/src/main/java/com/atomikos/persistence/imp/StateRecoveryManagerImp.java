@@ -25,8 +25,6 @@
 
 package com.atomikos.persistence.imp;
 
-import java.util.Properties;
-
 import com.atomikos.finitestates.FSMEnterEvent;
 import com.atomikos.finitestates.FSMPreEnterListener;
 import com.atomikos.icatch.CoordinatorLogEntry;

@@ -19,11 +19,10 @@ import com.atomikos.icatch.provider.ConfigProperties;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 import com.atomikos.persistence.imp.LogFileLock;
-import com.atomikos.persistence.imp.Utils;
 import com.atomikos.recovery.LogException;
-import com.atomikos.recovery.Repository;
 import com.atomikos.recovery.LogReadException;
 import com.atomikos.recovery.LogWriteException;
+import com.atomikos.recovery.Repository;
 import com.atomikos.util.VersionedFile;
 
 public class FileSystemRepository implements
