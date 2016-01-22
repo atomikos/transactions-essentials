@@ -25,7 +25,6 @@
 
 package com.atomikos.datasource;
 
-import com.atomikos.icatch.Participant;
 import com.atomikos.icatch.RecoveryService;
 
 

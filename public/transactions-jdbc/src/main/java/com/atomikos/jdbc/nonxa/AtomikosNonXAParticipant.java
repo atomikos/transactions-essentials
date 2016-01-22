@@ -34,7 +34,6 @@ import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeurMixedException;
 import com.atomikos.icatch.HeurRollbackException;
 import com.atomikos.icatch.Participant;
-import com.atomikos.icatch.ParticipantLogEntry;
 import com.atomikos.icatch.RollbackException;
 import com.atomikos.icatch.SysException;
 import com.atomikos.logging.Logger;

@@ -31,13 +31,11 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.io.OptionalDataException;
 import java.io.Serializable;
-import java.util.Enumeration;
 
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
 
-import com.atomikos.datasource.RecoverableResource;
 import com.atomikos.datasource.ResourceException;
 import com.atomikos.datasource.ResourceTransaction;
 import com.atomikos.icatch.CompositeTransaction;
@@ -50,7 +48,6 @@ import com.atomikos.icatch.RollbackException;
 import com.atomikos.icatch.SysException;
 import com.atomikos.icatch.TransactionControl;
 import com.atomikos.icatch.TxState;
-import com.atomikos.icatch.config.Configuration;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 
