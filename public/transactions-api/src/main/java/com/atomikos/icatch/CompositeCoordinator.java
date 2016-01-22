@@ -49,45 +49,7 @@ public interface CompositeCoordinator extends java.io.Serializable
      */
 
     public RecoveryCoordinator getRecoveryCoordinator();
-    
-    
-    /**
-     * @deprecated No longer needed for new TCC
-     * 
-     * Checks whether the instance is recoverable
-     * in the active state. Although active recoverability requires 
-     * more logging overhead, some protocols may need this capability.
-     * 
-     * @return Boolean True if the instance is recoverable in active state, 
-     * or null if this information is not available (e.g., for imported instances). 
-     * 
-     */
-   public Boolean isRecoverableWhileActive();
-   
-   /**
-    * @deprecated No longer needed for new TCC
-    * 
-    * Sets this coordinator to be recoverable
-    * while active. Ideally, this method is called
-    * before any participants are added 
-    * (otherwise, some participants may have been added
-    * and not recovered due to an intermediate crash).
-    *
-    * This operation may not be unavailable for imported 
-    * coordinators, but it should always work for 
-    * locally created (sub)transactions.
-    * 
-    * Calling this method is optional, and it defaults to false.
-    *
-    * <br>
-    * <b>NOTE: active recoverability is inherited by 
-    * any subtransactions that are created afterwards.</b>
-    */
-   
-   public void setRecoverableWhileActive()
-   throws UnsupportedOperationException;
-    
-    
+
 }
 
 

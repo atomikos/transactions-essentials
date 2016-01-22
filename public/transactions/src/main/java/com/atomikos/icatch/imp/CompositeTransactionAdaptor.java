@@ -48,8 +48,6 @@ public class CompositeTransactionAdaptor extends AbstractCompositeTransaction
 
     private String root_;
 
-    private Boolean isRecoverableWhileActive_;
-
     /**
      * Create a new instance.
      *
@@ -60,12 +58,10 @@ public class CompositeTransactionAdaptor extends AbstractCompositeTransaction
      *            True if serial.
      * @param adaptor
      *            The adaptor for replay requests.
-     * @param isRecoverableWhileActive
-     *            Whether recoverable in active state or not. Null if not known.
      */
 
     public CompositeTransactionAdaptor ( Stack lineage , String tid ,
-            boolean serial , RecoveryCoordinator adaptor , Boolean isRecoverableWhileActive )
+            boolean serial , RecoveryCoordinator adaptor  )
     {
         super ( tid , (Stack) lineage.clone () , serial  );
         adaptorForReplayRequests_ = adaptor;
@@ -75,7 +71,6 @@ public class CompositeTransactionAdaptor extends AbstractCompositeTransaction
             parent = (CompositeTransaction) tmp.pop();
         }
         root_ = parent.getTid();
-        isRecoverableWhileActive_ = isRecoverableWhileActive;
     }
 
     /**
@@ -137,16 +132,6 @@ public class CompositeTransactionAdaptor extends AbstractCompositeTransaction
     public RecoveryCoordinator getRecoveryCoordinator ()
     {
         return adaptorForReplayRequests_;
-    }
-
-    public Boolean isRecoverableWhileActive ()
-    {
-        return isRecoverableWhileActive_;
-    }
-
-    public void setRecoverableWhileActive()
-    {
-        throw new UnsupportedOperationException();
     }
 
 }

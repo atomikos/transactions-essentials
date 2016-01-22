@@ -59,7 +59,7 @@ public class PropagationImp implements Propagation
         // replace most recent ancestor by adaptor
         CompositeTransaction remote = (CompositeTransaction) lineage.peek ();
         CompositeTransaction ct = new CompositeTransactionAdaptor ( lineage,
-                remote.getTid (), remote.isSerial (), adaptor , remote.getCompositeCoordinator().isRecoverableWhileActive() );
+                remote.getTid (), remote.isSerial (), adaptor);
 
         lineage.pop ();
 
