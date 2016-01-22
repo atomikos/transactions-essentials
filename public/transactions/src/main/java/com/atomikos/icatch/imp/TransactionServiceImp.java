@@ -221,7 +221,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
      *         none.
      */
 
-    Vector<CoordinatorImp> getCoordinatorImpVector ()
+    private Vector<CoordinatorImp> getCoordinatorImpVector ()
     {
         Vector<CoordinatorImp> ret = new Vector<CoordinatorImp> ();
         Enumeration tids = rootToCoordinatorMap_.keys ();
