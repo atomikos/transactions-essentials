@@ -32,7 +32,7 @@ public class XaResourceRecoveryManager {
 			public boolean selects(Xid vendorXid) {
 				boolean ret = false;
 				String branch = new String ( vendorXid.getBranchQualifier () );
-				Xid xid = wrapWithOurOwnXidToHaveCorrectEqualsAndHashCode ( vendorXid );
+				XID xid = wrapWithOurOwnXidToHaveCorrectEqualsAndHashCode ( vendorXid );
                 if ( branch.startsWith ( tmUniqueName ) ) {
                 	ret = true;
                     if(LOGGER.isInfoEnabled()){
@@ -47,7 +47,7 @@ public class XaResourceRecoveryManager {
                 return ret;
 			}
 
-			private Xid wrapWithOurOwnXidToHaveCorrectEqualsAndHashCode(Xid xid) {
+			private XID wrapWithOurOwnXidToHaveCorrectEqualsAndHashCode(Xid xid) {
 				return new XID(xid);
 			}						
 		}; 
@@ -56,11 +56,11 @@ public class XaResourceRecoveryManager {
 	
 
 	public void recover(XAResource xaResource) {
-		List<Xid> xidsToRecover = retrievePreparedXidsFromXaResource(xaResource);
-		Collection<Xid> xidsToCommit;
+		List<XID> xidsToRecover = retrievePreparedXidsFromXaResource(xaResource);
+		Collection<XID> xidsToCommit;
 		try {
 			xidsToCommit = retrieveExpiredCommittingXidsFromLog();
-			for (Xid xid : xidsToRecover) {
+			for (XID xid : xidsToRecover) {
 				if (xidsToCommit.contains(xid)) {
 					replayCommit(xid, xaResource);
 				} else {
@@ -72,7 +72,7 @@ public class XaResourceRecoveryManager {
 		}
 	}
 
-	private void replayCommit(Xid xid, XAResource xaResource) {
+	private void replayCommit(XID xid, XAResource xaResource) {
 		try {
 			xaResource.commit(xid, false);
 			log.terminated(xid);
@@ -87,7 +87,7 @@ public class XaResourceRecoveryManager {
 		}
 	}
 
-	private void handleHeuristicTerminationByResource(Xid xid,
+	private void handleHeuristicTerminationByResource(XID xid,
 			XAResource xaResource, XAException e, boolean commitDesired) {
 		try {
 			notifyLogOfHeuristic(xid, e, commitDesired);
@@ -139,13 +139,12 @@ public class XaResourceRecoveryManager {
 		}
 	}
 
-	private Set<Xid> retrieveExpiredCommittingXidsFromLog() throws LogException {
+	private Set<XID> retrieveExpiredCommittingXidsFromLog() throws LogException {
 		return log.getExpiredCommittingXids();
 	}
 
-	private List<Xid> retrievePreparedXidsFromXaResource(XAResource xaResource) {
-		// TODO wrapWithOurOwnXidToHaveCorrectEqualsAndHashCode(Xid vendorXid)
-		List<Xid> ret = new ArrayList<Xid>();
+	private List<XID> retrievePreparedXidsFromXaResource(XAResource xaResource) {
+		List<XID> ret = new ArrayList<XID>();
 		try {
 			ret = RecoveryScan.recoverXids(xaResource, xidSelector);
 		} catch (XAException e) {
@@ -154,7 +153,7 @@ public class XaResourceRecoveryManager {
 		return ret;
 	}
 
-	private void attemptPresumedAbort(Xid xid, XAResource xaResource) {
+	private void attemptPresumedAbort(XID xid, XAResource xaResource) {
 		try {
 			log.presumedAborting(xid);
 			try {
@@ -176,7 +175,7 @@ public class XaResourceRecoveryManager {
 		}
 	}
 
-	private void notifyLogOfHeuristic(Xid xid, XAException e, boolean commitDesired ) throws LogException {
+	private void notifyLogOfHeuristic(XID xid, XAException e, boolean commitDesired ) throws LogException {
 		switch (e.errorCode) {
 		case XAException.XA_HEURHAZ:
 			log.terminatedWithHeuristicHazardByResource(xid);

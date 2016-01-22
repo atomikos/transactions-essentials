@@ -146,11 +146,11 @@ public class XAResourceTransaction implements ResourceTransaction,
 	private boolean isXaSuspended;
 	private TxState state;
 	private String resourcename;
-	private transient Xid xid;
+	private transient XID xid;
 	private transient String xidToHexString;
 	private transient String toString;
 
-	private void setXid(Xid xid) {
+	private void setXid(XID xid) {
 		this.xid = xid;
 		this.xidToHexString = xidToHexString(xid);
 		this.toString = "XAResourceTransaction: " + this.xidToHexString;
@@ -292,7 +292,7 @@ public class XAResourceTransaction implements ResourceTransaction,
 	public void readExternal(ObjectInput in) throws IOException,
 			ClassNotFoundException {
 
-		setXid((Xid) in.readObject());
+		setXid((XID) in.readObject());
 		this.tid = (String) in.readObject();
 		this.root = (String) in.readObject();
 		this.state = (TxState) in.readObject();
@@ -882,7 +882,7 @@ public class XAResourceTransaction implements ResourceTransaction,
 	 */
 	@Override
 	public String getURI() {
-		return XID.getBranchQualifierAsString(xid);
+		return xid.getBranchQualifierAsString();
 	}
 
 	public String getResourceName() {

@@ -35,15 +35,15 @@ public class XaResourceRecoveryManagerTestJUnit {
 
 	@Test
 	public void irrelevantResourceXidsAreIgnored() throws XAException {
-		Xid xid = createIrrelevantXid();
+		XID xid = createIrrelevantXid();
 		givenXaResourceWithPreparedXid(xid);
 		whenRecovered();
 		thenNotTerminatedInXaResource(xid);
 		thenNotTerminatedInLog(xid);
 	}
 
-	private Xid createIrrelevantXid() {
-		Xid xid = new XID("demo", "Irrelevant" + XARESOURCE_QUALIFIER);
+	private XID createIrrelevantXid() {
+		XID xid = new XID("demo", "Irrelevant" + XARESOURCE_QUALIFIER);
 		return xid;
 	}
 
@@ -57,7 +57,7 @@ public class XaResourceRecoveryManagerTestJUnit {
 
 	@Test
 	public void preparingRelevantXidsAreRolledbackAfterExpiry() throws XAException, InterruptedException {
-		Xid xid = createRelevantXid();
+		XID xid = createRelevantXid();
 		givenXaResourceWithPreparedXid(xid);
 		givenExpiredPreparingXidInLog(xid);
 		whenRecovered();
@@ -68,7 +68,7 @@ public class XaResourceRecoveryManagerTestJUnit {
 	@Test
 	public void preparingRelevantXidsAreNotRolledbackBeforeExpiryToMinimizeInterferenceWithOltpCommit()
 			throws Exception {
-		Xid xid = createRelevantXid();
+		XID xid = createRelevantXid();
 		givenXaResourceWithPreparedXid(xid);
 		givenUnexpiredPreparingXidInLog(xid);
 		whenRecovered();
@@ -78,7 +78,7 @@ public class XaResourceRecoveryManagerTestJUnit {
 
 	@Test
 	public void preparingRelevantXidsAreNotRolledbackAfterConcurrentOltpCommit() throws Exception {
-		Xid xid = createRelevantXid();
+		XID xid = createRelevantXid();
 		givenXaResourceWithPreparedXid(xid);
 		givenExpiredPreparingXidInLog(xid);
 		givenIntermediateCommitByOltp(xid);
@@ -89,7 +89,7 @@ public class XaResourceRecoveryManagerTestJUnit {
 
 	@Test
 	public void committingRelevantXidsAreForgottenAfterHeuristicRollbackByResource() throws Exception {
-		Xid xid = createRelevantXid();
+		XID xid = createRelevantXid();
 		givenXaResourceWithHeuristicallyRolledbackXid(xid);
 		givenExpiredCommittingXidInLog(xid);
 		whenRecovered();
@@ -99,7 +99,7 @@ public class XaResourceRecoveryManagerTestJUnit {
 
 	@Test
 	public void rollingbackRelevantXidsAreForgottenAfterHeuristicCommitByResource() throws Exception {
-		Xid xid = createRelevantXid();
+		XID xid = createRelevantXid();
 		givenXaResourceWithHeuristicallyCommittedXid(xid);
 		givenExpiredPreparingXidInLog(xid);
 		whenRecovered();
@@ -109,7 +109,7 @@ public class XaResourceRecoveryManagerTestJUnit {
 
 	@Test
 	public void committingRelevantXidsAreForgottenAfterHeuristicHazardFromResource() throws Exception {
-		Xid xid = createRelevantXid();
+		XID xid = createRelevantXid();
 		givenXaResourceWithHeuristicHazardXid(xid);
 		givenExpiredCommittingXidInLog(xid);
 		whenRecovered();
@@ -119,7 +119,7 @@ public class XaResourceRecoveryManagerTestJUnit {
 
 	@Test
 	public void rollingbackRelevantXidsAreForgottenAfterHeuristicHazardFromResource() throws Exception {
-		Xid xid = createRelevantXid();
+		XID xid = createRelevantXid();
 		givenXaResourceWithHeuristicHazardXid(xid);
 		givenExpiredPreparingXidInLog(xid);
 		whenRecovered();
@@ -129,7 +129,7 @@ public class XaResourceRecoveryManagerTestJUnit {
 
 	@Test
 	public void rollingbackRelevantXidsAreForgottenAfterHeuristicMixedFromResource() throws Exception {
-		Xid xid = createRelevantXid();
+		XID xid = createRelevantXid();
 		givenXaResourceWithHeuristicMixedXid(xid);
 		givenExpiredPreparingXidInLog(xid);
 		whenRecovered();
@@ -148,7 +148,7 @@ public class XaResourceRecoveryManagerTestJUnit {
 
 	@Test
 	public void autoForgetHeuristicsCanBeDisabledByConfiguration() throws Exception {
-		Xid xid = createRelevantXid();
+		XID xid = createRelevantXid();
 		givenAutoForgetDisabled();
 		givenXaResourceWithHeuristicMixedXid(xid);
 		givenExpiredPreparingXidInLog(xid);
@@ -203,13 +203,13 @@ public class XaResourceRecoveryManagerTestJUnit {
 		Mockito.verify(xaResource, Mockito.times(0)).forget(xid);
 	}
 
-	private void thenNotTerminatedInLog(Xid xid) {
+	private void thenNotTerminatedInLog(XID xid) {
 		Mockito.verify(log, Mockito.times(0)).terminated(xid);
 	}
 
 	@Test
 	public void committingRelevantXidsAreCommittedAfterExpiry() throws Exception {
-		Xid xid = createRelevantXid();
+		XID xid = createRelevantXid();
 		givenXaResourceWithPreparedXid(xid);
 		givenExpiredCommittingXidInLog(xid);
 		whenRecovered();
@@ -227,23 +227,23 @@ public class XaResourceRecoveryManagerTestJUnit {
 		Mockito.when(xaResource.recover(Mockito.anyInt())).thenThrow(new XAException(XAException.XAER_RMERR));
 	}
 
-	private void thenTerminatedInLog(Xid xid) {
+	private void thenTerminatedInLog(XID xid) {
 		Mockito.verify(log, Mockito.times(1)).terminated(xid);
 	}
 
-	private void thenHeuristicHazardReportedToLog(Xid xid) throws LogException {
+	private void thenHeuristicHazardReportedToLog(XID xid) throws LogException {
 		Mockito.verify(log, Mockito.times(1)).terminatedWithHeuristicHazardByResource(xid);
 	}
 
-	private void thenHeuristicMixedReportedToLog(Xid xid) throws LogException {
+	private void thenHeuristicMixedReportedToLog(XID xid) throws LogException {
 		Mockito.verify(log, Mockito.times(1)).terminatedWithHeuristicMixedByResource(xid);
 	}
 
-	private void thenHeuristicCommitReportedToLog(Xid xid) throws LogException {
+	private void thenHeuristicCommitReportedToLog(XID xid) throws LogException {
 		Mockito.verify(log, Mockito.times(1)).terminatedWithHeuristicCommitByResource(xid);
 	}
 
-	private void thenHeuristicRollbackReportedToLog(Xid xid) throws LogException {
+	private void thenHeuristicRollbackReportedToLog(XID xid) throws LogException {
 		Mockito.verify(log, Mockito.times(1)).terminatedWithHeuristicRollbackByResource(xid);
 	}
 
@@ -251,7 +251,7 @@ public class XaResourceRecoveryManagerTestJUnit {
 		Mockito.verify(xaResource, Mockito.times(1)).commit(xid, false);
 	}
 
-	private void givenUnexpiredPreparingXidInLog(Xid xid) throws IllegalStateException, LogException {
+	private void givenUnexpiredPreparingXidInLog(XID xid) throws IllegalStateException, LogException {
 		Mockito.doThrow(new IllegalStateException()).when(log).presumedAborting(xid);
 	}
 
@@ -259,13 +259,13 @@ public class XaResourceRecoveryManagerTestJUnit {
 		// do nothing: don't make log mock throw on presumedAborting
 	}
 
-	private void givenExpiredCommittingXidInLog(Xid xid) throws LogException {
-		Set<Xid> toReturn = new HashSet<Xid>();
+	private void givenExpiredCommittingXidInLog(XID xid) throws LogException {
+		Set<XID> toReturn = new HashSet<XID>();
 		toReturn.add(xid);
 		Mockito.when(log.getExpiredCommittingXids()).thenReturn(toReturn);
 	}
 
-	private void givenIntermediateCommitByOltp(Xid xid) throws IllegalStateException, LogException {
+	private void givenIntermediateCommitByOltp(XID xid) throws IllegalStateException, LogException {
 		Mockito.doThrow(new IllegalStateException()).when(log).presumedAborting(xid);
 	}
 
@@ -277,8 +277,8 @@ public class XaResourceRecoveryManagerTestJUnit {
 		Mockito.verify(xaResource, Mockito.never()).rollback(xid);
 	}
 
-	private Xid createRelevantXid() {
-		Xid xid = new XID("demo", XARESOURCE_QUALIFIER);
+	private XID createRelevantXid() {
+		XID xid = new XID("demo", XARESOURCE_QUALIFIER);
 		return xid;
 	}
 

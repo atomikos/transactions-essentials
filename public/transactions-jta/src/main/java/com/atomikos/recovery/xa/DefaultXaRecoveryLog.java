@@ -22,30 +22,30 @@ public class DefaultXaRecoveryLog implements XaRecoveryLog {
 	}
 
 	@Override
-	public void presumedAborting(Xid xid) throws IllegalStateException, LogException {
+	public void presumedAborting(XID xid) throws IllegalStateException, LogException {
 		ParticipantLogEntry entry = convertXidToParticipantLogEntry(xid, TxState.IN_DOUBT);
 		log.presumedAborting(entry);
 	}
 
 	@Override
-	public void terminated(Xid xid) {
+	public void terminated(XID xid) {
 		ParticipantLogEntry entry = convertXidToParticipantLogEntry(xid, TxState.TERMINATED);
 		log.terminated(entry);
 	}
 
-	private ParticipantLogEntry convertXidToParticipantLogEntry(Xid xid, TxState state) {
+	private ParticipantLogEntry convertXidToParticipantLogEntry(XID xid, TxState state) {
 		//TODO : description should include unique resource name...
 		ParticipantLogEntry entry = new ParticipantLogEntry(
-				XID.getGlobalTransactionIdAsString(xid),
-				XID.getBranchQualifierAsString(xid), 0, xid.toString(),
+				xid.getGlobalTransactionIdAsString(),
+				xid.getBranchQualifierAsString(), 0, xid.toString(),
 				state
 			);
 		return entry;
 	}
 
 	@Override
-	public Set<Xid> getExpiredCommittingXids() throws LogReadException {
-		Set<Xid> ret = new HashSet<Xid>();
+	public Set<XID> getExpiredCommittingXids() throws LogReadException {
+		Set<XID> ret = new HashSet<XID>();
 		Collection<ParticipantLogEntry> entries = log.getCommittingParticipants();
 		for (ParticipantLogEntry entry : entries) {
 			if (expired(entry) && !http(entry)) {
@@ -66,25 +66,25 @@ public class DefaultXaRecoveryLog implements XaRecoveryLog {
 	}
 
 	@Override
-	public void terminatedWithHeuristicHazardByResource(Xid xid) throws LogException {
+	public void terminatedWithHeuristicHazardByResource(XID xid) throws LogException {
 		ParticipantLogEntry entry = convertXidToParticipantLogEntry(xid, TxState.HEUR_HAZARD);
 		log.terminatedWithHeuristicHazard(entry);
 	}
 
 	@Override
-	public void terminatedWithHeuristicCommitByResource(Xid xid) throws LogException {
+	public void terminatedWithHeuristicCommitByResource(XID xid) throws LogException {
 		ParticipantLogEntry entry = convertXidToParticipantLogEntry(xid, TxState.HEUR_COMMITTED);
 		log.terminatedWithHeuristicCommit(entry);
 	}
 
 	@Override
-	public void terminatedWithHeuristicMixedByResource(Xid xid) throws LogException {
+	public void terminatedWithHeuristicMixedByResource(XID xid) throws LogException {
 		ParticipantLogEntry entry = convertXidToParticipantLogEntry(xid, TxState.HEUR_MIXED);
 		log.terminatedWithHeuristicMixed(entry);
 	}
 
 	@Override
-	public void terminatedWithHeuristicRollbackByResource(Xid xid) throws LogException {
+	public void terminatedWithHeuristicRollbackByResource(XID xid) throws LogException {
 		ParticipantLogEntry entry = convertXidToParticipantLogEntry(xid, TxState.HEUR_ABORTED);
 		log.terminatedWithHeuristicRollback(entry);
 	}

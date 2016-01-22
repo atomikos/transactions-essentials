@@ -13,13 +13,13 @@ public class RecoveryScan {
 		boolean selects(Xid xid);
 	}
 	
-	public static List<Xid> recoverXids(XAResource xaResource, XidSelector selector) throws XAException {
-		List<Xid> ret = new ArrayList<Xid>();
+	public static List<XID> recoverXids(XAResource xaResource, XidSelector selector) throws XAException {
+		List<XID> ret = new ArrayList<XID>();
 
         boolean done = false;
         int flags = XAResource.TMSTARTRSCAN;
         Xid[] xidsFromLastScan = null;
-        List<Xid> allRecoveredXidsSoFar = new ArrayList<Xid>();
+        List<XID> allRecoveredXidsSoFar = new ArrayList<XID>();
         do {
         	xidsFromLastScan = xaResource.recover(flags);
             flags = XAResource.TMNOFLAGS;
@@ -34,7 +34,7 @@ public class RecoveryScan {
 
                 done = true;
                 for ( int i = 0; i < xidsFromLastScan.length; i++ ) {
-                    Xid xid = new XID ( xidsFromLastScan[i] );
+                	XID xid = new XID ( xidsFromLastScan[i] );
                     // our own XID implements equals and hashCode properly
                     if (!allRecoveredXidsSoFar.contains(xid)) {
                         // a new xid is returned -> we can not be in a recovery loop -> go on

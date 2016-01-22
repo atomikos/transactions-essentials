@@ -4,6 +4,7 @@ import java.util.Set;
 
 import javax.transaction.xa.Xid;
 
+import com.atomikos.datasource.xa.XID;
 import com.atomikos.recovery.LogException;
 
 
@@ -22,7 +23,7 @@ public interface XaRecoveryLog {
 	 * @param xid
 	 * @throws IllegalStateException If the state precondition is not satisfied.
 	 */
-	public void presumedAborting(Xid xid) throws IllegalStateException, LogException;
+	public void presumedAborting(XID xid) throws IllegalStateException, LogException;
 
 	/**
 	 * Notifies the log that recovery has terminated a pending xid.
@@ -32,15 +33,15 @@ public interface XaRecoveryLog {
 	 * 
 	 * @param xid
 	 */
-	public void terminated(Xid xid);
+	public void terminated(XID xid);
 
-	public Set<Xid> getExpiredCommittingXids() throws LogException;
+	public Set<XID> getExpiredCommittingXids() throws LogException;
 
-	public void terminatedWithHeuristicHazardByResource(Xid xid) throws LogException;
+	public void terminatedWithHeuristicHazardByResource(XID xid) throws LogException;
 
-	public void terminatedWithHeuristicCommitByResource(Xid xid) throws LogException;
+	public void terminatedWithHeuristicCommitByResource(XID xid) throws LogException;
 
-	public void terminatedWithHeuristicMixedByResource(Xid xid) throws LogException;
+	public void terminatedWithHeuristicMixedByResource(XID xid) throws LogException;
 
-	public void terminatedWithHeuristicRollbackByResource(Xid xid) throws LogException;
+	public void terminatedWithHeuristicRollbackByResource(XID xid) throws LogException;
 }

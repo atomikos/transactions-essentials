@@ -456,7 +456,7 @@ public abstract class XATransactionalResource implements TransactionalResource
      *         that connects to the same EIS.
      */
 
-    protected Xid createXid(String tid) {
+    protected XID createXid(String tid) {
     	if (this.branchIdentifier == null) throw new IllegalStateException("Not yet initialized");
         return getXidFactory().createXid (tid , this.branchIdentifier);
     }

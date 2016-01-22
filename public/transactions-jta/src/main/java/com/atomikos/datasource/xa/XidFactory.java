@@ -25,7 +25,6 @@
 
 package com.atomikos.datasource.xa;
 
-import javax.transaction.xa.Xid;
 
 /**
  * 
@@ -48,5 +47,5 @@ public interface XidFactory
      * @return Xid The Xid instance.
      */
 
-    public Xid createXid ( String tid , String resourcename );
+    public XID createXid ( String tid , String resourcename );
 }

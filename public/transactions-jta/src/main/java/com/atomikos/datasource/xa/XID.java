@@ -47,18 +47,10 @@ public class XID implements Serializable, Xid
 	
 	private String cachedToStringForPerformance;
     private int formatId;
-    private byte[] branchQualifier = new byte[Xid.MAXBQUALSIZE];
-    private byte[] globalTransactionId = new byte[Xid.MAXGTRIDSIZE];
-
-    private XID ( String tid )
-    {
-        this.formatId = DEFAULT_FORMAT;
-        this.branchQualifier[0] = 0;
-        this.globalTransactionId = tid.toString ().getBytes ();
-        if ( this.globalTransactionId.length > Xid.MAXGTRIDSIZE )
-        	throw new RuntimeException ( "Max global tid length exceeded." );
-    }
-
+    private final byte[] branchQualifier;
+    private final byte[] globalTransactionId;
+    private final String branchQualifierStr;
+    private final String globalTransactionIdStr;
     /**
      * Create a new instance with the resource name as branch. This is the main
      * constructor for new instances.
@@ -75,7 +67,14 @@ public class XID implements Serializable, Xid
 
     public XID ( String tid , String resourceURL )
     {
-        this ( tid );
+    	 this.formatId = DEFAULT_FORMAT;
+
+         this.globalTransactionIdStr=tid;
+         this.globalTransactionId = tid.toString ().getBytes ();
+         if ( this.globalTransactionId.length > Xid.MAXGTRIDSIZE )
+         	throw new RuntimeException ( "Max global tid length exceeded." );
+         
+        this.branchQualifierStr = resourceURL;
         this.branchQualifier = resourceURL.getBytes ();
         if ( this.branchQualifier.length > Xid.MAXBQUALSIZE )
             throw new RuntimeException (
@@ -97,6 +96,8 @@ public class XID implements Serializable, Xid
         this.formatId = xid.getFormatId ();
         this.globalTransactionId = xid.getGlobalTransactionId ();
         this.branchQualifier = xid.getBranchQualifier ();
+        this.globalTransactionIdStr = new String(xid.getGlobalTransactionId ());
+        this.branchQualifierStr= new String(xid.getBranchQualifier ());
     }
 
     @Override
@@ -122,31 +123,29 @@ public class XID implements Serializable, Xid
     {
     	if (this == obj)
 			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-        Xid xid = (Xid) obj;
-        return Arrays.equals(xid.getGlobalTransactionId (),getGlobalTransactionId ()) && Arrays.equals(xid.getBranchQualifier (), getBranchQualifier ());
-
+		if (obj instanceof XID) {
+			XID xid = (XID) obj;
+			return xid.getBranchQualifierAsString().equals(getBranchQualifierAsString()) && xid.getGlobalTransactionIdAsString().equals(getGlobalTransactionIdAsString());
+		}
+		return false;
     }
 
     @Override
 	public String toString ()
     {
         if ( this.cachedToStringForPerformance == null ) {
-            this.cachedToStringForPerformance = getGlobalTransactionIdAsString(this)
-                    + getBranchQualifierAsString(this);
+            this.cachedToStringForPerformance = getGlobalTransactionIdAsString()
+                    + getBranchQualifierAsString();
         }
         return this.cachedToStringForPerformance;
     }
 
-	public static String getBranchQualifierAsString(Xid xid) {
-		return new String ( xid.getBranchQualifier() );
+	public  String getBranchQualifierAsString() {
+		return this.branchQualifierStr;
 	}
 
-	public static String getGlobalTransactionIdAsString(Xid xid) {
-		return new String ( xid.getGlobalTransactionId() );
+	public  String getGlobalTransactionIdAsString() {
+		return this.globalTransactionIdStr;
 	}
 
     @Override

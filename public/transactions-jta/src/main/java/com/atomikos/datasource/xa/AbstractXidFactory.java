@@ -25,6 +25,8 @@
 
 package com.atomikos.datasource.xa;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 import javax.transaction.xa.Xid;
 
 /**
@@ -42,21 +44,8 @@ public abstract class AbstractXidFactory implements XidFactory
 {
 
    private static final int MAX_LENGTH_OF_COUNTER = 8;
-//default scope for testing issue 10086
-   static long counter = 0;
-
-    // to make sure that XIDs for the same
-    // combination of TM,TID are still unique
-
-    protected static void incCounter ()
-    {
-        counter++;
-    }
-
-    protected static long getCounter ()
-    {
-        return counter;
-    }
+ 
+   static AtomicLong counter = new AtomicLong(0);
 
     public AbstractXidFactory ()
     {
@@ -68,7 +57,7 @@ public abstract class AbstractXidFactory implements XidFactory
      * @see com.atomikos.datasource.xa.XidFactory
      */
 
-    public Xid createXid ( String tid , String resourcename )
+    public XID createXid ( String tid , String resourcename )
     {
 
     	if ( resourcename.getBytes().length + MAX_LENGTH_OF_COUNTER > XID.MAXBQUALSIZE ) {
@@ -80,8 +69,7 @@ public abstract class AbstractXidFactory implements XidFactory
         // different from the last call that was done
         // by the SAME tid (works because calls within
         // one TID are serial)
-        incCounter ();
-        return new XID ( tid, resourcename + getCounter () );
+        return new XID ( tid, resourcename + counter.incrementAndGet() );
     }
 
 }

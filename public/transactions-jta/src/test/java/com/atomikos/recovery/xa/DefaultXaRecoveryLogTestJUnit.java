@@ -37,42 +37,42 @@ public class DefaultXaRecoveryLogTestJUnit {
 
 	@Test
 	public void testTerminated() {
-		Xid xid = givenSomeXid();
+		XID xid = givenSomeXid();
 		whenTerminated(xid);
 		thenTerminatedInUnderlyingGenericLog(xid);
 	}
 	
 	@Test
 	public void testPresumedAborting() throws IllegalStateException, LogException {
-		Xid xid = givenSomeXid();
+		XID xid = givenSomeXid();
 		whenPresumedAborting(xid);
 		thenPresumedAbortingInUnderlyingGenericLog(xid);
 	}
 	
 	@Test
 	public void testHeuristicRollbackByResource() throws IllegalStateException, LogException {
-		Xid xid = givenSomeXid();
+		XID xid = givenSomeXid();
 		whenHeuristicRollback(xid);
 		thenHeuristicRollbackInUnderlyingGenericLog(xid);
 	}
 	
 	@Test
 	public void testHeuristicCommitByResource() throws IllegalStateException, LogException {
-		Xid xid = givenSomeXid();
+		XID xid = givenSomeXid();
 		whenHeuristicCommit(xid);
 		thenHeuristicCommitInUnderlyingGenericLog(xid);
 	}
 	
 	@Test
 	public void testHeuristicHazardByResource() throws IllegalStateException, LogException {
-		Xid xid = givenSomeXid();
+		XID xid = givenSomeXid();
 		whenHeuristicHazard(xid);
 		thenHeuristicHazardInUnderlyingGenericLog(xid);
 	}
 	
 	@Test
 	public void testHeuristicMixedByResource() throws IllegalStateException, LogException {
-		Xid xid = givenSomeXid();
+		XID xid = givenSomeXid();
 		whenHeuristicMixed(xid);
 		thenHeuristicMixedInUnderlyingGenericLog(xid);
 	}
@@ -80,7 +80,7 @@ public class DefaultXaRecoveryLogTestJUnit {
 	@Test
 	public void testGetCommittingXids() throws LogReadException {
 		ParticipantLogEntry entry = givenCommittingParticipantLogEntryInGenericLog();
-		Xid xid = whenGetExpiredCommittingXids();
+		XID xid = whenGetExpiredCommittingXids();
 		thenGtidEqualsCoordinatorId(entry, xid);
 		thenParticipantEqualsXidBranchQualifierToString(entry, xid);
 	}
@@ -100,17 +100,17 @@ public class DefaultXaRecoveryLogTestJUnit {
 	}
 
 	private void thenParticipantEqualsXidBranchQualifierToString(ParticipantLogEntry entry,
-			Xid xid) {
-		Assert.assertEquals(entry.uri, XID.getBranchQualifierAsString(xid));
+			XID xid) {
+		Assert.assertEquals(entry.uri,xid.getBranchQualifierAsString());
 	}
 
-	private void thenGtidEqualsCoordinatorId(ParticipantLogEntry entry, Xid xid) {
-		Assert.assertEquals(entry.coordinatorId, XID.getGlobalTransactionIdAsString(xid));
+	private void thenGtidEqualsCoordinatorId(ParticipantLogEntry entry, XID xid) {
+		Assert.assertEquals(entry.coordinatorId, xid.getGlobalTransactionIdAsString());
 	}
 
-	private Xid whenGetExpiredCommittingXids() throws LogReadException {
-		Xid ret = null;
-		Set<Xid> xids = sut.getExpiredCommittingXids();
+	private XID whenGetExpiredCommittingXids() throws LogReadException {
+		XID ret = null;
+		Set<XID> xids = sut.getExpiredCommittingXids();
 		if (!xids.isEmpty()) {
 			ret = xids.iterator().next();
 		}
@@ -118,47 +118,47 @@ public class DefaultXaRecoveryLogTestJUnit {
 	}
 
 	private ParticipantLogEntry givenCommittingParticipantLogEntryInGenericLog() throws LogReadException {
-		Xid xid = givenSomeXid();
-		ParticipantLogEntry entry = new ParticipantLogEntry(XID.getGlobalTransactionIdAsString(xid), xid.toString(), 0, "desc", TxState.COMMITTING);
+		XID xid = givenSomeXid();
+		ParticipantLogEntry entry = new ParticipantLogEntry(xid.getGlobalTransactionIdAsString(), xid.toString(), 0, "desc", TxState.COMMITTING);
 		Collection<ParticipantLogEntry> c = new HashSet<ParticipantLogEntry>();
 		c.add(entry);
 		Mockito.when(mock.getCommittingParticipants()).thenReturn(c);
 		return entry;
 	}
 
-	private void thenHeuristicMixedInUnderlyingGenericLog(Xid xid) throws LogException {
+	private void thenHeuristicMixedInUnderlyingGenericLog(XID xid) throws LogException {
 		ParticipantLogEntry entry = convertXidToParticipantLogEntry(xid);
 		Mockito.verify(mock,Mockito.times(1)).terminatedWithHeuristicMixed(entry);
 	}
 
-	private void whenHeuristicMixed(Xid xid) throws LogException {
+	private void whenHeuristicMixed(XID xid) throws LogException {
 		sut.terminatedWithHeuristicMixedByResource(xid);
 	}
 
-	private void thenHeuristicHazardInUnderlyingGenericLog(Xid xid) throws LogException {
+	private void thenHeuristicHazardInUnderlyingGenericLog(XID xid) throws LogException {
 		ParticipantLogEntry entry = convertXidToParticipantLogEntry(xid);
 		Mockito.verify(mock,Mockito.times(1)).terminatedWithHeuristicHazard(entry);
 	}
 
-	private void whenHeuristicHazard(Xid xid) throws LogException {
+	private void whenHeuristicHazard(XID xid) throws LogException {
 		sut.terminatedWithHeuristicHazardByResource(xid);
 	}
 
-	private void thenHeuristicCommitInUnderlyingGenericLog(Xid xid) throws LogException {
+	private void thenHeuristicCommitInUnderlyingGenericLog(XID xid) throws LogException {
 		ParticipantLogEntry entry = convertXidToParticipantLogEntry(xid);
 		Mockito.verify(mock,Mockito.times(1)).terminatedWithHeuristicCommit(entry);
 	}
 
-	private void whenHeuristicCommit(Xid xid) throws LogException {
+	private void whenHeuristicCommit(XID xid) throws LogException {
 		sut.terminatedWithHeuristicCommitByResource(xid);
 	}
 
-	private void thenHeuristicRollbackInUnderlyingGenericLog(Xid xid) throws LogException {
+	private void thenHeuristicRollbackInUnderlyingGenericLog(XID xid) throws LogException {
 		ParticipantLogEntry entry = convertXidToParticipantLogEntry(xid);
 		Mockito.verify(mock,Mockito.times(1)).terminatedWithHeuristicRollback(entry);
 	}
 
-	private void whenHeuristicRollback(Xid xid) throws LogException {
+	private void whenHeuristicRollback(XID xid) throws LogException {
 		sut.terminatedWithHeuristicRollbackByResource(xid);
 	}
 
@@ -168,24 +168,24 @@ public class DefaultXaRecoveryLogTestJUnit {
 		Assert.assertEquals(TxState.IN_DOUBT, captor.getValue().state);
 	}
 
-	private ParticipantLogEntry convertXidToParticipantLogEntry(Xid xid) {
-		return new ParticipantLogEntry(XID.getGlobalTransactionIdAsString(xid), XID.getBranchQualifierAsString(xid), 0, "desc", TxState.COMMITTING);
+	private ParticipantLogEntry convertXidToParticipantLogEntry(XID xid) {
+		return new ParticipantLogEntry(xid.getGlobalTransactionIdAsString(), xid.getBranchQualifierAsString(), 0, "desc", TxState.COMMITTING);
 	}
 
-	private void whenPresumedAborting(Xid xid) throws IllegalStateException, LogException {
+	private void whenPresumedAborting(XID xid) throws IllegalStateException, LogException {
 		sut.presumedAborting(xid);
 	}
 
-	private void thenTerminatedInUnderlyingGenericLog(Xid xid) {
+	private void thenTerminatedInUnderlyingGenericLog(XID xid) {
 		ParticipantLogEntry entry = convertXidToParticipantLogEntry(xid);
 		Mockito.verify(mock,Mockito.times(1)).terminated(entry);
 	}
 
-	private void whenTerminated(Xid xid) {
+	private void whenTerminated(XID xid) {
 		sut.terminated(xid);
 	}
 
-	private Xid givenSomeXid() {
+	private XID givenSomeXid() {
 		return new XID(TID, BRANCH);
 	}
 
