@@ -39,23 +39,8 @@ import com.atomikos.icatch.CoordinatorLogEntry;
  * should take this into account.
  */
 
-public interface RecoverableCoordinator<TxState> extends Recoverable, FSMPreEnterEventSource<TxState>
+public interface RecoverableCoordinator<TxState> extends FSMPreEnterEventSource<TxState>
 {
-
-    /**
-     * Get an object image for the given state.
-     * 
-     * @param state
-     *            The state about to be reached. Because the instance is not yet
-     *            IN the new state, this state is supplied as a parameter.
-     * 
-     * @return ObjectImage The image, or null to override the recoverability preference.
-     *         In other words, if null is returned that logging is not done for the given
-     *         state, even if the state was returned as one of the recoverable states.
-     */
-    ObjectImage getObjectImage ( TxState state );
-    
-    
     
     CoordinatorLogEntry getCoordinatorLogEntry(TxState state);
     

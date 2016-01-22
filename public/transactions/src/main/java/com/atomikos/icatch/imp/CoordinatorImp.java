@@ -63,7 +63,6 @@ import com.atomikos.icatch.event.transaction.TransactionHeuristicEvent;
 import com.atomikos.icatch.event.transaction.TransactionReadOnlyEvent;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
-import com.atomikos.persistence.ObjectImage;
 import com.atomikos.persistence.RecoverableCoordinator;
 import com.atomikos.publish.EventPublisher;
 import com.atomikos.thread.TaskManager;
@@ -710,92 +709,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
         return ret;
     }
 
-    /**
-     * Help function for restoration.
-     */
 
-    protected void restore ( ObjectImage image )
-    {
-        CoordinatorLogImage img = (CoordinatorLogImage) image;
-        
-        root_ = img.root_;
-
-        participants_ = img.participants_;
-        superiorCoordinator_ = img.coordinator_;
-        heuristicMeansCommit_ = img.heuristicCommit_;
-        maxNumberOfTimeoutTicksBeforeHeuristicDecision_ = img.maxInquiries_;
-        maxNumberOfTimeoutTicksBeforeRollback_ = img.maxInquiries_;
-        recoverableWhileActive_ = img.activity_;
-        if ( recoverableWhileActive_ ) {
-            checkSiblings_ = img.checkSiblings_;
-            localSiblingCount_ = img.localSiblingCount_;
-        }
-
-	    initFsm(img.state_);
-
-        stateHandler_ = img.stateHandler_;
-        if ( img.state_.equals ( TxState.COMMITTING )
-                && stateHandler_.getState ().equals ( TxState.ACTIVE ) ) {
-            // this is a recovered coordinator that was committing
-            // ONE-PHASE; make this a heuristic hazard so it can
-            // be terminated manually if desired (LogAdministrator)
-            CoordinatorStateHandler stateHandler = new HeurHazardStateHandler (
-                    stateHandler_, img.participants_ );
-
-            stateHandler.recover ( this );
-            setStateHandler ( stateHandler );
-
-        }
-        single_threaded_2pc_ = img.single_threaded_2pc_;
-        
-    }
-
-    /**
-     * @see com.atomikos.persistence.Recoverable
-     */
-
-    public ObjectImage getObjectImage ()
-    {
-    	synchronized ( fsm_ ) {
-    		return getObjectImage ( getState () );
-    	}
-    }
-
-    /**
-     * @see com.atomikos.persistence.RecoverableCoordinator
-     */
-
-    public ObjectImage getObjectImage ( TxState state )
-    {
-        // IF VOTING: RETURN LIST OF ALL PARTICIPANTS
-        // IF INDOUBT: RETURN LIST OF INDOUBTS AND NOT READONLY
-        // IF COMMIT/ABORT: RETURN LIST OF REMAINING ACK
-
-    	CoordinatorLogImage ret = null;
-    	synchronized ( fsm_ ) {
-
-    		if ( excludedFromLogging(state)) {
-    				//merely return null to avoid logging overhead
-    				ret = null;
-    		}
-    		else {
-    			TxState imgstate = state;
-
-    			if ( recoverableWhileActive_ ) {
-    				ret = new CoordinatorLogImage ( root_, imgstate, participants_,
-    						superiorCoordinator_, heuristicMeansCommit_, maxNumberOfTimeoutTicksBeforeHeuristicDecision_,
-    						stateHandler_, localSiblingCount_, checkSiblings_ , single_threaded_2pc_);
-    			} else {
-    				ret = new CoordinatorLogImage ( root_, imgstate, participants_,
-    						superiorCoordinator_, heuristicMeansCommit_, maxNumberOfTimeoutTicksBeforeHeuristicDecision_,
-    						stateHandler_ , single_threaded_2pc_ );
-    			}
-    		}
-    	}
-
-        return ret;
-    }
-    
 	private boolean excludedFromLogging(TxState state) {
 		boolean ret = false;
 		if (state.equals ( TxState.ACTIVE ) && !recoverableWhileActive_) {
@@ -817,10 +731,6 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 	}
 
     
-    /**
-     * @see com.atomikos.persistence.Recoverable
-     */
-
     public Object getId ()
     {
         return root_;
