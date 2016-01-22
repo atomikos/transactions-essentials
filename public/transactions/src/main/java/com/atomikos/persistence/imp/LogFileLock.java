@@ -13,7 +13,7 @@ import com.atomikos.recovery.LogException;
 public class LogFileLock {
 	
 	private static Logger LOGGER = LoggerFactory.createLogger(LogFileLock.class);
-	
+	private static final String FILE_SEPARATOR = String.valueOf(File.separatorChar);
 	private File lockfileToPreventDoubleStartup_;
 	private FileOutputStream lockfilestream_ = null;
 	private FileLock lock_ = null;
@@ -23,13 +23,20 @@ public class LogFileLock {
 	private String fileName;
 
 	public LogFileLock(String dir, String fileName) {
+		if(!dir.endsWith(FILE_SEPARATOR)) {
+			dir += FILE_SEPARATOR;
+		}
 		this.dir = dir;
 		this.fileName = fileName;
 	}
 
 	public void acquireLock() throws LogException {
 		try {
-			lockfileToPreventDoubleStartup_ = new File(dir + fileName + ".lck");
+			File parent = new File(dir);
+			if(!parent.exists()) {
+				parent.mkdir();
+			}
+			lockfileToPreventDoubleStartup_ = new File(dir, fileName + ".lck");
 			lockfilestream_ = new FileOutputStream(lockfileToPreventDoubleStartup_);
 			lock_ = lockfilestream_.getChannel().tryLock();
 			lockfileToPreventDoubleStartup_.deleteOnExit();
