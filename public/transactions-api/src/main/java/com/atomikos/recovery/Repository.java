@@ -8,7 +8,7 @@ import com.atomikos.icatch.provider.ConfigProperties;
 public interface Repository {
 
 	
-	void init(ConfigProperties configProperties);
+	void init(ConfigProperties configProperties) throws LogException;
 	/**
 	 * @throws IllegalArgumentException If the same coordinatorLogEntry is already in the repository. 
 	 */

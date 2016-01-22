@@ -17,6 +17,7 @@ import com.atomikos.icatch.provider.ConfigProperties;
 import com.atomikos.icatch.provider.TransactionServiceProvider;
 import com.atomikos.logging.LoggerFactory;
 import com.atomikos.persistence.imp.StateRecoveryManagerImp;
+import com.atomikos.recovery.LogException;
 import com.atomikos.recovery.Repository;
 import com.atomikos.recovery.OltpLog;
 import com.atomikos.recovery.RecoveryLog;
@@ -122,7 +123,11 @@ public class AssemblerImp implements Assembler {
 		
 		Repository repository;
 		if (enableLogging) {
-			repository = createCoordinatorLogEntryRepository(configProperties);
+			try {
+				repository = createCoordinatorLogEntryRepository(configProperties);
+			} catch ( LogException le ) {
+	            throw new SysException ( "Error in init: " + le.getMessage (), le );
+	        }
 		} else {
 			repository = createInMemoryCoordinatorLogEntryRepository(configProperties);;
 		}
@@ -162,7 +167,7 @@ public class AssemblerImp implements Assembler {
 	}
 
 	private CachedRepository createCoordinatorLogEntryRepository(
-			ConfigProperties configProperties) {
+			ConfigProperties configProperties) throws LogException {
 		InMemoryRepository inMemoryCoordinatorLogEntryRepository = new InMemoryRepository();
 		inMemoryCoordinatorLogEntryRepository.init(configProperties);
 		FileSystemRepository backupCoordinatorLogEntryRepository = new FileSystemRepository();

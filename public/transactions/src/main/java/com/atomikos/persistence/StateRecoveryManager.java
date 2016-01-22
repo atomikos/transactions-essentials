@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2016 Atomikos <info@atomikos.com>
  *
  * This code ("Atomikos TransactionsEssentials"), by itself,
  * is being distributed under the
@@ -25,9 +25,8 @@
 
 package com.atomikos.persistence;
 
-import java.util.Properties;
-
 import com.atomikos.icatch.TxState;
+import com.atomikos.recovery.LogException;
 /**
  * A state recovery manager is responsible for reconstructing StateRecoverable
  * instances based on the history.
@@ -36,14 +35,6 @@ import com.atomikos.icatch.TxState;
 public interface StateRecoveryManager 
 {
 
-    /**
-     * Initialize the recovery mgr before calling the other methods.
-     * 
-     * @exception LogException
-     *                If the underlying log fails.
-     */
-
-    public void init (Properties properties) throws com.atomikos.recovery.LogException;
     /**
      * Register a staterecoverable with the recovery manager service.
      * 

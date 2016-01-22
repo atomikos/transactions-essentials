@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2012 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2016 Atomikos <info@atomikos.com>
  *
  * This code ("Atomikos TransactionsEssentials"), by itself,
  * is being distributed under the
@@ -498,14 +498,6 @@ public class TransactionServiceImp implements TransactionServiceProvider,
 
     public synchronized void init ( Properties properties ) throws SysException
     {
-
-        try {
-            recoverymanager_.init (properties);
-        } catch ( LogException le ) {
-            throw new SysException ( "Error in init: " + le.getMessage (),
-                    le );
-        }
-
         shutdownInProgress_ = false;
         control_ = new com.atomikos.icatch.admin.imp.LogControlImp ( (AdminLog) this.recoveryLog );
 

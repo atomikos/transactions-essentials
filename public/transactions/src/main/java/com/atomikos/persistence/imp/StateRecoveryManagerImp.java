@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2015 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2016 Atomikos <info@atomikos.com>
  *
  * This code ("Atomikos TransactionsEssentials"), by itself,
  * is being distributed under the
@@ -31,7 +31,6 @@ import com.atomikos.finitestates.FSMEnterEvent;
 import com.atomikos.finitestates.FSMPreEnterListener;
 import com.atomikos.icatch.CoordinatorLogEntry;
 import com.atomikos.icatch.TxState;
-import com.atomikos.icatch.provider.ConfigProperties;
 import com.atomikos.persistence.RecoverableCoordinator;
 import com.atomikos.persistence.StateRecoveryManager;
 import com.atomikos.recovery.LogException;
@@ -44,11 +43,6 @@ import com.atomikos.util.Assert;
 
 public class StateRecoveryManagerImp  implements StateRecoveryManager, FSMPreEnterListener<TxState>
 {
-
-	
-	private LogFileLock lock_;
-
-
 	/**
 	 * @see StateRecoveryManager
 	 */
@@ -87,20 +81,7 @@ public class StateRecoveryManagerImp  implements StateRecoveryManager, FSMPreEnt
 	 */
 	public void close() throws LogException {
 		oltpLog.close();
-		lock_.releaseLock();
 	}
-	
-	public void init(Properties p) throws LogException {
-		ConfigProperties configProperties = new ConfigProperties(p);
-        String logdir = configProperties.getLogBaseDir();
-        String logname = configProperties.getLogBaseName();
-        logdir = Utils.findOrCreateFolder ( logdir );
-        
-        lock_ = new LogFileLock(logdir, logname);
-        lock_.acquireLock();
-		
-	}
-	
 	
 	private OltpLog oltpLog;
 	

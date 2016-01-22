@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2016 Atomikos <info@atomikos.com>
  *
  * This code ("Atomikos TransactionsEssentials"), by itself,
  * is being distributed under the
@@ -55,15 +55,14 @@ public class AtomikosActivator implements BundleActivator {
 		try {
 			// TransactionManager
 			utm = new UserTransactionManager();
-			// TODO: need to check the possible values for "osgi.jndi.service.name"
 			utm.init();
 			Dictionary<String, String> tmProps = new Hashtable<String, String>();
-			tmProps.put("osgi.jndi.service.name", "AtomikosV3");
+			tmProps.put("osgi.jndi.service.name", "AtomikosV4");
 			utmRegistration = context.registerService(TransactionManager.class.getName(), utm, tmProps);
 			// UserTransaction
 			userTransaction = new UserTransactionImp();
 			Dictionary<String, String> utmProps = new Hashtable<String, String>();
-			utmProps.put("osgi.jndi.service.name", "AtomikosV3");
+			utmProps.put("osgi.jndi.service.name", "AtomikosV4");
 			userTransactionRegistration = context.registerService(UserTransaction.class.getName(), userTransaction, utmProps);
 		} catch (Exception e) {
 			LOGGER.logWarning(e.getMessage(), e);

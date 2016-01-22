@@ -18,6 +18,9 @@ import com.atomikos.icatch.CoordinatorLogEntry;
 import com.atomikos.icatch.provider.ConfigProperties;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
+import com.atomikos.persistence.imp.LogFileLock;
+import com.atomikos.persistence.imp.Utils;
+import com.atomikos.recovery.LogException;
 import com.atomikos.recovery.Repository;
 import com.atomikos.recovery.LogReadException;
 import com.atomikos.recovery.LogWriteException;
@@ -30,11 +33,13 @@ public class FileSystemRepository implements
 			.createLogger(FileSystemRepository.class);
 	private VersionedFile file;
 	private FileChannel rwChannel = null;
-
+	private LogFileLock lock_;
 	@Override
-	public void init(ConfigProperties configProperties) {
+	public void init(ConfigProperties configProperties) throws LogException {
 		String baseDir = configProperties.getLogBaseDir();
 		String baseName = configProperties.getLogBaseName();
+        lock_ = new LogFileLock(baseDir, baseName);
+        lock_.acquireLock();
 		file = new VersionedFile(baseDir, baseName, ".log");
 		
 	}
@@ -152,7 +157,10 @@ public class FileSystemRepository implements
 			closeOutput();
 		} catch (Exception e) {
 			LOGGER.logWarning("Error closing file - ignoring",e);
+		} finally {
+			lock_.releaseLock();	
 		}
+		
 	}
 	protected void closeOutput() throws IllegalStateException {
 		try {
