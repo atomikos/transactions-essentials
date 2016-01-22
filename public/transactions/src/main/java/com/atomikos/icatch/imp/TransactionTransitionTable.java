@@ -34,7 +34,7 @@ import com.atomikos.icatch.TxState;
  * A transition table for transaction <b>coordinator</b> objects.
  */
 
-class TransactionTransitionTable implements TransitionTable<TxState> {
+class TransactionTransitionTable implements TransitionTable {
 
 	/**
 	 * This method allows checking whether a transition is valid.

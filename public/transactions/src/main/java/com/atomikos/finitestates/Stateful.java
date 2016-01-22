@@ -25,17 +25,13 @@
 
 package com.atomikos.finitestates;
 
+import com.atomikos.icatch.TxState;
 
-/**
-*
-*
-*Abstract representation of an object that has a state.
-*A state can be anything.
-*/
-public interface Stateful<Status>{
+
+public interface Stateful{
 	/**
 	*@return The object representing the state.
 	*/
-	public Status getState();
+	public TxState getState();
 }
 

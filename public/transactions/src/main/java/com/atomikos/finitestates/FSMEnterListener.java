@@ -25,25 +25,17 @@
 
 package com.atomikos.finitestates;
 
-import java.util.EventObject;
+import java.util.EventListener;
 
-public class FSMTransitionEvent<Status> extends EventObject{
 
-	private static final long serialVersionUID = 7629493293234798149L;
 
-	protected Status from,to;
-
-	public FSMTransitionEvent(Object source,Status fromState,Status toState){
-		super(source);
-		from=fromState;
-		to=toState;
-	}
+public interface FSMEnterListener extends EventListener
+{
 	
-	public Status fromState(){
-		return from;
-	}
+	/**
+	*Called when the FSM has entered a new state.
+	*
+	*/
 
-	public Status toState(){
-		return to;
-	}
+	public void entered(FSMEnterEvent e);
 }

@@ -25,16 +25,18 @@
 
 package com.atomikos.finitestates;
 
+import java.util.EventListener;
 
-/**
- *
- *
- *A source of FSMPreEnterEvents.
- */
-
-public interface FSMPreEnterEventSource<Status> extends Stateful<Status>
+public interface FSMTransitionListener extends EventListener
 {
     
-    public void addFSMPreEnterListener(FSMPreEnterListener<Status> l,Status state);
+    /**
+     *A method to be called AFTER the specified transition is done.
+     *
+     *@param e The transition that was made.
+     *
+     */
+    
+    public void transitionPerformed(FSMTransitionEvent e);
     
 }

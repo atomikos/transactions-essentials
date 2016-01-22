@@ -25,7 +25,6 @@
 
 package com.atomikos.persistence;
 
-import com.atomikos.icatch.TxState;
 import com.atomikos.recovery.LogException;
 /**
  * A state recovery manager is responsible for reconstructing StateRecoverable
@@ -42,7 +41,7 @@ public interface StateRecoveryManager
      *            The object that wants recoverable states.
      */
 
-    public void register ( RecoverableCoordinator<TxState> staterecoverable );
+    public void register ( RecoverableCoordinator staterecoverable );
 
     /**
      * Shutdown.

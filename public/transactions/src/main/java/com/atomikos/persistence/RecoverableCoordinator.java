@@ -27,6 +27,7 @@ package com.atomikos.persistence;
 
 import com.atomikos.finitestates.FSMPreEnterEventSource;
 import com.atomikos.icatch.CoordinatorLogEntry;
+import com.atomikos.icatch.TxState;
 
 /**
  * A type of stateful objects whose state is guaranteed to be recoverable. The
@@ -39,7 +40,7 @@ import com.atomikos.icatch.CoordinatorLogEntry;
  * should take this into account.
  */
 
-public interface RecoverableCoordinator<TxState> extends FSMPreEnterEventSource<TxState>
+public interface RecoverableCoordinator extends FSMPreEnterEventSource
 {
     
     CoordinatorLogEntry getCoordinatorLogEntry(TxState state);

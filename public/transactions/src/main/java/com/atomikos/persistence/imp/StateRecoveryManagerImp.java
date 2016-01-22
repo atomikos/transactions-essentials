@@ -39,12 +39,12 @@ import com.atomikos.util.Assert;
  * Default implementation of a state recovery manager.
  */
 
-public class StateRecoveryManagerImp  implements StateRecoveryManager, FSMPreEnterListener<TxState>
+public class StateRecoveryManagerImp  implements StateRecoveryManager, FSMPreEnterListener
 {
 	/**
 	 * @see StateRecoveryManager
 	 */
-	public void register(RecoverableCoordinator<TxState> staterecoverable) {
+	public void register(RecoverableCoordinator staterecoverable) {
 		Assert.notNull("illegal attempt to register null staterecoverable", staterecoverable);
 		TxState[] states = TxState.values();
 		for (TxState txState : states) {
@@ -57,10 +57,10 @@ public class StateRecoveryManagerImp  implements StateRecoveryManager, FSMPreEnt
 	/**
 	 * @see FSMPreEnterListener
 	 */
-	public void preEnter(FSMEnterEvent<TxState> event) throws IllegalStateException {
+	public void preEnter(FSMEnterEvent event) throws IllegalStateException {
 		TxState state = event.getState();
 		
-		RecoverableCoordinator<TxState> source = (RecoverableCoordinator<TxState>) event.getSource();
+		RecoverableCoordinator source = (RecoverableCoordinator) event.getSource();
 		CoordinatorLogEntry coordinatorLogEntry=source.getCoordinatorLogEntry(state);
 		if (coordinatorLogEntry != null) {
 			// null images are not logged as per the Recoverable contract

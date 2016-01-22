@@ -1,6 +1,8 @@
 package com.atomikos.finitestates;
 import java.util.Hashtable;
 
+import com.atomikos.icatch.TxState;
+
 /**
  *
  *
@@ -9,9 +11,9 @@ import java.util.Hashtable;
 
 public class TestTransitionTable implements TransitionTable
 {
-    public static Object INITIAL=new String("INITIAL");
-    public static Object MIDDLE=new String("MIDDLE STATE");
-    public static Object END=new String ("END STATE");
+    public static TxState INITIAL=TxState.ACTIVE;
+    public static TxState MIDDLE=TxState.COMMITTING;
+    public static TxState END=TxState.TERMINATED;
 
     private Hashtable table_=new Hashtable();
 
@@ -27,7 +29,7 @@ public class TestTransitionTable implements TransitionTable
         
     }
 
-    public boolean legalTransition(Object from , Object to) 
+    public boolean legalTransition(TxState from , TxState to) 
     {
         Hashtable fromtable = (Hashtable) table_.get(from);
         if (fromtable ==  null) 

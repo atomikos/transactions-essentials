@@ -71,7 +71,7 @@ import com.atomikos.util.UniqueIdMgr;
  */
 
 public class TransactionServiceImp implements TransactionServiceProvider,
-        FSMEnterListener<TxState>, SubTxAwareParticipant, RecoveryService, AdminLog
+        FSMEnterListener, SubTxAwareParticipant, RecoveryService, AdminLog
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(TransactionServiceImp.class);
     private static final int NUMLATCHES = 97;
@@ -550,7 +550,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
      * @see FSMEnterListener.
      */
 
-    public void entered ( FSMEnterEvent<TxState> event )
+    public void entered ( FSMEnterEvent event )
     {
         CoordinatorImp cc = (CoordinatorImp) event.getSource ();
         TxState state = event.getState ();

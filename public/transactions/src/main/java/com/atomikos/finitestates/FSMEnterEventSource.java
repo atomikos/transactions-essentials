@@ -25,20 +25,19 @@
 
 package com.atomikos.finitestates;
 
-import java.util.EventObject;
+import com.atomikos.icatch.TxState;
 
-public class FSMEnterEvent<Status> extends EventObject{
 
-	private static final long serialVersionUID = -7910459829127232977L;
+public interface FSMEnterEventSource extends Stateful
+{
 	
-	protected Status newState;
-
-	public FSMEnterEvent(Object source, Status state){
-		super(source);
-		newState=state;
-	}
+	/**
+	 *Add an enter event listener. 
+	 *@param l The listener.
+	 *@param state The state to listen on.
+	 *
+	 */
+	 
+	public void addFSMEnterListener(FSMEnterListener l, TxState state);
 	
-	public Status getState(){
-		return newState;
-	}
 }

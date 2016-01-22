@@ -25,16 +25,27 @@
 
 package com.atomikos.finitestates;
 
+import java.util.EventObject;
 
-/**
- *
- *
- *A source of TransitionEvents.
- */
+import com.atomikos.icatch.TxState;
 
-public interface FSMTransitionEventSource<Status> extends Stateful<Status>
-{   
-    public void addFSMTransitionListener(FSMTransitionListener<Status> l,
-				 Status from, Status to);
+public class FSMTransitionEvent extends EventObject{
+
+	private static final long serialVersionUID = 7629493293234798149L;
+
+	protected TxState from,to;
+
+	public FSMTransitionEvent(Object source,TxState fromState,TxState toState){
+		super(source);
+		from=fromState;
+		to=toState;
+	}
 	
+	public TxState fromState(){
+		return from;
+	}
+
+	public TxState toState(){
+		return to;
+	}
 }

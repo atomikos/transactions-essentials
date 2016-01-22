@@ -25,26 +25,13 @@
 
 package com.atomikos.finitestates;
 
+import com.atomikos.icatch.TxState;
 
-/**
- *
- *
- *A default transition table implementation that allows any
- *transition without really checking anything.
- */
 
- public class AllowAllTransitionTable<Status> implements TransitionTable<Status>
- {
 
-      public AllowAllTransitionTable() {}
-
-      /**
-       *This method always returns true.
-       */
-
-      public boolean legalTransition ( Status from, Status to )
-      {
-          return true;
-      }
- }
-
+public interface FSMTransitionEventSource extends Stateful
+{   
+    public void addFSMTransitionListener(FSMTransitionListener l,
+				 TxState from, TxState to);
+	
+}

@@ -25,23 +25,12 @@
 
 package com.atomikos.finitestates;
 
+import com.atomikos.icatch.TxState;
 
-/**
-*
-*
-*Interface of an FSMEnterEventSource.
-*/
 
-public interface FSMEnterEventSource<Status> extends Stateful<Status>
+public interface FSMPreEnterEventSource extends Stateful
 {
-	
-	/**
-	 *Add an enter event listener. 
-	 *@param l The listener.
-	 *@param state The state to listen on.
-	 *
-	 */
-	 
-	public void addFSMEnterListener(FSMEnterListener<Status> l, Status state);
-	
+    
+    public void addFSMPreEnterListener(FSMPreEnterListener l,TxState state);
+    
 }

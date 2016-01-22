@@ -25,22 +25,22 @@
 
 package com.atomikos.finitestates;
 
-import java.util.EventListener;
+import com.atomikos.icatch.TxState;
 
-/**
-*
-*
-*A listener on FSMEnterEvent occurrences.
-*
-*/
 
-public interface FSMEnterListener<Status> extends EventListener
-{
-	
-	/**
-	*Called when the FSM has entered a new state.
-	*
-	*/
 
-	public void entered(FSMEnterEvent<Status> e);
-}
+ public class AllowAllTransitionTable implements TransitionTable
+ {
+
+      public AllowAllTransitionTable() {}
+
+      /**
+       *This method always returns true.
+       */
+
+      public boolean legalTransition ( TxState from, TxState to )
+      {
+          return true;
+      }
+ }
+

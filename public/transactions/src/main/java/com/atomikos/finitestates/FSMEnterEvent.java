@@ -25,25 +25,22 @@
 
 package com.atomikos.finitestates;
 
-import java.util.EventListener;
+import java.util.EventObject;
 
-/**
-*
-*
-*A listener that wants to be notified BEFORE the new state is entered.
-*
-*/
+import com.atomikos.icatch.TxState;
 
-public interface FSMPreEnterListener<Status> extends EventListener
-{
-	/**
-	*Called BEFORE the FSM enters the new state, so that 
-	*the callee is sure that nobody has seen the new state yet.
-	*
-	*@exception IllegalStateException on failure.
-	*The callee can use this to prevent the state change from
-	*happening.
-	*/
+public class FSMEnterEvent extends EventObject{
 
-	public void preEnter(FSMEnterEvent<Status> e) throws IllegalStateException;
+	private static final long serialVersionUID = -7910459829127232977L;
+	
+	protected TxState newState;
+
+	public FSMEnterEvent(Object source, TxState state){
+		super(source);
+		newState=state;
+	}
+	
+	public TxState getState(){
+		return newState;
+	}
 }

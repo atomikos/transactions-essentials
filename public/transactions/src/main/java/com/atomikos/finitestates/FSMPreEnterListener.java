@@ -27,21 +27,17 @@ package com.atomikos.finitestates;
 
 import java.util.EventListener;
 
-/**
-*
-*
-*A listener interface for FSMTransitionEvents.
-*/
-public interface FSMTransitionListener<Status> extends EventListener
+
+public interface FSMPreEnterListener extends EventListener
 {
-    
-    /**
-     *A method to be called AFTER the specified transition is done.
-     *
-     *@param e The transition that was made.
-     *
-     */
-    
-    public void transitionPerformed(FSMTransitionEvent<Status> e);
-    
+	/**
+	*Called BEFORE the FSM enters the new state, so that 
+	*the callee is sure that nobody has seen the new state yet.
+	*
+	*@exception IllegalStateException on failure.
+	*The callee can use this to prevent the state change from
+	*happening.
+	*/
+
+	public void preEnter(FSMEnterEvent e) throws IllegalStateException;
 }

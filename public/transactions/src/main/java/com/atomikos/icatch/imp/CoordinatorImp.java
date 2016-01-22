@@ -77,8 +77,8 @@ import com.atomikos.timing.PooledAlarmTimer;
  */
 
 public class CoordinatorImp implements CompositeCoordinator, Participant,
-        RecoveryCoordinator, RecoverableCoordinator<TxState>, AlarmTimerListener, Stateful<TxState>,
-        FSMPreEnterListener<TxState>, FSMTransitionListener<TxState>, FSMEnterListener<TxState>
+        RecoveryCoordinator, RecoverableCoordinator, AlarmTimerListener, Stateful,
+        FSMPreEnterListener, FSMTransitionListener, FSMEnterListener
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(CoordinatorImp.class);
 
@@ -96,7 +96,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     private long maxNumberOfTimeoutTicksBeforeRollback_ = MAX_NUMBER_OF_TIMEOUT_TICKS_BEFORE_ROLLBACK_OF_ACTIVES;
 
     private String root_ = null;
-    private FSM<TxState> fsm_ = null;
+    private FSM fsm_ = null;
     private boolean recoverableWhileActive_;
     private boolean heuristicMeansCommit_ = true;
     private Vector<Participant> participants_ = new Vector<Participant>();
@@ -127,7 +127,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     }
 
 	private void initFsm(TxState initialState) {
-		fsm_ = new FSMImp<TxState> ( this, new TransactionTransitionTable (),
+		fsm_ = new FSMImp ( this, new TransactionTransitionTable (),
                 initialState );
         fsm_.addFSMPreEnterListener ( this, TxState.TERMINATED );
         fsm_.addFSMPreEnterListener ( this, TxState.HEUR_COMMITTED );
@@ -374,7 +374,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
      * @see FSMEnterEventSource.
      */
 
-    public void addFSMEnterListener ( FSMEnterListener<TxState> l, TxState state )
+    public void addFSMEnterListener ( FSMEnterListener l, TxState state )
     {
         fsm_.addFSMEnterListener ( l, state );
 
@@ -385,7 +385,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
      * @see FSMPreEnterEventSource.
      */
 
-    public void addFSMPreEnterListener ( FSMPreEnterListener<TxState> l, TxState state )
+    public void addFSMPreEnterListener ( FSMPreEnterListener l, TxState state )
     {
         fsm_.addFSMPreEnterListener ( l, state );
 
@@ -495,7 +495,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
      * @see FSMPreEnterListener.
      */
 
-    public void preEnter ( FSMEnterEvent<TxState> event ) throws IllegalStateException
+    public void preEnter ( FSMEnterEvent event ) throws IllegalStateException
     {
     	TxState state = event.getState ();
 
@@ -826,7 +826,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 
 
 	@Override
-	public void transitionPerformed(FSMTransitionEvent<TxState> e) {
+	public void transitionPerformed(FSMTransitionEvent e) {
 		TxState fromState = e.fromState();
 		TxState toState = e.toState();
 		if (TxState.TERMINATED.equals(toState)) {
@@ -847,7 +847,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 	
 
 	@Override
-	public void entered(FSMEnterEvent<TxState> e) {
+	public void entered(FSMEnterEvent e) {
 		TxState state = e.getState();
 		if (state.isHeuristic()) {
 			publishDomainEvent(new TransactionHeuristicEvent(root_));
