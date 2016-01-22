@@ -875,14 +875,12 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     					participantLogEntries.add(ple);
     				} 
     			}
-
-    			ParticipantLogEntry[] participantDetails = participantLogEntries.toArray(new ParticipantLogEntry[participantLogEntries.size()]);
-    			if (participantDetails.length>0) {
-    				CoordinatorLogEntry coordinatorLogEntry = new CoordinatorLogEntry(this.getCoordinatorId(), this.isCommitted(), participantDetails);
-        			return coordinatorLogEntry;	
+    			if (participantLogEntries.isEmpty()) {
+    				return null;	
     			}
-     			//else
-    			return null;
+    			ParticipantLogEntry[] participantDetails = participantLogEntries.toArray(new ParticipantLogEntry[participantLogEntries.size()]);
+    			CoordinatorLogEntry coordinatorLogEntry = new CoordinatorLogEntry(this.getCoordinatorId(), this.isCommitted(), participantDetails);
+        		return coordinatorLogEntry;	
     		}	
     	}
 	}
