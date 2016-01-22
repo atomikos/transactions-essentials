@@ -26,7 +26,6 @@
 package com.atomikos.datasource.xa;
 
 import java.io.Serializable;
-import java.util.Arrays;
 
 import javax.transaction.xa.Xid;
 

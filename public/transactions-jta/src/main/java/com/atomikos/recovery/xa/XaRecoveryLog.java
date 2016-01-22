@@ -2,8 +2,6 @@ package com.atomikos.recovery.xa;
 
 import java.util.Set;
 
-import javax.transaction.xa.Xid;
-
 import com.atomikos.datasource.xa.XID;
 import com.atomikos.recovery.LogException;
 

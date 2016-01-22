@@ -27,8 +27,6 @@ package com.atomikos.datasource.xa;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-import javax.transaction.xa.Xid;
-
 /**
  *
  *

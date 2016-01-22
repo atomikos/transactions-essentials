@@ -4,8 +4,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.transaction.xa.Xid;
-
 import com.atomikos.datasource.xa.XID;
 import com.atomikos.icatch.ParticipantLogEntry;
 import com.atomikos.icatch.TxState;

@@ -58,14 +58,6 @@ public final class UserTransactionServiceImp
 
 	private static final long serialVersionUID = -3374591336514451887L;
 
-	/**
-     * Constant denoting the system property name that suggest NOT to use
-     * any configuration file for the transaction service's properties.
-     * 
-     * @deprecated No longer used since 4.0
-     */
-    public static final String NO_FILE_PROPERTY_NAME = "com.atomikos.icatch.no_file";
-
     /**
      * The name of the system property whose value corresponds to the path
      * towards the properties file for initialization of the transaction service.
@@ -77,20 +69,6 @@ public final class UserTransactionServiceImp
 
     public static final String FILE_PATH_PROPERTY_NAME = ConfigProperties.FILE_PATH_PROPERTY_NAME;
     
-    /**
-     * The name of the system property to disable printing 'Using init file...' messages.
-     * 
-     * @deprecated No longer used since 4.0
-     */
-    
-    public static final String HIDE_INIT_FILE_PATH_PROPERTY_NAME = "com.atomikos.icatch.hide_init_file_path";
-
-   /**
-    * @deprecated
-    */
-    public static final String DEFAULT_PROPERTIES_FILE_NAME = "transactions.properties";
-    
-
     private Properties properties_;
     
     private List<TransactionServicePlugin> tsListeners_;

@@ -30,7 +30,6 @@ import java.util.Stack;
 
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
-import javax.transaction.xa.Xid;
 
 import com.atomikos.datasource.RecoverableResource;
 import com.atomikos.datasource.ResourceException;
