@@ -100,7 +100,7 @@ public class CachedRepository implements Repository {
 	protected boolean canBeForgotten(long now,
 			CoordinatorLogEntry coordinatorLogEntry) {
 		boolean ret = false;
-		if ((coordinatorLogEntry.expires()+forgetOrphanedLogEntriesDelay) > now) {
+		if ((coordinatorLogEntry.expires()+forgetOrphanedLogEntriesDelay) < now) {
 			TxState entryState = coordinatorLogEntry.getResultingState();
 			if ( TxState.ABORTING == entryState ) {
 				// pending ABORTING: happens during presumed abort on recovery, 
