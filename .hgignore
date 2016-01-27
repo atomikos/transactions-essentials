@@ -80,3 +80,5 @@ syntax: regexp
 ^public/transactions-api/src/test/java/com/atomikos/recovery/Deserializer\.java$
 syntax: regexp
 ^public/transactions-api/json\.txt$
+syntax: regexp
+^specs/examples/examples-jta/activemq-data$
