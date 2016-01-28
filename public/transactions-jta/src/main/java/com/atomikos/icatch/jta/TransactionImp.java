@@ -343,7 +343,6 @@ class TransactionImp implements Transaction {
 			RecoverableResource rres = (RecoverableResource) enumm
 					.nextElement();
 			if (rres instanceof XATransactionalResource) {
-				System.out.println(rres);
 				xatxres = (XATransactionalResource) rres;
 				if (xatxres.usesXAResource(xares))
 					ret = xatxres;
