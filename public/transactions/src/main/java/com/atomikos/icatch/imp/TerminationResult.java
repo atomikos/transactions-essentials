@@ -39,7 +39,7 @@ import com.atomikos.icatch.RollbackException;
 
 class TerminationResult extends Result
 {
-    protected boolean allRepliesProcessed;
+	private boolean allRepliesProcessed;
     private Set<Participant> heuristicparticipants_;
     private Set<Participant> possiblyIndoubts_;
 
@@ -103,11 +103,9 @@ class TerminationResult extends Result
                     onePhaseCommitWithRollbackException = true;
                 } else if ( err instanceof HeurMixedException ) {
                     atLeastOneHeuristicMixedException = true;
-                    HeurMixedException hm = (HeurMixedException) err;
                     heuristicparticipants_.add ( reply.getParticipant ());
                 } else if ( err instanceof HeurCommitException ) {
                     atLeastOneHeuristicCommitException = true;
-                    HeurCommitException hc = (HeurCommitException) err;
                     atLeastOneHeuristicMixedException = (atLeastOneHeuristicMixedException || atLeastOneHeuristicRollbackException || atLeastOneHeuristicHazardException);
                     heuristicparticipants_.add ( reply.getParticipant () );
 

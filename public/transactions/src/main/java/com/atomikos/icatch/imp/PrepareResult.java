@@ -27,10 +27,8 @@ package com.atomikos.icatch.imp;
 
 import java.util.Enumeration;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.Set;
 import java.util.Stack;
-import java.util.Vector;
 
 import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.HeurHazardException;
@@ -46,15 +44,11 @@ class PrepareResult extends Result
 
     protected Set<Participant> readonlytable_ = new HashSet<Participant> ();
     // for read only voters
-    protected Hashtable indoubts_ = new Hashtable ();
+    private Set<Participant> indoubts_ = new HashSet<Participant>();
     // for indoubt participants
     // should be rolled back in case of failure!
 
-    protected Hashtable heuristics_ = new Hashtable ();
-
-    protected boolean analyzed_ = false;
-
-    protected Vector msgvector_ = new Vector ();
+    private boolean analyzed_ = false;
 
     /**
      * Constructor.
@@ -101,7 +95,7 @@ class PrepareResult extends Result
                 } else if ( err instanceof HeurHazardException ) {
                     heurhazards = true;
                     heurmixed = (heurmixed || heurcommits);
-                    indoubts_.put ( reply.getParticipant (), Boolean.TRUE);
+                    indoubts_.add ( reply.getParticipant ());
                     // REMEMBER: might be indoubt, so HAS to be notified
                     // during rollback!
                 }
@@ -118,7 +112,7 @@ class PrepareResult extends Result
 
                 // if readonly: remember this fact for logging and second phase
                 if ( readonly ) readonlytable_.add ( reply.getParticipant () );
-                else indoubts_.put ( reply.getParticipant (), Boolean.TRUE);
+                else indoubts_.add ( reply.getParticipant ());
             }
 
             allYes = (allYes && yes);
@@ -173,7 +167,7 @@ class PrepareResult extends Result
     /**
      * Get a table of readonly voting participants.
      *
-     * @return Hashtable Contains a key per readonly participant.
+     * @return Set Contains readonly participant.
      * @exception InterruptedException
      *                If interrupted on wait.
      */
@@ -182,21 +176,6 @@ class PrepareResult extends Result
     {
         calculateResultFromAllReplies ();
         return readonlytable_;
-    }
-
-    /**
-     * Get a table of indoubt participants, which have to be notified of commit
-     * or rollback.
-     *
-     * @return Hashtable A key per indoubt participant.
-     * @exception InterruptedException
-     *                If interrupted on wait.
-     */
-
-    public Hashtable getIndoubtTable () throws InterruptedException
-    {
-        calculateResultFromAllReplies ();
-        return indoubts_;
     }
 
 }

@@ -113,9 +113,6 @@ abstract class CoordinatorStateHandler
         readOnlyTable_ = other.readOnlyTable_;
         committed_ = other.committed_;
         cascadeList_ = other.cascadeList_;
-
-//        heuristicMap_ = other.heuristicMap_;
-
     }
 
     /**
@@ -153,17 +150,6 @@ abstract class CoordinatorStateHandler
     protected Stack<Participant> getReplayStack ()
     {
         return replayStack_;
-    }
-
-    /**
-     * Get the readonly table.
-     *
-     * @return The table.
-     */
-
-    protected Set<Participant> getReadOnlyTable ()
-    {
-        return readOnlyTable_;
     }
 
     /**
@@ -369,7 +355,7 @@ abstract class CoordinatorStateHandler
             TerminationResult commitresult = new TerminationResult ( count );
 
             // cf bug 64546: avoid committed_ being null upon recovery!
-            committed_ = new Boolean ( true );
+            committed_ = Boolean.TRUE;
             // for replaying completion: commit decision was reached
             // otherwise, replay requests might only see TERMINATED!
 
