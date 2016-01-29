@@ -43,12 +43,7 @@ import com.atomikos.icatch.TxState;
 class TerminatedStateHandler extends CoordinatorStateHandler
 {
 
-    TerminatedStateHandler ( CoordinatorImp coordinator )
-    {
-        super ( coordinator );
-    }
-
-    TerminatedStateHandler ( CoordinatorStateHandler previous )
+	TerminatedStateHandler ( CoordinatorStateHandler previous )
     {
         super ( previous );
         // VERY important: stop all active threads

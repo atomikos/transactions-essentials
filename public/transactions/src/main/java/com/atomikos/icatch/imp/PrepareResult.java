@@ -26,13 +26,16 @@
 package com.atomikos.icatch.imp;
 
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Set;
 import java.util.Stack;
 import java.util.Vector;
 
 import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeurMixedException;
+import com.atomikos.icatch.Participant;
 
 /**
  * A result for prepare messages.
@@ -41,7 +44,7 @@ import com.atomikos.icatch.HeurMixedException;
 class PrepareResult extends Result
 {
 
-    protected Hashtable readonlytable_ = new Hashtable ();
+    protected Set<Participant> readonlytable_ = new HashSet<Participant> ();
     // for read only voters
     protected Hashtable indoubts_ = new Hashtable ();
     // for indoubt participants
@@ -114,7 +117,7 @@ class PrepareResult extends Result
                 yes = (readonly || answer.booleanValue ());
 
                 // if readonly: remember this fact for logging and second phase
-                if ( readonly ) readonlytable_.put ( reply.getParticipant (), Boolean.TRUE);
+                if ( readonly ) readonlytable_.add ( reply.getParticipant () );
                 else indoubts_.put ( reply.getParticipant (), Boolean.TRUE);
             }
 
@@ -175,7 +178,7 @@ class PrepareResult extends Result
      *                If interrupted on wait.
      */
 
-    public Hashtable getReadOnlyTable () throws InterruptedException
+    public Set<Participant> getReadOnlyTable () throws InterruptedException
     {
         calculateResultFromAllReplies ();
         return readonlytable_;

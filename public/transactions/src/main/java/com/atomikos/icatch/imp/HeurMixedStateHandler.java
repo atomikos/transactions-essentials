@@ -26,7 +26,8 @@
 package com.atomikos.icatch.imp;
 
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Stack;
 
 import com.atomikos.icatch.HeurCommitException;
@@ -43,25 +44,15 @@ import com.atomikos.thread.InterruptedExceptionHelper;
  * A state handler for the heuristic mixed coordinator state.
  */
 
-public class HeurMixedStateHandler extends CoordinatorStateHandler
+class HeurMixedStateHandler extends CoordinatorStateHandler
 {
 
-    private Hashtable<Participant,TxState> hazards_;
+    private Set<Participant> hazards_;
 
-    public HeurMixedStateHandler() {
-	
-	}
-    HeurMixedStateHandler ( CoordinatorImp coordinator )
-    {
-        super ( coordinator );
-        hazards_ = new Hashtable<Participant,TxState> ();
-
-    }
-
-    HeurMixedStateHandler ( CoordinatorStateHandler previous , Hashtable<Participant,TxState> hazards )
+    HeurMixedStateHandler ( CoordinatorStateHandler previous , Set<Participant> hazards )
     {
         super ( previous );
-        hazards_ = (Hashtable<Participant,TxState>) hazards.clone ();
+        hazards_ = new HashSet<Participant>(hazards);
     }
 
     protected TxState getState ()
@@ -77,9 +68,9 @@ public class HeurMixedStateHandler extends CoordinatorStateHandler
     	Boolean commitDecided = getCommitted();
         
         //replay does remove -> re-add hazards each time
-        addAllForReplay ( hazards_.keySet() );
+        addAllForReplay ( hazards_ );
 
-        Stack replayStack = getReplayStack ();
+        Stack<Participant> replayStack = getReplayStack ();
         boolean replay = false;
         if ( !replayStack.empty ()  && commitDecided != null ) {
         	boolean committed = commitDecided.booleanValue ();
@@ -88,7 +79,7 @@ public class HeurMixedStateHandler extends CoordinatorStateHandler
             TerminationResult result = new TerminationResult ( count );
 
             while ( !replayStack.empty () ) {
-                Participant part = (Participant) replayStack.pop ();
+                Participant part = replayStack.pop ();
                 if ( committed ) {
                     CommitMessage cm = new CommitMessage ( part, result, false );
                     getPropagator ().submitPropagationMessage ( cm );
@@ -104,11 +95,11 @@ public class HeurMixedStateHandler extends CoordinatorStateHandler
                 // remove OK replies from hazards_ list and change state if
                 // hazard_ is empty.
 
-                Stack replies = result.getReplies ();
+                Stack<Reply> replies = result.getReplies ();
 
-                Enumeration enumm = replies.elements ();
+                Enumeration<Reply> enumm = replies.elements ();
                 while ( enumm.hasMoreElements () ) {
-                    Reply reply = (Reply) enumm.nextElement ();
+                    Reply reply = enumm.nextElement ();
 
                     if ( !reply.hasFailed () ) {
                         hazards_.remove ( reply.getParticipant () );

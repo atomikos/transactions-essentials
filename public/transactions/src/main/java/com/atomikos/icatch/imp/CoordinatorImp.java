@@ -97,7 +97,6 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 
     private String root_ = null;
     private FSM fsm_ = null;
-    private boolean recoverableWhileActive_;
     private boolean heuristicMeansCommit_ = true;
     private Vector<Participant> participants_ = new Vector<Participant>();
     private RecoveryCoordinator superiorCoordinator_ = null; 
@@ -174,7 +173,6 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 	    initFsm(TxState.ACTIVE );
         heuristicMeansCommit_ = heuristic_commit;
 
-        recoverableWhileActive_ = false;
         superiorCoordinator_ = coord;
         if ( timeout > DEFAULT_MILLIS_BETWEEN_TIMER_WAKEUPS ) {
             // If timeout is smaller than the default timeout, then
@@ -224,7 +222,6 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
         heuristicMeansCommit_ = false;
 
         checkSiblings_ = true;
-        recoverableWhileActive_ = false;
         single_threaded_2pc_ = false;
         synchronizations = new ArrayList<Synchronization>();
 
@@ -297,11 +294,6 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     boolean checkSiblings ()
     {
         return checkSiblings_;
-    }
-
-    public Boolean isRecoverableWhileActive()
-    {
-        return new Boolean ( recoverableWhileActive_ );
     }
 
     /**
@@ -520,53 +512,6 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     }
 
     /**
-     * @see Participant
-     */
-
-    public boolean recover () throws SysException
-    {
-        boolean allOK = true;
-        boolean ret;
-    	 if ( LOGGER.isDebugEnabled() ){
-    		 LOGGER.logDebug (  "starting recover() for coordinator: " + getCoordinatorId () );
-    	 }
-
-		synchronized ( fsm_ ) {
-			// cf case 61686 and case 62217: avoid concurrent enlists while recovering
-			Iterator<Participant> parts = getParticipants().iterator();
-			while (parts.hasNext()) {
-				Participant next =  parts.next();
-				boolean recoveredParticipant = false;
-				try {
-					recoveredParticipant = next.recover();
-					 if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug (  "coordinator: " + getCoordinatorId()
-								+ "recovered participant: " + next );
-				} catch (Exception e) {
-					// happens if XA connection could not be gotten or other problems
-					LOGGER.logWarning("Error in recovering participant");
-					StackTraceElement[] infos = e.getStackTrace();
-					for (int i = 0; i < infos.length; i++) {
-						LOGGER.logWarning(infos[i].toString());
-					}
-					// do NOT throw any exception: tolerate this to let the coordinator do the rest
-				}
-				allOK = allOK && recoveredParticipant;
-			}
-			stateHandler_.recover(this);
-			ret = !(!allOK && getState().equals(TxState.IN_DOUBT));
-		} // synchronized
-
-        // ONLY NOW start threads and so on
-        startThreads ( DEFAULT_MILLIS_BETWEEN_TIMER_WAKEUPS );
-
-
-        if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug (   "recover() done for coordinator: " + getCoordinatorId () );
-      
-
-        return ret;
-    }
-
-    /**
      * @see Participant.
      */
 
@@ -712,7 +657,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 
 	private boolean excludedFromLogging(TxState state) {
 		boolean ret = false;
-		if (state.equals ( TxState.ACTIVE ) && !recoverableWhileActive_) {
+		if (!state.isRecoverableState() ) {
 				ret = true;
 		} else if ( superiorCoordinator_ == null) {
 			if ( state.equals( TxState.IN_DOUBT )) {
@@ -787,11 +732,6 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     	}
     }
 
-    public void setRecoverableWhileActive () throws UnsupportedOperationException
-    {
-        recoverableWhileActive_ = true;
-    }
-    
     void setRollbackOnly() { 	
     	
     	RollbackOnlyParticipant p = new RollbackOnlyParticipant ( );

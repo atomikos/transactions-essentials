@@ -26,7 +26,7 @@
 package com.atomikos.icatch.imp;
 
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.Set;
 import java.util.Stack;
 import java.util.Vector;
 
@@ -44,53 +44,16 @@ import com.atomikos.thread.InterruptedExceptionHelper;
  * A state handler for the heuristic hazard coordinator state.
  */
 
-public class HeurHazardStateHandler extends CoordinatorStateHandler
+class HeurHazardStateHandler extends CoordinatorStateHandler
 {
-	private static final long serialVersionUID = 3405983048694149334L;
 	private Vector<Participant> hazards_;
 
-    public HeurHazardStateHandler() {
-	
-	}
-    
-    HeurHazardStateHandler ( CoordinatorImp coordinator )
-    {
-        super ( coordinator );
-        hazards_ = new Vector<Participant> ();
-    }
-
     HeurHazardStateHandler ( CoordinatorStateHandler previous ,
-            Vector<Participant> hazards )
+            Set<Participant> hazards )
     {
         super ( previous );
-        hazards_ = (Vector<Participant>) hazards.clone ();
+        hazards_ = new Vector<Participant>(hazards);
 
-    }
-
-    HeurHazardStateHandler ( CoordinatorStateHandler previous ,
-            Hashtable hazards )
-    {
-        super ( previous );
-        hazards_ = new Vector<Participant>();
-        hazards_.addAll ( hazards.keySet() );
-
-    }
-
-
-    protected void recover ( CoordinatorImp coordinator )
-    {
-        super.recover ( coordinator );
-
-        // add all recovered participants to the replay stack
-        // to resume where we left off before the crash,
-        // and try to notify all hazards
-        Enumeration enumm = getCoordinator ().getParticipants ().elements ();
-        while ( enumm.hasMoreElements () ) {
-            Participant p = (Participant) enumm.nextElement ();
-            if ( !getReadOnlyTable ().containsKey ( p ) ) {
-                replayCompletion ( p );
-            }
-        } // while
     }
 
     protected TxState getState ()

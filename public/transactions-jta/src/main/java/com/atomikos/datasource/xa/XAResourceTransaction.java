@@ -25,13 +25,6 @@
 
 package com.atomikos.datasource.xa;
 
-import java.io.Externalizable;
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
-import java.io.OptionalDataException;
-import java.io.Serializable;
-
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
@@ -57,8 +50,7 @@ import com.atomikos.logging.LoggerFactory;
  * An implementation of ResourceTransaction for XA transactions.
  */
 
-public class XAResourceTransaction implements ResourceTransaction,
-		Externalizable, Participant {
+public class XAResourceTransaction implements ResourceTransaction, Participant {
 	private static final Logger LOGGER = LoggerFactory
 			.createLogger(XAResourceTransaction.class);
 
@@ -272,50 +264,9 @@ public class XAResourceTransaction implements ResourceTransaction,
 			this.resource.removeSiblingMap(this.root);
 	}
 
-	@Override
-	public void writeExternal(ObjectOutput out) throws IOException {
-		out.writeObject(this.xid);
-		out.writeObject(this.tid);
-		out.writeObject(this.root);
-		out.writeObject(this.state);
-		out.writeObject(this.resourcename);
-		if (this.xaresource instanceof Serializable) {
-			// cf case 59238
-			out.writeObject(Boolean.TRUE);
-			out.writeObject(this.xaresource);
-		} else {
-			out.writeObject(Boolean.FALSE);
-		}
-	}
-
-	@Override
-	public void readExternal(ObjectInput in) throws IOException,
-			ClassNotFoundException {
-
-		setXid((XID) in.readObject());
-		this.tid = (String) in.readObject();
-		this.root = (String) in.readObject();
-		this.state = (TxState) in.readObject();
-
-		this.resourcename = (String) in.readObject();
-
-		try {
-			Boolean xaresSerializable = (Boolean) in.readObject();
-			if (xaresSerializable != null && xaresSerializable) {
-				// cf case 59238
-				this.xaresource = (XAResource) in.readObject();
-			}
-		} catch (OptionalDataException e) {
-			// happens if boolean is missing - like in older logfiles
-			LOGGER.logDebug("Ignoring missing field", e);
-		}
-
-	}
-
 	/**
 	 * @see ResourceTransaction.
 	 */
-
 	public String getTid() {
 		return this.tid;
 	}
@@ -410,15 +361,6 @@ public class XAResourceTransaction implements ResourceTransaction,
 
 	public Object getState() {
 		return this.state;
-	}
-
-	/**
-	 * @see Participant
-	 */
-	@Override
-	public boolean recover() throws SysException {
-		
-		return true;
 	}
 
 	private boolean beforePrepare() {

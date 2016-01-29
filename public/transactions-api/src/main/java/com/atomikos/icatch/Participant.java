@@ -46,23 +46,6 @@ public interface Participant extends java.io.Serializable
      */
 
     public static final int READ_ONLY=0x00;
-
-    
-    
-     /**
-      *
-      * Called by the transaction manager (TM)
-      * at recovery time, and this should reconstruct
-      * the internal state.
-      * 
-      * @return boolean False if the instance could not be recovered.
-      * It is up to the transaction manager to determine the severity of this case.
-      *
-      * @exception SysException
-      */
-      
-    public boolean recover() 
-    throws SysException;
     
      /**
       * @return String The unique URI for this remote participant, or null for local instances.

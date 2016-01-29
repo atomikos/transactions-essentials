@@ -25,12 +25,13 @@
 
 package com.atomikos.icatch.imp;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Dictionary;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.Stack;
 import java.util.Vector;
 
@@ -56,39 +57,33 @@ import com.atomikos.thread.InterruptedExceptionHelper;
  * this class.</b>
  */
 
-abstract class CoordinatorStateHandler implements Serializable, Cloneable
+abstract class CoordinatorStateHandler
 {
 	
-	private static final long serialVersionUID = 5510459174124363958L;
-
 	private static final Logger LOGGER = LoggerFactory.createLogger(CoordinatorStateHandler.class);
 
     private transient CoordinatorImp coordinator_;
     // the coordinator instance whose state we represent
 
-    private Hashtable<Participant,Boolean> readOnlyTable_;
+    private Set<Participant> readOnlyTable_;
     // a hash table that keeps track of which participants are readonly
     // needed on prepare, commit and rollback
 
-    private transient Propagator propagator_;
+    private Propagator propagator_;
     // The propagator for propagation of messages
 
-    private transient Stack<Participant> replayStack_;
+    private Stack<Participant> replayStack_;
     // where replay requests are queued
 
     private Boolean committed_;
     // True iff commit, False iff rollback, otherwise null
 
-    private transient Dictionary<Participant,Integer> cascadeList_;
+    private Dictionary<Participant,Integer> cascadeList_;
     // The participants to cascade prepare to
 
     private Hashtable<TxState,Stack<Participant>> heuristicMap_;
     // Where heuristic states are mapped to participants in that state
 
-    
-    public CoordinatorStateHandler() {
-    	this((CoordinatorImp)null);
-	}
     /**
      * Creates a new instance.
      *
@@ -96,12 +91,11 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
      *            The coordinator to represent.
      *
      */
-
     protected CoordinatorStateHandler ( CoordinatorImp coordinator )
     {
         coordinator_ = coordinator;
         replayStack_ = new Stack<Participant>();
-        readOnlyTable_ = new Hashtable<Participant,Boolean> ();
+        readOnlyTable_ = new HashSet<Participant> ();
         committed_ = null;
 
         heuristicMap_ = new Hashtable<TxState,Stack<Participant>> ();
@@ -140,44 +134,9 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
 
     void setCommitted ()
     {
-        committed_ = new Boolean ( true );
+        committed_ = Boolean.TRUE;
     }
-
-    /**
-     * Performs a deep clone of the state handler, needed for logging the state
-     * information in this handler.
-     *
-     * @return Object The deep clone.
-     */
-
-    @SuppressWarnings("unchecked")
-	public Object clone ()
-    {
-        CoordinatorStateHandler clone = null;
-        try {
-            clone = (CoordinatorStateHandler) super.clone ();
-            clone.readOnlyTable_ = (Hashtable<Participant,Boolean>) readOnlyTable_.clone ();
-
-            clone.heuristicMap_ = new Hashtable<TxState,Stack<Participant>> ();
-
-            Stack<Participant> hazStack =  heuristicMap_.get ( TxState.HEUR_HAZARD );
-            Stack<Participant> mixStack = heuristicMap_.get ( TxState.HEUR_MIXED );
-            Stack<Participant> comStack = heuristicMap_.get ( TxState.HEUR_COMMITTED );
-            Stack<Participant> abStack = heuristicMap_.get ( TxState.HEUR_ABORTED );
-            Stack<Participant> termStack = heuristicMap_.get ( TxState.TERMINATED );
-
-            clone.heuristicMap_.put ( TxState.HEUR_HAZARD, (Stack<Participant>) hazStack.clone () );
-            clone.heuristicMap_.put ( TxState.HEUR_MIXED, (Stack<Participant>) mixStack.clone () );
-            clone.heuristicMap_.put ( TxState.HEUR_COMMITTED, (Stack<Participant>) comStack.clone () );
-            clone.heuristicMap_.put ( TxState.HEUR_ABORTED,(Stack<Participant>) abStack.clone () );
-            clone.heuristicMap_.put ( TxState.TERMINATED, (Stack<Participant>)termStack.clone () );
-        } catch ( CloneNotSupportedException e ) {
-            throw new RuntimeException ("CoordinatorStateHandler: clone failure :" + e.getMessage () );
-        }
-
-        return clone;
-    }
-
+   
     /**
      * Adds a participant with a given heuristic state to the map.
      *
@@ -205,7 +164,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
      *            The participant to heuristic state map.
      */
 
-    protected void addToHeuristicMap ( Hashtable<Participant,TxState> participants )
+    private void addToHeuristicMap ( Hashtable<Participant,TxState> participants )
     {
         Enumeration<Participant> parts = participants.keys ();
         while ( parts.hasMoreElements () ) {
@@ -249,7 +208,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
      * @return The table.
      */
 
-    protected Hashtable<Participant,Boolean> getReadOnlyTable ()
+    protected Set<Participant> getReadOnlyTable ()
     {
         return readOnlyTable_;
     }
@@ -310,7 +269,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
      *            The table.
      */
 
-    protected void setReadOnlyTable ( Hashtable<Participant,Boolean> table )
+    protected void setReadOnlyTable ( Set<Participant> table )
     {
         readOnlyTable_ = table;
     }
@@ -326,20 +285,6 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
     	boolean threaded = !coordinator_.prefersSingleThreaded2PC();
         if ( propagator_ == null )
             propagator_ = new Propagator ( threaded );
-    }
-
-    /**
-     * Recover the state handler after restart. For safety, this method should
-     * be called AFTER activate has been called, or recovery may not work fine!
-     *
-     * @param coordinator
-     *            The (transient) coordinator to use.
-     */
-
-    protected void recover ( CoordinatorImp coordinator )
-    {
-        coordinator_ = coordinator;
-        replayStack_ = new Stack<Participant> ();
     }
 
     /**
@@ -489,7 +434,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
             Enumeration<Participant> enumm = participants.elements ();
             while ( enumm.hasMoreElements () ) {
                 Participant p = enumm.nextElement ();
-                if ( !readOnlyTable_.containsKey ( p ) ) {
+                if ( !readOnlyTable_.contains ( p ) ) {
                     CommitMessage cm = new CommitMessage ( p, commitresult,
                             onePhase );
 
@@ -524,7 +469,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
                             addToHeuristicMap ( p, TxState.TERMINATED );
                     }
                     nextStateHandler = new HeurMixedStateHandler ( this,
-                            hazards );
+                            hazards.keySet() );
 
                     coordinator_.setStateHandler ( nextStateHandler );
                     throw new HeurMixedException();
@@ -556,7 +501,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
                             addToHeuristicMap ( p, TxState.TERMINATED );
                     }
                     nextStateHandler = new HeurHazardStateHandler ( this,
-                            hazards );
+                            hazards.keySet() );
                     coordinator_.setStateHandler ( nextStateHandler );
                     throw new HeurHazardException();
                 }
@@ -615,7 +560,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
             Enumeration<Participant> enumm = participants.elements ();
             while ( enumm.hasMoreElements () ) {
                 Participant p = enumm.nextElement ();
-                if ( !readOnlyTable_.containsKey ( p ) ) {
+                if ( !readOnlyTable_.contains ( p ) ) {
                     RollbackMessage rm = new RollbackMessage ( p,
                             rollbackresult, indoubt );
                     propagator_.submitPropagationMessage ( rm );
@@ -640,7 +585,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
                             addToHeuristicMap ( p, TxState.TERMINATED );
                     }
                     nextStateHandler = new HeurMixedStateHandler ( this,
-                            hazards );
+                            hazards.keySet() );
                     coordinator_.setStateHandler ( nextStateHandler );
                     throw new HeurMixedException();
                 }
@@ -666,7 +611,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
                             addToHeuristicMap ( p, TxState.TERMINATED );
                         }
                     }
-                    nextStateHandler = new HeurHazardStateHandler ( this, hazards );
+                    nextStateHandler = new HeurHazardStateHandler ( this, hazards.keySet() );
                     coordinator_.setStateHandler ( nextStateHandler );
                     throw new HeurHazardException();
                 }
@@ -717,7 +662,7 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
         ForgetResult result = new ForgetResult ( count );
         while ( enumm.hasMoreElements () ) {
             Participant p = (Participant) enumm.nextElement ();
-            if ( !readOnlyTable_.containsKey ( p ) ) {
+            if ( !readOnlyTable_.contains ( p ) ) {
                 ForgetMessage fm = new ForgetMessage ( p, result );
                 propagator_.submitPropagationMessage ( fm );
             }
