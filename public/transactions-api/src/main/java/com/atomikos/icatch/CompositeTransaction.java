@@ -185,24 +185,7 @@ public interface CompositeTransaction
      */
      
     public boolean isLocal ();
-
-
-	public CompositeTransaction createSubTransaction()
-		throws SysException,
-		 IllegalStateException;
-
    
-	/**
-	 * Sets the serial mode. 
-	 * This only works on the root itself, and can not be undone.
-	 * After this, no parallel calls are allowed in any descendant.
-	 *
-	 * @throws IllegalStateException
-	 * @throws SysException
-	 */
-	
-	public void setSerial() throws IllegalStateException, SysException;
-
 
 	/**
 	 * 

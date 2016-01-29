@@ -26,13 +26,13 @@
 package com.atomikos.datasource;
 
 
-public class HeuristicException extends ResourceException
+class HeuristicException extends ResourceException
 {
 
 	private static final long serialVersionUID = 1L;
 
 
-    public HeuristicException(String msg)
+    HeuristicException(String msg)
     {
         super(msg);
     }

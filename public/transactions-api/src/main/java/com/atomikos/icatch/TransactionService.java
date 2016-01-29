@@ -156,14 +156,4 @@ public interface TransactionService
       public CompositeCoordinator getCompositeCoordinator ( String root )
       throws SysException;
       
-      /**
-       * Gets the superior recovery coordinator for a given root.
-       * Needed for imported transactions only. 
-       * @param root The root ID
-       * @return The recovery coordinator, or null if the root does not exist or if the root was not imported.
-       */
-      
-      public RecoveryCoordinator getSuperiorRecoveryCoordinator ( String root );
-      
-
 }
