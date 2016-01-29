@@ -52,17 +52,16 @@ import com.atomikos.logging.LoggerFactory;
  * A complete composite transaction implementation for use in the local VM.
  */
 
-public class CompositeTransactionImp
-extends AbstractCompositeTransaction implements
+class CompositeTransactionImp extends AbstractCompositeTransaction implements
         CompositeTerminator, TransactionControl, FSMEnterListener
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(CompositeTransactionImp.class);
 
-    protected CoordinatorImp coordinator = null;
+	private CoordinatorImp coordinator = null;
 
-    protected TransactionServiceImp txservice;
+	private TransactionServiceImp txservice;
 
-    protected Extent extent = null;
+	private Extent extent = null;
 
     protected boolean noLocalAncestors;
 

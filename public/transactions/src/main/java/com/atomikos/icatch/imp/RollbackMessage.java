@@ -36,10 +36,6 @@ import com.atomikos.icatch.Participant;
 
 class RollbackMessage extends PropagationMessage
 {
-
-	private int retrycount_ = 0;
-    // no of retries so far
-
 	private boolean indoubt_ = false;
     // true if participant can be indoubt.
 

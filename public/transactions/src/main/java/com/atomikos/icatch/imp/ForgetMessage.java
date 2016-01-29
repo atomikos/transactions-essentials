@@ -33,12 +33,7 @@ import com.atomikos.icatch.Participant;
 
 class ForgetMessage extends PropagationMessage
 {
-
-    ForgetMessage ( Participant participant )
-    {
-        super ( participant , null );
-    }
-
+    
     ForgetMessage ( Participant p , ForgetResult result )
     {
         super ( p , result );

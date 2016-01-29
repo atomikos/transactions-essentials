@@ -38,7 +38,7 @@ import com.atomikos.icatch.SysException;
  * This allows substitution of the recovery coordinator adaptor.
  */
 
-public class CompositeTransactionAdaptor extends AbstractCompositeTransaction
+class CompositeTransactionAdaptor extends AbstractCompositeTransaction
         implements CompositeCoordinator
 {
 

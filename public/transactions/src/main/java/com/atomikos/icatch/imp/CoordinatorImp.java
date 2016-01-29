@@ -191,28 +191,6 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     }
 
     /**
-     * Constructor.
-     *
-     * @param root
-     *            The root String for this one.
-     * @param console
-     *            The console to log to, or null if none.
-     * @param coord
-     *            The recovery coordinator for indoubt resolution.
-     * @param heuristic_commit
-     *            If true, heuristic decision is commit.
-     * @param checkorphans
-     *            If true, orphan checking is done at prepare.
-     */
-
-    public CoordinatorImp ( String root , RecoveryCoordinator coord ,
-             boolean heuristic_commit , boolean checkorphans )
-    {
-        this ( root , coord ,  heuristic_commit ,
-                DEFAULT_MILLIS_BETWEEN_TIMER_WAKEUPS , checkorphans , false );
-    }
-
-    /**
      * No argument constructor as required by Recoverable interface.
      */
 
@@ -318,7 +296,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
      *            The console, null if none.
      */
 
-    protected void startThreads ( long timeout )
+    private void startThreads ( long timeout )
     {
     	synchronized ( fsm_ ) {
     		if ( timer_ == null ) { //not null for repeated recovery 
@@ -367,7 +345,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
      * @see FSMEnterEventSource.
      */
 
-    public void addFSMEnterListener ( FSMEnterListener l, TxState state )
+    void addFSMEnterListener ( FSMEnterListener l, TxState state )
     {
         fsm_.addFSMEnterListener ( l, state );
 
@@ -412,7 +390,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
         return root_;
     }
 
-    public RecoveryCoordinator addParticipant (
+    RecoveryCoordinator addParticipant (
             Participant participant ) throws SysException,
             java.lang.IllegalStateException, RollbackException
     {
@@ -617,7 +595,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     }
 
 
-    public void rollbackHeuristically ()
+    void rollbackHeuristically ()
             throws HeurCommitException, HeurMixedException, SysException,
             HeurHazardException, java.lang.IllegalStateException
     {
@@ -626,7 +604,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
         } 
     }
 
-    public void commitHeuristically () throws HeurMixedException,
+    void commitHeuristically () throws HeurMixedException,
             SysException, HeurRollbackException, HeurHazardException,
             java.lang.IllegalStateException, RollbackException
     {

@@ -54,7 +54,7 @@ public class PropagationImp implements Propagation
     public static Propagation adaptPropagation ( Propagation propagation ,
             RecoveryCoordinator adaptor )
     {
-        Stack lineage = propagation.getLineage ();
+        Stack<CompositeTransaction> lineage = propagation.getLineage ();
 
         // replace most recent ancestor by adaptor
         CompositeTransaction remote = (CompositeTransaction) lineage.peek ();
@@ -70,7 +70,7 @@ public class PropagationImp implements Propagation
                 propagation.getTimeOut () );
     }
 
-    private Stack lineage_;
+    private Stack<CompositeTransaction> lineage_;
 
     private boolean serial_;
 
@@ -89,10 +89,10 @@ public class PropagationImp implements Propagation
      *            The timeout left for the tx.
      */
 
-    public PropagationImp ( Stack lineage , boolean serial , long timeout )
+    public PropagationImp ( Stack<CompositeTransaction> lineage , boolean serial , long timeout )
     {
         serial_ = serial;
-        lineage_ = (Stack) lineage.clone ();
+        lineage_ = (Stack<CompositeTransaction>) lineage.clone ();
         timeout_ = timeout;
     }
 
@@ -100,7 +100,7 @@ public class PropagationImp implements Propagation
      * @see Propagation
      */
 
-    public Stack getLineage ()
+    public Stack<CompositeTransaction> getLineage ()
     {
         return lineage_;
     }

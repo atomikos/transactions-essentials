@@ -73,8 +73,8 @@ class PrepareResult extends Result
         boolean heurmixed = false;
         boolean heurhazards = false;
         boolean heurcommits = false;
-        Stack replies = getReplies ();
-        Enumeration enumm = replies.elements ();
+        Stack<Reply> replies = getReplies ();
+        Enumeration<Reply> enumm = replies.elements ();
 
         while ( enumm.hasMoreElements () ) {
             boolean yes = false;

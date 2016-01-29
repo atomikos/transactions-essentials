@@ -578,7 +578,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
     CompositeTransaction createSubTransaction ( CompositeTransaction parent )
     {
         CompositeTransactionImp ret = null;
-        Stack lineage = (Stack) parent.getLineage ().clone ();
+        Stack<CompositeTransaction> lineage = (Stack<CompositeTransaction>) parent.getLineage ().clone ();
         lineage.push ( parent );
         String tid = tidmgr_.get ();
         CoordinatorImp ccParent = (CoordinatorImp) parent
