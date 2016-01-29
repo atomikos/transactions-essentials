@@ -25,6 +25,8 @@
 
 package com.atomikos.datasource.xa;
 
+import java.util.Map;
+
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
@@ -354,7 +356,7 @@ public class XAResourceTransaction implements ResourceTransaction, Participant {
 	 */
 
 	@Override
-	public void setCascadeList(java.util.Dictionary allParticipants)
+	public void setCascadeList(Map<String, Integer> allParticipants)
 			throws SysException {
 		// nothing to do: local participant
 	}

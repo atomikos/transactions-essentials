@@ -26,6 +26,7 @@
 package com.atomikos.icatch.imp;
 
 import java.util.Dictionary;
+import java.util.Map;
 
 import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.HeurHazardException;
@@ -64,7 +65,7 @@ public class ReadOnlyParticipant implements Participant {
 		return null;
 	}
 
-	public void setCascadeList(Dictionary allParticipants) throws SysException {
+	public void setCascadeList(Map<String, Integer> allParticipants) throws SysException {
 
 
 	}

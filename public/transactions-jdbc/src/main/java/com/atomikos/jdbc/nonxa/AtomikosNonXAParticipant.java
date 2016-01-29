@@ -28,6 +28,7 @@ package com.atomikos.jdbc.nonxa;
 
 import java.io.Serializable;
 import java.util.Dictionary;
+import java.util.Map;
 
 import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.HeurHazardException;
@@ -89,9 +90,10 @@ public class AtomikosNonXAParticipant implements Participant, Serializable
     }
 
     /**
-     * @see com.atomikos.icatch.Participant#setCascadeList(java.util.Dictionary)
+     * @see Participant
      */
-    public void setCascadeList ( Dictionary allParticipants )
+
+    public void setCascadeList ( Map<String, Integer> allParticipants )
             throws SysException
     {
         // ignore

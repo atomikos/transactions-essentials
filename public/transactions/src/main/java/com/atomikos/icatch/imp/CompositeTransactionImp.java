@@ -26,6 +26,7 @@
 package com.atomikos.icatch.imp;
 
 import java.util.Dictionary;
+import java.util.Map;
 import java.util.Stack;
 
 import com.atomikos.finitestates.FSMEnterEvent;
@@ -360,7 +361,7 @@ extends AbstractCompositeTransaction implements
     }
 
     private void setSiblingInfoForIncoming1pcRequestFromRemoteClient() {
-		Dictionary cascadelist = getExtent ().getRemoteParticipants ();
+    	Map<String,Integer> cascadelist = getExtent().getRemoteParticipants ();
         coordinator.setGlobalSiblingCount ( coordinator.getLocalSiblingCount () );
         coordinator.setCascadeList ( cascadelist );
 	}

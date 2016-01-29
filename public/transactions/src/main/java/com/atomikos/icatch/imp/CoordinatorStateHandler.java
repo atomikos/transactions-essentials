@@ -31,6 +31,7 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 import java.util.Vector;
@@ -78,7 +79,7 @@ abstract class CoordinatorStateHandler
     private Boolean committed_;
     // True iff commit, False iff rollback, otherwise null
 
-    private Dictionary<Participant,Integer> cascadeList_;
+    private Map<String, Integer> cascadeList_;
     // The participants to cascade prepare to
 
     private Hashtable<TxState,Stack<Participant>> heuristicMap_;
@@ -216,10 +217,10 @@ abstract class CoordinatorStateHandler
     /**
      * Get the cascade list.
      *
-     * @return Dictionary The cascade list.
+     * @return Map The cascade list.
      */
 
-    protected Dictionary getCascadeList ()
+    protected Map<String,Integer> getCascadeList ()
     {
         return cascadeList_;
     }
@@ -333,7 +334,7 @@ abstract class CoordinatorStateHandler
      * The corresponding 2PC method is delegated hereto.
      */
 
-    protected void setCascadeList ( Dictionary<Participant, Integer> allParticipants )
+    protected void setCascadeList ( Map<String, Integer> allParticipants )
     {
         cascadeList_ = allParticipants;
     }

@@ -25,6 +25,8 @@
 
 package com.atomikos.icatch;
 
+import java.util.Map;
+
 
 
 
@@ -64,7 +66,7 @@ public interface Participant extends java.io.Serializable
      * @exception SysException 
      */
 
-    public void setCascadeList(java.util.Dictionary allParticipants)
+    public void setCascadeList(Map<String, Integer> allParticipants)
         throws SysException;
 
     /**

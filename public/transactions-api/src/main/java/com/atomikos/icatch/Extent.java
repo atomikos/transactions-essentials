@@ -25,7 +25,7 @@
 
 package com.atomikos.icatch;
 
-import java.util.Hashtable;
+import java.util.Map;
 import java.util.Stack;
 
 /**
@@ -43,11 +43,11 @@ import java.util.Stack;
 public interface Extent extends java.io.Serializable
 {
     /**
-     * @return Hashtable Mapping URIs of remote participants (directly or indirectly invoked)
+     * @return Map Mapping URIs of remote participants (directly or indirectly invoked)
      * to Integer counts that represent the number of invocations detected by each participant.
      */
 
-    public Hashtable<String,Integer> getRemoteParticipants();
+    public Map<String,Integer> getRemoteParticipants();
     
     /**
      * Merges another extent into this one.

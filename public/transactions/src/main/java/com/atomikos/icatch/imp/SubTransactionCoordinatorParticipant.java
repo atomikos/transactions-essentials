@@ -26,6 +26,7 @@
 package com.atomikos.icatch.imp;
 
 import java.util.Dictionary;
+import java.util.Map;
 
 import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.HeurHazardException;
@@ -84,10 +85,8 @@ public class SubTransactionCoordinatorParticipant implements Participant
         return subordinateId;
     }
 
-    /**
-     * @see com.atomikos.icatch.Participant#setCascadeList(java.util.Dictionary)
-     */
-    public void setCascadeList ( Dictionary allParticipants )
+  
+    public void setCascadeList ( Map<String,Integer> allParticipants )
             throws SysException
     {
         // delegate to subordinate, in order to propagate to remote

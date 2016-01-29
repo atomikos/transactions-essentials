@@ -25,6 +25,8 @@
 
 package com.atomikos.icatch.imp;
 
+import java.util.Map;
+
 import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeurMixedException;
@@ -58,15 +60,7 @@ public class RollbackOnlyParticipant implements Participant
         return false;
     }
 
-    /**
-     * @see Participant
-     */
 
-    public void setCascadeList ( java.util.Dictionary allParticipants )
-            throws SysException
-    {
-        
-    }
 
     /**
      * @see Participant
@@ -140,6 +134,12 @@ public class RollbackOnlyParticipant implements Participant
 	@Override
 	public String getResourceName() {
 		return null;
+	}
+
+	@Override
+	public void setCascadeList(Map<String, Integer> cascadeList)
+			throws SysException {
+		
 	}
 	
 }

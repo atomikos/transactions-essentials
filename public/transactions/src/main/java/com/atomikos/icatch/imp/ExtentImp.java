@@ -25,9 +25,11 @@
 
 package com.atomikos.icatch.imp;
 
-import java.util.Dictionary;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 
 import com.atomikos.icatch.Extent;
@@ -45,7 +47,7 @@ public class ExtentImp implements Extent
 
 	private static final long serialVersionUID = -1010453448007350422L;
 
-	private Hashtable<String,Integer> participants_ = null;
+	private Map<String, Integer> participants_ = null;
     private boolean queried_ = false;
 
     private Stack<Participant> directs_;
@@ -56,20 +58,19 @@ public class ExtentImp implements Extent
         directs_ = new Stack<Participant> ();
     }
 
-    public ExtentImp ( Hashtable<String,Integer> participants , Stack<Participant> directs )
+    public ExtentImp ( Map<String, Integer> map , Stack<Participant> directs )
     {
-        participants_ = (Hashtable<String,Integer>) participants.clone ();
+        participants_ = (Map<String,Integer>) new HashMap(map);
         directs_ = (Stack<Participant>) directs.clone ();
     }
 
-    public void addRemoteParticipants ( Dictionary<String,Integer> participants )
+    public void addRemoteParticipants ( Map<String,Integer> participants )
             throws IllegalStateException, SysException
     {
         if ( participants == null )
             return;
-        Enumeration<String> enumm = participants.keys ();
-        while ( enumm.hasMoreElements () ) {
-            String participant =  enumm.nextElement ();
+        Set<String> enumm = participants.keySet();
+        for ( String participant : enumm) {
             Integer count =  participants_.get ( participant );
             if ( count == null )
                 count = Integer.valueOf( 0 );
@@ -93,10 +94,10 @@ public class ExtentImp implements Extent
      * @see Extent
      */
 
-    public Hashtable<String,Integer> getRemoteParticipants ()
+    public Map<String, Integer> getRemoteParticipants ()
     {
         queried_ = true;
-        return (Hashtable<String,Integer>) participants_.clone ();
+        return new HashMap(participants_);
     }
 
     /**
