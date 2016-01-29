@@ -25,9 +25,6 @@
 
 package com.atomikos.icatch.imp;
 
-import java.util.Enumeration;
-import java.util.Hashtable;
-
 import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeurMixedException;
@@ -47,64 +44,14 @@ public class IndoubtStateHandler extends CoordinatorStateHandler
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(IndoubtStateHandler.class);
 
-	private static final long serialVersionUID = 7541858185410144702L;
-
 	private int inquiries_;
     // how many timeout events have happened?
     // if max allowed -> take heuristic decision
-
-    private boolean recovered_;
-    // useful in the case of a non-recovered ROOT, which needs to
-    // timeout to a heuristic state since the client terminator
-    // will not receive the outcome!
-
-    
-    public IndoubtStateHandler() {
-	
-	}
-    
-    IndoubtStateHandler ( CoordinatorImp coordinator )
-    {
-        super ( coordinator );
-        inquiries_ = 0;
-        recovered_ = false;
-    }
-
+   
     IndoubtStateHandler ( CoordinatorStateHandler previous )
     {
         super ( previous );
         inquiries_ = 0;
-        recovered_ = false;
-    }
-
-    protected void recover ( CoordinatorImp coordinator )
-    {
-        super.recover ( coordinator );
-
-        if ( getCoordinator ().getState ().equals ( TxState.COMMITTING ) ) {
-            // A coordinator that is still in this state might not have notified
-            // all its participants -> make sure replay happens
-            Enumeration enumm = getCoordinator ().getParticipants ().elements ();
-            Hashtable hazards = new Hashtable ();
-            while ( enumm.hasMoreElements () ) {
-                Participant p = (Participant) enumm.nextElement ();
-                if ( !getReadOnlyTable ().containsKey ( p ) ) {
-                    addToHeuristicMap ( p, TxState.HEUR_HAZARD );
-                    hazards.put ( p, TxState.HEUR_HAZARD );
-                }
-            }
-            HeurHazardStateHandler hazardStateHandler = new HeurHazardStateHandler (
-                    this, hazards );
-            // set state to hazard AFTER having added all heuristic info,
-            // otherwise this info will NOT be in the log image!
-            getCoordinator ().setStateHandler ( hazardStateHandler );
-
-            // propagate recover notification to next state
-            hazardStateHandler.recover ( coordinator );
-
-        }
-
-        recovered_ = true;
     }
 
     protected TxState getState ()
@@ -114,8 +61,6 @@ public class IndoubtStateHandler extends CoordinatorStateHandler
 
     protected void onTimeout ()
     {
-    	
-
         // first check if we are still the current state!
         // otherwise, a COMMITTING tx could be rolled back if it
         // times out in between (i.e. a commit can come in while

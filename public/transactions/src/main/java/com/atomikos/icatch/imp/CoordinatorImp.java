@@ -520,53 +520,6 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     }
 
     /**
-     * @see Participant
-     */
-
-    public boolean recover () throws SysException
-    {
-        boolean allOK = true;
-        boolean ret;
-    	 if ( LOGGER.isDebugEnabled() ){
-    		 LOGGER.logDebug (  "starting recover() for coordinator: " + getCoordinatorId () );
-    	 }
-
-		synchronized ( fsm_ ) {
-			// cf case 61686 and case 62217: avoid concurrent enlists while recovering
-			Iterator<Participant> parts = getParticipants().iterator();
-			while (parts.hasNext()) {
-				Participant next =  parts.next();
-				boolean recoveredParticipant = false;
-				try {
-					recoveredParticipant = next.recover();
-					 if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug (  "coordinator: " + getCoordinatorId()
-								+ "recovered participant: " + next );
-				} catch (Exception e) {
-					// happens if XA connection could not be gotten or other problems
-					LOGGER.logWarning("Error in recovering participant");
-					StackTraceElement[] infos = e.getStackTrace();
-					for (int i = 0; i < infos.length; i++) {
-						LOGGER.logWarning(infos[i].toString());
-					}
-					// do NOT throw any exception: tolerate this to let the coordinator do the rest
-				}
-				allOK = allOK && recoveredParticipant;
-			}
-			stateHandler_.recover(this);
-			ret = !(!allOK && getState().equals(TxState.IN_DOUBT));
-		} // synchronized
-
-        // ONLY NOW start threads and so on
-        startThreads ( DEFAULT_MILLIS_BETWEEN_TIMER_WAKEUPS );
-
-
-        if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug (   "recover() done for coordinator: " + getCoordinatorId () );
-      
-
-        return ret;
-    }
-
-    /**
      * @see Participant.
      */
 

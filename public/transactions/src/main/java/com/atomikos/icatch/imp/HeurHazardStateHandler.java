@@ -76,23 +76,6 @@ public class HeurHazardStateHandler extends CoordinatorStateHandler
 
     }
 
-
-    protected void recover ( CoordinatorImp coordinator )
-    {
-        super.recover ( coordinator );
-
-        // add all recovered participants to the replay stack
-        // to resume where we left off before the crash,
-        // and try to notify all hazards
-        Enumeration enumm = getCoordinator ().getParticipants ().elements ();
-        while ( enumm.hasMoreElements () ) {
-            Participant p = (Participant) enumm.nextElement ();
-            if ( !getReadOnlyTable ().containsKey ( p ) ) {
-                replayCompletion ( p );
-            }
-        } // while
-    }
-
     protected TxState getState ()
     {
         return TxState.HEUR_HAZARD;

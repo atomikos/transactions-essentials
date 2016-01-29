@@ -25,7 +25,6 @@
 
 package com.atomikos.icatch.imp;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Dictionary;
 import java.util.Enumeration;
@@ -56,11 +55,9 @@ import com.atomikos.thread.InterruptedExceptionHelper;
  * this class.</b>
  */
 
-abstract class CoordinatorStateHandler implements Serializable, Cloneable
+abstract class CoordinatorStateHandler
 {
 	
-	private static final long serialVersionUID = 5510459174124363958L;
-
 	private static final Logger LOGGER = LoggerFactory.createLogger(CoordinatorStateHandler.class);
 
     private transient CoordinatorImp coordinator_;
@@ -140,44 +137,9 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
 
     void setCommitted ()
     {
-        committed_ = new Boolean ( true );
+        committed_ = Boolean.TRUE;
     }
-
-    /**
-     * Performs a deep clone of the state handler, needed for logging the state
-     * information in this handler.
-     *
-     * @return Object The deep clone.
-     */
-
-    @SuppressWarnings("unchecked")
-	public Object clone ()
-    {
-        CoordinatorStateHandler clone = null;
-        try {
-            clone = (CoordinatorStateHandler) super.clone ();
-            clone.readOnlyTable_ = (Hashtable<Participant,Boolean>) readOnlyTable_.clone ();
-
-            clone.heuristicMap_ = new Hashtable<TxState,Stack<Participant>> ();
-
-            Stack<Participant> hazStack =  heuristicMap_.get ( TxState.HEUR_HAZARD );
-            Stack<Participant> mixStack = heuristicMap_.get ( TxState.HEUR_MIXED );
-            Stack<Participant> comStack = heuristicMap_.get ( TxState.HEUR_COMMITTED );
-            Stack<Participant> abStack = heuristicMap_.get ( TxState.HEUR_ABORTED );
-            Stack<Participant> termStack = heuristicMap_.get ( TxState.TERMINATED );
-
-            clone.heuristicMap_.put ( TxState.HEUR_HAZARD, (Stack<Participant>) hazStack.clone () );
-            clone.heuristicMap_.put ( TxState.HEUR_MIXED, (Stack<Participant>) mixStack.clone () );
-            clone.heuristicMap_.put ( TxState.HEUR_COMMITTED, (Stack<Participant>) comStack.clone () );
-            clone.heuristicMap_.put ( TxState.HEUR_ABORTED,(Stack<Participant>) abStack.clone () );
-            clone.heuristicMap_.put ( TxState.TERMINATED, (Stack<Participant>)termStack.clone () );
-        } catch ( CloneNotSupportedException e ) {
-            throw new RuntimeException ("CoordinatorStateHandler: clone failure :" + e.getMessage () );
-        }
-
-        return clone;
-    }
-
+   
     /**
      * Adds a participant with a given heuristic state to the map.
      *
@@ -326,20 +288,6 @@ abstract class CoordinatorStateHandler implements Serializable, Cloneable
     	boolean threaded = !coordinator_.prefersSingleThreaded2PC();
         if ( propagator_ == null )
             propagator_ = new Propagator ( threaded );
-    }
-
-    /**
-     * Recover the state handler after restart. For safety, this method should
-     * be called AFTER activate has been called, or recovery may not work fine!
-     *
-     * @param coordinator
-     *            The (transient) coordinator to use.
-     */
-
-    protected void recover ( CoordinatorImp coordinator )
-    {
-        coordinator_ = coordinator;
-        replayStack_ = new Stack<Participant> ();
     }
 
     /**

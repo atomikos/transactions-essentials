@@ -363,15 +363,6 @@ public class XAResourceTransaction implements ResourceTransaction, Participant {
 		return this.state;
 	}
 
-	/**
-	 * @see Participant
-	 */
-	@Override
-	public boolean recover() throws SysException {
-		
-		return true;
-	}
-
 	private boolean beforePrepare() {
 		return TxState.ACTIVE.equals(this.state)
 				|| TxState.LOCALLY_DONE.equals(this.state);

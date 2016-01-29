@@ -40,15 +40,6 @@ import com.atomikos.icatch.TxState;
 public class HeurAbortedStateHandler extends CoordinatorStateHandler
 {
 
-	public HeurAbortedStateHandler() {
-	
-	}
-	
-    HeurAbortedStateHandler ( CoordinatorImp coordinator )
-    {
-        super ( coordinator );
-    }
-
     HeurAbortedStateHandler ( CoordinatorStateHandler previous )
     {
         super ( previous );
