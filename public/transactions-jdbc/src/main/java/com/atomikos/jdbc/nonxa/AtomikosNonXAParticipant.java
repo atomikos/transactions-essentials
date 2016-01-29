@@ -27,7 +27,6 @@ package com.atomikos.jdbc.nonxa;
 
 
 import java.io.Serializable;
-import java.util.Dictionary;
 import java.util.Map;
 
 import com.atomikos.icatch.HeurCommitException;

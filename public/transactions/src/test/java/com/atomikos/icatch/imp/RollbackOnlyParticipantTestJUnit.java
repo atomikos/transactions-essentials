@@ -19,11 +19,6 @@ public class RollbackOnlyParticipantTestJUnit extends TestCase {
 		p = new RollbackOnlyParticipant();
 	}
 	
-	public void testRecover()
-	{
-		assertFalse ( p.recover() );
-	}
-	
 	public void testURI()
 	{
 		assertNull ( p.getURI() );

@@ -41,9 +41,8 @@ class CommitMessage extends PropagationMessage
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(CommitMessage.class);
 
-    protected boolean onephase_ = false;
+    private boolean onephase_ = false;
 
-    protected int retrycount_ = 0;
     
     public CommitMessage ( Participant participant , Result result ,
             boolean onephase )

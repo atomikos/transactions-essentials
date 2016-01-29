@@ -42,25 +42,10 @@ import com.atomikos.logging.LoggerFactory;
  * never allow commit.
  */
 
-public class RollbackOnlyParticipant implements Participant
+class RollbackOnlyParticipant implements Participant
 {
 
 	private static final Logger LOG = LoggerFactory.createLogger(RollbackOnlyParticipant.class);
-
-    
-
-    RollbackOnlyParticipant() {}
-
-    /**
-     * @see Participant
-     */
-
-    public boolean recover () throws SysException
-    {
-        return false;
-    }
-
-
 
     /**
      * @see Participant
@@ -68,7 +53,6 @@ public class RollbackOnlyParticipant implements Participant
 
     public void setGlobalSiblingCount ( int count )
     {
-        
     }
 
     /**

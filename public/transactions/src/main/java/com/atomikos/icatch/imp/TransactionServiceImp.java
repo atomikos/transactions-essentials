@@ -283,7 +283,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
      */
 
     private CompositeTransactionImp createCT ( String tid ,
-            CoordinatorImp coordinator , Stack lineage , boolean serial )
+            CoordinatorImp coordinator , Stack<CompositeTransaction> lineage , boolean serial )
             throws SysException
     {
     		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Creating composite transaction: " + tid );
@@ -402,28 +402,6 @@ public class TransactionServiceImp implements TransactionServiceProvider,
         return cc;
     }
 
-    /**
-     * Create a new tid.
-     *
-     * @return String The newly created and unique identifier.
-     */
-
-    protected String createTid () throws SysException
-    {
-        return tidmgr_.get ();
-    }
-
-    /**
-     * Get the state recovery manager.
-     *
-     * @return StateRecoveryManager The recovery manager.
-     */
-
-    protected StateRecoveryManager getStateRecoveryManager ()
-    {
-        return recoverymanager_;
-    }
-
     public String getName ()
     {
         return tmUniqueName_;
@@ -440,9 +418,6 @@ public class TransactionServiceImp implements TransactionServiceProvider,
 
         return control_;
     }
-    
-    
-    
 
     /**
      * @see TransactionService
@@ -487,7 +462,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
 
     }
     
-    PooledAlarmTimer recoveryTimer;
+    private PooledAlarmTimer recoveryTimer;
 
     /**
      * @see TransactionService
@@ -550,7 +525,6 @@ public class TransactionServiceImp implements TransactionServiceProvider,
     public void entered ( FSMEnterEvent event )
     {
         CoordinatorImp cc = (CoordinatorImp) event.getSource ();
-        TxState state = event.getState ();
         removeCoordinator(cc);
     }
 
@@ -640,11 +614,11 @@ public class TransactionServiceImp implements TransactionServiceProvider,
         try {
             String tid = tidmgr_.get ();
             boolean serial = context.isSerial ();
-            Stack lineage = context.getLineage ();
+            Stack<CompositeTransaction> lineage = context.getLineage ();
             if ( lineage.empty () )
                 throw new SysException (
                         "Empty lineage in propagation: empty lineage" );
-            Stack tmp = new Stack ();
+            Stack<CompositeTransaction> tmp = new Stack<CompositeTransaction>();
 
             while ( !lineage.empty () ) {
                 tmp.push ( lineage.pop () );
@@ -706,9 +680,9 @@ public class TransactionServiceImp implements TransactionServiceProvider,
             // to enter this method will do the following. Don't do
             // it twice.
 
-            Enumeration enumm = rootToCoordinatorMap_.keys ();
+            Enumeration<String> enumm = rootToCoordinatorMap_.keys ();
             while ( enumm.hasMoreElements () ) {
-                String tid = (String) enumm.nextElement ();
+                String tid = enumm.nextElement ();
                 LOGGER.logDebug ( "Transaction Service: Stopping thread for root "
                                 + tid + "..." );
                 CoordinatorImp c = (CoordinatorImp) rootToCoordinatorMap_
@@ -742,10 +716,10 @@ public class TransactionServiceImp implements TransactionServiceProvider,
             	//PURGE to avoid issue 10079
             	//use a clone to avoid concurrency interference
             	if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Transaction Service: Purging coordinators for shutdown..." );
-            	Hashtable clone = ( Hashtable ) rootToCoordinatorMap_.clone();
-            	Enumeration coordinatorIds = clone.keys();
+            	Hashtable<String,CoordinatorImp> clone = new Hashtable<String,CoordinatorImp>(rootToCoordinatorMap_);
+            	Enumeration<String> coordinatorIds = clone.keys();
             	while ( coordinatorIds.hasMoreElements() ) {
-            		String id = ( String ) coordinatorIds.nextElement();	
+            		String id = coordinatorIds.nextElement();	
             		rootToCoordinatorMap_.remove ( id );
             	}
             }

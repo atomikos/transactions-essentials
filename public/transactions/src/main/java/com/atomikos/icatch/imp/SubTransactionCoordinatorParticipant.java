@@ -25,7 +25,6 @@
 
 package com.atomikos.icatch.imp;
 
-import java.util.Dictionary;
 import java.util.Map;
 
 import com.atomikos.icatch.HeurCommitException;

@@ -25,7 +25,6 @@
 
 package com.atomikos.icatch.imp;
 
-import java.util.Dictionary;
 import java.util.Map;
 
 import com.atomikos.icatch.HeurCommitException;
@@ -37,7 +36,7 @@ import com.atomikos.icatch.RollbackException;
 import com.atomikos.icatch.SysException;
 
 
-public class ReadOnlyParticipant implements Participant {
+class ReadOnlyParticipant implements Participant {
 
 
 	//force set UID for backward log compatibility
@@ -46,33 +45,23 @@ public class ReadOnlyParticipant implements Participant {
 
 	//keep coordinator ID for equality
 	private final String coordinatorId;
-
-
 	public ReadOnlyParticipant() {
-		coordinatorId=null;
+		this.coordinatorId = null;
 	}
-	public ReadOnlyParticipant ( CoordinatorImp coordinator )
+
+	ReadOnlyParticipant ( CoordinatorImp coordinator )
 	{
 		this.coordinatorId = coordinator.getCoordinatorId();
 	}
 
-	public boolean recover() throws SysException {
-		return true;
-	}
-
 	public String getURI() {
-
 		return null;
 	}
 
 	public void setCascadeList(Map<String, Integer> allParticipants) throws SysException {
-
-
 	}
 
 	public void setGlobalSiblingCount(int count) {
-
-
 	}
 
 	public int prepare() throws RollbackException, HeurHazardException,

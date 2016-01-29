@@ -25,7 +25,6 @@
 
 package com.atomikos.icatch.imp;
 
-import java.util.Dictionary;
 import java.util.Map;
 import java.util.Stack;
 
@@ -73,7 +72,7 @@ extends AbstractCompositeTransaction implements
      * This constructor is kept for compatibility with the test classes.
      */
 
-    CompositeTransactionImp ( Stack lineage , String tid , boolean serial ,
+    CompositeTransactionImp ( Stack<CompositeTransaction> lineage , String tid , boolean serial ,
             CoordinatorImp coordinator )
     {
         this ( null , lineage , tid , serial , coordinator );
@@ -96,8 +95,8 @@ extends AbstractCompositeTransaction implements
      *                If coordinator no longer activatable.
      */
 
-    public CompositeTransactionImp ( TransactionServiceImp txservice ,
-            Stack lineage , String tid , boolean serial ,
+    CompositeTransactionImp ( TransactionServiceImp txservice ,
+            Stack<CompositeTransaction> lineage , String tid , boolean serial ,
             CoordinatorImp coordinator ) throws IllegalStateException
     {
 

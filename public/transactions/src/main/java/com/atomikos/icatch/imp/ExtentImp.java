@@ -60,8 +60,9 @@ public class ExtentImp implements Extent
 
     public ExtentImp ( Map<String, Integer> map , Stack<Participant> directs )
     {
-        participants_ = (Map<String,Integer>) new HashMap(map);
-        directs_ = (Stack<Participant>) directs.clone ();
+        participants_ = new HashMap<String,Integer>(map);
+        directs_ = new Stack<Participant>();
+        directs_.addAll(directs);
     }
 
     public void addRemoteParticipants ( Map<String,Integer> participants )
@@ -97,7 +98,7 @@ public class ExtentImp implements Extent
     public Map<String, Integer> getRemoteParticipants ()
     {
         queried_ = true;
-        return new HashMap(participants_);
+        return new HashMap<String, Integer>(participants_);
     }
 
     /**

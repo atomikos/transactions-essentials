@@ -42,7 +42,7 @@ import com.atomikos.icatch.Participant;
 class PrepareResult extends Result
 {
 
-    protected Set<Participant> readonlytable_ = new HashSet<Participant> ();
+    private Set<Participant> readonlytable_ = new HashSet<Participant> ();
     // for read only voters
     private Set<Participant> indoubts_ = new HashSet<Participant>();
     // for indoubt participants
