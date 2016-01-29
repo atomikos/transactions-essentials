@@ -70,7 +70,7 @@ public class TemporaryXATransactionalResource extends XATransactionalResource
 
     public TemporaryXATransactionalResource ( XAResource xares )
     {
-        super ( truncateNameTo45Bytes ( xares.toString () ) );
+        super ( truncateNameTo45Bytes ( String.valueOf(xares.hashCode()) ) );
         xares_ = xares;
         // get xa resource a first time, to
         // so that needsRefresh() means that the
