@@ -616,11 +616,6 @@ public class TransactionServiceImp implements TransactionServiceProvider,
         // but without orphan checks since subtxs have no orphans
         CoordinatorImp cc = createCC ( null, tid, false ,
                 ccParent.prefersHeuristicCommit (), parent.getTimeout () );
-        if ( ccParent.isRecoverableWhileActive() != null &&
-             ccParent.isRecoverableWhileActive().booleanValue() ) {
-            //inherit active recoverability feature
-            cc.setRecoverableWhileActive();
-        }
         ret = createCT ( tid, cc, lineage, parent.isSerial () );
         ret.noLocalAncestors = false;
         return ret;

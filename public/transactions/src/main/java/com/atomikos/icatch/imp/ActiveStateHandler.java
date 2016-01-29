@@ -94,15 +94,12 @@ class ActiveStateHandler extends CoordinatorStateHandler
                 		}
                 	} else {
                 		LOGGER.logWarning ( "Rollback of timedout ACTIVE coordinator !" );
-                		final boolean indoubt = getCoordinator().isRecoverableWhileActive().booleanValue();
-                		//treat activities (recoverable) as indoubts to make sure that anomalies
-                		//with early prepare etc. are treated as heuristics
                 		rollbackWithAfterCompletionNotification(new RollbackCallback() {
 							public void doRollback()
 									throws HeurCommitException,
 									HeurMixedException, SysException,
 									HeurHazardException, IllegalStateException {
-								rollbackFromWithinCallback(indoubt,false);
+								rollbackFromWithinCallback(false,false);
 							}});
                 	}
                 } else if (getCoordinator().getState().isOneOf(TxState.PREPARING, TxState.COMMITTING, TxState.ABORTING))  {
@@ -143,7 +140,7 @@ class ActiveStateHandler extends CoordinatorStateHandler
 							throws HeurCommitException,
 							HeurMixedException, SysException,
 							HeurHazardException, IllegalStateException {
-						rollbackFromWithinCallback(getCoordinator().isRecoverableWhileActive().booleanValue(),false);
+						rollbackFromWithinCallback(false,false);
 					}});
 
             } catch ( HeurCommitException hc ) {
@@ -166,7 +163,7 @@ class ActiveStateHandler extends CoordinatorStateHandler
 								throws HeurCommitException,
 								HeurMixedException, SysException,
 								HeurHazardException, IllegalStateException {
-							rollbackFromWithinCallback(getCoordinator().isRecoverableWhileActive().booleanValue(),false);
+							rollbackFromWithinCallback(false,false);
 						}});
 					throw new RollbackException ( msg , error);
         		} catch ( HeurCommitException e ) {
@@ -301,7 +298,7 @@ class ActiveStateHandler extends CoordinatorStateHandler
 					throws HeurCommitException,
 					HeurMixedException, SysException,
 					HeurHazardException, IllegalStateException {
-				 rollbackFromWithinCallback(getCoordinator().isRecoverableWhileActive().booleanValue(),false);
+				 rollbackFromWithinCallback(false,false);
 			}});
     }
 

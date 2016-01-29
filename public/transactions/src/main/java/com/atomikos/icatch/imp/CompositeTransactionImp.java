@@ -395,13 +395,10 @@ extends AbstractCompositeTransaction implements
      */
     public void entered ( FSMEnterEvent coordinatorTerminatedEvent )
     {
-        if ( getState ().equals ( TxState.ACTIVE ) || getState ().equals ( TxState.MARKED_ABORT ) ) {
+        if (getState().isOneOf(TxState.ACTIVE,TxState.MARKED_ABORT )) {
         	// our coordinator terminated and we did not -> coordinator must have seen a timeout/abort 
             try {
-            	boolean recoverableWhileActive = false;
-            	Boolean pref = coordinator.isRecoverableWhileActive();
-            	if ( pref != null ) recoverableWhileActive = pref.booleanValue();
-            	if ( !recoverableWhileActive && !( stateHandler instanceof TxTerminatedStateHandler ) ) {
+            	if (!( stateHandler instanceof TxTerminatedStateHandler ) ) {
             		// note: check for TxTerminatedStateHandler differentiates regular rollback from timeout/rollback !!!           		          		
             		setRollbackOnly(); // see case 27857: keep tx context for thread on timeout
             	} else  {

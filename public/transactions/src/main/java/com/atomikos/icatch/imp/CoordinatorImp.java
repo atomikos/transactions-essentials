@@ -97,7 +97,6 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 
     private String root_ = null;
     private FSM fsm_ = null;
-    private boolean recoverableWhileActive_;
     private boolean heuristicMeansCommit_ = true;
     private Vector<Participant> participants_ = new Vector<Participant>();
     private RecoveryCoordinator superiorCoordinator_ = null; 
@@ -174,7 +173,6 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 	    initFsm(TxState.ACTIVE );
         heuristicMeansCommit_ = heuristic_commit;
 
-        recoverableWhileActive_ = false;
         superiorCoordinator_ = coord;
         if ( timeout > DEFAULT_MILLIS_BETWEEN_TIMER_WAKEUPS ) {
             // If timeout is smaller than the default timeout, then
@@ -224,7 +222,6 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
         heuristicMeansCommit_ = false;
 
         checkSiblings_ = true;
-        recoverableWhileActive_ = false;
         single_threaded_2pc_ = false;
         synchronizations = new ArrayList<Synchronization>();
 
@@ -297,11 +294,6 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     boolean checkSiblings ()
     {
         return checkSiblings_;
-    }
-
-    public Boolean isRecoverableWhileActive()
-    {
-        return new Boolean ( recoverableWhileActive_ );
     }
 
     /**
@@ -665,7 +657,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 
 	private boolean excludedFromLogging(TxState state) {
 		boolean ret = false;
-		if (state.equals ( TxState.ACTIVE ) && !recoverableWhileActive_) {
+		if (!state.isRecoverableState() ) {
 				ret = true;
 		} else if ( superiorCoordinator_ == null) {
 			if ( state.equals( TxState.IN_DOUBT )) {
@@ -740,11 +732,6 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     	}
     }
 
-    public void setRecoverableWhileActive () throws UnsupportedOperationException
-    {
-        recoverableWhileActive_ = true;
-    }
-    
     void setRollbackOnly() { 	
     	
     	RollbackOnlyParticipant p = new RollbackOnlyParticipant ( );
