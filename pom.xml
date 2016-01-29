@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.atomikos</groupId>
 	<artifactId>atomikos-parent</artifactId>
-	<version>4.0.0M5</version>
+	<version>4.0.0M6-SNAPSHOT</version>
 	<!-- With maven, a parent pom MUST have "pom" for packaging -->
 	<packaging>pom</packaging>
 	<name>Atomikos All POM</name>
@@ -53,7 +53,7 @@
 		<connection>scm:hg:http://atomikos.repositoryhosting.com/hg/atomikos/development</connection>
 		<developerConnection>scm:hg:http://atomikos.repositoryhosting.com/hg/atomikos/development</developerConnection>
 		<url>http://www.atomikos.com/</url>
-		<tag>4.0.0M5</tag>
+		<tag>HEAD</tag>
 	</scm>
 
 		<build>
