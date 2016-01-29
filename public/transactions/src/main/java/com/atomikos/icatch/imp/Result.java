@@ -25,7 +25,8 @@
 
 package com.atomikos.icatch.imp;
 
-import java.util.Hashtable;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Stack;
 
 import com.atomikos.icatch.Participant;
@@ -46,7 +47,7 @@ abstract class Result
 
     protected int numberOfMissingReplies_ = 0;
     protected Stack<Reply> replies_ = new Stack<Reply>();
-    protected Hashtable<Participant,Object> repliedlist_ = new Hashtable<Participant,Object>();
+    private Set<Participant> repliedlist_ = new HashSet<Participant>();
 
     public Result ( int numberOfRepliesToWaitFor )
     {
@@ -88,7 +89,7 @@ abstract class Result
     	// retried messages are not counted in result
         // and duplicate entries per participant neither
         // otherwise duplicates arise if a participant sends replay
-    	return reply.isRetried() || repliedlist_.containsKey(reply.getParticipant());
+    	return reply.isRetried() || repliedlist_.contains(reply.getParticipant());
     }
 
     /**
@@ -101,7 +102,7 @@ abstract class Result
     public synchronized void addReply(Reply reply)
     {
         if ( !ignoreReply(reply) ) {
-        	repliedlist_.put(reply.getParticipant(),new Object());
+        	repliedlist_.add(reply.getParticipant());
         	replies_.push(reply);
         	numberOfMissingReplies_--;
         	notifyAll();

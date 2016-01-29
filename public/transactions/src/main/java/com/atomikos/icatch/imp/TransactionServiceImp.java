@@ -78,11 +78,10 @@ public class TransactionServiceImp implements TransactionServiceProvider,
     
     private long maxTimeout_;
     private Object[] rootLatches_ = null;
-    private Hashtable tidToTransactionMap_ = null;
-    private Hashtable rootToCoordinatorMap_ = null;
+    private Hashtable<String,CompositeTransaction> tidToTransactionMap_ = null;
+    private Hashtable<String,CoordinatorImp> rootToCoordinatorMap_ = null;
     private boolean shutdownInProgress_ = false;
     private Object shutdownSynchronizer_;
-    private Object recoverySynchronizer_;
     private UniqueIdMgr tidmgr_ = null;
     private StateRecoveryManager recoverymanager_ = null;
     private boolean initialized_ = false;
@@ -151,7 +150,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
      *
      */
 
-    public TransactionServiceImp ( String name ,
+    private TransactionServiceImp ( String name ,
             StateRecoveryManager recoverymanager , UniqueIdMgr tidmgr ,
              long maxtimeout , boolean checkorphans ,
             int maxActives , boolean single_threaded_2pc, RecoveryLog recoveryLog )
@@ -163,10 +162,9 @@ public class TransactionServiceImp implements TransactionServiceProvider,
         initialized_ = false;
         recoverymanager_ = recoverymanager;
         tidmgr_ = tidmgr;
-        tidToTransactionMap_ = new Hashtable();
+        tidToTransactionMap_ = new Hashtable<String,CompositeTransaction>();
         shutdownSynchronizer_ = new Object();
-        recoverySynchronizer_ = new Object();
-        rootToCoordinatorMap_ = new Hashtable();
+        rootToCoordinatorMap_ = new Hashtable<String,CoordinatorImp>();
         rootLatches_ = new Object[NUMLATCHES];
         for (int i = 0; i < NUMLATCHES; i++) {
             rootLatches_[i] = new Object();
@@ -185,8 +183,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
      *
      * @return Object The object to lock for the given root.
      */
-
-    protected Object getLatch ( String root )
+    private Object getLatch ( String root )
     {
         return rootLatches_[Math.abs ( root.toString().hashCode() % NUMLATCHES )];
     }
@@ -202,7 +199,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
      *                If the tid is already mapped.
      */
 
-    void setTidToTx ( String tid , CompositeTransaction ct )
+    private void setTidToTx ( String tid , CompositeTransaction ct )
             throws IllegalStateException
     {
         synchronized ( tidToTransactionMap_ ) {
@@ -224,9 +221,9 @@ public class TransactionServiceImp implements TransactionServiceProvider,
     private Vector<CoordinatorImp> getCoordinatorImpVector ()
     {
         Vector<CoordinatorImp> ret = new Vector<CoordinatorImp> ();
-        Enumeration tids = rootToCoordinatorMap_.keys ();
+        Enumeration<String> tids = rootToCoordinatorMap_.keys ();
         while ( tids.hasMoreElements () ) {
-            String next = (String) tids.nextElement ();
+            String next = tids.nextElement ();
             CoordinatorImp c = getCoordinatorImp ( next );
             if ( c != null ) {
                 // not synchronized -> may be null if removed
