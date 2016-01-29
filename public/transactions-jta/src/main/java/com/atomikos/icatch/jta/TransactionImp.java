@@ -338,21 +338,22 @@ class TransactionImp implements Transaction {
 		TransactionalResource ret = null;
 		XATransactionalResource xatxres;
 
-		Enumeration enumm = Configuration.getResources();
-		while (enumm.hasMoreElements()) {
-			RecoverableResource rres = (RecoverableResource) enumm
-					.nextElement();
-			if (rres instanceof XATransactionalResource) {
-				xatxres = (XATransactionalResource) rres;
-				if (xatxres.usesXAResource(xares))
-					ret = xatxres;
+		synchronized (Configuration.class) {
+			// synchronized to avoid case 61740 and 142795
+			
+			Enumeration enumm = Configuration.getResources();
+			while (enumm.hasMoreElements()) {
+				RecoverableResource rres = (RecoverableResource) enumm
+						.nextElement();
+				if (rres instanceof XATransactionalResource) {
+					xatxres = (XATransactionalResource) rres;
+					if (xatxres.usesXAResource(xares))
+						ret = xatxres;
+				}
+
 			}
 
-		}
-
-		if (ret == null && this.autoRegistration) {
-			synchronized (Configuration.class) {
-				// synchronized to avoid case 61740
+			if (ret == null && this.autoRegistration) {
 
 				ret = new TemporaryXATransactionalResource(xares);
 				// cf case 61740: check for concurrent additions before this
@@ -364,9 +365,9 @@ class TransactionImp implements Transaction {
 					}
 					Configuration.addResource(ret);
 				} else {
-            		//fix for case 116270
-                    ret = (TransactionalResource) Configuration.getResource ( ret.getName() );
-                }
+					//fix for case 116270
+					ret = (TransactionalResource) Configuration.getResource ( ret.getName() );
+				}
 			}
 
 		}

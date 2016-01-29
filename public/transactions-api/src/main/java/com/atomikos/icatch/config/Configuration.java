@@ -296,10 +296,10 @@ public final class Configuration
                     + "resource with name " + resource.getName () );
 
 
+        //FIRST add init resource, only then add it - cf case 142795
+        resource.setRecoveryService ( recoveryService_ );
         resources_.put ( resource.getName (), resource );
         resourceList_.add ( resource );
-        resource.setRecoveryService ( recoveryService_ );
-
     }
 
     /**
