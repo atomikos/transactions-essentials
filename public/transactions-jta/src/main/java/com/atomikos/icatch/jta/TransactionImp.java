@@ -363,7 +363,10 @@ class TransactionImp implements Transaction {
 								+ "for unknown XAResource: " + xares);
 					}
 					Configuration.addResource(ret);
-				}
+				} else {
+            		//fix for case 116270
+                    ret = (TransactionalResource) Configuration.getResource ( ret.getName() );
+                }
 			}
 
 		}
