@@ -29,7 +29,6 @@ import java.util.Collection;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.Stack;
@@ -412,8 +411,8 @@ abstract class CoordinatorStateHandler
             if ( res != TerminationResult.ALL_OK ) {
 
                 if ( res == TerminationResult.HEUR_MIXED ) {
-                	Hashtable<Participant,TxState> hazards = commitresult.getPossiblyIndoubts ();
-                    nextStateHandler = new HeurMixedStateHandler ( this, hazards.keySet() );
+                	Set<Participant> hazards = commitresult.getPossiblyIndoubts ();
+                    nextStateHandler = new HeurMixedStateHandler ( this, hazards );
                     coordinator_.setStateHandler ( nextStateHandler );
                     throw new HeurMixedException();
                 }
@@ -434,8 +433,8 @@ abstract class CoordinatorStateHandler
                 }
 
                 else if ( res == TerminationResult.HEUR_HAZARD ) {
-                    Hashtable<Participant,TxState> hazards = commitresult.getPossiblyIndoubts ();
-                    nextStateHandler = new HeurHazardStateHandler ( this, hazards.keySet() );
+                    Set<Participant> hazards = commitresult.getPossiblyIndoubts ();
+                    nextStateHandler = new HeurHazardStateHandler ( this, hazards );
                     coordinator_.setStateHandler ( nextStateHandler );
                     throw new HeurHazardException();
                 }
@@ -508,8 +507,8 @@ abstract class CoordinatorStateHandler
             // otherwise, we don't mind any remaining indoubts.
             if ( indoubt && res != TerminationResult.ALL_OK ) {
                 if ( res == TerminationResult.HEUR_MIXED ) {
-                    Hashtable<Participant,TxState> hazards = rollbackresult.getPossiblyIndoubts ();
-                    nextStateHandler = new HeurMixedStateHandler ( this, hazards.keySet() );
+                    Set<Participant> hazards = rollbackresult.getPossiblyIndoubts ();
+                    nextStateHandler = new HeurMixedStateHandler ( this, hazards );
                     coordinator_.setStateHandler ( nextStateHandler );
                     throw new HeurMixedException();
                 } else if ( res == TerminationResult.HEUR_COMMIT ) {
@@ -519,8 +518,8 @@ abstract class CoordinatorStateHandler
                     // participants are heuristically committed.
                     throw new HeurCommitException();
                 } else if ( res == TerminationResult.HEUR_HAZARD ) {
-                    Hashtable<Participant,TxState> hazards = rollbackresult.getPossiblyIndoubts ();
-                    nextStateHandler = new HeurHazardStateHandler ( this, hazards.keySet() );
+                    Set<Participant> hazards = rollbackresult.getPossiblyIndoubts ();
+                    nextStateHandler = new HeurHazardStateHandler ( this, hazards );
                     coordinator_.setStateHandler ( nextStateHandler );
                     throw new HeurHazardException();
                 }

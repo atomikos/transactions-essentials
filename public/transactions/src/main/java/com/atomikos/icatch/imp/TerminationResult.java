@@ -26,7 +26,8 @@
 package com.atomikos.icatch.imp;
 
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Stack;
 
 import com.atomikos.icatch.HeurCommitException;
@@ -34,21 +35,20 @@ import com.atomikos.icatch.HeurMixedException;
 import com.atomikos.icatch.HeurRollbackException;
 import com.atomikos.icatch.Participant;
 import com.atomikos.icatch.RollbackException;
-import com.atomikos.icatch.TxState;
 
 
 class TerminationResult extends Result
 {
     protected boolean allRepliesProcessed;
-    protected Hashtable<Participant,TxState> heuristicparticipants_;
-    protected Hashtable<Participant,TxState> possiblyIndoubts_;
+    private Set<Participant> heuristicparticipants_;
+    private Set<Participant> possiblyIndoubts_;
 
     public TerminationResult ( int numberOfRepliesToWaitFor )
     {
         super ( numberOfRepliesToWaitFor );
         allRepliesProcessed = false;
-        heuristicparticipants_ = new Hashtable<Participant,TxState>();
-        possiblyIndoubts_ = new Hashtable<Participant,TxState>();
+        heuristicparticipants_ = new HashSet<Participant>();
+        possiblyIndoubts_ = new HashSet<Participant>();
     }
 
     /**
@@ -56,7 +56,7 @@ class TerminationResult extends Result
      *                If not done yet.
      */
 
-    public Hashtable<Participant,TxState> getHeuristicParticipants () throws IllegalStateException,
+    public Set<Participant> getHeuristicParticipants () throws IllegalStateException,
             InterruptedException
     {
         calculateResultFromAllReplies();
@@ -69,7 +69,7 @@ class TerminationResult extends Result
      *                If comm. not done yet.
      */
 
-    public Hashtable<Participant,TxState> getPossiblyIndoubts () throws IllegalStateException,
+    public Set<Participant> getPossiblyIndoubts () throws IllegalStateException,
             InterruptedException
     {
         calculateResultFromAllReplies ();
@@ -104,30 +104,24 @@ class TerminationResult extends Result
                 } else if ( err instanceof HeurMixedException ) {
                     atLeastOneHeuristicMixedException = true;
                     HeurMixedException hm = (HeurMixedException) err;
-                    heuristicparticipants_.put ( reply.getParticipant (),
-                            TxState.HEUR_MIXED );
+                    heuristicparticipants_.add ( reply.getParticipant ());
                 } else if ( err instanceof HeurCommitException ) {
                     atLeastOneHeuristicCommitException = true;
                     HeurCommitException hc = (HeurCommitException) err;
                     atLeastOneHeuristicMixedException = (atLeastOneHeuristicMixedException || atLeastOneHeuristicRollbackException || atLeastOneHeuristicHazardException);
-                    heuristicparticipants_.put ( reply.getParticipant (),
-                            TxState.HEUR_COMMITTED );
+                    heuristicparticipants_.add ( reply.getParticipant () );
 
                 } else if ( err instanceof HeurRollbackException ) {
                     atLeastOneHeuristicRollbackException = true;
                     atLeastOneHeuristicMixedException = (atLeastOneHeuristicMixedException || atLeastOneHeuristicCommitException || atLeastOneHeuristicHazardException);
-                    HeurRollbackException hr = (HeurRollbackException) err;
-                    heuristicparticipants_.put ( reply.getParticipant (),
-                            TxState.HEUR_ABORTED );
+                    heuristicparticipants_.add ( reply.getParticipant ());
 
                 } else {
 
                     atLeastOneHeuristicHazardException = true;
                     atLeastOneHeuristicMixedException = (atLeastOneHeuristicMixedException || atLeastOneHeuristicRollbackException || atLeastOneHeuristicCommitException);
-                    heuristicparticipants_.put ( reply.getParticipant (),
-                            TxState.HEUR_HAZARD );
-                    possiblyIndoubts_.put ( reply.getParticipant (),
-                            TxState.HEUR_HAZARD );
+                    heuristicparticipants_.add ( reply.getParticipant ());
+                    possiblyIndoubts_.add ( reply.getParticipant ());
 
                 }
             }
