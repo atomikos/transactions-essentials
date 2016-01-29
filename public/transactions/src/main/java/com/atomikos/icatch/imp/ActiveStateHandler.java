@@ -44,11 +44,8 @@ import com.atomikos.thread.InterruptedExceptionHelper;
  * A state handler for the active coordinator state.
  */
 
-public class ActiveStateHandler extends CoordinatorStateHandler
+class ActiveStateHandler extends CoordinatorStateHandler
 {
-
-	private static final long serialVersionUID = -80097456886481668L;
-
 	private static final Logger LOGGER = LoggerFactory.createLogger(ActiveStateHandler.class);
 
     private long rollbackTicks_;
@@ -58,11 +55,6 @@ public class ActiveStateHandler extends CoordinatorStateHandler
     private int globalSiblingCount_;
     
     private boolean wasSetToRollbackOnly;
-
-    
-    public ActiveStateHandler() {
-	
-	}
 
     ActiveStateHandler ( CoordinatorImp coordinator )
     {
@@ -138,7 +130,7 @@ public class ActiveStateHandler extends CoordinatorStateHandler
         PrepareResult result = null; // synchronization
         boolean allReadOnly = true; // if still true at end-> readonly vote
         int ret = 0; // return value
-        Vector participants = getCoordinator ().getParticipants ();
+        Vector<Participant> participants = getCoordinator ().getParticipants ();
         CoordinatorStateHandler nextStateHandler = null;
 
         if ( orphansExist() ) {
@@ -184,7 +176,7 @@ public class ActiveStateHandler extends CoordinatorStateHandler
         	}
             count = participants.size ();
             result = new PrepareResult ( count );
-            Enumeration enumm = participants.elements ();
+            Enumeration<Participant> enumm = participants.elements ();
             while ( enumm.hasMoreElements () ) {
                 Participant p = (Participant) enumm.nextElement ();
                 PrepareMessage pm = new PrepareMessage ( p, result );

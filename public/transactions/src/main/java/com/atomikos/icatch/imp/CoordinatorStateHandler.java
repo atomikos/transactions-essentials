@@ -28,8 +28,10 @@ package com.atomikos.icatch.imp;
 import java.util.Collection;
 import java.util.Dictionary;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.Stack;
 import java.util.Vector;
 
@@ -63,29 +65,25 @@ abstract class CoordinatorStateHandler
     private transient CoordinatorImp coordinator_;
     // the coordinator instance whose state we represent
 
-    private Hashtable<Participant,Boolean> readOnlyTable_;
+    private Set<Participant> readOnlyTable_;
     // a hash table that keeps track of which participants are readonly
     // needed on prepare, commit and rollback
 
-    private transient Propagator propagator_;
+    private Propagator propagator_;
     // The propagator for propagation of messages
 
-    private transient Stack<Participant> replayStack_;
+    private Stack<Participant> replayStack_;
     // where replay requests are queued
 
     private Boolean committed_;
     // True iff commit, False iff rollback, otherwise null
 
-    private transient Dictionary<Participant,Integer> cascadeList_;
+    private Dictionary<Participant,Integer> cascadeList_;
     // The participants to cascade prepare to
 
     private Hashtable<TxState,Stack<Participant>> heuristicMap_;
     // Where heuristic states are mapped to participants in that state
 
-    
-    public CoordinatorStateHandler() {
-    	this((CoordinatorImp)null);
-	}
     /**
      * Creates a new instance.
      *
@@ -93,12 +91,11 @@ abstract class CoordinatorStateHandler
      *            The coordinator to represent.
      *
      */
-
     protected CoordinatorStateHandler ( CoordinatorImp coordinator )
     {
         coordinator_ = coordinator;
         replayStack_ = new Stack<Participant>();
-        readOnlyTable_ = new Hashtable<Participant,Boolean> ();
+        readOnlyTable_ = new HashSet<Participant> ();
         committed_ = null;
 
         heuristicMap_ = new Hashtable<TxState,Stack<Participant>> ();
@@ -167,7 +164,7 @@ abstract class CoordinatorStateHandler
      *            The participant to heuristic state map.
      */
 
-    protected void addToHeuristicMap ( Hashtable<Participant,TxState> participants )
+    private void addToHeuristicMap ( Hashtable<Participant,TxState> participants )
     {
         Enumeration<Participant> parts = participants.keys ();
         while ( parts.hasMoreElements () ) {
@@ -211,7 +208,7 @@ abstract class CoordinatorStateHandler
      * @return The table.
      */
 
-    protected Hashtable<Participant,Boolean> getReadOnlyTable ()
+    protected Set<Participant> getReadOnlyTable ()
     {
         return readOnlyTable_;
     }
@@ -272,7 +269,7 @@ abstract class CoordinatorStateHandler
      *            The table.
      */
 
-    protected void setReadOnlyTable ( Hashtable<Participant,Boolean> table )
+    protected void setReadOnlyTable ( Set<Participant> table )
     {
         readOnlyTable_ = table;
     }
@@ -437,7 +434,7 @@ abstract class CoordinatorStateHandler
             Enumeration<Participant> enumm = participants.elements ();
             while ( enumm.hasMoreElements () ) {
                 Participant p = enumm.nextElement ();
-                if ( !readOnlyTable_.containsKey ( p ) ) {
+                if ( !readOnlyTable_.contains ( p ) ) {
                     CommitMessage cm = new CommitMessage ( p, commitresult,
                             onePhase );
 
@@ -472,7 +469,7 @@ abstract class CoordinatorStateHandler
                             addToHeuristicMap ( p, TxState.TERMINATED );
                     }
                     nextStateHandler = new HeurMixedStateHandler ( this,
-                            hazards );
+                            hazards.keySet() );
 
                     coordinator_.setStateHandler ( nextStateHandler );
                     throw new HeurMixedException();
@@ -504,7 +501,7 @@ abstract class CoordinatorStateHandler
                             addToHeuristicMap ( p, TxState.TERMINATED );
                     }
                     nextStateHandler = new HeurHazardStateHandler ( this,
-                            hazards );
+                            hazards.keySet() );
                     coordinator_.setStateHandler ( nextStateHandler );
                     throw new HeurHazardException();
                 }
@@ -563,7 +560,7 @@ abstract class CoordinatorStateHandler
             Enumeration<Participant> enumm = participants.elements ();
             while ( enumm.hasMoreElements () ) {
                 Participant p = enumm.nextElement ();
-                if ( !readOnlyTable_.containsKey ( p ) ) {
+                if ( !readOnlyTable_.contains ( p ) ) {
                     RollbackMessage rm = new RollbackMessage ( p,
                             rollbackresult, indoubt );
                     propagator_.submitPropagationMessage ( rm );
@@ -588,7 +585,7 @@ abstract class CoordinatorStateHandler
                             addToHeuristicMap ( p, TxState.TERMINATED );
                     }
                     nextStateHandler = new HeurMixedStateHandler ( this,
-                            hazards );
+                            hazards.keySet() );
                     coordinator_.setStateHandler ( nextStateHandler );
                     throw new HeurMixedException();
                 }
@@ -614,7 +611,7 @@ abstract class CoordinatorStateHandler
                             addToHeuristicMap ( p, TxState.TERMINATED );
                         }
                     }
-                    nextStateHandler = new HeurHazardStateHandler ( this, hazards );
+                    nextStateHandler = new HeurHazardStateHandler ( this, hazards.keySet() );
                     coordinator_.setStateHandler ( nextStateHandler );
                     throw new HeurHazardException();
                 }
@@ -665,7 +662,7 @@ abstract class CoordinatorStateHandler
         ForgetResult result = new ForgetResult ( count );
         while ( enumm.hasMoreElements () ) {
             Participant p = (Participant) enumm.nextElement ();
-            if ( !readOnlyTable_.containsKey ( p ) ) {
+            if ( !readOnlyTable_.contains ( p ) ) {
                 ForgetMessage fm = new ForgetMessage ( p, result );
                 propagator_.submitPropagationMessage ( fm );
             }

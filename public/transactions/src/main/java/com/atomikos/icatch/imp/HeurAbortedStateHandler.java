@@ -37,7 +37,7 @@ import com.atomikos.icatch.TxState;
  * A state handler for the heuristic abort coordinator state.
  */
 
-public class HeurAbortedStateHandler extends CoordinatorStateHandler
+class HeurAbortedStateHandler extends CoordinatorStateHandler
 {
 
     HeurAbortedStateHandler ( CoordinatorStateHandler previous )
