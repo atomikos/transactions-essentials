@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>com.atomikos</groupId>
 		<artifactId>ate</artifactId>
-		<version>4.0.0-SNAPSHOT</version>
+		<version>4.0.0M5</version>
 	</parent>
 	<artifactId>transactions</artifactId>
 	<name>Transactions Core</name>
@@ -13,12 +13,12 @@
 		<dependency>
 			<groupId>com.atomikos</groupId>
 			<artifactId>transactions-api</artifactId>
-			<version>4.0.0-SNAPSHOT</version>
+			<version>4.0.0M5</version>
 		</dependency>
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>atomikos-util</artifactId>
-            <version>4.0.0-SNAPSHOT</version>
+            <version>4.0.0M5</version>
         </dependency>
 	</dependencies>
 </project>
