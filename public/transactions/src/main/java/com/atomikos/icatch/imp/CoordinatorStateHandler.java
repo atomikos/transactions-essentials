@@ -81,8 +81,6 @@ abstract class CoordinatorStateHandler
     private Dictionary<Participant,Integer> cascadeList_;
     // The participants to cascade prepare to
 
-    private Hashtable<TxState,Stack<Participant>> heuristicMap_;
-    // Where heuristic states are mapped to participants in that state
 
     /**
      * Creates a new instance.
@@ -97,13 +95,6 @@ abstract class CoordinatorStateHandler
         replayStack_ = new Stack<Participant>();
         readOnlyTable_ = new HashSet<Participant> ();
         committed_ = null;
-
-        heuristicMap_ = new Hashtable<TxState,Stack<Participant>> ();
-        heuristicMap_.put ( TxState.HEUR_HAZARD, new Stack<Participant> () );
-        heuristicMap_.put ( TxState.HEUR_MIXED, new Stack<Participant> () );
-        heuristicMap_.put ( TxState.HEUR_ABORTED, new Stack<Participant> () );
-        heuristicMap_.put ( TxState.HEUR_COMMITTED, new Stack<Participant> () );
-        heuristicMap_.put ( TxState.TERMINATED, new Stack<Participant> () );
     }
 
     /**
@@ -124,7 +115,7 @@ abstract class CoordinatorStateHandler
         committed_ = other.committed_;
         cascadeList_ = other.cascadeList_;
 
-        heuristicMap_ = other.heuristicMap_;
+//        heuristicMap_ = other.heuristicMap_;
 
     }
 
@@ -135,43 +126,6 @@ abstract class CoordinatorStateHandler
     void setCommitted ()
     {
         committed_ = Boolean.TRUE;
-    }
-   
-    /**
-     * Adds a participant with a given heuristic state to the map.
-     *
-     * @param p
-     *            The participant.
-     * @param state
-     *            The (heuristic) state. Should be one of the four heuristic
-     *            states, or the terminated state.
-     */
-
-    protected void addToHeuristicMap ( Participant p , TxState state )
-    {
-        Stack<Participant> stack = heuristicMap_.get ( state );
-        stack.push ( p );
-
-    }
-
-    /**
-     * Adds a map of participants -> heuristic states to the map of heuristic
-     * states -> participants. This method is called after heuristics on
-     * commit/rollback, and allows to retrieve the exact state of each single
-     * participant in case of heuristic terminations.
-     *
-     * @param participants
-     *            The participant to heuristic state map.
-     */
-
-    private void addToHeuristicMap ( Hashtable<Participant,TxState> participants )
-    {
-        Enumeration<Participant> parts = participants.keys ();
-        while ( parts.hasMoreElements () ) {
-            Participant next = parts.nextElement ();
-            TxState state = participants.get ( next );
-            addToHeuristicMap ( next, state );
-        }
     }
 
     /**
@@ -459,18 +413,7 @@ abstract class CoordinatorStateHandler
 
                 if ( res == TerminationResult.HEUR_MIXED ) {
                 	Hashtable<Participant,TxState> hazards = commitresult.getPossiblyIndoubts ();
-                    Hashtable<Participant,TxState> heuristics = commitresult
-                            .getHeuristicParticipants ();
-                    addToHeuristicMap ( heuristics );
-                    enumm = participants.elements ();
-                    while ( enumm.hasMoreElements () ) {
-                        Participant p = (Participant) enumm.nextElement ();
-                        if ( !heuristics.containsKey ( p ) )
-                            addToHeuristicMap ( p, TxState.TERMINATED );
-                    }
-                    nextStateHandler = new HeurMixedStateHandler ( this,
-                            hazards.keySet() );
-
+                    nextStateHandler = new HeurMixedStateHandler ( this, hazards.keySet() );
                     coordinator_.setStateHandler ( nextStateHandler );
                     throw new HeurMixedException();
                 }
@@ -492,16 +435,7 @@ abstract class CoordinatorStateHandler
 
                 else if ( res == TerminationResult.HEUR_HAZARD ) {
                     Hashtable<Participant,TxState> hazards = commitresult.getPossiblyIndoubts ();
-                    Hashtable<Participant,TxState> heuristics = commitresult.getHeuristicParticipants ();
-                    addToHeuristicMap ( heuristics );
-                    enumm = participants.elements ();
-                    while ( enumm.hasMoreElements () ) {
-                        Participant p = (Participant) enumm.nextElement ();
-                        if ( !heuristics.containsKey ( p ) )
-                            addToHeuristicMap ( p, TxState.TERMINATED );
-                    }
-                    nextStateHandler = new HeurHazardStateHandler ( this,
-                            hazards.keySet() );
+                    nextStateHandler = new HeurHazardStateHandler ( this, hazards.keySet() );
                     coordinator_.setStateHandler ( nextStateHandler );
                     throw new HeurHazardException();
                 }
@@ -573,44 +507,19 @@ abstract class CoordinatorStateHandler
             // check results, but we only care if we are indoubt.
             // otherwise, we don't mind any remaining indoubts.
             if ( indoubt && res != TerminationResult.ALL_OK ) {
-
                 if ( res == TerminationResult.HEUR_MIXED ) {
                     Hashtable<Participant,TxState> hazards = rollbackresult.getPossiblyIndoubts ();
-                    Hashtable<Participant,TxState> heuristics = rollbackresult.getHeuristicParticipants ();
-                    addToHeuristicMap ( heuristics );
-                    enumm = participants.elements ();
-                    while ( enumm.hasMoreElements () ) {
-                        Participant p = (Participant) enumm.nextElement ();
-                        if ( !heuristics.containsKey ( p ) )
-                            addToHeuristicMap ( p, TxState.TERMINATED );
-                    }
-                    nextStateHandler = new HeurMixedStateHandler ( this,
-                            hazards.keySet() );
+                    nextStateHandler = new HeurMixedStateHandler ( this, hazards.keySet() );
                     coordinator_.setStateHandler ( nextStateHandler );
                     throw new HeurMixedException();
-                }
-
-                else if ( res == TerminationResult.HEUR_COMMIT ) {
+                } else if ( res == TerminationResult.HEUR_COMMIT ) {
                     nextStateHandler = new HeurCommittedStateHandler ( this );
                     coordinator_.setStateHandler ( nextStateHandler );
                     // NO extra per-participant state mappings, since ALL
                     // participants are heuristically committed.
                     throw new HeurCommitException();
-
-                }
-
-                else if ( res == TerminationResult.HEUR_HAZARD ) {
+                } else if ( res == TerminationResult.HEUR_HAZARD ) {
                     Hashtable<Participant,TxState> hazards = rollbackresult.getPossiblyIndoubts ();
-                    Hashtable<Participant,TxState> heuristics = rollbackresult.getHeuristicParticipants ();
-                    // will trigger logging of indoubts and messages
-                    addToHeuristicMap ( heuristics );
-                    enumm = participants.elements ();
-                    while ( enumm.hasMoreElements () ) {
-                        Participant p = (Participant) enumm.nextElement ();
-                        if ( !heuristics.containsKey ( p ) ) {
-                            addToHeuristicMap ( p, TxState.TERMINATED );
-                        }
-                    }
                     nextStateHandler = new HeurHazardStateHandler ( this, hazards.keySet() );
                     coordinator_.setStateHandler ( nextStateHandler );
                     throw new HeurHazardException();
