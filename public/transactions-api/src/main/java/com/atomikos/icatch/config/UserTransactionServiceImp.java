@@ -168,6 +168,17 @@ public final class UserTransactionServiceImp
 		shutdown ( true );
 		
 	}
+	
+	/**
+	 * Convenience shutdown method for DI containers like Spring. 
+	 * 
+	 */
+	
+	public void shutdownWait() 
+	{
+		shutdown ( false );
+		
+	}
 
 	/**
 	 * Dependency injection of all resources to be added during init.
