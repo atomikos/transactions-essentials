@@ -110,7 +110,7 @@ public abstract class AbstractXPooledConnection implements XPooledConnection {
 		lastTimeReleased = System.currentTimeMillis();
 	}
 	
-	protected void updateLastTimeAcquired() {
+	private void updateLastTimeAcquired() {
 		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug (  this + ": updating last time acquired" );
 		lastTimeAcquired = System.currentTimeMillis();
 		

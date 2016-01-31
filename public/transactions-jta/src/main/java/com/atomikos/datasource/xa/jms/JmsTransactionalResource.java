@@ -33,7 +33,6 @@ import javax.transaction.xa.XAResource;
 
 import com.atomikos.datasource.ResourceException;
 import com.atomikos.datasource.xa.XATransactionalResource;
-import com.atomikos.datasource.xa.XidFactory;
 
 /**
  *
@@ -62,27 +61,6 @@ public class JmsTransactionalResource extends XATransactionalResource
     {
         super ( name );
         this.factory = factory;
-        this.conn = null;
-    }
-
-    /**
-     * Create a new instance, but one that requires a specific Xid format. This
-     * may be necessary for some JMS implementations that require their own
-     * format.
-     *
-     * @param name
-     *            The unique resource name.
-     * @param qFactory
-     *            The queue connection factory.
-     * @param xidFactory
-     *            The factory for Xid instances.
-     */
-
-    public JmsTransactionalResource ( String name ,
-            XAConnectionFactory qFactory , XidFactory xidFactory )
-    {
-        super ( name , xidFactory );
-        this.factory = qFactory;
         this.conn = null;
     }
 

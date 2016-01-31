@@ -45,10 +45,10 @@ import com.atomikos.icatch.CompositeTransaction;
 class SiblingMapper
 {
 
-    protected Map<CompositeTransaction,List<XAResourceTransaction>> siblingsOfSameRoot;
-    protected XATransactionalResource res;
+	private Map<CompositeTransaction,List<XAResourceTransaction>> siblingsOfSameRoot;
+    private XATransactionalResource res;
 
-    protected String root ;
+    private String root ;
 
     SiblingMapper ( XATransactionalResource res , String root )
     {

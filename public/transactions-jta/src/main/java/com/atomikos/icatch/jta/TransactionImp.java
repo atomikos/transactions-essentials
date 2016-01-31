@@ -60,7 +60,7 @@ class TransactionImp implements Transaction {
 	private static final Logger LOGGER = LoggerFactory
 			.createLogger(TransactionImp.class);
 
-	static void rethrowAsJtaRollbackException(String msg, Throwable cause)
+	private static void rethrowAsJtaRollbackException(String msg, Throwable cause)
 			throws javax.transaction.RollbackException {
 		javax.transaction.RollbackException ret = new javax.transaction.RollbackException(
 				msg);
@@ -68,7 +68,7 @@ class TransactionImp implements Transaction {
 		throw ret;
 	}
 
-	static void rethrowAsJtaHeuristicMixedException(String msg, Throwable cause)
+	private static void rethrowAsJtaHeuristicMixedException(String msg, Throwable cause)
 			throws javax.transaction.HeuristicMixedException {
 		javax.transaction.HeuristicMixedException ret = new javax.transaction.HeuristicMixedException(
 				msg);
@@ -76,7 +76,7 @@ class TransactionImp implements Transaction {
 		throw ret;
 	}
 
-	static void rethrowAsJtaHeuristicRollbackException(String msg,
+	private static void rethrowAsJtaHeuristicRollbackException(String msg,
 			Throwable cause)
 			throws javax.transaction.HeuristicRollbackException {
 		javax.transaction.HeuristicRollbackException ret = new javax.transaction.HeuristicRollbackException(

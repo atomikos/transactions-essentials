@@ -35,7 +35,7 @@ class Sync2Sync implements com.atomikos.icatch.Synchronization
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(Sync2Sync.class);
 
-    protected javax.transaction.Synchronization sync;
+    private javax.transaction.Synchronization sync;
 
     private Boolean committed; //null for readonly
     
