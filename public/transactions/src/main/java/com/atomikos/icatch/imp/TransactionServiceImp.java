@@ -786,7 +786,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
         }
         
         String tid = tidmgr_.get ();
-        Stack lineage = new Stack ();
+        Stack<CompositeTransaction> lineage = new Stack<CompositeTransaction>();
         // create a CC with heuristic preference set to false,
         // since it does not really matter anyway (since we are
         // creating a root)

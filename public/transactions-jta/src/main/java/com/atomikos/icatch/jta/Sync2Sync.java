@@ -59,7 +59,7 @@ class Sync2Sync implements com.atomikos.icatch.Synchronization
     @Override
 	public void afterCompletion ( TxState state )
     {
-        if ( state.equals ( TxState.TERMINATED ) ) {
+        if ( state == TxState.TERMINATED ) {
             if ( this.committed == null ) { //readonly: unknown
                 this.sync.afterCompletion ( Status.STATUS_UNKNOWN );
                 LOGGER.logInfo ( "afterCompletion ( STATUS_UNKNOWN ) called "
@@ -78,8 +78,8 @@ class Sync2Sync implements com.atomikos.icatch.Synchronization
                                     + this.sync.toString () );
                 }
             }
-        } else if ( state.equals ( TxState.COMMITTING ) ) this.committed = new Boolean ( true );
-          else if ( state.equals ( TxState.ABORTING ) ) this.committed = new Boolean ( false );
+        } else if ( state == TxState.COMMITTING ) this.committed = Boolean.TRUE;
+          else if ( state == TxState.ABORTING ) this.committed = Boolean.FALSE;
 
     }
 }

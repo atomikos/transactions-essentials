@@ -31,6 +31,7 @@ import com.atomikos.icatch.CompositeTransaction;
 import com.atomikos.icatch.Participant;
 import com.atomikos.icatch.RecoveryCoordinator;
 import com.atomikos.icatch.SubTxAwareParticipant;
+import com.atomikos.icatch.Synchronization;
 import com.atomikos.icatch.TxState;
 
 
@@ -88,7 +89,7 @@ class TxTerminatingStateHandler extends TransactionStateHandler
 		super.addSubTxAwareParticipant ( p );
 	}
 
-	protected void addSynchronizations ( Stack s )
+	protected void addSynchronizations ( Stack<Synchronization> s )
 	{
 		reject();
 	}

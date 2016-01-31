@@ -83,13 +83,13 @@ public class CompositeTransactionManagerImp implements CompositeTransactionManag
      * @return Stack The tx stack that was for current thread.
      */
 
-    private Stack removeThreadMappings ( Thread thread )
+    private Stack<CompositeTransaction> removeThreadMappings ( Thread thread )
     {
 
-        Stack ret = null;
+        Stack<CompositeTransaction> ret = null;
         synchronized ( threadtotxmap_ ) {
-            ret = (Stack) threadtotxmap_.remove ( thread );
-            CompositeTransaction tx = (CompositeTransaction) ret.peek ();
+            ret = threadtotxmap_.remove ( thread );
+            CompositeTransaction tx = ret.peek ();
             txtothreadmap_.remove ( tx );
         }
         return ret;
@@ -114,9 +114,9 @@ public class CompositeTransactionManagerImp implements CompositeTransactionManag
         	//may have happened; make sure to check or we add a thread mapping
         	//that will never be removed!
         	if ( TxState.ACTIVE.equals ( ct.getState() )) {
-        		Stack txs = (Stack) threadtotxmap_.get ( thread );
+        		Stack<CompositeTransaction> txs = threadtotxmap_.get ( thread );
         		if ( txs == null )
-        			txs = new Stack ();
+        			txs = new Stack<CompositeTransaction>();
         		txs.push ( ct );
         		threadtotxmap_.put ( thread, txs );
         		txtothreadmap_.put ( ct, thread );
@@ -126,22 +126,22 @@ public class CompositeTransactionManagerImp implements CompositeTransactionManag
 
     }
 
-    private void restoreThreadMappings ( Stack stack , Thread thread )
+    private void restoreThreadMappings ( Stack<CompositeTransaction> stack , Thread thread )
             throws IllegalStateException
     {
     	//case 21806: callbacks to ct to be made outside synchronized block
-    	CompositeTransaction tx = (CompositeTransaction) stack.peek ();
+    	CompositeTransaction tx = stack.peek ();
     	tx.addSubTxAwareParticipant ( this ); //step 1
 
         synchronized ( threadtotxmap_ ) {
         	//between step 1 and here, intermediate timeout/rollback of the ct
         	//may have happened; make sure to check or we add a thread mapping
         	//that will never be removed!
-        	Object state = tx.getState();
-
-        	if ( TxState.ACTIVE.equals ( state ) || TxState.MARKED_ABORT.equals ( state ) ) {
+        	TxState state = tx.getState();
+        	
+        	if ( state.isOneOf(TxState.ACTIVE, TxState.MARKED_ABORT) ) {
         		//also resume for marked abort - see case 26398
-        		Stack txs = (Stack) threadtotxmap_.get ( thread );
+        		Stack<CompositeTransaction> txs = threadtotxmap_.get ( thread );
         		if ( txs != null ) throw new IllegalStateException ("Thread already has subtx stack" );
         		threadtotxmap_.put ( thread, stack );
         		txtothreadmap_.put ( tx, thread );
@@ -149,15 +149,15 @@ public class CompositeTransactionManagerImp implements CompositeTransactionManag
         }
     }
 
-    private CompositeTransactionImp getCurrentTx ()
+    private CompositeTransaction getCurrentTx ()
     {
         Thread thread = Thread.currentThread ();
         synchronized ( threadtotxmap_ ) {
-            Stack txs = (Stack) threadtotxmap_.get ( thread );
+            Stack<CompositeTransaction> txs = threadtotxmap_.get ( thread );
             if ( txs == null )
                 return null;
             else
-                return (CompositeTransactionImp) txs.peek ();
+                return txs.peek ();
 
         }
     }
@@ -325,8 +325,8 @@ public class CompositeTransactionManagerImp implements CompositeTransactionManag
         
 
        
-        Stack ancestors = new Stack ();
-        Stack tmp = new Stack ();
+        Stack<CompositeTransaction> ancestors = new Stack<CompositeTransaction>();
+        Stack<CompositeTransaction> tmp = new Stack<CompositeTransaction>();
         Stack lineage = (Stack) ct.getLineage ().clone ();
         boolean done = false;
         while ( !lineage.isEmpty () && !done ) {
@@ -393,7 +393,7 @@ public class CompositeTransactionManagerImp implements CompositeTransactionManag
         Thread thread = getThread ( ct );
         if ( thread == null ) return;
 
-        Stack mappings = removeThreadMappings ( thread );
+        Stack<CompositeTransaction> mappings = removeThreadMappings ( thread );
         if ( mappings != null && !mappings.empty () ) {
             mappings.pop ();
             if ( !mappings.empty () ) restoreThreadMappings ( mappings, thread );
@@ -407,7 +407,6 @@ public class CompositeTransactionManagerImp implements CompositeTransactionManag
 
     public CompositeTransaction createCompositeTransaction ( long timeout ) throws SysException
     {
-        Stack errors = new Stack();
         CompositeTransaction ct = null , ret = null;
         
         ct = getCurrentTx ();

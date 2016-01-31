@@ -64,7 +64,7 @@ public abstract class XATransactionalResource implements TransactionalResource
 
     protected XAResource xares_;
     protected String servername;
-    protected Hashtable rootTransactionToSiblingMapperMap;
+    protected Hashtable<String,SiblingMapper> rootTransactionToSiblingMapperMap;
     protected XidFactory xidFact;
     private boolean closed;
 
@@ -96,7 +96,7 @@ public abstract class XATransactionalResource implements TransactionalResource
     {
 
         this.servername = servername;
-        this.rootTransactionToSiblingMapperMap = new Hashtable ();
+        this.rootTransactionToSiblingMapperMap = new Hashtable<String,SiblingMapper>();
         // name should be less than 64 for xid compatibility
 
         //branch id is server name + long value!

@@ -60,7 +60,7 @@ class CompositeTransactionAdaptor extends AbstractCompositeTransaction
      *            The adaptor for replay requests.
      */
 
-    public CompositeTransactionAdaptor ( Stack lineage , String tid ,
+    public CompositeTransactionAdaptor ( Stack<CompositeTransaction> lineage , String tid ,
             boolean serial , RecoveryCoordinator adaptor  )
     {
         super ( tid , (Stack) lineage.clone () , serial  );
