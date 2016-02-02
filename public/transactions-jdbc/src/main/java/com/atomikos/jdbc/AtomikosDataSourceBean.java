@@ -25,8 +25,8 @@
 
 package com.atomikos.jdbc;
 
-import java.util.Enumeration;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.sql.XADataSource;
 
@@ -63,16 +63,16 @@ extends AbstractDataSourceBean
 		this.xaProperties = new Properties();
 	}
 	
-	protected String printXaProperties()
+	private String printXaProperties()
 	{
 		StringBuffer ret = new StringBuffer();
 		if ( xaProperties != null ) {
-			Enumeration it = xaProperties.propertyNames();
+			
+			Set<String> names = xaProperties.stringPropertyNames();
 			ret.append ( "[" );
 			boolean first = true;
-			while ( it.hasMoreElements() ) {
+			for (String name : names) {
 				if ( ! first ) ret.append ( "," );
-				String name = ( String ) it.nextElement();
 				String value = xaProperties.getProperty( name);
 				ret.append ( name ); ret.append ( "=" ); ret.append ( value );
 				first = false;

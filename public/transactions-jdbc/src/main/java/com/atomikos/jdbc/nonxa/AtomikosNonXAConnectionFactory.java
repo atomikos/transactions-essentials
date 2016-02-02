@@ -62,7 +62,7 @@ class AtomikosNonXAConnectionFactory implements ConnectionFactory
 	
 	
 	private Driver driver;
-	protected Properties connectionProperties = new Properties();
+	private Properties connectionProperties = new Properties();
 	public AtomikosNonXAConnectionFactory ( ConnectionPoolProperties props , 
 			String url , String driverClassName , String user , 
 			String password , int loginTimeout , boolean readOnly )

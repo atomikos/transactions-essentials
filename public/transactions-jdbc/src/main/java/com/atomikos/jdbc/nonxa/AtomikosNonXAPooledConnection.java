@@ -154,17 +154,6 @@ class AtomikosNonXAPooledConnection extends AbstractXPooledConnection
 		return erroneous;
 	}
 
-	public boolean isInTransaction ( CompositeTransaction ct ) {
-		boolean ret = false;
-		Reapable handle = getCurrentConnectionProxy();
-		if ( handle != null ) {
-			DynamicProxy dproxy = ( DynamicProxy ) handle;
-			AtomikosThreadLocalConnection previous = (AtomikosThreadLocalConnection) dproxy.getInvocationHandler();
-			ret = previous.isInTransaction ( ct );
-		}
-		return ret;
-	}
-
 	//overridden for package-use here
 	protected void fireOnXPooledConnectionTerminated() 
 	{

@@ -53,7 +53,7 @@ import com.atomikos.logging.LoggerFactory;
  *
  */
 
-public class AtomikosNonXAParticipant implements Participant, Serializable
+class AtomikosNonXAParticipant implements Participant, Serializable
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(AtomikosNonXAParticipant.class);
 
@@ -71,7 +71,7 @@ public class AtomikosNonXAParticipant implements Participant, Serializable
 
     // not null iff not recovered
 
-    public AtomikosNonXAParticipant ( JtaAwareNonXaConnection connection , String name )
+    AtomikosNonXAParticipant ( JtaAwareNonXaConnection connection , String name )
     {
         this.connection = connection;
         this.name = name;
@@ -80,7 +80,7 @@ public class AtomikosNonXAParticipant implements Participant, Serializable
     /**
      * @see com.atomikos.icatch.Participant#recover()
      */
-    public boolean recover () throws SysException
+    boolean recover () throws SysException
     {
         // return true at this stage: there is a problem only when commit is
         // requested
