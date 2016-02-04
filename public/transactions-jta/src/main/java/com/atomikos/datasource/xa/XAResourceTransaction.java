@@ -161,12 +161,9 @@ public class XAResourceTransaction implements ResourceTransaction, Participant {
 	XAResourceTransaction(XATransactionalResource resource,
 			CompositeTransaction transaction, String root) {
 		setResource(resource);
-		TransactionControl control = transaction.getTransactionControl();
-		if (control != null) {
-			this.timeout = (int) transaction.getTransactionControl()
-					.getTimeout() / 1000;
+		
+		this.timeout = (int) transaction.getTimeout() / 1000;
 
-		}
 		this.tid = transaction.getTid();
 		this.root = root;
 		this.resourcename = resource.getName();
