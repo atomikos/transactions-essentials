@@ -31,7 +31,6 @@ import java.util.Stack;
 import com.atomikos.finitestates.FSMEnterEvent;
 import com.atomikos.finitestates.FSMEnterListener;
 import com.atomikos.icatch.CompositeCoordinator;
-import com.atomikos.icatch.CompositeTerminator;
 import com.atomikos.icatch.CompositeTransaction;
 import com.atomikos.icatch.Extent;
 import com.atomikos.icatch.HeurHazardException;
@@ -53,7 +52,7 @@ import com.atomikos.logging.LoggerFactory;
  */
 
 class CompositeTransactionImp extends AbstractCompositeTransaction implements
-        CompositeTerminator, TransactionControl, FSMEnterListener
+        TransactionControl, FSMEnterListener
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(CompositeTransactionImp.class);
 
@@ -249,15 +248,6 @@ class CompositeTransactionImp extends AbstractCompositeTransaction implements
     public boolean isLocal ()
     {
         return true;
-    }
-
-    /**
-     * @see TransactionControl.
-     */
-
-    public CompositeTerminator getTerminator ()
-    {
-        return this;
     }
 
     /**

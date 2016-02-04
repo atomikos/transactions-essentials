@@ -43,14 +43,6 @@ package com.atomikos.icatch;
  {
 
     /**
-     *Get a terminator for this tx.
-     *
-     *@return CompositeTerminator A terminator, null if none.
-     */
-
-    public CompositeTerminator getTerminator();
-    
-    /**
      *Get the number of subtxs that were locally started for this
      *instance.
      *@return int The number of locally started subtxs.
