@@ -170,16 +170,6 @@ public interface CompositeTransaction
     
     /**
      *
-     * @deprecated As from release 3.0, 
-     * the methods in the TransactionControl
-     * interface have been moved to this one.
-     */
-     
-    public TransactionControl getTransactionControl();
-    
-    
-    /**
-     *
      * @return boolean True if started in the local VM.
      * For imported transactions, this is false.
      */
@@ -280,6 +270,12 @@ public interface CompositeTransaction
      */
 
     public void setSerial() throws IllegalStateException, SysException;
+
+    /**
+    *@return int The number of locally started subtxs.
+    */
+    
+	public int getLocalSubTxCount();
 
 
 
