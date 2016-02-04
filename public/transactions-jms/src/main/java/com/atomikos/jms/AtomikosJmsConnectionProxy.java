@@ -63,7 +63,7 @@ implements SessionHandleStateChangeListener
 	
 	private static final String REAP_METHOD = "reap";
 	
-	protected static void forceConnectionIntoXaMode ( Connection c )
+	private static void forceConnectionIntoXaMode ( Connection c )
 	{
 	   //ORACLE AQ WORKAROUND: 
  	   //force connection into global tx mode
@@ -332,9 +332,9 @@ implements SessionHandleStateChangeListener
 	public boolean isAvailable() {
 		boolean ret = closed;
 		synchronized (sessions) {
-			Iterator it = sessions.iterator();
+			Iterator<Session> it = sessions.iterator();
 			while ( it.hasNext() && ret ) {
-				Object handle = it.next();
+				Session handle = it.next();
 				DynamicProxy dproxy = ( DynamicProxy ) handle;
 				AbstractJmsSessionProxy  session = (AbstractJmsSessionProxy) dproxy.getInvocationHandler();
 				if ( !session.isAvailable() ) {
@@ -349,9 +349,9 @@ implements SessionHandleStateChangeListener
 	public boolean isErroneous() {
 		boolean ret = erroneous;
 		synchronized (sessions) {
-			Iterator it = sessions.iterator();
+			Iterator<Session> it = sessions.iterator();
 			while ( it.hasNext() && !ret ) {
-				Object handle = it.next();
+				Session handle = it.next();
 				DynamicProxy dproxy = ( DynamicProxy ) handle;
 				AbstractJmsSessionProxy  session = (AbstractJmsSessionProxy) dproxy.getInvocationHandler();
 				if ( session.isErroneous() ) ret = true;
@@ -364,9 +364,9 @@ implements SessionHandleStateChangeListener
 	public boolean isInTransaction ( CompositeTransaction ct ) {
 		boolean ret = false;
 		synchronized (sessions) {
-			Iterator it = sessions.iterator();
+			Iterator<Session> it = sessions.iterator();
 			while ( it.hasNext() && !ret ) {
-				Object handle = it.next();
+				Session handle = it.next();
 				DynamicProxy dproxy = ( DynamicProxy ) handle;
 				AbstractJmsSessionProxy  session = (AbstractJmsSessionProxy) dproxy.getInvocationHandler();
 				if ( session.isInTransaction ( ct ) ) ret = true;
@@ -378,9 +378,9 @@ implements SessionHandleStateChangeListener
 	boolean isInactiveInTransaction ( CompositeTransaction ct ) {
 		boolean ret = false;
 		synchronized (sessions) {
-			Iterator it = sessions.iterator();
+			Iterator<Session> it = sessions.iterator();
 			while ( it.hasNext() && !ret ) {
-				Object handle = it.next();
+				Session handle = it.next();
 				DynamicProxy dproxy = ( DynamicProxy ) handle;
 				AbstractJmsSessionProxy  session = (AbstractJmsSessionProxy) dproxy.getInvocationHandler();
 				if ( session.isInactiveTransaction ( ct ) ) ret = true;
@@ -397,9 +397,9 @@ implements SessionHandleStateChangeListener
 	{
 		//a session has terminated -> remove it from the list of sessions to enable GC
 		synchronized (sessions) {
-			Iterator it = sessions.iterator();
+			Iterator<Session> it = sessions.iterator();
 			while ( it.hasNext() ) {
-				Object handle = it.next();
+				Session handle = it.next();
 				DynamicProxy dproxy = ( DynamicProxy ) handle;
 				AbstractJmsSessionProxy  session = (AbstractJmsSessionProxy) dproxy.getInvocationHandler();
 				if ( session.isAvailable() ) it.remove();

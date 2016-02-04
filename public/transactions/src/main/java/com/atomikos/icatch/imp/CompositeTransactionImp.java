@@ -25,14 +25,12 @@
 
 package com.atomikos.icatch.imp;
 
-import java.util.Dictionary;
 import java.util.Map;
 import java.util.Stack;
 
 import com.atomikos.finitestates.FSMEnterEvent;
 import com.atomikos.finitestates.FSMEnterListener;
 import com.atomikos.icatch.CompositeCoordinator;
-import com.atomikos.icatch.CompositeTerminator;
 import com.atomikos.icatch.CompositeTransaction;
 import com.atomikos.icatch.Extent;
 import com.atomikos.icatch.HeurHazardException;
@@ -53,17 +51,16 @@ import com.atomikos.logging.LoggerFactory;
  * A complete composite transaction implementation for use in the local VM.
  */
 
-public class CompositeTransactionImp
-extends AbstractCompositeTransaction implements
-        CompositeTerminator, TransactionControl, FSMEnterListener
+class CompositeTransactionImp extends AbstractCompositeTransaction implements
+        TransactionControl, FSMEnterListener
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(CompositeTransactionImp.class);
 
-    protected CoordinatorImp coordinator = null;
+	private CoordinatorImp coordinator = null;
 
-    protected TransactionServiceImp txservice;
+	private TransactionServiceImp txservice;
 
-    protected Extent extent = null;
+	private Extent extent = null;
 
     protected boolean noLocalAncestors;
 
@@ -73,7 +70,7 @@ extends AbstractCompositeTransaction implements
      * This constructor is kept for compatibility with the test classes.
      */
 
-    CompositeTransactionImp ( Stack lineage , String tid , boolean serial ,
+    CompositeTransactionImp ( Stack<CompositeTransaction> lineage , String tid , boolean serial ,
             CoordinatorImp coordinator )
     {
         this ( null , lineage , tid , serial , coordinator );
@@ -96,8 +93,8 @@ extends AbstractCompositeTransaction implements
      *                If coordinator no longer activatable.
      */
 
-    public CompositeTransactionImp ( TransactionServiceImp txservice ,
-            Stack lineage , String tid , boolean serial ,
+    CompositeTransactionImp ( TransactionServiceImp txservice ,
+            Stack<CompositeTransaction> lineage , String tid , boolean serial ,
             CoordinatorImp coordinator ) throws IllegalStateException
     {
 
@@ -152,18 +149,10 @@ extends AbstractCompositeTransaction implements
         return this;
     }
 
-    /**
-     * @see TransactionControl
-     */
-
     public int getLocalSubTxCount ()
     {
         return localGetTransactionStateHandler().getSubTransactionCount ();
     }
-
-    /**
-     * @see TransactionControl.
-     */
 
     public synchronized void setSerial () throws IllegalStateException,
             SysException
@@ -262,15 +251,6 @@ extends AbstractCompositeTransaction implements
     }
 
     /**
-     * @see TransactionControl.
-     */
-
-    public CompositeTerminator getTerminator ()
-    {
-        return this;
-    }
-
-    /**
      * Successfully end the composite transaction. Marks it as inactive. Called
      * by Terminator implementation only! NOTE: this does NOT commit the
      * participants, but rather only marks the (sub)transaction as being
@@ -292,18 +272,10 @@ extends AbstractCompositeTransaction implements
     	}
     }
 
-    /**
-     * @see TransactionControl
-     */
-
     public long getTimeout ()
     {
         return coordinator.getTimeOut ();
     }
-
-    /**
-     * @see TransactionControl.
-     */
 
     public synchronized Extent getExtent ()
     {
@@ -311,12 +283,6 @@ extends AbstractCompositeTransaction implements
             extent = new ExtentImp ();
     		return extent;
     }
-
-
-
-    /**
-     * @see TransactionControl.
-     */
 
     public void setRollbackOnly ()
     {

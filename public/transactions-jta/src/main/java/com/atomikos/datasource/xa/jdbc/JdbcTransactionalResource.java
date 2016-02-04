@@ -33,7 +33,6 @@ import javax.transaction.xa.XAResource;
 
 import com.atomikos.datasource.ResourceException;
 import com.atomikos.datasource.xa.XATransactionalResource;
-import com.atomikos.datasource.xa.XidFactory;
 import com.atomikos.util.Assert;
 
 /**
@@ -61,27 +60,6 @@ public class JdbcTransactionalResource extends XATransactionalResource
     {
         super(serverName);
         Assert.notNull("XADataSource must not be null", xads);
-        this.xaDataSource = xads;
-        this.xaConnection = null;
-    }
-
-    /**
-     * Constructs a new instance with a given name and XADataSource, and an Xid
-     * factory to use. The custom Xid factory is needed for data servers that do
-     * not accept arbitrary Xid formats.
-     *
-     * @param serverName
-     *            The unique name.
-     * @param xads
-     *            The data source.
-     * @param factory
-     *            The custom Xid factory.
-     */
-
-    public JdbcTransactionalResource ( String serverName , XADataSource xads ,
-            XidFactory factory )
-    {
-        super ( serverName , factory );
         this.xaDataSource = xads;
         this.xaConnection = null;
     }

@@ -53,7 +53,7 @@ public abstract class AbstractJUnitMaxActivesTest extends TestCase
         }
         catch ( IllegalStateException ok ) {}
         
-        ct1.getTransactionControl().getTerminator().rollback();
+        ct1.rollback();
         
         //now create should work
         try {
@@ -62,7 +62,7 @@ public abstract class AbstractJUnitMaxActivesTest extends TestCase
         catch ( Exception e ) {
         	throw new Exception ( "Max actives not reached and create fails???");
         }
-		ct1.getTransactionControl().getTerminator().rollback();
+		ct1.rollback();
     }
 
 }

@@ -40,7 +40,7 @@ import com.atomikos.logging.LoggerFactory;
  * A state handler for the indoubt coordinator state.
  */
 
-public class IndoubtStateHandler extends CoordinatorStateHandler
+class IndoubtStateHandler extends CoordinatorStateHandler
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(IndoubtStateHandler.class);
 

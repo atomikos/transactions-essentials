@@ -62,7 +62,7 @@ implements DataSource, ConnectionPoolProperties, Referenceable, Serializable
 	private static final Logger LOGGER = LoggerFactory.createLogger(AbstractDataSourceBean.class);
 	
 	static final int DEFAULT_ISOLATION_LEVEL_UNSET = -1;
-	static final int DEFAULT_POOL_SIZE = 1;
+	private static final int DEFAULT_POOL_SIZE = 1;
 
 	private int minPoolSize = DEFAULT_POOL_SIZE;
 	private int maxPoolSize = DEFAULT_POOL_SIZE;
@@ -84,7 +84,7 @@ implements DataSource, ConnectionPoolProperties, Referenceable, Serializable
 		throwAtomikosSQLException ( msg , null );
 	}
 	
-	protected void throwAtomikosSQLException ( String msg , Throwable cause ) throws AtomikosSQLException 
+	private void throwAtomikosSQLException ( String msg , Throwable cause ) throws AtomikosSQLException 
 	{
 		AtomikosSQLException.throwAtomikosSQLException ( msg  , cause );
 	}

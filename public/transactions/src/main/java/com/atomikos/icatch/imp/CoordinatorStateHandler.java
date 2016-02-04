@@ -26,7 +26,6 @@
 package com.atomikos.icatch.imp;
 
 import java.util.Collection;
-import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;

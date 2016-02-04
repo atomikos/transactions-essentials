@@ -31,7 +31,7 @@ package com.atomikos.datasource.xa;
  * A default Xid factory.
  */
 
-public class DefaultXidFactory extends AbstractXidFactory implements
+class DefaultXidFactory extends AbstractXidFactory implements
         java.io.Serializable
 {
 

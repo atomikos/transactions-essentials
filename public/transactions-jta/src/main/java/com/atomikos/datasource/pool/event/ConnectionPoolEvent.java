@@ -2,7 +2,7 @@ package com.atomikos.datasource.pool.event;
 
 import com.atomikos.icatch.event.Event;
 
-public abstract class ConnectionPoolEvent extends Event {
+abstract class ConnectionPoolEvent extends Event {
 
 	private static final long serialVersionUID = 1L;
 	

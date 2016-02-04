@@ -42,7 +42,7 @@ import com.atomikos.icatch.Participant;
 class PrepareResult extends Result
 {
 
-    protected Set<Participant> readonlytable_ = new HashSet<Participant> ();
+    private Set<Participant> readonlytable_ = new HashSet<Participant> ();
     // for read only voters
     private Set<Participant> indoubts_ = new HashSet<Participant>();
     // for indoubt participants
@@ -73,8 +73,8 @@ class PrepareResult extends Result
         boolean heurmixed = false;
         boolean heurhazards = false;
         boolean heurcommits = false;
-        Stack replies = getReplies ();
-        Enumeration enumm = replies.elements ();
+        Stack<Reply> replies = getReplies ();
+        Enumeration<Reply> enumm = replies.elements ();
 
         while ( enumm.hasMoreElements () ) {
             boolean yes = false;

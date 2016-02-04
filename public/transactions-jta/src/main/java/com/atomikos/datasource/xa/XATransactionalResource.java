@@ -63,9 +63,9 @@ public abstract class XATransactionalResource implements TransactionalResource
 	private static final Logger LOGGER = LoggerFactory.createLogger(XATransactionalResource.class);
 
     protected XAResource xares_;
-    protected String servername;
-    protected Hashtable rootTransactionToSiblingMapperMap;
-    protected XidFactory xidFact;
+    private String servername;
+    private Hashtable<String,SiblingMapper> rootTransactionToSiblingMapperMap;
+    private XidFactory xidFact;
     private boolean closed;
 
     private boolean weakCompare;
@@ -96,7 +96,7 @@ public abstract class XATransactionalResource implements TransactionalResource
     {
 
         this.servername = servername;
-        this.rootTransactionToSiblingMapperMap = new Hashtable ();
+        this.rootTransactionToSiblingMapperMap = new Hashtable<String,SiblingMapper>();
         // name should be less than 64 for xid compatibility
 
         //branch id is server name + long value!
@@ -166,11 +166,11 @@ public abstract class XATransactionalResource implements TransactionalResource
 
     }
 
-    SiblingMapper getSiblingMap ( String root )
+    private SiblingMapper getSiblingMap ( String root )
     {
         synchronized ( this.rootTransactionToSiblingMapperMap ) {
             if ( this.rootTransactionToSiblingMapperMap.containsKey ( root ) )
-                return (SiblingMapper) this.rootTransactionToSiblingMapperMap.get ( root );
+                return this.rootTransactionToSiblingMapperMap.get ( root );
             else {
                 SiblingMapper map = new SiblingMapper ( this , root );
                 this.rootTransactionToSiblingMapperMap.put ( root, map );
@@ -349,11 +349,11 @@ public abstract class XATransactionalResource implements TransactionalResource
 
         if ( ct == null ) return null; // happens in create method of beans?
 
-        Stack lineage = ct.getLineage ();
+        Stack<CompositeTransaction> lineage = ct.getLineage ();
         String root = null;
         if (lineage == null || lineage.isEmpty ()) root = ct.getTid ();
         else {
-            Stack tmp = (Stack) lineage.clone ();
+            Stack<CompositeTransaction> tmp = (Stack<CompositeTransaction>) lineage.clone ();
             while ( !tmp.isEmpty() ) {
                 CompositeTransaction next = (CompositeTransaction) tmp.pop();
                 if (next.isRoot()) root = next.getTid ();

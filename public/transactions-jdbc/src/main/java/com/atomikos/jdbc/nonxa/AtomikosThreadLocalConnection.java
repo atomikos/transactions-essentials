@@ -438,13 +438,4 @@ implements JtaAwareNonXaConnection
 		return ret.toString();
 	}
 
-	public boolean usesConnection ( XPooledConnection xpc )
-	{
-		boolean ret = false;
-		if ( pooledConnection != null ) {
-			ret = pooledConnection.equals ( xpc );
-		}
-		return ret;
-	}
-
 }

@@ -47,7 +47,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(ConnectionPool.class);
 
-	public final static int DEFAULT_MAINTENANCE_INTERVAL = 60;
+	private final static int DEFAULT_MAINTENANCE_INTERVAL = 60;
 
 	private List<XPooledConnection> connections = new ArrayList<XPooledConnection>();
 	private ConnectionFactory connectionFactory;

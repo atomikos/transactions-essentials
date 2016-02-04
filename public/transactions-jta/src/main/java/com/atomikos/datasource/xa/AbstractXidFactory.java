@@ -38,7 +38,7 @@ import java.util.concurrent.atomic.AtomicLong;
  *
  *
  */
-public abstract class AbstractXidFactory implements XidFactory
+abstract class AbstractXidFactory implements XidFactory
 {
 
    private static final int MAX_LENGTH_OF_COUNTER = 8;

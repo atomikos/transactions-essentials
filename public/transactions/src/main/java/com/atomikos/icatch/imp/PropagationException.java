@@ -36,9 +36,9 @@ package com.atomikos.icatch.imp;
 class PropagationException extends java.io.IOException
 {
 
-    protected boolean transient_ = false;
+	private boolean transient_ = false;
 
-    protected Exception detail_ = null;
+	private Exception detail_ = null;
     // wrapped exception
 
     /**

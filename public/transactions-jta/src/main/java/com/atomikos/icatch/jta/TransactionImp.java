@@ -29,7 +29,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Stack;
 
 import javax.transaction.Status;
 import javax.transaction.SystemException;
@@ -61,7 +60,7 @@ class TransactionImp implements Transaction {
 	private static final Logger LOGGER = LoggerFactory
 			.createLogger(TransactionImp.class);
 
-	static void rethrowAsJtaRollbackException(String msg, Throwable cause)
+	private static void rethrowAsJtaRollbackException(String msg, Throwable cause)
 			throws javax.transaction.RollbackException {
 		javax.transaction.RollbackException ret = new javax.transaction.RollbackException(
 				msg);
@@ -69,7 +68,7 @@ class TransactionImp implements Transaction {
 		throw ret;
 	}
 
-	static void rethrowAsJtaHeuristicMixedException(String msg, Throwable cause)
+	private static void rethrowAsJtaHeuristicMixedException(String msg, Throwable cause)
 			throws javax.transaction.HeuristicMixedException {
 		javax.transaction.HeuristicMixedException ret = new javax.transaction.HeuristicMixedException(
 				msg);
@@ -77,7 +76,7 @@ class TransactionImp implements Transaction {
 		throw ret;
 	}
 
-	static void rethrowAsJtaHeuristicRollbackException(String msg,
+	private static void rethrowAsJtaHeuristicRollbackException(String msg,
 			Throwable cause)
 			throws javax.transaction.HeuristicRollbackException {
 		javax.transaction.HeuristicRollbackException ret = new javax.transaction.HeuristicRollbackException(
@@ -242,8 +241,6 @@ class TransactionImp implements Transaction {
 			javax.transaction.SystemException, IllegalStateException {
 		TransactionalResource res = null;
 		XAResourceTransaction restx = null;
-		Stack errors = new Stack();
-
 		int status = getStatus();
 		switch (status) {
 		case Status.STATUS_MARKED_ROLLBACK:
@@ -283,10 +280,8 @@ class TransactionImp implements Transaction {
 					rethrowAsJtaRollbackException(
 							"Transaction was already rolled back inside the back-end resource. Further enlists are useless.",
 							xaerr);
-
-				errors.push(xaerr);
 				throw new ExtendedSystemException(
-						"Unexpected error during enlist", errors);
+						"Unexpected error during enlist", xaerr);
 			}
 
 		} else {
@@ -320,9 +315,8 @@ class TransactionImp implements Transaction {
 				restx.setXAResource(xares);
 				restx.resume();
 			} catch (ResourceException re) {
-				errors.push(re);
 				throw new ExtendedSystemException(
-						"Unexpected error during enlist", errors);
+						"Unexpected error during enlist", re);
 			} catch (RuntimeException e) {
 				throw e;
 			}
@@ -341,10 +335,9 @@ class TransactionImp implements Transaction {
 		synchronized (Configuration.class) {
 			// synchronized to avoid case 61740 and 142795
 			
-			Enumeration enumm = Configuration.getResources();
+			Enumeration<RecoverableResource> enumm = Configuration.getResources();
 			while (enumm.hasMoreElements()) {
-				RecoverableResource rres = (RecoverableResource) enumm
-						.nextElement();
+				RecoverableResource rres = enumm.nextElement();
 				if (rres instanceof XATransactionalResource) {
 					xatxres = (XATransactionalResource) rres;
 					if (xatxres.usesXAResource(xares))
@@ -383,7 +376,6 @@ class TransactionImp implements Transaction {
 	public boolean delistResource(XAResource xares, int flag)
 			throws java.lang.IllegalStateException,
 			javax.transaction.SystemException {
-		Stack errors = new Stack();
 
 		if (LOGGER.isInfoEnabled()) {
 			LOGGER.logInfo("delistResource ( " + xares + " ) with transaction "
@@ -405,9 +397,8 @@ class TransactionImp implements Transaction {
 			try {
 				active.suspend();
 			} catch (ResourceException re) {
-				errors.push(re);
 				throw new ExtendedSystemException(
-						"Error in delisting the given XAResource", errors);
+						"Error in delisting the given XAResource", re);
 			}
 			removeXAResourceTransaction(xares);
 			if (flag == XAResource.TMFAIL)
@@ -417,9 +408,8 @@ class TransactionImp implements Transaction {
 			try {
 				active.xaSuspend();
 			} catch (XAException xaerr) {
-				errors.push(xaerr);
 				throw new ExtendedSystemException(
-						"Error in delisting the given XAResource", errors);
+						"Error in delisting the given XAResource", xaerr);
 			}
 
 		} else {
@@ -465,36 +455,30 @@ class TransactionImp implements Transaction {
 
 	void suspendEnlistedXaResources() throws ExtendedSystemException {
 		// cf case 61305
-		Iterator xaResourceTransactions = this.xaResourceToResourceTransactionMap_
+		Iterator<XAResourceTransaction> xaResourceTransactions = this.xaResourceToResourceTransactionMap_
 				.values().iterator();
 		while (xaResourceTransactions.hasNext()) {
-			XAResourceTransaction resTx = (XAResourceTransaction) xaResourceTransactions
-					.next();
+			XAResourceTransaction resTx = xaResourceTransactions.next();
 			try {
 				resTx.xaSuspend();
 			} catch (XAException e) {
-				Stack errors = new Stack();
-				errors.push(e);
 				throw new ExtendedSystemException(
-						"Error in suspending the given XAResource", errors);
+						"Error in suspending the given XAResource", e);
 			}
 		}
 	}
 
 	void resumeEnlistedXaReources() throws ExtendedSystemException {
-		Iterator xaResourceTransactions = this.xaResourceToResourceTransactionMap_
+		Iterator<XAResourceTransaction> xaResourceTransactions = this.xaResourceToResourceTransactionMap_
 				.values().iterator();
 		while (xaResourceTransactions.hasNext()) {
-			XAResourceTransaction resTx = (XAResourceTransaction) xaResourceTransactions
-					.next();
+			XAResourceTransaction resTx = xaResourceTransactions.next();
 			try {
 				resTx.xaResume();
 				xaResourceTransactions.remove();
 			} catch (XAException e) {
-				Stack errors = new Stack();
-				errors.push(e);
 				throw new ExtendedSystemException(
-						"Error in resuming the given XAResource", errors);
+						"Error in resuming the given XAResource", e);
 			}
 		}
 	}

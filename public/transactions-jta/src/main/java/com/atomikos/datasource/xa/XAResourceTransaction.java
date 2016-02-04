@@ -53,12 +53,11 @@ import com.atomikos.logging.LoggerFactory;
  */
 
 public class XAResourceTransaction implements ResourceTransaction, Participant {
-	private static final Logger LOGGER = LoggerFactory
-			.createLogger(XAResourceTransaction.class);
+	private static final Logger LOGGER = LoggerFactory.createLogger(XAResourceTransaction.class);
 
 	static final long serialVersionUID = -8227293322090019196L;
 
-	protected static String interpretErrorCode(String resourceName,
+	private static String interpretErrorCode(String resourceName,
 			String opCode, Xid xid, int errorCode) {
 
 		String msg = "unkown";
@@ -162,12 +161,9 @@ public class XAResourceTransaction implements ResourceTransaction, Participant {
 	XAResourceTransaction(XATransactionalResource resource,
 			CompositeTransaction transaction, String root) {
 		setResource(resource);
-		TransactionControl control = transaction.getTransactionControl();
-		if (control != null) {
-			this.timeout = (int) transaction.getTransactionControl()
-					.getTimeout() / 1000;
+		
+		this.timeout = (int) transaction.getTimeout() / 1000;
 
-		}
 		this.tid = transaction.getTid();
 		this.root = root;
 		this.resourcename = resource.getName();
@@ -230,7 +226,7 @@ public class XAResourceTransaction implements ResourceTransaction, Participant {
 		this.xaresource.isSameRM(this.xaresource);
 	}
 
-	protected void forceRefreshXAConnection() throws XAException {
+	private void forceRefreshXAConnection() throws XAException {
 		if (LOGGER.isDebugEnabled())
 			LOGGER.logDebug(this.resourcename
 					+ ": forcing refresh of XAConnection...");
@@ -407,16 +403,16 @@ public class XAResourceTransaction implements ResourceTransaction, Participant {
 		int ret = 0;
 		terminateInResource();
 
-		if (TxState.ACTIVE.equals(this.state)) {
+		if (TxState.ACTIVE == this.state) {
 			// tolerate non-delisting apps/servers
 			suspend();
 		}
 
 		// duplicate prepares can happen for siblings in serial subtxs!!!
 		// in that case, the second prepare just returns READONLY
-		if (this.state.equals(TxState.IN_DOUBT))
+		if (this.state == TxState.IN_DOUBT)
 			return Participant.READ_ONLY;
-		else if (!this.state.equals(TxState.LOCALLY_DONE))
+		else if (!(this.state == TxState.LOCALLY_DONE))
 			throw new SysException("Wrong state for prepare: " + this.state);
 		try {
 			// refresh xaresource for MQSeries: seems to close XAResource after
@@ -710,17 +706,6 @@ public class XAResourceTransaction implements ResourceTransaction, Participant {
 		return this.xid;
 	}
 
-	protected void setRecoveredXAResource(XAResource xaresource) {
-		// See case 25671: only reset xaresource if NOT enlisted!
-		// Otherwise, the delist will fail since XA does not allow
-		// enlist/delist on different xaresource instances.
-		// This should not interfere with recovery since a recovered
-		// instance will NOT have state ACTIVE...
-		if (!TxState.ACTIVE.equals(this.state)) {
-			setXAResource(xaresource);
-		}
-	}
-
 	/**
 	 * Set the XAResource attribute.
 	 * 
@@ -831,10 +816,6 @@ public class XAResourceTransaction implements ResourceTransaction, Participant {
 
 	public String getResourceName() {
 		return this.resourcename;
-	}
-
-	XAResource getXAResource() {
-		return this.xaresource;
 	}
 
 	@Override

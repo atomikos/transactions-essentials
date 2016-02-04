@@ -105,25 +105,6 @@ public final class Configuration
     private Configuration ()
     {
     }
-    
-    /**
-     * Installs the transaction service in use.
-     *
-     * @param service
-     *            The service.
-     */
-
-    public static synchronized void installTransactionService (
-            TransactionService service )
-    {
-        service_ = (TransactionServiceProvider) service;
-        addAllTransactionServicePluginServicesFromClasspath();
-        Iterator it = tsListenersList_.iterator ();
-        while ( it.hasNext () && service != null ) {
-            TransactionServicePlugin l = (TransactionServicePlugin) it.next ();
-            service_.addTSListener ( l );
-        }
-    }
 
     private static void addAllTransactionServicePluginServicesFromClasspath() {
         ServiceLoader<TransactionServicePlugin> loader = ServiceLoader.load(TransactionServicePlugin.class,Configuration.class.getClassLoader());
@@ -140,7 +121,7 @@ public final class Configuration
      *
      * @param hook
      */
-    public static synchronized void addShutdownHook ( Thread hook )
+    private static synchronized void addShutdownHook ( Thread hook )
     {
     	if ( shutdownHooks_.contains ( hook ) ) return;
 
@@ -160,7 +141,7 @@ public final class Configuration
      * This method should be called on shutdown of the core.
      */
 
-    public static synchronized void removeShutdownHooks()
+    private static synchronized void removeShutdownHooks()
     {
     	Iterator it = shutdownHooks_.iterator();
 
@@ -239,20 +220,6 @@ public final class Configuration
 
         ctxmgr_ = compositeTransactionManager;
     }
-
-
-
-    /**
-     * Installs the log control interface to use.
-     *
-     * @param control
-     */
-
-    public static synchronized void installLogControl ( LogControl control )
-    {
-
-    }
-
 
     /**
      * Get the composite transaction manager.
@@ -335,7 +302,7 @@ public final class Configuration
      *
      * @return Enumeration The logadministrators.
      */
-    public static Enumeration getLogAdministrators ()
+    private static Enumeration getLogAdministrators ()
     {
         Vector v = (Vector) logAdministrators_.clone ();
         return v.elements ();

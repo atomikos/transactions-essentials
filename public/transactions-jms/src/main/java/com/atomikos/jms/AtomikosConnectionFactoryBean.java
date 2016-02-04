@@ -26,8 +26,8 @@
 package com.atomikos.jms;
 
 import java.io.Serializable;
-import java.util.Enumeration;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.jms.Connection;
 import javax.jms.JMSException;
@@ -167,12 +167,12 @@ Referenceable, Serializable {
 		xaProperties = new Properties();
 	}
 	
-	protected void throwAtomikosJMSException ( String msg ) throws AtomikosJMSException 
+	private void throwAtomikosJMSException ( String msg ) throws AtomikosJMSException 
 	{
 		throwAtomikosJMSException ( msg , null );
 	}
 
-	protected void throwAtomikosJMSException ( String msg , Throwable cause ) 
+	private void throwAtomikosJMSException ( String msg , Throwable cause ) 
 	throws AtomikosJMSException
 	{
 		AtomikosJMSException.throwAtomikosJMSException(msg, cause);
@@ -372,15 +372,14 @@ Referenceable, Serializable {
 
 	}
 	
-	protected String printXaProperties() {
+	private String printXaProperties() {
 		StringBuffer ret = new StringBuffer();
 		if ( xaProperties != null ) {
-			Enumeration it = xaProperties.propertyNames();
+			Set<String> it = xaProperties.stringPropertyNames();
 			ret.append ( "[" );
 			boolean first = true;
-			while ( it.hasMoreElements() ) {
+			for (String name : it) {
 				if ( ! first ) ret.append ( "," );
-				String name = ( String ) it.nextElement();
 				String value = xaProperties.getProperty( name);
 				ret.append ( name ); ret.append ( "=" ); ret.append ( value );
 				first = false;
@@ -390,7 +389,7 @@ Referenceable, Serializable {
 		return ret.toString();
 	}
 	
-	protected com.atomikos.datasource.pool.ConnectionFactory doInit() throws Exception 
+	private com.atomikos.datasource.pool.ConnectionFactory doInit() throws Exception 
 	{
 		if (xaConnectionFactory == null) {
 			if (xaConnectionFactoryClassName == null)

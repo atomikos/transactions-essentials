@@ -38,7 +38,7 @@ import com.atomikos.icatch.SysException;
  * This allows substitution of the recovery coordinator adaptor.
  */
 
-public class CompositeTransactionAdaptor extends AbstractCompositeTransaction
+class CompositeTransactionAdaptor extends AbstractCompositeTransaction
         implements CompositeCoordinator
 {
 
@@ -60,7 +60,7 @@ public class CompositeTransactionAdaptor extends AbstractCompositeTransaction
      *            The adaptor for replay requests.
      */
 
-    public CompositeTransactionAdaptor ( Stack lineage , String tid ,
+    public CompositeTransactionAdaptor ( Stack<CompositeTransaction> lineage , String tid ,
             boolean serial , RecoveryCoordinator adaptor  )
     {
         super ( tid , (Stack) lineage.clone () , serial  );

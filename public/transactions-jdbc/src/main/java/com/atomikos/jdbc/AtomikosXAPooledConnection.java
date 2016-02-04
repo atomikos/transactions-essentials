@@ -148,13 +148,6 @@ public class AtomikosXAPooledConnection extends AbstractXPooledConnection
 	public String toString() {
 		return "an AtomikosXAPooledConnection with " + sessionHandleState;
 	}
-
-	public boolean isInTransaction ( CompositeTransaction ct ) 
-	{
-		return sessionHandleState.isActiveInTransaction ( ct );
-	}
-	
-	
 	
 	public boolean canBeRecycledForCallingThread ()
 	{

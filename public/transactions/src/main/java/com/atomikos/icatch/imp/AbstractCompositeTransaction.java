@@ -317,7 +317,7 @@ public abstract class AbstractCompositeTransaction implements CompositeTransacti
      */
     public long getTimeout ()
     {
-    	throw new UnsupportedOperationException();
+    	return 0;
     }
 
     /**

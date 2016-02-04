@@ -258,7 +258,7 @@ public class UserTransactionServerImp implements UserTransactionServer
         tm.begin ( timeout );
         TransactionImp tx = (TransactionImp) tm.getTransaction ();
         // set serial mode or shared access will NOT work!
-        tx.getCT ().getTransactionControl ().setSerial ();
+        tx.getCT ().setSerial ();
         tm.suspend ();
         return tx.getCT ().getTid ();
     }

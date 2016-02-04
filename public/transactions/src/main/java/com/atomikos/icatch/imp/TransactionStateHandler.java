@@ -206,18 +206,15 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
     protected void commit() throws SysException,
             java.lang.IllegalStateException, RollbackException
     {
-        Stack participants = null;
-        Stack synchronizations = null;
-        
         //prevent concurrent rollback due to timeout
         ct_.localTestAndSetTransactionStateHandler(this , new TxTerminatingStateHandler(true , ct_ , this));
 
         // NOTE: this must be done BEFORE calling notifications
         // to make sure that active recovery works for early prepares 
         if ( ct_.isLocalRoot() ) {
-        	Enumeration enumm = ct_.getExtent().getParticipants().elements();
+        	Enumeration<Participant> enumm = ct_.getExtent().getParticipants().elements();
         	while ( enumm.hasMoreElements () ) {
-        		Participant part = (Participant) enumm.nextElement();
+        		Participant part = enumm.nextElement();
         		addParticipant(part);
 
         	}
@@ -232,7 +229,6 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
         // NOTE: doing this at the very beginning of commit
         // also makes sure that the tx can still get new Participants
         // from beforeCompletion work being done! This is required.
-        Synchronization sync = null;
         Throwable cause = notifyBeforeCompletion();
 
         if ( ct_.getState().equals ( TxState.MARKED_ABORT ) ) {

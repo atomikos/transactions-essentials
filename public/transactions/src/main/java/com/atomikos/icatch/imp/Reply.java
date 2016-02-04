@@ -34,13 +34,13 @@ import com.atomikos.icatch.Participant;
 class Reply
 {
 
-    protected Exception exception_ = null;
+    private Exception exception_ = null;
 
-    protected Object response_ = null;
+    private Object response_ = null;
 
-    protected Participant participant_ = null;
+    private Participant participant_ = null;
 
-    protected boolean retried_ = false;
+    private boolean retried_ = false;
 
     /**
      * Constructor.

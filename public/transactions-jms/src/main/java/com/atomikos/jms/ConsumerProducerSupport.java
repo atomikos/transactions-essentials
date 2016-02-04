@@ -64,7 +64,7 @@ abstract class ConsumerProducerSupport
 	
 
 
-	protected CompositeTransactionManager getCompositeTransactionManager() 
+	private CompositeTransactionManager getCompositeTransactionManager() 
 	{
 		CompositeTransactionManager ret = null;
 		ret = Configuration.getCompositeTransactionManager();

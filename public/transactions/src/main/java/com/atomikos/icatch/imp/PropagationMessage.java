@@ -38,11 +38,11 @@ abstract class PropagationMessage
      * How many times is message re-sent if comm. failure?
      */
 
-    public static final int MAX_RETRIES_ON_COMM_FAILURE = 5;
+	private static final int MAX_RETRIES_ON_COMM_FAILURE = 5;
 
-    protected Participant participant_;
-    protected int retrycount_ = 0;
-    protected Result result_ = null;
+    private Participant participant_;
+    private int retrycount_ = 0;
+    private Result result_ = null;
 
     public PropagationMessage ( Participant participant , Result result )
     {

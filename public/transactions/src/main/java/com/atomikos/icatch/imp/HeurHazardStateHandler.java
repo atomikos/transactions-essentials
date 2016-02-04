@@ -73,7 +73,7 @@ class HeurHazardStateHandler extends CoordinatorStateHandler
 
         // get Stack to avoid overwriting effects of
         // intermediate recovery calls
-        Stack replayStack = getReplayStack ();
+        Stack<Participant> replayStack = getReplayStack ();
         boolean replay = false;
         if ( !replayStack.empty ()  && commitDecided != null ) {
         	committed = commitDecided.booleanValue ();
@@ -82,7 +82,7 @@ class HeurHazardStateHandler extends CoordinatorStateHandler
             TerminationResult result = new TerminationResult ( count );
 
             while ( !replayStack.empty () ) {
-                Participant part = (Participant) replayStack.pop ();
+                Participant part = replayStack.pop ();
                 if ( committed ) {
                     CommitMessage cm = new CommitMessage ( part, result, false );
                     getPropagator ().submitPropagationMessage ( cm );
@@ -94,10 +94,10 @@ class HeurHazardStateHandler extends CoordinatorStateHandler
             }
             try {
                 result.waitForReplies ();
-                Stack replies = result.getReplies ();
-                Enumeration enumm = replies.elements ();
+                Stack<Reply> replies = result.getReplies ();
+                Enumeration<Reply> enumm = replies.elements ();
                 while ( enumm.hasMoreElements () ) {
-                    Reply reply = (Reply) enumm.nextElement ();
+                    Reply reply = enumm.nextElement ();
 
                     if ( !reply.hasFailed () ) {
                         hazards_.remove ( reply.getParticipant () );

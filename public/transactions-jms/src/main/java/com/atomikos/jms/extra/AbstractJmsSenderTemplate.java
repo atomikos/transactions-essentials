@@ -53,17 +53,17 @@ public abstract class AbstractJmsSenderTemplate
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(AbstractJmsSenderTemplate.class);
 
-	protected AtomikosConnectionFactoryBean connectionFactoryBean;
+	private AtomikosConnectionFactoryBean connectionFactoryBean;
 	private String user;
-	protected String password;
-	protected Destination destination;
+	private String password;
+	private Destination destination;
 	private String destinationName;
 	private Destination replyToDestination;
 	private String replyToDestinationName;
 	private int deliveryMode;
 	private int priority;
 	private long timeToLive;
-	protected boolean inited;
+	private boolean inited;
 
 	protected AbstractJmsSenderTemplate()
 	{

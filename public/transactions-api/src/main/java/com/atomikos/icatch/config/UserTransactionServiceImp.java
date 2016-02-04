@@ -58,28 +58,11 @@ public final class UserTransactionServiceImp
 
 	private static final long serialVersionUID = -3374591336514451887L;
 
-    /**
-     * The name of the system property whose value corresponds to the path
-     * towards the properties file for initialization of the transaction service.
-     * If this system property is set then the corresponding file path will be
-     * used to load the initialization parameters for the transaction service.
-     * Otherwise, the transaction service will attempt to load the default
-     * file from the classpath.
-     */
-
-    public static final String FILE_PATH_PROPERTY_NAME = ConfigProperties.FILE_PATH_PROPERTY_NAME;
-    
     private Properties properties_;
     
     private List<TransactionServicePlugin> tsListeners_;
     private List<LogAdministrator> logAdministrators_;
     private List<RecoverableResource> resources_;
-
-    
-    
-
-   
-
 
     /**
      * Default constructor.
@@ -94,22 +77,6 @@ public final class UserTransactionServiceImp
 		properties_ = new Properties();
        
     }
-
-	/**
-	 * Constructs a new instance and initializes it with the given properties.
-	 * If this constructor is called, then file-based initialization is overridden.
-	 * In particular, the given properties will take precedence over the file-based
-	 * properties (if found).
-	 * 
-	 * @param properties The properties.
-	 */
-	
-    public UserTransactionServiceImp ( Properties properties )
-    {
-    	this();
-    	properties_ = properties;
-    }
-
 
     /**
      *
@@ -201,7 +168,7 @@ public final class UserTransactionServiceImp
 		shutdown ( true );
 		
 	}
-
+	
 	/**
 	 * Convenience shutdown method for DI containers like Spring. 
 	 * 
