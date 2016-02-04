@@ -289,7 +289,7 @@ public class TransactionManagerImp implements TransactionManager,
             ct = compositeTransactionManager.createCompositeTransaction ( ( ( long ) timeout ) * 1000 );
             if ( resumeParticipant != null ) ct.addSubTxAwareParticipant ( resumeParticipant );
             if ( ct.isRoot () && getDefaultSerial () )
-                ct.getTransactionControl ().setSerial ();
+                ct.setSerial ();
             ct.setProperty ( JTA_PROPERTY_NAME , "true" );
         } catch ( SysException se ) {
         	String msg = "Error in begin()";

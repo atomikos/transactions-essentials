@@ -269,6 +269,19 @@ public interface CompositeTransaction
     
     public Properties getProperties();
 
+	public CompositeTransaction createSubTransaction();
+
+    /**
+     *Set serial mode for root.
+     *This only works on the root itself, and can not be undone.
+     *After this, no parallel calls are allowed in any descendant.
+     *@exception IllegalStateException If  called for non-root tx.
+     *@exception SysException For unexpected errors.
+     */
+
+    public void setSerial() throws IllegalStateException, SysException;
+
+
 
 }
 

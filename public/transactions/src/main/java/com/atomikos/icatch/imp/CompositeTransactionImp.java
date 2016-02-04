@@ -150,18 +150,10 @@ class CompositeTransactionImp extends AbstractCompositeTransaction implements
         return this;
     }
 
-    /**
-     * @see TransactionControl
-     */
-
     public int getLocalSubTxCount ()
     {
         return localGetTransactionStateHandler().getSubTransactionCount ();
     }
-
-    /**
-     * @see TransactionControl.
-     */
 
     public synchronized void setSerial () throws IllegalStateException,
             SysException
@@ -290,18 +282,10 @@ class CompositeTransactionImp extends AbstractCompositeTransaction implements
     	}
     }
 
-    /**
-     * @see TransactionControl
-     */
-
     public long getTimeout ()
     {
         return coordinator.getTimeOut ();
     }
-
-    /**
-     * @see TransactionControl.
-     */
 
     public synchronized Extent getExtent ()
     {
@@ -309,12 +293,6 @@ class CompositeTransactionImp extends AbstractCompositeTransaction implements
             extent = new ExtentImp ();
     		return extent;
     }
-
-
-
-    /**
-     * @see TransactionControl.
-     */
 
     public void setRollbackOnly ()
     {

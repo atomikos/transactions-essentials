@@ -418,7 +418,7 @@ public class CompositeTransactionManagerImp implements CompositeTransactionManag
             }
         } else {
         	 if(LOGGER.isInfoEnabled()) LOGGER.logInfo("createCompositeTransaction ( " + timeout + " )");
-            ret = ct.getTransactionControl ().createSubTransaction ();
+            ret = ct.createSubTransaction ();
 
         }
         Thread thread = Thread.currentThread ();

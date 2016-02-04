@@ -41,29 +41,7 @@ package com.atomikos.icatch;
  public interface TransactionControl
  extends java.io.Serializable
  {
-        
-    /**
-     *Create a subtx for this transaction.
-     *
-     *@return CompositeTransaction The subtx.
-     *@exception IllegalStateException If no longer active.
-     */
 
-    public CompositeTransaction createSubTransaction()
-        throws SysException,
-	     IllegalStateException;
-	     
-    /**
-     *Set serial mode for root.
-     *This only works on the root itself, and can not be undone.
-     *After this, no parallel calls are allowed in any descendant.
-     *@exception IllegalStateException If  called for non-root tx.
-     *@exception SysException For unexpected errors.
-     */
-
-    public void setSerial() throws IllegalStateException, SysException;
-
-	     
     /**
      *Get a terminator for this tx.
      *
