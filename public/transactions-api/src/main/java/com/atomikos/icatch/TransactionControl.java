@@ -84,16 +84,7 @@ package com.atomikos.icatch;
      *Get the extent for the transaction.
      */
      public Extent getExtent();
-     
-     
-      /**
-       *Get the timeout in ms.
-       *
-       *@return long The timeout, in ms, of the tx.
-       */
-       
-     public long getTimeout();
-	
+    
 	 /**
 	  *Marks the transaction so that the only possible
 	  *termination is rollback. 
