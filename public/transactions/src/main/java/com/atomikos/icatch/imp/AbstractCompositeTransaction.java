@@ -40,7 +40,6 @@ import com.atomikos.icatch.RollbackException;
 import com.atomikos.icatch.SubTxAwareParticipant;
 import com.atomikos.icatch.Synchronization;
 import com.atomikos.icatch.SysException;
-import com.atomikos.icatch.TransactionControl;
 import com.atomikos.icatch.TxState;
 
 /**
@@ -128,16 +127,6 @@ public abstract class AbstractCompositeTransaction implements CompositeTransacti
     public boolean isLocal ()
     {
         return false;
-    }
-
-    /**
-     * @see CompositeTransaction.
-     */
-
-    public TransactionControl getTransactionControl ()
-            throws UnsupportedOperationException
-    {
-        return null;
     }
 
     /**
@@ -376,6 +365,11 @@ public abstract class AbstractCompositeTransaction implements CompositeTransacti
 
     public TxState getState ()
     {
+    	throw new UnsupportedOperationException();
+    }
+    
+    @Override
+    public int getLocalSubTxCount() {
     	throw new UnsupportedOperationException();
     }
 

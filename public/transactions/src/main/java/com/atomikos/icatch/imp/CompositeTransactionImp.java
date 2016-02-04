@@ -42,7 +42,6 @@ import com.atomikos.icatch.RollbackException;
 import com.atomikos.icatch.SubTxAwareParticipant;
 import com.atomikos.icatch.Synchronization;
 import com.atomikos.icatch.SysException;
-import com.atomikos.icatch.TransactionControl;
 import com.atomikos.icatch.TxState;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
@@ -51,8 +50,7 @@ import com.atomikos.logging.LoggerFactory;
  * A complete composite transaction implementation for use in the local VM.
  */
 
-class CompositeTransactionImp extends AbstractCompositeTransaction implements
-        TransactionControl, FSMEnterListener
+class CompositeTransactionImp extends AbstractCompositeTransaction implements FSMEnterListener
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(CompositeTransactionImp.class);
 
@@ -137,16 +135,6 @@ class CompositeTransactionImp extends AbstractCompositeTransaction implements
     CoordinatorImp getCoordinatorImp ()
     {
         return coordinator;
-    }
-
-
-    /**
-     * @see CompositeTransaction.
-     */
-
-    public TransactionControl getTransactionControl ()
-    {
-        return this;
     }
 
     public int getLocalSubTxCount ()

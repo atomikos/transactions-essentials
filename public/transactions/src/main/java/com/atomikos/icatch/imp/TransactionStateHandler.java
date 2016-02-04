@@ -284,7 +284,7 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
     public void committed ( CompositeTransaction subtx )
     {
         CompositeTransactionImp ct = (CompositeTransactionImp) subtx;
-        Extent toAdd = subtx.getTransactionControl().getExtent();
+        Extent toAdd = subtx.getExtent();
         Extent target = ct_.getExtent();
         target.add ( toAdd );
 
