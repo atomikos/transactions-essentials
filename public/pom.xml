@@ -27,6 +27,8 @@
 		<module>transactions-hibernate4</module>
 		<module>transactions-eclipselink</module>
 		<module>transactions-jndi-provider</module>
+		<module>transactions-tcc-rest-api</module>
+		<module>transactions-tcc-rest</module>
 	</modules>
 
 

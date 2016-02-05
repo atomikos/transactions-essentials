@@ -1,4 +1,4 @@
-Copyright (C) ${year} ${company} <${email}>
+Copyright (C) 2012-2016 Atomikos <info@atomikos.com>
 
 This code ("Atomikos TransactionsEssentials"), by itself, 
 is being distributed under the 
