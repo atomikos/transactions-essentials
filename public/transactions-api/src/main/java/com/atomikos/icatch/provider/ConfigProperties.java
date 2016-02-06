@@ -1,6 +1,7 @@
 package com.atomikos.icatch.provider;
 
 import java.net.UnknownHostException;
+import java.util.Enumeration;
 import java.util.Properties;
 import java.util.Set;
 
@@ -96,8 +97,9 @@ public final class ConfigProperties {
 
 	private void applySystemProperties() {
 		Properties systemProperties = System.getProperties();
-		Set<String> propertyNames = systemProperties.stringPropertyNames();
-		for (String name : propertyNames) {
+		Enumeration<?> propertyNames = systemProperties.propertyNames();
+		while (propertyNames.hasMoreElements()) {
+			String name = (String) propertyNames.nextElement();
 			if (name.startsWith("com.atomikos")) {
 				properties.setProperty(name, systemProperties.getProperty(name));
 			}
@@ -106,8 +108,9 @@ public final class ConfigProperties {
 
 	private void substitutePlaceHolderValues() {
 		//resolve referenced values with ant-like ${...} syntax
-		Set<String> allProps= properties.stringPropertyNames();
-		for (String key : allProps) {
+		Enumeration<?> allProps= properties.propertyNames();
+		while ( allProps.hasMoreElements() ) {
+			String key = ( String ) allProps.nextElement();
 			String raw = properties.getProperty ( key );
 			String value= evaluateReference ( raw , properties );
 			if ( !raw.equals ( value ) ) {
@@ -178,8 +181,9 @@ public final class ConfigProperties {
 	}
 
 	public void applyUserSpecificProperties(Properties userSpecificProperties) {
-		Set<String> names = userSpecificProperties.stringPropertyNames();
-		for (String name : names) {
+		Enumeration<?> names = userSpecificProperties.propertyNames();
+		while (names.hasMoreElements()) {
+			String name = (String) names.nextElement();
 			properties.setProperty(name, userSpecificProperties.getProperty(name));
 		}
 	}
@@ -187,8 +191,9 @@ public final class ConfigProperties {
 	public Properties getCompletedProperties() {
 		Properties ret = new Properties();
 		completeProperties();
-		Set<String> propertyNames = properties.stringPropertyNames();
-		for (String name : propertyNames) {
+		Enumeration<?> propertyNames = properties.propertyNames();
+		while (propertyNames.hasMoreElements()) {
+			String name = (String) propertyNames.nextElement();
 			ret.setProperty(name, getProperty(name));
 		}
 		return ret;
