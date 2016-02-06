@@ -327,10 +327,10 @@ public class CompositeTransactionManagerImp implements CompositeTransactionManag
        
         Stack<CompositeTransaction> ancestors = new Stack<CompositeTransaction>();
         Stack<CompositeTransaction> tmp = new Stack<CompositeTransaction>();
-        Stack lineage = (Stack) ct.getLineage ().clone ();
+        Stack<CompositeTransaction> lineage = (Stack<CompositeTransaction>) ct.getLineage ().clone ();
         boolean done = false;
         while ( !lineage.isEmpty () && !done ) {
-            CompositeTransaction parent = (CompositeTransaction) lineage.pop ();
+            CompositeTransaction parent = lineage.pop ();
             if ( !parent.isLocal () )
                 done = true;
             else

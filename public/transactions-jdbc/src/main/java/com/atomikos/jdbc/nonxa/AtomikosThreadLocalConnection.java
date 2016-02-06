@@ -37,7 +37,6 @@ import java.util.Set;
 
 import com.atomikos.beans.PropertyUtils;
 import com.atomikos.datasource.pool.Reapable;
-import com.atomikos.datasource.pool.XPooledConnection;
 import com.atomikos.datasource.pool.XPooledConnectionEventListener;
 import com.atomikos.icatch.CompositeTransaction;
 import com.atomikos.icatch.CompositeTransactionManager;
@@ -108,6 +107,7 @@ implements JtaAwareNonXaConnection
 
 	private String resourceName;
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	static Object newInstance ( AtomikosNonXAPooledConnection pooledConnection , String resourceName )
 
 	{

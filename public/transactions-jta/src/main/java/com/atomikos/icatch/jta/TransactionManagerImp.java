@@ -27,7 +27,6 @@ package com.atomikos.icatch.jta;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Stack;
 
 import javax.naming.NamingException;
 import javax.naming.Reference;
@@ -453,19 +452,14 @@ public class TransactionManagerImp implements TransactionManager,
     public void setRollbackOnly () throws IllegalStateException,
             SystemException
     {
-        Stack errors = new Stack ();
-        
         Transaction tx = getTransaction(); 
         if ( tx == null ) raiseNoTransaction();
-              
         try {
             tx.setRollbackOnly ();
-
         } catch ( SecurityException se ) {
-            errors.push ( se );
             String msg = "Unexpected error during setRollbackOnly";
             LOGGER.logWarning( msg , se );
-            throw new ExtendedSystemException ( msg, errors );
+            throw new ExtendedSystemException ( msg, se );
         }
     }
 

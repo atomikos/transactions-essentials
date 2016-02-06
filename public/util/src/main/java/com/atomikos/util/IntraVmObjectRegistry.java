@@ -40,7 +40,7 @@ import javax.naming.NameNotFoundException;
  */
 public class IntraVmObjectRegistry {
 
-	private final static Map resourcesMap = new HashMap();
+	private final static Map<String,Object> resourcesMap = new HashMap<String,Object>();
 
 	public synchronized static void addResource(String resourceName, Object resource) throws NameAlreadyBoundException
 	{

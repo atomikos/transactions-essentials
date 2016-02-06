@@ -63,12 +63,12 @@ class CompositeTransactionAdaptor extends AbstractCompositeTransaction
     public CompositeTransactionAdaptor ( Stack<CompositeTransaction> lineage , String tid ,
             boolean serial , RecoveryCoordinator adaptor  )
     {
-        super ( tid , (Stack) lineage.clone () , serial  );
+        super ( tid , (Stack<CompositeTransaction>) lineage.clone () , serial  );
         adaptorForReplayRequests_ = adaptor;
-        Stack tmp = (Stack) lineage.clone();
+        Stack<CompositeTransaction> tmp = (Stack<CompositeTransaction>) lineage.clone();
         CompositeTransaction parent = null;
         while ( !tmp.empty () ) {
-            parent = (CompositeTransaction) tmp.pop();
+            parent = tmp.pop();
         }
         root_ = parent.getTid();
     }

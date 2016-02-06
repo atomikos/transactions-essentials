@@ -95,7 +95,7 @@ public class AssemblerImp implements Assembler {
 			File file = new File(customFilePath);
 			URL url;
 			try {
-				url = file.toURL();
+				url = file.toURI().toURL();
 				loadPropertiesFromUrl(customProperties, url);
 			} catch (MalformedURLException e) {
 				LOGGER.logWarning("File not found: " + customFilePath);

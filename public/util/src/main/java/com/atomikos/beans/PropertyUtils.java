@@ -43,6 +43,7 @@ import java.util.Set;
  *
  * @author lorban
  */
+@SuppressWarnings({"rawtypes","unchecked"})
 public class PropertyUtils 
 {
 	
@@ -118,7 +119,8 @@ public class PropertyUtils
      * @return a Map of String with properties names as key and their values
      * @throws PropertyException if an error happened while trying to get a property.
      */
-    public static Map getProperties ( Object target ) throws PropertyException 
+    
+	public static Map getProperties ( Object target ) throws PropertyException 
     {
         Map properties = new HashMap();
         Class clazz = target.getClass();

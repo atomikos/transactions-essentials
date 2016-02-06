@@ -25,13 +25,14 @@
 
 package com.atomikos.icatch.jta;
 
-
+@SuppressWarnings("deprecation")
 public final class UserTransactionServerImp_Stub extends
         java.rmi.server.RemoteStub implements
         com.atomikos.icatch.jta.UserTransactionServer
 {
 
-    private static final java.rmi.server.Operation[] operations = {
+    
+	private static final java.rmi.server.Operation[] operations = {
             new java.rmi.server.Operation ( "java.lang.String begin(int)" ),
             new java.rmi.server.Operation ( "void commit(java.lang.String)" ),
             new java.rmi.server.Operation ( "int getStatus(java.lang.String)" ),

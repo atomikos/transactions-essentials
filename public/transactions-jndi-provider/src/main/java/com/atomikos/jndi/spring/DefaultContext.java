@@ -2,9 +2,11 @@ package com.atomikos.jndi.spring;
 
 import java.util.Hashtable;
 
+import javax.naming.Binding;
 import javax.naming.CompositeName;
 import javax.naming.Context;
 import javax.naming.Name;
+import javax.naming.NameClassPair;
 import javax.naming.NameNotFoundException;
 import javax.naming.NameParser;
 import javax.naming.NamingEnumeration;
@@ -99,12 +101,12 @@ public class DefaultContext implements Context {
 	}
 
 	@Override
-	public NamingEnumeration list(String name) throws NamingException {
+	public NamingEnumeration<NameClassPair> list(String name) throws NamingException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public NamingEnumeration listBindings(String name) throws NamingException {
+	public NamingEnumeration<Binding> listBindings(String name) throws NamingException {
 		throw new UnsupportedOperationException();
 	}
 
@@ -114,12 +116,12 @@ public class DefaultContext implements Context {
 	}
 
 	@Override
-	public NamingEnumeration list(Name name) throws NamingException {
+	public NamingEnumeration<NameClassPair> list(Name name) throws NamingException {
 		return list(name.toString());
 	}
 
 	@Override
-	public NamingEnumeration listBindings(Name name) throws NamingException {
+	public NamingEnumeration<Binding> listBindings(Name name) throws NamingException {
 		return listBindings(name.toString());
 	}
 

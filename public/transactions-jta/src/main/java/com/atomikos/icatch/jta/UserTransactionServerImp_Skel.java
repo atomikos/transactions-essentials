@@ -26,6 +26,7 @@
 package com.atomikos.icatch.jta;
 
 
+@SuppressWarnings("deprecation")
 public final class UserTransactionServerImp_Skel implements
         java.rmi.server.Skeleton
 {
