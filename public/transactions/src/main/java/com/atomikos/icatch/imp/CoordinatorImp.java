@@ -127,8 +127,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     }
 
 	private void initFsm(TxState initialState) {
-		fsm_ = new FSMImp ( this, new TransactionTransitionTable (),
-                initialState );
+		fsm_ = new FSMImp ( this, initialState );
         fsm_.addFSMPreEnterListener ( this, TxState.TERMINATED );
         fsm_.addFSMPreEnterListener ( this, TxState.HEUR_COMMITTED );
         fsm_.addFSMPreEnterListener ( this, TxState.HEUR_ABORTED );

@@ -3,7 +3,6 @@ package com.atomikos.icatch.provider;
 import java.net.UnknownHostException;
 import java.util.Enumeration;
 import java.util.Properties;
-import java.util.Set;
 
 public final class ConfigProperties {
 

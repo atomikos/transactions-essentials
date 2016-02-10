@@ -106,8 +106,8 @@ public class UserTransactionServerImp implements UserTransactionServer
      */
     private Context getInitialContext () throws NamingException
     {
-        Hashtable env = new Hashtable ();
-        Enumeration enumm = properties_.propertyNames ();
+        Hashtable<String,String> env = new Hashtable<String,String> ();
+        Enumeration<?> enumm = properties_.propertyNames ();
         while ( enumm.hasMoreElements () ) {
             String name = (String) enumm.nextElement ();
             String value = properties_.getProperty ( name );
