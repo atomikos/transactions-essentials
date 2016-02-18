@@ -50,8 +50,9 @@ import com.atomikos.util.SerializableObjectFactory;
 public class UserTransactionImp implements UserTransaction, Serializable,
         Referenceable
 {
-
-    private transient TransactionManager txmgr_;
+	private static final long serialVersionUID = -865418426269785202L;
+	
+	private transient TransactionManager txmgr_;
 
     /**
      * No-argument constructor.

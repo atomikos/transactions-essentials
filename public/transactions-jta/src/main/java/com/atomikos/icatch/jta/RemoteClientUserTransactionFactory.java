@@ -41,9 +41,6 @@ import javax.naming.spi.ObjectFactory;
 public class RemoteClientUserTransactionFactory implements ObjectFactory
 {
 
-    private String url_;
-
-    // the RMI url of the server
 
     public RemoteClientUserTransactionFactory ()
     {

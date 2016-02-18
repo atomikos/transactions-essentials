@@ -48,18 +48,12 @@ public class JmxTransactionalResource implements JmxTransactionalResourceMBean,
 
     private XAResourceConfig config;
 
-    private String localName;
-
-    // the locally unique name property of the corresponding resource
-    // needed because the full name may have unacceptable format
-
     public JmxTransactionalResource ( XATransactionalResource resource ,
-            XAResourceConfig config , String localName )
+            XAResourceConfig config )
     {
         super ();
         this.resource = resource;
         this.config = config;
-        this.localName = localName;
         setUseWeakCompare ( config.usesWeakCompare () );
         setAcceptAllXAResources ( config.acceptsAllXAResources () );
 

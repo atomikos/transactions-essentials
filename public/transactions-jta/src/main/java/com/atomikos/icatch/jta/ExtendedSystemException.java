@@ -33,6 +33,8 @@ import javax.transaction.SystemException;
 
 public class ExtendedSystemException extends SystemException {
 
+	private static final long serialVersionUID = 1475357523769839371L;
+
 	public ExtendedSystemException(String msg, Throwable cause) {
 		super(msg);
 		initCause(cause);

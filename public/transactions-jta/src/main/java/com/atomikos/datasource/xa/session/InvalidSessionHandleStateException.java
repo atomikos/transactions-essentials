@@ -42,6 +42,9 @@ public class InvalidSessionHandleStateException
 extends Exception
 {
 
+	private static final long serialVersionUID = 2838873552114439968L;
+
+
 	InvalidSessionHandleStateException ( String msg )
 	{
 		super ( msg );

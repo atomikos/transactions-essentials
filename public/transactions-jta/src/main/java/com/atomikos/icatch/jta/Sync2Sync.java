@@ -33,6 +33,9 @@ import com.atomikos.logging.LoggerFactory;
 
 class Sync2Sync implements com.atomikos.icatch.Synchronization
 {
+
+	private static final long serialVersionUID = 2217827831174006366L;
+
 	private static final Logger LOGGER = LoggerFactory.createLogger(Sync2Sync.class);
 
     private javax.transaction.Synchronization sync;

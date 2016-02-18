@@ -189,18 +189,13 @@ public class XAResourceTransaction implements ResourceTransaction, Participant {
 		return gtrid + ":" + bqual;
 	}
 
-	private void switchToHeuristicState(String opCode, TxState state,
-			XAException cause) {
-		String errorMsg = interpretErrorCode(this.resourcename, opCode,
-				this.xid, cause.errorCode);
-		setState(state);
-	}
+	
 
 	protected void testOrRefreshXAResourceFor2PC() throws XAException {
 		try {
 
 			// fix for case 31209: refresh entire XAConnection on heur hazard
-			if (this.state.equals(TxState.HEUR_HAZARD))
+			if (this.state == TxState.HEUR_HAZARD)
 				forceRefreshXAConnection();
 			else if (this.xaresource != null) { // null if connection failure
 				assertConnectionIsStillAlive(); 
@@ -520,16 +515,13 @@ public class XAResourceTransaction implements ResourceTransaction, Participant {
 				LOGGER.logWarning(msg, xaerr);
 				switch (xaerr.errorCode) {
 				case XAException.XA_HEURHAZ:
-					switchToHeuristicState("rollback", TxState.HEUR_HAZARD,
-							xaerr);
+					setState(TxState.HEUR_HAZARD);
 					throw new HeurHazardException();
 				case XAException.XA_HEURMIX:
-					switchToHeuristicState("rollback", TxState.HEUR_MIXED,
-							xaerr);
+					setState(TxState.HEUR_MIXED);
 					throw new HeurMixedException();
 				case XAException.XA_HEURCOM:
-					switchToHeuristicState("rollback", TxState.HEUR_COMMITTED,
-							xaerr);
+					setState(TxState.HEUR_COMMITTED);
 					throw new HeurCommitException();
 				case XAException.XA_HEURRB:
 					forget();
@@ -544,8 +536,7 @@ public class XAResourceTransaction implements ResourceTransaction, Participant {
 					break;
 				default:
 					// fix for bug 31209
-					switchToHeuristicState("rollback", TxState.HEUR_HAZARD,
-							xaerr);
+					setState(TxState.HEUR_HAZARD);
 					throw new SysException(msg, xaerr);
 				}
 			}
@@ -624,17 +615,16 @@ public class XAResourceTransaction implements ResourceTransaction, Participant {
 			} else {
 				switch (xaerr.errorCode) {
 				case XAException.XA_HEURHAZ:
-					switchToHeuristicState("commit", TxState.HEUR_HAZARD, xaerr);
+					setState(TxState.HEUR_HAZARD);
 					throw new HeurHazardException();
 				case XAException.XA_HEURMIX:
-					switchToHeuristicState("commit", TxState.HEUR_MIXED, xaerr);
+					setState(TxState.HEUR_MIXED);
 					throw new HeurMixedException();
 				case XAException.XA_HEURCOM:
 					forget();
 					break;
 				case XAException.XA_HEURRB:
-					switchToHeuristicState("commit", TxState.HEUR_ABORTED,
-							xaerr);
+					setState(TxState.HEUR_ABORTED);
 					throw new HeurRollbackException();
 				case XAException.XAER_NOTA:
 					if (!onePhase) {
@@ -645,7 +635,7 @@ public class XAResourceTransaction implements ResourceTransaction, Participant {
 					}
 				default:
 					// fix for bug 31209
-					switchToHeuristicState("commit", TxState.HEUR_HAZARD, xaerr);
+					setState(TxState.HEUR_HAZARD);
 					throw new SysException(msg, xaerr);
 				}
 			}

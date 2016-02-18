@@ -38,4 +38,6 @@ class UnexpectedTransactionContextException
 extends Exception
 {
 
+	private static final long serialVersionUID = -1180906964991835993L;
+
 }

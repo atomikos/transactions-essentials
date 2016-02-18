@@ -366,9 +366,8 @@ public class TransactionManagerImp implements TransactionManager,
 
 	private void suspendUnderlyingCompositeTransaction()
 			throws ExtendedSystemException {
-		CompositeTransaction ct = null;
         try {
-            ct = compositeTransactionManager.suspend();
+            compositeTransactionManager.suspend();
         } catch ( SysException se ) {
         	String msg = "Unexpected error while suspending the existing transaction for the current thread";
         	LOGGER.logWarning( msg , se );
