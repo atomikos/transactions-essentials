@@ -35,7 +35,7 @@ import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 
 class AtomikosJmsMessageProducerProxy extends ConsumerProducerSupport implements
-		HeuristicMessageProducer {
+		MessageProducer {
 	private static final Logger LOGGER = LoggerFactory.createLogger(AtomikosJmsMessageProducerProxy.class);
 	
 	private MessageProducer delegate;
@@ -45,38 +45,11 @@ class AtomikosJmsMessageProducerProxy extends ConsumerProducerSupport implements
 		super ( state );
 		this.delegate = delegate;
 	}
-
-	public void send ( Message msg, String heuristicMessage ) throws JMSException {
-		
-		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": send ( message , heuristicMessage )..." );
+	
+	public void send ( Message msg ) throws JMSException {
+		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": send ( message )..." );
 		enlist ( );
 		delegate.send ( msg );
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": send done." );
-	}
-
-	public void send ( Destination dest, Message msg, String heuristicMessage)
-			throws JMSException {
-		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": send ( destination , message , heuristicMessage )..." );
-		enlist ( );
-		delegate.send ( dest , msg );
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": send done." );
-	}
-
-	public void send ( Message msg, int deliveryMode, int priority,
-			long timeToLive, String heuristicMessage ) throws JMSException {
-		
-		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": send ( message , deliveryMode , priority , timeToLive , heuristicMessage )..." );
-		enlist ( );
-		delegate.send (  msg , deliveryMode , priority , timeToLive );
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": send done." );
-	}
-
-	public void send ( Destination dest , Message msg, int deliveryMode,
-			int priority, long timeToLive, String heuristicMessage ) 
-			throws JMSException {
-		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": send ( destination , message , deliveryMode , priority , timeToLive , heuristicMessage )..." );
-		enlist ( );
-		delegate.send (  dest , msg , deliveryMode , priority , timeToLive );
 		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": send done." );
 	}
 
@@ -128,30 +101,28 @@ class AtomikosJmsMessageProducerProxy extends ConsumerProducerSupport implements
 		return ret;
 	}
 
-	public void send ( Message msg ) throws JMSException {
-		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": send ( message )..." );
-		send ( msg , null );
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": send done." );
 
-	}
 
 	public void send(Destination dest , Message msg ) throws JMSException {
 		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": send ( destination , message )..." );
-		send ( dest , msg , null );
+		enlist ( );
+		delegate.send ( dest , msg );
 		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": send done." );
 	}
 
-	public void send(Message msg , int deliveryMode , int pty , long ttl )
+	public void send(Message msg , int deliveryMode , int priority , long timeToLive )
 			throws JMSException {
 		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": send ( message , deliveryMode , priority , timeToLive )..." );
-		send ( msg , deliveryMode , pty , ttl, null );
+		enlist ( );
+		delegate.send (  msg , deliveryMode , priority , timeToLive );
 		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": send done." );
 	}
 
-	public void send ( Destination dest , Message msg , int mode , int pty ,
-			long ttl ) throws JMSException {
+	public void send ( Destination dest , Message msg , int deliveryMode , int priority ,
+			long timeToLive ) throws JMSException {
 		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": send ( destination , message , deliveryMode , priority , timeToLive )..." );
-		send ( dest , msg , mode , pty , ttl, null );
+		enlist ( );
+		delegate.send (  dest , msg , deliveryMode , priority , timeToLive );
 		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": send done." );
 	}
 

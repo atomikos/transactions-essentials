@@ -35,7 +35,7 @@ import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 
 class AtomikosJmsMessageConsumerProxy extends ConsumerProducerSupport implements
-		HeuristicMessageConsumer {
+		MessageConsumer {
 	private static final Logger LOGGER = LoggerFactory.createLogger(AtomikosJmsMessageConsumerProxy.class);
 	
 	
