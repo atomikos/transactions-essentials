@@ -27,14 +27,15 @@ package com.atomikos.jms.extra;
 
 import java.util.Iterator;
 import java.util.Map;
-
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.MapMessage;
 import javax.jms.Session;
 
+@SuppressWarnings("rawtypes")
 class SendMapMessageCallback extends AbstractSendMessageCallback {
 
+	
 	private Map content;
 
 	protected SendMapMessageCallback ( Map content , Destination destination,

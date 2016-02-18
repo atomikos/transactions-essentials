@@ -53,7 +53,8 @@ public class RemoteClientUserTransactionFactory implements ObjectFactory
      * @see javax.naming.spi.ObjectFactory
      */
 
-    public Object getObjectInstance ( Object obj , Name name , Context nameCtx ,
+    @SuppressWarnings("rawtypes")
+	public Object getObjectInstance ( Object obj , Name name , Context nameCtx ,
             Hashtable environment ) throws Exception
     {
         RemoteClientUserTransaction ret = null;

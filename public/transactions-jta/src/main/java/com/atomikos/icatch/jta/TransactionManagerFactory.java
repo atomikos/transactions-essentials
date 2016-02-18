@@ -59,7 +59,8 @@ public class TransactionManagerFactory implements ObjectFactory
      *      javax.naming.Name, javax.naming.Context, java.util.Hashtable)
      */
 
-    public Object getObjectInstance ( Object obj , Name reg , Context arg2 ,
+    @SuppressWarnings("rawtypes")
+	public Object getObjectInstance ( Object obj , Name reg , Context arg2 ,
             Hashtable arg3 ) throws Exception
     {
         Object ret = null;

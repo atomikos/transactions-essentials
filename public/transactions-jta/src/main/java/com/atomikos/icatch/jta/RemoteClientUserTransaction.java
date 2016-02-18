@@ -84,7 +84,7 @@ public final class RemoteClientUserTransaction implements UserTransaction,
     private transient TransactionManager txmgr;
     // not null if used in server VM
 
-    private transient Hashtable threadToTidMap;
+    private transient Hashtable<Thread,String> threadToTidMap;
 
     private int timeout;
 
@@ -107,7 +107,7 @@ public final class RemoteClientUserTransaction implements UserTransaction,
 
     public RemoteClientUserTransaction ()
     {
-        this.threadToTidMap = new Hashtable ();
+        this.threadToTidMap = new Hashtable<Thread,String>();
         this.timeout = DEFAULT_TIMEOUT;
         this.imported = false;
     }
@@ -140,7 +140,7 @@ public final class RemoteClientUserTransaction implements UserTransaction,
         this.providerUrl = providerUrl;
 
         this.userTransactionServerLookupName = name;
-        this.threadToTidMap = new Hashtable ();
+        this.threadToTidMap = new Hashtable<Thread,String>();
         this.timeout = DEFAULT_TIMEOUT;
         this.imported = false;
     }

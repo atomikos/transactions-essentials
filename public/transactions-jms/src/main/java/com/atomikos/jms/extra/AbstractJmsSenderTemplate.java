@@ -436,6 +436,7 @@ public abstract class AbstractJmsSenderTemplate
 	 *
 	 * @throws JMSException
 	 */
+	@SuppressWarnings("rawtypes")
 	public void sendMapMessage(Map content) throws JMSException {
 		retrieveDestinationIfNecessary();
 		retrieveReplyToDestinationIfNecessary();

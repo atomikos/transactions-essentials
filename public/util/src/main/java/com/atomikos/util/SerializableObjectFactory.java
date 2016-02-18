@@ -110,7 +110,7 @@ public class SerializableObjectFactory implements ObjectFactory
         		byte[] bytes = ( byte[] ) ra.getContent();
         		ByteArrayInputStream bin = new ByteArrayInputStream ( bytes );
         		ObjectInputStream in = new ObjectInputStream ( bin ) {
-					protected Class resolveClass ( ObjectStreamClass desc )
+					protected Class<?> resolveClass ( ObjectStreamClass desc )
 						throws IOException, ClassNotFoundException
 					{
 						try

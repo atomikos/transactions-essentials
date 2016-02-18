@@ -54,6 +54,7 @@ public class IntraVmObjectFactory implements ObjectFactory
 	private static SerializableObjectFactory serializableObjectFactory = new SerializableObjectFactory();
 
 	//synchronized static to avoid race conditions between concurrent retrievals
+	@SuppressWarnings("rawtypes")
 	private static synchronized Object retrieveObjectInstance (
 			Object obj, Name name, Context nameCtx, Hashtable environment)
 			throws Exception
@@ -106,6 +107,7 @@ public class IntraVmObjectFactory implements ObjectFactory
 	}
 
 
+	@SuppressWarnings("rawtypes")
 	public Object getObjectInstance(Object obj, Name name, Context nameCtx, Hashtable environment) throws Exception
 	{
 		return retrieveObjectInstance(obj, name, nameCtx, environment);

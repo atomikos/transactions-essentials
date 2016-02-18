@@ -28,7 +28,7 @@ package com.atomikos.icatch.jta.hibernate3;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Iterator;
-import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 
 import org.hibernate.HibernateException;
@@ -123,9 +123,9 @@ public class AtomikosConnectionProvider implements ConnectionProvider {
 	private Properties filterOutHibernateProperties(Properties props) {
 		Properties atomikosProperties = new Properties();
 
-		Iterator it = props.entrySet().iterator();
+		Iterator<Entry<Object,Object>> it = props.entrySet().iterator();
 		while (it.hasNext()) {
-			Map.Entry entry = (Map.Entry) it.next();
+			Entry<Object,Object> entry = it.next();
 			String key = (String) entry.getKey();
 			Object value =  entry.getValue();
 
