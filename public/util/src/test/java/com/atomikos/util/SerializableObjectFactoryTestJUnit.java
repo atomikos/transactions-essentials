@@ -39,7 +39,7 @@ public class SerializableObjectFactoryTestJUnit extends TestCase {
 		if (bean.getTransientValue() == TRANSIENT_VALUE)
 			fail("getTransientValue failure");
 	}
-
+	@SuppressWarnings("serial")
 	static class TestBean implements Serializable {
 		private String name;
 

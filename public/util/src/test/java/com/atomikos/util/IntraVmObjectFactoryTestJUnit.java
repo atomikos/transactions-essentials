@@ -55,7 +55,7 @@ public class IntraVmObjectFactoryTestJUnit extends TestCase {
 		//no existing instance registered -> init should have happened
 		assertTrue ( result.wasInitCalled() );
 	}
-	
+	@SuppressWarnings("serial")
 	static class TestSerializableLocalResource implements Serializable {
 
 		private boolean initCalled;
