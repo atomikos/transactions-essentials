@@ -49,7 +49,6 @@ public class CompositeTransactionManagerImp implements CompositeTransactionManag
         SubTxAwareParticipant
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(CompositeTransactionManagerImp.class);
-	private static final long serialVersionUID = -552994279460833505L;
 	
 	private Map<Thread, Stack<CompositeTransaction>> threadtotxmap_ = null;
     private Map<CompositeTransaction, Thread> txtothreadmap_ = null;

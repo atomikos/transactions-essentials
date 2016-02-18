@@ -43,8 +43,6 @@ public class ResumePreviousTransactionSubTxAwareParticipant implements
         SubTxAwareParticipant
 {
 
-	private static final long serialVersionUID = 5686929544961993731L;
-
 	private static final Logger LOGGER = LoggerFactory.createLogger(ResumePreviousTransactionSubTxAwareParticipant.class);
 
     private CompositeTransaction previous;

@@ -25,6 +25,7 @@
 
 package com.atomikos.icatch.jta;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,7 +54,7 @@ import com.atomikos.logging.LoggerFactory;
  */
 
 public class TransactionManagerImp implements TransactionManager,
-        SubTxAwareParticipant, Referenceable, UserTransaction
+        SubTxAwareParticipant, Referenceable, UserTransaction, Serializable
 
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(TransactionManagerImp.class);

@@ -33,8 +33,7 @@ package com.atomikos.icatch;
  * nested transaction tree. 
  */
 
-public interface SubTxAwareParticipant 
-extends java.io.Serializable
+public interface SubTxAwareParticipant
 {
     /**
      * Notification of termination.
