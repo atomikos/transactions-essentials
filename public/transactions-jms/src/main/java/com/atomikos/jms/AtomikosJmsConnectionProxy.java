@@ -27,7 +27,6 @@ package com.atomikos.jms;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -57,6 +56,7 @@ implements SessionHandleStateChangeListener
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(AtomikosJmsConnectionProxy.class);
 	
+	private static Class<?>[] MINIMUM_SET_OF_INTERFACES = {Reapable.class, DynamicProxy.class,javax.jms.Connection.class };
 	private static final String CREATE_SESSION_METHOD = "createSession";
 	
 	private static final String CLOSE_METHOD = "close";
@@ -301,29 +301,24 @@ implements SessionHandleStateChangeListener
 		sessions.clear ();
 	}
 	
+	
 	public static Reapable newInstance ( boolean ignoreSessionTransactedFlag, XAConnection c, XATransactionalResource jmsTransactionalResource , SessionHandleStateChangeListener owner , ConnectionPoolProperties props ) 
 	{
 		 Reapable ret = null;
 		 
         AtomikosJmsConnectionProxy proxy = new AtomikosJmsConnectionProxy ( ignoreSessionTransactedFlag, c , jmsTransactionalResource , owner , props );
-        Set<Class> interfaces = PropertyUtils.getAllImplementedInterfaces ( c.getClass() );
+        Set<Class<?>> interfaces = PropertyUtils.getAllImplementedInterfaces ( c.getClass() );
         interfaces.add ( Reapable.class );
         //see case 24532
         interfaces.add ( DynamicProxy.class );
-        Class[] interfaceClasses = ( Class[] ) interfaces.toArray ( new Class[0] );
-        
-        Set<Class> minimumSetOfInterfaces = new HashSet<Class>();
-		minimumSetOfInterfaces.add ( Reapable.class );
-		minimumSetOfInterfaces.add ( DynamicProxy.class );
-		minimumSetOfInterfaces.add ( javax.jms.Connection.class );
-        Class[] minimumSetOfInterfaceClasses = ( Class[] ) minimumSetOfInterfaces.toArray( new Class[0] );
+        Class<?>[] interfaceClasses = ( Class[] ) interfaces.toArray ( new Class[0] );
         
         List<ClassLoader> classLoaders = new ArrayList<ClassLoader>();
 		classLoaders.add ( Thread.currentThread().getContextClassLoader() );
 		classLoaders.add ( c.getClass().getClassLoader() );
 		classLoaders.add ( AtomikosJmsConnectionProxy.class.getClassLoader() );
         
-		ret = ( Reapable ) ClassLoadingHelper.newProxyInstance ( classLoaders , minimumSetOfInterfaceClasses , interfaceClasses , proxy );
+		ret = ( Reapable ) ClassLoadingHelper.newProxyInstance ( classLoaders , MINIMUM_SET_OF_INTERFACES , interfaceClasses , proxy );
         
         return ret;
     }

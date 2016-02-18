@@ -31,7 +31,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -86,7 +85,8 @@ implements JtaAwareNonXaConnection
 			"wait"
 			});
 
-
+	private static Class<?>[] MINIMUM_SET_OF_INTERFACES = {Reapable.class, DynamicProxy.class, java.sql.Connection.class };
+	
 	private int useCount;
 
 	private CompositeTransaction transaction;
@@ -107,31 +107,24 @@ implements JtaAwareNonXaConnection
 
 	private String resourceName;
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	
+	
 	static Object newInstance ( AtomikosNonXAPooledConnection pooledConnection , String resourceName )
-
 	{
 		Object ret = null;
 		Object obj = pooledConnection.getConnection();
-		Set<Class> interfaces = PropertyUtils.getAllImplementedInterfaces ( obj.getClass() );
+		Set<Class<?>> interfaces = PropertyUtils.getAllImplementedInterfaces ( obj.getClass() );
 		interfaces.add ( Reapable.class );
 		//see case 24532
 		interfaces.add ( DynamicProxy.class );
-		Class[] interfaceClasses = ( Class[] ) interfaces.toArray ( new Class[0] );
-
-		Set<Class> minimumSetOfInterfaces = new HashSet<Class>();
-		minimumSetOfInterfaces.add ( Reapable.class );
-		minimumSetOfInterfaces.add ( DynamicProxy.class );
-		minimumSetOfInterfaces.add ( java.sql.Connection.class );
-        Class[] minimumSetOfInterfaceClasses = ( Class[] ) minimumSetOfInterfaces.toArray( new Class[0] );
-
+		Class<?>[] interfaceClasses = ( Class[] ) interfaces.toArray ( new Class[0] );
 
 		List<ClassLoader> classLoaders = new ArrayList<ClassLoader>();
 		classLoaders.add ( Thread.currentThread().getContextClassLoader() );
 		classLoaders.add ( obj.getClass().getClassLoader() );
 		classLoaders.add ( AtomikosThreadLocalConnection.class.getClassLoader() );
 
-		ret = ClassLoadingHelper.newProxyInstance ( classLoaders , minimumSetOfInterfaceClasses , interfaceClasses , new AtomikosThreadLocalConnection ( pooledConnection ) );
+		ret = ClassLoadingHelper.newProxyInstance ( classLoaders , MINIMUM_SET_OF_INTERFACES , interfaceClasses , new AtomikosThreadLocalConnection ( pooledConnection ) );
 
 		DynamicProxy dproxy = (DynamicProxy) ret;
 		AtomikosThreadLocalConnection c = (AtomikosThreadLocalConnection) dproxy.getInvocationHandler();

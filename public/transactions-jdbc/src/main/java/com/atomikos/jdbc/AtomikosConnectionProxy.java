@@ -31,7 +31,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -58,6 +57,8 @@ class AtomikosConnectionProxy extends AbstractConnectionProxy
 	private final static List<String> CLOSE_METHODS = Arrays.asList(new String[] {"close"});
 	private final static List<String> XA_INCOMPATIBLE_METHODS = Arrays.asList(new String[] {"commit", "rollback", "setSavepoint", "releaseSavepoint"});
 
+	private static Class<?>[] MINIMUM_SET_OF_INTERFACES = {Reapable.class, DynamicProxy.class,java.sql.Connection.class };
+	
 	private final Connection delegate;
 	private SessionHandleState sessionHandleState;
 	private boolean closed = false;
@@ -87,7 +88,6 @@ class AtomikosConnectionProxy extends AbstractConnectionProxy
 	public Object invoke ( Object proxy, Method method, Object[] args ) throws SQLException
 	{
 		final String methodName = method.getName();
-		boolean jtaTxFound = false;
 
 		//see case 24532
 		if ( methodName.equals ( "getInvocationHandler" ) ) return this;
@@ -136,7 +136,7 @@ class AtomikosConnectionProxy extends AbstractConnectionProxy
 		// check for enlistment
         if (ENLISTMENT_METHODS.contains(methodName)) {
         	try {
-        		jtaTxFound = enlist();
+        		enlist();
         	} catch ( Exception e ) {
         		//fix for bug 25678
         		sessionHandleState.notifySessionErrorOccurred();
@@ -249,30 +249,25 @@ class AtomikosConnectionProxy extends AbstractConnectionProxy
 		CompositeTransaction ct = compositeTransactionManager.getCompositeTransaction();
 		return sessionHandleState.isActiveInTransaction ( ct );
 	}
+	
+	
 
 	public static Reapable newInstance ( Connection c , SessionHandleState sessionHandleState )
 	{
 		Reapable ret = null;
         AtomikosConnectionProxy proxy = new AtomikosConnectionProxy(c, sessionHandleState );
-        Set<Class> interfaces = PropertyUtils.getAllImplementedInterfaces ( c.getClass() );
+        Set<Class<?>> interfaces = PropertyUtils.getAllImplementedInterfaces ( c.getClass() );
         interfaces.add ( Reapable.class );
         //see case 24532
         interfaces.add ( DynamicProxy.class );
-        Class[] interfaceClasses = ( Class[] ) interfaces.toArray ( new Class[0] );
-
-		Set<Class> minimumSetOfInterfaces = new HashSet<Class>();
-		minimumSetOfInterfaces.add ( Reapable.class );
-		minimumSetOfInterfaces.add ( DynamicProxy.class );
-		minimumSetOfInterfaces.add ( java.sql.Connection.class );
-        Class[] minimumSetOfInterfaceClasses = ( Class[] ) minimumSetOfInterfaces.toArray( new Class[0] );
+        Class<?>[] interfaceClasses = ( Class[] ) interfaces.toArray ( new Class[0] );
 
         List<ClassLoader> classLoaders = new ArrayList<ClassLoader>();
 		classLoaders.add ( Thread.currentThread().getContextClassLoader() );
 		classLoaders.add ( c.getClass().getClassLoader() );
 		classLoaders.add ( AtomikosConnectionProxy.class.getClassLoader() );
 
-
-		ret = ( Reapable ) ClassLoadingHelper.newProxyInstance ( classLoaders , minimumSetOfInterfaceClasses , interfaceClasses , proxy );
+		ret = ( Reapable ) ClassLoadingHelper.newProxyInstance ( classLoaders , MINIMUM_SET_OF_INTERFACES , interfaceClasses , proxy );
 
         return ret;
     }

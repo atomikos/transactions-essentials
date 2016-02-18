@@ -51,7 +51,7 @@ public class PropertyUtils
 	 * Gets all implemented interfaces of a class. 
 	 */
 	
-	public static Set getAllImplementedInterfaces ( Class clazz ) 
+	public static Set<Class<?>> getAllImplementedInterfaces ( Class clazz ) 
 	{
 		Set ret = null;
 		
