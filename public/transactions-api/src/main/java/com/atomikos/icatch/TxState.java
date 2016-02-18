@@ -36,15 +36,10 @@ public enum TxState {
 	ABORTED 		(false, false),
 	ABANDONED		(false, false),
 	
-	
-	//Recoverable States
 	TERMINATED 		(false, true),
-	HEUR_COMMITTED 	("HEURISTIC COMMIT", 	true, 	false, TERMINATED),
-	
-	/**
-	 * @deprecated TODO replace by COMMITING or ABORTING where relevant
-	 */
 	HEUR_HAZARD 	("HEURISTIC HAZARD", 	false, 	false, TERMINATED),
+	//Recoverable States
+	HEUR_COMMITTED 	("HEURISTIC COMMIT", 	true, 	false, TERMINATED),
 	HEUR_ABORTED 	("HEURISTIC ROLLBACK", 	true, 	false, TERMINATED),
 	HEUR_MIXED 		("HEURISTIC MIXED", 	true, 	false, TERMINATED),	
 	COMMITTING 		(						true, 	false, HEUR_ABORTED, HEUR_COMMITTED, HEUR_HAZARD, HEUR_MIXED, TERMINATED),
