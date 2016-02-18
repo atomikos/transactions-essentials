@@ -42,15 +42,25 @@ public enum TaskManager {
 	
 	private static final Logger LOGGER = LoggerFactory.createLogger(TaskManager.class);
 	
-	private ThreadPoolExecutor executor = new ThreadPoolExecutor(0, Integer.MAX_VALUE, new Long(60L),
-			TimeUnit.SECONDS, new SynchronousQueue<Runnable>(), new AtomikosThreadFactory());
+	private ThreadPoolExecutor executor;
+	
+
+	private void init() {
+		SynchronousQueue<Runnable> synchronousQueue = new SynchronousQueue<Runnable>();
+		executor = new ThreadPoolExecutor(0, Integer.MAX_VALUE, new Long(60L),
+				TimeUnit.SECONDS, synchronousQueue, new AtomikosThreadFactory());
+
+	}
 
 	/**
 	 * Notification of shutdown to close all pooled threads.
 	 * 
 	 */
 	public synchronized void shutdown() {
+		if (executor != null) {
 			executor.shutdown();
+			executor = null;
+		}
 	}
 
 	/**
@@ -59,6 +69,10 @@ public enum TaskManager {
 	 * @param task
 	 */
 	public void executeTask(Runnable task) {
+		if (executor == null) {
+			// happens on restart of TS within same VM
+			init();
+		}
 		executor.execute(task);
 	}
 
