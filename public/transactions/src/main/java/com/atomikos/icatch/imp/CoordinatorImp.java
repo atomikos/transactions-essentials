@@ -310,7 +310,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 
    
     private void submitTimer(AlarmTimer timer) {
-    		TaskManager.getInstance().executeTask (timer);
+    		TaskManager.SINGLETON.executeTask (timer);
 	}
 
 	protected long getTimeOut ()

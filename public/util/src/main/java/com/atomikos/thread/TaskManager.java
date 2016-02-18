@@ -37,47 +37,20 @@ import com.atomikos.logging.LoggerFactory;
  * Scheduling logic for tasks/threads.
  */
 
-public class TaskManager {
+public enum TaskManager {
+	SINGLETON;
+	
 	private static final Logger LOGGER = LoggerFactory.createLogger(TaskManager.class);
-
-	private static TaskManager singleton;
-
-	private ThreadPoolExecutor executor;
-
-	/**
-	 * Gets the singleton instance.
-	 * 
-	 * @return
-	 */
-	public static synchronized final TaskManager getInstance() {
-		if (singleton == null) {
-			if (LOGGER.isDebugEnabled())
-				LOGGER.logDebug("TaskManager: initializing...");
-			singleton = new TaskManager();
-		}
-		return singleton;
-	}
-
-	protected TaskManager() {
-		init();
-	}
-
-	private void init() {
-		SynchronousQueue<Runnable> synchronousQueue = new SynchronousQueue<Runnable>();
-		executor = new ThreadPoolExecutor(0, Integer.MAX_VALUE, new Long(60L),
-				TimeUnit.SECONDS, synchronousQueue, new AtomikosThreadFactory());
-
-	}
+	
+	private ThreadPoolExecutor executor = new ThreadPoolExecutor(0, Integer.MAX_VALUE, new Long(60L),
+			TimeUnit.SECONDS, new SynchronousQueue<Runnable>(), new AtomikosThreadFactory());
 
 	/**
 	 * Notification of shutdown to close all pooled threads.
 	 * 
 	 */
 	public synchronized void shutdown() {
-		if (executor != null) {
 			executor.shutdown();
-			executor = null;
-		}
 	}
 
 	/**
@@ -86,10 +59,6 @@ public class TaskManager {
 	 * @param task
 	 */
 	public void executeTask(Runnable task) {
-		if (executor == null) {
-			// happens on restart of TS within same VM
-			init();
-		}
 		executor.execute(task);
 	}
 

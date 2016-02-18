@@ -491,7 +491,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
 			
 		});
         
-        TaskManager.getInstance().executeTask(recoveryTimer);
+        TaskManager.SINGLETON.executeTask(recoveryTimer);
         
         initialized_ = true;
        
@@ -745,7 +745,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
     }
 
 	private void shutdownSystemExecutors() {
-		TaskManager exec = TaskManager.getInstance();
+		TaskManager exec = TaskManager.SINGLETON;
         if ( exec != null ) {
         		exec.shutdown();
         }

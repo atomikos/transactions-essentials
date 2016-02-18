@@ -93,7 +93,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 				removeIdleConnectionsIfMinPoolSizeExceeded();
 			}
 		});
-		TaskManager.getInstance().executeTask ( maintenanceTimer );
+		TaskManager.SINGLETON.executeTask ( maintenanceTimer );
 	}
 
 	private synchronized void addConnectionsIfMinPoolSizeNotReached() {

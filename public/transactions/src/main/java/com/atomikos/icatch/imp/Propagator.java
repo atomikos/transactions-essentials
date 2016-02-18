@@ -53,7 +53,7 @@ class Propagator
     {
     		PropagatorThread t = new PropagatorThread ( msg );
     		if ( threaded_ ) {
-    			TaskManager.getInstance().executeTask ( t );
+    			TaskManager.SINGLETON.executeTask ( t );
     		} else {
     			t.run();
     		}
