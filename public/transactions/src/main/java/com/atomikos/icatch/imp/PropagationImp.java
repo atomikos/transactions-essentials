@@ -88,7 +88,7 @@ public class PropagationImp implements Propagation
      * @param timeout
      *            The timeout left for the tx.
      */
-
+    @SuppressWarnings("unchecked")
     public PropagationImp ( Stack<CompositeTransaction> lineage , boolean serial , long timeout )
     {
         serial_ = serial;

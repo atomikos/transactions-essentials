@@ -59,7 +59,7 @@ class CompositeTransactionAdaptor extends AbstractCompositeTransaction
      * @param adaptor
      *            The adaptor for replay requests.
      */
-
+    @SuppressWarnings("unchecked")
     public CompositeTransactionAdaptor ( Stack<CompositeTransaction> lineage , String tid ,
             boolean serial , RecoveryCoordinator adaptor  )
     {

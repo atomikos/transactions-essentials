@@ -340,7 +340,7 @@ public abstract class XATransactionalResource implements TransactionalResource
     /**
      * @see TransactionalResource
      */
-
+    @SuppressWarnings("unchecked")
     @Override
 	public ResourceTransaction getResourceTransaction ( CompositeTransaction ct )
             throws ResourceException, IllegalStateException

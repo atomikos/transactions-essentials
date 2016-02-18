@@ -95,7 +95,8 @@ public class SerializableObjectFactory implements ObjectFactory
      * @see javax.naming.spi.ObjectFactory#getObjectInstance(java.lang.Object, javax.naming.Name, javax.naming.Context, java.util.Hashtable)
      */
 
-    public Object getObjectInstance(
+    @SuppressWarnings("rawtypes")
+	public Object getObjectInstance(
 		Object obj, Name name,
 		Context nameCtx,
 		Hashtable environment )

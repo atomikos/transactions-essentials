@@ -104,7 +104,7 @@ public class ExtentImp implements Extent
     /**
      * @see Extent
      */
-
+    @SuppressWarnings("unchecked")
     public Stack<Participant> getParticipants ()
     {
         queried_ = true;

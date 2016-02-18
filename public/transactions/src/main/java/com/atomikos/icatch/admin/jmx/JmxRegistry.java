@@ -28,6 +28,7 @@ package com.atomikos.icatch.admin.jmx;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -41,10 +42,10 @@ import javax.management.ObjectName;
 public class JmxRegistry implements JmxRegistryMBean
 {
 
-    private static Map servers = new HashMap ();
+    private static Map<JmxRegistry,MBeanServer> servers = new HashMap<JmxRegistry,MBeanServer>();
     // key=instance that received server handle; value=server handle
 
-    public static Iterator getServers ()
+    public static Iterator<Entry<JmxRegistry,MBeanServer>> getServers ()
     {
         return servers.entrySet ().iterator ();
     }

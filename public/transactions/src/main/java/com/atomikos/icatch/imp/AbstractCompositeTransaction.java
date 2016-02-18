@@ -153,8 +153,8 @@ public abstract class AbstractCompositeTransaction implements CompositeTransacti
     /**
      * @see CompositeTransaction.
      */
-
-    public Stack<CompositeTransaction> getLineage ()
+    @SuppressWarnings("unchecked")
+	public Stack<CompositeTransaction> getLineage ()
     {
         return (Stack<CompositeTransaction>) lineage_.clone ();
     }
@@ -195,7 +195,7 @@ public abstract class AbstractCompositeTransaction implements CompositeTransacti
     /**
      * @see CompositeTransaction.
      */
-
+    @SuppressWarnings("unchecked")
     public boolean isRelatedTransaction ( CompositeTransaction ct )
     {
         Stack<CompositeTransaction> lineage = null;

@@ -575,6 +575,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
      * @param parent
      * @return
      */
+    @SuppressWarnings("unchecked")
     CompositeTransaction createSubTransaction ( CompositeTransaction parent )
     {
         CompositeTransactionImp ret = null;

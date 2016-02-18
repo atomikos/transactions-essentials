@@ -318,13 +318,10 @@ public class CompositeTransactionManagerImp implements CompositeTransactionManag
     /**
      * @see CompositeTransactionManager
      */
-
+    @SuppressWarnings("unchecked")
     public void resume ( CompositeTransaction ct )
             throws IllegalStateException, SysException
     {
-        
-
-       
         Stack<CompositeTransaction> ancestors = new Stack<CompositeTransaction>();
         Stack<CompositeTransaction> tmp = new Stack<CompositeTransaction>();
         Stack<CompositeTransaction> lineage = (Stack<CompositeTransaction>) ct.getLineage ().clone ();

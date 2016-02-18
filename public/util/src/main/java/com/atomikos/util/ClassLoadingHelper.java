@@ -65,13 +65,13 @@ public class ClassLoadingHelper {
 	 *                If any of the interfaces involved could not be loaded.
 	 */
 
-	private static Object newProxyInstance(List classLoadersToTry,
-			Class[] interfaces, InvocationHandler delegate)
+	private static Object newProxyInstance(List<ClassLoader> classLoadersToTry,
+			Class<?>[] interfaces, InvocationHandler delegate)
 			throws IllegalArgumentException {
 
 		Object ret = null;
-		ClassLoader cl = (ClassLoader) classLoadersToTry.get(0);
-		List remainingClassLoaders = classLoadersToTry.subList(1,
+		ClassLoader cl = classLoadersToTry.get(0);
+		List<ClassLoader> remainingClassLoaders = classLoadersToTry.subList(1,
 				classLoadersToTry.size());
 
 		try {
@@ -109,8 +109,8 @@ public class ClassLoadingHelper {
 	 *                If any of the interfaces involved could not be loaded.
 	 */
 
-	public static Object newProxyInstance(List classLoadersToTry,
-			Class[] minimumSetOfInterfaces, Class[] interfaces,
+	public static Object newProxyInstance(List<ClassLoader> classLoadersToTry,
+			Class<?>[] minimumSetOfInterfaces, Class<?>[] interfaces,
 			InvocationHandler delegate) throws IllegalArgumentException {
 		Object ret = null;
 		try {
@@ -164,20 +164,6 @@ public class ClassLoadingHelper {
 			ret = clazz.getResource("/" + resourceName);
 		}
 		return ret;
-	}
-
-	public static Object newInstance(String className) {
-		try {
-			Class clazz = ClassLoadingHelper.loadClass(className);
-			return clazz.newInstance();
-		} catch (ClassNotFoundException e) {
-			LOGGER.logWarning("Unable to instanciate " + className, e);
-		} catch (InstantiationException e) {
-			LOGGER.logWarning("Unable to instanciate " + className, e);
-		} catch (IllegalAccessException e) {
-			LOGGER.logWarning("Unable to instanciate " + className, e);
-		}
-		return null;
 	}
 
 }

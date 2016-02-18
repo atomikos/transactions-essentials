@@ -179,9 +179,8 @@ public final class RemoteClientUserTransaction implements UserTransaction,
         if ( this.txmgr == null ) {
 
             try {
-                Hashtable env = new Hashtable ();
-                env.put ( Context.INITIAL_CONTEXT_FACTORY,
-                        this.initialContextFactory );
+                Hashtable<String,String> env = new Hashtable<String,String> ();
+                env.put ( Context.INITIAL_CONTEXT_FACTORY,this.initialContextFactory );
                 env.put ( Context.PROVIDER_URL, this.providerUrl );
                 Context ctx = new InitialContext ( env );
                 this.txmgrServer = (UserTransactionServer) PortableRemoteObject

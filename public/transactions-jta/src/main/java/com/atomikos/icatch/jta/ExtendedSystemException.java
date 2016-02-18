@@ -25,55 +25,17 @@
 
 package com.atomikos.icatch.jta;
 
-import java.util.Enumeration;
-import java.util.Stack;
-
 import javax.transaction.SystemException;
 
 /**
- * A better system exception, containing nested errors in a stack.
+ * A better system exception, containing throwable cause.
  */
 
-public class ExtendedSystemException extends SystemException
-{
+public class ExtendedSystemException extends SystemException {
 
-    private Stack errors_;
+	public ExtendedSystemException(String msg, Throwable cause) {
+		super(msg);
+		initCause(cause);
+	}
 
-
-    public ExtendedSystemException ( String msg , Throwable cause )
-    {
-        super ( msg);
-        errors_ = new Stack();
-        errors_.add(cause);
-    }
-   
-    public ExtendedSystemException ( String msg , Stack errors )
-    {
-        super ( msg );
-        errors_ = errors;
-    }
-
-    /**
-     * Get any nested errors as a stack.
-     * @deprecated
-     *
-     * @return Stack The nested error stack, or null if none.
-     */
-
-    public Stack getErrors ()
-    {
-        return (Stack) errors_.clone ();
-    }
-
-    public void printStackTrace ()
-    {
-        super.printStackTrace ();
-        if ( errors_ != null ) {
-            Enumeration enumm = errors_.elements ();
-            while ( enumm.hasMoreElements () ) {
-                Exception e = (Exception) enumm.nextElement ();
-                e.printStackTrace ();
-            }
-        }
-    }
 }
