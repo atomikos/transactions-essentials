@@ -26,6 +26,7 @@
 package com.atomikos.icatch.imp;
 
 import com.atomikos.icatch.Participant;
+import com.atomikos.icatch.config.Configuration;
 
 /**
  * A PropagationMessage is used for propagation of 2pc communication.
@@ -38,7 +39,7 @@ abstract class PropagationMessage
      * How many times is message re-sent if comm. failure?
      */
 
-	private static final int MAX_RETRIES_ON_COMM_FAILURE = 5;
+	private static final int MAX_RETRIES_ON_COMM_FAILURE = Configuration.getConfigProperties().getOltpMaxRetries();
 
     private Participant participant_;
     private int retrycount_ = 0;

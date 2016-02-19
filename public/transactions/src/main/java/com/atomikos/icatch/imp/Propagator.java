@@ -25,6 +25,7 @@
 
 package com.atomikos.icatch.imp;
 
+import com.atomikos.icatch.config.Configuration;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 import com.atomikos.thread.TaskManager;
@@ -37,7 +38,7 @@ class Propagator
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(Propagator.class);
 	
-    static long RETRY_INTERVAL = 10000;
+    static long RETRY_INTERVAL = Configuration.getConfigProperties().getOltpRetryInterval();
 
 
     private boolean threaded_ = true;
