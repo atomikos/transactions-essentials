@@ -579,20 +579,24 @@ public class TransactionServiceImp implements TransactionServiceProvider,
     @SuppressWarnings("unchecked")
     CompositeTransaction createSubTransaction ( CompositeTransaction parent )
     {
-        CompositeTransactionImp ret = null;
-        Stack<CompositeTransaction> lineage = (Stack<CompositeTransaction>) parent.getLineage ().clone ();
-        lineage.push ( parent );
-        String tid = tidmgr_.get ();
-        CoordinatorImp ccParent = (CoordinatorImp) parent
-                .getCompositeCoordinator ();
-        // create NEW coordinator for subtx, with most of the parent settings
-        // but without orphan checks since subtxs have no orphans
-        CoordinatorImp cc = createCC ( null, tid, false ,
+    	if (Configuration.getConfigProperties().getAllowSubTransactions()) {
+    		CompositeTransactionImp ret = null;
+    		Stack<CompositeTransaction> lineage = (Stack<CompositeTransaction>) parent.getLineage ().clone ();
+    		lineage.push ( parent );
+    		String tid = tidmgr_.get ();
+    		CoordinatorImp ccParent = (CoordinatorImp) parent
+    				.getCompositeCoordinator ();
+    		// create NEW coordinator for subtx, with most of the parent settings
+    		// but without orphan checks since subtxs have no orphans
+    		CoordinatorImp cc = createCC ( null, tid, false ,
                 ccParent.prefersHeuristicCommit (), parent.getTimeout () );
-        ret = createCT ( tid, cc, lineage, parent.isSerial () );
-        ret.noLocalAncestors = false;
-        return ret;
-
+    		ret = createCT ( tid, cc, lineage, parent.isSerial () );
+    		ret.noLocalAncestors = false;
+    		return ret;
+    	} else {
+    		throw new SysException("Subtransactions not allowed - set config property com.atomikos.icatch.allow_subtransactions=true to enable");
+    	}
+    	
     }
 
     /**
