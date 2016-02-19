@@ -25,7 +25,6 @@
 
 package com.atomikos.icatch.imp;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -171,7 +170,8 @@ public class TransactionServiceImp implements TransactionServiceProvider,
             rootLatches_[i] = new Object();
         }
 
-        maxTimeout_ = maxtimeout;
+        maxTimeout_ = maxtimeout;	
+        
         tmUniqueName_ = name;
         tsListeners_ = new Vector<TransactionServicePlugin>();
         single_threaded_2pc_ = single_threaded_2pc;
@@ -324,7 +324,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
     {
         CoordinatorImp cc = null;
 
-        if ( timeout > maxTimeout_ ) {
+        if (maxTimeout_ > 0 &&  timeout > maxTimeout_ ) {
             timeout = maxTimeout_;
             //FIXED 20188
             LOGGER.logWarning ( "Attempt to create a transaction with a timeout that exceeds maximum - truncating to: " + maxTimeout_ );
