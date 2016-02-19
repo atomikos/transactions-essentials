@@ -25,7 +25,6 @@
 
 package com.atomikos.icatch.jta;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -54,12 +53,11 @@ import com.atomikos.logging.LoggerFactory;
  */
 
 public class TransactionManagerImp implements TransactionManager,
-        SubTxAwareParticipant, Referenceable, UserTransaction, Serializable
+        SubTxAwareParticipant, Referenceable, UserTransaction
 
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(TransactionManagerImp.class);
 
-	private static final long serialVersionUID = -3048879409985542685L;
 
 	/**
      * Transaction property name to indicate that the transaction is a 
@@ -77,7 +75,7 @@ public class TransactionManagerImp implements TransactionManager,
 
     private static boolean jtaTransactionsAreSerialByDefault = false;
 
-    private int timeoutInSecondsForNewTransactions;
+    private ThreadLocal<Integer> timeoutInSecondsForNewTransactions = new ThreadLocal<Integer>();
 
     private Map<String, TransactionImp> jtaTransactionToCoreTransactionMap;
 
@@ -187,7 +185,7 @@ public class TransactionManagerImp implements TransactionManager,
             boolean automaticResourceRegistration )
     {
         compositeTransactionManager = ctm;
-        timeoutInSecondsForNewTransactions = defaultTimeoutInSecondsForNewTransactions;
+        timeoutInSecondsForNewTransactions.set(defaultTimeoutInSecondsForNewTransactions);
         jtaTransactionToCoreTransactionMap = new HashMap<String, TransactionImp>();
         enableAutomatRegistrationOfUnknownXAResources = automaticResourceRegistration;
     }
@@ -195,7 +193,7 @@ public class TransactionManagerImp implements TransactionManager,
     private void addToMap ( String tid , TransactionImp tx )
     {
         synchronized ( jtaTransactionToCoreTransactionMap ) {
-            jtaTransactionToCoreTransactionMap.put ( tid.toString (), tx );
+            jtaTransactionToCoreTransactionMap.put ( tid , tx );
         }
     }
 
@@ -203,6 +201,16 @@ public class TransactionManagerImp implements TransactionManager,
     {
         synchronized ( jtaTransactionToCoreTransactionMap ) {
             jtaTransactionToCoreTransactionMap.remove ( tid );
+        }
+    }
+    
+    /**
+     * @return TransactionImp The relevant instance, or null.
+     */
+    TransactionImp getJtaTransactionWithId ( String tid )
+    {
+        synchronized ( jtaTransactionToCoreTransactionMap ) {
+             return jtaTransactionToCoreTransactionMap.get ( tid );
         }
     }
 
@@ -230,20 +238,7 @@ public class TransactionManagerImp implements TransactionManager,
          }
 	}
     
-    /**
-     * @return TransactionImp The relevant instance, or null.
-     */
-
-    TransactionImp getJtaTransactionWithId ( String tid )
-    {
-    	TransactionImp ret = null;
-        synchronized ( jtaTransactionToCoreTransactionMap ) {
-            if ( jtaTransactionToCoreTransactionMap.containsKey ( tid.toString () ) ) {
-                ret = (TransactionImp) jtaTransactionToCoreTransactionMap.get ( tid.toString () );
-            } 
-        }
-        return ret;
-    }
+    
 
     /**
      * Gets any previous transaction with the given identifier.
@@ -264,7 +259,7 @@ public class TransactionManagerImp implements TransactionManager,
 
     public void begin () throws NotSupportedException, SystemException
     {
-        begin ( timeoutInSecondsForNewTransactions );
+        begin ( timeoutInSecondsForNewTransactions.get() );
     }
 
     /**
@@ -335,9 +330,9 @@ public class TransactionManagerImp implements TransactionManager,
     public void setTransactionTimeout ( int seconds ) throws SystemException
     {
         if ( seconds > 0 ) {
-            timeoutInSecondsForNewTransactions = seconds;
+            timeoutInSecondsForNewTransactions.set(seconds);
         } else if ( seconds == 0 ) {
-            timeoutInSecondsForNewTransactions = defaultTimeoutInSecondsForNewTransactions;
+            timeoutInSecondsForNewTransactions.set(defaultTimeoutInSecondsForNewTransactions);
         } else {
         	String msg = "setTransactionTimeout: value must be >= 0";
         	LOGGER.logWarning( msg );
@@ -348,7 +343,7 @@ public class TransactionManagerImp implements TransactionManager,
 
     public int getTransactionTimeout ()
     {
-        return timeoutInSecondsForNewTransactions;
+        return timeoutInSecondsForNewTransactions.get();
     }
 
     /**
