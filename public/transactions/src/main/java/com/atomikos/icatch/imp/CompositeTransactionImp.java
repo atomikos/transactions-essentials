@@ -52,6 +52,8 @@ import com.atomikos.logging.LoggerFactory;
 
 class CompositeTransactionImp extends AbstractCompositeTransaction implements FSMEnterListener
 {
+	private static final long serialVersionUID = 975317723773209940L;
+
 	private static final Logger LOGGER = LoggerFactory.createLogger(CompositeTransactionImp.class);
 
 	private CoordinatorImp coordinator = null;

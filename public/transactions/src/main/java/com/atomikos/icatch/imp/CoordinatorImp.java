@@ -81,6 +81,8 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
         RecoveryCoordinator, RecoverableCoordinator, AlarmTimerListener, Stateful,
         FSMPreEnterListener, FSMTransitionListener, FSMEnterListener
 {
+	private static final long serialVersionUID = -7769094320086083771L;
+
 	private static final Logger LOGGER = LoggerFactory.createLogger(CoordinatorImp.class);
 
     static long DEFAULT_MILLIS_BETWEEN_TIMER_WAKEUPS = 150;
