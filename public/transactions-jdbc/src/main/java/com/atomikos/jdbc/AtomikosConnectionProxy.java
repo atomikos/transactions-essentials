@@ -107,7 +107,7 @@ class AtomikosConnectionProxy extends AbstractConnectionProxy
 			return ret;
 		}
 
-		if ( closed && !methodName.equals("close") ) {
+		if ( closed && !methodAllowedAfterClose(method) ) {
 			if ( reaped ) {
 				//'reaped' is a system-triggered variant of closed -> throw exception that explains this
 				String msg = "Connection has been reaped - calling " + methodName + " is no longer allowed! Increase reapTimeout to avoid this problem.";
@@ -172,6 +172,10 @@ class AtomikosConnectionProxy extends AbstractConnectionProxy
         return ret;
 	}
 
+
+	private boolean methodAllowedAfterClose(Method method) {
+		return method.getName().equals("close") || ClassLoadingHelper.existsInJavaObjectClass(method);
+	}
 
 	private String formatCallDetails(Method method, Object[] args) {
 		StringBuffer ret = new StringBuffer();
