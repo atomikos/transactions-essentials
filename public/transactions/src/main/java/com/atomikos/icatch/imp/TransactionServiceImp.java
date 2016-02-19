@@ -475,7 +475,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
         control_ = new com.atomikos.icatch.admin.imp.LogControlImp ( (AdminLog) this.recoveryLog );
 
 		ConfigProperties configProperties = new ConfigProperties(properties);
-		long recoveryDelay = configProperties.getAsLong("com.atomikos.icatch.recovery_delay");
+		long recoveryDelay = configProperties.getRecoveryDelay();
 
         
         recoveryTimer = new PooledAlarmTimer(recoveryDelay);

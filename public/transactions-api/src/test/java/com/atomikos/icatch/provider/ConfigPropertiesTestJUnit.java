@@ -130,10 +130,30 @@ public class ConfigPropertiesTestJUnit {
 		assertEquals(NAME, props.getTmUniqueName());
 	}
 	@Test
-	public void testDefaultForgetOrphanedLogEntriesDelay() throws Exception {
-		props.setProperty("com.atomikos.icatch.forget_orphaned_log_entries_delay", "1800000");
-		
+	public void testForgetOrphanedLogEntriesDelay() throws Exception {
+		props.setProperty("com.atomikos.icatch.forget_orphaned_log_entries_delay", "1800000");		
 		assertEquals(TimeUnit.MINUTES.toMillis(30), props.getForgetOrphanedLogEntriesDelay());
+	}
+	
+	@Test
+	public void testRecoveryDelay() throws Exception {
+		final long VALUE = 12345L;
+		props.setProperty("com.atomikos.icatch.recovery_delay", Long.toString(VALUE));
+		assertEquals(VALUE, props.getRecoveryDelay());
+	}
+	
+	@Test
+	public void testOltpMaxRetries() throws Exception {
+		final int VALUE = 123;
+		props.setProperty("com.atomikos.icatch.oltp_max_retries", Integer.toString(VALUE));
+		assertEquals(VALUE, props.getOltpMaxRetries());
+	}
+	
+	@Test
+	public void testOltpRetryInterval() throws Exception {
+		final long VALUE = 2345l;
+		props.setProperty("com.atomikos.icatch.oltp_retry_interval", Long.toString(VALUE));
+		assertEquals(VALUE, props.getOltpRetryInterval());
 	}
 }
 

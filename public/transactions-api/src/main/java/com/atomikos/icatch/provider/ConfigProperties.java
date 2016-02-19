@@ -21,6 +21,7 @@ public final class ConfigProperties {
 	private static final String FORGET_ORPHANED_LOG_ENTRIES_DELAY = "com.atomikos.icatch.forget_orphaned_log_entries_delay";
 	private static final String OLTP_MAX_RETRIES_PROPERTY_NAME = "com.atomikos.icatch.oltp_max_retries";
 	private static final String OLTP_RETRY_INTERVAL = "com.atomikos.icatch.oltp_retry_interval";
+	private static final String RECOVERY_DELAY = "com.atomikos.icatch.recovery_delay";
 
 	/**
 	 * Replace ${...} sequence with the referenced value from the given properties or 
@@ -220,6 +221,10 @@ public final class ConfigProperties {
 
 	public long getOltpRetryInterval() {
 		return getAsInt(OLTP_RETRY_INTERVAL);
+	}
+
+	public long getRecoveryDelay() {
+		return getAsLong(RECOVERY_DELAY);
 	}
 
 }
