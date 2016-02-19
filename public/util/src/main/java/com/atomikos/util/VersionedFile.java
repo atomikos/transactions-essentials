@@ -118,7 +118,7 @@ public class VersionedFile
 
 			ret = Long.valueOf( suffix );
 		} catch ( NumberFormatException e ) {
-			IllegalArgumentException err = new IllegalArgumentException ( "Error extracting version from file: " + name );
+			IllegalArgumentException err = new IllegalArgumentException ( "Error extracting version from file: " + name+" in " + getBaseDir() );
 			err.initCause ( e );
 			throw err;
 		}

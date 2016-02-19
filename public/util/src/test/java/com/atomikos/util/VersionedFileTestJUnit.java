@@ -51,6 +51,27 @@ public class VersionedFileTestJUnit extends TestCase {
 		assertEquals ( getBaseName() , file.getBaseName() );
 	}
 	
+	
+	public void testReadingNonExistingLogBaseDirShouldFailWithMeaningFulException() throws Exception {
+		String nonExistingBaseDir = "nonExistingBaseDir";
+		try {
+			file = new VersionedFile ( nonExistingBaseDir , getBaseName() , SUFFIX );
+			file.openLastValidVersionForReading();
+		} catch (Exception e) {
+			String message = e.getMessage();
+			assertTrue(message.contains(nonExistingBaseDir));
+		}
+	}
+	public void testWritingNonExistingLogBaseDirShouldFailWithMeaningFulException() throws Exception {
+		String nonExistingBaseDir = "nonExistingBaseDir";
+		try {
+			file = new VersionedFile ( nonExistingBaseDir , getBaseName() , SUFFIX );
+			file.openNewVersionForNioWriting();
+		} catch (Exception e) {
+			String message = e.getMessage();
+			assertTrue(message.contains(nonExistingBaseDir));
+		}
+	}
 	public void testGetSuffix() 
 	{
 		assertEquals ( SUFFIX , file.getSuffix() );
