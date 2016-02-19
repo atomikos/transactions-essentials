@@ -13,18 +13,6 @@ public class Serializer {
 	private static final String END_OBJECT = "}";
 	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 	
-	
-//	public byte[] toByteArray (CoordinatorLogEntry coordinatorLogEntry){
-//		
-//		try {
-//			ByteArrayOutputStream oo = new ByteArrayOutputStream(); 
-//			ObjectOutputStream out = new ObjectOutputStream(oo);
-//			out.writeObject(coordinatorLogEntry);
-//			return oo.toByteArray();
-//		} catch (IOException e) {
-//			return null;
-//		}
-//	}
 	public String toJSON(CoordinatorLogEntry coordinatorLogEntry) {
 		StringBuilder strBuilder = new StringBuilder(600);
 		strBuilder.append(START_OBJECT);
