@@ -75,7 +75,11 @@ public class TransactionManagerImp implements TransactionManager,
 
     private static boolean jtaTransactionsAreSerialByDefault = false;
 
-    private ThreadLocal<Integer> timeoutInSecondsForNewTransactions = new ThreadLocal<Integer>();
+    private ThreadLocal<Integer> timeoutInSecondsForNewTransactions = new ThreadLocal<Integer>() {
+    	protected Integer initialValue() {
+    		return defaultTimeoutInSecondsForNewTransactions;
+    	};
+	};
 
     private Map<String, TransactionImp> jtaTransactionToCoreTransactionMap;
 
@@ -185,7 +189,6 @@ public class TransactionManagerImp implements TransactionManager,
             boolean automaticResourceRegistration )
     {
         compositeTransactionManager = ctm;
-        timeoutInSecondsForNewTransactions.set(defaultTimeoutInSecondsForNewTransactions);
         jtaTransactionToCoreTransactionMap = new HashMap<String, TransactionImp>();
         enableAutomatRegistrationOfUnknownXAResources = automaticResourceRegistration;
     }
@@ -259,7 +262,8 @@ public class TransactionManagerImp implements TransactionManager,
 
     public void begin () throws NotSupportedException, SystemException
     {
-        begin ( timeoutInSecondsForNewTransactions.get() );
+    	
+        begin ( getTransactionTimeout() );
     }
 
     /**
