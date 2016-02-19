@@ -23,6 +23,8 @@ public final class ConfigProperties {
 	private static final String OLTP_RETRY_INTERVAL = "com.atomikos.icatch.oltp_retry_interval";
 	private static final String RECOVERY_DELAY = "com.atomikos.icatch.recovery_delay";
 
+	private static final String ALLOW_SUBTRANSACTIONS = "com.atomikos.icatch.allow_subtransactions";
+	
 	/**
 	 * Replace ${...} sequence with the referenced value from the given properties or 
 	 * (if not found) the system properties -
@@ -225,6 +227,10 @@ public final class ConfigProperties {
 
 	public long getRecoveryDelay() {
 		return getAsLong(RECOVERY_DELAY);
+	}
+
+	public boolean getAllowSubTransactions() {
+		return getAsBoolean(ALLOW_SUBTRANSACTIONS);
 	}
 
 }

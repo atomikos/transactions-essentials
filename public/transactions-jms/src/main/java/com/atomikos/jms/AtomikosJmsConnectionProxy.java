@@ -153,7 +153,7 @@ implements SessionHandleStateChangeListener
 				String msg = "Connection was reaped - calling method " + methodName + " no longer allowed. Increase the reapTimeout to avoid this.";
 				LOGGER.logWarning ( this + ": " + msg );
 				throw new javax.jms.IllegalStateException ( msg );
-			} else if ( closed ) {
+			} else if ( closed && !methodAllowedAfterClose(method) ) {
 				String msg = "Connection is closed already - calling method " + methodName + " no longer allowed.";
 				LOGGER.logWarning ( this + ": " + msg );
 				throw new javax.jms.IllegalStateException ( msg );
@@ -217,6 +217,10 @@ implements SessionHandleStateChangeListener
 		
 		//dummy return to make compiler happy
 		return null;
+	}
+
+	private boolean methodAllowedAfterClose(Method method) {
+		return method.getName().equals("close") || ClassLoadingHelper.existsInJavaObjectClass(method);
 	}
 
 	private boolean createXaSession(boolean sessionTransactedFlag) {

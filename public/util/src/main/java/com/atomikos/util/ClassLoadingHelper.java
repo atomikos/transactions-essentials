@@ -28,9 +28,15 @@
  */
 package com.atomikos.util;
 
+import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.MethodDescriptor;
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.atomikos.logging.Logger;
@@ -164,6 +170,23 @@ public class ClassLoadingHelper {
 			ret = clazz.getResource("/" + resourceName);
 		}
 		return ret;
+	}
+
+	private static List<String> javaLangObjectMethodNames = new ArrayList<String>();
+	static {
+		try {
+			BeanInfo infos = Introspector.getBeanInfo(java.lang.Object.class);
+			MethodDescriptor[] methods=	infos.getMethodDescriptors();
+			for (MethodDescriptor methodDescriptor : methods) {
+				javaLangObjectMethodNames.add(methodDescriptor.getName());
+			}
+		} catch (IntrospectionException e) {
+			//ignore, return false
+		}
+	}
+	
+	public static boolean existsInJavaObjectClass(Method method) {
+		return javaLangObjectMethodNames.contains(method.getName());
 	}
 
 }
