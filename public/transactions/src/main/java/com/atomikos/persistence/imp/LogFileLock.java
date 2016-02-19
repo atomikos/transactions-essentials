@@ -48,8 +48,8 @@ public class LogFileLock {
 			lock_ = null;
 		}
 		if (lock_ == null) {
-			LOGGER.logWarning("ERROR: the specified log seems to be " + "in use already. Make sure that no other instance is " + "running, or kill any pending process if needed.");
-			throw new LogException("Log already in use?");
+			LOGGER.logWarning("ERROR: the specified log seems to be in use already: " + fileName + " in "+ dir+". Make sure that no other instance is running, or kill any pending process if needed.");
+			throw new LogException("Log already in use? " + fileName + " in "+ dir);
 		}
 	}
 
