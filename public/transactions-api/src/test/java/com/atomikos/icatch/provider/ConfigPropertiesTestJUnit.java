@@ -155,5 +155,12 @@ public class ConfigPropertiesTestJUnit {
 		props.setProperty("com.atomikos.icatch.oltp_retry_interval", Long.toString(VALUE));
 		assertEquals(VALUE, props.getOltpRetryInterval());
 	}
+	
+	@Test
+	public void testAllowSubTransactions() throws Exception {
+		final boolean VALUE = false;
+		props.setProperty("com.atomikos.icatch.allow_subtransactions", "false");
+		assertEquals(VALUE, props.getAllowSubTransactions());
+	}
 }
 
