@@ -9,9 +9,7 @@ import static com.atomikos.icatch.TxState.HEUR_MIXED;
 import static com.atomikos.icatch.TxState.IN_DOUBT;
 import static com.atomikos.icatch.TxState.TERMINATED;
 
-import java.io.Serializable;
-
-public class CoordinatorLogEntry  implements Serializable {
+public class CoordinatorLogEntry {
 
 	public final String id;
 

@@ -1,10 +1,7 @@
 package com.atomikos.icatch;
 
-import java.io.Serializable;
 
-public class ParticipantLogEntry implements Serializable {
-
-	private static final long serialVersionUID = 1L;
+public class ParticipantLogEntry {
 
 	/**
 	 * The ID of the global transaction as known by the transaction core.
