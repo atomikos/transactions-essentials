@@ -205,7 +205,9 @@ public final class UserTransactionServiceImp
 	}
 
 
-
+	/**
+	 * Initializes with given properties.
+	 */
 	public void init ( Properties properties ) throws SysException {
 		properties_ = properties;
 		initialize();

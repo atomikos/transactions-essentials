@@ -10,6 +10,9 @@ package com.atomikos.recovery;
 
 import com.atomikos.icatch.CoordinatorLogEntry;
 
+ /**
+  * Handle to the transactions log for admin purposes.
+  */
 public interface AdminLog {
 
 	CoordinatorLogEntry[] getCoordinatorLogEntries();

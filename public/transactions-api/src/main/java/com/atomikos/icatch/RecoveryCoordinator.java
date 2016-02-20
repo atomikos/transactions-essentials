@@ -26,7 +26,7 @@ public interface RecoveryCoordinator extends java.io.Serializable
      * participant asking the replay.
      */
 
-    public Boolean replayCompletion ( Participant participant )
+     Boolean replayCompletion ( Participant participant )
         throws IllegalStateException;
     
      /**
@@ -34,6 +34,6 @@ public interface RecoveryCoordinator extends java.io.Serializable
       * @return String The URI identifier.
       */
       
-    public String getURI();
+     String getURI();
 
 }

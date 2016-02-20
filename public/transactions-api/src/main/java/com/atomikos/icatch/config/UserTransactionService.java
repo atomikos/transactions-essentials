@@ -24,27 +24,27 @@ import com.atomikos.icatch.provider.TransactionServicePlugin;
 
 public interface UserTransactionService
 {
-	public void shutdown ( boolean force ) throws IllegalStateException;
+	void shutdown ( boolean force ) throws IllegalStateException;
 	
-	public void shutdown (long maxWaitTime) throws IllegalStateException;
+	void shutdown (long maxWaitTime) throws IllegalStateException;
  
-	public void registerResource ( RecoverableResource resource );
+	void registerResource ( RecoverableResource resource );
 
-	public void removeResource ( RecoverableResource res );
+	void removeResource ( RecoverableResource res );
 
-	public void registerLogAdministrator ( LogAdministrator admin );
+	void registerLogAdministrator ( LogAdministrator admin );
 
-	public void removeLogAdministrator ( LogAdministrator admin );
+	void removeLogAdministrator ( LogAdministrator admin );
 
-	public void registerTransactionServicePlugin ( TransactionServicePlugin listener );
+	void registerTransactionServicePlugin ( TransactionServicePlugin listener );
 
-	public void removeTransactionServicePlugin ( TransactionServicePlugin listener );
+	void removeTransactionServicePlugin ( TransactionServicePlugin listener );
 
-	public void init ( Properties properties ) throws SysException;
+	void init ( Properties properties ) throws SysException;
 	
-	public void init() throws SysException;
+	void init() throws SysException;
 
-	public CompositeTransactionManager getCompositeTransactionManager();
+	CompositeTransactionManager getCompositeTransactionManager();
 
 
 }

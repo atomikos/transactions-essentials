@@ -28,7 +28,7 @@ public interface LogAdministrator
       * @param control The LogControl instance.
       */
       
-    public void registerLogControl ( LogControl control );
+     void registerLogControl ( LogControl control );
     
      /**
       * De-registers (removes) a LogControl instance from the
@@ -40,5 +40,5 @@ public interface LogAdministrator
       * if the control is not registered.
       */
       
-    public void deregisterLogControl ( LogControl control ); 
+     void deregisterLogControl ( LogControl control ); 
 }

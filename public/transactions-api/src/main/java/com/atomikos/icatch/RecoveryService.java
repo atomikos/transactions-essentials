@@ -24,7 +24,7 @@ public interface RecoveryService
 	 * transaction service.
 	 */
 	
-	public String getName();
+	 String getName();
 	
 	
 	RecoveryLog getRecoveryLog();

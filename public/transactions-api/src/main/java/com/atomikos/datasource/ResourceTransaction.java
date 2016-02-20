@@ -24,13 +24,13 @@ public interface ResourceTransaction
      *
      */
 
-    public void suspend() throws IllegalStateException,ResourceException;
+     void suspend() throws IllegalStateException,ResourceException;
 
     /**
      * Resumes a previously suspended tx.
      *
      */
 
-    public void resume() throws IllegalStateException,ResourceException;
+     void resume() throws IllegalStateException,ResourceException;
        
 }

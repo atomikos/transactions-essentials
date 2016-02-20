@@ -29,7 +29,7 @@ public interface LogControl
           * terminated in the meantime will not be returned.
           */
           
-        public AdminTransaction[] getAdminTransactions(String... tids );
+         AdminTransaction[] getAdminTransactions(String... tids );
         
          
     

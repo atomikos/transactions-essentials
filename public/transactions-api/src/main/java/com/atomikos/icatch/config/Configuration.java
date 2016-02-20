@@ -32,8 +32,8 @@ import com.atomikos.icatch.provider.TransactionServiceProvider;
 import com.atomikos.recovery.RecoveryLog;
 
 /**
- * Configuration is a facade for the icatch transaction management facilities.
- * Allows the application server code to find the transaction manager, even if
+ * Configuration is a facade for the transaction management core.
+ * Allows the application code to find the transaction manager, even if
  * the actual implementation varies over time.
  */
 

@@ -27,7 +27,7 @@ package com.atomikos.icatch;
      * This instance will also be mapped to the calling thread.
      */
      
-    public CompositeTransaction 
+     CompositeTransaction 
       importTransaction ( Propagation propagation , 
                           boolean orphancheck , boolean heur_commit 
                          ) throws SysException;
@@ -50,7 +50,7 @@ package com.atomikos.icatch;
      * 
      */
      
-    public Extent terminated( boolean commit ) 
+    Extent terminated( boolean commit ) 
     throws SysException, RollbackException;
 
     

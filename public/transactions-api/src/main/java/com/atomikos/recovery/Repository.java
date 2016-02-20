@@ -13,6 +13,9 @@ import java.util.Collection;
 import com.atomikos.icatch.CoordinatorLogEntry;
 import com.atomikos.icatch.provider.ConfigProperties;
 
+ /**
+  * Abstraction of where transaction log entries are stored and retrieved.
+  */
 public interface Repository {
 
 	

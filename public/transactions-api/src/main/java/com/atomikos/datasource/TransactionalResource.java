@@ -27,7 +27,7 @@ public interface TransactionalResource extends RecoverableResource
      *
      */
 
-    public ResourceTransaction 
+     ResourceTransaction 
         getResourceTransaction ( CompositeTransaction compositeTransaction ) 
         throws IllegalStateException, ResourceException;
 

@@ -34,7 +34,7 @@ public interface CompositeTransactionManager
 	 * an activity instead of a classical transaction.
 	 */
 
-	public CompositeTransaction createCompositeTransaction ( long timeout ) 
+	CompositeTransaction createCompositeTransaction ( long timeout ) 
 	throws SysException, IllegalStateException;
 
 	/**
@@ -43,7 +43,7 @@ public interface CompositeTransactionManager
 	 * @exception SysException On unexpected failure.
 	 */
 
-	public CompositeTransaction getCompositeTransaction () throws SysException;
+	 CompositeTransaction getCompositeTransaction () throws SysException;
 
 	/**
 	 * Gets the composite transaction with the given id.
@@ -56,7 +56,7 @@ public interface CompositeTransactionManager
 	 * @exception SysException Unexpected failure.
 	 */
 
-	public CompositeTransaction getCompositeTransaction ( String tid )
+	CompositeTransaction getCompositeTransaction ( String tid )
 	throws SysException;
 
 	/**
@@ -67,7 +67,7 @@ public interface CompositeTransactionManager
 	 * @exception SysException 
 	 */
 
-	public void resume ( CompositeTransaction compositeTransaction )
+	void resume ( CompositeTransaction compositeTransaction )
 	throws IllegalStateException, SysException;
 
 	/**
@@ -78,7 +78,7 @@ public interface CompositeTransactionManager
 	 * @exception SysException 
 	 */
 
-	public CompositeTransaction suspend() throws SysException ;
+	 CompositeTransaction suspend() throws SysException ;
 
     /**
      * Recreate a composite transaction based on an imported context. Needed by
@@ -97,7 +97,7 @@ public interface CompositeTransactionManager
      *                Failure.
      */
 
-	public CompositeTransaction recreateCompositeTransaction(
+	 CompositeTransaction recreateCompositeTransaction(
 			Propagation propagation, boolean orphancheck, boolean heur_commit);
 
 

@@ -27,7 +27,7 @@ package com.atomikos.icatch;
      *
      */
     
-    public Propagation getPropagation () 
+    Propagation getPropagation () 
     throws SysException, RollbackException;
     
     /**
@@ -45,6 +45,6 @@ package com.atomikos.icatch;
      */
      
      
-    public void addExtent ( Extent extent ) 
+    void addExtent ( Extent extent ) 
     throws SysException, RollbackException;
  }

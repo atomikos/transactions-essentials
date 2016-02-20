@@ -30,7 +30,7 @@ public interface Extent extends java.io.Serializable
      * to Integer counts that represent the number of invocations detected by each participant.
      */
 
-    public Map<String,Integer> getRemoteParticipants();
+     Map<String,Integer> getRemoteParticipants();
     
     /**
      * Merges another extent into this one.
@@ -41,7 +41,7 @@ public interface Extent extends java.io.Serializable
      *@exception SysException 
      */
 
-    public void add ( Extent extent ) throws  IllegalStateException, SysException;
+     void add ( Extent extent ) throws  IllegalStateException, SysException;
     
     /**
      * Adds a participant to the extent.
@@ -57,7 +57,7 @@ public interface Extent extends java.io.Serializable
      * @exception SysException
      */
      
-    public void add ( Participant participant , int count ) 
+     void add ( Participant participant , int count ) 
     	throws IllegalStateException, SysException;
     	
     
@@ -71,7 +71,7 @@ public interface Extent extends java.io.Serializable
       * it will also be part of the remote set.
       */
       
-    public Stack<Participant> getParticipants();
+     Stack<Participant> getParticipants();
 
   
     											

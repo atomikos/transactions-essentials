@@ -101,6 +101,10 @@ import com.atomikos.icatch.TxState;
 
 	 String[] getParticipantDetails();
 
-	 boolean hasExpired();
+	 /**
+	  * 
+	  * @return True if this transaction has expired past its timeout.
+	  */
+	  boolean hasExpired();
 
 }

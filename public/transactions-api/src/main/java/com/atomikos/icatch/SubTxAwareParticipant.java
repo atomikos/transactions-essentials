@@ -10,8 +10,6 @@ package com.atomikos.icatch;
 
 
 /**
- *
- *
  * A participant that wants to be notified of local termination of a node in a 
  * nested transaction tree. 
  */
@@ -25,7 +23,7 @@ public interface SubTxAwareParticipant
      * locally at its node.
      */
 
-    public void committed ( CompositeTransaction transaction );
+     void committed ( CompositeTransaction transaction );
     
     /**
      * Notification that some transaction has been rolledback.
@@ -33,5 +31,5 @@ public interface SubTxAwareParticipant
      * @param parent The transaction that has rolled back at its node.
      */
 
-    public void rolledback ( CompositeTransaction transaction );
+     void rolledback ( CompositeTransaction transaction );
 }

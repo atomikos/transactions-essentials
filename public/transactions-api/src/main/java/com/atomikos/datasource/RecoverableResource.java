@@ -46,7 +46,7 @@ public interface RecoverableResource
 	 * @throws ResourceException On errors.
 	 */
 
-	public void setRecoveryService ( RecoveryService recoveryService )
+	void setRecoveryService ( RecoveryService recoveryService )
 	throws ResourceException;
 	
     
@@ -55,7 +55,7 @@ public interface RecoverableResource
      * This notifies the resource that it is no longer needed.
      */
 
-    public void close() throws ResourceException;
+     void close() throws ResourceException;
     
     /**
      * Gets the name of the resource. Names should be unique 
@@ -63,21 +63,25 @@ public interface RecoverableResource
      * @return String The name.
      */
      
-    public String getName();
+     String getName();
     
     /**
      * Tests if a resource is the same as another one.
      */
 
-    public boolean isSameRM(RecoverableResource res) 
+     boolean isSameRM(RecoverableResource res) 
         throws ResourceException;
 
     /**
      * Tests if the resource is closed.
      * @return boolean True if the resource is closed.
      */
-    public boolean isClosed();
+     boolean isClosed();
 
-    void recover();
+    /**
+     * Instructs the resource to recover. 
+     * When this method returns, all pending participants of this resource have been recovered.
+     */
+     void recover();
     
 }

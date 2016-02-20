@@ -12,8 +12,8 @@ import java.util.Properties;
 
  /**
   * A plugin interface for transaction service extension modules.
-  * Instances can register themselves in order to be notified about
-  * recovery and shutdown events.
+  * Instances can register themselves via the ServiceLoader mechanism
+  * in order to be notified about startup and shutdown events.
   */
 
 public interface TransactionServicePlugin
@@ -29,17 +29,17 @@ public interface TransactionServicePlugin
       * </em>
       */
       
-    public void beforeInit ( Properties properties );
+    void beforeInit ( Properties properties );
     
     /**
      * Called after initialization of the transaction core.
      */
     
-    public void afterInit();
+    void afterInit();
     
      /** 
       * Called after shutdown of the transaction core.
       */
       
-    public void afterShutdown(); 
+    void afterShutdown(); 
 }

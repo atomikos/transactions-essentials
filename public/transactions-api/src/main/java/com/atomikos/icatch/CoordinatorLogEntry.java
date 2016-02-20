@@ -17,6 +17,10 @@ import static com.atomikos.icatch.TxState.HEUR_MIXED;
 import static com.atomikos.icatch.TxState.IN_DOUBT;
 import static com.atomikos.icatch.TxState.TERMINATED;
 
+/**
+ * Coordinator snapshot for logging and recovery purposes.
+ *
+ */
 public class CoordinatorLogEntry {
 
 	public final String id;

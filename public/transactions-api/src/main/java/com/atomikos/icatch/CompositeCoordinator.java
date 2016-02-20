@@ -23,7 +23,7 @@ public interface CompositeCoordinator extends java.io.Serializable
      * For subtransactions, this will be an independent id.
      */
 
-    public String getCoordinatorId();
+     String getCoordinatorId();
    
 
     /**
@@ -31,7 +31,7 @@ public interface CompositeCoordinator extends java.io.Serializable
      *@return RecoveryCoordinator.
      */
 
-    public RecoveryCoordinator getRecoveryCoordinator();
+     RecoveryCoordinator getRecoveryCoordinator();
 
 }
 

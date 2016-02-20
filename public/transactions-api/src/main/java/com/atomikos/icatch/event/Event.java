@@ -10,6 +10,9 @@ package com.atomikos.icatch.event;
 
 import java.io.Serializable;
 
+ /**
+  * Significant core events that are communicated to the outside world.
+  */
 public abstract class Event implements Serializable {
 
 	private static final long serialVersionUID = 1L;

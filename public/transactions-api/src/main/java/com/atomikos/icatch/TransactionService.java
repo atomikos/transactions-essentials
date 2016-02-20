@@ -28,14 +28,14 @@ public interface TransactionService
        * @param listener The listener.
        */
        
-      public void addTSListener ( TransactionServicePlugin listener );
+       void addTSListener ( TransactionServicePlugin listener );
       
        /**
         * Removes a listener from the transaction service.
         * @param listener The listener.
         */
         
-      public void removeTSListener ( TransactionServicePlugin listener );
+       void removeTSListener ( TransactionServicePlugin listener );
   
   
        /**
@@ -44,7 +44,7 @@ public interface TransactionService
         * @return CompositeTransaction The transaction, or null if none.
         */
         
-      public CompositeTransaction getCompositeTransaction ( String tid );
+       CompositeTransaction getCompositeTransaction ( String tid );
       
 
       
@@ -61,7 +61,7 @@ public interface TransactionService
        *
        */
        
-      public CompositeTransaction createCompositeTransaction ( 
+       CompositeTransaction createCompositeTransaction ( 
                   long timeout )
                   throws SysException;
 
@@ -86,7 +86,7 @@ public interface TransactionService
        */
 
 
-      public CompositeTransaction 
+      CompositeTransaction 
       recreateCompositeTransaction (  Propagation context , 
                                        boolean orphancheck ,
                                        boolean heur_commit )
@@ -108,7 +108,7 @@ public interface TransactionService
        * @exception SysException
        */
      
-      public void shutdown ( boolean force )
+      void shutdown ( boolean force )
       throws SysException, IllegalStateException;
       
        /**
@@ -121,7 +121,7 @@ public interface TransactionService
         * @exception SysException On failure, or if the given root is not known.
         */
       
-      public Participant getParticipant ( String root )
+      Participant getParticipant ( String root )
       throws SysException;
       
       /**
@@ -136,7 +136,7 @@ public interface TransactionService
        * @exception SysException
        */
       
-      public CompositeCoordinator getCompositeCoordinator ( String root )
+      CompositeCoordinator getCompositeCoordinator ( String root )
       throws SysException;
       
 }

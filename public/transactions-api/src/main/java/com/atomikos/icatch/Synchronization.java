@@ -22,7 +22,7 @@ package com.atomikos.icatch;
      * Called before prepare decision is made.
      */
      
-    public void beforeCompletion ();
+     void beforeCompletion ();
     
     /**
      * Called after the overall outcome  is known.
@@ -31,5 +31,5 @@ package com.atomikos.icatch;
      * Equals either null ( readonly ), TxState.COMMITTING  or TxState.ABORTING.
      */
      
-    public void afterCompletion ( TxState txstate );	
+     void afterCompletion ( TxState txstate );	
  }

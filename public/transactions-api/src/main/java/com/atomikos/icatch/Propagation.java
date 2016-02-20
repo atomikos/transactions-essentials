@@ -24,14 +24,14 @@ public interface Propagation extends java.io.Serializable
      * @return Stack The ancestor transactions.
      */
 
-    public Stack<CompositeTransaction> getLineage();
+     Stack<CompositeTransaction> getLineage();
     
     /**
      *
      * @return boolean True if serial mode was set.
      */
     
-    public boolean isSerial();
+     boolean isSerial();
     
     
      /**
@@ -39,6 +39,6 @@ public interface Propagation extends java.io.Serializable
       *@return long The time left before timeout, in millis.
       */
       
-    public long getTimeOut();
+     long getTimeOut();
     
 }

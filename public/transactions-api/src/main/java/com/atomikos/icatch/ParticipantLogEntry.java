@@ -8,6 +8,10 @@
 
 package com.atomikos.icatch;
 
+ /**
+  * Participant snapshot for logging and recovery purposes.
+  *
+  */
 
 public class ParticipantLogEntry {
 

@@ -30,13 +30,13 @@ public interface Participant extends java.io.Serializable
      * Indicates that no commit/rollback is needed after prepare.
      */
 
-    public static final int READ_ONLY=0x00;
+     static final int READ_ONLY=0x00;
     
      /**
       * @return String The unique URI for this remote participant, or null for local instances.
       */
       
-    public String getURI();
+     String getURI();
     
     /**
      * For cascading 2PC, this method sets the information needed
@@ -49,7 +49,7 @@ public interface Participant extends java.io.Serializable
      * @exception SysException 
      */
 
-    public void setCascadeList(Map<String, Integer> allParticipants)
+     void setCascadeList(Map<String, Integer> allParticipants)
         throws SysException;
 
     /**
@@ -60,7 +60,7 @@ public interface Participant extends java.io.Serializable
      *@param count The global count.
      */
 
-    public void setGlobalSiblingCount(int count);
+     void setGlobalSiblingCount(int count);
 
     /**
      * Prepares the participant.
@@ -88,7 +88,7 @@ public interface Participant extends java.io.Serializable
      * @exception SysException 
      */
 
-    public int prepare()
+     int prepare()
         throws RollbackException,
 	     HeurHazardException,
 	     HeurMixedException,
@@ -124,7 +124,7 @@ public interface Participant extends java.io.Serializable
      * @exception SysException
      */
 
-    public void commit ( boolean onePhase )
+     void commit ( boolean onePhase )
         throws HeurRollbackException,
 	     HeurHazardException,
 	     HeurMixedException,
@@ -151,7 +151,7 @@ public interface Participant extends java.io.Serializable
      * @exception SysException
      */
 
-    public void rollback()
+     void rollback()
         throws HeurCommitException,
 	     HeurMixedException,
 	     HeurHazardException,
@@ -169,7 +169,7 @@ public interface Participant extends java.io.Serializable
      * leave this method empty.
      */
 
-    public void forget();
+     void forget();
 
     
 	/**
@@ -177,12 +177,12 @@ public interface Participant extends java.io.Serializable
 	 * 
 	 * @return True in most cases, false only for particular border cases that do not need recovery, such as read-only instances.
 	 */
-	public boolean isRecoverable();
+	 boolean isRecoverable();
 
 	
 	/**
 	 * @return The (unique) name of the recoverable resource as known in the configuration. Null if not relevant.
 	 */
-	public String getResourceName();
+	 String getResourceName();
 }
 
