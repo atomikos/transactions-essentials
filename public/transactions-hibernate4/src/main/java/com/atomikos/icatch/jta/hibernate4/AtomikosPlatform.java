@@ -6,9 +6,6 @@
  * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
  */
 
-/**
- * 
- */
 package com.atomikos.icatch.jta.hibernate4;
 
 import javax.transaction.TransactionManager;
