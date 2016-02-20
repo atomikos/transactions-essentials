@@ -15,6 +15,9 @@ package com.atomikos.icatch.event;
  * External applications/modules can implement this functionality to 
  * be notified of significant events. Implementations are registered
  * via the JDK 6+ ServiceLoader mechanism.
+ * 
+ * CAUTION: event notification is synchronous, so registering listeners
+ * may impact performance of the core!
  */
 public interface EventListener {
 
