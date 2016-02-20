@@ -13,7 +13,7 @@ package com.atomikos.icatch;
  * participants.
  */
 
-public class HeurHazardException extends Exception {
+public class HeurHazardException extends HeuristicException {
 
 	private static final long serialVersionUID = 1L;
 

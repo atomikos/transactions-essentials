@@ -12,7 +12,7 @@ package com.atomikos.icatch;
  * Exception signaling heuristic commit.
  */
 
-public class HeurCommitException extends Exception {
+public class HeurCommitException extends HeuristicException {
 
 	private static final long serialVersionUID = 1L;
 

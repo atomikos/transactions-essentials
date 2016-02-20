@@ -24,9 +24,11 @@ package com.atomikos.icatch;
  * have committed whereas others performed a rollback.
  */
 
-public class HeurMixedException extends Exception
+public class HeurMixedException extends HeuristicException
 {
-    public HeurMixedException ()
+	private static final long serialVersionUID = 1L;
+
+	public HeurMixedException ()
     {
         super("Heuristic Mixed Exception");
     }

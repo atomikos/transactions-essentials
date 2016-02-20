@@ -13,7 +13,9 @@ package com.atomikos.icatch;
  * heuristically.
  */
 
-public class HeurRollbackException extends Exception {
+public class HeurRollbackException extends HeuristicException {
+
+	private static final long serialVersionUID = 1L;
 
 	public HeurRollbackException() {
 		super("Heuristic Rollback Exception");
