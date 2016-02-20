@@ -1,4 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2000-2016 Atomikos <info@atomikos.com>
+
+    LICENSE CONDITIONS
+
+    See http://www.atomikos.com/Main/WhichLicenseApplies for details.
+
+-->
+
 <beans xmlns="http://www.springframework.org/schema/beans"
   xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
   xmlns:sec="http://www.springframework.org/schema/security" xmlns:tx="http://www.springframework.org/schema/tx"
