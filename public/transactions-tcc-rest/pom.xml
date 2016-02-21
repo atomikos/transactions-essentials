@@ -60,7 +60,12 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.atomikos</groupId>
-			<artifactId>transactions</artifactId>
+			<artifactId>transactions-api</artifactId>
+			<version>4.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.atomikos</groupId>
+			<artifactId>atomikos-util</artifactId>
 			<version>4.0.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
