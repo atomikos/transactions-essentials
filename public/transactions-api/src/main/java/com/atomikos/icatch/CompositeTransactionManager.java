@@ -72,6 +72,7 @@ public interface CompositeTransactionManager
 
 	/**
 	 * Suspends the transaction context for the current thread.
+	 * This method suspends the entire transaction tree, including any parent transactions.
 	 *
 	 * @return CompositeTransaction The transaction for the current thread.
 	 *
