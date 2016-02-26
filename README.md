@@ -34,7 +34,7 @@ Pull latest from repo `git pull origin master` and try `mvn clean install -Popen
 
 ### Contributing
 
-Please fork to contribute, and send a pull request when you have a contribution ready for our review.
+Please fork to contribute, and send a pull request when you have a contribution ready for our review. Note that we tend to accept feature contributions more than bug fixes (more precisely: feel free to fork and fix whatever you want but we reserve the right to reject pull requests for bug fixes).
 
 DO NOT COMMIT/PUSH TO THIS REPOSITORY DIRECTLY! WE OVERWRITE IT WHENEVER WE MERGE PULL REQUESTS.
 
