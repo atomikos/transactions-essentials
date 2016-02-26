@@ -32,7 +32,7 @@ import com.atomikos.logging.LoggerFactory;
   *
   */
 
-public abstract class AbstractJmsSenderTemplate
+public abstract class AbstractJmsSenderTemplate implements JmsSenderTemplate
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(AbstractJmsSenderTemplate.class);
 
@@ -318,12 +318,10 @@ public abstract class AbstractJmsSenderTemplate
 	    }
 	}
 
-	/**
-	 * Executes an application-level call-back within the managed session.
-	 *
-	 * @param callback
-	 * @throws JMSException
+	/* (non-Javadoc)
+	 * @see com.atomikos.jms.extra.JmsSenderTemplate#executeCallback(com.atomikos.jms.extra.JmsSenderTemplateCallback)
 	 */
+	@Override
 	public void executeCallback(JmsSenderTemplateCallback callback) throws JMSException {
 
 		init();
@@ -399,12 +397,10 @@ public abstract class AbstractJmsSenderTemplate
 	    timeToLive = l;
 	}
 
-	/**
-	 * Sends a TextMessage.
-	 *
-	 * @param content The text as a string.
-	 * @throws JMSException
+	/* (non-Javadoc)
+	 * @see com.atomikos.jms.extra.JmsSenderTemplate#sendTextMessage(java.lang.String)
 	 */
+	@Override
 	public void sendTextMessage(String content) throws JMSException {
 		retrieveDestinationIfNecessary();
 		retrieveReplyToDestinationIfNecessary();
@@ -412,13 +408,10 @@ public abstract class AbstractJmsSenderTemplate
 		executeCallback ( cb );
 	}
 
-	/**
-	 * Sends a MapMessage.
-	 *
-	 * @param content The Map to get the content from.
-	 *
-	 * @throws JMSException
+	/* (non-Javadoc)
+	 * @see com.atomikos.jms.extra.JmsSenderTemplate#sendMapMessage(java.util.Map)
 	 */
+	@Override
 	@SuppressWarnings("rawtypes")
 	public void sendMapMessage(Map content) throws JMSException {
 		retrieveDestinationIfNecessary();
@@ -427,12 +420,10 @@ public abstract class AbstractJmsSenderTemplate
 		executeCallback ( cb );
 	}
 
-	/**
-	 * Sends an ObjectMessage.
-	 *
-	 * @param content The serializable object content.
-	 * @throws JMSException
+	/* (non-Javadoc)
+	 * @see com.atomikos.jms.extra.JmsSenderTemplate#sendObjectMessage(java.io.Serializable)
 	 */
+	@Override
 	public void sendObjectMessage(Serializable content) throws JMSException {
 		retrieveDestinationIfNecessary();
 		retrieveReplyToDestinationIfNecessary();
@@ -440,12 +431,10 @@ public abstract class AbstractJmsSenderTemplate
 		executeCallback ( cb );
 	}
 
-	/**
-	 * Sends a ByteMessage.
-	 *
-	 * @param content The content as a byte array.
-	 * @throws JMSException
+	/* (non-Javadoc)
+	 * @see com.atomikos.jms.extra.JmsSenderTemplate#sendBytesMessage(byte[])
 	 */
+	@Override
 	public void sendBytesMessage(byte[] content) throws JMSException {
 		retrieveDestinationIfNecessary();
 		retrieveReplyToDestinationIfNecessary();
