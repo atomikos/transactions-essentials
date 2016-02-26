@@ -346,8 +346,6 @@ public final class Configuration
 
 	private static void loadAssembler() {
         ServiceLoader<Assembler> loader = ServiceLoader.load(Assembler.class,Configuration.class.getClassLoader());
-        //empty cache
-        loader.reload();
 		Iterator<Assembler> it = loader.iterator();
 		if (it.hasNext()) {
 			assembler = it.next();
