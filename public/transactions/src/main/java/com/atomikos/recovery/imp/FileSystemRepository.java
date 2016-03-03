@@ -79,8 +79,6 @@ public class FileSystemRepository implements
 		String str = serializer.toJSON(coordinatorLogEntry);
 		byte[] buffer = str.getBytes();
 		ByteBuffer buff = ByteBuffer.wrap(buffer);
-		buff.put(buffer);
-		buff.rewind();
 		writeToFile(buff, coordinatorLogEntry.shouldSync() && flushImmediately);
 	}
 
