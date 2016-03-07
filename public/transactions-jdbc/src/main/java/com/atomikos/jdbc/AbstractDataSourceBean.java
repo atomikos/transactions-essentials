@@ -256,7 +256,7 @@ implements DataSource, ConnectionPoolProperties, Referenceable, Serializable
 
 	public synchronized void init() throws AtomikosSQLException 
 	{
-		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": init..." );
+		if ( LOGGER.isInfoEnabled() ) LOGGER.logNewInfo ( this + ": init..." );
 		if (connectionPool != null)
 			return;
 		
@@ -292,7 +292,7 @@ implements DataSource, ConnectionPoolProperties, Referenceable, Serializable
 	
 	public void close() 
 	{
-		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": close..." );
+		if ( LOGGER.isInfoEnabled() ) LOGGER.logNewInfo ( this + ": close..." );
 		if (connectionPool != null) {
 			connectionPool.destroy();
 		}

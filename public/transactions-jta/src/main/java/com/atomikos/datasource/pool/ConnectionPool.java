@@ -286,7 +286,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 	{
 
 		if ( ! destroyed ) {
-			LOGGER.logInfo ( this + ": destroying pool..." );
+			LOGGER.logNewInfo ( this + ": destroying pool..." );
 			for ( int i=0 ; i < connections.size() ; i++ ) {
 				XPooledConnection xpc = ( XPooledConnection ) connections.get(i);
 				if ( !xpc.isAvailable() ) {

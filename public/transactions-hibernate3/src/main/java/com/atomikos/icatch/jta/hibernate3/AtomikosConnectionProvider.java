@@ -88,7 +88,7 @@ public class AtomikosConnectionProvider implements ConnectionProvider {
 		}
 
 		Properties atomikosProperties = filterOutHibernateProperties(props);
-		LOGGER.logInfo("configuring AtomikosConnectionProvider with properties: " + atomikosProperties);
+		LOGGER.logNewInfo("configuring AtomikosConnectionProvider with properties: " + atomikosProperties);
 
 		try {
 			PropertyUtils.setProperties(dataSource, atomikosProperties);

@@ -327,7 +327,7 @@ Referenceable, Serializable {
 	 */
 	public synchronized void init() throws JMSException
 	{
-		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": init..." );
+		if ( LOGGER.isInfoEnabled() ) LOGGER.logNewInfo ( this + ": init..." );
 		if (connectionPool != null)
 			return;
 		
@@ -382,7 +382,7 @@ Referenceable, Serializable {
 		}
 		
 		
-		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo(
+		if ( LOGGER.isInfoEnabled() ) LOGGER.logNewInfo(
 				this + ": initializing with [" +
 				" xaConnectionFactory=" + xaConnectionFactory + "," +
 				" xaConnectionFactoryClassName=" + xaConnectionFactoryClassName + "," +
@@ -551,7 +551,7 @@ Referenceable, Serializable {
 	 */
 	public synchronized void close() 
 	{
-		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": close..." );
+		if ( LOGGER.isInfoEnabled() ) LOGGER.logNewInfo ( this + ": close..." );
 		if ( connectionPool != null ) {
 			connectionPool.destroy();
 			connectionPool = null;

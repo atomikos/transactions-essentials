@@ -155,7 +155,7 @@ public class AtomikosNonXADataSourceBean extends AbstractDataSourceBean
 	protected ConnectionFactory doInit() throws Exception 
 	{
 		AtomikosNonXAConnectionFactory ret = null;
-		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo(
+		if ( LOGGER.isInfoEnabled() ) LOGGER.logNewInfo(
 				this + ": initializing with [" +
 				" uniqueResourceName=" + getUniqueResourceName() + "," +
 				" maxPoolSize=" + getMaxPoolSize() + "," +
