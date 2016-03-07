@@ -16,7 +16,8 @@ import org.mockito.Mockito;
 
 public class Log4JLoggerFactoryTestJUnit extends AbstractLoggerFactoryTest {
 
-	//can't mock the "logger" Itself but Logger call a "publish" method on a mocked handler
+	// can't mock the "logger" Itself but Logger call a "publish" method on a
+	// mocked handler
 	private Appender mockedAppender = Mockito.mock(Appender.class);
 
 	public void setUp() {
@@ -33,7 +34,7 @@ public class Log4JLoggerFactoryTestJUnit extends AbstractLoggerFactoryTest {
 
 	public void testLogDebug() {
 		configureLoggingFrameworkWithDebug();
-		logger.logTrace(MESSAGE);
+		logger.logDebug(MESSAGE);
 		assertLoggedAsDebug();
 	}
 
@@ -42,7 +43,7 @@ public class Log4JLoggerFactoryTestJUnit extends AbstractLoggerFactoryTest {
 		ArgumentCaptor<LoggingEvent> arg = ArgumentCaptor.forClass(LoggingEvent.class);
 		Mockito.verify(mockedAppender).doAppend(arg.capture());
 		LoggingEvent loggingEvent = arg.getValue();
-		assertLoggingEvent(loggingEvent,Level.DEBUG,false);
+		assertLoggingEvent(loggingEvent, Level.DEBUG, false);
 	}
 
 	@Override
@@ -50,13 +51,14 @@ public class Log4JLoggerFactoryTestJUnit extends AbstractLoggerFactoryTest {
 		ArgumentCaptor<LoggingEvent> arg = ArgumentCaptor.forClass(LoggingEvent.class);
 		Mockito.verify(mockedAppender).doAppend(arg.capture());
 		LoggingEvent loggingEvent = arg.getValue();
-		assertLoggingEvent(loggingEvent,Level.DEBUG,true);
+		assertLoggingEvent(loggingEvent, Level.DEBUG, true);
 	}
 
-	private void assertLoggingEvent(LoggingEvent loggingEvent,Level expectedLevel,boolean withThrowable) {
+	private void assertLoggingEvent(LoggingEvent loggingEvent,
+			Level expectedLevel, boolean withThrowable) {
 		assertEquals(MESSAGE, loggingEvent.getMessage());
 		assertEquals(expectedLevel, loggingEvent.getLevel());
-		if(withThrowable){
+		if (withThrowable) {
 			assertNotNull(loggingEvent.getThrowableInformation());
 		} else {
 			assertNull(loggingEvent.getThrowableInformation());
@@ -69,7 +71,7 @@ public class Log4JLoggerFactoryTestJUnit extends AbstractLoggerFactoryTest {
 		ArgumentCaptor<LoggingEvent> arg = ArgumentCaptor.forClass(LoggingEvent.class);
 		Mockito.verify(mockedAppender).doAppend(arg.capture());
 		LoggingEvent loggingEvent = arg.getValue();
-		assertLoggingEvent(loggingEvent,Level.INFO,false);
+		assertLoggingEvent(loggingEvent, Level.INFO, false);
 	}
 
 	@Override
@@ -77,7 +79,7 @@ public class Log4JLoggerFactoryTestJUnit extends AbstractLoggerFactoryTest {
 		ArgumentCaptor<LoggingEvent> arg = ArgumentCaptor.forClass(LoggingEvent.class);
 		Mockito.verify(mockedAppender).doAppend(arg.capture());
 		LoggingEvent loggingEvent = arg.getValue();
-		assertLoggingEvent(loggingEvent,Level.INFO,true);
+		assertLoggingEvent(loggingEvent, Level.INFO, true);
 
 	}
 
@@ -86,15 +88,15 @@ public class Log4JLoggerFactoryTestJUnit extends AbstractLoggerFactoryTest {
 		ArgumentCaptor<LoggingEvent> arg = ArgumentCaptor.forClass(LoggingEvent.class);
 		Mockito.verify(mockedAppender).doAppend(arg.capture());
 		LoggingEvent loggingEvent = arg.getValue();
-		assertLoggingEvent(loggingEvent,Level.WARN,false);
-		}
+		assertLoggingEvent(loggingEvent, Level.WARN, false);
+	}
 
 	@Override
 	protected void assertLoggedAsWarningWithException() {
 		ArgumentCaptor<LoggingEvent> arg = ArgumentCaptor.forClass(LoggingEvent.class);
 		Mockito.verify(mockedAppender).doAppend(arg.capture());
 		LoggingEvent loggingEvent = arg.getValue();
-		assertLoggingEvent(loggingEvent,Level.WARN,true);
+		assertLoggingEvent(loggingEvent, Level.WARN, true);
 	}
 
 	public void testIsInfoEnabled() {
@@ -118,30 +120,54 @@ public class Log4JLoggerFactoryTestJUnit extends AbstractLoggerFactoryTest {
 		return org.apache.log4j.Logger.getLogger(getClass());
 	}
 
-  @Override
-  protected void assertLoggedAsError() {
-    ArgumentCaptor<LoggingEvent> arg = ArgumentCaptor.forClass(LoggingEvent.class);
-    Mockito.verify(mockedAppender).doAppend(arg.capture());
-    LoggingEvent loggingEvent = arg.getValue();
-    assertLoggingEvent(loggingEvent,Level.ERROR,false);
-  }
+	@Override
+	protected void assertLoggedAsError() {
+		ArgumentCaptor<LoggingEvent> arg = ArgumentCaptor.forClass(LoggingEvent.class);
+		Mockito.verify(mockedAppender).doAppend(arg.capture());
+		LoggingEvent loggingEvent = arg.getValue();
+		assertLoggingEvent(loggingEvent, Level.ERROR, false);
+	}
 
-  @Override
-  protected void assertLoggedAsErrorWithException() {
-    ArgumentCaptor<LoggingEvent> arg = ArgumentCaptor.forClass(LoggingEvent.class);
-    Mockito.verify(mockedAppender).doAppend(arg.capture());
-    LoggingEvent loggingEvent = arg.getValue();
-    assertLoggingEvent(loggingEvent,Level.ERROR,true);
-  }
+	@Override
+	protected void assertLoggedAsErrorWithException() {
+		ArgumentCaptor<LoggingEvent> arg = ArgumentCaptor.forClass(LoggingEvent.class);
+		Mockito.verify(mockedAppender).doAppend(arg.capture());
+		LoggingEvent loggingEvent = arg.getValue();
+		assertLoggingEvent(loggingEvent, Level.ERROR, true);
+	}
 
-  @Override
-  protected void configureLoggingFrameworkWithNone() {
-    getUnderlyingLogger().setLevel(Level.OFF);
-  }
+	@Override
+	protected void configureLoggingFrameworkWithNone() {
+		getUnderlyingLogger().setLevel(Level.OFF);
+	}
 
-  @Override
-  protected void configureLoggingFrameworkWithError() {
-    getUnderlyingLogger().setLevel(Level.ERROR);    
-  }
+	@Override
+	protected void configureLoggingFrameworkWithError() {
+		getUnderlyingLogger().setLevel(Level.ERROR);
+	}
+
+	@Override
+	protected void configureLoggingFrameworkWithTrace() {
+		getUnderlyingLogger().setLevel(Level.TRACE);
+
+	}
+
+	@Override
+	protected void assertLoggedAsTrace() {
+		ArgumentCaptor<LoggingEvent> arg = ArgumentCaptor.forClass(LoggingEvent.class);
+		Mockito.verify(mockedAppender).doAppend(arg.capture());
+		LoggingEvent loggingEvent = arg.getValue();
+		assertLoggingEvent(loggingEvent, Level.TRACE, false);
+
+	}
+
+	@Override
+	protected void assertLoggedAsTraceWithException() {
+		ArgumentCaptor<LoggingEvent> arg = ArgumentCaptor.forClass(LoggingEvent.class);
+		Mockito.verify(mockedAppender).doAppend(arg.capture());
+		LoggingEvent loggingEvent = arg.getValue();
+		assertLoggingEvent(loggingEvent, Level.TRACE, true);
+
+	}
 
 }

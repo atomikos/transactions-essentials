@@ -78,5 +78,14 @@ public class Log4j2Logger implements Logger {
 	public boolean isErrorEnabled() {
 		return logger.isErrorEnabled();
 	}
+	@Override
+	public void logInfo(String message, Throwable error) {
+		logger.info(message, error);
+	}
+	
+	@Override
+	public boolean isInfoEnabled() {
+		return logger.isInfoEnabled();
+	}
 
 }

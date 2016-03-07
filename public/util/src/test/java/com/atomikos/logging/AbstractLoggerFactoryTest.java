@@ -18,18 +18,35 @@ public abstract class AbstractLoggerFactoryTest extends TestCase {
 
 	protected Logger logger;
 
+	public void testLogTrace() {
+		configureLoggingFrameworkWithTrace();
+		logger.logTrace(MESSAGE);
+		assertLoggedAsTrace();
+	}
 
+	protected abstract void configureLoggingFrameworkWithTrace() ;
+
+	protected abstract void assertLoggedAsTrace();
+	
 	public void testLogDebug() {
 		configureLoggingFrameworkWithDebug();
-		logger.logTrace(MESSAGE);
+		logger.logDebug(MESSAGE);
 		assertLoggedAsDebug();
 	}
 
 	protected abstract void assertLoggedAsDebug();
 
+	public void testLogTraceWithException() {
+		configureLoggingFrameworkWithTrace();
+		logger.logTrace(MESSAGE,ERROR);
+		assertLoggedAsTraceWithException();
+	}
+	
+	protected abstract void assertLoggedAsTraceWithException() ;
+
 	public void testLogDebugWithException() {
 		configureLoggingFrameworkWithDebug();
-		logger.logTrace(MESSAGE,ERROR);
+		logger.logDebug(MESSAGE,ERROR);
 		assertLoggedAsDebugWithException();
 	}
 
@@ -40,14 +57,14 @@ public abstract class AbstractLoggerFactoryTest extends TestCase {
 	}
 
 	public void testLogInfo() {
-		logger.logDebug(MESSAGE);
+		logger.logInfo(MESSAGE);
 		assertLoggedAsInfo();
 	}
 
 	protected abstract void assertLoggedAsInfo();
 
 	public void testLogInfoWithException() {
-		logger.logDebug(MESSAGE,ERROR);
+		logger.logInfo(MESSAGE,ERROR);
 		assertLoggedAsInfoWithException();
 	}
 
@@ -81,16 +98,21 @@ public abstract class AbstractLoggerFactoryTest extends TestCase {
   
   protected abstract void assertLoggedAsErrorWithException();
 
-	public void testIsDebugEnabled() {
+  public void testIsTraceEnabled() {
 		assertFalse(logger.isTraceEnabled());
-		configureLoggingFrameworkWithDebug();
+		configureLoggingFrameworkWithTrace();
 		assertTrue(logger.isTraceEnabled());
+	}
+	public void testIsDebugEnabled() {
+		assertFalse(logger.isDebugEnabled());
+		configureLoggingFrameworkWithDebug();
+		assertTrue(logger.isDebugEnabled());
 	}
 
 	public void testIsInfoEnabled() {
-		assertFalse(logger.isDebugEnabled());
+		assertFalse(logger.isInfoEnabled());
 		configureLoggingFrameworkWithInfo();
-		assertTrue(logger.isDebugEnabled());
+		assertTrue(logger.isInfoEnabled());
 	}
 	
 	public void testIsErrorEnabled() {
