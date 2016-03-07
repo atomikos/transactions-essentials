@@ -13,6 +13,8 @@ public interface Logger {
   void logError(String message);
 
   void logWarning(String message);
+  
+  void logNewInfo(String message);
 
   void logInfo(String message);
 

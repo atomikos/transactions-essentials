@@ -22,6 +22,11 @@ class Log4JLogger implements Logger {
 		log4jLogger.warn(message);
 	}
 
+	@Override
+	public void logNewInfo(String message) {
+		log4jLogger.info(message);
+	}
+	
 	public void logInfo(String message) {
 		log4jLogger.info(message);
 	}

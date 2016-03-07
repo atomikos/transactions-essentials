@@ -20,6 +20,10 @@ class Slf4jLogger implements Logger {
 		slf4j.warn(message);
 	}
 
+	public void logNewInfo(String message) {
+		slf4j.info(message);
+	}
+	
 	public void logInfo(String message) {
 		slf4j.info(message);
 	}

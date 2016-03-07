@@ -23,6 +23,11 @@ class JULLogger implements Logger {
 	public void logWarning(String message) {
 		julLogger.log(Level.WARNING,message);
 	}
+	
+	public void logNewInfo(String message) {
+		julLogger.log(Level.INFO,message);
+
+	}
 
 	public void logInfo(String message) {
 		julLogger.log(Level.INFO,message);
