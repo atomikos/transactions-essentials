@@ -241,7 +241,7 @@ public class RecoveryLogImp implements RecoveryLog, AdminLog {
 		long accumulatedWaitTime = 0;
 		int waitTime = 1000;
 		while (pendingCoordinatorLogEntries.length>0 && (accumulatedWaitTime < maxWaitTime)) {
-			LOGGER.logWarning("Waiting for termination of pending coordinators...");
+			LOGGER.logInfo("Waiting for termination of pending coordinators...");
 			synchronized(this) {
 				try {
 					this.wait (waitTime);
