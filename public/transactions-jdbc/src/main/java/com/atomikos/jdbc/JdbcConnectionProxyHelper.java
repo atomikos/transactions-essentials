@@ -46,7 +46,7 @@ public class JdbcConnectionProxyHelper {
 					Throwable cause = ite.getCause();
 					if ( cause != null ) {
 						//log as debug and let the convert do the rest for the cause
-						if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( msg , ite );
+						if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( msg , ite );
 						convertProxyError ( cause , msg );
 					}
 					else {

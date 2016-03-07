@@ -43,7 +43,7 @@ class AtomikosJmsMessageConsumerProxy extends ConsumerProducerSupport implements
 		} catch (Exception e) {
 			handleException ( e );
 		}
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": receive returning " + ret );
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": receive returning " + ret );
 		return ret;
 	}
 
@@ -57,7 +57,7 @@ class AtomikosJmsMessageConsumerProxy extends ConsumerProducerSupport implements
 		} catch (Exception e) {
 			handleException ( e );
 		}
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": receive returning " + ret );
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": receive returning " + ret );
 		return ret;
 	}
 
@@ -71,7 +71,7 @@ class AtomikosJmsMessageConsumerProxy extends ConsumerProducerSupport implements
 		} catch (Exception e) {
 			handleException ( e );
 		}
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": receiveNoWait returning " + ret );
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": receiveNoWait returning " + ret );
 		return ret;
 	}
 
@@ -83,7 +83,7 @@ class AtomikosJmsMessageConsumerProxy extends ConsumerProducerSupport implements
 		} catch (Exception e) {
 			handleException ( e );
 		}
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": close done." );	
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": close done." );	
 	}
 
 	public MessageListener getMessageListener() throws JMSException {
@@ -94,7 +94,7 @@ class AtomikosJmsMessageConsumerProxy extends ConsumerProducerSupport implements
 		} catch (Exception e) {
 			handleException ( e );
 		}
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": getMessageListener() returning " + ret );
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": getMessageListener() returning " + ret );
 		return ret;
 	}
 
@@ -106,7 +106,7 @@ class AtomikosJmsMessageConsumerProxy extends ConsumerProducerSupport implements
 		} catch (Exception e) {
 			handleException ( e );
 		}
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": getMessageSelector() returning " + ret );
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": getMessageSelector() returning " + ret );
 		return ret;
 	}
 
@@ -117,7 +117,7 @@ class AtomikosJmsMessageConsumerProxy extends ConsumerProducerSupport implements
 		}catch (Exception e) {
 			handleException ( e );
 		}
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": setMessageListener done." );
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": setMessageListener done." );
 	}
 	
 	public String toString() 

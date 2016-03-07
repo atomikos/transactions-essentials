@@ -105,8 +105,8 @@ public class ClassLoadingHelper {
 		try {
 			ret = newProxyInstance(classLoadersToTry, interfaces, delegate);
 		} catch (IllegalArgumentException someClassNotFound) {
-			if (LOGGER.isDebugEnabled()) {
-				LOGGER.logDebug("could not create Atomikos proxy with all requested interfaces - trying again with minimum set of interfaces");
+			if (LOGGER.isTraceEnabled()) {
+				LOGGER.logTrace("could not create Atomikos proxy with all requested interfaces - trying again with minimum set of interfaces");
 			}
 
 			ret = newProxyInstance(classLoadersToTry, minimumSetOfInterfaces,

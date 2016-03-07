@@ -21,7 +21,7 @@ public abstract class AbstractLoggerFactoryTest extends TestCase {
 
 	public void testLogDebug() {
 		configureLoggingFrameworkWithDebug();
-		logger.logDebug(MESSAGE);
+		logger.logTrace(MESSAGE);
 		assertLoggedAsDebug();
 	}
 
@@ -29,7 +29,7 @@ public abstract class AbstractLoggerFactoryTest extends TestCase {
 
 	public void testLogDebugWithException() {
 		configureLoggingFrameworkWithDebug();
-		logger.logDebug(MESSAGE,ERROR);
+		logger.logTrace(MESSAGE,ERROR);
 		assertLoggedAsDebugWithException();
 	}
 
@@ -82,9 +82,9 @@ public abstract class AbstractLoggerFactoryTest extends TestCase {
   protected abstract void assertLoggedAsErrorWithException();
 
 	public void testIsDebugEnabled() {
-		assertFalse(logger.isDebugEnabled());
+		assertFalse(logger.isTraceEnabled());
 		configureLoggingFrameworkWithDebug();
-		assertTrue(logger.isDebugEnabled());
+		assertTrue(logger.isTraceEnabled());
 	}
 
 	public void testIsInfoEnabled() {

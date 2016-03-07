@@ -45,7 +45,7 @@ public class AtomikosJTATransactionFactory extends JTATransactionFactory {
 		} catch ( Exception e ) {
 			//fix for case 58114: exceptions here for Hibernate 3.2.7 and higher
 			String msg = "Hibernate: error during config - ignore for hibernate 3.2.7 or higher";
-			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( msg , e );
+			if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( msg , e );
 		}
     }
 

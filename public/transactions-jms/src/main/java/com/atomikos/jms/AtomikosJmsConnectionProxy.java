@@ -58,7 +58,7 @@ implements SessionHandleStateChangeListener
  	   }
  	   catch ( Exception e ) {
  		   //ignore: workaround code
- 		   if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "JMS: driver complains while enforcing XA mode - ignore if no later errors:" , e );
+ 		   if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( "JMS: driver complains while enforcing XA mode - ignore if no later errors:" , e );
  	   } 
  	   finally {
  		   if ( s != null ) {
@@ -66,7 +66,7 @@ implements SessionHandleStateChangeListener
  				   s.close();
  			   } catch ( JMSException e ) {
  				   //ignore: workaround code
- 				   if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "JMS: driver complains while enforcing XA mode - ignore if no later errors:" , e );
+ 				   if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( "JMS: driver complains while enforcing XA mode - ignore if no later errors:" , e );
  			   }
  		   }
  	   }
@@ -129,7 +129,7 @@ implements SessionHandleStateChangeListener
 			}
 			
 			if ( CLOSE_METHOD.equals ( methodName ) ) {
-				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug( this + ": intercepting call to close" );
+				if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace( this + ": intercepting call to close" );
 				close();
 				return null;
 			} else if ( reaped ) {
@@ -177,14 +177,14 @@ implements SessionHandleStateChangeListener
 					session = ( Session ) AtomikosJmsNonXaSessionProxy.newInstance( wrapped , owner , this );
 					addSession ( session );
 				}
-				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": returning " + session );
+				if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": returning " + session );
 				return session;
 				
 			} else {		
 			
 					if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": calling " + methodName + " on JMS driver...");
 					Object ret = method.invoke(delegate, args);
-					if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": " + methodName + " returning " + ret );
+					if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": " + methodName + " returning " + ret );
 					return ret;
 			
 			}
@@ -244,7 +244,7 @@ implements SessionHandleStateChangeListener
 		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": close()...");
 		
 		closed = true;		
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": closing " + sessions.size() + " session(s)" );
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": closing " + sessions.size() + " session(s)" );
 		
 		//close all sessions to make sure the session close notifications are done!
 		synchronized (sessions) {
@@ -259,18 +259,18 @@ implements SessionHandleStateChangeListener
 			}
 		}
 		
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug( this + ": is available ? " + isAvailable() );
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace( this + ": is available ? " + isAvailable() );
 		if (isAvailable())
 			owner.onTerminated();
 		
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": closed." );	
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": closed." );	
 		//leave destroy to the owning pooled connection - that one knows when any and all 2PCs are done
 	}
 
 
 	//should only be called after ALL sessions are done, i.e. when the connection can be pooled again
 	synchronized void destroy() {
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": closing connection and all " + sessions.size() + " session(s)" );
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": closing connection and all " + sessions.size() + " session(s)" );
 
 		//close all sessions to make sure the session close notifications are done!
 		synchronized (sessions) {

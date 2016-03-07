@@ -93,7 +93,7 @@ abstract class ConsumerProducerSupport
 	}
 
 	private void registerSynchronization ( CompositeTransaction ct ) throws AtomikosJMSException {
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": detected transaction " + ct );
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": detected transaction " + ct );
 		ct.registerSynchronization ( new JmsRequeueSynchronization( ct ) );
 	}
 	
@@ -113,9 +113,9 @@ abstract class ConsumerProducerSupport
 			if ( afterCompletionDone ) return;
 			
 			if ( txState.isHeuristic() || txState == TxState.TERMINATED ) {
-				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug( "JmsRequeueSynchronization: detected termination of transaction " + compositeTransaction );
+				if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace( "JmsRequeueSynchronization: detected termination of transaction " + compositeTransaction );
 				state.notifyTransactionTerminated(compositeTransaction);
-				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug( "JmsRequeueSynchronization: is in terminated state ? " + state.isTerminated() );			
+				if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace( "JmsRequeueSynchronization: is in terminated state ? " + state.isTerminated() );			
 	            afterCompletionDone = true;
 	        }	
         	

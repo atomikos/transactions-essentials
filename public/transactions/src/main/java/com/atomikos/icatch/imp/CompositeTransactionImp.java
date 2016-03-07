@@ -347,7 +347,7 @@ class CompositeTransactionImp extends AbstractCompositeTransaction implements FS
 
             } catch ( Exception e ) {
                 // ignore but log
-            	LOGGER.logDebug("Ignoring error during event callback",e);
+            	LOGGER.logTrace("Ignoring error during event callback",e);
             }
         }
 

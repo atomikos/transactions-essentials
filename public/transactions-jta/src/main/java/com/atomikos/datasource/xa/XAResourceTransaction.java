@@ -185,8 +185,8 @@ public class XAResourceTransaction implements ResourceTransaction, Participant {
 			}
 		} catch (XAException xa) {
 			// timed out?
-			if (LOGGER.isDebugEnabled())
-				LOGGER.logDebug(this.resourcename
+			if (LOGGER.isTraceEnabled())
+				LOGGER.logTrace(this.resourcename
 						+ ": XAResource needs refresh", xa);
 
 			if (this.resource == null) {
@@ -204,8 +204,8 @@ public class XAResourceTransaction implements ResourceTransaction, Participant {
 	}
 
 	private void forceRefreshXAConnection() throws XAException {
-		if (LOGGER.isDebugEnabled())
-			LOGGER.logDebug(this.resourcename
+		if (LOGGER.isTraceEnabled())
+			LOGGER.logTrace(this.resourcename
 					+ ": forcing refresh of XAConnection...");
 		if (this.resource == null) {
 			// cf bug 67951 - happens on recovery without resource found
@@ -273,8 +273,8 @@ public class XAResourceTransaction implements ResourceTransaction, Participant {
 			} catch (XAException xaerr) {
 				String msg = interpretErrorCode(this.resourcename, "end",
 						this.xid, xaerr.errorCode);
-				if (LOGGER.isDebugEnabled())
-					LOGGER.logDebug(msg, xaerr);
+				if (LOGGER.isTraceEnabled())
+					LOGGER.logTrace(msg, xaerr);
 				// don't throw: fix for case 102827
 			}
 			setState(TxState.LOCALLY_DONE);
@@ -364,7 +364,7 @@ public class XAResourceTransaction implements ResourceTransaction, Participant {
 				this.xaresource.forget(this.xid);
 			}
 		} catch (Exception err) {
-			LOGGER.logDebug("Error forgetting xid: " + this.xid, err);
+			LOGGER.logTrace("Error forgetting xid: " + this.xid, err);
 			// we don't care here
 		}
 		setState(TxState.TERMINATED);
@@ -395,8 +395,8 @@ public class XAResourceTransaction implements ResourceTransaction, Participant {
 			// refresh xaresource for MQSeries: seems to close XAResource after
 			// suspend???
 			testOrRefreshXAResourceFor2PC();
-			if (LOGGER.isDebugEnabled()) {
-				LOGGER.logDebug("About to call prepare on XAResource instance: "
+			if (LOGGER.isTraceEnabled()) {
+				LOGGER.logTrace("About to call prepare on XAResource instance: "
 						+ this.xaresource);
 			}
 			ret = this.xaresource.prepare(this.xid);
@@ -492,8 +492,8 @@ public class XAResourceTransaction implements ResourceTransaction, Participant {
 																	// semantics
 																	// of
 																	// rollback
-				if (LOGGER.isDebugEnabled())
-					LOGGER.logDebug(msg);
+				if (LOGGER.isTraceEnabled())
+					LOGGER.logTrace(msg);
 			} else {
 				LOGGER.logWarning(msg, xaerr);
 				switch (xaerr.errorCode) {
@@ -511,8 +511,8 @@ public class XAResourceTransaction implements ResourceTransaction, Participant {
 					break;
 				case XAException.XAER_NOTA:
 					// see case 21552
-					if (LOGGER.isDebugEnabled()) {
-						LOGGER.logDebug("XAResource.rollback: invalid Xid - already rolled back in resource?");
+					if (LOGGER.isTraceEnabled()) {
+						LOGGER.logTrace("XAResource.rollback: invalid Xid - already rolled back in resource?");
 					}
 					setState(TxState.TERMINATED);
 					// ignore error - corresponds to semantics of rollback!
@@ -689,8 +689,8 @@ public class XAResourceTransaction implements ResourceTransaction, Participant {
 	 */
 
 	public void setXAResource(XAResource xaresource) {
-		if (LOGGER.isDebugEnabled())
-			LOGGER.logDebug(this + ": about to switch to XAResource "
+		if (LOGGER.isTraceEnabled())
+			LOGGER.logTrace(this + ": about to switch to XAResource "
 					+ xaresource);
 		this.xaresource = xaresource;
 		try {
@@ -701,8 +701,8 @@ public class XAResourceTransaction implements ResourceTransaction, Participant {
 			LOGGER.logWarning(msg, e);
 			// we don't care
 		}
-		if (LOGGER.isDebugEnabled())
-			LOGGER.logDebug("XAResourceTransaction " + getXid()
+		if (LOGGER.isTraceEnabled())
+			LOGGER.logTrace("XAResourceTransaction " + getXid()
 					+ ": switched to XAResource " + xaresource);
 	}
 

@@ -307,7 +307,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
    
     void setState ( TxState state ) throws IllegalStateException
     {
-        if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Coordinator " + getCoordinatorId ()
+        if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( "Coordinator " + getCoordinatorId ()
                 + " entering state: " + state.toString () );
         fsm_.setState ( state );
 
@@ -523,11 +523,11 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
         	ret = stateHandler_.prepare ();
         	if ( ret == Participant.READ_ONLY ) {
 
-        		 if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug (  "prepare() of Coordinator  " + getCoordinatorId ()
+        		 if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace (  "prepare() of Coordinator  " + getCoordinatorId ()
          				+ " returning READONLY" );
         	} else {
 
-        		 if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "prepare() of Coordinator  " + getCoordinatorId ()
+        		 if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( "prepare() of Coordinator  " + getCoordinatorId ()
          				+ " returning YES vote");
         	}
         }
@@ -657,12 +657,12 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     {
     	synchronized ( fsm_ ) {
     		if ( timer_ != null ) {
-    			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Coordinator " + getCoordinatorId() + " : stopping timer..." );
+    			if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( "Coordinator " + getCoordinatorId() + " : stopping timer..." );
     			timer_.stop ();
     		}
-    		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Coordinator " + getCoordinatorId() + " : disposing statehandler " + stateHandler_.getState() + "..." );
+    		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( "Coordinator " + getCoordinatorId() + " : disposing statehandler " + stateHandler_.getState() + "..." );
     		stateHandler_.dispose ();
-    		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Coordinator " + getCoordinatorId() + " : disposed." );
+    		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( "Coordinator " + getCoordinatorId() + " : disposed." );
     	}
     }
 
@@ -703,10 +703,10 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     		addParticipant ( p );
     	} catch ( IllegalStateException alreadyTerminated ) {
     		//happens in rollback after timeout - see case 27857; ignore but log
-    		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Error during setRollbackOnly" , alreadyTerminated );
+    		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( "Error during setRollbackOnly" , alreadyTerminated );
     	} catch ( RollbackException e ) {
     		//ignore: corresponds to desired outcome
-    		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Error during setRollbackOnly" , e );
+    		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( "Error during setRollbackOnly" , e );
         }
     }
 

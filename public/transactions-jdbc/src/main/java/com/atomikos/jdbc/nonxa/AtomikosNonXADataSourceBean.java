@@ -193,7 +193,7 @@ public class AtomikosNonXADataSourceBean extends AbstractDataSourceBean
         com.atomikos.jdbc.nonxa.AtomikosThreadLocalConnection previous = (AtomikosThreadLocalConnection) dproxy.getInvocationHandler();
 
         previous.incUseCount();
-        if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": returning " + proxy );
+        if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": returning " + proxy );
 		return proxy;
 	}
 

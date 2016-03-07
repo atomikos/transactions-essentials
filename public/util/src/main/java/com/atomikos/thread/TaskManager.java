@@ -74,8 +74,8 @@ public enum TaskManager {
 		@Override
 		public Thread newThread(Runnable r) {
 			String realName = "Atomikos:" + count.incrementAndGet();
-			if (LOGGER.isDebugEnabled())
-				LOGGER.logDebug("ThreadFactory: creating new thread: "+ realName);
+			if (LOGGER.isTraceEnabled())
+				LOGGER.logTrace("ThreadFactory: creating new thread: "+ realName);
 			Thread thread = new Thread(group, r, realName);
 			thread.setContextClassLoader(Thread.currentThread().getContextClassLoader());
 			thread.setDaemon(true);

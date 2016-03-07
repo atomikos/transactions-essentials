@@ -184,7 +184,7 @@ public abstract class XATransactionalResource implements TransactionalResource
             }
         } catch ( XAException xa ) {
             // timed out?
-            if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this.servername
+            if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this.servername
                     + ": XAResource needs refresh?", xa );
 
         }
@@ -291,7 +291,7 @@ public abstract class XATransactionalResource implements TransactionalResource
                     // the same is enough. Needed for SONICMQ and others.
                     ret = true;
                 } else {
-                	LOGGER.logDebug ( "XAResources claim to be different: "
+                	LOGGER.logTrace ( "XAResources claim to be different: "
                                     + xares + " and " + xaresource );
                 }
             } catch ( XAException xe ) {
@@ -312,7 +312,7 @@ public abstract class XATransactionalResource implements TransactionalResource
     {
         // null on first invocation
         if ( needsRefresh () ) {
-        	LOGGER.logDebug ( this.servername + ": refreshing XAResource..." );
+        	LOGGER.logTrace ( this.servername + ": refreshing XAResource..." );
             this.xares_ = refreshXAConnection ();
             LOGGER.logInfo ( this.servername + ": refreshed XAResource" );
         }
@@ -412,7 +412,7 @@ public abstract class XATransactionalResource implements TransactionalResource
     {
 
         if ( recoveryService != null ) {
-            if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Installing recovery service on resource "
+            if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( "Installing recovery service on resource "
                     + getName () );
             this.branchIdentifier=recoveryService.getName();
             recover();

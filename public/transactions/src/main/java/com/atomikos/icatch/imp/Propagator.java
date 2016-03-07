@@ -64,7 +64,7 @@ class Propagator
         				if ( tryAgain  ) {
         				  //wait a little before retrying
         				  Thread.sleep ( RETRY_INTERVAL );
-                          if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Propagator: retrying " + "message: " + msg );
+                          if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( "Propagator: retrying " + "message: " + msg );
         				}
         			} while ( tryAgain );
         		}

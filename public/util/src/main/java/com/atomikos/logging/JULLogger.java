@@ -29,8 +29,8 @@ class JULLogger implements Logger {
 
 	}
 
-	public void logDebug(String message) {
-		julLogger.log(Level.FINE,message);
+	public void logTrace(String message) {
+		julLogger.log(Level.FINEST,message);
 	}
 
 	public void logWarning(String message, Throwable error) {
@@ -42,12 +42,12 @@ class JULLogger implements Logger {
 
 	}
 
-	public void logDebug(String message, Throwable error) {
-		julLogger.log(Level.FINE, message, error);
+	public void logTrace(String message, Throwable error) {
+		julLogger.log(Level.FINEST, message, error);
 	}
 
-	public boolean isDebugEnabled() {
-		return julLogger.isLoggable(Level.FINE);
+	public boolean isTraceEnabled() {
+		return julLogger.isLoggable(Level.FINEST);
 	}
 
 	public boolean isInfoEnabled() {

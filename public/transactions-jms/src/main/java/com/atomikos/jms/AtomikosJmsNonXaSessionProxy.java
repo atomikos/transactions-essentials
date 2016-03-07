@@ -75,7 +75,7 @@ class AtomikosJmsNonXaSessionProxy extends AbstractJmsSessionProxy
 			try {
 				tx = tm.getTransaction();
 			} catch (SystemException e) {
-				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": Failed to get transaction."  , e );
+				if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": Failed to get transaction."  , e );
 				//ignore
 			}
 			if ( tx != null ) {
@@ -119,7 +119,7 @@ class AtomikosJmsNonXaSessionProxy extends AbstractJmsSessionProxy
 			try {
 				if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": calling " + methodName + " on vendor session..." );
 				Object ret =  method.invoke(delegate, args);
-				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": " + methodName + " returning " + ret );
+				if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": " + methodName + " returning " + ret );
 				return ret;
 			} catch (Exception ex) {
 				errorsOccurred = true;

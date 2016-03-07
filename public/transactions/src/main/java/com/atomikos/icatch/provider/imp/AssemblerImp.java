@@ -61,7 +61,7 @@ public class AssemblerImp implements Assembler {
     		if (url != null) {
     			loadPropertiesFromUrl(p, url);
     		} else {
-    			LOGGER.logDebug("Could not find expected property file: " + fileName);
+    			LOGGER.logTrace("Could not find expected property file: " + fileName);
     		}
     }
 
@@ -73,7 +73,7 @@ public class AssemblerImp implements Assembler {
 			in.close();
 			LOGGER.logInfo("Loaded " + url.toString());
 		} catch (IOException e) {
-			LOGGER.logDebug("Failed to load property file: " + url.toString(), e);
+			LOGGER.logTrace("Failed to load property file: " + url.toString(), e);
 		}
 	}
 

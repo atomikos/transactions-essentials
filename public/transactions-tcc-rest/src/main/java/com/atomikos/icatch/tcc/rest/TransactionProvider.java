@@ -62,9 +62,9 @@ public class TransactionProvider implements MessageBodyWriter<Transaction>, Mess
 		MessageBodyReader<Transaction> reader = this.providers.getMessageBodyReader(type, genericType, annotations,
 				realMediaType);
 		InputStream in = entityStream;
-		if (LOGGER.isDebugEnabled()) {
+		if (LOGGER.isTraceEnabled()) {
 			String content = getStringFromInputStream(entityStream);
-			LOGGER.logDebug("Incoming REST request payload:\n" + content);
+			LOGGER.logTrace("Incoming REST request payload:\n" + content);
 			in = new ByteArrayInputStream(content.getBytes());
 		}
 
@@ -85,7 +85,7 @@ public class TransactionProvider implements MessageBodyWriter<Transaction>, Mess
 			}
 
 		} catch (IOException e) {
-			LOGGER.logDebug("Failed to read REST payload.", e);
+			LOGGER.logTrace("Failed to read REST payload.", e);
 		} finally {
 			if (br != null) {
 				try {

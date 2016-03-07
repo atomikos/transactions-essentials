@@ -119,7 +119,7 @@ public abstract class AbstractJmsSenderTemplate implements JmsSenderTemplate
 			msg.append ( "destination=" ).append( getDestinationName() ).append ( ", " );
 			msg.append ( "replyToDestination=" ).append ( getReplyToDestinationName() );
 			msg.append ( "]" );
-			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( msg.toString() );
+			if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( msg.toString() );
 			inited = true;
 		}
 	}
@@ -198,14 +198,14 @@ public abstract class AbstractJmsSenderTemplate implements JmsSenderTemplate
 				try {
 					ret = q.getQueueName();
 				} catch ( JMSException e ) {
-					if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": error retrieving queue name" , e );
+					if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": error retrieving queue name" , e );
 				}
 			} else if ( d instanceof Topic ) {
 				Topic t = ( Topic ) d;
 				try {
 					ret = t.getTopicName();
 				} catch ( JMSException e ) {
-					if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": error retrieving topic name" , e );
+					if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": error retrieving topic name" , e );
 				}
 			}
 		}
@@ -296,9 +296,9 @@ public abstract class AbstractJmsSenderTemplate implements JmsSenderTemplate
 	    try {
 	    	conn = getOrReuseConnection();
 	    	session = getOrRefreshSession ( conn );
-	    	if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Calling callback..." );
+	    	if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( "Calling callback..." );
 	    	callback.doInJmsSession ( session );
-	        if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Callback done!" );
+	        if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( "Callback done!" );
 	        afterUseWithoutErrors ( conn , session );
 
 	    } catch ( AtomikosTransactionRequiredJMSException notx ) {

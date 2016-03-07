@@ -24,8 +24,8 @@ class Slf4jLogger implements Logger {
 		slf4j.info(message);
 	}
 
-	public void logDebug(String message) {
-		slf4j.debug(message);
+	public void logTrace(String message) {
+		slf4j.trace(message);
 	}
 
 	public void logWarning(String message, Throwable error) {
@@ -37,13 +37,13 @@ class Slf4jLogger implements Logger {
 		slf4j.info(message,error);
 	}
 
-	public void logDebug(String message, Throwable error) {
-		slf4j.debug(message,error);
+	public void logTrace(String message, Throwable error) {
+		slf4j.trace(message,error);
 
 	}
 
-	public boolean isDebugEnabled() {
-		return slf4j.isDebugEnabled();
+	public boolean isTraceEnabled() {
+		return slf4j.isTraceEnabled();
 	}
 
 	public boolean isInfoEnabled() {

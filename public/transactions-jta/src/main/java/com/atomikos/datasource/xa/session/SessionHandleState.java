@@ -85,7 +85,7 @@ public class SessionHandleState
 	 */
 	public synchronized void notifySessionBorrowed()
 	{
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": notifySessionBorrowed" );
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": notifySessionBorrowed" );
 		currentContext = new TransactionContext ( resource , xaResource );
 		allContexts.add ( currentContext );
 		closed = false;
@@ -99,7 +99,7 @@ public class SessionHandleState
 	
 	public void notifySessionClosed()
 	{
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": entering notifySessionClosed" );
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": entering notifySessionClosed" );
 		boolean notifyOfClosedEvent = false;
 	
 		synchronized ( this ) {
@@ -107,7 +107,7 @@ public class SessionHandleState
 			Iterator<TransactionContext> it = allContexts.iterator();
 			while ( it.hasNext() ) {
 				TransactionContext b = ( TransactionContext ) it.next();
-				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": delegating session close to " + b ) ;
+				if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": delegating session close to " + b ) ;
 				b.sessionClosed();
 			}
 			closed = true;
@@ -115,7 +115,7 @@ public class SessionHandleState
 		}
 		//do callbacks out of synch!!!
 		if ( notifyOfClosedEvent ) {
-			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": all contexts terminated, firing TerminatedEvent" );
+			if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": all contexts terminated, firing TerminatedEvent" );
 			fireTerminatedEvent();
 		}
 	}
@@ -156,7 +156,7 @@ public class SessionHandleState
 			else {
 				//no suspended branch was found -> try to use the current branch
 				try {
-					if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": checking XA context for transaction " + ct );
+					if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": checking XA context for transaction " + ct );
 					currentContext.checkEnlistBeforeUse ( ct );
 				}
 				catch ( UnexpectedTransactionContextException txBoundaryPassed ) {
@@ -230,7 +230,7 @@ public class SessionHandleState
 		
 		//check termination status CHANGES - only fire event once for safety!
 		if ( notifyOfTerminatedEvent ) {
-			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug( this + ": all contexts terminated, firing TerminatedEvent for " + this);
+			if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace( this + ": all contexts terminated, firing TerminatedEvent for " + this);
 			fireTerminatedEvent();
 		}
 	}

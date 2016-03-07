@@ -270,7 +270,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
             CoordinatorImp coordinator , Stack<CompositeTransaction> lineage , boolean serial )
             throws SysException
     {
-    		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Creating composite transaction: " + tid );
+    		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( "Creating composite transaction: " + tid );
         CompositeTransactionImp ct = new CompositeTransactionImp ( this,
                 lineage, tid, serial, coordinator );
 
@@ -428,7 +428,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
 
     		if ( ! tsListeners_.contains ( listener ) ) {
     			tsListeners_.addElement ( listener );
-    			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug (  "Added TSListener: " + listener );
+    			if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace (  "Added TSListener: " + listener );
     		}
 
 
@@ -442,7 +442,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
     {
 
         tsListeners_.removeElement ( listener );
-        if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug  ( "Removed TSListener: " + listener );
+        if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace  ( "Removed TSListener: " + listener );
 
     }
     
@@ -658,7 +658,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
     private void shutdown(boolean force, long maxWaitTime) {
     	
         boolean wasShuttingDown = false;
-        if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Transaction Service: Entering shutdown ( "
+        if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( "Transaction Service: Entering shutdown ( "
                 + force + " )..." );
 
         // following moved out of synch block to avoid deadlock on immediate
@@ -672,21 +672,21 @@ public class TransactionServiceImp implements TransactionServiceProvider,
             Enumeration<String> enumm = rootToCoordinatorMap_.keys ();
             while ( enumm.hasMoreElements () ) {
                 String tid = enumm.nextElement ();
-                LOGGER.logDebug ( "Transaction Service: Stopping thread for root "
+                LOGGER.logTrace ( "Transaction Service: Stopping thread for root "
                                 + tid + "..." );
                 CoordinatorImp c = (CoordinatorImp) rootToCoordinatorMap_
                         .get ( tid );
                 if ( c != null ) { //null if intermediate termination while in enumm
                 		c.dispose (); //needed for forced shutdown
                 }
-                LOGGER.logDebug ( "Transaction Service: Thread stopped." );
+                LOGGER.logTrace ( "Transaction Service: Thread stopped." );
             }
 
         } // if wasShuttingDown
 
 
         synchronized ( shutdownSynchronizer_ ) {
-        	LOGGER.logDebug ( "Transaction Service: Shutdown acquired lock on waiter." );
+        	LOGGER.logTrace ( "Transaction Service: Shutdown acquired lock on waiter." );
             wasShuttingDown = shutdownInProgress_;
             shutdownInProgress_ = true;
             // check for active coordinators (who might be indoubt)
@@ -704,7 +704,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
 
             	//PURGE to avoid issue 10079
             	//use a clone to avoid concurrency interference
-            	if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Transaction Service: Purging coordinators for shutdown..." );
+            	if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( "Transaction Service: Purging coordinators for shutdown..." );
             	Hashtable<String,CoordinatorImp> clone = new Hashtable<String,CoordinatorImp>(rootToCoordinatorMap_);
             	Enumeration<String> coordinatorIds = clone.keys();
             	while ( coordinatorIds.hasMoreElements() ) {

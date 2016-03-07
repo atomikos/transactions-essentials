@@ -33,8 +33,8 @@ public class Log4j2Logger implements Logger {
 	}
 
 	@Override
-	public void logDebug(String message) {
-		logger.debug(message);
+	public void logTrace(String message) {
+		logger.trace(message);
 	}
 
 	@Override
@@ -54,14 +54,14 @@ public class Log4j2Logger implements Logger {
 	}
 
 	@Override
-	public void logDebug(String message, Throwable error) {
-		logger.debug(message, error);
+	public void logTrace(String message, Throwable error) {
+		logger.trace(message, error);
 
 	}
 
 	@Override
-	public boolean isDebugEnabled() {
-		return logger.isDebugEnabled();
+	public boolean isTraceEnabled() {
+		return logger.isTraceEnabled();
 	}
 
 	@Override

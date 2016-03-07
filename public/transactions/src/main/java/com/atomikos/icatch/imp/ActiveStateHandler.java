@@ -115,7 +115,7 @@ class ActiveStateHandler extends CoordinatorStateHandler
 
         if ( orphansExist() ) {
             try {
-                if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Orphans detected: "
+                if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( "Orphans detected: "
                         + getCoordinator ().getLocalSiblingCount () + " vs "
                         + globalSiblingCount_ + " - forcing rollback." );
                 rollbackWithAfterCompletionNotification(new RollbackCallback() {

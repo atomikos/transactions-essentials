@@ -351,7 +351,7 @@ Referenceable, Serializable {
 			//don't log: AtomikosJMSException is logged on creation by the factory methods
 			throwAtomikosJMSException("Cannot initialize AtomikosConnectionFactoryBean", ex);
 		}
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": init done." );
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": init done." );
 
 	}
 	
@@ -561,7 +561,7 @@ Referenceable, Serializable {
 			IntraVmObjectRegistry.removeResource ( getUniqueResourceName() );
 		} catch ( NameNotFoundException e ) {
 			//ignore but log
-			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": error removing from JNDI" , e );
+			if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": error removing from JNDI" , e );
 		}
 		
 		RecoverableResource res = Configuration.getResource ( getUniqueResourceName() );
@@ -571,7 +571,7 @@ Referenceable, Serializable {
 			res.close();
 		}
 		
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": close done." );
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": close done." );
 	}
 	
 	public String toString() 
@@ -602,7 +602,7 @@ Referenceable, Serializable {
 		} catch (ConnectionPoolException e) {
 			throwAtomikosJMSException ( "Error borrowing connection", e );
 		}
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": createConnection() returning " + ret );
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": createConnection() returning " + ret );
 		return ret;
 	}
 
@@ -625,7 +625,7 @@ Referenceable, Serializable {
 		Reference ret = null;
 		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": getReference()..." );
 		ret = IntraVmObjectFactory.createReference ( this , getUniqueResourceName() );
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": getReference() returning " + ret );
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": getReference() returning " + ret );
 		return ret;
 	}
 	

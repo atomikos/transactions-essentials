@@ -56,13 +56,13 @@ class AtomikosNonXAPooledConnection extends AbstractXPooledConnection
 	
 	void setErroneous() 
 	{
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": setErroneous" );
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": setErroneous" );
 		this.erroneous = true;
 	}
 
 	public void destroy() 
 	{
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": destroying..." );
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": destroying..." );
 		try {
 			if ( connection != null ) connection.close();
 		} catch ( SQLException e ) {
@@ -76,14 +76,14 @@ class AtomikosNonXAPooledConnection extends AbstractXPooledConnection
 	{
 		Reapable ret = null;
 		if ( canBeRecycledForCallingThread() ) {
-			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": reusing existing proxy for thread..." );
+			if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": reusing existing proxy for thread..." );
 			ret = getCurrentConnectionProxy();
 			DynamicProxy dproxy = ( DynamicProxy ) ret;
 			AtomikosThreadLocalConnection previous = (AtomikosThreadLocalConnection) dproxy.getInvocationHandler();
 			//DON't increment use count: see case 27793
 			//previous.incUseCount();
 		} else {
-			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": creating connection proxy..." );
+			if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": creating connection proxy..." );
 			JdbcConnectionProxyHelper.setIsolationLevel ( connection, getDefaultIsolationLevel() );
 			ret = ( Reapable ) AtomikosThreadLocalConnection.newInstance ( this , props.getUniqueResourceName() );
 		}
@@ -101,7 +101,7 @@ class AtomikosNonXAPooledConnection extends AbstractXPooledConnection
 		String testQuery = getTestQuery();
 		if ( isErroneous() ) throw new CreateConnectionException ( this + ": connection is erroneous" );
 		if (testQuery != null) {
-			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": testing connection with query [" + testQuery + "]" );
+			if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": testing connection with query [" + testQuery + "]" );
 			Statement stmt = null;
 			try {
 				stmt = connection.createStatement();
@@ -112,10 +112,10 @@ class AtomikosNonXAPooledConnection extends AbstractXPooledConnection
 				//catch any Exception - cf case 22198
 				throw new CreateConnectionException ( "Error executing testQuery" ,  e );
 			}
-			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": connection tested OK" );
+			if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": connection tested OK" );
 		}
 		else {
-			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": no test query, skipping test" );
+			if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": no test query, skipping test" );
 		}
 	}
 

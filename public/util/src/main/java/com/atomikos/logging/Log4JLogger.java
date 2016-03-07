@@ -26,8 +26,8 @@ class Log4JLogger implements Logger {
 		log4jLogger.info(message);
 	}
 
-	public void logDebug(String message) {
-		log4jLogger.debug(message);
+	public void logTrace(String message) {
+		log4jLogger.trace(message);
 	}
 
 	public void logWarning(String message, Throwable error) {
@@ -39,13 +39,13 @@ class Log4JLogger implements Logger {
 		log4jLogger.info(message, error);
 	}
 
-	public void logDebug(String message, Throwable error) {
-		log4jLogger.debug(message, error);
+	public void logTrace(String message, Throwable error) {
+		log4jLogger.trace(message, error);
 	}
 
-	public boolean isDebugEnabled() {
+	public boolean isTraceEnabled() {
 
-		return log4jLogger.isDebugEnabled();
+		return log4jLogger.isTraceEnabled();
 	}
 
 	public boolean isInfoEnabled() {

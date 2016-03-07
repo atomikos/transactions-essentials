@@ -335,8 +335,8 @@ class TransactionImp implements Transaction {
 				// cf case 61740: check for concurrent additions before this
 				// synch block was entered
 				if (Configuration.getResource(ret.getName()) == null) {
-					if (LOGGER.isDebugEnabled()) {
-						LOGGER.logDebug("constructing new temporary resource "
+					if (LOGGER.isTraceEnabled()) {
+						LOGGER.logTrace("constructing new temporary resource "
 								+ "for unknown XAResource: " + xares);
 					}
 					Configuration.addResource(ret);

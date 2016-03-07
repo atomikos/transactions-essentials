@@ -200,13 +200,13 @@ public class CompositeTransactionManagerImp implements CompositeTransactionManag
         CompositeTransaction ct = null;
         ct = getCurrentTx ();
         if ( ct != null ) {
-        	if(LOGGER.isDebugEnabled()){
-            	LOGGER.logDebug("getCompositeTransaction()  returning instance with id "
+        	if(LOGGER.isTraceEnabled()){
+            	LOGGER.logTrace("getCompositeTransaction()  returning instance with id "
                         + ct.getTid ());
         	}
         } else{
-        	if(LOGGER.isDebugEnabled()){
-        		LOGGER.logDebug("getCompositeTransaction() returning NULL!");
+        	if(LOGGER.isTraceEnabled()){
+        		LOGGER.logTrace("getCompositeTransaction() returning NULL!");
         	}
         }
 
@@ -222,13 +222,13 @@ public class CompositeTransactionManagerImp implements CompositeTransactionManag
     {
         CompositeTransaction ret = getTransactionService().getCompositeTransaction ( tid );
         if ( ret != null ) {
-        	if(LOGGER.isDebugEnabled()){
-        		LOGGER.logDebug("getCompositeTransaction ( " + tid
+        	if(LOGGER.isTraceEnabled()){
+        		LOGGER.logTrace("getCompositeTransaction ( " + tid
                     + " ) returning instance with tid " + ret.getTid ());
         	}
         } else {
-        	if(LOGGER.isDebugEnabled()){
-        		LOGGER.logDebug( "getCompositeTransaction ( " + tid
+        	if(LOGGER.isTraceEnabled()){
+        		LOGGER.logTrace( "getCompositeTransaction ( " + tid
                     + " ) returning null");
         	}
         }

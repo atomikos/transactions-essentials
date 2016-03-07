@@ -123,13 +123,13 @@ public class FileSystemRepository implements
 			br.close();
 
 		} catch (java.io.EOFException unexpectedEOF) {
-			LOGGER.logDebug("Unexpected EOF - logfile not closed properly last time?", unexpectedEOF);
+			LOGGER.logTrace("Unexpected EOF - logfile not closed properly last time?", unexpectedEOF);
 			// merely return what was read so far...
 		} catch (StreamCorruptedException unexpectedEOF) {
-			LOGGER.logDebug("Unexpected EOF - logfile not closed properly last time?", unexpectedEOF);
+			LOGGER.logTrace("Unexpected EOF - logfile not closed properly last time?", unexpectedEOF);
 			// merely return what was read so far...
 		} catch (ObjectStreamException unexpectedEOF) {
-			LOGGER.logDebug("Unexpected EOF - logfile not closed properly last time?", unexpectedEOF);
+			LOGGER.logTrace("Unexpected EOF - logfile not closed properly last time?", unexpectedEOF);
 			// merely return what was read so far...
 		} catch (FileNotFoundException firstStart) {
 			// the file could not be opened for reading;

@@ -38,7 +38,7 @@ class TxRollbackOnlyStateHandler extends TransactionStateHandler
     	try {
     		participant.rollback();
     	} catch ( Exception ignore ) {
-    		LOGGER.logDebug("Ignoring exception on participant rollback",ignore);
+    		LOGGER.logTrace("Ignoring exception on participant rollback",ignore);
     	}
 
     	return getCT().getCoordinatorImp();

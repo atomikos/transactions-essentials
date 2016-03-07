@@ -16,7 +16,7 @@ public interface Logger {
 
   void logInfo(String message);
 
-  void logDebug(String message);
+  void logTrace(String message);
   
   void logError(String message, Throwable error);
 
@@ -24,9 +24,9 @@ public interface Logger {
 
   void logInfo(String message, Throwable error);
 
-  void logDebug(String message, Throwable error);
+  void logTrace(String message, Throwable error);
 
-  boolean isDebugEnabled();
+  boolean isTraceEnabled();
 
   boolean isInfoEnabled();
   

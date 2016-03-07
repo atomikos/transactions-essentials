@@ -60,7 +60,7 @@ class ParticipantAdapterImp implements ParticipantAdapter {
 		try {
 			p.cancel();
 		} catch (Exception ignore) {
-			LOGGER.logDebug("Error invoking cancel on participant", ignore);
+			LOGGER.logTrace("Error invoking cancel on participant", ignore);
 		}
 	}
 
@@ -84,7 +84,7 @@ class ParticipantAdapterImp implements ParticipantAdapter {
 		try {
 			client.options();
 		} catch (Exception e) {
-			LOGGER.logDebug("Error retrieving options", e);
+			LOGGER.logTrace("Error retrieving options", e);
 		}
 	}
 

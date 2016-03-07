@@ -42,7 +42,7 @@ implements InvocationHandler
 			try {
 				String msg = "Forcing close of pending statement: " + s;
 				if ( warn ) LOGGER.logWarning ( msg );
-				else LOGGER.logDebug ( msg );
+				else LOGGER.logTrace ( msg );
 				s.close();
 			} catch ( Exception e ) {
 				//ignore but log

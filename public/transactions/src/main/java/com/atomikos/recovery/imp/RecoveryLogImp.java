@@ -248,7 +248,7 @@ public class RecoveryLogImp implements RecoveryLog, AdminLog {
 				} catch (InterruptedException ex) {
 					InterruptedExceptionHelper.handleInterruptedException ( ex );
 					// ignore
-					if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": interrupted during wait" , ex );
+					if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": interrupted during wait" , ex );
 				}
 			}
 			accumulatedWaitTime+=waitTime;

@@ -256,7 +256,7 @@ class MessageConsumerSession
 	    msg.append ( "exceptionListener=" ).append ( getExceptionListener() ).append ( ", " );
 	    msg.append ( "connectionFactory=" ).append ( getAtomikosConnectionFactoryBean() );
 	    msg.append ( "]" );
-	    if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( msg.toString() );
+	    if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( msg.toString() );
 
 	}
 
@@ -275,14 +275,14 @@ class MessageConsumerSession
 				try {
 					ret = q.getQueueName();
 				} catch (JMSException e) {
-					if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Error retrieving queue name" , e );
+					if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( "Error retrieving queue name" , e );
 				}
 			} else if ( destination instanceof Topic ) {
 				Topic t = ( Topic ) destination;
 				try {
 					ret = t.getTopicName();
 				} catch (JMSException e) {
-					if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Error retrieving topic name" , e );
+					if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( "Error retrieving topic name" , e );
 				}
 			}
 		}
@@ -306,7 +306,7 @@ class MessageConsumerSession
 	        //FIXED 10082
 	        current.setDaemon ( daemonThreads );
 	        current.start ();
-	        if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "MessageConsumerSession: started new thread: " + current );
+	        if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( "MessageConsumerSession: started new thread: " + current );
 		    }
 		    //if not active: ignore
 	}
@@ -427,7 +427,7 @@ class MessageConsumerSession
 									//see case 62452 and 80464: wait for listener thread to exit so the subscriber is no longer in use
 									if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( "MessageConsumerSession: waiting for listener thread to finish..." );
 									this.join();
-									if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "MessageConsumerSession: waiting done." );
+									if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( "MessageConsumerSession: waiting done." );
 
 								}
 
@@ -450,7 +450,7 @@ class MessageConsumerSession
 					    	if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( "MessageConsumerSession: closing JMS session..." );
 					        session.close ();
 					        session = null;
-					        if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "MessageConsumerSession: JMS session closed." );
+					        if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( "MessageConsumerSession: JMS session closed." );
 					    } catch ( JMSException e ) {
 					        if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo (
 					                "MessageConsumerSession: Error closing JMS session",
@@ -463,7 +463,7 @@ class MessageConsumerSession
 					    	if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( "MessageConsumerSession: closing JMS connection..." );
 					        connection.close ();
 					        connection = null;
-					        if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "MessageConsumerSession: JMS connection closed." );
+					        if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( "MessageConsumerSession: JMS connection closed." );
 					    } catch ( JMSException e ) {
 					    	LOGGER
 					                .logWarning (
@@ -498,7 +498,7 @@ class MessageConsumerSession
 
 	            while ( Thread.currentThread () == current ) {
 
-	            	   if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "MessageConsumerSession: JMS listener thread iterating..." );
+	            	   if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( "MessageConsumerSession: JMS listener thread iterating..." );
 	                boolean refresh = false;
 	                boolean commit = true;
 	                try {
@@ -546,7 +546,7 @@ class MessageConsumerSession
 	                                            + msg.toString () );
 	                            listener.onMessage ( msg );
 	                            LOGGER
-	                                    .logDebug ( "MessageConsumerSession: Consumed message: "
+	                                    .logTrace ( "MessageConsumerSession: Consumed message: "
 	                                            + msg.toString () );
 	                        } else {
 	                            commit = false;
@@ -631,7 +631,7 @@ class MessageConsumerSession
 	                        // a new thread.
 	                        try {
 	                        	LOGGER
-	                                    .logDebug ( "MessageConsumerSession: Suspending any active transaction..." );
+	                                    .logTrace ( "MessageConsumerSession: Suspending any active transaction..." );
 	                            // try to suspend
 	                            tm.suspend ();
 	                        } catch ( SystemException err ) {
@@ -643,7 +643,7 @@ class MessageConsumerSession
 	                            // can't risk a pending transaction
 	                            try {
 	                            	LOGGER
-	                                        .logDebug ( "MessageConsumerSession: Starting new thread..." );
+	                                        .logTrace ( "MessageConsumerSession: Starting new thread..." );
 	                                startNewThread();
 	                            } catch ( Throwable fatal ) {
 	                                // happens if queue or factory no longer set
@@ -671,7 +671,7 @@ class MessageConsumerSession
 	                    	try {
 	                    		receiver.close();
 	                    	} catch ( Throwable e ) {
-	                    		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "MessageConsumerSession: Error closing receiver" , e );
+	                    		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( "MessageConsumerSession: Error closing receiver" , e );
 	                    	}
 	                        receiver = null;
 	                        closeJmsResources ( false );
@@ -685,7 +685,7 @@ class MessageConsumerSession
 	              try {
                     receiver.close();
                   } catch ( Throwable e ) {
-                    LOGGER.logDebug ( "MessageConsumerSession: Error closing receiver" , e );
+                    LOGGER.logTrace ( "MessageConsumerSession: Error closing receiver" , e );
                   }
                   receiver = null;
 	            }

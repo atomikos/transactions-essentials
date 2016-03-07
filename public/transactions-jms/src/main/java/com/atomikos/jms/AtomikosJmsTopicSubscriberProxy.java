@@ -30,7 +30,7 @@ class AtomikosJmsTopicSubscriberProxy extends AtomikosJmsMessageConsumerProxy
 	{
 		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": getDelegateTopicSubscriber()..." );
 		TopicSubscriber ret =  ( TopicSubscriber ) getDelegate();
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": getDelegateTopicSubscriber() returning " + ret );
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": getDelegateTopicSubscriber() returning " + ret );
 		return ret;
 	}
 
@@ -43,7 +43,7 @@ class AtomikosJmsTopicSubscriberProxy extends AtomikosJmsMessageConsumerProxy
 		} catch (Exception e) {
 			handleException(e);
 		}
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": getNoLocal() returning " + ret );
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": getNoLocal() returning " + ret );
 		return ret;
 	}
 
@@ -56,7 +56,7 @@ class AtomikosJmsTopicSubscriberProxy extends AtomikosJmsMessageConsumerProxy
 		} catch (Exception e) {
 			handleException ( e );
 		}
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug (  this + ": getTopic() returning " + ret );
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace (  this + ": getTopic() returning " + ret );
 		return ret;
 	}
 	

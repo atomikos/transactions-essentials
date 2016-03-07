@@ -47,8 +47,8 @@ public class AtomikosContext implements Context {
 	@Override
 	public Object lookup(String s) throws NamingException {
 		Object ret;
-		if (log.isDebugEnabled()) {
-			log.logDebug("looking up '" + s + "'");
+		if (log.isTraceEnabled()) {
+			log.logTrace("looking up '" + s + "'");
 		}
 
 		if (USER_TRANSACTION_NAME.equals(s)) {

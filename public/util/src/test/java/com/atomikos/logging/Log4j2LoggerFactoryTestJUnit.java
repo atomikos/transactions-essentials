@@ -37,7 +37,7 @@ public class Log4j2LoggerFactoryTestJUnit extends AbstractLoggerFactoryTest {
 
 	public void testLogDebug() {
 		configureLoggingFrameworkWithDebug();
-		logger.logDebug(MESSAGE);
+		logger.logTrace(MESSAGE);
 		assertLoggedAsDebug();
 	}
 

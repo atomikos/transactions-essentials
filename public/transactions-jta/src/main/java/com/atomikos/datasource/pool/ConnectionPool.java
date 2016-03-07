@@ -56,7 +56,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 
 	private void init() throws ConnectionPoolException
 	{
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": initializing..." );
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": initializing..." );
 		addConnectionsIfMinPoolSizeNotReached();
 		launchMaintenanceTimer();
 	}
@@ -64,7 +64,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 	private void launchMaintenanceTimer() {
 		int maintenanceInterval = properties.getMaintenanceInterval();
 		if ( maintenanceInterval <= 0 ) {
-			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": using default maintenance interval..." );
+			if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": using default maintenance interval..." );
 			maintenanceInterval = DEFAULT_MAINTENANCE_INTERVAL;
 		}
 		maintenanceTimer = new PooledAlarmTimer ( maintenanceInterval * 1000 );
@@ -88,7 +88,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 				xpc.registerXPooledConnectionEventListener ( this );
 			} catch ( Exception dbDown ) {
 				//see case 26380
-				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": could not establish initial connection" , dbDown );
+				if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": could not establish initial connection" , dbDown );
 			}
 		}
 	}
@@ -108,7 +108,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 
 			if (xpc.canBeRecycledForCallingThread()) {
 				ret = xpc.createConnectionProxy();
-				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug( this + ": recycling connection from pool..." );
+				if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace( this + ": recycling connection from pool..." );
 				return ret;
 			}
 		}
@@ -170,8 +170,8 @@ public class ConnectionPool implements XPooledConnectionEventListener
 	}
 
 	private void logCurrentPoolSize() {
-		if ( LOGGER.isDebugEnabled() )  {
-			LOGGER.logDebug( this +  ": current size: " + availableSize() + "/" + totalSize());
+		if ( LOGGER.isTraceEnabled() )  {
+			LOGGER.logTrace( this +  ": current size: " + availableSize() + "/" + totalSize());
 		}
 	}
 
@@ -187,7 +187,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 			if (xpc.isAvailable()) {
 				try {
 					ret = xpc.createConnectionProxy();
-					if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug( this + ": got connection from pool");
+					if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace( this + ": got connection from pool");
 				} catch ( CreateConnectionException ex ) {
 					String msg = this +  ": error creating proxy of connection " + xpc;
 					LOGGER.logWarning( msg , ex);
@@ -212,7 +212,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 		if (connections == null || properties.getMaxIdleTime() <= 0 )
 			return;
 
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": trying to shrink pool" );
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": trying to shrink pool" );
 		List<XPooledConnection> connectionsToRemove = new ArrayList<XPooledConnection>();
 		int maxConnectionsToRemove = totalSize() - properties.getMinPoolSize();
 		if ( maxConnectionsToRemove > 0 ) {
@@ -221,9 +221,9 @@ public class ConnectionPool implements XPooledConnectionEventListener
 				long lastRelease = xpc.getLastTimeReleased();
 				long maxIdle = properties.getMaxIdleTime();
 				long now = System.currentTimeMillis();
-				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": connection idle for " + (now - lastRelease) + "ms");
+				if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": connection idle for " + (now - lastRelease) + "ms");
 				if ( xpc.isAvailable() &&  ( (now - lastRelease) >= (maxIdle * 1000L) ) && ( connectionsToRemove.size() < maxConnectionsToRemove ) ) {
-					if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": connection idle for more than " + maxIdle + "s, closing it: " + xpc);
+					if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": connection idle for more than " + maxIdle + "s, closing it: " + xpc);
 					destroyPooledConnection(xpc);
 					connectionsToRemove.add(xpc);
 				}
@@ -243,7 +243,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 		long maxInUseTime = properties.getReapTimeout();
 		if ( connections == null || maxInUseTime <= 0 ) return;
 
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": reaping old connections" );
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": reaping old connections" );
 
 		Iterator<XPooledConnection> it = connections.iterator();
 		while ( it.hasNext() ) {
@@ -253,7 +253,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 
 			long now = System.currentTimeMillis();
 			if ( inUse && ( ( now - maxInUseTime * 1000 ) > lastTimeReleased ) ) {
-				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": connection in use for more than " + maxInUseTime + "s, reaping it: " + xpc );
+				if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": connection in use for more than " + maxInUseTime + "s, reaping it: " + xpc );
 				xpc.reap();
 				EventPublisher.publish(new PooledConnectionReapedEvent(properties.getUniqueResourceName(),xpc));
 			}
@@ -266,7 +266,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 		long maxLifetime = properties.getMaxLifetime();
 		if ( connections == null || maxLifetime <= 0 ) return;
 
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": closing connections that exceeded maxLifetime" );
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": closing connections that exceeded maxLifetime" );
 
 		Iterator<XPooledConnection> it = connections.iterator();
 		while ( it.hasNext() ) {
@@ -274,7 +274,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 			long creationTime = xpc.getCreationTime();
 			long now = System.currentTimeMillis();
 			if ( xpc.isAvailable() &&  ( (now - creationTime) >= (maxLifetime * 1000L) ) ) {
-				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": connection in use for more than " + maxLifetime + "s, destroying it: " + xpc );
+				if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": connection in use for more than " + maxLifetime + "s, destroying it: " + xpc );
 				destroyPooledConnection(xpc);
 				it.remove();
 			}
@@ -299,7 +299,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 			connections = null;
 			destroyed = true;
 			maintenanceTimer.stop();
-			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": pool destroyed." );
+			if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": pool destroyed." );
 		}
 	}
 	
@@ -326,16 +326,16 @@ public class ConnectionPool implements XPooledConnectionEventListener
         	if ( waitTime <= 0 ) throw new PoolExhaustedException ( "ConnectionPool: pool is empty - increase either maxPoolSize or borrowConnectionTimeout" );
             long before = System.currentTimeMillis();
         	try {
-        		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": about to wait for connection during " + waitTime + "ms...");
+        		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": about to wait for connection during " + waitTime + "ms...");
         		this.wait (waitTime);
 
 			} catch (InterruptedException ex) {
 				// cf bug 67457
 				InterruptedExceptionHelper.handleInterruptedException ( ex );
 				// ignore
-				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": interrupted during wait" , ex );
+				if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": interrupted during wait" , ex );
 			}
-			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": done waiting." );
+			if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": done waiting." );
 			long now = System.currentTimeMillis();
             waitTime -= (now - before);
         }
@@ -373,7 +373,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 	}
 
 	public synchronized void onXPooledConnectionTerminated(XPooledConnection connection) {
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug( this +  ": connection " + connection + " became available, notifying potentially waiting threads");
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace( this +  ": connection " + connection + " became available, notifying potentially waiting threads");
 		this.notify();
 
 	}
