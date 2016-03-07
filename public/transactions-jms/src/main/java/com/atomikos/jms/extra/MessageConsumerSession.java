@@ -425,7 +425,7 @@ class MessageConsumerSession
 								if ( Thread.currentThread() != this ) {
 
 									//see case 62452 and 80464: wait for listener thread to exit so the subscriber is no longer in use
-									if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( "MessageConsumerSession: waiting for listener thread to finish..." );
+									if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "MessageConsumerSession: waiting for listener thread to finish..." );
 									this.join();
 									if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( "MessageConsumerSession: waiting done." );
 
@@ -438,29 +438,29 @@ class MessageConsumerSession
 
 							} catch ( JMSException e ) {
 
-								 if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo (
+								 if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug (
 					                    "MessageConsumerSession: Error closing on JMS session",
 
 					                    e );
-					            if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( "MessageConsumerSession: linked exception is " , e.getLinkedException() );
+					            if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "MessageConsumerSession: linked exception is " , e.getLinkedException() );
 							}
 						}
 
 					    try {
-					    	if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( "MessageConsumerSession: closing JMS session..." );
+					    	if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "MessageConsumerSession: closing JMS session..." );
 					        session.close ();
 					        session = null;
 					        if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( "MessageConsumerSession: JMS session closed." );
 					    } catch ( JMSException e ) {
-					        if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo (
+					        if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug (
 					                "MessageConsumerSession: Error closing JMS session",
 					                e );
-					        if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( "MessageConsumerSession: linked exception is " , e.getLinkedException() );
+					        if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "MessageConsumerSession: linked exception is " , e.getLinkedException() );
 					    }
 					}
 					if ( connection != null )
 					    try {
-					    	if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( "MessageConsumerSession: closing JMS connection..." );
+					    	if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "MessageConsumerSession: closing JMS connection..." );
 					        connection.close ();
 					        connection = null;
 					        if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( "MessageConsumerSession: JMS connection closed." );
@@ -494,7 +494,7 @@ class MessageConsumerSession
 	            }
 
 	            LOGGER
-	                    .logInfo ( "MessageConsumerSession: Starting JMS listener thread." );
+	                    .logDebug ( "MessageConsumerSession: Starting JMS listener thread." );
 
 	            while ( Thread.currentThread () == current ) {
 
@@ -542,7 +542,7 @@ class MessageConsumerSession
 	                        if ( msg != null && listener != null
 	                                && Thread.currentThread () == current ) {
 	                        	LOGGER
-	                                    .logInfo ( "MessageConsumerSession: Consuming message: "
+	                                    .logDebug ( "MessageConsumerSession: Consuming message: "
 	                                            + msg.toString () );
 	                            listener.onMessage ( msg );
 	                            LOGGER
@@ -552,7 +552,7 @@ class MessageConsumerSession
 	                            commit = false;
 	                        }
 	                    } catch ( Exception e ) {
-	                        if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo (
+	                        if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug (
 	                                "MessageConsumerSession: Error during JMS processing of message "
 	                                        + msg.toString () + " - rolling back.",
 	                                e );
@@ -691,7 +691,7 @@ class MessageConsumerSession
 	            }
 
 	            LOGGER
-	                    .logInfo ( "MessageConsumerSession: JMS listener thread exiting." );
+	                    .logDebug ( "MessageConsumerSession: JMS listener thread exiting." );
 	            if ( listener != null && current == null && notifyListenerOnClose ) {
 	                // if this session stops listening (no more threads active) then
 	                // notify the listener of shutdown by calling with null argument

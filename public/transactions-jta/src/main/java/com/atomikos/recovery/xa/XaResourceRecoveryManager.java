@@ -43,12 +43,12 @@ public class XaResourceRecoveryManager {
 				XID xid = wrapWithOurOwnXidToHaveCorrectEqualsAndHashCode ( vendorXid );
                 if ( branch.startsWith ( tmUniqueName ) ) {
                 	ret = true;
-                    if(LOGGER.isInfoEnabled()){
-                    	LOGGER.logInfo("Resource " + tmUniqueName + " recovering XID: " + xid);
+                    if(LOGGER.isDebugEnabled()){
+                    	LOGGER.logDebug("Resource " + tmUniqueName + " recovering XID: " + xid);
                     }
                 } else {
-                	if(LOGGER.isInfoEnabled()){
-                		LOGGER.logInfo("Resource " + tmUniqueName + ": XID " + xid + 
+                	if(LOGGER.isDebugEnabled()){
+                		LOGGER.logDebug("Resource " + tmUniqueName + ": XID " + xid + 
                 		" with branch " + branch + " is not under my responsibility");
                 	}
                 }

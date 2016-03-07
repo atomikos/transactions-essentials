@@ -138,7 +138,7 @@ extends AbstractDataSourceBean
 		}
 		
 		
-		if ( LOGGER.isInfoEnabled() ) LOGGER.logNewInfo(
+		if ( LOGGER.isDebugEnabled() ) LOGGER.logInfo(
 				this + ": initializing with [" +
 				" xaDataSourceClassName=" + xaDataSourceClassName + "," +
 				" uniqueResourceName=" + getUniqueResourceName() + "," +

@@ -143,8 +143,8 @@ class CompositeTransactionImp extends AbstractCompositeTransaction implements FS
             IllegalStateException
     {
         CompositeTransaction ret = localGetTransactionStateHandler().createSubTransaction ();
-        if(LOGGER.isInfoEnabled()){
-        	LOGGER.logInfo("createSubTransaction(): created new SUBTRANSACTION "
+        if(LOGGER.isDebugEnabled()){
+        	LOGGER.logDebug("createSubTransaction(): created new SUBTRANSACTION "
                     + ret.getTid () + " for existing transaction " + getTid ());
         }
 
@@ -160,8 +160,8 @@ class CompositeTransactionImp extends AbstractCompositeTransaction implements FS
     {
 
         RecoveryCoordinator ret = localGetTransactionStateHandler().addParticipant ( participant );
-        if(LOGGER.isInfoEnabled()){
-        	LOGGER.logInfo("addParticipant ( " + participant + " ) for transaction "
+        if(LOGGER.isDebugEnabled()){
+        	LOGGER.logDebug("addParticipant ( " + participant + " ) for transaction "
                     + getTid ());
         }
         return ret;
@@ -175,8 +175,8 @@ class CompositeTransactionImp extends AbstractCompositeTransaction implements FS
             IllegalStateException, UnsupportedOperationException, SysException
     {
     	localGetTransactionStateHandler().registerSynchronization ( sync );
-    	if(LOGGER.isInfoEnabled()){
-    		LOGGER.logInfo("registerSynchronization ( " + sync + " ) for transaction "
+    	if(LOGGER.isDebugEnabled()){
+    		LOGGER.logDebug("registerSynchronization ( " + sync + " ) for transaction "
                     + getTid ());
     	}
     }
@@ -199,8 +199,8 @@ class CompositeTransactionImp extends AbstractCompositeTransaction implements FS
             SysException
     {
     	localGetTransactionStateHandler().rollbackWithStateCheck ();
-    	if(LOGGER.isInfoEnabled()){
-    		LOGGER.logInfo("rollback() done of transaction " + getTid ());
+    	if(LOGGER.isDebugEnabled()){
+    		LOGGER.logDebug("rollback() done of transaction " + getTid ());
     	}
 
     }
@@ -240,8 +240,8 @@ class CompositeTransactionImp extends AbstractCompositeTransaction implements FS
     {
 
     	localGetTransactionStateHandler().commit ();
-    	if(LOGGER.isInfoEnabled()){
-    		LOGGER.logInfo("commit() done (by application) of transaction " + getTid ());
+    	if(LOGGER.isDebugEnabled()){
+    		LOGGER.logDebug("commit() done (by application) of transaction " + getTid ());
     	}
     }
 
@@ -260,8 +260,8 @@ class CompositeTransactionImp extends AbstractCompositeTransaction implements FS
     public void setRollbackOnly ()
     {
     	localGetTransactionStateHandler().setRollbackOnly ();
-    	if(LOGGER.isInfoEnabled()){
-    		LOGGER.logInfo("setRollbackOnly() called for transaction " + getTid ());
+    	if(LOGGER.isDebugEnabled()){
+    		LOGGER.logDebug("setRollbackOnly() called for transaction " + getTid ());
     	}
 
 

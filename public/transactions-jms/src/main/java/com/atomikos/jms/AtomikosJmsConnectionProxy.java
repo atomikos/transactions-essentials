@@ -147,7 +147,7 @@ implements SessionHandleStateChangeListener
 				if ( createXaSession(transactedFlag.booleanValue()) ) {
 					session = recycleSession();
 					if (session == null) {
-						if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": creating XA-capable session..." );
+						if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": creating XA-capable session..." );
 						forceConnectionIntoXaMode ( delegate );
 						XASession wrapped = null;
 						try {
@@ -164,7 +164,7 @@ implements SessionHandleStateChangeListener
 					CompositeTransactionManager ctm = Configuration.getCompositeTransactionManager();
 					if ( ctm != null ) ct = ctm.getCompositeTransaction();
 					if ( ct != null && ct.getProperty ( TransactionManagerImp.JTA_PROPERTY_NAME ) != null ) {
-						if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": creating NON-XA session - the resulting JMS work will NOT be part of the JTA transaction!" );
+						if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": creating NON-XA session - the resulting JMS work will NOT be part of the JTA transaction!" );
 					}
 					Integer ackMode = ( Integer ) args[1];
 					Session wrapped = null;
@@ -182,7 +182,7 @@ implements SessionHandleStateChangeListener
 				
 			} else {		
 			
-					if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": calling " + methodName + " on JMS driver...");
+					if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": calling " + methodName + " on JMS driver...");
 					Object ret = method.invoke(delegate, args);
 					if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": " + methodName + " returning " + ret );
 					return ret;
@@ -231,7 +231,7 @@ implements SessionHandleStateChangeListener
 					//recycle if either inactive in this tx, OR if active (since a new session will be created anyway, and 
 					//concurrent sessions are allowed on the same underlying connection!
 					if ( proxy.isInactiveTransaction(current) || proxy.isInTransaction( current ) ) {
-						if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": recycling session " + proxy );
+						if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": recycling session " + proxy );
 						return session;
 					}
 				}
@@ -241,7 +241,7 @@ implements SessionHandleStateChangeListener
 	}
 
 	private void close() {
-		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": close()...");
+		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": close()...");
 		
 		closed = true;		
 		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": closing " + sessions.size() + " session(s)" );

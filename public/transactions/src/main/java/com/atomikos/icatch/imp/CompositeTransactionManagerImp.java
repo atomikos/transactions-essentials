@@ -283,14 +283,14 @@ public class CompositeTransactionManagerImp implements CompositeTransactionManag
 
         CompositeTransaction ret = getCurrentTx ();
         if ( ret != null ) {
-        	if(LOGGER.isInfoEnabled()){
-        		LOGGER.logInfo("suspend() for transaction " + ret.getTid ());
+        	if(LOGGER.isDebugEnabled()){
+        		LOGGER.logDebug("suspend() for transaction " + ret.getTid ());
         	}
         	Thread thread = Thread.currentThread();   
             removeThreadMappings ( thread );
         } else {
-        	if(LOGGER.isInfoEnabled()){
-        		LOGGER.logInfo("suspend() called without a transaction context");
+        	if(LOGGER.isDebugEnabled()){
+        		LOGGER.logDebug("suspend() called without a transaction context");
         	}
         }
         return ret;
@@ -322,7 +322,7 @@ public class CompositeTransactionManagerImp implements CompositeTransactionManag
 
         Thread thread = Thread.currentThread ();
         restoreThreadMappings ( ancestors, thread );
-        if(LOGGER.isInfoEnabled()) LOGGER.logInfo("resume ( " + ct + " ) done for transaction " + ct.getTid ());
+        if(LOGGER.isDebugEnabled()) LOGGER.logDebug("resume ( " + ct + " ) done for transaction " + ct.getTid ());
         
     }
 
@@ -391,12 +391,12 @@ public class CompositeTransactionManagerImp implements CompositeTransactionManag
         ct = getCurrentTx ();
         if ( ct == null ) {
             ret = getTransactionService().createCompositeTransaction ( timeout );
-            if(LOGGER.isInfoEnabled()){
-            	LOGGER.logInfo("createCompositeTransaction ( " + timeout + " ): "
+            if(LOGGER.isDebugEnabled()){
+            	LOGGER.logDebug("createCompositeTransaction ( " + timeout + " ): "
                     + "created new ROOT transaction with id " + ret.getTid ());
             }
         } else {
-        	 if(LOGGER.isInfoEnabled()) LOGGER.logInfo("createCompositeTransaction ( " + timeout + " )");
+        	 if(LOGGER.isDebugEnabled()) LOGGER.logDebug("createCompositeTransaction ( " + timeout + " )");
             ret = ct.createSubTransaction ();
 
         }

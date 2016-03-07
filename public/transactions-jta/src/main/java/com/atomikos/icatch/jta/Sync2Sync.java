@@ -35,7 +35,7 @@ class Sync2Sync implements com.atomikos.icatch.Synchronization
     {
         this.sync.beforeCompletion ();
         resetForReuse();
-        LOGGER.logInfo("beforeCompletion() called on Synchronization: " + this.sync.toString());
+        LOGGER.logDebug("beforeCompletion() called on Synchronization: " + this.sync.toString());
     }
 
 	private void resetForReuse() {
@@ -48,18 +48,18 @@ class Sync2Sync implements com.atomikos.icatch.Synchronization
         if ( state == TxState.TERMINATED ) {
             if ( this.committed == null ) { //readonly: unknown
                 this.sync.afterCompletion ( Status.STATUS_UNKNOWN );
-                LOGGER.logInfo ( "afterCompletion ( STATUS_UNKNOWN ) called "
+                LOGGER.logDebug ( "afterCompletion ( STATUS_UNKNOWN ) called "
                                 + " on Synchronization: " + this.sync.toString () );
             } else {
                 boolean commit = this.committed.booleanValue ();
                 if ( commit ) {
                     this.sync.afterCompletion ( Status.STATUS_COMMITTED );
-                    LOGGER.logInfo ( "afterCompletion ( STATUS_COMMITTED ) called "
+                    LOGGER.logDebug ( "afterCompletion ( STATUS_COMMITTED ) called "
                                     + " on Synchronization: "
                                     + this.sync.toString () );
                 } else {
                     this.sync.afterCompletion ( Status.STATUS_ROLLEDBACK );
-                    LOGGER.logInfo ( "afterCompletion ( STATUS_ROLLEDBACK ) called "
+                    LOGGER.logDebug ( "afterCompletion ( STATUS_ROLLEDBACK ) called "
                                     + " on Synchronization: "
                                     + this.sync.toString () );
                 }

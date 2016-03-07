@@ -23,12 +23,12 @@ class Log4JLogger implements Logger {
 	}
 
 	@Override
-	public void logNewInfo(String message) {
+	public void logInfo(String message) {
 		log4jLogger.info(message);
 	}
 	
-	public void logInfo(String message) {
-		log4jLogger.info(message);
+	public void logDebug(String message) {
+		log4jLogger.debug(message);
 	}
 
 	public void logTrace(String message) {
@@ -40,8 +40,8 @@ class Log4JLogger implements Logger {
 
 	}
 
-	public void logInfo(String message, Throwable error) {
-		log4jLogger.info(message, error);
+	public void logDebug(String message, Throwable error) {
+		log4jLogger.debug(message, error);
 	}
 
 	public void logTrace(String message, Throwable error) {
@@ -53,9 +53,9 @@ class Log4JLogger implements Logger {
 		return log4jLogger.isTraceEnabled();
 	}
 
-	public boolean isInfoEnabled() {
+	public boolean isDebugEnabled() {
 
-		return log4jLogger.isInfoEnabled();
+		return log4jLogger.isDebugEnabled();
 	}
   
   public void logError(String message) {

@@ -35,7 +35,7 @@ class AtomikosJmsMessageConsumerProxy extends ConsumerProducerSupport implements
 	}
 	
 	public Message receive() throws JMSException {
-		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": receive()..." );
+		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": receive()..." );
 		Message ret = null;
 		try {
 			enlist();
@@ -48,7 +48,7 @@ class AtomikosJmsMessageConsumerProxy extends ConsumerProducerSupport implements
 	}
 
 	public Message receive ( long timeout ) throws JMSException {
-		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": receive ( " + timeout + ")..." );
+		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": receive ( " + timeout + ")..." );
 		
 		Message ret = null;
 		try {
@@ -62,7 +62,7 @@ class AtomikosJmsMessageConsumerProxy extends ConsumerProducerSupport implements
 	}
 
 	public Message receiveNoWait() throws JMSException {
-		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": receiveNoWait()..." );
+		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": receiveNoWait()..." );
 		
 		Message ret = null;
 		try {
@@ -77,7 +77,7 @@ class AtomikosJmsMessageConsumerProxy extends ConsumerProducerSupport implements
 
 	public void close() throws JMSException {
 		//note: delist is done at session level!
-		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": close..." );
+		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": close..." );
 		try {
 			delegate.close();
 		} catch (Exception e) {
@@ -87,7 +87,7 @@ class AtomikosJmsMessageConsumerProxy extends ConsumerProducerSupport implements
 	}
 
 	public MessageListener getMessageListener() throws JMSException {
-		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": getMessageListener()..." );
+		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": getMessageListener()..." );
 		MessageListener ret = null;
 		try {
 			ret = delegate.getMessageListener();
@@ -99,7 +99,7 @@ class AtomikosJmsMessageConsumerProxy extends ConsumerProducerSupport implements
 	}
 
 	public String getMessageSelector() throws JMSException {
-		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": getMessageSelector()..." );
+		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": getMessageSelector()..." );
 		String ret = null;
 		try {
 			ret = delegate.getMessageSelector();
@@ -111,7 +111,7 @@ class AtomikosJmsMessageConsumerProxy extends ConsumerProducerSupport implements
 	}
 
 	public void setMessageListener ( MessageListener listener ) throws JMSException {
-		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": setMessageListener ( " + listener + " )..." );
+		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": setMessageListener ( " + listener + " )..." );
 		try {
 			delegate.setMessageListener ( listener );
 		}catch (Exception e) {

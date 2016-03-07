@@ -271,8 +271,8 @@ class TransactionImp implements Transaction {
 
 			res = findRecoverableResourceForXaResource(xares);
 
-			if (LOGGER.isInfoEnabled()) {
-				LOGGER.logInfo("enlistResource ( " + xares
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.logDebug("enlistResource ( " + xares
 						+ " ) with transaction " + toString());
 			}
 
@@ -360,8 +360,8 @@ class TransactionImp implements Transaction {
 			throws java.lang.IllegalStateException,
 			javax.transaction.SystemException {
 
-		if (LOGGER.isInfoEnabled()) {
-			LOGGER.logInfo("delistResource ( " + xares + " ) with transaction "
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.logDebug("delistResource ( " + xares + " ) with transaction "
 					+ toString());
 		}
 

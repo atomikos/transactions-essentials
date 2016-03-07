@@ -24,13 +24,13 @@ class JULLogger implements Logger {
 		julLogger.log(Level.WARNING,message);
 	}
 	
-	public void logNewInfo(String message) {
+	public void logInfo(String message) {
 		julLogger.log(Level.INFO,message);
 
 	}
 
-	public void logInfo(String message) {
-		julLogger.log(Level.INFO,message);
+	public void logDebug(String message) {
+		julLogger.log(Level.FINE,message);
 
 	}
 
@@ -42,8 +42,8 @@ class JULLogger implements Logger {
 		julLogger.log(Level.WARNING, message, error);
 		}
 
-	public void logInfo(String message, Throwable error) {
-		julLogger.log(Level.INFO, message, error);
+	public void logDebug(String message, Throwable error) {
+		julLogger.log(Level.FINE, message, error);
 
 	}
 
@@ -55,8 +55,8 @@ class JULLogger implements Logger {
 		return julLogger.isLoggable(Level.FINEST);
 	}
 
-	public boolean isInfoEnabled() {
-		return julLogger.isLoggable(Level.INFO);
+	public boolean isDebugEnabled() {
+		return julLogger.isLoggable(Level.FINE);
 	}
   
   public void logError(String message) {

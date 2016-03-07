@@ -605,8 +605,8 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     public Boolean replayCompletion ( Participant participant )
             throws IllegalStateException
     {
-    	if(LOGGER.isInfoEnabled()){
-    		LOGGER.logInfo("replayCompletion ( " + participant
+    	if(LOGGER.isDebugEnabled()){
+    		LOGGER.logDebug("replayCompletion ( " + participant
                     + " ) received by coordinator " + getCoordinatorId ()
                     + " for participant " + participant.toString ());
     	}

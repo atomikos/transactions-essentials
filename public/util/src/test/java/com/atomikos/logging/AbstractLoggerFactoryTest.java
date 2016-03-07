@@ -40,14 +40,14 @@ public abstract class AbstractLoggerFactoryTest extends TestCase {
 	}
 
 	public void testLogInfo() {
-		logger.logInfo(MESSAGE);
+		logger.logDebug(MESSAGE);
 		assertLoggedAsInfo();
 	}
 
 	protected abstract void assertLoggedAsInfo();
 
 	public void testLogInfoWithException() {
-		logger.logInfo(MESSAGE,ERROR);
+		logger.logDebug(MESSAGE,ERROR);
 		assertLoggedAsInfoWithException();
 	}
 
@@ -88,9 +88,9 @@ public abstract class AbstractLoggerFactoryTest extends TestCase {
 	}
 
 	public void testIsInfoEnabled() {
-		assertFalse(logger.isInfoEnabled());
+		assertFalse(logger.isDebugEnabled());
 		configureLoggingFrameworkWithInfo();
-		assertTrue(logger.isInfoEnabled());
+		assertTrue(logger.isDebugEnabled());
 	}
 	
 	public void testIsErrorEnabled() {

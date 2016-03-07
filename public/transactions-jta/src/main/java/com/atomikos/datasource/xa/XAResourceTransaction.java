@@ -261,8 +261,8 @@ public class XAResourceTransaction implements ResourceTransaction, Participant {
 		// This is required for some hibernate connection release strategies.
 		if (this.state.equals(TxState.ACTIVE)) {
 			try {
-				if (LOGGER.isInfoEnabled()) {
-					LOGGER.logInfo("XAResource.end ( " + this.xidToHexString
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.logDebug("XAResource.end ( " + this.xidToHexString
 							+ " , XAResource.TMSUCCESS ) on resource "
 							+ this.resourcename
 							+ " represented by XAResource instance "
@@ -305,8 +305,8 @@ public class XAResourceTransaction implements ResourceTransaction, Participant {
 					+ this.state);
 
 		try {
-			if (LOGGER.isInfoEnabled()) {
-				LOGGER.logInfo("XAResource.start ( " + this.xidToHexString
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.logDebug("XAResource.start ( " + this.xidToHexString
 						+ " , " + logFlag + " ) on resource "
 						+ this.resourcename
 						+ " represented by XAResource instance "
@@ -414,8 +414,8 @@ public class XAResourceTransaction implements ResourceTransaction, Participant {
 		}
 		setState(TxState.IN_DOUBT);
 		if (ret == XAResource.XA_RDONLY) {
-			if (LOGGER.isInfoEnabled()) {
-				LOGGER.logInfo("XAResource.prepare ( " + this.xidToHexString
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.logDebug("XAResource.prepare ( " + this.xidToHexString
 						+ " ) returning XAResource.XA_RDONLY " + "on resource "
 						+ this.resourcename
 						+ " represented by XAResource instance "
@@ -423,8 +423,8 @@ public class XAResourceTransaction implements ResourceTransaction, Participant {
 			}
 			return Participant.READ_ONLY;
 		} else {
-			if (LOGGER.isInfoEnabled()) {
-				LOGGER.logInfo("XAResource.prepare ( " + this.xidToHexString
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.logDebug("XAResource.prepare ( " + this.xidToHexString
 						+ " ) returning OK " + "on resource "
 						+ this.resourcename
 						+ " represented by XAResource instance "
@@ -470,8 +470,8 @@ public class XAResourceTransaction implements ResourceTransaction, Participant {
 			// refresh xaresource for MQSeries: seems to close XAResource after
 			// suspend???
 			testOrRefreshXAResourceFor2PC();
-			if (LOGGER.isInfoEnabled()) {
-				LOGGER.logInfo("XAResource.rollback ( " + this.xidToHexString
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.logDebug("XAResource.rollback ( " + this.xidToHexString
 						+ " ) " + "on resource " + this.resourcename
 						+ " represented by XAResource instance "
 						+ this.xaresource);
@@ -573,8 +573,8 @@ public class XAResourceTransaction implements ResourceTransaction, Participant {
 			// refresh xaresource for MQSeries: seems to close XAResource after
 			// suspend???
 			testOrRefreshXAResourceFor2PC();
-			if (LOGGER.isInfoEnabled()) {
-				LOGGER.logInfo("XAResource.commit ( " + this.xidToHexString
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.logDebug("XAResource.commit ( " + this.xidToHexString
 						+ " , " + onePhase + " ) on resource "
 						+ this.resourcename
 						+ " represented by XAResource instance "
@@ -715,8 +715,8 @@ public class XAResourceTransaction implements ResourceTransaction, Participant {
 		// not interfere with our suspends (triggered by transaction suspend)
 		if (!this.isXaSuspended) {
 			try {
-				if (LOGGER.isInfoEnabled()) {
-					LOGGER.logInfo("XAResource.suspend ( "
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.logDebug("XAResource.suspend ( "
 							+ this.xidToHexString
 							+ " , XAResource.TMSUSPEND ) on resource "
 							+ this.resourcename
@@ -741,8 +741,8 @@ public class XAResourceTransaction implements ResourceTransaction, Participant {
 
 	public void xaResume() throws XAException {
 		try {
-			if (LOGGER.isInfoEnabled()) {
-				LOGGER.logInfo("XAResource.start ( " + this.xidToHexString
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.logDebug("XAResource.start ( " + this.xidToHexString
 						+ " , XAResource.TMRESUME ) on resource "
 						+ this.resourcename
 						+ " represented by XAResource instance "

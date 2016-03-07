@@ -84,7 +84,7 @@ class AtomikosJmsNonXaSessionProxy extends AbstractJmsSessionProxy
 						"To enable JTA, make sure to do all of the following:" + "\n" +
 						"1. Make sure that the AtomikosConnectionFactoryBean is configured with localTransactionMode=false, and" + "\n" +
 						"2. Make sure to call create JMS sessions with the transacted flag set to true.";
-				if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( msg );
+				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( msg );
 			}
 		}
 	}
@@ -109,7 +109,7 @@ class AtomikosJmsNonXaSessionProxy extends AbstractJmsSessionProxy
 			}
 
 			if ( CLOSE_METHOD.equals ( methodName ) ) {
-				if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": close...");
+				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": close...");
 				destroy();
 				return null;
 			}
@@ -117,7 +117,7 @@ class AtomikosJmsNonXaSessionProxy extends AbstractJmsSessionProxy
 			checkForTransactionContextAndLogWarningIfSo();
 
 			try {
-				if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": calling " + methodName + " on vendor session..." );
+				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": calling " + methodName + " on vendor session..." );
 				Object ret =  method.invoke(delegate, args);
 				if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": " + methodName + " returning " + ret );
 				return ret;
@@ -135,7 +135,7 @@ class AtomikosJmsNonXaSessionProxy extends AbstractJmsSessionProxy
 
 	protected void destroy() {
 		try {
-			if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": destroying session...");
+			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": destroying session...");
 			if ( !closed ) {
 				closed = true;
 				delegate.close(); 

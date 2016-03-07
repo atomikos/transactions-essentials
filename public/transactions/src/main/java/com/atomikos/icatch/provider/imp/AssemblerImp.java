@@ -71,7 +71,7 @@ public class AssemblerImp implements Assembler {
 			in = url.openStream();
 			p.load(in);
 			in.close();
-			LOGGER.logNewInfo("Loaded " + url.toString());
+			LOGGER.logInfo("Loaded " + url.toString());
 		} catch (IOException e) {
 			LOGGER.logTrace("Failed to load property file: " + url.toString(), e);
 		}
@@ -114,7 +114,7 @@ public class AssemblerImp implements Assembler {
 
 	private void logProperties(Properties properties) {
 		for (Entry<Object, Object> entry : properties.entrySet()) {
-			LOGGER.logNewInfo("USING: " + entry.getKey() + " = " + entry.getValue());
+			LOGGER.logInfo("USING: " + entry.getKey() + " = " + entry.getValue());
 		}
 	}
 

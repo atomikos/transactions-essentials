@@ -28,13 +28,13 @@ public class Log4j2Logger implements Logger {
 	}
 	
 	@Override
-	public void logNewInfo(String message) {
+	public void logInfo(String message) {
 		logger.info(message);
 	}
 
 	@Override
-	public void logInfo(String message) {
-		logger.info(message);
+	public void logDebug(String message) {
+		logger.debug(message);
 	}
 
 	@Override
@@ -54,8 +54,8 @@ public class Log4j2Logger implements Logger {
 	}
 
 	@Override
-	public void logInfo(String message, Throwable error) {
-		logger.info(message, error);
+	public void logDebug(String message, Throwable error) {
+		logger.debug(message, error);
 	}
 
 	@Override
@@ -70,8 +70,8 @@ public class Log4j2Logger implements Logger {
 	}
 
 	@Override
-	public boolean isInfoEnabled() {
-		return logger.isInfoEnabled();
+	public boolean isDebugEnabled() {
+		return logger.isDebugEnabled();
 	}
 
 	@Override

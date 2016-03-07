@@ -622,7 +622,7 @@ abstract class CoordinatorStateHandler
     }
     
     protected void removePendingOltpCoordinatorFromTransactionService() {
-    	LOGGER.logInfo("Abandoning "+getCoordinator().getCoordinatorId()+" in state "+getState()+" after timeout - recovery will cleanup in the background");
+    	LOGGER.logDebug("Abandoning "+getCoordinator().getCoordinatorId()+" in state "+getState()+" after timeout - recovery will cleanup in the background");
     	getCoordinator().setState(TxState.ABANDONED);
 	}
 }

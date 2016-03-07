@@ -58,7 +58,7 @@ public final class LoggerFactory {
 			fallbackToDefault();
 		}
 		Logger logger = createLogger(LoggerFactory.class);
-		logger.logInfo("Using " + loggerFactoryDelegate + " for logging.");
+		logger.logDebug("Using " + loggerFactoryDelegate + " for logging.");
 	}
 
 	private static void fallbackToDefault() {

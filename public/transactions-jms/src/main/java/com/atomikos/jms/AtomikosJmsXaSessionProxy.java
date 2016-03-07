@@ -107,14 +107,14 @@ class AtomikosJmsXaSessionProxy extends AbstractJmsSessionProxy implements Sessi
 				//
 				// See: org.springframework.jms.connection.ConnectionFactoryUtils$JmsResourceSynchronization.afterCommit()
 				// and org.springframework.jms.connection.JmsResourceHolder.commitAll() (as of Spring 2.0.8)
-				if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": " + msg );
+				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": " + msg );
 				throw new javax.jms.TransactionInProgressException ( msg );
 			}
 			
 			
 			if ( CLOSE_METHOD.equals ( methodName ) ) {
 				state.notifySessionClosed();
-				if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": closing session " + this + " - is terminated ? " + state.isTerminated() );
+				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": closing session " + this + " - is terminated ? " + state.isTerminated() );
 				if ( state.isTerminated() ) {
 					//only destroy if there is no pending 2PC - otherwise this is done
 					//in the registered synchronization
@@ -129,7 +129,7 @@ class AtomikosJmsXaSessionProxy extends AbstractJmsSessionProxy implements Sessi
 			}
 			
 			if (PRODUCER_CONSUMER_METHODS.contains(methodName)) {
-				if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": calling " + methodName + " on JMS driver session " + delegate );
+				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": calling " + methodName + " on JMS driver session " + delegate );
 				Object producerConsumerProxy = null;
 				if ( "createConsumer".equals ( methodName ) ) {
 					MessageConsumer vendorConsumer = null;
@@ -170,7 +170,7 @@ class AtomikosJmsXaSessionProxy extends AbstractJmsSessionProxy implements Sessi
 			}
 			
 			try {
-				if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": calling " + methodName + " on JMS driver session..." );
+				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": calling " + methodName + " on JMS driver session..." );
 				Object ret = method.invoke(delegate, args);
 				if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": " + methodName + " returning " + ret );
 				return ret;

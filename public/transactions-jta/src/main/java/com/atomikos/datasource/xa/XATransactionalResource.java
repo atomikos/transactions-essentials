@@ -314,7 +314,7 @@ public abstract class XATransactionalResource implements TransactionalResource
         if ( needsRefresh () ) {
         	LOGGER.logTrace ( this.servername + ": refreshing XAResource..." );
             this.xares_ = refreshXAConnection ();
-            LOGGER.logNewInfo ( this.servername + ": refreshed XAResource" );
+            LOGGER.logInfo ( this.servername + ": refreshed XAResource" );
         }
 
         return this.xares_;

@@ -14,9 +14,9 @@ public interface Logger {
 
   void logWarning(String message);
   
-  void logNewInfo(String message);
-
   void logInfo(String message);
+
+  void logDebug(String message);
 
   void logTrace(String message);
   
@@ -24,13 +24,13 @@ public interface Logger {
 
   void logWarning(String message, Throwable error);
 
-  void logInfo(String message, Throwable error);
+  void logDebug(String message, Throwable error);
 
   void logTrace(String message, Throwable error);
 
   boolean isTraceEnabled();
 
-  boolean isInfoEnabled();
+  boolean isDebugEnabled();
   
   boolean isErrorEnabled();
 

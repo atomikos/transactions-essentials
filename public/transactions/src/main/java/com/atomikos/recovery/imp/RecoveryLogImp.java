@@ -231,7 +231,7 @@ public class RecoveryLogImp implements RecoveryLog, AdminLog {
 		if (pendingCoordinatorLogEntries.length>0) {
 			LOGGER.logWarning("Shutdown leaves pending transactions in log - do NOT delete logfiles!");
 		} else {
-			LOGGER.logNewInfo("Shutdown leaves no pending transactions - ok to delete logfiles");
+			LOGGER.logInfo("Shutdown leaves no pending transactions - ok to delete logfiles");
 		}
 		//don't close repository: OltpLog responsibility.
 	}

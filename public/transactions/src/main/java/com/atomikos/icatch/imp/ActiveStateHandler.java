@@ -91,7 +91,7 @@ class ActiveStateHandler extends CoordinatorStateHandler
                 }
             }
         } catch ( Exception e ) {
-            LOGGER.logInfo( "Error in timeout of ACTIVE state: " + e.getMessage ()
+            LOGGER.logDebug( "Error in timeout of ACTIVE state: " + e.getMessage ()
                     + " for coordinator " + getCoordinator ().getCoordinatorId () );
         }
     }
