@@ -421,7 +421,7 @@ class MessageConsumerSession
 						if ( threadWillStop ) {
 
 							try {
-								LOGGER.logWarning ( "MessageConsumerSession: unsubscribing " + subscriberName + "...");
+								LOGGER.logInfo ( "MessageConsumerSession: unsubscribing " + subscriberName + "...");
 								if ( Thread.currentThread() != this ) {
 
 									//see case 62452 and 80464: wait for listener thread to exit so the subscriber is no longer in use
@@ -432,17 +432,16 @@ class MessageConsumerSession
 								}
 
 								if (subscriberName != null && properties.getUnsubscribeOnClose()) {
-									LOGGER.logWarning ( "MessageConsumerSession: unsubscribing " + subscriberName + "...");
+									LOGGER.logInfo ( "MessageConsumerSession: unsubscribing " + subscriberName + "...");
 									session.unsubscribe ( subscriberName );
 								}
 
 							} catch ( JMSException e ) {
 
-								 if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug (
-					                    "MessageConsumerSession: Error closing on JMS session",
-
-					                    e );
-					            if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "MessageConsumerSession: linked exception is " , e.getLinkedException() );
+								 if ( LOGGER.isDebugEnabled() ) {
+									 LOGGER.logDebug ("MessageConsumerSession: Error closing on JMS session", e );
+									 LOGGER.logDebug ( "MessageConsumerSession: linked exception is " , e.getLinkedException() );
+								 }
 							}
 						}
 
@@ -452,9 +451,7 @@ class MessageConsumerSession
 					        session = null;
 					        if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( "MessageConsumerSession: JMS session closed." );
 					    } catch ( JMSException e ) {
-					        if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug (
-					                "MessageConsumerSession: Error closing JMS session",
-					                e );
+					        if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "MessageConsumerSession: Error closing JMS session", e );
 					        if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "MessageConsumerSession: linked exception is " , e.getLinkedException() );
 					    }
 					}
@@ -465,10 +462,7 @@ class MessageConsumerSession
 					        connection = null;
 					        if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( "MessageConsumerSession: JMS connection closed." );
 					    } catch ( JMSException e ) {
-					    	LOGGER
-					                .logWarning (
-					                        "MessageConsumerSession: Error closing JMS connection",
-					                        e );
+					    	LOGGER.logWarning ( "MessageConsumerSession: Error closing JMS connection", e );
 					        LOGGER.logWarning ( "MessageConsumerSession: linked exception is " , e.getLinkedException() );
 					    }
 				} catch ( Throwable e ) {
@@ -487,14 +481,10 @@ class MessageConsumerSession
 	                // to Configuration will not work!
 	                tm.setTransactionTimeout ( getTransactionTimeout() );
 	            } catch ( SystemException e ) {
-	            	LOGGER
-	                        .logWarning (
-	                                "MessageConsumerSession: Error in JMS thread while setting transaction timeout",
-	                                e );
+	            	LOGGER.logWarning ( "MessageConsumerSession: Error in JMS thread while setting transaction timeout", e );
 	            }
 
-	            LOGGER
-	                    .logDebug ( "MessageConsumerSession: Starting JMS listener thread." );
+	            LOGGER.logDebug ( "MessageConsumerSession: Starting JMS listener thread." );
 
 	            while ( Thread.currentThread () == current ) {
 
@@ -520,16 +510,9 @@ class MessageConsumerSession
 	                    tm.setTransactionTimeout ( getTransactionTimeout() );
 
 	                    if ( tm.getTransaction () != null ) {
-	                    	LOGGER
-	                                .logWarning ( "MessageConsumerSession: Detected pending transaction: "
-	                                        + tm.getTransaction () );
-	                        // this is fatal and should not happen due to cleanup in
-	                        // previous iteration
-	                        // so if it does happen then everything we assumed and
-	                        // tried is wrong
-	                        // meaning that we can only exit the thread
-	                        throw new IllegalStateException (
-	                                "Can't reuse listener thread with pending transaction!" );
+	                    	LOGGER.logError ( "MessageConsumerSession: detected pending transaction: " + tm.getTransaction () );
+	                        // this is fatal and should not happen due to cleanup in previous iteration
+	                        throw new IllegalStateException ( "Can't reuse listener thread with pending transaction!" );
 	                    }
 
 	                    tm.begin ();
@@ -539,23 +522,18 @@ class MessageConsumerSession
 
 	                    try {
 
-	                        if ( msg != null && listener != null
-	                                && Thread.currentThread () == current ) {
-	                        	LOGGER
-	                                    .logDebug ( "MessageConsumerSession: Consuming message: "
-	                                            + msg.toString () );
+	                        if ( msg != null && listener != null && Thread.currentThread () == current ) {
+	                        	LOGGER.logDebug ( "MessageConsumerSession: Consuming message: " + msg.toString () );
 	                            listener.onMessage ( msg );
-	                            LOGGER
-	                                    .logTrace ( "MessageConsumerSession: Consumed message: "
-	                                            + msg.toString () );
+	                            LOGGER.logTrace ( "MessageConsumerSession: Consumed message: " + msg.toString () );
 	                        } else {
 	                            commit = false;
 	                        }
 	                    } catch ( Exception e ) {
-	                        if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug (
-	                                "MessageConsumerSession: Error during JMS processing of message "
-	                                        + msg.toString () + " - rolling back.",
-	                                e );
+	                        if ( LOGGER.isDebugEnabled() ) {
+	                        	LOGGER.logDebug ("MessageConsumerSession: Error during JMS processing of message "
+	                        					+ msg.toString () + " - rolling back.", e );
+	                        }
 
 	                        // This happens if the listener generated the error.
 	                        // In that case, don't refresh the connection but rather
@@ -565,8 +543,7 @@ class MessageConsumerSession
 	                    }
 
 	                } catch ( JMSException e ) {
-	                    LOGGER.logWarning (
-	                            "MessageConsumerSession: Error in JMS thread", e );
+	                    LOGGER.logWarning ( "MessageConsumerSession: Error in JMS thread", e );
 	                    Exception linkedException = e.getLinkedException();
 	                    if ( linkedException != null ) {
 	                    	LOGGER.logWarning ( "Linked JMS exception is: " , linkedException );
@@ -577,14 +554,12 @@ class MessageConsumerSession
 	                    notifyExceptionListener ( e );
 
 	                } catch ( Throwable e ) {
-	                    LOGGER.logWarning (
-	                            "MessageConsumerSession: Error in JMS thread", e );
-	                    // Happens if there is an error not generated by the
-	                    // listener;
+	                    LOGGER.logWarning ("MessageConsumerSession: Error in JMS thread", e );
+	                    // Happens if there is an error not generated by the listener;
 	                    // refresh connection to avoid corruption of thread state.
 	                    refresh = true;
 	                    commit = false;
-	                    JMSException listenerError = new JMSException ( "Unexpected error - please see Atomikos console file for more info" );
+	                    JMSException listenerError = new JMSException ( "Unexpected error - please see application log for more info" );
 	                    notifyExceptionListener ( listenerError );
 
 	                } finally {
@@ -599,65 +574,34 @@ class MessageConsumerSession
 	                        }
 	                    } catch ( RollbackException e ) {
 	                        // thread still OK
-	                    	LOGGER
-	                                .logWarning (
-	                                        "MessageConsumerSession: Error in ending transaction",
-	                                        e );
+	                    	LOGGER.logWarning ( "MessageConsumerSession: Error in ending transaction", e );
 	                    } catch ( HeuristicMixedException e ) {
 	                        // thread still OK
-	                    	LOGGER
-	                                .logWarning (
-	                                        "MessageConsumerSession: Error in ending transaction",
-	                                        e );
+	                    	LOGGER.logWarning ( "MessageConsumerSession: Error in ending transaction", e );
 	                    } catch ( HeuristicRollbackException e ) {
 	                        // thread still OK
-	                    	LOGGER
-	                                .logWarning (
-	                                        "MessageConsumerSession: Error in ending transaction",
-	                                        e );
+	                    	LOGGER.logWarning ( "MessageConsumerSession: Error in ending transaction", e );
 	                    } catch ( Throwable e ) {
-	                        // fatal since thread tx may still exist
-	                    	LOGGER
-	                                .logWarning (
-	                                        "MessageConsumerSession: Error ending thread tx association",
-	                                        e );
-
-	                        // In this case, we suspend the tx so that it is no
-	                        // longer
-	                        // associated with this thread. This allows thread reuse
-	                        // for
-	                        // later messages. If suspend fails, then we can only
-	                        // start
-	                        // a new thread.
+	                    	LOGGER.logWarning ("MessageConsumerSession: Error ending thread tx association", e );
+	                        // In this case, we suspend the tx so that it is no longer associated with this thread. 
+	                    	// This allows thread reuse for later messages. 
+	                    	// If suspend fails, then we can only start a new thread.
 	                        try {
-	                        	LOGGER
-	                                    .logTrace ( "MessageConsumerSession: Suspending any active transaction..." );
-	                            // try to suspend
+	                        	LOGGER.logTrace ( "MessageConsumerSession: Suspending any active transaction..." );
 	                            tm.suspend ();
 	                        } catch ( SystemException err ) {
-	                        	LOGGER
-	                                    .logWarning (
-	                                            "MessageConsumerSession: Error suspending transaction",
-	                                            err );
-	                            // start new thread to replace this one, because we
-	                            // can't risk a pending transaction
+	                        	LOGGER.logWarning ( "MessageConsumerSession: Error suspending transaction", err );
+	                            // start new thread to replace this one, because we can't risk a pending transaction
 	                            try {
-	                            	LOGGER
-	                                        .logTrace ( "MessageConsumerSession: Starting new thread..." );
+	                            	LOGGER.logTrace ( "MessageConsumerSession: Starting new thread..." );
 	                                startNewThread();
 	                            } catch ( Throwable fatal ) {
 	                                // happens if queue or factory no longer set
 	                                // in this case, we can't do anything else -
-	                                // just let the
-	                                // current thread exit and log warning that the
-	                                // listener has stopped
-	                            	LOGGER
-	                                        .logWarning (
-	                                                "MessageConsumerSession: Error starting new thread - stopping listener",
-	                                                e );
-	                                // set current to null to make this thread exit,
-	                                // since reuse is impossible due to risk
-	                                // of pending transaction!
+	                                // just let the current thread exit and log 
+	                            	LOGGER.logError ( "MessageConsumerSession: Error starting new thread - stopping listener", e );
+	                                // set current to null to make this thread exit, 
+	                            	// since reuse is impossible due to risk of pending transaction!
 	                                stopListening ();
 	                            }
 	                        }
@@ -665,9 +609,7 @@ class MessageConsumerSession
 	                    }
 
 	                    if ( refresh && Thread.currentThread () == current) {
-	                        // close resources here and let the actual refresh be
-	                        // done
-	                        // by the next iteration
+	                        // close resources here and let the actual refresh be done by the next iteration
 	                    	try {
 	                    		receiver.close();
 	                    	} catch ( Throwable e ) {
@@ -690,12 +632,10 @@ class MessageConsumerSession
                   receiver = null;
 	            }
 
-	            LOGGER
-	                    .logDebug ( "MessageConsumerSession: JMS listener thread exiting." );
+	            LOGGER.logDebug ( "MessageConsumerSession: JMS listener thread exiting." );
 	            if ( listener != null && current == null && notifyListenerOnClose ) {
 	                // if this session stops listening (no more threads active) then
 	                // notify the listener of shutdown by calling with null argument
-	                // System.out.println ( "Stopping listener: " + listener );
 	                listener.onMessage ( null );
 	            }
 
