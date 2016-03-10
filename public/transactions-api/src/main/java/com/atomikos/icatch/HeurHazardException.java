@@ -21,4 +21,8 @@ public class HeurHazardException extends HeuristicException {
 		super("Heuristic Hazard Exception");
 	}
 
+	public HeurHazardException(String msg) {
+		super(msg);
+	}
+
 }

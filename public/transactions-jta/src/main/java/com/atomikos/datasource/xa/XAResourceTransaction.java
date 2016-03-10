@@ -190,7 +190,6 @@ public class XAResourceTransaction implements ResourceTransaction, Participant {
 						+ ": XAResource needs refresh", xa);
 
 			if (this.resource == null) {
-				// cf bug 67951 - happens on recovery without resource found
 				throwXAExceptionForUnavailableResource();
 			} else {
 				this.xaresource = this.resource.getXAResource();
@@ -208,7 +207,6 @@ public class XAResourceTransaction implements ResourceTransaction, Participant {
 			LOGGER.logTrace(this.resourcename
 					+ ": forcing refresh of XAConnection...");
 		if (this.resource == null) {
-			// cf bug 67951 - happens on recovery without resource found
 			throwXAExceptionForUnavailableResource();
 		}
 
@@ -221,9 +219,8 @@ public class XAResourceTransaction implements ResourceTransaction, Participant {
 	}
 
 	private void throwXAExceptionForUnavailableResource() throws XAException {
-		String msg = this.resourcename
-				+ ": resource no longer available - recovery might be at risk!";
-		LOGGER.logWarning(msg);
+		String msg = this.resourcename + ": resource not available?";
+		LOGGER.logError(msg);
 		XAException err = new XAException(msg);
 		err.errorCode = XAException.XAER_RMFAIL;
 		throw err;
@@ -455,11 +452,9 @@ public class XAResourceTransaction implements ResourceTransaction, Participant {
 			throw new HeurMixedException();
 		if (this.state.equals(TxState.HEUR_COMMITTED))
 			throw new HeurCommitException();
-		if (this.xaresource == null) { // if recover failed
-			LOGGER.logWarning("XAResourceTransaction "
-					+ getXid()
-					+ ": no XAResource to rollback - the required resource is probably not yet intialized?");
-			throw new HeurHazardException();
+		if (this.xaresource == null) { 
+			throw new HeurHazardException("XAResourceTransaction "
+					+ getXid() + ": no XAResource to rollback?");
 		}
 
 		try {
@@ -547,11 +542,9 @@ public class XAResourceTransaction implements ResourceTransaction, Participant {
 			throw new HeurMixedException();
 		if (this.state.equals(TxState.HEUR_ABORTED))
 			throw new HeurRollbackException();
-		if (this.xaresource == null) { // null if recovery failed
-			LOGGER.logWarning("XAResourceTransaction "
-					+ getXid()
-					+ ": no XAResource to commit - the required resource is probably not yet intialized?");
-			throw new HeurHazardException();
+		if (this.xaresource == null) { 
+			throw new HeurHazardException("XAResourceTransaction "
+					+ getXid() + ": no XAResource to commit?");
 		}
 
 		try {
