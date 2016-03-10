@@ -8,6 +8,9 @@
 
 package com.atomikos.logging;
 
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
+
 class Slf4jLogger implements Logger {
 
 	private final org.slf4j.Logger slf4j;
@@ -78,12 +81,14 @@ class Slf4jLogger implements Logger {
 
 	@Override
 	public void logFatal(String message) {
-		slf4j.error(message);
+		Marker m = MarkerFactory.getMarker("FATAL");
+		slf4j.error(m, message);
 	}
 
 	@Override
 	public void logFatal(String message, Throwable error) {
-		slf4j.error(message, error);
+		Marker m = MarkerFactory.getMarker("FATAL");
+		slf4j.error(m, message, error);
 	}
 
 }
