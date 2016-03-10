@@ -177,7 +177,7 @@ class TransactionImp implements Transaction {
 		} catch (HeurMixedException hm) {
 			rethrowAsJtaHeuristicMixedException(hm.getMessage(), hm);
 		} catch (SysException se) {
-			LOGGER.logWarning(se.getMessage(), se);
+			LOGGER.logError(se.getMessage(), se);
 			throw new ExtendedSystemException(se.getMessage(), se);
 		} catch (com.atomikos.icatch.RollbackException rb) {
 			// see case 29708: all statements have been closed
@@ -198,7 +198,7 @@ class TransactionImp implements Transaction {
 		try {
 			this.compositeTransaction.rollback();
 		} catch (SysException se) {
-			LOGGER.logWarning(se.getMessage(), se);
+			LOGGER.logError(se.getMessage(), se);
 			throw new ExtendedSystemException(se.getMessage(), se);
 		}
 

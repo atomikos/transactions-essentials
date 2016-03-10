@@ -50,9 +50,9 @@ public class RecoveryLogImp implements RecoveryLog, AdminLog {
 				}
 			}
 		} catch (LogException e) {
-			LOGGER.logWarning("Unable to write to repository: "+entry+" - leaving cleanup to recovery housekeeping...", e);
+			LOGGER.logError("Unable to write to repository: "+entry+" - leaving cleanup to recovery housekeeping...", e);
 		} catch (IllegalArgumentException e) {
-			LOGGER.logWarning("Unexpected error while terminating participant entry - ignoring (may result in orphaned log entry)", e);
+			LOGGER.logError("Unexpected error while terminating participant entry - ignoring (may result in orphaned log entry)", e);
 		} 
 	}
 
@@ -197,7 +197,7 @@ public class RecoveryLogImp implements RecoveryLog, AdminLog {
 			Collection<CoordinatorLogEntry> allCoordinatorLogEntries = repository.getAllCoordinatorLogEntries();
 			return allCoordinatorLogEntries.toArray(new CoordinatorLogEntry[allCoordinatorLogEntries.size()]);
 		} catch (LogReadException e) {
-			LOGGER.logWarning("Could not retrieve coordinators - returning empty array", e);	
+			LOGGER.logError("Could not retrieve coordinators - returning empty array", e);	
 		}
 		
 		return new CoordinatorLogEntry[0];

@@ -333,11 +333,9 @@ public abstract class AbstractJmsSenderTemplate implements JmsSenderTemplate
 		UserTransactionManager tm = new UserTransactionManager ();
 	    try {
 	        if ( tm.getStatus () != Status.STATUS_ACTIVE )
-	            throw new JMSException (
-	                    "This method requires an active transaction!" );
+	            throw new JMSException ( "This method requires an active transaction!" );
 	    } catch ( SystemException e ) {
-	    	LOGGER
-	                .logWarning ( this +": error in getting transaction status", e );
+	    	LOGGER.logError ( this +": error in getting transaction status", e );
 	        throw new RuntimeException ( e.getMessage () );
 	    }
 

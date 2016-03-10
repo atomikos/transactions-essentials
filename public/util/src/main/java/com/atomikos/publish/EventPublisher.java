@@ -47,7 +47,7 @@ public class EventPublisher {
 			try {
 				listener.eventOccurred(event);
 			} catch (Exception e) {
-				LOGGER.logWarning("Error notifying listener " + listener, e);
+				LOGGER.logError("Error notifying listener " + listener, e);
 			}
 		}
 	}

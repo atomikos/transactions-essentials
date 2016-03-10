@@ -53,7 +53,7 @@ public class CoordinatorImp implements Coordinator {
 		try {
 			ct = convertToCompositeTransaction(transaction);
 		} catch (Exception e) {
-			LOGGER.logWarning("Unexpected error while creating transaction", e);
+			LOGGER.logError("Unexpected error while creating transaction", e);
 			throw new WebApplicationException(500);
 		}
 		return ct;
@@ -121,7 +121,7 @@ public class CoordinatorImp implements Coordinator {
 		} catch (HeurRollbackException e) {
 			throwCancelledException();
 		} catch (Exception e) {
-			LOGGER.logWarning("Unexpected error during confirm", e);
+			LOGGER.logError("Unexpected error during confirm", e);
 			Response response =	Response.status(409).entity("partial confirmation - check each participant for details").type(MediaType.TEXT_PLAIN).build();
 			throw new WebApplicationException(response);
 		}

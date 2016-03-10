@@ -207,7 +207,7 @@ public class TransactionManagerImp implements TransactionManager,
              ct = compositeTransactionManager.getCompositeTransaction ();
          } catch ( SysException se ) {
          	String msg = "Error while retrieving the transaction for the calling thread";
-         	LOGGER.logWarning( msg , se);
+         	LOGGER.logError( msg , se);
             throw new ExtendedSystemException ( msg , se );
          }
     	 establishJtaTransactionContextIfNecessary(ct);
@@ -275,7 +275,7 @@ public class TransactionManagerImp implements TransactionManager,
             ct.setProperty ( JTA_PROPERTY_NAME , "true" );
         } catch ( SysException se ) {
         	String msg = "Error in begin()";
-        	LOGGER.logWarning( msg , se );
+        	LOGGER.logError( msg , se );
             throw new ExtendedSystemException ( msg , se );
         }
         recreateCompositeTransactionAsJtaTransaction(ct);
@@ -353,7 +353,7 @@ public class TransactionManagerImp implements TransactionManager,
             compositeTransactionManager.suspend();
         } catch ( SysException se ) {
         	String msg = "Unexpected error while suspending the existing transaction for the current thread";
-        	LOGGER.logWarning( msg , se );
+        	LOGGER.logError( msg , se );
             throw new ExtendedSystemException ( msg , se );
         }
 	}
@@ -376,7 +376,7 @@ public class TransactionManagerImp implements TransactionManager,
             compositeTransactionManager.resume ( tximp.getCT () );
         } catch ( SysException se ) {
         	String msg = "Unexpected error while resuming the transaction in the calling thread";
-        	LOGGER.logWarning( msg , se );
+        	LOGGER.logError( msg , se );
             throw new ExtendedSystemException(msg , se );
         }
         tximp.resumeEnlistedXaReources();
@@ -440,7 +440,7 @@ public class TransactionManagerImp implements TransactionManager,
             tx.setRollbackOnly ();
         } catch ( SecurityException se ) {
             String msg = "Unexpected error during setRollbackOnly";
-            LOGGER.logWarning( msg , se );
+            LOGGER.logError( msg , se );
             throw new ExtendedSystemException ( msg, se );
         }
     }

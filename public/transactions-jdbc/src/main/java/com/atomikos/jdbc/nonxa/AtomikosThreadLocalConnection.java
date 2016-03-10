@@ -139,7 +139,7 @@ implements JtaAwareNonXaConnection
         	//see case 24567
             wrapped.setAutoCommit ( originalAutoCommitState );
         }catch ( Exception ex ){
-            LOGGER.logWarning ( "Failed to reset original autoCommit state: "+ex.getMessage(), ex);
+            LOGGER.logError ( "Failed to reset original autoCommit state: "+ex.getMessage(), ex);
         }
         setTransaction ( null );
         participant = null;

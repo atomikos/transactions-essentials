@@ -391,6 +391,7 @@ public class XAResourceTransaction implements ResourceTransaction, Participant {
 					&& xaerr.errorCode <= XAException.XA_RBEND) {
 				throw new RollbackException(msg);
 			} else {
+				LOGGER.logError(msg, xaerr);
 				throw new SysException(msg, xaerr);
 			}
 		}

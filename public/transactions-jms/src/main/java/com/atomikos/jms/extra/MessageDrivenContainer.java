@@ -406,7 +406,7 @@ implements MessageConsumerSessionProperties
 	            // System.out.println ( "MessageDrivenContainer: started
 	            // session");
 	        } catch ( Exception e ) {
-	            LOGGER.logWarning ( "Error starting pool", e );
+	            LOGGER.logError ( "Error starting pool", e );
 	        }
 	        sessions.add ( s );
 	    }
