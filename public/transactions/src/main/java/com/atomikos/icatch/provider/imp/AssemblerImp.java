@@ -106,7 +106,7 @@ public class AssemblerImp implements Assembler {
 				url = file.toURL();
 				loadPropertiesFromUrl(customProperties, url);
 			} catch (MalformedURLException e) {
-				LOGGER.logError("File not found: " + customFilePath);
+				LOGGER.logFatal("File not found: " + customFilePath);
 			}
 		}
 	}
@@ -149,7 +149,7 @@ public class AssemblerImp implements Assembler {
 		if ( overflow > 0 ) {
 			// see case 73086
 			String msg = "Value too long : " + tmUniqueName;
-			LOGGER.logError ( msg );
+			LOGGER.logFatal ( msg );
 			throw new SysException(msg);
 		}
 		return new TransactionServiceImp(tmUniqueName, recoveryManager, idMgr, maxTimeout, maxActives, !threaded2pc, recoveryLog);

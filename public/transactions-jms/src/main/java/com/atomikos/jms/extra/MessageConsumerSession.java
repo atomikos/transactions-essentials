@@ -510,7 +510,7 @@ class MessageConsumerSession
 	                    tm.setTransactionTimeout ( getTransactionTimeout() );
 
 	                    if ( tm.getTransaction () != null ) {
-	                    	LOGGER.logError ( "MessageConsumerSession: detected pending transaction: " + tm.getTransaction () );
+	                    	LOGGER.logFatal ( "MessageConsumerSession: detected pending transaction: " + tm.getTransaction () );
 	                        // this is fatal and should not happen due to cleanup in previous iteration
 	                        throw new IllegalStateException ( "Can't reuse listener thread with pending transaction!" );
 	                    }
@@ -599,7 +599,7 @@ class MessageConsumerSession
 	                                // happens if queue or factory no longer set
 	                                // in this case, we can't do anything else -
 	                                // just let the current thread exit and log 
-	                            	LOGGER.logError ( "MessageConsumerSession: Error starting new thread - stopping listener", e );
+	                            	LOGGER.logFatal ( "MessageConsumerSession: Error starting new thread - stopping listener", e );
 	                                // set current to null to make this thread exit, 
 	                            	// since reuse is impossible due to risk of pending transaction!
 	                                stopListening ();

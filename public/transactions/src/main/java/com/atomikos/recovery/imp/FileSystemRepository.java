@@ -135,7 +135,7 @@ public class FileSystemRepository implements
 			// the file could not be opened for reading;
 			// merely return the default empty vector
 		} catch (Exception e) {
-			LOGGER.logError("Error in recover", e);
+			LOGGER.logFatal("Error in recover", e);
 			throw new LogReadException(e);
 		} finally {
 			closeSilently(fis);
@@ -198,7 +198,7 @@ public class FileSystemRepository implements
 			// the file could not be opened for reading;
 			// merely return the default empty vector
 		} catch (Exception e) {
-			LOGGER.logError("Failed to write checkpoint", e);
+			LOGGER.logFatal("Failed to write checkpoint", e);
 			throw new LogWriteException(e);
 		}
 

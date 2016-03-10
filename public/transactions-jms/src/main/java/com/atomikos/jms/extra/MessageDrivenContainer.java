@@ -403,10 +403,8 @@ implements MessageConsumerSessionProperties
 	        s.setClientID(clientID);
 	        try {
 	            s.startListening ();
-	            // System.out.println ( "MessageDrivenContainer: started
-	            // session");
 	        } catch ( Exception e ) {
-	            LOGGER.logError ( "Error starting pool", e );
+	            LOGGER.logFatal ( "Error starting pool", e );
 	        }
 	        sessions.add ( s );
 	    }
