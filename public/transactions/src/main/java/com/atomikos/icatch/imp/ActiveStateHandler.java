@@ -150,7 +150,7 @@ class ActiveStateHandler extends CoordinatorStateHandler
 						}});
 					throw new RollbackException ( msg , error);
         		} catch ( HeurCommitException e ) {
-					LOGGER.logWarning ( "Illegal heuristic commit during rollback before prepare:" + e );
+					LOGGER.logError ( "Illegal heuristic commit during rollback before prepare:" + e );
 					throw new HeurMixedException();
 				}
         	}
