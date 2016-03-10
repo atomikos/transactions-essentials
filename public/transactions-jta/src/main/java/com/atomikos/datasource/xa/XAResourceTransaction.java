@@ -434,11 +434,9 @@ public class XAResourceTransaction implements ResourceTransaction, Participant {
 			throw new HeurMixedException();
 		if (this.state.equals(TxState.HEUR_COMMITTED))
 			throw new HeurCommitException();
-		if (this.xaresource == null) { // if recover failed
-			LOGGER.logWarning("XAResourceTransaction "
-					+ getXid()
-					+ ": no XAResource to rollback - the required resource is probably not yet intialized?");
-			throw new HeurHazardException();
+		if (this.xaresource == null) { 
+			throw new HeurHazardException("XAResourceTransaction "
+					+ getXid() + ": no XAResource to rollback?");
 		}
 
 		try {
@@ -526,11 +524,9 @@ public class XAResourceTransaction implements ResourceTransaction, Participant {
 			throw new HeurMixedException();
 		if (this.state.equals(TxState.HEUR_ABORTED))
 			throw new HeurRollbackException();
-		if (this.xaresource == null) { // null if recovery failed
-			LOGGER.logWarning("XAResourceTransaction "
-					+ getXid()
-					+ ": no XAResource to commit - the required resource is probably not yet intialized?");
-			throw new HeurHazardException();
+		if (this.xaresource == null) { 
+			throw new HeurHazardException("XAResourceTransaction "
+					+ getXid() + ": no XAResource to commit?");
 		}
 
 		try {
