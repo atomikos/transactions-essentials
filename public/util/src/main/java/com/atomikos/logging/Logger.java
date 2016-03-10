@@ -10,6 +10,8 @@ package com.atomikos.logging;
 
 public interface Logger {
 
+	void logFatal(String message);
+	
 	void logError(String message);
 
 	void logWarning(String message);
@@ -19,6 +21,8 @@ public interface Logger {
 	void logDebug(String message);
 
 	void logTrace(String message);
+	
+	void logFatal(String message, Throwable error);
 
 	void logError(String message, Throwable error);
 

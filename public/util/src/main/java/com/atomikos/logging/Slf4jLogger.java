@@ -76,4 +76,14 @@ class Slf4jLogger implements Logger {
 		return slf4j.isInfoEnabled();
 	}
 
+	@Override
+	public void logFatal(String message) {
+		slf4j.error(message);
+	}
+
+	@Override
+	public void logFatal(String message, Throwable error) {
+		slf4j.error(message, error);
+	}
+
 }

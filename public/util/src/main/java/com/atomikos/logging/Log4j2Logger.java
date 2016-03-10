@@ -87,5 +87,13 @@ public class Log4j2Logger implements Logger {
 	public boolean isInfoEnabled() {
 		return logger.isInfoEnabled();
 	}
+	@Override
+	public void logFatal(String message) {
+		logger.fatal(message);
+	}
+	@Override
+	public void logFatal(String message, Throwable error) {
+		logger.fatal(message, error);
+	}
 
 }
