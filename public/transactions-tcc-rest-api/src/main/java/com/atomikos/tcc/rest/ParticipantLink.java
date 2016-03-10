@@ -10,8 +10,8 @@ package com.atomikos.tcc.rest;
 
 public class ParticipantLink {
 
-	protected String uri;
-	protected String expires;
+	private String uri;
+	private String expires;
 
 	/**
 	 * required by third-party REST frameworks 
@@ -30,6 +30,9 @@ public class ParticipantLink {
 		super();
 		this.uri = uri;
 		this.expires = expires;
+	}
+	public ParticipantLink(String uri, long expires) {
+		this(uri,DateUtil.toDate(expires));
 	}
 
 	public String getUri() {

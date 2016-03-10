@@ -8,7 +8,6 @@
 
 package com.atomikos.tcc.rest;
 
-import java.text.ParseException;
 
 public class ParticipantLinkBuilder {
 
