@@ -27,6 +27,7 @@ import com.atomikos.icatch.SysException;
 import com.atomikos.icatch.TxState;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
+import com.atomikos.util.Assert;
 
 /**
  * 
@@ -131,19 +132,16 @@ public class XAResourceTransaction implements ResourceTransaction, Participant {
 		this.toString = "XAResourceTransaction: " + this.xidToHexString;
 	}
 
-	private transient XATransactionalResource resource;
+	private transient final XATransactionalResource resource;
 	private transient XAResource xaresource;
 	private transient boolean knownInResource;
 	private transient int timeout;
 
-	public XAResourceTransaction() {
-		// needed for externalization mechanism
-	}
 
 	XAResourceTransaction(XATransactionalResource resource,
 			CompositeTransaction transaction, String root) {
-		setResource(resource);
-		
+		Assert.notNull("resource cannot be null", resource);
+		this.resource=resource;
 		this.timeout = (int) transaction.getTimeout() / 1000;
 
 		this.tid = transaction.getTid();
@@ -155,9 +153,7 @@ public class XAResourceTransaction implements ResourceTransaction, Participant {
 		this.knownInResource = false;
 	}
 
-	void setResource(XATransactionalResource resource) {
-		this.resource = resource;
-	}
+	
 
 	void setState(TxState state) {
 		this.state = state;
@@ -189,11 +185,8 @@ public class XAResourceTransaction implements ResourceTransaction, Participant {
 				LOGGER.logTrace(this.resourcename
 						+ ": XAResource needs refresh", xa);
 
-			if (this.resource == null) {
-				throwXAExceptionForUnavailableResource();
-			} else {
 				this.xaresource = this.resource.getXAResource();
-			}
+
 		}
 
 	}
@@ -206,9 +199,6 @@ public class XAResourceTransaction implements ResourceTransaction, Participant {
 		if (LOGGER.isTraceEnabled())
 			LOGGER.logTrace(this.resourcename
 					+ ": forcing refresh of XAConnection...");
-		if (this.resource == null) {
-			throwXAExceptionForUnavailableResource();
-		}
 
 		try {
 			this.xaresource = this.resource.refreshXAConnection();
@@ -216,14 +206,6 @@ public class XAResourceTransaction implements ResourceTransaction, Participant {
 			LOGGER.logWarning(this.resourcename
 					+ ": could not refresh XAConnection", re);
 		}
-	}
-
-	private void throwXAExceptionForUnavailableResource() throws XAException {
-		String msg = this.resourcename + ": resource not available?";
-		LOGGER.logError(msg);
-		XAException err = new XAException(msg);
-		err.errorCode = XAException.XAER_RMFAIL;
-		throw err;
 	}
 
 	/**
