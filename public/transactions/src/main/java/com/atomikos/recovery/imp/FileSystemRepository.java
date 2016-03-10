@@ -45,10 +45,10 @@ public class FileSystemRepository implements
 	public void init(ConfigProperties configProperties) throws LogException {
 		String baseDir = configProperties.getLogBaseDir();
 		String baseName = configProperties.getLogBaseName();
-		LOGGER.logInfo("baseDir "+baseDir);
-		LOGGER.logInfo("baseName "+baseName);
+		LOGGER.logDebug("baseDir "+baseDir);
+		LOGGER.logDebug("baseName "+baseName);
         lock_ = new LogFileLock(baseDir, baseName);
-        LOGGER.logInfo("LogFileLock "+lock_);
+        LOGGER.logDebug("LogFileLock "+lock_);
         lock_.acquireLock();
 		file = new VersionedFile(baseDir, baseName, ".log");
 		
@@ -135,7 +135,7 @@ public class FileSystemRepository implements
 			// the file could not be opened for reading;
 			// merely return the default empty vector
 		} catch (Exception e) {
-			LOGGER.logWarning("Error in recover", e);
+			LOGGER.logError("Error in recover", e);
 			throw new LogReadException(e);
 		} finally {
 			closeSilently(fis);
@@ -198,6 +198,7 @@ public class FileSystemRepository implements
 			// the file could not be opened for reading;
 			// merely return the default empty vector
 		} catch (Exception e) {
+			LOGGER.logError("Failed to write checkpoint", e);
 			throw new LogWriteException(e);
 		}
 
