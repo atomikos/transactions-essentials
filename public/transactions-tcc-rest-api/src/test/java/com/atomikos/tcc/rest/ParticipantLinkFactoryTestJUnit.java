@@ -20,7 +20,7 @@ import com.atomikos.tcc.rest.ParticipantLinkFactory;
 
 public class ParticipantLinkFactoryTestJUnit {
 	
-	private static final Date EXPIRES = new Date(1000l);
+	private static final String EXPIRES = "2002-05-30T09:30:10Z";
 	private static final String URI = "http://www.example.com/tcc";
 	
 	private ParticipantLink instance;
@@ -37,7 +37,7 @@ public class ParticipantLinkFactoryTestJUnit {
 	
 	@Test
 	public void testExpires() {
-		assertEquals(EXPIRES, instance.getExpires().toGregorianCalendar().getTime());
+		assertEquals(EXPIRES, instance.getExpires());
 	}
 	
 

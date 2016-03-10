@@ -8,8 +8,6 @@
 
 package com.atomikos.icatch.tcc.rest;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,8 +21,6 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
 import org.apache.cxf.jaxrs.lifecycle.SingletonResourceProvider;
@@ -77,12 +73,7 @@ public class TestParticipant  {
 
 	
 	ParticipantLink getConfirmLink() throws DatatypeConfigurationException {
-		GregorianCalendar gcal = new GregorianCalendar();
-		gcal.setTime(new Date());
-		XMLGregorianCalendar date = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);
-		ParticipantLink confirm = new ParticipantLink();
-		confirm.setUri("http://www.example.com/participant");
-		confirm.setExpires(date);
+		ParticipantLink confirm = new ParticipantLink("http://www.example.com/participant","2002-05-30T09:30:10Z");
 		return confirm;
 	}
 	
