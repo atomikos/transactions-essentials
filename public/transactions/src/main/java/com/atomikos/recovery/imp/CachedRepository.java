@@ -116,7 +116,7 @@ public class CachedRepository implements Repository {
 				ret = true;
 			}
 			else if (!entryState.isHeuristic()) {
-				LOGGER.logWarning("Unexpected long-lived entry found in log: " + coordinatorLogEntry );
+				LOGGER.logError("Unexpected long-lived entry found in log: " + coordinatorLogEntry );
 			}
 			
 		}
