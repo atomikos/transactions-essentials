@@ -8,6 +8,11 @@
 
 package com.atomikos.tcc.rest;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
+
 public class ParticipantLink {
 
 	private String uri;
@@ -32,7 +37,14 @@ public class ParticipantLink {
 		this.expires = expires;
 	}
 	public ParticipantLink(String uri, long expires) {
-		this(uri,DateUtil.toDate(expires));
+		this(uri, toDate(expires));
+	}
+	
+	private static String toDate(long timestamp) {
+		Date date = new Date(timestamp);
+		DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+		format.setTimeZone(TimeZone.getTimeZone("GMT+00:00"));
+		return format.format(date.getTime());
 	}
 
 	public String getUri() {

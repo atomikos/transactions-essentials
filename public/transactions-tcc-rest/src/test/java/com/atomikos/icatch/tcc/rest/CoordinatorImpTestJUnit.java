@@ -32,7 +32,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.atomikos.tcc.rest.Coordinator;
-import com.atomikos.tcc.rest.DateUtil;
 import com.atomikos.tcc.rest.ParticipantLink;
 import com.atomikos.tcc.rest.Transaction;
 
@@ -115,7 +114,17 @@ public class CoordinatorImpTestJUnit {
 		return transaction;
 	}
 
-
+	private static Transaction createTransaction(long timestamp,
+			String... participantUris) throws DatatypeConfigurationException {
+		List<ParticipantLink> participants = new ArrayList<ParticipantLink>();
+		for (String uri : participantUris) {
+			ParticipantLink participantLink = new ParticipantLink(uri,timestamp);
+			participants.add(participantLink);
+		}
+		Transaction transaction = new Transaction();
+		transaction.getParticipantLinks().addAll(participants);
+		return transaction;
+	}
 
 
 	@Before
@@ -128,19 +137,14 @@ public class CoordinatorImpTestJUnit {
 	public void testJsonCancelWorksForNonExistentParticipant()
 			throws DatatypeConfigurationException, InterruptedException {
 
-		Transaction transaction = createTransaction(now(),
+		Transaction transaction = createTransaction(System.currentTimeMillis(),
 				"http://www.example.com");
 		jsonClient.cancel(transaction);
 	}
 
-	private String now() {
-		
-		return toIso8601(System.currentTimeMillis());
-	}
 	
-	public String toIso8601(long timestamp) {
-		return DateUtil.toDate(timestamp);
-	}
+	
+	
 
 	@Test
 	public void testJsonCancelWorksForEmptyTransaction() {
@@ -229,8 +233,8 @@ public class CoordinatorImpTestJUnit {
 		}
 	}
 
-	private String createSufficientExpiryDateToAvoidIntermediateTimeout() {
-		return toIso8601(System.currentTimeMillis() + 5000);
+	private long createSufficientExpiryDateToAvoidIntermediateTimeout() {
+		return System.currentTimeMillis() + 5000;
 	}
 
 	
@@ -256,7 +260,7 @@ public class CoordinatorImpTestJUnit {
 	@Test
 	public void testTimeoutMeansCancel() throws DatatypeConfigurationException {
 		Transaction transaction = createTransaction(
-				now(), PARTICIPANT_CLIENT_URL_1,
+				System.currentTimeMillis(), PARTICIPANT_CLIENT_URL_1,
 				PARTICIPANT_CLIENT_URL_2);
 		try {
 			jsonClient.confirm(transaction);
@@ -269,7 +273,7 @@ public class CoordinatorImpTestJUnit {
 	
 	@Test
 	public void testParticipantLinkUriMissingThrows() throws Exception {
-		Transaction transaction = createTransaction(toIso8601(1000L),new String []{ null});
+		Transaction transaction = createTransaction(1000L,new String []{ null});
 		try {
 			jsonClient.confirm(transaction);
 			fail();
