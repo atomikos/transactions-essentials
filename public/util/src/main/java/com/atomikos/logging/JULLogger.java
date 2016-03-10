@@ -80,4 +80,14 @@ class JULLogger implements Logger {
 		return julLogger.isLoggable(Level.INFO);
 	}
 
+	@Override
+	public void logFatal(String message) {
+		julLogger.log(Level.SEVERE, message);
+	}
+
+	@Override
+	public void logFatal(String message, Throwable error) {
+		julLogger.log(Level.SEVERE, message, error);
+	}
+
 }

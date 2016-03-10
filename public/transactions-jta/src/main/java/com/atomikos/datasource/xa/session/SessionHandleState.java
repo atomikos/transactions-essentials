@@ -171,7 +171,7 @@ public class SessionHandleState
 						currentContext.checkEnlistBeforeUse ( ct );
 					} catch ( UnexpectedTransactionContextException e )  {
 						String msg = "Unexpected error in session handle";
-						LOGGER.logWarning ( msg , e );
+						LOGGER.logError ( msg , e );
 						throw new InvalidSessionHandleStateException ( msg );
 					}
 				}

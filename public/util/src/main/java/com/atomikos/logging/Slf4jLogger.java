@@ -8,10 +8,14 @@
 
 package com.atomikos.logging;
 
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
+
 class Slf4jLogger implements Logger {
 
 	private final org.slf4j.Logger slf4j;
-
+	private final Marker FATAL = MarkerFactory.getMarker("FATAL");
+	
 	public Slf4jLogger(Class<?> clazz) {
 		slf4j = org.slf4j.LoggerFactory.getLogger(clazz);
 	}
@@ -74,6 +78,16 @@ class Slf4jLogger implements Logger {
 	@Override
 	public boolean isInfoEnabled() {
 		return slf4j.isInfoEnabled();
+	}
+
+	@Override
+	public void logFatal(String message) {
+		slf4j.error(FATAL, message);
+	}
+
+	@Override
+	public void logFatal(String message, Throwable error) {		
+		slf4j.error(FATAL, message, error);
 	}
 
 }

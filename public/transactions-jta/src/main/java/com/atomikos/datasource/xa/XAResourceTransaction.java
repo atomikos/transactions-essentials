@@ -156,6 +156,9 @@ public class XAResourceTransaction implements ResourceTransaction, Participant {
 	
 
 	void setState(TxState state) {
+		if (state.isHeuristic()) {
+			LOGGER.logError("Heuristic termination of " + toString() + " with state " + state);
+		}
 		this.state = state;
 	}
 
@@ -388,6 +391,7 @@ public class XAResourceTransaction implements ResourceTransaction, Participant {
 					&& xaerr.errorCode <= XAException.XA_RBEND) {
 				throw new RollbackException(msg);
 			} else {
+				LOGGER.logError(msg, xaerr);
 				throw new SysException(msg, xaerr);
 			}
 		}
@@ -463,12 +467,7 @@ public class XAResourceTransaction implements ResourceTransaction, Participant {
 			String msg = interpretErrorCode(this.resourcename, "rollback",
 					this.xid, xaerr.errorCode);
 			if (XAException.XA_RBBASE <= xaerr.errorCode
-					&& xaerr.errorCode <= XAException.XA_RBEND) { // do nothing,
-																	// corresponds
-																	// with
-																	// semantics
-																	// of
-																	// rollback
+					&& xaerr.errorCode <= XAException.XA_RBEND) { 
 				if (LOGGER.isTraceEnabled())
 					LOGGER.logTrace(msg);
 			} else {
@@ -524,15 +523,16 @@ public class XAResourceTransaction implements ResourceTransaction, Participant {
 			throw new HeurMixedException();
 		if (this.state.equals(TxState.HEUR_ABORTED))
 			throw new HeurRollbackException();
-		if (this.xaresource == null) { 
-			throw new HeurHazardException("XAResourceTransaction "
-					+ getXid() + ": no XAResource to commit?");
+		if (this.xaresource == null) {
+			String msg =  toString + ": no XAResource to commit?";
+			LOGGER.logError(msg);
+			throw new HeurHazardException(msg);
 		}
 
 		try {
 
-			if (TxState.ACTIVE.equals(this.state)) { // tolerate non-delisting
-														// apps/servers
+			if (TxState.ACTIVE.equals(this.state)) { 
+				// tolerate non-delisting apps/servers
 				suspend();
 			}
 		} catch (ResourceException re) {
@@ -545,15 +545,12 @@ public class XAResourceTransaction implements ResourceTransaction, Participant {
 		if (!(this.state.isOneOf(TxState.LOCALLY_DONE, TxState.IN_DOUBT, TxState.HEUR_HAZARD)))
 			throw new SysException("Wrong state for commit: " + this.state);
 		try {
-			// refresh xaresource for MQSeries: seems to close XAResource after
-			// suspend???
+			// refresh xaresource for MQSeries: seems to close XAResource after suspend???
 			testOrRefreshXAResourceFor2PC();
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.logDebug("XAResource.commit ( " + this.xidToHexString
-						+ " , " + onePhase + " ) on resource "
-						+ this.resourcename
-						+ " represented by XAResource instance "
-						+ this.xaresource);
+						+ " , " + onePhase + " ) on resource " + this.resourcename + 
+						" represented by XAResource instance " + this.xaresource);
 			}
 			this.xaresource.commit(this.xid, onePhase);
 

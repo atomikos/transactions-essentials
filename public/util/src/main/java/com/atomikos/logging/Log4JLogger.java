@@ -81,4 +81,14 @@ class Log4JLogger implements Logger {
 		return log4jLogger.isInfoEnabled();
 	}
 
+	@Override
+	public void logFatal(String message) {
+		log4jLogger.fatal(message);
+	}
+
+	@Override
+	public void logFatal(String message, Throwable error) {
+		log4jLogger.fatal(message, error);
+	}
+
 }

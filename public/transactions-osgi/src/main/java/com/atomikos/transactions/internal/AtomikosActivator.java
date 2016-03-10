@@ -48,7 +48,7 @@ public class AtomikosActivator implements BundleActivator {
 			utmProps.put("osgi.jndi.service.name", "AtomikosV4");
 			userTransactionRegistration = context.registerService(UserTransaction.class.getName(), userTransaction, utmProps);
 		} catch (Exception e) {
-			LOGGER.logWarning(e.getMessage(), e);
+			LOGGER.logFatal(e.getMessage(), e);
 		}
 	}
 
@@ -68,7 +68,7 @@ public class AtomikosActivator implements BundleActivator {
 			}
 
 		} catch (Exception e) {
-			LOGGER.logWarning(e.getMessage(), e);
+			LOGGER.logError(e.getMessage(), e);
 		}
 
 	}

@@ -457,7 +457,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
         if ( state.equals ( TxState.TERMINATED ) || state.isHeuristic()) {
 
             if ( !state.equals ( TxState.TERMINATED ) )
-            	LOGGER.logWarning ( "Local heuristic termination of coordinator "
+            	LOGGER.logError ( "Local heuristic termination of coordinator "
                         + root_ + " with state " + getState () );
             else
                 dispose ();

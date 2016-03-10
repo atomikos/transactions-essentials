@@ -51,8 +51,7 @@ public class CachedRepository implements Repository {
 			
 			performCheckpoint();
 		} catch (LogException e) {
-			e.printStackTrace();
-			LOGGER.logWarning("Corrupted log file - restart JVM", e);
+			LOGGER.logFatal("Corrupted log file - restart JVM", e);
 			corrupt = true;
 		}
 		
@@ -83,11 +82,11 @@ public class CachedRepository implements Repository {
 			inMemoryCoordinatorLogEntryRepository.writeCheckpoint(coordinatorLogEntries);
 			numberOfPutsSinceLastCheckpoint=0;
 		} catch (LogWriteException corrupted) {
-			LOGGER.logWarning("Corrupted log file - restart JVM", corrupted);
+			LOGGER.logFatal("Corrupted log file - restart JVM", corrupted);
 			corrupt = true;
 			throw corrupted;	
 		} catch (Exception corrupted) {
-			LOGGER.logWarning("Corrupted log file - restart JVM", corrupted);
+			LOGGER.logFatal("Corrupted log file - restart JVM", corrupted);
 			corrupt = true;
 			throw new LogWriteException(corrupted);
 		}
@@ -116,7 +115,7 @@ public class CachedRepository implements Repository {
 				ret = true;
 			}
 			else if (!entryState.isHeuristic()) {
-				LOGGER.logWarning("Unexpected long-lived entry found in log: " + coordinatorLogEntry );
+				LOGGER.logError("Unexpected long-lived entry found in log: " + coordinatorLogEntry );
 			}
 			
 		}

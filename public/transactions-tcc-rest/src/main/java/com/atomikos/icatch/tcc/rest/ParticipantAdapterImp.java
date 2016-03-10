@@ -80,6 +80,7 @@ class ParticipantAdapterImp implements ParticipantAdapter {
 			p.confirm();
 		} catch (WebApplicationException e) {
 			if (e.getResponse().getStatus() == 404) {
+				LOGGER.logError("Heuristic cancel by participant " + uri );
 				throw new HeurRollbackException();
 			} else {
 				throw e;

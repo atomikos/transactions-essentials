@@ -489,7 +489,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
 			try {
 				recoverableResource.recover();
 			} catch (Throwable e) {
-				LOGGER.logWarning(e.getMessage(),e);
+				LOGGER.logError(e.getMessage(),e);
 			}
 		}
 	}

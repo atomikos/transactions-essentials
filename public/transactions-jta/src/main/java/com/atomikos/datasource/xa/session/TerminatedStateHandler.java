@@ -25,7 +25,7 @@ extends TransactionContextStateHandler
 	TransactionContextStateHandler checkEnlistBeforeUse ( CompositeTransaction ct) throws InvalidSessionHandleStateException 
 	{
 		String msg = "Detected illegal attempt to use a terminated XA session";
-		LOGGER.logWarning ( msg );
+		LOGGER.logError ( msg );
 		throw new InvalidSessionHandleStateException ( msg );
 	}
 

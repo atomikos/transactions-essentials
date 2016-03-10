@@ -39,7 +39,7 @@ extends TransactionContextStateHandler
 			throws InvalidSessionHandleStateException 
 	{
 		String msg = "Detected illegal attempt to use a closed XA session";
-		LOGGER.logWarning ( msg );
+		LOGGER.logError ( msg );
 		throw new InvalidSessionHandleStateException ( msg );
 	}
 

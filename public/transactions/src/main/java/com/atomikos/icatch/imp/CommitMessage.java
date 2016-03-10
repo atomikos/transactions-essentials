@@ -62,7 +62,7 @@ class CommitMessage extends PropagationMessage
             // fill in exact heuristic messages by using buffer effect
             // of participant proxies.
             String msg = "Unexpected error in commit";
-            LOGGER.logWarning ( msg, e );
+            LOGGER.logError ( msg, e );
             HeurHazardException heurh = new HeurHazardException();
             throw new PropagationException ( heurh, true );
         }
