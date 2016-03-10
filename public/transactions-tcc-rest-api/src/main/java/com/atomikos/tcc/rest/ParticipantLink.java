@@ -13,8 +13,11 @@ public class ParticipantLink {
 	protected String uri;
 	protected String expires;
 
-	public ParticipantLink() {
-	}
+	/**
+	 * required by third-party REST frameworks 
+	 */
+	@SuppressWarnings("unused")
+	private ParticipantLink() {}
 
 	public void setExpires(String expires) {
 		this.expires = expires;
