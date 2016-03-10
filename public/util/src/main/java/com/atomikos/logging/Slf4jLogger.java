@@ -14,7 +14,8 @@ import org.slf4j.MarkerFactory;
 class Slf4jLogger implements Logger {
 
 	private final org.slf4j.Logger slf4j;
-
+	private final Marker FATAL = MarkerFactory.getMarker("FATAL");
+	
 	public Slf4jLogger(Class<?> clazz) {
 		slf4j = org.slf4j.LoggerFactory.getLogger(clazz);
 	}
@@ -81,14 +82,12 @@ class Slf4jLogger implements Logger {
 
 	@Override
 	public void logFatal(String message) {
-		Marker m = MarkerFactory.getMarker("FATAL");
-		slf4j.error(m, message);
+		slf4j.error(FATAL, message);
 	}
 
 	@Override
-	public void logFatal(String message, Throwable error) {
-		Marker m = MarkerFactory.getMarker("FATAL");
-		slf4j.error(m, message, error);
+	public void logFatal(String message, Throwable error) {		
+		slf4j.error(FATAL, message, error);
 	}
 
 }
