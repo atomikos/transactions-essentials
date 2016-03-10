@@ -26,7 +26,7 @@ class Log4JLogger implements Logger {
 	public void logInfo(String message) {
 		log4jLogger.info(message);
 	}
-	
+
 	public void logDebug(String message) {
 		log4jLogger.debug(message);
 	}
@@ -57,17 +57,28 @@ class Log4JLogger implements Logger {
 
 		return log4jLogger.isDebugEnabled();
 	}
-  
-  public void logError(String message) {
-    log4jLogger.error(message);
-  }  
-  
-  public void logError(String message, Throwable error) {
-    log4jLogger.error(message, error);
-  }  
-  
-  public boolean isErrorEnabled() {
-    return log4jLogger.isEnabledFor(Level.ERROR);
-  }
+
+	public void logError(String message) {
+		log4jLogger.error(message);
+	}
+
+	public void logError(String message, Throwable error) {
+		log4jLogger.error(message, error);
+	}
+
+	public boolean isErrorEnabled() {
+		return log4jLogger.isEnabledFor(Level.ERROR);
+	}
+
+	@Override
+	public void logInfo(String message, Throwable error) {
+		log4jLogger.info(message, error);
+
+	}
+
+	@Override
+	public boolean isInfoEnabled() {
+		return log4jLogger.isInfoEnabled();
+	}
 
 }

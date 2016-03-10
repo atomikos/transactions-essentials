@@ -9,29 +9,33 @@
 package com.atomikos.logging;
 
 public interface Logger {
-  
-  void logError(String message);
 
-  void logWarning(String message);
-  
-  void logInfo(String message);
+	void logError(String message);
 
-  void logDebug(String message);
+	void logWarning(String message);
 
-  void logTrace(String message);
-  
-  void logError(String message, Throwable error);
+	void logInfo(String message);
 
-  void logWarning(String message, Throwable error);
+	void logDebug(String message);
 
-  void logDebug(String message, Throwable error);
+	void logTrace(String message);
 
-  void logTrace(String message, Throwable error);
+	void logError(String message, Throwable error);
 
-  boolean isTraceEnabled();
+	void logWarning(String message, Throwable error);
 
-  boolean isDebugEnabled();
-  
-  boolean isErrorEnabled();
+	void logInfo(String message, Throwable error);
+
+	void logDebug(String message, Throwable error);
+
+	void logTrace(String message, Throwable error);
+
+	boolean isTraceEnabled();
+
+	boolean isDebugEnabled();
+
+	boolean isErrorEnabled();
+
+	boolean isInfoEnabled();
 
 }

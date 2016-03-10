@@ -23,7 +23,7 @@ class Slf4jLogger implements Logger {
 	public void logInfo(String message) {
 		slf4j.info(message);
 	}
-	
+
 	public void logDebug(String message) {
 		slf4j.debug(message);
 	}
@@ -33,16 +33,16 @@ class Slf4jLogger implements Logger {
 	}
 
 	public void logWarning(String message, Throwable error) {
-		slf4j.warn(message,error);
+		slf4j.warn(message, error);
 
 	}
 
 	public void logDebug(String message, Throwable error) {
-		slf4j.debug(message,error);
+		slf4j.debug(message, error);
 	}
 
 	public void logTrace(String message, Throwable error) {
-		slf4j.trace(message,error);
+		slf4j.trace(message, error);
 
 	}
 
@@ -53,19 +53,27 @@ class Slf4jLogger implements Logger {
 	public boolean isDebugEnabled() {
 		return slf4j.isDebugEnabled();
 	}
-  
-  public void logError(String message) {
-    slf4j.error(message);
-  }
 
-  
-  public void logError(String message, Throwable error) {
-    slf4j.error(message, error);
-  }
+	public void logError(String message) {
+		slf4j.error(message);
+	}
 
-  
-  public boolean isErrorEnabled() {
-    return slf4j.isErrorEnabled();
-  }
+	public void logError(String message, Throwable error) {
+		slf4j.error(message, error);
+	}
+
+	public boolean isErrorEnabled() {
+		return slf4j.isErrorEnabled();
+	}
+
+	@Override
+	public void logInfo(String message, Throwable error) {
+		slf4j.info(message, error);
+	}
+
+	@Override
+	public boolean isInfoEnabled() {
+		return slf4j.isInfoEnabled();
+	}
 
 }
