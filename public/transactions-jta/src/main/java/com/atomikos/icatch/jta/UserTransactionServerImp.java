@@ -147,8 +147,7 @@ public class UserTransactionServerImp implements UserTransactionServer
         canExport = "UnicastRemoteObject".equals ( exportClass )
                 || "PortableRemoteObject".equals ( exportClass );
         if ( !canExport ) {
-            LOGGER
-                    .logWarning ( "Client transaction demarcation not supported for "
+            LOGGER.logWarning ( "Client transaction demarcation not supported for "
                             + "com.atomikos.icatch.rmi_export_class="
                             + exportClass );
             exported_ = false;

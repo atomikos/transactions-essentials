@@ -92,8 +92,7 @@ class TransactionImp implements Transaction {
 
 	private void assertActiveOrSuspended(XAResourceTransaction restx) {
 		if (!(restx.isActive() || restx.isXaSuspended())) {
-			LOGGER.logWarning("Unexpected resource transaction state for "
-					+ restx);
+			LOGGER.logWarning("Unexpected resource transaction state for " + restx);
 		}
 	}
 

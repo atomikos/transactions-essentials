@@ -67,7 +67,7 @@ class RollbackOnlyParticipant implements Participant
             HeurMixedException, RollbackException, SysException
     {
         if (onePhase) throw new RollbackException();
-        else LOG.logWarning("Unexpected 2-phase commit: outcome should be rollback!");
+        else LOG.logError("Unexpected 2-phase commit: outcome should be rollback!");
     }
 
     /**

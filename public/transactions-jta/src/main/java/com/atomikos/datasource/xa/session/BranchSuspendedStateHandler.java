@@ -35,7 +35,7 @@ class BranchSuspendedStateHandler extends TransactionContextStateHandler
 			UnexpectedTransactionContextException 
 	{
 		String msg = "Detected illegal attempt to use a suspended XA session";
-		LOGGER.logWarning ( msg );
+		LOGGER.logError ( msg );
 		throw new InvalidSessionHandleStateException ( msg );
 	}
 
