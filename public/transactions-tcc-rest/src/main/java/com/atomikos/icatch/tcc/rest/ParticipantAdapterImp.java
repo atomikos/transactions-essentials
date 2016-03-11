@@ -36,12 +36,7 @@ class ParticipantAdapterImp implements ParticipantAdapter {
 
 	public ParticipantAdapterImp(ParticipantLink pl) {
 		this.uri = pl.getUri();
-		Calendar cal = Calendar.getInstance() ;
-		try {
-			cal = DatatypeConverter.parseDateTime(pl.getExpires());
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+		Calendar cal = DatatypeConverter.parseDateTime(pl.getExpires());
 		this.expires = cal.getTimeInMillis();
 	}
 	
