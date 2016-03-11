@@ -246,8 +246,8 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
         		if (cause == null) {
         			cause = error;
         		} else {
-        			// log the others which may still happen as error
-        			LOGGER.logWarning("Unexpected error in beforeCompletion: ", error);
+        			// log the others which may still happen as error - cf. case 115604
+        			LOGGER.logError("Unexpected error in beforeCompletion: ", error);
         		}       		
         	}
         	sync = localPopSynchronization();
