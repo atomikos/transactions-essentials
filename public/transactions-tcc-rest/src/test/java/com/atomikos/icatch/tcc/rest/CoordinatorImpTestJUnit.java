@@ -283,7 +283,20 @@ public class CoordinatorImpTestJUnit {
 		}
 	}
 
-
+	@Test
+	public void testParticipantMalformedExpiresThrows() throws Exception {
+		String invalidISO8601Date = "participantLink: expires must be a valid ISO 8601 date";
+		Transaction transaction = createTransaction(invalidISO8601Date, "DUMMY");
+		try {
+			jsonClient.confirm(transaction);
+			fail();
+		} catch (WebApplicationException e) {
+			Assert.assertEquals(400, e.getResponse().getStatus());
+			Assert.assertEquals("invalid date format participantLink an 'expires' "+invalidISO8601Date, e.getMessage());
+		}
+	}
+	
+	
 	@Test
 	public void testParticipantExpiresMissingThrows() throws Exception {
 		Transaction transaction = createTransaction(null, "DUMMY");
