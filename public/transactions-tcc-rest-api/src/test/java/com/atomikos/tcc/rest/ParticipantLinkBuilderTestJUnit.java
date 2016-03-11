@@ -12,12 +12,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.text.ParseException;
-import java.util.Date;
-import java.util.GregorianCalendar;
-
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -28,7 +22,6 @@ public class ParticipantLinkBuilderTestJUnit {
 
 	private static final String URI = "http://www.example.com/bla";
 	private static final String FORMATTED_DATE = "2002-05-30T09:30:10Z";
-	private static final String DATE_FORMAT = "dd/MM/yyyy";
 	
 	private ParticipantLinkBuilder builder;
 	

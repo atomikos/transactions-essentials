@@ -10,13 +10,8 @@ package com.atomikos.tcc.rest;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.Date;
-
 import org.junit.Before;
 import org.junit.Test;
-
-import com.atomikos.tcc.rest.ParticipantLink;
-import com.atomikos.tcc.rest.ParticipantLinkFactory;
 
 public class ParticipantLinkFactoryTestJUnit {
 	
