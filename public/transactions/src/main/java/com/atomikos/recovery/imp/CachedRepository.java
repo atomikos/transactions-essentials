@@ -110,6 +110,7 @@ public class CachedRepository implements Repository {
 		if ((coordinatorLogEntry.expires()+forgetOrphanedLogEntriesDelay) < now) {
 			TxState entryState = coordinatorLogEntry.getResultingState();
 			if (!entryState.isHeuristic()) {
+				//can happen for commits or aborts where the 'terminated' does not make it to the log after the resource aborted/committed
 				LOGGER.logWarning("Purging orphaned entry from log: " + coordinatorLogEntry);
 				ret = true;
 			}
