@@ -68,18 +68,19 @@ public class UniqueIdMgr
 
     public String get()
     {
-        incrementAndGet();
         StringBuffer buffer = new StringBuffer();
-        return buffer.append(commonPartOfId).
+        String id = buffer.append(commonPartOfId).
         			  append(System.currentTimeMillis()).
-        			  append(getCountWithLeadingZeroes ( lastcounter )).
-        			  toString() ;
+        			  append(getCountWithLeadingZeroes ( incrementAndGet() )).
+        			  toString();
+        return id;
     }
 
 
-	private synchronized void incrementAndGet() {
+	private synchronized int incrementAndGet() {
 		lastcounter++;
         if (lastcounter == MAX_COUNTER_WITHIN_SAME_MILLIS) lastcounter = 0;
+        return lastcounter;
 	}
 
     private static String getCommonPartOfId(String server) {
