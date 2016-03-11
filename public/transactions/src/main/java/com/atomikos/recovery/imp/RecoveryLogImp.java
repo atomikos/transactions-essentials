@@ -17,11 +17,11 @@ import com.atomikos.icatch.TxState;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 import com.atomikos.recovery.AdminLog;
-import com.atomikos.recovery.Repository;
 import com.atomikos.recovery.LogException;
 import com.atomikos.recovery.LogReadException;
 import com.atomikos.recovery.LogWriteException;
 import com.atomikos.recovery.RecoveryLog;
+import com.atomikos.recovery.Repository;
 import com.atomikos.thread.InterruptedExceptionHelper;
 
 public class RecoveryLogImp implements RecoveryLog, AdminLog {
@@ -74,7 +74,7 @@ public class RecoveryLogImp implements RecoveryLog, AdminLog {
 
 	@Override
 	public void terminatedWithHeuristicRollback(ParticipantLogEntry entry) throws LogException {
-
+		LOGGER.logError("terminatedWithHeuristicRollback: " + entry);
 		CoordinatorLogEntry coordinatorLogEntry = repository.get(entry.coordinatorId);
 		if (coordinatorLogEntry == null) {
 			LOGGER.logWarning("terminatedWithHeuristicRollback called on non existent Coordinator " + entry.coordinatorId + " " + entry.uri);
@@ -157,6 +157,7 @@ public class RecoveryLogImp implements RecoveryLog, AdminLog {
 
 	@Override
 	public void terminatedWithHeuristicCommit(ParticipantLogEntry entry) throws LogException {
+		LOGGER.logError("terminatedWithHeuristicCommit: " + entry);
 		CoordinatorLogEntry coordinatorLogEntry = repository.get(entry.coordinatorId);
 		if (coordinatorLogEntry == null) {
 			LOGGER.logWarning("terminatedWithHeuristicCommit called on non existent Coordinator " + entry.coordinatorId + " " + entry.uri);
@@ -173,11 +174,12 @@ public class RecoveryLogImp implements RecoveryLog, AdminLog {
 
 	@Override
 	public void terminatedWithHeuristicHazard(ParticipantLogEntry entry) {
-		LOGGER.logWarning("terminatedWithHeuristicHazard " + entry);
+		LOGGER.logError("terminatedWithHeuristicHazard " + entry);
 	}
 
 	@Override
 	public void terminatedWithHeuristicMixed(ParticipantLogEntry entry) throws LogException {
+		LOGGER.logError("terminatedWithHeuristicMixed " + entry);
 		CoordinatorLogEntry coordinatorLogEntry = repository.get(entry.coordinatorId);
 		if (coordinatorLogEntry == null) {
 			LOGGER.logWarning("terminatedWithHeuristicMixed called on non existent Coordinator " + entry.coordinatorId + " " + entry.uri);
