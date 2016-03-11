@@ -14,7 +14,7 @@ import static com.atomikos.icatch.TxState.HEUR_COMMITTED;
 import static com.atomikos.icatch.TxState.HEUR_MIXED;
 import static com.atomikos.icatch.TxState.IN_DOUBT;
 import static com.atomikos.icatch.TxState.TERMINATED;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.util.EnumSet;
 import java.util.Set;
@@ -31,7 +31,7 @@ public class TxStateTestJUnit {
 
 	@Test
 	public void testRecoverableStates() throws Exception {
-		Set<TxState> recoverableStates = EnumSet.of(IN_DOUBT, COMMITTING, HEUR_COMMITTED, HEUR_ABORTED, HEUR_MIXED);
+		Set<TxState> recoverableStates = EnumSet.of(TERMINATED, IN_DOUBT, COMMITTING, HEUR_COMMITTED, HEUR_ABORTED, HEUR_MIXED);
 		TxState[] states = TxState.values();
 		for (TxState txState : states) {
 			if (recoverableStates.contains(txState)) {
@@ -40,6 +40,10 @@ public class TxStateTestJUnit {
 				Assert.assertFalse(txState.isRecoverableState());
 			}
 		}
+	}
+	@Test
+	public void testTerminatedMustRecoverableToDeleteFromLogs() throws Exception {
+		assertTrue(TERMINATED.isRecoverableState());
 	}
 
 	@Test
