@@ -87,12 +87,7 @@ public class CoordinatorImp implements Coordinator {
 	}
 
 	private long toTimestamp(String expires) {
-		Calendar cal = Calendar.getInstance() ;
-		try {
-			cal = DatatypeConverter.parseDateTime(expires);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+		Calendar cal = DatatypeConverter.parseDateTime(expires);
 		return cal.getTimeInMillis();
 	}
 
@@ -115,6 +110,11 @@ public class CoordinatorImp implements Coordinator {
 
 	private void validateParticipantLink(ParticipantLink pl) {
 		if (pl.getExpires() == null) failWithInvalidRequest("each participantLink must have an 'expires'");
+		try {
+			toTimestamp(pl.getExpires()); 
+		} catch (IllegalArgumentException e) {
+			failWithInvalidRequest("invalid date format participantLink an 'expires' "+pl.getExpires());
+		}
 		if (pl.getUri() == null) failWithInvalidRequest("each participantLink must have a value for 'uri'");
 	}
 	
