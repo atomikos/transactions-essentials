@@ -9,9 +9,12 @@
 package com.atomikos.icatch.tcc.rest;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
+import javax.management.RuntimeErrorException;
 import javax.ws.rs.WebApplicationException;
+import javax.xml.bind.DatatypeConverter;
 
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.apache.cxf.jaxrs.client.WebClient;
@@ -34,7 +37,13 @@ class ParticipantAdapterImp implements ParticipantAdapter {
 
 	public ParticipantAdapterImp(ParticipantLink pl) {
 		this.uri = pl.getUri();
-		this.expires = pl.getExpires().toGregorianCalendar().getTime().getTime();
+		Calendar cal = Calendar.getInstance() ;
+		try {
+			cal = DatatypeConverter.parseDateTime(pl.getExpires());
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		this.expires = cal.getTimeInMillis();
 	}
 	
 	Participant getParticipant() {

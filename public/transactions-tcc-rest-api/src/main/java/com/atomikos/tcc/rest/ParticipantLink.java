@@ -8,41 +8,51 @@
 
 package com.atomikos.tcc.rest;
 
-import java.util.GregorianCalendar;
-
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
 
 public class ParticipantLink {
 
-	protected String uri;
-	protected XMLGregorianCalendar expires;
+	private String uri;
+	private String expires;
 
-	public ParticipantLink() {
-		GregorianCalendar gcal = new GregorianCalendar();
-		gcal.setTimeInMillis(Long.MAX_VALUE);
-		try {
-			expires = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);
-		} catch (DatatypeConfigurationException e) {
-			throw new RuntimeException(e);
-		}
+	/**
+	 * required by third-party REST frameworks 
+	 */
+	@SuppressWarnings("unused")
+	private ParticipantLink() {}
+
+	public void setExpires(String expires) {
+		this.expires = expires;
+	}
+	
+	public void setUri(String uri) {
+		this.uri = uri;
+	}
+	public ParticipantLink(String uri, String expires) {
+		super();
+		this.uri = uri;
+		this.expires = expires;
+	}
+	public ParticipantLink(String uri, long expires) {
+		this(uri, toDate(expires));
+	}
+	
+	private static String toDate(long timestamp) {
+		Date date = new Date(timestamp);
+		DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+		format.setTimeZone(TimeZone.getTimeZone("GMT+00:00"));
+		return format.format(date.getTime());
 	}
 
 	public String getUri() {
 		return uri;
 	}
 
-	public void setUri(String value) {
-		this.uri = value;
-	}
-
-	public XMLGregorianCalendar getExpires() {
+	public String getExpires() {
 		return expires;
-	}
-
-	public void setExpires(XMLGregorianCalendar value) {
-		this.expires = value;
 	}
 
 }

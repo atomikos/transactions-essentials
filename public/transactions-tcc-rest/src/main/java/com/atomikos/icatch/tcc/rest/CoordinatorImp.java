@@ -8,12 +8,15 @@
 
 package com.atomikos.icatch.tcc.rest;
 
+import java.util.Calendar;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.xml.bind.DatatypeConverter;
 
 import com.atomikos.icatch.CompositeTransaction;
 import com.atomikos.icatch.CompositeTransactionManager;
@@ -74,7 +77,7 @@ public class CoordinatorImp implements Coordinator {
 		long timeout = 10000L;
 		long now = System.currentTimeMillis();
 		for (ParticipantLink pl : transaction.getParticipantLinks()) {
-			long expires = pl.getExpires().toGregorianCalendar().getTime().getTime();
+			long expires = toTimestamp( pl.getExpires());
 			long participantTimeout = expires - now;
 			if (participantTimeout > timeout) {
 				timeout = participantTimeout;
@@ -82,6 +85,17 @@ public class CoordinatorImp implements Coordinator {
 		}
 		return timeout;
 	}
+
+	private long toTimestamp(String expires) {
+		Calendar cal = Calendar.getInstance() ;
+		try {
+			cal = DatatypeConverter.parseDateTime(expires);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		return cal.getTimeInMillis();
+	}
+
 
 	@Override
 	@PUT

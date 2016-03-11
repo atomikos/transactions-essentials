@@ -14,15 +14,11 @@ import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
 
 import junit.framework.Assert;
 
@@ -88,7 +84,7 @@ public class CoordinatorImpTestJUnit {
 	}
 
 	public static void main(String[] args) throws DatatypeConfigurationException, IOException {
-		Transaction transaction = createTransaction(1, "http://1","http://2");
+		Transaction transaction = createTransaction("2002-05-30T09:30:10Z", "http://1","http://2");
 		JacksonJaxbJsonProvider provider = new JacksonJaxbJsonProvider();
 		
 		
@@ -106,23 +102,30 @@ public class CoordinatorImpTestJUnit {
 		
 	}
 
-	private static Transaction createTransaction(long expiryDate,
+	private static Transaction createTransaction(String date,
 			String... participantUris) throws DatatypeConfigurationException {
 		List<ParticipantLink> participants = new ArrayList<ParticipantLink>();
 		for (String uri : participantUris) {
-			GregorianCalendar gcal = new GregorianCalendar();
-			gcal.setTime(new Date(expiryDate));
-			XMLGregorianCalendar date = DatatypeFactory.newInstance()
-					.newXMLGregorianCalendar(gcal);
-			ParticipantLink participantLink = new ParticipantLink();
-			participantLink.setUri(uri);
-			participantLink.setExpires(date);
+			ParticipantLink participantLink = new ParticipantLink(uri,date);
 			participants.add(participantLink);
 		}
 		Transaction transaction = new Transaction();
 		transaction.getParticipantLinks().addAll(participants);
 		return transaction;
 	}
+
+	private static Transaction createTransaction(long timestamp,
+			String... participantUris) throws DatatypeConfigurationException {
+		List<ParticipantLink> participants = new ArrayList<ParticipantLink>();
+		for (String uri : participantUris) {
+			ParticipantLink participantLink = new ParticipantLink(uri,timestamp);
+			participants.add(participantLink);
+		}
+		Transaction transaction = new Transaction();
+		transaction.getParticipantLinks().addAll(participants);
+		return transaction;
+	}
+
 
 	@Before
 	public void setUp() {
@@ -138,6 +141,10 @@ public class CoordinatorImpTestJUnit {
 				"http://www.example.com");
 		jsonClient.cancel(transaction);
 	}
+
+	
+	
+	
 
 	@Test
 	public void testJsonCancelWorksForEmptyTransaction() {
@@ -266,8 +273,7 @@ public class CoordinatorImpTestJUnit {
 	
 	@Test
 	public void testParticipantLinkUriMissingThrows() throws Exception {
-		Transaction transaction = createTransaction(1000L, "DUMMY");
-		transaction.getParticipantLinks().get(0).setUri(null);
+		Transaction transaction = createTransaction(1000L,new String []{ null});
 		try {
 			jsonClient.confirm(transaction);
 			fail();
@@ -280,8 +286,7 @@ public class CoordinatorImpTestJUnit {
 
 	@Test
 	public void testParticipantExpiresMissingThrows() throws Exception {
-		Transaction transaction = createTransaction(1000L, "DUMMY");
-		transaction.getParticipantLinks().get(0).setExpires(null);
+		Transaction transaction = createTransaction(null, "DUMMY");
 		try {
 			jsonClient.confirm(transaction);
 			fail();

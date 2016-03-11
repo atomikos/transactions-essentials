@@ -8,32 +8,20 @@
 
 package com.atomikos.tcc.rest;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.GregorianCalendar;
-
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
 
 public class ParticipantLinkBuilder {
 
-	public static ParticipantLinkBuilder instance(String uri) {
-		return new ParticipantLinkBuilder(uri);
+	public static ParticipantLinkBuilder instance(String uri, String expiryDate) {
+		return new ParticipantLinkBuilder(uri, expiryDate);
 	}
 
 	private ParticipantLink pl;
 	
-	private ParticipantLinkBuilder(String uri) {
-		this.pl = new ParticipantLink();
-		this.pl.setUri(uri);
+	private ParticipantLinkBuilder(String uri, String expiryDate) {
+		this.pl = new ParticipantLink(uri, expiryDate);
 	}
 	
-	public ParticipantLinkBuilder withExpires(XMLGregorianCalendar date) {
-		this.pl.setExpires(date);
-		return this;
-	}
+	
 	
 	public ParticipantLink build() {
 		assertNotNull(pl.getExpires(), "Required: expiry");
@@ -44,28 +32,6 @@ public class ParticipantLinkBuilder {
 		if (o == null) throw new IllegalStateException(msg);
 	}
 
-	public ParticipantLinkBuilder withExpires(Date date) {
-		XMLGregorianCalendar cal = createXMLGregorianCalendar(date);
-		return withExpires(cal);
-	}
-	
-	private XMLGregorianCalendar createXMLGregorianCalendar(Date date) {
-		GregorianCalendar gcal = new GregorianCalendar();
-		gcal.setTime(date);
-		XMLGregorianCalendar cal;
-		try {
-			cal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);
-		} catch (DatatypeConfigurationException e) {
-			throw new RuntimeException(e);
-		}
-		return cal;
-	}
-
-	public ParticipantLinkBuilder withExpires(String dateFormat, String formattedDate) throws ParseException {
-		SimpleDateFormat formatter = new SimpleDateFormat(dateFormat);
-		Date date = formatter.parse(formattedDate);
-		return withExpires(date);
-	}
 
 
 }

@@ -8,10 +8,10 @@
 
 package com.atomikos.tcc.rest;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
@@ -22,70 +22,52 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.atomikos.tcc.rest.ParticipantLink;
-import com.atomikos.tcc.rest.ParticipantLinkBuilder;
-
 public class ParticipantLinkBuilderTestJUnit {
 
 
 
 	private static final String URI = "http://www.example.com/bla";
-	private static final String FORMATTED_DATE = "02/01/2014";
+	private static final String FORMATTED_DATE = "2002-05-30T09:30:10Z";
 	private static final String DATE_FORMAT = "dd/MM/yyyy";
 	
 	private ParticipantLinkBuilder builder;
-	private Date expiryAsDate;
 	
 	@Before
 	public void setUp() throws ParseException {
-		builder = ParticipantLinkBuilder.instance(URI);
-		SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT);
-		expiryAsDate = formatter.parse(FORMATTED_DATE);
-		builder.withExpires(expiryAsDate);
+		builder = ParticipantLinkBuilder.instance(URI, FORMATTED_DATE);
+		
 	}
 
 	@Test(expected=IllegalStateException.class)
 	public void testFailsWithoutDate() {
-		builder.withExpires((XMLGregorianCalendar) null);
+		builder = ParticipantLinkBuilder.instance(URI, null);
 		builder.build();
 	}
 	
 	@Test
 	public void testWithExpiresAsXMLGregorianCalendar() {
-		XMLGregorianCalendar cal = createXMLGregorianCalendar(expiryAsDate);
-		builder.withExpires(cal);
+		builder = ParticipantLinkBuilder.instance(URI, FORMATTED_DATE);
 		ParticipantLink pl = builder.build();
 		assertNotNull(pl);
-		assertEquals(cal, pl.getExpires());
+		assertEquals(FORMATTED_DATE, pl.getExpires());
 	}
 	
 	@Test
 	public void testWithExpiresAsDate() {
-		builder.withExpires(expiryAsDate);
+		builder = ParticipantLinkBuilder.instance(URI, FORMATTED_DATE);
 		ParticipantLink pl = builder.build();
 		assertNotNull(pl);
-		assertEquals(createXMLGregorianCalendar(expiryAsDate), pl.getExpires());
+		assertEquals(FORMATTED_DATE, pl.getExpires());
 	}
 	
 	@Test
 	public void testWithExpiresAsString() throws ParseException {
-		builder.withExpires(DATE_FORMAT, FORMATTED_DATE);
+		builder = ParticipantLinkBuilder.instance(URI, FORMATTED_DATE);
 		ParticipantLink pl = builder.build();
 		assertNotNull(pl);
-		assertEquals(expiryAsDate, pl.getExpires().toGregorianCalendar().getTime());
+		assertEquals(FORMATTED_DATE, pl.getExpires());
 	}
 	
 
-	private XMLGregorianCalendar createXMLGregorianCalendar(Date date) {
-		GregorianCalendar gcal = new GregorianCalendar();
-		gcal.setTime(date);
-		XMLGregorianCalendar cal;
-		try {
-			cal = DatatypeFactory.newInstance().newXMLGregorianCalendar(gcal);
-		} catch (DatatypeConfigurationException e) {
-			throw new RuntimeException(e);
-		}
-		return cal;
-	}
 
 }
