@@ -26,8 +26,9 @@ public class UniqueIdMgr
 	private final static int MAX_COUNTER_WITHIN_SAME_MILLIS = 32000;
 
 
-    String server_; //name of server
-    int lastcounter_;
+  
+    private final String commonPartOfId; //name of server
+    private int lastcounter;
   
 
     /**
@@ -38,8 +39,8 @@ public class UniqueIdMgr
 
     public UniqueIdMgr ( String server ) {
         super();
-        server_ = server;
-        lastcounter_ = 0;
+        commonPartOfId=getCommonPartOfId(server);
+        lastcounter = 0;
     }
  
 
@@ -50,6 +51,7 @@ public class UniqueIdMgr
     		int max = Long.toString(MAX_COUNTER_WITHIN_SAME_MILLIS).length();
     		int len = ret.length();
     		StringBuffer zeroes = new StringBuffer();
+    		
     		while ( len < max ) {
     			zeroes.append ( "0" );
     			len++;
@@ -64,22 +66,31 @@ public class UniqueIdMgr
      *
      */
 
-    public synchronized String get()
+    public String get()
     {
-        lastcounter_++;
-        if (lastcounter_ == MAX_COUNTER_WITHIN_SAME_MILLIS) lastcounter_ = 0;
-        return getCommonPartOfId() + System.currentTimeMillis() + getCountWithLeadingZeroes ( lastcounter_ ) ;
+        incrementAndGet();
+        StringBuffer buffer = new StringBuffer();
+        return buffer.append(commonPartOfId).
+        			  append(System.currentTimeMillis()).
+        			  append(getCountWithLeadingZeroes ( lastcounter )).
+        			  toString() ;
     }
 
-    private String getCommonPartOfId() {
+
+	private synchronized void incrementAndGet() {
+		lastcounter++;
+        if (lastcounter == MAX_COUNTER_WITHIN_SAME_MILLIS) lastcounter = 0;
+	}
+
+    private static String getCommonPartOfId(String server) {
     	StringBuffer ret = new StringBuffer(64);
-		ret.append(server_);
+		ret.append(server);
 		return ret.toString();
     }
 
 	public int getMaxIdLengthInBytes() {
 		// see case 73086
-		return getCommonPartOfId().getBytes().length + MAX_LENGTH_OF_NUMERIC_SUFFIX;
+		return commonPartOfId.getBytes().length + MAX_LENGTH_OF_NUMERIC_SUFFIX;
 	}
 
 
