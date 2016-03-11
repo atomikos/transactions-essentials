@@ -19,7 +19,7 @@ public enum TxState {
 	ABORTED 		(false, false),
 	ABANDONED		(false, false),
 	
-	TERMINATED 		(false, true),
+	TERMINATED 		(true, true),
 	HEUR_HAZARD 	("HEURISTIC HAZARD", 	false, 	false, TERMINATED),
 	//Recoverable States
 	HEUR_COMMITTED 	("HEURISTIC COMMIT", 	true, 	false, TERMINATED),
