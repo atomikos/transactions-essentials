@@ -81,6 +81,7 @@ public class XaResourceRecoveryManager {
 	}
 
 	private void replayCommit(XID xid, XAResource xaResource) {
+		if (LOGGER.isDebugEnabled()) LOGGER.logDebug("Replaying commit of xid: " + xid);
 		try {
 			xaResource.commit(xid, false);
 			log.terminated(xid);
@@ -164,6 +165,7 @@ public class XaResourceRecoveryManager {
 	private void attemptPresumedAbort(XID xid, XAResource xaResource) {
 		try {
 			log.presumedAborting(xid);
+			if (LOGGER.isDebugEnabled()) LOGGER.logDebug("Presumed abort of xid: " + xid);
 			try {
 				xaResource.rollback(xid);
 				log.terminated(xid); 

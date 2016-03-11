@@ -36,7 +36,8 @@ public class RecoveryLogImp implements RecoveryLog, AdminLog {
 
 	@Override
 	public void terminated(ParticipantLogEntry entry)  {
-		
+		if (LOGGER.isTraceEnabled()) LOGGER.logTrace("terminated: " + entry);
+
 		try {
 			CoordinatorLogEntry coordinatorLogEntry =null;
 			coordinatorLogEntry = repository.get(entry.coordinatorId);
