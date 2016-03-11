@@ -109,13 +109,9 @@ public class CachedRepository implements Repository {
 		boolean ret = false;
 		if ((coordinatorLogEntry.expires()+forgetOrphanedLogEntriesDelay) < now) {
 			TxState entryState = coordinatorLogEntry.getResultingState();
-			if ( TxState.ABORTING == entryState ) {
-				// pending ABORTING: happens during presumed abort on recovery, 
-				// when rollback OK in resource but subsequent delete from log fails
+			if (!entryState.isHeuristic()) {
+				LOGGER.logWarning("Purging orphaned entry from log: " + coordinatorLogEntry);
 				ret = true;
-			}
-			else if (!entryState.isHeuristic()) {
-				LOGGER.logError("Unexpected long-lived entry found in log: " + coordinatorLogEntry );
 			}
 			
 		}
