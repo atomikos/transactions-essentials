@@ -113,6 +113,11 @@ public class ConfigurationTestJUnit {
 	private void setCustomProperty() {
 		props.setProperty(CUSTOM_PROPERTY_NAME, CUSTOM_PROPERTY_VALUE);
 	}
+	@After
+	public void cleanup(){
+		System.clearProperty(CUSTOM_PROPERTY_NAME);
+		System.clearProperty("com.atomikos.icatch.file");
+	}
 
 	@Test
 	public void testPlaceHolderSubstitution() {
