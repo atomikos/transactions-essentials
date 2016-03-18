@@ -113,7 +113,7 @@ public class CoordinatorImp implements Coordinator {
 		try {
 			toTimestamp(pl.getExpires()); 
 		} catch (IllegalArgumentException e) {
-			failWithInvalidRequest("invalid date format participantLink an 'expires' "+pl.getExpires());
+			failWithInvalidRequest("invalid date format for participantLink 'expires': "+pl.getExpires());
 		}
 		if (pl.getUri() == null) failWithInvalidRequest("each participantLink must have a value for 'uri'");
 	}
