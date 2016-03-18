@@ -8,6 +8,8 @@
 
 package com.atomikos.icatch;
 
+import com.atomikos.recovery.TxState;
+
 
 
  /**

@@ -8,7 +8,7 @@
 
 package com.atomikos.icatch.imp;
 
-import com.atomikos.icatch.TxState;
+import com.atomikos.recovery.TxState;
 
 /**
  * An active state handler.

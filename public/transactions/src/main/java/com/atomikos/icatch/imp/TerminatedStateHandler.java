@@ -15,7 +15,7 @@ import com.atomikos.icatch.HeurRollbackException;
 import com.atomikos.icatch.Participant;
 import com.atomikos.icatch.RollbackException;
 import com.atomikos.icatch.SysException;
-import com.atomikos.icatch.TxState;
+import com.atomikos.recovery.TxState;
 
 /**
  *

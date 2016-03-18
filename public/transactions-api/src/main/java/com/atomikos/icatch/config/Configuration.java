@@ -23,11 +23,11 @@ import com.atomikos.icatch.CompositeTransactionManager;
 import com.atomikos.icatch.RecoveryService;
 import com.atomikos.icatch.SysException;
 import com.atomikos.icatch.TransactionService;
+import com.atomikos.icatch.TransactionServicePlugin;
 import com.atomikos.icatch.admin.LogAdministrator;
 import com.atomikos.icatch.admin.LogControl;
 import com.atomikos.icatch.provider.Assembler;
 import com.atomikos.icatch.provider.ConfigProperties;
-import com.atomikos.icatch.provider.TransactionServicePlugin;
 import com.atomikos.icatch.provider.TransactionServiceProvider;
 import com.atomikos.recovery.RecoveryLog;
 

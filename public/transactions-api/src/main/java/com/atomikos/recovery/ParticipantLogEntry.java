@@ -6,7 +6,8 @@
  * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
  */
 
-package com.atomikos.icatch;
+package com.atomikos.recovery;
+
 
  /**
   * Participant snapshot for logging and recovery purposes.

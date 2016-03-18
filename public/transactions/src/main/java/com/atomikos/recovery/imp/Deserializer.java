@@ -13,9 +13,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.atomikos.icatch.CoordinatorLogEntry;
-import com.atomikos.icatch.ParticipantLogEntry;
-import com.atomikos.icatch.TxState;
+import com.atomikos.recovery.CoordinatorLogEntry;
+import com.atomikos.recovery.ParticipantLogEntry;
+import com.atomikos.recovery.TxState;
 
 public class Deserializer {
 

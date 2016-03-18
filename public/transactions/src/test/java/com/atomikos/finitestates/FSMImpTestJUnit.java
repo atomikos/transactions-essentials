@@ -8,7 +8,7 @@
 
 package com.atomikos.finitestates;
 
-import com.atomikos.icatch.TxState;
+import com.atomikos.recovery.TxState;
 
 import junit.framework.TestCase;
 

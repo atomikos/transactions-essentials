@@ -11,17 +11,17 @@ package com.atomikos.recovery.imp;
 import java.util.Collection;
 import java.util.HashSet;
 
-import com.atomikos.icatch.CoordinatorLogEntry;
-import com.atomikos.icatch.ParticipantLogEntry;
-import com.atomikos.icatch.TxState;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 import com.atomikos.recovery.AdminLog;
+import com.atomikos.recovery.CoordinatorLogEntry;
 import com.atomikos.recovery.LogException;
 import com.atomikos.recovery.LogReadException;
 import com.atomikos.recovery.LogWriteException;
+import com.atomikos.recovery.ParticipantLogEntry;
 import com.atomikos.recovery.RecoveryLog;
 import com.atomikos.recovery.Repository;
+import com.atomikos.recovery.TxState;
 import com.atomikos.thread.InterruptedExceptionHelper;
 
 public class RecoveryLogImp implements RecoveryLog, AdminLog {

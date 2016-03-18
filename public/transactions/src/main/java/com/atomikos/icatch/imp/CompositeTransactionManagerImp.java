@@ -19,10 +19,10 @@ import com.atomikos.icatch.Propagation;
 import com.atomikos.icatch.SubTxAwareParticipant;
 import com.atomikos.icatch.SysException;
 import com.atomikos.icatch.TransactionService;
-import com.atomikos.icatch.TxState;
 import com.atomikos.icatch.config.Configuration;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
+import com.atomikos.recovery.TxState;
 
 /**
  * Reusable (generic) composite transaction manager implementation.

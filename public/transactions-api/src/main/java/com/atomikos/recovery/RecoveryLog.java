@@ -10,8 +10,6 @@ package com.atomikos.recovery;
 
 import java.util.Collection;
 
-import com.atomikos.icatch.ParticipantLogEntry;
-
  /**
   * Handle to the transaction logs for recovery purposes.
   */

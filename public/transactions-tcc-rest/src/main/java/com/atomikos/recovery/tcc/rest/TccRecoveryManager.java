@@ -11,11 +11,11 @@ package com.atomikos.recovery.tcc.rest;
 import java.util.Collection;
 
 import com.atomikos.icatch.HeurRollbackException;
-import com.atomikos.icatch.ParticipantLogEntry;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 import com.atomikos.recovery.LogException;
 import com.atomikos.recovery.LogReadException;
+import com.atomikos.recovery.ParticipantLogEntry;
 import com.atomikos.recovery.RecoveryLog;
 
 public class TccRecoveryManager {

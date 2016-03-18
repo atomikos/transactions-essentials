@@ -9,8 +9,8 @@
 package com.atomikos.persistence;
 
 import com.atomikos.finitestates.FSMPreEnterEventSource;
-import com.atomikos.icatch.CoordinatorLogEntry;
-import com.atomikos.icatch.TxState;
+import com.atomikos.recovery.CoordinatorLogEntry;
+import com.atomikos.recovery.TxState;
 
 /**
  * A type of stateful objects whose state is guaranteed to be recoverable. The

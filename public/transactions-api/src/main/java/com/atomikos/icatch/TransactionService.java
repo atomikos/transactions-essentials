@@ -8,7 +8,6 @@
 
 package com.atomikos.icatch;
 
-import com.atomikos.icatch.provider.TransactionServicePlugin;
 
  /**
   * This internal interface is the base interface for creating transactions.

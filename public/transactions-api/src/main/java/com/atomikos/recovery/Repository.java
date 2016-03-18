@@ -10,16 +10,13 @@ package com.atomikos.recovery;
 
 import java.util.Collection;
 
-import com.atomikos.icatch.CoordinatorLogEntry;
-import com.atomikos.icatch.provider.ConfigProperties;
-
  /**
   * Abstraction of where transaction log entries are stored and retrieved.
   */
 public interface Repository {
 
 	
-	void init(ConfigProperties configProperties) throws LogException;
+	void init() throws LogException;
 	/**
 	 * @throws IllegalArgumentException If the same coordinatorLogEntry is already in the repository. 
 	 */

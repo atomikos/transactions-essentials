@@ -13,7 +13,7 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Set;
 
-import com.atomikos.icatch.TxState;
+import com.atomikos.recovery.TxState;
 
 
 /**

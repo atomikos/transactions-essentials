@@ -13,7 +13,7 @@ import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeurMixedException;
 import com.atomikos.icatch.HeurRollbackException;
 import com.atomikos.icatch.SysException;
-import com.atomikos.icatch.TxState;
+import com.atomikos.recovery.TxState;
 
 /**
  * An administration interface for a transaction. Allows inspection of heuristic

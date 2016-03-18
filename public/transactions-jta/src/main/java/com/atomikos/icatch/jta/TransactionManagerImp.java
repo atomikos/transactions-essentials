@@ -27,9 +27,9 @@ import com.atomikos.icatch.CompositeTransaction;
 import com.atomikos.icatch.CompositeTransactionManager;
 import com.atomikos.icatch.SubTxAwareParticipant;
 import com.atomikos.icatch.SysException;
-import com.atomikos.icatch.TxState;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
+import com.atomikos.recovery.TxState;
 
 /**
  * The main JTA transaction manager singleton.

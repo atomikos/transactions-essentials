@@ -12,8 +12,8 @@ import java.util.Properties;
 import com.atomikos.datasource.RecoverableResource;
 import com.atomikos.icatch.CompositeTransactionManager;
 import com.atomikos.icatch.SysException;
+import com.atomikos.icatch.TransactionServicePlugin;
 import com.atomikos.icatch.admin.LogAdministrator;
-import com.atomikos.icatch.provider.TransactionServicePlugin;
 
  /**
   *

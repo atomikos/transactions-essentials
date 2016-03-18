@@ -17,10 +17,11 @@ import org.mockito.Mockito;
 import org.mockito.verification.VerificationMode;
 
 import com.atomikos.icatch.HeurRollbackException;
+import com.atomikos.recovery.LogException;
+import com.atomikos.recovery.LogReadException;
 import com.atomikos.recovery.ParticipantLogEntry;
 import com.atomikos.recovery.RecoveryLog;
-import com.atomikos.recovery.tcc.rest.TccRecoveryManager;
-import com.atomikos.recovery.tcc.rest.TccTransport;
+import com.atomikos.recovery.TxState;
 
 public class TccRecoveryManagerTestJUnit {
 
@@ -35,7 +36,7 @@ public class TccRecoveryManagerTestJUnit {
 		tccTransport = Mockito.mock(TccTransport.class);
 		tccRecoveryManager.setRecoveryLog(log);
 		tccRecoveryManager.setTccTransport(tccTransport);
-		entry = new ParticipantLogEntry("coord", "http://part", 0);
+		entry = new ParticipantLogEntry("coord", "http://part", 0,"xx",TxState.COMMITTING);
 	}
 	
 	@Test
@@ -44,12 +45,12 @@ public class TccRecoveryManagerTestJUnit {
 		whenRecovered();	
 	}
 
-	private void givenCommittingXaParticipant() throws HeurRollbackException {
-		entry = new ParticipantLogEntry("coord", "branchQualifier", 0);
+	private void givenCommittingXaParticipant() throws HeurRollbackException, LogReadException {
+		entry = new ParticipantLogEntry("coord", "branchQualifier", 0,"xx",TxState.COMMITTING);
 		Collection<ParticipantLogEntry> confirmingParticipantAdapters = new HashSet<ParticipantLogEntry>();
 		confirmingParticipantAdapters.add(entry);
 		Mockito.when(log.getCommittingParticipants()).thenReturn(confirmingParticipantAdapters);
-		Mockito.doThrow(new IllegalArgumentException()).when(tccTransport).put(entry.participantUri);
+		Mockito.doThrow(new IllegalArgumentException()).when(tccTransport).put(entry.uri);
 	}
 
 	@Test
@@ -61,19 +62,19 @@ public class TccRecoveryManagerTestJUnit {
 	}
 	
 	@Test
-	public void heuristicRollbackReportedToLog() throws HeurRollbackException {
+	public void heuristicRollbackReportedToLog() throws HeurRollbackException, LogException {
 		givenExpiredCommittingParticipant();
 		whenRecovered();
 		thenPutWasCalledOnParticipant();
 		thenHeuristicRollbackWasReportedToLog();
 	}
 
-	private void thenHeuristicRollbackWasReportedToLog() {
+	private void thenHeuristicRollbackWasReportedToLog() throws LogException {
 		Mockito.verify(log, Mockito.times(1)).terminatedWithHeuristicRollback(entry);
 	}
 
-	private void givenExpiredCommittingParticipant() throws HeurRollbackException {
-		Mockito.doThrow(new HeurRollbackException()).when(tccTransport).put(entry.participantUri);
+	private void givenExpiredCommittingParticipant() throws HeurRollbackException, LogReadException {
+		Mockito.doThrow(new HeurRollbackException()).when(tccTransport).put(entry.uri);
 		Collection<ParticipantLogEntry> confirmingParticipantAdapters = new HashSet<ParticipantLogEntry>();
 		confirmingParticipantAdapters.add(entry);
 		Mockito.when(log.getCommittingParticipants()).thenReturn(confirmingParticipantAdapters);
@@ -85,14 +86,14 @@ public class TccRecoveryManagerTestJUnit {
 
 	private void thenPutWasCalledOnParticipant() throws HeurRollbackException {
 		VerificationMode uneFois = Mockito.times(1);
-		Mockito.verify(tccTransport, uneFois).put(entry.participantUri);
+		Mockito.verify(tccTransport, uneFois).put(entry.uri);
 	}
 
 	private void whenRecovered() throws HeurRollbackException {
 		tccRecoveryManager.recover();
 	}
 
-	private void givenCommittingParticipant() {
+	private void givenCommittingParticipant() throws LogReadException {
 		Collection<ParticipantLogEntry> confirmingParticipantAdapters = new HashSet<ParticipantLogEntry>();
 		confirmingParticipantAdapters.add(entry);
 		Mockito.when(log.getCommittingParticipants()).thenReturn(confirmingParticipantAdapters);

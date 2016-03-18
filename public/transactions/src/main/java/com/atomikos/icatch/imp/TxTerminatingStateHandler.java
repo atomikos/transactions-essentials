@@ -15,7 +15,7 @@ import com.atomikos.icatch.Participant;
 import com.atomikos.icatch.RecoveryCoordinator;
 import com.atomikos.icatch.SubTxAwareParticipant;
 import com.atomikos.icatch.Synchronization;
-import com.atomikos.icatch.TxState;
+import com.atomikos.recovery.TxState;
 
 
 /**

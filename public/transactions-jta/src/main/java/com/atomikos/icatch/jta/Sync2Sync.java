@@ -10,9 +10,9 @@ package com.atomikos.icatch.jta;
 
 import javax.transaction.Status;
 
-import com.atomikos.icatch.TxState;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
+import com.atomikos.recovery.TxState;
 
 class Sync2Sync implements com.atomikos.icatch.Synchronization
 {
