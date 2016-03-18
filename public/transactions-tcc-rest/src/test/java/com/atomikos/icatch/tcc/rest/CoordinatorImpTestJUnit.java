@@ -292,7 +292,7 @@ public class CoordinatorImpTestJUnit {
 			fail();
 		} catch (WebApplicationException e) {
 			Assert.assertEquals(400, e.getResponse().getStatus());
-			Assert.assertEquals("invalid date format participantLink an 'expires' "+invalidISO8601Date, e.getMessage());
+			Assert.assertEquals("invalid date format for participantLink 'expires': "+invalidISO8601Date, e.getMessage());
 		}
 	}
 	
