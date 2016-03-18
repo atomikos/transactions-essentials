@@ -33,6 +33,16 @@ public final class LoggerFactory {
 		} catch (Throwable ex) {
 			System.out.println("No org.slf4j.impl.StaticLoggerBinder found in ClassPath, trying with log4j...");
 		}
+		
+		if(cname==null){
+			try {
+				Class.forName("org.apache.logging.log4j.Logger");
+				cname = "com.atomikos.logging.Log4j2LoggerFactoryDelegate";
+			} catch (Throwable ex) {
+				//don't print stackTrace - cf bug 118228
+				System.out.println("No org.apache.logging.log4j.Logger found found in ClassPath, trying with log4j...");
+			}
+		}
 
 		if(cname==null){
 			try {
