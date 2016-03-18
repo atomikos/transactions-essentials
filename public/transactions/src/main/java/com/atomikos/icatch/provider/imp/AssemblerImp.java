@@ -94,7 +94,16 @@ public class AssemblerImp implements Assembler {
 		Properties customProperties = new Properties(jtaProperties);
 		loadPropertiesFromCustomFilePath(customProperties);
 		Properties finalProperties = new Properties(customProperties);
-		return new ConfigProperties(finalProperties);
+		ConfigProperties configProperties = new ConfigProperties(finalProperties);
+		checkRegistration(configProperties);
+		return configProperties;
+	}
+	private void checkRegistration(ConfigProperties configProperties) {
+		if (!"true".equals(configProperties.getCompletedProperties().get("com.atomikos.icatch.registered"))) {
+			String message ="Thanks for using Atomikos! Register at http://www.atomikos.com/Main/RegisterYourDownload to disable this message and receive FREE tips & advice.";
+			LOGGER.logWarning(message);
+			System.out.println(message);
+		}
 	}
 
 	private void loadPropertiesFromCustomFilePath(Properties customProperties) {
