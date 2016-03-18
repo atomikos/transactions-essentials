@@ -13,11 +13,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.atomikos.datasource.xa.XID;
-import com.atomikos.icatch.ParticipantLogEntry;
-import com.atomikos.icatch.TxState;
 import com.atomikos.recovery.LogException;
 import com.atomikos.recovery.LogReadException;
+import com.atomikos.recovery.ParticipantLogEntry;
 import com.atomikos.recovery.RecoveryLog;
+import com.atomikos.recovery.TxState;
 
 public class DefaultXaRecoveryLog implements XaRecoveryLog {
 

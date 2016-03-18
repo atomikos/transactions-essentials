@@ -14,10 +14,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.atomikos.icatch.CoordinatorLogEntry;
-import com.atomikos.icatch.TxState;
-import com.atomikos.icatch.provider.ConfigProperties;
+import com.atomikos.recovery.CoordinatorLogEntry;
 import com.atomikos.recovery.Repository;
+import com.atomikos.recovery.TxState;
 
 public class InMemoryRepository implements
 		Repository {
@@ -27,7 +26,7 @@ public class InMemoryRepository implements
 	
 	private boolean closed = true;
 	@Override
-	public void init(ConfigProperties configProperties) {
+	public void init() {
 		closed=false;
 	}
 	

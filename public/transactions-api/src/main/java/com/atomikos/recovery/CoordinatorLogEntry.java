@@ -6,16 +6,16 @@
  * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
  */
 
-package com.atomikos.icatch;
+package com.atomikos.recovery;
 
-import static com.atomikos.icatch.TxState.ABORTING;
-import static com.atomikos.icatch.TxState.COMMITTING;
-import static com.atomikos.icatch.TxState.HEUR_ABORTED;
-import static com.atomikos.icatch.TxState.HEUR_COMMITTED;
-import static com.atomikos.icatch.TxState.HEUR_HAZARD;
-import static com.atomikos.icatch.TxState.HEUR_MIXED;
-import static com.atomikos.icatch.TxState.IN_DOUBT;
-import static com.atomikos.icatch.TxState.TERMINATED;
+import static com.atomikos.recovery.TxState.ABORTING;
+import static com.atomikos.recovery.TxState.COMMITTING;
+import static com.atomikos.recovery.TxState.HEUR_ABORTED;
+import static com.atomikos.recovery.TxState.HEUR_COMMITTED;
+import static com.atomikos.recovery.TxState.HEUR_HAZARD;
+import static com.atomikos.recovery.TxState.HEUR_MIXED;
+import static com.atomikos.recovery.TxState.IN_DOUBT;
+import static com.atomikos.recovery.TxState.TERMINATED;
 
 /**
  * Coordinator snapshot for logging and recovery purposes.

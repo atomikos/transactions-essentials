@@ -10,7 +10,7 @@ package com.atomikos.finitestates;
 
 import java.util.EventObject;
 
-import com.atomikos.icatch.TxState;
+import com.atomikos.recovery.TxState;
 
 public class FSMTransitionEvent extends EventObject{
 

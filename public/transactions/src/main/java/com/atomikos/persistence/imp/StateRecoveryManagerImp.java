@@ -10,12 +10,12 @@ package com.atomikos.persistence.imp;
 
 import com.atomikos.finitestates.FSMEnterEvent;
 import com.atomikos.finitestates.FSMPreEnterListener;
-import com.atomikos.icatch.CoordinatorLogEntry;
-import com.atomikos.icatch.TxState;
 import com.atomikos.persistence.RecoverableCoordinator;
 import com.atomikos.persistence.StateRecoveryManager;
+import com.atomikos.recovery.CoordinatorLogEntry;
 import com.atomikos.recovery.LogException;
 import com.atomikos.recovery.OltpLog;
+import com.atomikos.recovery.TxState;
 import com.atomikos.util.Assert;
 
 /**

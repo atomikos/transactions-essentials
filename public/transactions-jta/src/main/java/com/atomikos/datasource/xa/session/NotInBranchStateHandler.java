@@ -12,8 +12,8 @@ import javax.transaction.xa.XAResource;
 
 import com.atomikos.datasource.xa.XATransactionalResource;
 import com.atomikos.icatch.CompositeTransaction;
-import com.atomikos.icatch.TxState;
 import com.atomikos.icatch.jta.TransactionManagerImp;
+import com.atomikos.recovery.TxState;
 
  /**
   *

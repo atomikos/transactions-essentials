@@ -12,6 +12,8 @@ package com.atomikos.icatch;
 import java.util.Properties;
 import java.util.Stack;
 
+import com.atomikos.recovery.TxState;
+
 /**
  * Represents a nested part of a global
  * composite transaction. Each invocation of a server is 

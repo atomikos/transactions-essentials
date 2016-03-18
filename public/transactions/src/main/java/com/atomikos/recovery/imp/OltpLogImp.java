@@ -8,7 +8,7 @@
 
 package com.atomikos.recovery.imp;
 
-import com.atomikos.icatch.CoordinatorLogEntry;
+import com.atomikos.recovery.CoordinatorLogEntry;
 import com.atomikos.recovery.Repository;
 import com.atomikos.recovery.LogException;
 import com.atomikos.recovery.LogReadException;

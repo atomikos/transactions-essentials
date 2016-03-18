@@ -8,12 +8,12 @@
 
 package com.atomikos.icatch;
 
-import static com.atomikos.icatch.TxState.COMMITTING;
-import static com.atomikos.icatch.TxState.HEUR_ABORTED;
-import static com.atomikos.icatch.TxState.HEUR_COMMITTED;
-import static com.atomikos.icatch.TxState.HEUR_MIXED;
-import static com.atomikos.icatch.TxState.IN_DOUBT;
-import static com.atomikos.icatch.TxState.TERMINATED;
+import static com.atomikos.recovery.TxState.COMMITTING;
+import static com.atomikos.recovery.TxState.HEUR_ABORTED;
+import static com.atomikos.recovery.TxState.HEUR_COMMITTED;
+import static com.atomikos.recovery.TxState.HEUR_MIXED;
+import static com.atomikos.recovery.TxState.IN_DOUBT;
+import static com.atomikos.recovery.TxState.TERMINATED;
 import static org.junit.Assert.*;
 
 import java.util.EnumSet;
@@ -21,6 +21,8 @@ import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
+
+import com.atomikos.recovery.TxState;
 
 public class TxStateTestJUnit {
 	@Test

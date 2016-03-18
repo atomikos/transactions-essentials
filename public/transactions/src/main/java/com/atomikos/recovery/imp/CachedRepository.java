@@ -12,15 +12,16 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.atomikos.icatch.CoordinatorLogEntry;
-import com.atomikos.icatch.TxState;
+import com.atomikos.icatch.config.Configuration;
 import com.atomikos.icatch.provider.ConfigProperties;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
+import com.atomikos.recovery.CoordinatorLogEntry;
 import com.atomikos.recovery.Repository;
 import com.atomikos.recovery.LogException;
 import com.atomikos.recovery.LogReadException;
 import com.atomikos.recovery.LogWriteException;
+import com.atomikos.recovery.TxState;
 
 public class CachedRepository implements Repository {
 
@@ -41,8 +42,10 @@ public class CachedRepository implements Repository {
 	}
 
 	@Override
-	public void init(ConfigProperties configProperties) {
+	public void init() {
 		//populate inMemoryCoordinatorLogEntryRepository with backup data
+		
+		ConfigProperties configProperties =	Configuration.getConfigProperties();
 		try {
 			Collection<CoordinatorLogEntry> coordinatorLogEntries = backupCoordinatorLogEntryRepository.getAllCoordinatorLogEntries();
 			for (CoordinatorLogEntry coordinatorLogEntry : coordinatorLogEntries) {

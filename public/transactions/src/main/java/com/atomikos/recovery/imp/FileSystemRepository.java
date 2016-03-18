@@ -22,11 +22,12 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.atomikos.icatch.CoordinatorLogEntry;
+import com.atomikos.icatch.config.Configuration;
 import com.atomikos.icatch.provider.ConfigProperties;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 import com.atomikos.persistence.imp.LogFileLock;
+import com.atomikos.recovery.CoordinatorLogEntry;
 import com.atomikos.recovery.LogException;
 import com.atomikos.recovery.LogReadException;
 import com.atomikos.recovery.LogWriteException;
@@ -42,7 +43,8 @@ public class FileSystemRepository implements
 	private FileChannel rwChannel = null;
 	private LogFileLock lock_;
 	@Override
-	public void init(ConfigProperties configProperties) throws LogException {
+	public void init() throws LogException {
+		ConfigProperties configProperties =	Configuration.getConfigProperties();
 		String baseDir = configProperties.getLogBaseDir();
 		String baseName = configProperties.getLogBaseName();
 		LOGGER.logDebug("baseDir "+baseDir);

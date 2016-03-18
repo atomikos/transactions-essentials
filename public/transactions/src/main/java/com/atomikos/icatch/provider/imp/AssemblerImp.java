@@ -167,7 +167,7 @@ public class AssemblerImp implements Assembler {
 	private Repository createInMemoryCoordinatorLogEntryRepository(
 			ConfigProperties configProperties) {
 		InMemoryRepository inMemoryCoordinatorLogEntryRepository = new InMemoryRepository();
-		inMemoryCoordinatorLogEntryRepository.init(configProperties);
+		inMemoryCoordinatorLogEntryRepository.init();
 		return inMemoryCoordinatorLogEntryRepository;
 	}
 
@@ -186,11 +186,11 @@ public class AssemblerImp implements Assembler {
 	private CachedRepository createCoordinatorLogEntryRepository(
 			ConfigProperties configProperties) throws LogException {
 		InMemoryRepository inMemoryCoordinatorLogEntryRepository = new InMemoryRepository();
-		inMemoryCoordinatorLogEntryRepository.init(configProperties);
+		inMemoryCoordinatorLogEntryRepository.init();
 		FileSystemRepository backupCoordinatorLogEntryRepository = new FileSystemRepository();
-		backupCoordinatorLogEntryRepository.init(configProperties);
+		backupCoordinatorLogEntryRepository.init();
 		CachedRepository repository = new CachedRepository(inMemoryCoordinatorLogEntryRepository, backupCoordinatorLogEntryRepository);
-		repository.init(configProperties);
+		repository.init();
 		return repository;
 	}
 

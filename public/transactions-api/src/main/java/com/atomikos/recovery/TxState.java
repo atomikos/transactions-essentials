@@ -6,7 +6,7 @@
  * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
  */
 
-package com.atomikos.icatch;
+package com.atomikos.recovery;
 /**
  * The states for a distributed transaction system.
  */

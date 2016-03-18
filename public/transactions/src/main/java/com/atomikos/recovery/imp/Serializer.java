@@ -8,8 +8,8 @@
 
 package com.atomikos.recovery.imp;
 
-import com.atomikos.icatch.CoordinatorLogEntry;
-import com.atomikos.icatch.ParticipantLogEntry;
+import com.atomikos.recovery.CoordinatorLogEntry;
+import com.atomikos.recovery.ParticipantLogEntry;
 
 public class Serializer {
 
