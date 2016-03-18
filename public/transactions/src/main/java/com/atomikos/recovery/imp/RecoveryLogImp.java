@@ -11,8 +11,10 @@ package com.atomikos.recovery.imp;
 import java.util.Collection;
 import java.util.HashSet;
 
+import com.atomikos.icatch.event.transaction.TransactionHeuristicEvent;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
+import com.atomikos.publish.EventPublisher;
 import com.atomikos.recovery.AdminLog;
 import com.atomikos.recovery.CoordinatorLogEntry;
 import com.atomikos.recovery.LogException;
@@ -86,7 +88,13 @@ public class RecoveryLogImp implements RecoveryLog, AdminLog {
 				ParticipantLogEntry subTransaction = createSubTransactionCoordinatorParticipant(coordinatorLogEntry);
 				terminatedWithHeuristicRollback(subTransaction);
 			}
+			publishDomainEvent(new TransactionHeuristicEvent(entry.coordinatorId));
 		}
+	}
+
+	private void publishDomainEvent(
+			TransactionHeuristicEvent transactionHeuristicEvent) {
+		EventPublisher.publish(transactionHeuristicEvent);
 	}
 
 	@Override
@@ -169,6 +177,7 @@ public class RecoveryLogImp implements RecoveryLog, AdminLog {
 				ParticipantLogEntry subTransaction = createSubTransactionCoordinatorParticipant(coordinatorLogEntry);
 				terminatedWithHeuristicCommit(subTransaction);
 			}
+			publishDomainEvent(new TransactionHeuristicEvent(entry.coordinatorId));
 		}
 
 	}
@@ -176,6 +185,7 @@ public class RecoveryLogImp implements RecoveryLog, AdminLog {
 	@Override
 	public void terminatedWithHeuristicHazard(ParticipantLogEntry entry) {
 		LOGGER.logError("terminatedWithHeuristicHazard " + entry);
+		publishDomainEvent(new TransactionHeuristicEvent(entry.coordinatorId));
 	}
 
 	@Override
@@ -191,6 +201,7 @@ public class RecoveryLogImp implements RecoveryLog, AdminLog {
 				ParticipantLogEntry subTransaction = createSubTransactionCoordinatorParticipant(coordinatorLogEntry);
 				terminatedWithHeuristicMixed(subTransaction);
 			}
+			publishDomainEvent(new TransactionHeuristicEvent(entry.coordinatorId));
 		}
 	}
 
