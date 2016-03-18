@@ -62,6 +62,21 @@ public final class UserTransactionServiceImp
     }
 
     /**
+	 * Constructs a new instance and initializes it with the given properties.
+	 * If this constructor is called, then file-based initialization is overridden.
+	 * In particular, the given properties will take precedence over the file-based
+	 * properties (if found).
+	 * 
+	 * @param properties The properties.
+	 */
+	
+    public UserTransactionServiceImp ( Properties properties )
+    {
+    	this();
+    	properties_ = properties;
+    }
+    
+    /**
      *
      * @see UserTransactionService
      */
