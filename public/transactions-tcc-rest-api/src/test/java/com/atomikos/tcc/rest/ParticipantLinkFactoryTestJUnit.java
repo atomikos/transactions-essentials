@@ -35,14 +35,6 @@ public class ParticipantLinkFactoryTestJUnit {
 		assertEquals(EXPIRES, instance.getExpires());
 	}
 	
-
-
-	@Test(expected=IllegalStateException.class)
-	public void testFailsWithoutDate() {
-		instance = ParticipantLinkFactory.createInstance(URI, null);
-		
-	}
-	
 	@Test
 	public void testWithExpiresAsXMLGregorianCalendar() {
 		instance = ParticipantLinkFactory.createInstance(URI, EXPIRES);
