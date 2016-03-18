@@ -6,7 +6,7 @@
  * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
  */
 
-package com.atomikos.icatch.provider;
+package com.atomikos.icatch;
 
 import java.util.Properties;
 
