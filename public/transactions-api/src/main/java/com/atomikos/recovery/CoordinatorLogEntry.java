@@ -190,8 +190,10 @@ public class CoordinatorLogEntry {
 	}
 
 	public boolean shouldSync() {
+		if (participants.length == 1) {
+			return false;
+		}
 		TxState state = getResultingState();
-		//return !state.isOneOf(IN_DOUBT,ABORTING,TERMINATED);
 		switch (state) {
 			case IN_DOUBT:
 			case ABORTING:
