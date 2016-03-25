@@ -190,15 +190,14 @@ public class CoordinatorLogEntry {
 	}
 
 	public boolean shouldSync() {
-		if (participants.length == 1) {
-			return false;
-		}
 		TxState state = getResultingState();
 		switch (state) {
 			case IN_DOUBT:
 			case ABORTING:
 			case TERMINATED:
 				return false; // sub-transactions: root will sync COMMITTING entry in same log later which will also sync this entry
+			case COMMITTING:
+				return participants.length > 1; //cf. case 22128
 			default:
 				return !state.isFinalState();
 		}
