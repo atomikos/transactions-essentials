@@ -99,7 +99,7 @@ public class AssemblerImp implements Assembler {
 		return configProperties;
 	}
 	private void checkRegistration(ConfigProperties configProperties) {
-		if (configProperties.getCompletedProperties().contains("com.atomikos.icatch.registered")) {
+		if (!configProperties.getCompletedProperties().contains("com.atomikos.icatch.registered")) {
 			String message ="Thanks for using Atomikos! Register at http://www.atomikos.com/Main/RegisterYourDownload to disable this message and receive FREE tips & advice.";
 			LOGGER.logWarning(message);
 			System.out.println(message);
