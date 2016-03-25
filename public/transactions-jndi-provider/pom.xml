@@ -3,19 +3,19 @@
 	<parent>
 		<groupId>com.atomikos</groupId>
 		<artifactId>ate</artifactId>
-		<version>4.0.2-SNAPSHOT</version>
+		<version>4.0.2</version>
 	</parent>
 	<artifactId>transactions-jndi-provider</artifactId>
 	<dependencies>
 		<dependency>
 			<groupId>com.atomikos</groupId>
 			<artifactId>transactions-jms</artifactId>
-			<version>4.0.2-SNAPSHOT</version>
+			<version>4.0.2</version>
 		</dependency>
 		<dependency>
 			<groupId>com.atomikos</groupId>
 			<artifactId>transactions-jdbc</artifactId>
-			<version>4.0.2-SNAPSHOT</version>
+			<version>4.0.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.geronimo.specs</groupId>
