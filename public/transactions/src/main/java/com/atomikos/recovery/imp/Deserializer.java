@@ -23,15 +23,18 @@ public class Deserializer {
 
 	private static final String JSON_ARRAY_START = "[";
 
+	private static final String OBJECT_START= "{";
+	
+	private static final String OBJECT_END= "}";
 	
 	List<String> tokenize(String content) {
 		List<String> result = new ArrayList<String>();
-		int endObject = content.indexOf("}");
+		int endObject = content.indexOf(OBJECT_END);
 		while(endObject >0){
 			String object = content.substring(0,endObject+1);
 			result.add(object);
 			content = content.substring(endObject+1);
-			endObject = content.indexOf("}");
+			endObject = content.indexOf(OBJECT_END);
 		}
 		return result;
 	}
@@ -47,21 +50,36 @@ public class Deserializer {
 		
 		return content.substring(start+1, end);
 	}
-	public CoordinatorLogEntry fromJSON(String coordinatorLogEntryStr) {
-		Map<String, String> header = extractHeader(coordinatorLogEntryStr);
-		String coordinatorId = header.get("id");
-		String arrayContent = extractArrayPart(coordinatorLogEntryStr);
-		List<String> elements = tokenize(arrayContent);
-		
-		ParticipantLogEntry[] participantLogEntries = new ParticipantLogEntry[elements.size()];
-		
-		for (int i = 0; i < participantLogEntries.length; i++) {
-			participantLogEntries[i]=recreateParticipantLogEntry(coordinatorId,elements.get(i));
+	public CoordinatorLogEntry fromJSON(String coordinatorLogEntryStr) throws DeserialisationException {
+		try {
+			validateJSONContent(coordinatorLogEntryStr);
+			Map<String, String> header = extractHeader(coordinatorLogEntryStr);
+			String coordinatorId = header.get("id");
+			String arrayContent = extractArrayPart(coordinatorLogEntryStr);
+			List<String> elements = tokenize(arrayContent);
+			
+			ParticipantLogEntry[] participantLogEntries = new ParticipantLogEntry[elements.size()];
+			
+			for (int i = 0; i < participantLogEntries.length; i++) {
+				participantLogEntries[i]=recreateParticipantLogEntry(coordinatorId,elements.get(i));
+			}
+			
+			
+			CoordinatorLogEntry actual = new CoordinatorLogEntry(header.get("id"),Boolean.valueOf(header.get("wasCommitted")),  participantLogEntries,header.get("superiorCoordinatorId"));
+			return actual;
+		} catch (Exception unexpectedEOF) {
+			throw new DeserialisationException(coordinatorLogEntryStr);
 		}
-		
-		
-		CoordinatorLogEntry actual = new CoordinatorLogEntry(header.get("id"),Boolean.valueOf(header.get("wasCommitted")),  participantLogEntries,header.get("superiorCoordinatorId"));
-		return actual;
+	}
+
+	private void validateJSONContent(String coordinatorLogEntryStr)
+			throws DeserialisationException {
+		if (!coordinatorLogEntryStr.startsWith(OBJECT_START)){
+			throw new DeserialisationException(coordinatorLogEntryStr);
+		}
+		if (!coordinatorLogEntryStr.endsWith(OBJECT_END)){
+			throw new DeserialisationException(coordinatorLogEntryStr);
+		}
 	}
 
 	private Map<String, String> extractHeader(String coordinatorLogEntryStr) {

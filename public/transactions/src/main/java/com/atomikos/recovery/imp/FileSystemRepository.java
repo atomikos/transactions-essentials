@@ -110,19 +110,36 @@ public class FileSystemRepository implements
 	public Collection<CoordinatorLogEntry> getAllCoordinatorLogEntries()
 			throws LogReadException {
 		Map<String, CoordinatorLogEntry> coordinatorLogEntries = new HashMap<String, CoordinatorLogEntry>();
-		FileInputStream fis = null;
+		BufferedReader br = null;
+		try {
+			FileInputStream fis = file.openLastValidVersionForReading();
+			InputStreamReader isr = new InputStreamReader(fis);
+			br = new BufferedReader(isr);
+			coordinatorLogEntries = readContent( br);
+		} catch (FileNotFoundException firstStart) {
+			// the file could not be opened for reading;
+			// merely return the default empty vector
+		} catch (Exception e) {
+			LOGGER.logFatal("Error in recover", e);
+			throw new LogReadException(e);
+		} finally {
+			closeSilently(br);
+		}
+
+		return coordinatorLogEntries.values();
+	}
+
+	Map<String, CoordinatorLogEntry> readContent(
+			BufferedReader br) throws IOException {
+		
+		Map<String, CoordinatorLogEntry> coordinatorLogEntries = new HashMap<String, CoordinatorLogEntry>();
 		try {
 			String line;
-			fis = file.openLastValidVersionForReading();
-			InputStreamReader isr = new InputStreamReader(fis);
-			BufferedReader br = new BufferedReader(isr);
-
 			while ((line = br.readLine()) != null) {
 				CoordinatorLogEntry coordinatorLogEntry = deserialize(line);
 				coordinatorLogEntries.put(coordinatorLogEntry.id,
-						coordinatorLogEntry);
+					coordinatorLogEntry);
 			}
-			br.close();
 
 		} catch (java.io.EOFException unexpectedEOF) {
 			LOGGER.logTrace("Unexpected EOF - logfile not closed properly last time?", unexpectedEOF);
@@ -133,20 +150,15 @@ public class FileSystemRepository implements
 		} catch (ObjectStreamException unexpectedEOF) {
 			LOGGER.logTrace("Unexpected EOF - logfile not closed properly last time?", unexpectedEOF);
 			// merely return what was read so far...
-		} catch (FileNotFoundException firstStart) {
-			// the file could not be opened for reading;
-			// merely return the default empty vector
-		} catch (Exception e) {
-			LOGGER.logFatal("Error in recover", e);
-			throw new LogReadException(e);
-		} finally {
-			closeSilently(fis);
+		} catch (DeserialisationException unexpectedEOF) {
+			LOGGER.logTrace("Unexpected EOF - logfile not closed properly last time? "+ unexpectedEOF);
 		}
-
-		return coordinatorLogEntries.values();
+		return coordinatorLogEntries;
 	}
 
-	private void closeSilently(InputStream fis) {
+	
+
+	private void closeSilently(BufferedReader fis) {
 		try {
 			if (fis != null)
 				fis.close();
@@ -157,7 +169,7 @@ public class FileSystemRepository implements
 
 	private Deserializer deserializer = new Deserializer();
 
-	private CoordinatorLogEntry deserialize(String line) {
+	private CoordinatorLogEntry deserialize(String line) throws DeserialisationException {
 		return deserializer.fromJSON(line);
 	}
 
