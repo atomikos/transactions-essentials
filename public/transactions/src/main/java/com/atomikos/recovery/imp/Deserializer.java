@@ -52,10 +52,11 @@ public class Deserializer {
 	}
 	public CoordinatorLogEntry fromJSON(String coordinatorLogEntryStr) throws DeserialisationException {
 		try {
-			validateJSONContent(coordinatorLogEntryStr.trim());
-			Map<String, String> header = extractHeader(coordinatorLogEntryStr);
+			String jsonContent = coordinatorLogEntryStr.trim();
+			validateJSONContent(jsonContent);
+			Map<String, String> header = extractHeader(jsonContent);
 			String coordinatorId = header.get("id");
-			String arrayContent = extractArrayPart(coordinatorLogEntryStr);
+			String arrayContent = extractArrayPart(jsonContent);
 			List<String> elements = tokenize(arrayContent);
 			
 			ParticipantLogEntry[] participantLogEntries = new ParticipantLogEntry[elements.size()];
