@@ -8,13 +8,17 @@
 
 package com.atomikos.recovery;
 
+import java.io.Serializable;
+
 
  /**
   * Participant snapshot for logging and recovery purposes.
   *
   */
 
-public class ParticipantLogEntry {
+public class ParticipantLogEntry implements Serializable {
+
+	private static final long serialVersionUID = 1728296701394899871L;
 
 	/**
 	 * The ID of the global transaction as known by the transaction core.

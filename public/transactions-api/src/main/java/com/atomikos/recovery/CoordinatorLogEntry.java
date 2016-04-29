@@ -17,11 +17,15 @@ import static com.atomikos.recovery.TxState.HEUR_MIXED;
 import static com.atomikos.recovery.TxState.IN_DOUBT;
 import static com.atomikos.recovery.TxState.TERMINATED;
 
+import java.io.Serializable;
+
 /**
  * Coordinator snapshot for logging and recovery purposes.
  *
  */
-public class CoordinatorLogEntry {
+public class CoordinatorLogEntry implements Serializable {
+
+	private static final long serialVersionUID = -919666492191340531L;
 
 	public final String id;
 
