@@ -28,10 +28,12 @@ import com.atomikos.datasource.pool.ConnectionPoolException;
 import com.atomikos.datasource.pool.ConnectionPoolProperties;
 import com.atomikos.datasource.pool.CreateConnectionException;
 import com.atomikos.datasource.pool.PoolExhaustedException;
+import com.atomikos.datasource.xa.event.XAResourceDetectedEvent;
 import com.atomikos.datasource.xa.jms.JmsTransactionalResource;
 import com.atomikos.icatch.config.Configuration;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
+import com.atomikos.publish.EventPublisher;
 import com.atomikos.util.ClassLoadingHelper;
 import com.atomikos.util.IntraVmObjectFactory;
 import com.atomikos.util.IntraVmObjectRegistry;
@@ -420,6 +422,7 @@ Referenceable, Serializable {
 		JmsTransactionalResource tr = new JmsTransactionalResource(getUniqueResourceName() , xaConnectionFactory);
 		com.atomikos.datasource.pool.ConnectionFactory cf = new com.atomikos.jms.AtomikosJmsXAConnectionFactory(xaConnectionFactory, tr, this);
 		Configuration.addResource ( tr );
+		EventPublisher.publish(new XAResourceDetectedEvent(xaConnectionFactoryClassName,xaProperties,XAResourceDetectedEvent.ResourceType.JMS));
 		return cf;
 	}
 	

@@ -15,10 +15,12 @@ import javax.sql.XADataSource;
 
 import com.atomikos.beans.PropertyUtils;
 import com.atomikos.datasource.RecoverableResource;
+import com.atomikos.datasource.xa.event.XAResourceDetectedEvent;
 import com.atomikos.datasource.xa.jdbc.JdbcTransactionalResource;
 import com.atomikos.icatch.config.Configuration;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
+import com.atomikos.publish.EventPublisher;
 import com.atomikos.util.ClassLoadingHelper;
 
  /**
@@ -180,6 +182,7 @@ extends AbstractDataSourceBean
 			com.atomikos.datasource.pool.ConnectionFactory cf = new com.atomikos.jdbc.AtomikosXAConnectionFactory(xaDataSource, tr, this);
 			Configuration.addResource ( tr );
 			
+			EventPublisher.publish(new XAResourceDetectedEvent(xaDataSourceClassName,xaProperties,XAResourceDetectedEvent.ResourceType.JDBC));
 			return cf;
 	}
 	
