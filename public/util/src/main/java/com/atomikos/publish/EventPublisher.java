@@ -12,7 +12,6 @@ import java.util.HashSet;
 import java.util.ServiceLoader;
 import java.util.Set;
 
-import com.atomikos.icatch.HeuristicException;
 import com.atomikos.icatch.event.Event;
 import com.atomikos.icatch.event.EventListener;
 import com.atomikos.icatch.event.transaction.TransactionHeuristicEvent;
