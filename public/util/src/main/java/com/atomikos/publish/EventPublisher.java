@@ -12,8 +12,10 @@ import java.util.HashSet;
 import java.util.ServiceLoader;
 import java.util.Set;
 
+import com.atomikos.icatch.HeuristicException;
 import com.atomikos.icatch.event.Event;
 import com.atomikos.icatch.event.EventListener;
+import com.atomikos.icatch.event.transaction.TransactionHeuristicEvent;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 
@@ -43,6 +45,14 @@ public class EventPublisher {
 	}
 
 	private static void notifyAllListeners(Event event) {
+		if(event instanceof TransactionHeuristicEvent) {
+			TransactionHeuristicEvent the = (TransactionHeuristicEvent)event;
+			if (listeners.isEmpty()) {
+				LOGGER.logError("Transaction " + the.transactionId + " corrupted - contact support@atomikos.com to get help");
+			}
+		}
+		
+		
 		for(EventListener listener : listeners) {				
 			try {
 				listener.eventOccurred(event);

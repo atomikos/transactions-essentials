@@ -77,7 +77,7 @@ public class RecoveryLogImp implements RecoveryLog, AdminLog {
 
 	@Override
 	public void terminatedWithHeuristicRollback(ParticipantLogEntry entry) throws LogException {
-		LOGGER.logError("terminatedWithHeuristicRollback: " + entry);
+		LOGGER.logDebug("terminatedWithHeuristicRollback: " + entry);
 		CoordinatorLogEntry coordinatorLogEntry = repository.get(entry.coordinatorId);
 		if (coordinatorLogEntry == null) {
 			LOGGER.logWarning("terminatedWithHeuristicRollback called on non existent Coordinator " + entry.coordinatorId + " " + entry.uri);
@@ -166,7 +166,7 @@ public class RecoveryLogImp implements RecoveryLog, AdminLog {
 
 	@Override
 	public void terminatedWithHeuristicCommit(ParticipantLogEntry entry) throws LogException {
-		LOGGER.logError("terminatedWithHeuristicCommit: " + entry);
+		LOGGER.logDebug("terminatedWithHeuristicCommit: " + entry);
 		CoordinatorLogEntry coordinatorLogEntry = repository.get(entry.coordinatorId);
 		if (coordinatorLogEntry == null) {
 			LOGGER.logWarning("terminatedWithHeuristicCommit called on non existent Coordinator " + entry.coordinatorId + " " + entry.uri);
@@ -184,13 +184,13 @@ public class RecoveryLogImp implements RecoveryLog, AdminLog {
 
 	@Override
 	public void terminatedWithHeuristicHazard(ParticipantLogEntry entry) {
-		LOGGER.logError("terminatedWithHeuristicHazard " + entry);
+		LOGGER.logDebug("terminatedWithHeuristicHazard " + entry);
 		publishDomainEvent(new TransactionHeuristicEvent(entry.coordinatorId));
 	}
 
 	@Override
 	public void terminatedWithHeuristicMixed(ParticipantLogEntry entry) throws LogException {
-		LOGGER.logError("terminatedWithHeuristicMixed " + entry);
+		LOGGER.logDebug("terminatedWithHeuristicMixed " + entry);
 		CoordinatorLogEntry coordinatorLogEntry = repository.get(entry.coordinatorId);
 		if (coordinatorLogEntry == null) {
 			LOGGER.logWarning("terminatedWithHeuristicMixed called on non existent Coordinator " + entry.coordinatorId + " " + entry.uri);
