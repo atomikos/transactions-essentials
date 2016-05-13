@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.atomikos</groupId>
         <artifactId>ate</artifactId>
-        <version>4.0.3-SNAPSHOT</version>
+        <version>4.0.4-SNAPSHOT</version>
     </parent>
     <artifactId>transactions-hibernate3</artifactId>
     <name>Transactions Hibernate3</name>
@@ -12,12 +12,12 @@
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>transactions-jta</artifactId>
-            <version>4.0.3-SNAPSHOT</version>
+            <version>4.0.4-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>transactions-jdbc</artifactId>
-            <version>4.0.3-SNAPSHOT</version>
+            <version>4.0.4-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
