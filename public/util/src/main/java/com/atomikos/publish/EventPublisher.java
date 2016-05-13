@@ -44,15 +44,15 @@ public class EventPublisher {
 	}
 
 	private static void notifyAllListeners(Event event) {
-		if(event instanceof TransactionHeuristicEvent) {
+		if (event instanceof TransactionHeuristicEvent) {
 			TransactionHeuristicEvent the = (TransactionHeuristicEvent)event;
 			if (listeners.isEmpty()) {
-				LOGGER.logError("Transaction " + the.transactionId + " corrupted - contact support@atomikos.com to get help");
+				LOGGER.logError("Transaction " + the.transactionId + " corrupted - check https://www.atomikos.com/Documentation/HowToHandleHeuristics to learn more");
 			}
 		}
 		
 		
-		for(EventListener listener : listeners) {				
+		for (EventListener listener : listeners) {				
 			try {
 				listener.eventOccurred(event);
 			} catch (Exception e) {
