@@ -34,6 +34,10 @@ public final class Atomikos {
 
 		return properties.getProperty("version");
 	}
+	
+	public static boolean isEvaluationVersion() {
+		return VERSION.endsWith(".EVAL");
+	}
 
 
 }

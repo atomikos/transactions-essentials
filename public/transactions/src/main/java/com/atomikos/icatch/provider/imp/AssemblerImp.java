@@ -34,6 +34,7 @@ import com.atomikos.recovery.imp.FileSystemRepository;
 import com.atomikos.recovery.imp.InMemoryRepository;
 import com.atomikos.recovery.imp.OltpLogImp;
 import com.atomikos.recovery.imp.RecoveryLogImp;
+import com.atomikos.util.Atomikos;
 import com.atomikos.util.ClassLoadingHelper;
 import com.atomikos.util.UniqueIdMgr;
 
@@ -103,6 +104,11 @@ public class AssemblerImp implements Assembler {
 			String message ="Thanks for using Atomikos! Register at http://www.atomikos.com/Main/RegisterYourDownload to disable this message and receive FREE tips & advice.";
 			LOGGER.logWarning(message);
 			System.out.println(message);
+		}
+		if (Atomikos.isEvaluationVersion()) {
+			String message ="This product (ExtremeTransactions) is licensed for DEVELOPMENT ONLY - for production use you need to purchase a subscription via https://www.atomikos.com/Main/BuyOnline";
+			LOGGER.logWarning(message);
+			System.err.println(message);
 		}
 	}
 
