@@ -4,7 +4,7 @@
 	<parent>
         <groupId>com.atomikos</groupId>
         <artifactId>ate</artifactId>
-        <version>4.0.3</version>
+        <version>4.0.4-SNAPSHOT</version>
     </parent>
 	<artifactId>transactions-tcc-rest-api</artifactId>
 	<name>Transactions / TCC REST API</name>
