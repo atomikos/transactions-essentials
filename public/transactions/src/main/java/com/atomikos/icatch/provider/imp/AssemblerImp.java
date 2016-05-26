@@ -101,7 +101,9 @@ public class AssemblerImp implements Assembler {
 	}
 	private void checkRegistration(ConfigProperties configProperties) {
 		if (configProperties.getCompletedProperties().getProperty("com.atomikos.icatch.registered") == null) {
-			String message ="Thanks for using Atomikos! Register at http://www.atomikos.com/Main/RegisterYourDownload to disable this message and receive FREE tips & advice.";
+			String message ="Thanks for using Atomikos! Evaluate http://www.atomikos.com/Main/ExtremeTransactions for advanced features and professional support\n"
+					+ "or register at http://www.atomikos.com/Main/RegisterYourDownload to disable this message and receive FREE tips & advice";
+			
 			LOGGER.logWarning(message);
 			System.out.println(message);
 		}
