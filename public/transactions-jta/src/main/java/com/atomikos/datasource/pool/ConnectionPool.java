@@ -164,7 +164,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 			recycledConnection = recycleConnectionIfPossible();
 		} catch (Exception e) {
 			//ignore but log
-			LOGGER.logWarning ( this + ": error while trying to recycle" , e );
+			LOGGER.logDebug ( this + ": error while trying to recycle" , e );
 		}
 		return recycledConnection;
 	}
@@ -190,7 +190,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 					if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace( this + ": got connection from pool");
 				} catch ( CreateConnectionException ex ) {
 					String msg = this +  ": error creating proxy of connection " + xpc;
-					LOGGER.logWarning( msg , ex);
+					LOGGER.logDebug( msg , ex);
 					it.remove();
 					destroyPooledConnection(xpc);
 				} finally {
