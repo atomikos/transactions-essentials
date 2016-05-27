@@ -17,9 +17,9 @@ import java.util.List;
 
 import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
 import org.apache.cxf.jaxrs.lifecycle.SingletonResourceProvider;
-import org.codehaus.jackson.jaxrs.JacksonJaxbJsonProvider;
 
 import com.atomikos.icatch.config.Configuration;
+import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 
 /**
  * Simple server application to run a TCC/REST coordinator service.
@@ -52,6 +52,7 @@ public class Server {
 	private void startCoordinatorService() {
 		CoordinatorImp coord = new CoordinatorImp();
 		sf = new JAXRSServerFactoryBean();
+		
 		List<Object> providers = new ArrayList<Object>();
 		providers.add(new JacksonJaxbJsonProvider());
 		providers.add(new TransactionProvider());

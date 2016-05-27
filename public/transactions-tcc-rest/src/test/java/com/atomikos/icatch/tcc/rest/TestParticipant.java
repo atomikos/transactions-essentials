@@ -24,7 +24,7 @@ import javax.xml.datatype.DatatypeConfigurationException;
 
 import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
 import org.apache.cxf.jaxrs.lifecycle.SingletonResourceProvider;
-import org.apache.cxf.jaxrs.provider.JSONProvider;
+import org.apache.cxf.jaxrs.provider.json.JSONProvider;
 
 import com.atomikos.tcc.rest.ParticipantLink;
 @Path("/participant")

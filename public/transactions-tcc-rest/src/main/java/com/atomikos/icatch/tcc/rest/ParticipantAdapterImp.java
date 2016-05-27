@@ -8,16 +8,15 @@
 
 package com.atomikos.icatch.tcc.rest;
 
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 
+import javax.ws.rs.HttpMethod;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
 import javax.xml.bind.DatatypeConverter;
-
-import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
-import org.apache.cxf.jaxrs.client.WebClient;
-import org.apache.cxf.jaxrs.provider.JSONProvider;
 
 import com.atomikos.icatch.HeurRollbackException;
 import com.atomikos.logging.Logger;
@@ -30,7 +29,7 @@ class ParticipantAdapterImp implements ParticipantAdapter {
 
 	private static Logger LOGGER = LoggerFactory.createLogger(ParticipantAdapterImp.class);
 	
-	private transient Participant part;
+	private transient WebTarget part;
 	private String uri;
 	private long expires;
 
@@ -40,14 +39,11 @@ class ParticipantAdapterImp implements ParticipantAdapter {
 		this.expires = cal.getTimeInMillis();
 	}
 	
-	Participant getParticipant() {
+	WebTarget getParticipant() {
 		if (part == null) {
-			JSONProvider prov = new JSONProvider();
-			prov.setIgnoreNamespaces(true);
-	        List<JSONProvider> providers = new ArrayList<JSONProvider>();
-	        providers.add(prov);
-			part = JAXRSClientFactory.create(uri, Participant.class, providers);
-			WebClient.client(part).accept(MimeTypes.MIME_TYPE_PARTICIPANT_V1).type(MimeTypes.MIME_TYPE_PARTICIPANT_V1);
+			Client client = ClientBuilder.newClient();
+			WebTarget target = client.target(uri);
+			return target.path("/");
 		}
 		return part;
 	}
@@ -59,9 +55,9 @@ class ParticipantAdapterImp implements ParticipantAdapter {
 
 	@Override
 	public void delete() {
-		Participant p = getParticipant();
+		WebTarget p = getParticipant();
 		try {
-			p.cancel();
+			p.request(MimeTypes.MIME_TYPE_PARTICIPANT_V1).header("Content-type", MimeTypes.MIME_TYPE_PARTICIPANT_V1).delete();
 		} catch (Exception ignore) {
 			LOGGER.logTrace("Error invoking cancel on participant", ignore);
 		}
@@ -69,9 +65,14 @@ class ParticipantAdapterImp implements ParticipantAdapter {
 
 	@Override
 	public void put() throws HeurRollbackException {
-		Participant p = getParticipant();
+		WebTarget p = getParticipant();
 		try {
-			p.confirm();
+			Response r = p.request(MimeTypes.MIME_TYPE_PARTICIPANT_V1).header("Content-type", MimeTypes.MIME_TYPE_PARTICIPANT_V1).method(HttpMethod.PUT);
+			if (r.getStatus() == 404) {
+				LOGGER.logError("Heuristic cancel by participant " + uri );
+				throw new HeurRollbackException();
+			}
+
 		} catch (WebApplicationException e) {
 			if (e.getResponse().getStatus() == 404) {
 				LOGGER.logError("Heuristic cancel by participant " + uri );
@@ -84,18 +85,12 @@ class ParticipantAdapterImp implements ParticipantAdapter {
 
 	@Override
 	public void options() {
-		WebClient client = getRawParticipant();
+		WebTarget p = getParticipant();
 		try {
-			client.options();
+			p.request().options();
 		} catch (Exception e) {
 			LOGGER.logTrace("Error retrieving options", e);
 		}
-	}
-
-	private WebClient getRawParticipant() {
-
-		WebClient client = WebClient.create(uri);
-		return client;
 	}
 
 	@Override

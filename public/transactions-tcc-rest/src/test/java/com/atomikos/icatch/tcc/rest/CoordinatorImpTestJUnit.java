@@ -10,30 +10,30 @@ package com.atomikos.icatch.tcc.rest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
-import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedHashMap;
+import javax.ws.rs.core.Response;
 import javax.xml.datatype.DatatypeConfigurationException;
 
-import junit.framework.Assert;
-
-import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
-import org.apache.cxf.jaxrs.client.WebClient;
-import org.apache.cxf.jaxrs.impl.MetadataMap;
-import org.codehaus.jackson.jaxrs.JacksonJaxbJsonProvider;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.atomikos.tcc.rest.Coordinator;
 import com.atomikos.tcc.rest.ParticipantLink;
 import com.atomikos.tcc.rest.Transaction;
+import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 
 public class CoordinatorImpTestJUnit {
 
@@ -46,7 +46,7 @@ public class CoordinatorImpTestJUnit {
 	private static final String PARTICIPANT_CLIENT_URL_2 = PARTICIPANT_SERVER_URL_2
 			+ "/participant";
 
-	private static Coordinator jsonClient;
+	private static WebTarget coordinator;
 	private static TestParticipant tp1, tp2;
 	private static Server server;
 
@@ -54,7 +54,7 @@ public class CoordinatorImpTestJUnit {
 	public static void beforeClass() throws Exception {
 		server = new Server(COORDINATOR_BASE_URL);
 		server.start();
-		jsonClient = getCoordinatorForJson();
+		coordinator = getCoordinatorForJson();
 		tp1 = new TestParticipant();
 		tp1.export(PARTICIPANT_SERVER_URL_1);
 		tp2 = new TestParticipant();
@@ -73,32 +73,23 @@ public class CoordinatorImpTestJUnit {
 		stop();
 	}
 
-	private static Coordinator getCoordinatorForJson() {
-		List<Object> providers = new ArrayList<Object>();
-		providers.add(new JacksonJaxbJsonProvider());
-		providers.add(new TransactionProvider());
-		Coordinator c = JAXRSClientFactory.create(COORDINATOR_CLIENT_URL,
-				Coordinator.class, providers);
-		WebClient.client(c).accept("application/tcc+json");
-		return c;
+	private static WebTarget getCoordinatorForJson() {
+		Client client = ClientBuilder.newClient();
+		client.register(new JacksonJaxbJsonProvider());
+		client.register(new TransactionProvider());
+		WebTarget target = client.target(COORDINATOR_CLIENT_URL);
+		return target.path("/coordinator");
 	}
 
 	public static void main(String[] args) throws DatatypeConfigurationException, IOException {
 		Transaction transaction = createTransaction("2002-05-30T09:30:10Z", "http://1","http://2");
 		JacksonJaxbJsonProvider provider = new JacksonJaxbJsonProvider();
 		
-		
-		//mapper.configure(DeserializationConfig.Feature.UNWRAP_ROOT_VALUE, true);
-		
-		//mapper.configure(SerializationConfig.Feature.WRITE_ENUMS_USING_INDEX,true);
-		
 		provider.writeTo(transaction, 
 				Transaction.class, Transaction.class,
 				null, MediaType.APPLICATION_JSON_TYPE, 
-				new MetadataMap<String, Object>(), 
+				new MultivaluedHashMap<String, Object>(), 
 				System.out);
-		
-		//provider.readFrom(type, genericType, annotations, mediaType, httpHeaders, entityStream)
 		
 	}
 
@@ -136,26 +127,21 @@ public class CoordinatorImpTestJUnit {
 	@Test
 	public void testJsonCancelWorksForNonExistentParticipant()
 			throws DatatypeConfigurationException, InterruptedException {
-
 		Transaction transaction = createTransaction(System.currentTimeMillis(),
 				"http://www.example.com");
-		jsonClient.cancel(transaction);
+		coordinator.path("/cancel").request().put(Entity.entity(transaction, "application/tcc+json"));
 	}
-
-	
-	
-	
 
 	@Test
 	public void testJsonCancelWorksForEmptyTransaction() {
 		Transaction transaction = new Transaction();
-		jsonClient.cancel(transaction);
+		coordinator.path("/cancel").request().put(Entity.entity(transaction, "application/tcc+json"));
 	}
 
 	@Test
 	public void testJsonConfirmWorksForEmptyTransaction() {
 		Transaction transaction = new Transaction();
-		jsonClient.confirm(transaction);
+		coordinator.path("/confirm").request().put(Entity.entity(transaction, "application/tcc+json"));
 	}
 
 	@Test
@@ -164,7 +150,7 @@ public class CoordinatorImpTestJUnit {
 		Transaction transaction = createTransaction(
 				createSufficientExpiryDateToAvoidIntermediateTimeout(), PARTICIPANT_CLIENT_URL_1,
 				PARTICIPANT_CLIENT_URL_2);
-		jsonClient.cancel(transaction);
+		coordinator.path("/cancel").request().put(Entity.entity(transaction, "application/tcc+json"));
 		assertTrue(tp1.wasCancelled());
 		assertTrue(tp2.wasCancelled());
 	}
@@ -175,7 +161,7 @@ public class CoordinatorImpTestJUnit {
 		Transaction transaction = createTransaction(
 				createSufficientExpiryDateToAvoidIntermediateTimeout(), PARTICIPANT_CLIENT_URL_1,
 				PARTICIPANT_CLIENT_URL_2);
-		jsonClient.confirm(transaction);
+		coordinator.path("/confirm").request().put(Entity.entity(transaction, "application/tcc+json"));
 		assertTrue(tp1.wasOptionsCalled());
 		assertTrue(tp2.wasOptionsCalled());
 	}
@@ -187,7 +173,7 @@ public class CoordinatorImpTestJUnit {
 		Transaction transaction = createTransaction(
 				createSufficientExpiryDateToAvoidIntermediateTimeout(), PARTICIPANT_CLIENT_URL_1,
 				PARTICIPANT_CLIENT_URL_2);
-		jsonClient.confirm(transaction);
+		coordinator.path("/confirm").request().put(Entity.entity(transaction, "application/tcc+json"));
 		assertTrue(tp1.wasConfirmed());
 	}
 
@@ -197,7 +183,7 @@ public class CoordinatorImpTestJUnit {
 		Transaction transaction = createTransaction(
 				createSufficientExpiryDateToAvoidIntermediateTimeout(), PARTICIPANT_CLIENT_URL_1,
 				PARTICIPANT_CLIENT_URL_2);
-		jsonClient.confirm(transaction);
+		coordinator.path("/confirm").request().put(Entity.entity(transaction, "application/tcc+json"));
 		assertTrue(tp1.wasConfirmed());
 		assertTrue(tp2.wasConfirmed());
 	}
@@ -210,12 +196,9 @@ public class CoordinatorImpTestJUnit {
 		Transaction transaction = createTransaction(
 				createSufficientExpiryDateToAvoidIntermediateTimeout(), PARTICIPANT_CLIENT_URL_1,
 				PARTICIPANT_CLIENT_URL_2);
-		try {
-			jsonClient.confirm(transaction);
-			fail("No exception?");
-		} catch (WebApplicationException e) {
-			assertEquals(404, e.getResponse().getStatus());
-		}
+			Response r = coordinator.path("/confirm").request().put(Entity.entity(transaction, "application/tcc+json"));
+			assertEquals(404, r.getStatus());
+		
 	}
 
 	@Test
@@ -225,12 +208,8 @@ public class CoordinatorImpTestJUnit {
 		Transaction transaction = createTransaction(
 				createSufficientExpiryDateToAvoidIntermediateTimeout(), PARTICIPANT_CLIENT_URL_1,
 				PARTICIPANT_CLIENT_URL_2);
-		try {
-			jsonClient.confirm(transaction);
-			fail("No exception?");
-		} catch (WebApplicationException e) {
-			assertEquals(409, e.getResponse().getStatus());
-		}
+			Response r = coordinator.path("/confirm").request().put(Entity.entity(transaction, "application/tcc+json"));
+			assertEquals(409, r.getStatus());
 	}
 
 	private long createSufficientExpiryDateToAvoidIntermediateTimeout() {
@@ -244,8 +223,8 @@ public class CoordinatorImpTestJUnit {
 		Transaction transaction = createTransaction(
 				createSufficientExpiryDateToAvoidIntermediateTimeout(), PARTICIPANT_CLIENT_URL_1,
 				PARTICIPANT_CLIENT_URL_2);
-		jsonClient.confirm(transaction);
-		jsonClient.confirm(transaction);
+		coordinator.path("/confirm").request().put(Entity.entity(transaction, "application/tcc+json"));
+		coordinator.path("/confirm").request().put(Entity.entity(transaction, "application/tcc+json"));
 	}
 
 	@Test
@@ -253,8 +232,8 @@ public class CoordinatorImpTestJUnit {
 		Transaction transaction = createTransaction(
 				createSufficientExpiryDateToAvoidIntermediateTimeout(), PARTICIPANT_CLIENT_URL_1,
 				PARTICIPANT_CLIENT_URL_2);
-		jsonClient.cancel(transaction);
-		jsonClient.cancel(transaction);
+		coordinator.path("/cancel").request().put(Entity.entity(transaction, "application/tcc+json"));
+		coordinator.path("/cancel").request().put(Entity.entity(transaction, "application/tcc+json"));
 	}
 
 	@Test
@@ -262,51 +241,44 @@ public class CoordinatorImpTestJUnit {
 		Transaction transaction = createTransaction(
 				System.currentTimeMillis(), PARTICIPANT_CLIENT_URL_1,
 				PARTICIPANT_CLIENT_URL_2);
-		try {
-			jsonClient.confirm(transaction);
-		} catch (WebApplicationException e) {
-			assertEquals(404, e.getResponse().getStatus());
-			assertEquals("transaction has timed out and was cancelled", e.getMessage());
-		}
+		
+			Response r =coordinator.path("/confirm").request().put(Entity.entity(transaction, "application/tcc+json"));
+			assertEquals(404, r.getStatus());
+			assertEquals("transaction has timed out and was cancelled", getMessage(r));
+		
 	}
 	
 	
 	@Test
 	public void testParticipantLinkUriMissingThrows() throws Exception {
 		Transaction transaction = createTransaction(1000L,new String []{ null});
-		try {
-			jsonClient.confirm(transaction);
-			fail();
-		} catch (WebApplicationException e) {
-			Assert.assertEquals(400, e.getResponse().getStatus());
-			Assert.assertEquals("each participantLink must have a value for 'uri'", e.getMessage());
-		}
+			Response r =coordinator.path("/confirm").request().put(Entity.entity(transaction, "application/tcc+json"));
+			assertEquals(400, r.getStatus());
+			assertEquals("each participantLink must have a value for 'uri'", getMessage(r));
 	}
 
 	@Test
 	public void testParticipantMalformedExpiresThrows() throws Exception {
 		String invalidISO8601Date = "participantLink: expires must be a valid ISO 8601 date";
 		Transaction transaction = createTransaction(invalidISO8601Date, "DUMMY");
-		try {
-			jsonClient.confirm(transaction);
-			fail();
-		} catch (WebApplicationException e) {
-			Assert.assertEquals(400, e.getResponse().getStatus());
-			Assert.assertEquals("invalid date format for participantLink 'expires': "+invalidISO8601Date, e.getMessage());
-		}
+			Response r =coordinator.path("/confirm").request().put(Entity.entity(transaction, "application/tcc+json"));
+			assertEquals(400, r.getStatus());
+			assertEquals("invalid date format for participantLink 'expires': "+invalidISO8601Date, getMessage(r));
 	}
 	
 	
 	@Test
 	public void testParticipantExpiresMissingThrows() throws Exception {
 		Transaction transaction = createTransaction(null, "DUMMY");
-		try {
-			jsonClient.confirm(transaction);
-			fail();
-		} catch (WebApplicationException e) {
-			Assert.assertEquals(400, e.getResponse().getStatus());
-			Assert.assertEquals("each participantLink must have an 'expires'", e.getMessage());
-		}
+		Response r =coordinator.path("/confirm").request().put(Entity.entity(transaction, "application/tcc+json"));
+		assertEquals(400, r.getStatus());
+		assertEquals("each participantLink must have an 'expires'", getMessage(r));
+	}
+
+	private String getMessage(Response r) {
+		InputStream in = (InputStream) r.getEntity();
+		String message = new Scanner(in,"UTF-8").useDelimiter("\\A").next();
+        return message;
 	}
 	
 	@Test
@@ -315,6 +287,6 @@ public class CoordinatorImpTestJUnit {
 		Transaction transaction = createTransaction(
 				createSufficientExpiryDateToAvoidIntermediateTimeout(), PARTICIPANT_CLIENT_URL_1,
 				PARTICIPANT_CLIENT_URL_2);
-		jsonClient.cancel(transaction);
+		coordinator.path("/cancel").request().put(Entity.entity(transaction, "application/tcc+json"));
 	}
 }
