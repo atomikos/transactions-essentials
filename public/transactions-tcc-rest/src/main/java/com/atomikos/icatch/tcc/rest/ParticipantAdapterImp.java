@@ -42,8 +42,10 @@ class ParticipantAdapterImp implements ParticipantAdapter {
 	WebTarget getParticipant() {
 		if (part == null) {
 			Client client = ClientBuilder.newClient();
+			//see https://jersey.java.net/apidocs/2.5.1/jersey/org/glassfish/jersey/client/ClientProperties.html#SUPPRESS_HTTP_COMPLIANCE_VALIDATION
+			client.property("jersey.config.client.suppressHttpComplianceValidation", true);
 			WebTarget target = client.target(uri);
-			return target.path("/");
+			return target;
 		}
 		return part;
 	}
