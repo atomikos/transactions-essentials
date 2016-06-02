@@ -12,12 +12,14 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectStreamException;
 import java.io.StreamCorruptedException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,26 +35,26 @@ import com.atomikos.recovery.LogWriteException;
 import com.atomikos.recovery.Repository;
 import com.atomikos.util.VersionedFile;
 
-public class FileSystemRepository implements
-		Repository {
+public class FileSystemRepository implements Repository {
 
 	private static final Logger LOGGER = LoggerFactory
 			.createLogger(FileSystemRepository.class);
 	private VersionedFile file;
 	private FileChannel rwChannel = null;
 	private LogFileLock lock_;
+
 	@Override
 	public void init() throws LogException {
-		ConfigProperties configProperties =	Configuration.getConfigProperties();
+		ConfigProperties configProperties = Configuration.getConfigProperties();
 		String baseDir = configProperties.getLogBaseDir();
 		String baseName = configProperties.getLogBaseName();
-		LOGGER.logDebug("baseDir "+baseDir);
-		LOGGER.logDebug("baseName "+baseName);
-        lock_ = new LogFileLock(baseDir, baseName);
-        LOGGER.logDebug("LogFileLock "+lock_);
-        lock_.acquireLock();
+		LOGGER.logDebug("baseDir " + baseDir);
+		LOGGER.logDebug("baseName " + baseName);
+		lock_ = new LogFileLock(baseDir, baseName);
+		LOGGER.logDebug("LogFileLock " + lock_);
+		lock_.acquireLock();
 		file = new VersionedFile(baseDir, baseName, ".log");
-		
+
 	}
 
 	private Serializer serializer = new Serializer();
@@ -60,7 +62,7 @@ public class FileSystemRepository implements
 	@Override
 	public void put(String id, CoordinatorLogEntry coordinatorLogEntry)
 			throws LogWriteException {
-		
+
 		try {
 			initChannelIfNecessary();
 			write(coordinatorLogEntry, true);
@@ -69,7 +71,8 @@ public class FileSystemRepository implements
 		}
 	}
 
-	private synchronized void initChannelIfNecessary() throws FileNotFoundException {
+	private synchronized void initChannelIfNecessary()
+			throws FileNotFoundException {
 		if (rwChannel == null) {
 			rwChannel = file.openNewVersionForNioWriting();
 		}
@@ -92,7 +95,6 @@ public class FileSystemRepository implements
 
 	}
 
-
 	@Override
 	public CoordinatorLogEntry get(String coordinatorId) {
 		throw new UnsupportedOperationException();
@@ -103,61 +105,75 @@ public class FileSystemRepository implements
 		throw new UnsupportedOperationException();
 	}
 
-
-
 	@Override
 	public Collection<CoordinatorLogEntry> getAllCoordinatorLogEntries()
 			throws LogReadException {
-		Map<String, CoordinatorLogEntry> coordinatorLogEntries = new HashMap<String, CoordinatorLogEntry>();
-		BufferedReader br = null;
+		FileInputStream fis = null;
 		try {
-			FileInputStream fis = file.openLastValidVersionForReading();
-			InputStreamReader isr = new InputStreamReader(fis);
-			br = new BufferedReader(isr);
-			coordinatorLogEntries = readContent( br);
+			fis = file.openLastValidVersionForReading();
 		} catch (FileNotFoundException firstStart) {
 			// the file could not be opened for reading;
 			// merely return the default empty vector
+		} 
+		if (fis != null) {
+			return readFromInputStream(fis);
+		}
+		//else
+		return Collections.emptyList();
+	}
+
+	public static Collection<CoordinatorLogEntry> readFromInputStream(
+			InputStream in) throws LogReadException {
+		Map<String, CoordinatorLogEntry> coordinatorLogEntries = new HashMap<String, CoordinatorLogEntry>();
+		BufferedReader br = null;
+		try {
+			InputStreamReader isr = new InputStreamReader(in);
+			br = new BufferedReader(isr);
+			coordinatorLogEntries = readContent(br);
 		} catch (Exception e) {
 			LOGGER.logFatal("Error in recover", e);
 			throw new LogReadException(e);
 		} finally {
 			closeSilently(br);
 		}
-
 		return coordinatorLogEntries.values();
 	}
 
-	Map<String, CoordinatorLogEntry> readContent(
-			BufferedReader br) throws IOException {
-		
+	static Map<String, CoordinatorLogEntry> readContent(BufferedReader br)
+			throws IOException {
+
 		Map<String, CoordinatorLogEntry> coordinatorLogEntries = new HashMap<String, CoordinatorLogEntry>();
 		try {
 			String line;
 			while ((line = br.readLine()) != null) {
 				CoordinatorLogEntry coordinatorLogEntry = deserialize(line);
 				coordinatorLogEntries.put(coordinatorLogEntry.id,
-					coordinatorLogEntry);
+						coordinatorLogEntry);
 			}
 
 		} catch (java.io.EOFException unexpectedEOF) {
-			LOGGER.logTrace("Unexpected EOF - logfile not closed properly last time?", unexpectedEOF);
+			LOGGER.logTrace(
+					"Unexpected EOF - logfile not closed properly last time?",
+					unexpectedEOF);
 			// merely return what was read so far...
 		} catch (StreamCorruptedException unexpectedEOF) {
-			LOGGER.logTrace("Unexpected EOF - logfile not closed properly last time?", unexpectedEOF);
+			LOGGER.logTrace(
+					"Unexpected EOF - logfile not closed properly last time?",
+					unexpectedEOF);
 			// merely return what was read so far...
 		} catch (ObjectStreamException unexpectedEOF) {
-			LOGGER.logTrace("Unexpected EOF - logfile not closed properly last time?", unexpectedEOF);
+			LOGGER.logTrace(
+					"Unexpected EOF - logfile not closed properly last time?",
+					unexpectedEOF);
 			// merely return what was read so far...
 		} catch (DeserialisationException unexpectedEOF) {
-			LOGGER.logTrace("Unexpected EOF - logfile not closed properly last time? "+ unexpectedEOF);
+			LOGGER.logTrace("Unexpected EOF - logfile not closed properly last time? "
+					+ unexpectedEOF);
 		}
 		return coordinatorLogEntries;
 	}
 
-	
-
-	private void closeSilently(BufferedReader fis) {
+	private static void closeSilently(BufferedReader fis) {
 		try {
 			if (fis != null)
 				fis.close();
@@ -166,9 +182,10 @@ public class FileSystemRepository implements
 		}
 	}
 
-	private Deserializer deserializer = new Deserializer();
+	private static Deserializer deserializer = new Deserializer();
 
-	private CoordinatorLogEntry deserialize(String line) throws DeserialisationException {
+	private static CoordinatorLogEntry deserialize(String line)
+			throws DeserialisationException {
 		return deserializer.fromJSON(line);
 	}
 
@@ -177,12 +194,13 @@ public class FileSystemRepository implements
 		try {
 			closeOutput();
 		} catch (Exception e) {
-			LOGGER.logWarning("Error closing file - ignoring",e);
+			LOGGER.logWarning("Error closing file - ignoring", e);
 		} finally {
-			lock_.releaseLock();	
+			lock_.releaseLock();
 		}
-		
+
 	}
+
 	protected void closeOutput() throws IllegalStateException {
 		try {
 			if (file != null) {
