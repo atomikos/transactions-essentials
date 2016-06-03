@@ -138,11 +138,11 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<!-- same as "-source 1.6 -target 1.6" for compilation -->
+				<!-- same as "-source 1.7 -target 1.7" for compilation -->
 				<!-- see http://maven.apache.org/plugins/maven-compiler-plugin/compile-mojo.html -->
 				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
+					<source>1.7</source>
+					<target>1.7</target>
 				</configuration>
 			</plugin>
 			<plugin>
