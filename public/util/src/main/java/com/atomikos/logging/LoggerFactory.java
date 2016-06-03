@@ -31,7 +31,7 @@ public final class LoggerFactory {
 			Class.forName("org.slf4j.impl.StaticLoggerBinder");
 			cname = "com.atomikos.logging.Slf4JLoggerFactoryDelegate";
 		} catch (Throwable ex) {
-			System.out.println("No org.slf4j.impl.StaticLoggerBinder found in ClassPath, trying with log4j...");
+			System.out.println("No org.slf4j.impl.StaticLoggerBinder found in ClassPath, trying with log4j2...");
 		}
 		
 		if(cname==null){
