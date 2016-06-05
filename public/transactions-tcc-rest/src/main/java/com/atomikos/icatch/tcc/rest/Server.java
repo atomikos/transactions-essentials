@@ -84,7 +84,7 @@ public class Server {
 	
 	public static void main(String[] args) throws Exception {
 		if (args.length != 1) {
-			System.err.println("Required argument: URL to start on");
+			System.err.println("Required argument: Port to start on");
 			System.exit(1);
 		}
 		Server server = startServer(args);
