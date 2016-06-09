@@ -20,7 +20,7 @@ public abstract class TransactionEvent extends Event {
 
 	private static final long serialVersionUID = 1L;
 	
-	public String transactionId;
+	public final String transactionId;
 	
 	protected TransactionEvent(String transactionId) {
 		this.transactionId = transactionId;
