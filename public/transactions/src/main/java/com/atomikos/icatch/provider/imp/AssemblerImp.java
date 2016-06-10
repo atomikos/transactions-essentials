@@ -195,7 +195,9 @@ public class AssemblerImp implements Assembler {
 			i++;
 		}
         if (i > 1) {
-        	LOGGER.logFatal("More than one OltpLogFactory found in classpath - error in configuration!");
+			String msg = "More than one OltpLogFactory found in classpath - error in configuration!";
+			LOGGER.logFatal(msg);
+			throw new SysException(msg);
         }
         return ret;
 	}
