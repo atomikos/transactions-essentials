@@ -134,7 +134,9 @@ public final class ConfigProperties {
 	public String getProperty(String name) {
 		completeProperties();
 		String ret = properties.getProperty(name);
-		if (ret == null) throw new IllegalArgumentException(name);
+		if (ret == null) {
+			throw new IllegalArgumentException("Required property missing: " + name);
+		}
 		ret = ret.trim();
 		return ret;
 	}
