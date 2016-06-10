@@ -15,9 +15,12 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.ServiceLoader;
 
 import com.atomikos.icatch.CompositeTransactionManager;
 import com.atomikos.icatch.SysException;
+import com.atomikos.icatch.TransactionServicePlugin;
+import com.atomikos.icatch.config.Configuration;
 import com.atomikos.icatch.imp.CompositeTransactionManagerImp;
 import com.atomikos.icatch.imp.TransactionServiceImp;
 import com.atomikos.icatch.provider.Assembler;
@@ -26,6 +29,7 @@ import com.atomikos.icatch.provider.TransactionServiceProvider;
 import com.atomikos.logging.LoggerFactory;
 import com.atomikos.persistence.imp.StateRecoveryManagerImp;
 import com.atomikos.recovery.LogException;
+import com.atomikos.recovery.OltpLogFactory;
 import com.atomikos.recovery.Repository;
 import com.atomikos.recovery.OltpLog;
 import com.atomikos.recovery.RecoveryLog;
@@ -141,24 +145,19 @@ public class AssemblerImp implements Assembler {
 		RecoveryLog recoveryLog =null;
 		logProperties(configProperties.getCompletedProperties());
 		String tmUniqueName = configProperties.getTmUniqueName();
-		boolean enableLogging = configProperties.getEnableLogging();
+		
 		long maxTimeout = configProperties.getMaxTimeout();
 		int maxActives = configProperties.getMaxActives();
 		boolean threaded2pc = configProperties.getThreaded2pc();
 		
-		Repository repository;
-		if (enableLogging) {
-			try {
-				repository = createCoordinatorLogEntryRepository(configProperties);
-			} catch ( LogException le ) {
-	            throw new SysException ( "Error in init: " + le.getMessage (), le );
-	        }
-		} else {
-			repository = createInMemoryCoordinatorLogEntryRepository(configProperties);;
+		OltpLog oltpLog = createOltpLogFromClasspath();
+		if (oltpLog == null) {
+			LOGGER.logInfo("Using default (local) logging and recovery..."); 
+			Repository repository = createRepository(configProperties);		
+			oltpLog = createOltpLog(repository);
+			//??? Assemble recoveryLog
+			recoveryLog = createRecoveryLog(repository);			
 		}
-		OltpLog oltpLog = createOltpLog(repository);
-		//??? Assemble recoveryLog
-		recoveryLog = createRecoveryLog(repository);
 		StateRecoveryManagerImp	recoveryManager = new StateRecoveryManagerImp();
 		recoveryManager.setOltpLog(oltpLog);
 		UniqueIdMgr idMgr = new UniqueIdMgr ( tmUniqueName );
@@ -170,6 +169,35 @@ public class AssemblerImp implements Assembler {
 			throw new SysException(msg);
 		}
 		return new TransactionServiceImp(tmUniqueName, recoveryManager, idMgr, maxTimeout, maxActives, !threaded2pc, recoveryLog);
+	}
+
+	private Repository createRepository(ConfigProperties configProperties) {
+		boolean enableLogging = configProperties.getEnableLogging();
+		Repository repository;
+		if (enableLogging) {
+			try {
+				repository = createCoordinatorLogEntryRepository(configProperties);
+			} catch ( LogException le ) {
+				throw new SysException ( "Error in init: " + le.getMessage (), le );
+			}
+		} else {
+			repository = createInMemoryCoordinatorLogEntryRepository(configProperties);
+		}
+		return repository;
+	}
+
+	private OltpLog createOltpLogFromClasspath() {
+		OltpLog ret = null;
+		ServiceLoader<OltpLogFactory> loader = ServiceLoader.load(OltpLogFactory.class,Configuration.class.getClassLoader());
+		int i = 0;
+        for (OltpLogFactory l : loader ) {
+			ret = l.createOltpLog();
+			i++;
+		}
+        if (i > 1) {
+        	LOGGER.logFatal("More than one OltpLogFactory found in classpath - error in configuration!");
+        }
+        return ret;
 	}
 
 	private Repository createInMemoryCoordinatorLogEntryRepository(
