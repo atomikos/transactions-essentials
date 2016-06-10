@@ -443,8 +443,8 @@ public final class Configuration
 			startupInitiated = true;
 			addAllTransactionServicePluginServicesFromClasspath();
 			ConfigProperties configProperties = getConfigProperties();
-			assembleSystemComponents(configProperties);
 			notifyBeforeInit(configProperties);
+			assembleSystemComponents(configProperties);
 			initializeSystemComponents(configProperties);
 			notifyAfterInit();
 			if (configProperties.getForceShutdownOnVmExit()) {
