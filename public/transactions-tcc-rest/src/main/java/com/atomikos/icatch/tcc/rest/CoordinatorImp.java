@@ -119,6 +119,7 @@ public class CoordinatorImp implements Coordinator {
 	}
 	
 	private void failWithInvalidRequest(String message) {	
+		LOGGER.logWarning(message);
 		Response response =	Response.status(400).entity(message).type(MediaType.TEXT_PLAIN).build();
 		throw new WebApplicationException(response);
 	}
