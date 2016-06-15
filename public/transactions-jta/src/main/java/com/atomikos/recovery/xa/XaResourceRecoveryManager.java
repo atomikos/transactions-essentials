@@ -157,7 +157,7 @@ public class XaResourceRecoveryManager {
 		try {
 			ret = RecoveryScan.recoverXids(xaResource, xidSelector);
 		} catch (XAException e) {
-			LOGGER.logWarning("Error while retrieving xids from resource - will retry later...");
+			LOGGER.logWarning("Error while retrieving xids from resource - will retry later...", e);
 		}
 		return ret;
 	}
