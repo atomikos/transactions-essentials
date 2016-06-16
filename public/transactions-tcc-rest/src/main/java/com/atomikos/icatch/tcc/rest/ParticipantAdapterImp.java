@@ -23,11 +23,41 @@ import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 import com.atomikos.tcc.rest.ParticipantLink;
 
-class ParticipantAdapterImp implements ParticipantAdapter {
+public class ParticipantAdapterImp implements ParticipantAdapter {
 	
 	private static final long serialVersionUID = 1L;
 
 	private static Logger LOGGER = LoggerFactory.createLogger(ParticipantAdapterImp.class);
+	
+	public static WebTarget createJaxRsClientForUri(String uri) {
+		Client client = ClientBuilder.newClient();
+		//see https://jersey.java.net/apidocs/2.5.1/jersey/org/glassfish/jersey/client/ClientProperties.html#SUPPRESS_HTTP_COMPLIANCE_VALIDATION
+		client.property("jersey.config.client.suppressHttpComplianceValidation", true);
+		return client.target(uri);
+	}
+
+	
+	public static void callConfirmOnJaxrsClient(WebTarget target)
+			throws HeurRollbackException {
+		try {
+			Response r = target
+					.request(MimeTypes.MIME_TYPE_PARTICIPANT_V1)
+					.header("Content-type", MimeTypes.MIME_TYPE_PARTICIPANT_V1)
+					.method(HttpMethod.PUT);
+
+			if (r.getStatus() == 404) {
+				throw new HeurRollbackException();
+			}
+
+		} catch (WebApplicationException e) {
+			if (e.getResponse().getStatus() == 404) {
+				throw new HeurRollbackException();
+			} else {
+				throw e;
+			}
+		}
+	}
+	
 	
 	private transient WebTarget part;
 	private String uri;
@@ -41,13 +71,11 @@ class ParticipantAdapterImp implements ParticipantAdapter {
 	
 	WebTarget getParticipant() {
 		if (part == null) {
-			Client client = ClientBuilder.newClient();
-			//see https://jersey.java.net/apidocs/2.5.1/jersey/org/glassfish/jersey/client/ClientProperties.html#SUPPRESS_HTTP_COMPLIANCE_VALIDATION
-			client.property("jersey.config.client.suppressHttpComplianceValidation", true);
-			part  = client.target(uri);
+			createJaxRsClientForUri(uri);
 		}
 		return part;
 	}
+
 
 	@Override
 	public String getUri() {
@@ -67,21 +95,7 @@ class ParticipantAdapterImp implements ParticipantAdapter {
 	@Override
 	public void put() throws HeurRollbackException {
 		WebTarget p = getParticipant();
-		try {
-			Response r = p.request(MimeTypes.MIME_TYPE_PARTICIPANT_V1).header("Content-type", MimeTypes.MIME_TYPE_PARTICIPANT_V1).method(HttpMethod.PUT);
-			if (r.getStatus() == 404) {
-				LOGGER.logError("Heuristic cancel by participant " + uri );
-				throw new HeurRollbackException();
-			}
-
-		} catch (WebApplicationException e) {
-			if (e.getResponse().getStatus() == 404) {
-				LOGGER.logError("Heuristic cancel by participant " + uri );
-				throw new HeurRollbackException();
-			} else {
-				throw e;
-			}
-		} 
+		callConfirmOnJaxrsClient(p);
 	}
 
 	@Override
