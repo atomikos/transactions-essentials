@@ -14,19 +14,7 @@ import com.atomikos.icatch.RecoveryService;
  /**
   * A Recoverable Resource is the abstraction of a resource 
   * that supports recoverable work (i.e., that supports Participant
-  * instances). Its primary use is for Participant instances that are
-  * not self-containing, as for instance in XA transactions
-  * (where the Participant can not contain the entire transaction
-  * context of the server, but only an external reference to it in the
-  * form of an Xid instance).
-  * A recoverable resource is invoked at recovery time by its
-  * own Participant instances (typically in the readExternal 
-  * method), who iteratively ask each resource 
-  * in the com.atomikos.icatch.Configuration whether or not they 
-  * can be recovered by them. At the end of recovery, 
-  * the TM will invoke the endRecovery method, to indicate to the
-  * resource that whatever private logs it has, any remaining 
-  * and non-recovered participants should be aborted.
+  * instances). A recoverable resource is invoked at recovery time by the transaction core.
   */
   
 public interface RecoverableResource
