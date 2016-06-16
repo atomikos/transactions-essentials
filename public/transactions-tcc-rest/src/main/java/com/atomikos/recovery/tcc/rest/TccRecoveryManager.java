@@ -21,10 +21,22 @@ import com.atomikos.recovery.RecoveryLog;
 public class TccRecoveryManager {
 
 	private static final Logger LOGGER = LoggerFactory.createLogger(TccRecoveryManager.class);
+
+	private static TccRecoveryManager instance;
 	
 	private RecoveryLog log;
 	private TccTransport tccTransport;
 	
+	
+	public TccRecoveryManager() {
+	}
+	
+	public TccRecoveryManager(RecoveryLog log, TccTransport tccTransport) {
+		super();
+		this.log = log;
+		this.tccTransport = tccTransport;
+	}
+
 	public void recover() {
 		Collection<ParticipantLogEntry> participantsToConfirm;
 		
@@ -60,5 +72,14 @@ public class TccRecoveryManager {
 	
 	public void setTccTransport(TccTransport tccTransport) {
 		this.tccTransport = tccTransport;
+	}
+	
+	
+	public static TccRecoveryManager getInstance() {
+		return instance;
+	}
+	
+	public static void installTccRecoveryManager(RecoveryLog log, TccTransport tccTransport) {
+			instance = new TccRecoveryManager(log, tccTransport);
 	}
 }
