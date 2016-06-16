@@ -8,6 +8,9 @@
 
 package com.atomikos.jms.extra;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.jms.Connection;
 import javax.jms.Destination;
 import javax.jms.ExceptionListener;
@@ -58,6 +61,8 @@ class MessageConsumerSession
 	private boolean noLocal;
 	private String subscriberName;
 	private String clientID;
+
+	private Map<String,Long> messageCounterMap = new HashMap<>();
 
 	protected MessageConsumerSession ( MessageConsumerSessionProperties properties )
 	{
@@ -524,8 +529,10 @@ class MessageConsumerSession
 
 	                        if ( msg != null && listener != null && Thread.currentThread () == current ) {
 	                        	LOGGER.logDebug ( "MessageConsumerSession: Consuming message: " + msg.toString () );
+	                        	checkRedeliveryLimit(msg);
 	                            listener.onMessage ( msg );
 	                            LOGGER.logTrace ( "MessageConsumerSession: Consumed message: " + msg.toString () );
+	                            cleanRedeliveryLimit(msg);
 	                        } else {
 	                            commit = false;
 	                        }
@@ -642,8 +649,27 @@ class MessageConsumerSession
 	        }
 
 
-
 	    }
+	  
+	  private void cleanRedeliveryLimit(Message msg) throws JMSException {
+		  messageCounterMap.remove(msg.getJMSMessageID());
+	  }	  
+
+	  private void checkRedeliveryLimit(Message msg) throws JMSException {
+		  if (msg.getJMSRedelivered()) {
+			String key = msg.getJMSMessageID();
+			Long redeliveryCount = messageCounterMap.get(key);
+			if (redeliveryCount == null) {
+				redeliveryCount = 1L;
+			} else {
+				redeliveryCount++;
+				if (redeliveryCount > 5) {
+					LOGGER.logWarning("Possible poison message detected - check https://www.atomikos.com/Documentation/PoisonMessage: " + msg.toString());
+				}
+			}
+			messageCounterMap.put(key, redeliveryCount);
+		}
+	  }
 
 	/**
 	 * Gets the exception listener (if any).
