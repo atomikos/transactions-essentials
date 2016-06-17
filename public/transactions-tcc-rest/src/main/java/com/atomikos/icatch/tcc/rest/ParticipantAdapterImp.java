@@ -71,7 +71,7 @@ public class ParticipantAdapterImp implements ParticipantAdapter {
 	
 	WebTarget getParticipant() {
 		if (part == null) {
-			createJaxRsClientForUri(uri);
+			part = createJaxRsClientForUri(uri);
 		}
 		return part;
 	}
