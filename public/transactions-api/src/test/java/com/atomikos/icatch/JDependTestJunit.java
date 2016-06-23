@@ -3,7 +3,7 @@ package com.atomikos.icatch;
 import java.io.IOException;
 
 import jdepend.framework.JDepend;
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.junit.Test;
 

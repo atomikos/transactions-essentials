@@ -10,7 +10,7 @@ package com.atomikos.datasource.xa;
 
 import java.util.UUID;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.junit.Test;
 

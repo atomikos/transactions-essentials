@@ -19,7 +19,6 @@ import java.util.ServiceLoader;
 
 import com.atomikos.icatch.CompositeTransactionManager;
 import com.atomikos.icatch.SysException;
-import com.atomikos.icatch.TransactionServicePlugin;
 import com.atomikos.icatch.config.Configuration;
 import com.atomikos.icatch.imp.CompositeTransactionManagerImp;
 import com.atomikos.icatch.imp.TransactionServiceImp;
