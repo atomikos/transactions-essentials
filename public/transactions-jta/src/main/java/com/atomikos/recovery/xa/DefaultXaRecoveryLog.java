@@ -55,7 +55,7 @@ public class DefaultXaRecoveryLog implements XaRecoveryLog {
 		Collection<ParticipantLogEntry> entries = log.getCommittingParticipants();
 		for (ParticipantLogEntry entry : entries) {
 			if (expired(entry) && !http(entry)) {
-				XID xid = new XID(entry.coordinatorId, entry.uri);
+				XID xid = new XID(entry.coordinatorId, entry.uri, entry.resourceName);
 				ret.add(xid);
 			}
 		}

@@ -33,6 +33,7 @@ public class DefaultXaRecoveryLogTestJUnit {
 
 	private static final String TID = "TID";
 	private static final String BRANCH = "BRANCH";
+	private static final String RESOURCE_NAME = "RESOURCE";
 	private DefaultXaRecoveryLog sut;
 	private RecoveryLog mock;
 	
@@ -194,7 +195,7 @@ public class DefaultXaRecoveryLogTestJUnit {
 	}
 
 	private XID givenSomeXid() {
-		return new XID(TID, BRANCH);
+		return new XID(TID, BRANCH, RESOURCE_NAME);
 	}
 
 }
