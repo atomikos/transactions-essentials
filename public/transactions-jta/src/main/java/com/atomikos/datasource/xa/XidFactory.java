@@ -21,14 +21,12 @@ public interface XidFactory
 {
     /**
      * Creates a new Xid instance for a given composite transaction id and
-     * resource name.
+     * branch identifier.
      * 
      * @param tid
-     *            The unique ID of the composite transaction.
-     * @param resourcename
-     *            The unique resource name.
-     * @return Xid The Xid instance.
+     * @param branchIdentifier
+     * @param uniqueResourceName
      */
 
-    public XID createXid ( String tid , String resourcename );
+    public XID createXid (String tid , String branchIdentifier, String uniqueResourceName);
 }
