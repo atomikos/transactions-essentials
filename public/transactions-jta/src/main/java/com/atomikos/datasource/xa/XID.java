@@ -33,6 +33,8 @@ public class XID implements Serializable, Xid
     private final byte[] globalTransactionId;
     private final String branchQualifierStr;
     private final String globalTransactionIdStr;
+    private final String uniqueResourceName;
+    
     /**
      * Create a new instance with the resource name as branch. This is the main
      * constructor for new instances.
@@ -42,10 +44,10 @@ public class XID implements Serializable, Xid
      *
      */
 
-    public XID ( String tid , String branchQualifier )
+    public XID (String tid, String branchQualifier, String uniqueResourceName)
     {
     	 this.formatId = DEFAULT_FORMAT;
-
+    	 this.uniqueResourceName = uniqueResourceName;
          this.globalTransactionIdStr=tid;
          this.globalTransactionId = tid.toString ().getBytes ();
          if ( this.globalTransactionId.length > Xid.MAXGTRIDSIZE )
@@ -66,13 +68,14 @@ public class XID implements Serializable, Xid
      *
      */
 
-    public XID ( Xid xid )
+    public XID (Xid xid, String uniqueResourceName)
     {
         this.formatId = xid.getFormatId ();
         this.globalTransactionId = xid.getGlobalTransactionId ();
         this.branchQualifier = xid.getBranchQualifier ();
         this.globalTransactionIdStr = new String(xid.getGlobalTransactionId ());
         this.branchQualifierStr= new String(xid.getBranchQualifier ());
+        this.uniqueResourceName = uniqueResourceName;
     }
 
     @Override
@@ -128,4 +131,8 @@ public class XID implements Serializable, Xid
     {
         return toString ().hashCode ();
     }
+
+	public String getUniqueResourceName() {
+		return uniqueResourceName;
+	}
 }

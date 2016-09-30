@@ -37,10 +37,10 @@ public class XaResourceRecoveryManager {
 		this.log=log;
 		this.xidSelector=new XidSelector() {
 			@Override
-			public boolean selects(Xid vendorXid) {
+			public boolean selects(XID xid) {
 				boolean ret = false;
-				String branch = new String ( vendorXid.getBranchQualifier () );
-				XID xid = wrapWithOurOwnXidToHaveCorrectEqualsAndHashCode ( vendorXid );
+				String branch = xid.getBranchQualifierAsString();
+				
                 if ( branch.startsWith ( tmUniqueName ) ) {
                 	ret = true;
                     if(LOGGER.isDebugEnabled()){
@@ -55,16 +55,14 @@ public class XaResourceRecoveryManager {
                 return ret;
 			}
 
-			private XID wrapWithOurOwnXidToHaveCorrectEqualsAndHashCode(Xid xid) {
-				return new XID(xid);
-			}						
+									
 		}; 
 	}
 	
 	
 
-	public void recover(XAResource xaResource) {
-		List<XID> xidsToRecover = retrievePreparedXidsFromXaResource(xaResource);
+	public void recover(XAResource xaResource, String uniqueResourceName) {
+		List<XID> xidsToRecover = retrievePreparedXidsFromXaResource(xaResource, uniqueResourceName);
 		Collection<XID> xidsToCommit;
 		try {
 			xidsToCommit = retrieveExpiredCommittingXidsFromLog();
@@ -152,10 +150,10 @@ public class XaResourceRecoveryManager {
 		return log.getExpiredCommittingXids();
 	}
 
-	private List<XID> retrievePreparedXidsFromXaResource(XAResource xaResource) {
+	private List<XID> retrievePreparedXidsFromXaResource(XAResource xaResource, String uniqueResourceName) {
 		List<XID> ret = new ArrayList<XID>();
 		try {
-			ret = RecoveryScan.recoverXids(xaResource, xidSelector);
+			ret = RecoveryScan.recoverXids(xaResource, xidSelector, uniqueResourceName);
 		} catch (XAException e) {
 			LOGGER.logWarning("Error while retrieving xids from resource - will retry later...", e);
 		}

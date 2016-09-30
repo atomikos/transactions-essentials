@@ -25,7 +25,8 @@ public interface XidFactory
      * 
      * @param tid
      * @param branchIdentifier
+     * @param uniqueResourceName
      */
 
-    public XID createXid ( String tid , String branchIdentifier );
+    public XID createXid (String tid , String branchIdentifier, String uniqueResourceName);
 }

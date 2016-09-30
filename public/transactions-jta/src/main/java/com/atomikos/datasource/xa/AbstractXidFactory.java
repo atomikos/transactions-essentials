@@ -38,7 +38,7 @@ abstract class AbstractXidFactory implements XidFactory
      * @see com.atomikos.datasource.xa.XidFactory
      */
 
-    public XID createXid ( String tid , String branchIdentifier )
+    public XID createXid ( String tid , String branchIdentifier, String uniqueResourceName )
     {
 
     	if ( branchIdentifier.getBytes().length + MAX_LENGTH_OF_COUNTER > XID.MAXBQUALSIZE ) {
@@ -50,7 +50,7 @@ abstract class AbstractXidFactory implements XidFactory
         // different from the last call that was done
         // by the SAME tid (works because calls within
         // one TID are serial)
-        return new XID ( tid, branchIdentifier + counter.incrementAndGet() );
+        return new XID (tid, branchIdentifier + counter.incrementAndGet(), uniqueResourceName);
     }
 
 }

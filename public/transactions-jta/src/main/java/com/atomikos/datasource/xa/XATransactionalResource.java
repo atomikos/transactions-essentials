@@ -432,7 +432,7 @@ public abstract class XATransactionalResource implements TransactionalResource
 
     protected XID createXid(String tid) {
     	if (this.branchIdentifier == null) throw new IllegalStateException("Not yet initialized");
-        return getXidFactory().createXid (tid , this.branchIdentifier);
+        return getXidFactory().createXid (tid , this.branchIdentifier, this.uniqueResourceName);
     }
 
     @Override
@@ -440,7 +440,7 @@ public abstract class XATransactionalResource implements TransactionalResource
     	XaResourceRecoveryManager xaResourceRecoveryManager = XaResourceRecoveryManager.getInstance();
     	if (xaResourceRecoveryManager != null) { //null for LogCloud recovery
     		if(getXAResource() != null) { //null if backend down
-    			xaResourceRecoveryManager.recover(getXAResource());	
+    			xaResourceRecoveryManager.recover(getXAResource(), uniqueResourceName);	
     		}
     		
     	}
