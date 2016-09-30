@@ -46,7 +46,7 @@ public abstract class XATransactionalResource implements TransactionalResource
 	private static final Logger LOGGER = LoggerFactory.createLogger(XATransactionalResource.class);
 
     protected XAResource xares_;
-    private String servername;
+    private String uniqueResourceName;
     private Hashtable<String,SiblingMapper> rootTransactionToSiblingMapperMap;
     private XidFactory xidFact;
     private boolean closed;
@@ -70,21 +70,18 @@ public abstract class XATransactionalResource implements TransactionalResource
     /**
      * Construct a new instance with a default XidFactory.
      *
-     * @param servername
-     *            The servername, needed to identify the xid instances for the
-     *            current configuration. Max BYTE length is 64!
      */
 
-    public XATransactionalResource ( String servername )
+    public XATransactionalResource ( String uniqueResourceName )
     {
 
-        this.servername = servername;
+        this.uniqueResourceName = uniqueResourceName;
         this.rootTransactionToSiblingMapperMap = new Hashtable<String,SiblingMapper>();
         // name should be less than 64 for xid compatibility
 
         //branch id is server name + long value!
 
-        if ( servername.getBytes ().length > 64- MAX_LONG_LEN )
+        if ( uniqueResourceName.getBytes ().length > 64- MAX_LONG_LEN )
             throw new RuntimeException (
                     "Max length of resource name exceeded: should be less than " + ( 64 - MAX_LONG_LEN ) );
         this.xidFact = new DefaultXidFactory ();
@@ -96,17 +93,12 @@ public abstract class XATransactionalResource implements TransactionalResource
     /**
      * Construct a new instance with a custom XidFactory.
      *
-     * @param servername
-     *            The servername, needed to identify the xid instances for the
-     *            current configuration. Max BYTE length is 64!
-     * @param factory
-     *            The custom XidFactory.
      *
      */
 
-    public XATransactionalResource ( String servername , XidFactory factory )
+    public XATransactionalResource ( String uniqueResourceName , XidFactory factory )
     {
-        this ( servername );
+        this ( uniqueResourceName );
         this.xidFact = factory;
     }
 
@@ -184,7 +176,7 @@ public abstract class XATransactionalResource implements TransactionalResource
             }
         } catch ( XAException xa ) {
             // timed out?
-            if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this.servername
+            if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this.uniqueResourceName
                     + ": XAResource needs refresh?", xa );
 
         }
@@ -312,9 +304,9 @@ public abstract class XATransactionalResource implements TransactionalResource
     {
         // null on first invocation
         if ( needsRefresh () ) {
-        	LOGGER.logTrace ( this.servername + ": refreshing XAResource..." );
+        	LOGGER.logTrace ( this.uniqueResourceName + ": refreshing XAResource..." );
             this.xares_ = refreshXAConnection ();
-            LOGGER.logInfo ( this.servername + ": refreshed XAResource" );
+            LOGGER.logInfo ( this.uniqueResourceName + ": refreshed XAResource" );
         }
 
         return this.xares_;
@@ -354,7 +346,7 @@ public abstract class XATransactionalResource implements TransactionalResource
     @Override
 	public String getName ()
     {
-        return this.servername;
+        return this.uniqueResourceName;
     }
 
     /**
@@ -395,11 +387,11 @@ public abstract class XATransactionalResource implements TransactionalResource
         }
 
         XATransactionalResource xatxres = (XATransactionalResource) res;
-        if ( xatxres.servername == null || this.servername == null ) {
+        if ( xatxres.uniqueResourceName == null || this.uniqueResourceName == null ) {
             return false;
         }
 
-        return xatxres.servername.equals ( this.servername );
+        return xatxres.uniqueResourceName.equals ( this.uniqueResourceName );
     }
 
     /**

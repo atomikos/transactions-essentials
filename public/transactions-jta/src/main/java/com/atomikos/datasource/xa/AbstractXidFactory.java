@@ -38,19 +38,19 @@ abstract class AbstractXidFactory implements XidFactory
      * @see com.atomikos.datasource.xa.XidFactory
      */
 
-    public XID createXid ( String tid , String resourcename )
+    public XID createXid ( String tid , String branchIdentifier )
     {
 
-    	if ( resourcename.getBytes().length + MAX_LENGTH_OF_COUNTER > XID.MAXBQUALSIZE ) {
+    	if ( branchIdentifier.getBytes().length + MAX_LENGTH_OF_COUNTER > XID.MAXBQUALSIZE ) {
     		// see case 73086
-    		throw new IllegalArgumentException ( "Value too long: " + resourcename );
+    		throw new IllegalArgumentException ( "Value too long: " + branchIdentifier );
     	}
 
         // first increment counter to make sure it is
         // different from the last call that was done
         // by the SAME tid (works because calls within
         // one TID are serial)
-        return new XID ( tid, resourcename + counter.incrementAndGet() );
+        return new XID ( tid, branchIdentifier + counter.incrementAndGet() );
     }
 
 }
