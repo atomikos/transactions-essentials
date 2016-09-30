@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicLong;
 abstract class AbstractXidFactory implements XidFactory
 {
 
-   private static final int MAX_LENGTH_OF_COUNTER = 8;
+   private static final int MAX_LENGTH_OF_COUNTER = String.valueOf(Long.MAX_VALUE).length();
  
    static AtomicLong counter = new AtomicLong(0);
 
