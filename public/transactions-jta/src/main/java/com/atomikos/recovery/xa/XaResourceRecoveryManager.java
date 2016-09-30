@@ -10,6 +10,7 @@ package com.atomikos.recovery.xa;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -63,9 +64,8 @@ public class XaResourceRecoveryManager {
 
 	public void recover(XAResource xaResource, String uniqueResourceName) {
 		List<XID> xidsToRecover = retrievePreparedXidsFromXaResource(xaResource, uniqueResourceName);
-		Collection<XID> xidsToCommit;
 		try {
-			xidsToCommit = retrieveExpiredCommittingXidsFromLog();
+			Collection<XID> xidsToCommit = retrieveExpiredCommittingXidsFromLog(uniqueResourceName);
 			for (XID xid : xidsToRecover) {
 				if (xidsToCommit.contains(xid)) {
 					replayCommit(xid, xaResource);
@@ -146,8 +146,15 @@ public class XaResourceRecoveryManager {
 		}
 	}
 
-	private Set<XID> retrieveExpiredCommittingXidsFromLog() throws LogException {
-		return log.getExpiredCommittingXids();
+	private Set<XID> retrieveExpiredCommittingXidsFromLog(String uniqueResourceName) throws LogException {
+		Set<XID> allCommittingXids = log.getExpiredCommittingXids();
+		Set<XID> ret = new HashSet<>(allCommittingXids.size());
+		for (XID xid : allCommittingXids) {
+			if (uniqueResourceName.equals(xid.getUniqueResourceName())) {
+				ret.add(xid);
+			}
+		}
+		return ret;
 	}
 
 	private List<XID> retrievePreparedXidsFromXaResource(XAResource xaResource, String uniqueResourceName) {
