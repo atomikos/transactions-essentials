@@ -23,14 +23,6 @@ public class JtaTransactionServicePlugin implements TransactionServicePlugin {
 	
 	private static Logger LOGGER = LoggerFactory.createLogger(JtaTransactionServicePlugin.class);
 	
-	/**
-	 * The name of the property indicating whether (JTA/XA) resources should be
-	 * registered automatically or not.
-	 *
-	 * Expands to {@value}.
-	 */
-	public static final String AUTOMATIC_RESOURCE_REGISTRATION_PROPERTY_NAME = "com.atomikos.icatch.automatic_resource_registration";
-
 	
 	/**
 	 * The name of the property that specifies the default timeout (in
@@ -56,8 +48,6 @@ public class JtaTransactionServicePlugin implements TransactionServicePlugin {
 	 */
 	public static final String CLIENT_DEMARCATION_PROPERTY_NAME = "com.atomikos.icatch.client_demarcation";
 
-	private boolean autoRegisterResources;
-
 
 	@Override
 	public void beforeInit(Properties properties) {
@@ -80,26 +70,19 @@ public class JtaTransactionServicePlugin implements TransactionServicePlugin {
             utxs.init(name, properties);           
         }
         
-        autoRegisterResources = configProperties.getAsBoolean(AUTOMATIC_RESOURCE_REGISTRATION_PROPERTY_NAME);
-//        if ( Configuration.getResources().hasMoreElements() && !autoRegisterResources ) {
-//        	AcceptAllXATransactionalResource defaultRes = new AcceptAllXATransactionalResource (
-//                    "com.atomikos.icatch.DefaultResource" );
-//            Configuration.addResource ( defaultRes );
-//
-//        }
 	}
 
 
 	@Override
 	public void afterShutdown() {
 		UserTransactionServerImp.getSingleton().shutdown();
-		TransactionManagerImp.installTransactionManager ( null, false );
+		TransactionManagerImp.installTransactionManager ( null );
 		XaResourceRecoveryManager.installXaResourceRecoveryManager(null, null);
 	}
 
 	@Override
 	public void afterInit() {
-		TransactionManagerImp.installTransactionManager(Configuration.getCompositeTransactionManager(), autoRegisterResources);
+		TransactionManagerImp.installTransactionManager(Configuration.getCompositeTransactionManager());
 		RecoveryLog recoveryLog = Configuration.getRecoveryLog();
 		if (recoveryLog != null) {
 			XaResourceRecoveryManager.installXaResourceRecoveryManager(new DefaultXaRecoveryLog(recoveryLog),Configuration.getConfigProperties().getTmUniqueName());
