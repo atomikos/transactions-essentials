@@ -22,7 +22,6 @@ import javax.transaction.xa.XAResource;
 import com.atomikos.datasource.RecoverableResource;
 import com.atomikos.datasource.ResourceException;
 import com.atomikos.datasource.TransactionalResource;
-import com.atomikos.datasource.xa.TemporaryXATransactionalResource;
 import com.atomikos.datasource.xa.XAResourceTransaction;
 import com.atomikos.datasource.xa.XATransactionalResource;
 import com.atomikos.icatch.CompositeTransaction;
@@ -72,11 +71,9 @@ class TransactionImp implements Transaction {
 
 	private Map<XAResourceKey, XAResourceTransaction> xaResourceToResourceTransactionMap_;
 
-	private boolean autoRegistration;
 
-	TransactionImp(CompositeTransaction ct, boolean autoRegistration) {
+	TransactionImp(CompositeTransaction ct) {
 		this.compositeTransaction = ct;
-		this.autoRegistration = autoRegistration;
 		this.xaResourceToResourceTransactionMap_ = new HashMap<XAResourceKey, XAResourceTransaction>();
 	}
 
@@ -278,7 +275,7 @@ class TransactionImp implements Transaction {
 			if (res == null) {
 				String msg = "There is no registered resource that can recover the given XAResource instance. "
 						+ "\n"
-						+ "Either enable automatic resource registration, or register a corresponding resource.";
+						+ "Please register a corresponding resource first.";
 				LOGGER.logWarning(msg);
 				throw new javax.transaction.SystemException(msg);
 			}
@@ -326,23 +323,6 @@ class TransactionImp implements Transaction {
 						ret = xatxres;
 				}
 
-			}
-
-			if (ret == null && this.autoRegistration) {
-
-				ret = new TemporaryXATransactionalResource(xares);
-				// cf case 61740: check for concurrent additions before this
-				// synch block was entered
-				if (Configuration.getResource(ret.getName()) == null) {
-					if (LOGGER.isTraceEnabled()) {
-						LOGGER.logTrace("constructing new temporary resource "
-								+ "for unknown XAResource: " + xares);
-					}
-					Configuration.addResource(ret);
-				} else {
-					//fix for case 116270
-					ret = (TransactionalResource) Configuration.getResource ( ret.getName() );
-				}
 			}
 
 		}
