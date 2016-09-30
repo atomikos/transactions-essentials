@@ -68,7 +68,6 @@ public class TransactionManagerImp implements TransactionManager,
 
     private CompositeTransactionManager compositeTransactionManager;
 
-    private boolean enableAutomatRegistrationOfUnknownXAResources;
 
     
     private static final void raiseNoTransaction() 
@@ -145,12 +144,10 @@ public class TransactionManagerImp implements TransactionManager,
      */
 
     public static synchronized void installTransactionManager (
-            CompositeTransactionManager ctm ,
-            boolean automaticResourceRegistration )
+            CompositeTransactionManager ctm)
     {
     	if ( ctm != null ) {
-    		 singleton = new TransactionManagerImp ( ctm,
-                     automaticResourceRegistration );
+    		 singleton = new TransactionManagerImp(ctm);
     	} else  {
     		singleton = null;
     	}         
@@ -168,12 +165,10 @@ public class TransactionManagerImp implements TransactionManager,
         return singleton;
     }
 
-    private TransactionManagerImp ( CompositeTransactionManager ctm ,
-            boolean automaticResourceRegistration )
+    private TransactionManagerImp(CompositeTransactionManager ctm)
     {
         compositeTransactionManager = ctm;
         jtaTransactionToCoreTransactionMap = new HashMap<String, TransactionImp>();
-        enableAutomatRegistrationOfUnknownXAResources = automaticResourceRegistration;
     }
 
     private void addToMap ( String tid , TransactionImp tx )
@@ -297,7 +292,7 @@ public class TransactionManagerImp implements TransactionManager,
 			CompositeTransaction ct) {
 		TransactionImp ret = null;
 		if (ct.getState ().equals ( TxState.ACTIVE )) { // setRollbackOnly may have been called!
-			ret = new TransactionImp ( ct, enableAutomatRegistrationOfUnknownXAResources );
+			ret = new TransactionImp(ct);
 			addToMap ( ct.getTid (), ret );
 			ct.addSubTxAwareParticipant ( this );
 		}
