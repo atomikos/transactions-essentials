@@ -21,7 +21,7 @@ public class RecoveryScan {
 		boolean selects(XID xid);
 	}
 	
-	public static List<XID> recoverXids(XAResource xaResource, XidSelector selector, String uniqueResourceName) throws XAException {
+	public static List<XID> recoverXids(XAResource xaResource, XidSelector selector) throws XAException {
 		List<XID> ret = new ArrayList<XID>();
 
         boolean done = false;
@@ -42,7 +42,7 @@ public class RecoveryScan {
 
                 done = true;
                 for ( int i = 0; i < xidsFromLastScan.length; i++ ) {
-                	XID xid = new XID (xidsFromLastScan[i], uniqueResourceName);
+                	XID xid = new XID (xidsFromLastScan[i]);
                     // our own XID implements equals and hashCode properly
                     if (!allRecoveredXidsSoFar.contains(xid)) {
                         // a new xid is returned -> we can not be in a recovery loop -> go on
