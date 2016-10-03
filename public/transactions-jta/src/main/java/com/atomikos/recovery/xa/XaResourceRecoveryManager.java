@@ -63,9 +63,9 @@ public class XaResourceRecoveryManager {
 	
 
 	public void recover(XAResource xaResource, String uniqueResourceName) {
-		List<XID> xidsToRecover = retrievePreparedXidsFromXaResource(xaResource, uniqueResourceName);
+		List<XID> xidsToRecover = retrievePreparedXidsFromXaResource(xaResource);
 		try {
-			Collection<XID> xidsToCommit = retrieveExpiredCommittingXidsFromLog(uniqueResourceName);
+			Collection<XID> xidsToCommit = retrieveExpiredCommittingXidsFromLog();
 			for (XID xid : xidsToRecover) {
 				if (xidsToCommit.contains(xid)) {
 					replayCommit(xid, xaResource);
@@ -146,21 +146,14 @@ public class XaResourceRecoveryManager {
 		}
 	}
 
-	private Set<XID> retrieveExpiredCommittingXidsFromLog(String uniqueResourceName) throws LogException {
-		Set<XID> allCommittingXids = log.getExpiredCommittingXids();
-		Set<XID> ret = new HashSet<>(allCommittingXids.size());
-		for (XID xid : allCommittingXids) {
-			if (uniqueResourceName.equals(xid.getUniqueResourceName())) {
-				ret.add(xid);
-			}
-		}
-		return ret;
+	private Set<XID> retrieveExpiredCommittingXidsFromLog() throws LogException {
+		return log.getExpiredCommittingXids();
 	}
 
-	private List<XID> retrievePreparedXidsFromXaResource(XAResource xaResource, String uniqueResourceName) {
+	private List<XID> retrievePreparedXidsFromXaResource(XAResource xaResource) {
 		List<XID> ret = new ArrayList<XID>();
 		try {
-			ret = RecoveryScan.recoverXids(xaResource, xidSelector, uniqueResourceName);
+			ret = RecoveryScan.recoverXids(xaResource, xidSelector);
 		} catch (XAException e) {
 			LOGGER.logWarning("Error while retrieving xids from resource - will retry later...", e);
 		}

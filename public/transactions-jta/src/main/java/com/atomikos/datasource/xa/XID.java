@@ -68,14 +68,14 @@ public class XID implements Serializable, Xid
      *
      */
 
-    public XID (Xid xid, String uniqueResourceName)
+    public XID (Xid xid)
     {
         this.formatId = xid.getFormatId ();
         this.globalTransactionId = xid.getGlobalTransactionId ();
         this.branchQualifier = xid.getBranchQualifier ();
         this.globalTransactionIdStr = new String(xid.getGlobalTransactionId ());
         this.branchQualifierStr= new String(xid.getBranchQualifier ());
-        this.uniqueResourceName = uniqueResourceName;
+        this.uniqueResourceName = null;
     }
 
     @Override
