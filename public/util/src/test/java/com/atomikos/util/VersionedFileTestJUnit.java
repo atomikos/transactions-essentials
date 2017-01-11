@@ -10,6 +10,7 @@ package com.atomikos.util;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,7 +21,7 @@ import junit.framework.TestCase;
 public class VersionedFileTestJUnit extends TestCase {
 
 	private static final String SUFFIX = ".dat";
-	private static final String BASEDIR = "./";
+	private static final String BASEDIR = "." + File.separatorChar;
 	
 	private VersionedFile file;
 	
