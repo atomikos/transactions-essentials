@@ -28,7 +28,7 @@
 					<executable>java</executable>
 					<arguments>
 						<argument>-classpath</argument>
-						<!-- automatically creates the classpath using all project dependencies, 
+						<!-- automatically creates the classpath using all project dependencies,
 							also adding the project build directory -->
 						<classpath />
 						<argument>com.atomikos.icatch.tcc.rest.Server</argument>
@@ -59,25 +59,17 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>com.atomikos</groupId>
-			<artifactId>transactions-api</artifactId>
-			<version>4.0.4</version>
-		</dependency>
-		<dependency>
-			<groupId>com.atomikos</groupId>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>transactions</artifactId>
-			<version>4.0.4</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.atomikos</groupId>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>atomikos-util</artifactId>
-			<version>4.0.4</version>
 		</dependency>
 		<dependency>
-			<groupId>com.atomikos</groupId>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>transactions-tcc-rest-api</artifactId>
-			<version>4.0.4</version>
 		</dependency>
 		<!-- This dependency is needed if you're using the Jetty container -->
 		<dependency>

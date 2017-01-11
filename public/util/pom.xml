@@ -12,9 +12,8 @@
 	<name>Atomikos Util</name>
 	<dependencies>
 		<dependency>
-			<groupId>com.atomikos</groupId>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>transactions-api</artifactId>
-			<version>4.0.4</version>
 		</dependency>
 		<!-- only for HtmlBeanWizard -->
 		<dependency>
