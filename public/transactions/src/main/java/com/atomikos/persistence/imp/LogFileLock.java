@@ -46,19 +46,17 @@ public class LogFileLock {
 			}
 			lockfileToPreventDoubleStartup_ = new File(dir, fileName + ".lck");
 			lockfilestream_ = new FileOutputStream(lockfileToPreventDoubleStartup_);
-			lock_ = lockfilestream_.getChannel().tryLock();
-			lockfileToPreventDoubleStartup_.deleteOnExit();
-		} catch (OverlappingFileLockException failedToGetLock) {
-			// happens on windows
-			lock_ = null;
-		} catch (IOException failedToGetLock) {
-			// happens on windows
-			lock_ = null;
+			FileLock tryLock = lockfilestream_.getChannel().tryLock();
+			if (tryLock != null) {
+				lock_ = tryLock;
+				lockfileToPreventDoubleStartup_.deleteOnExit();
+				return;
+			}
+		} catch (OverlappingFileLockException | IOException failedToGetLock) {
+			// either may happen on windows
 		}
-		if (lock_ == null) {
-			LOGGER.logFatal("ERROR: the specified log seems to be in use already: " + fileName + " in "+ dir+". Make sure that no other instance is running, or kill any pending process if needed.");
-			throw new LogException("Log already in use? " + fileName + " in "+ dir);
-		}
+		LOGGER.logFatal("ERROR: the specified log seems to be in use already: " + fileName + " in "+ dir+". Make sure that no other instance is running, or kill any pending process if needed.");
+		throw new LogException("Log already in use? " + fileName + " in "+ dir);
 	}
 
 	public void releaseLock() {
