@@ -8,14 +8,12 @@
 	<artifactId>transactions-jndi-provider</artifactId>
 	<dependencies>
 		<dependency>
-			<groupId>com.atomikos</groupId>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>transactions-jms</artifactId>
-			<version>4.0.4</version>
 		</dependency>
 		<dependency>
-			<groupId>com.atomikos</groupId>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>transactions-jdbc</artifactId>
-			<version>4.0.4</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.geronimo.specs</groupId>
@@ -29,6 +27,6 @@
             <version>1.0</version>
             <scope>test</scope>
         </dependency>
-        
+
 	</dependencies>
 </project>

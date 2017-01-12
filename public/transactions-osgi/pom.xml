@@ -44,23 +44,21 @@
 	</build>
 	<dependencies>
 		<dependency>
-			<groupId>com.atomikos</groupId>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>transactions-jdbc</artifactId>
-			<version>4.0.4</version>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>com.atomikos</groupId>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>transactions-jms</artifactId>
-			<version>4.0.4</version>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-jta_1.0.1B_spec</artifactId>
-            <version>1.0</version>
-            <scope>provided</scope>
-        </dependency>
+			<groupId>org.apache.geronimo.specs</groupId>
+			<artifactId>geronimo-jta_1.0.1B_spec</artifactId>
+			<version>1.0</version>
+			<scope>provided</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.osgi</groupId>
 			<artifactId>org.osgi.core</artifactId>
