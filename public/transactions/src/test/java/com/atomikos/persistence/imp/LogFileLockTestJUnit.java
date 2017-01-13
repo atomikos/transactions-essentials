@@ -8,6 +8,7 @@
 
 package com.atomikos.persistence.imp;
 
+import java.io.File;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,7 +22,7 @@ public class LogFileLockTestJUnit {
 	
 	@Before
 	public void setUp() throws Exception {
-		lock = new LogFileLock("./", "LogFileLockTest");
+		lock = new LogFileLock("." + File.separatorChar, "LogFileLockTest");
 	}
 	
 	@After
