@@ -44,6 +44,6 @@ See http://www.atomikos.com/Main/WhichLicenseApplies
 
 #### Copyright
 
-Copyright (c) 2000-2016, Atomikos - all rights reserved.
+Copyright (c) 2000-2017, Atomikos - all rights reserved.
 
 Visit [www.atomikos.com](http://www.atomikos.com/) for more…
