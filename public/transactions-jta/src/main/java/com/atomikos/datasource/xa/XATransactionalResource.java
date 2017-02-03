@@ -50,19 +50,6 @@ public abstract class XATransactionalResource implements TransactionalResource
     private Hashtable<String,SiblingMapper> rootTransactionToSiblingMapperMap;
     private XidFactory xidFact;
     private boolean closed;
-
-    private boolean weakCompare;
-    // if true: do NOT delegate usesXAResource calls
-    // to the xaresource; needed for SONICMQ and other
-    // JMS that do not correctly implement isSameRM
-
-    private boolean compareAlwaysTrue;
-    // if true, then isSameRM will ALWAYS return true
-    // this can be useful for cases where different
-    // JOINs don't have to work with lock sharing
-    // or for cases where XAResource classes
-    // are always non-compliant (like JBoss)
-
     private String branchIdentifier;
 
     private static final String MAX_LONG_STR = String.valueOf(Long.MAX_VALUE);
@@ -89,8 +76,6 @@ public abstract class XATransactionalResource implements TransactionalResource
                     "Max length of resource name exceeded: should be less than " + ( 64 - MAX_LONG_LEN ) );
         this.xidFact = new DefaultXidFactory ();
         this.closed = false;
-        this.weakCompare = false;
-        this.compareAlwaysTrue = false;
     }
 
     /**
@@ -191,66 +176,7 @@ public abstract class XATransactionalResource implements TransactionalResource
         return ret;
     }
 
-    /**
-     * Set this instance to use the weak compare mode setting. This method
-     * should be called <b>before</b> recovery is done, so before
-     * initialization of the transaction service.
-     *
-     *
-     * this is no longer needed at all, and taken care of by the transaction
-     * service automatically.
-     *
-     * @return weakCompare True iff weak compare mode should be used. This mode
-     *         is relevant for integration with certain vendors whose XAResource
-     *         instances do not correctly implements isSameRM.
-     * @exception IllegalStateException
-     *                If recovery was already done, meaning that the transaction
-     *                service is already running.
-     */
-
-    public void useWeakCompare ( boolean weakCompare )
-    {
-        this.weakCompare = weakCompare;
-    }
-
-    /**
-     * Test if this instance uses weak compare mode.
-     *
-     *
-     * @return boolean True iff weak compare mode is in use. This mode is
-     *         relevant for integration with certain vendors whose XAResource
-     *         instances do not correctly implement isSameRM.
-     */
-
-    public boolean usesWeakCompare ()
-    {
-        return this.weakCompare;
-    }
-
-    /**
-     *
-     * Specify whether to entirely shortcut the isSameRM method of the
-     * XAResource implementations, and always return true for usesXAResource.
-     * The consequence is that branches are always different (even in the same
-     * tx) and that the resource names will not entirely match in the logfiles.
-     * Besides that, no serious problems should happen.
-     *
-     * @param val
-     */
-    public void setAcceptAllXAResources ( boolean val )
-    {
-        this.compareAlwaysTrue = val;
-    }
-
-    /**
-     *
-     * @return boolean True if usesXAResource is always true.
-     */
-    public boolean acceptsAllXAResources ()
-    {
-        return this.compareAlwaysTrue;
-    }
-
+   
     /**
      * Test if the XAResource is used by this instance.
      *
@@ -262,10 +188,6 @@ public abstract class XATransactionalResource implements TransactionalResource
 
     public boolean usesXAResource ( XAResource xares )
     {
-        // entirely shortcut normal behaviour if desired
-        if ( acceptsAllXAResources () )
-            return true;
-
         XAResource xaresource = getXAResource ();
         if (xaresource == null) return false;
         // if no connection could be gotten
@@ -284,11 +206,6 @@ public abstract class XATransactionalResource implements TransactionalResource
             // so delegate to xares instances
             try {
                 if ( xares.isSameRM ( xaresource ) ) {
-                    ret = true;
-                } else if ( usesWeakCompare () ) {
-                    // In weak compare mode, it does not matter if the resource
-                    // says it is different. The fact that the implementation is
-                    // the same is enough. Needed for SONICMQ and others.
                     ret = true;
                 } else {
                 	LOGGER.logTrace ( "XAResources claim to be different: "
