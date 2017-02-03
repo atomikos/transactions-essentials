@@ -264,8 +264,7 @@ public class XAResourceTransaction implements ResourceTransaction, Participant {
 	}
 
 	boolean supportsTmJoin() {
-		return !(this.resource.usesWeakCompare()
-				|| this.resource.acceptsAllXAResources() || isActive());
+		return !(isActive());
 	}
 
 	/**
