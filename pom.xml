@@ -17,11 +17,6 @@
 		</license>
 	</licenses>
 
-
-	<properties>
-		<!-- we don't want to depend on platform's default encoding -->
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
 	<developers>
 		<developer>
 			<id>guypardon</id>
@@ -55,6 +50,12 @@
 		<url>http://www.atomikos.com/</url>
 		<tag>4.0.4</tag>
 	</scm>
+
+  <properties>
+    <!-- we don't want to depend on platform's default encoding -->
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <releaseVersion>${project.version}</releaseVersion>
+  </properties>
 
 	<build>
 		<pluginManagement>
@@ -178,6 +179,20 @@
 					<tag>${releaseVersion}</tag>
 				</configuration>
 			</plugin>
+      <plugin>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>3.0.0</version>
+      </plugin>
+      <plugin>
+        <artifactId>maven-help-plugin</artifactId>
+        <version>2.2</version>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>versions-maven-plugin</artifactId>
+        <version>2.3</version>
+      </plugin>
+
 		</plugins>
 		<extensions>
 			<!-- Enabling the use of FTP -->
@@ -189,29 +204,40 @@
 		</extensions>
 	</build>
 
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-all</artifactId>
+        <version>2.0.2-beta</version>
+      </dependency>
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>4.12</version>
+        <scope>test</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-all</artifactId>
-			<version>1.9.0</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.11</version>
-			<scope>test</scope>
-		</dependency>
-
-	</dependencies>
+  <dependencies>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-all</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 
 	<!--TODO prevent tests execution during the build -->
 	<profiles>
 		<profile>
 			<id>all</id>
 			<activation>
-				<activeByDefault>true</activeByDefault>
+				<activeByDefault>false</activeByDefault>
 			</activation>
 			<distributionManagement>
 				<repository>
@@ -225,20 +251,18 @@
 				</snapshotRepository>
 			</distributionManagement>
 
-			<!-- "modules" must correspond to file system hierarchy -->
-			<modules>
-				<module>public</module>
-                                <!--
+      <!-- "modules" must correspond to file system hierarchy -->
+      <modules>
+        <module>public</module>
 				<module>private</module>
 				<module>specs</module>
-                                -->
-			</modules>
-		</profile>
+      </modules>
+    </profile>
 
 		<profile>
 			<id>opensource</id>
 			<activation>
-				<activeByDefault>false</activeByDefault>
+				<activeByDefault>true</activeByDefault>
 			</activation>
 			<build>
 				<plugins>
@@ -269,11 +293,12 @@
 						</executions>
 					</plugin>
 				</plugins>
-
 			</build>
+
 			<modules>
 				<module>public</module>
 			</modules>
+
 			<distributionManagement>
 				<snapshotRepository>
 					<id>sonatype-nexus-snapshots</id>
@@ -308,6 +333,7 @@
 			</build>
 		</profile>
 	</profiles>
+
 	<reporting>
     	<plugins>
       		<plugin>
@@ -316,6 +342,6 @@
         		<version>2.0</version>
       		</plugin>
     	</plugins>
-  	</reporting>
+  </reporting>
 
 </project>

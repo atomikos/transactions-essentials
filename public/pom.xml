@@ -31,11 +31,7 @@
 		<module>transactions-tcc-rest</module>
 	</modules>
 
-
-
 	<build>
-
-
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -48,11 +44,8 @@
 						<goals>
 							<goal>jar-no-fork</goal>
 						</goals>
-
 					</execution>
-
 				</executions>
-
 			</plugin>
 			<plugin>
 				<inherited>false</inherited>
@@ -75,8 +68,13 @@
 						<exclude>axt/**</exclude>
 					</excludes>
 					<useDefaultExcludes>true</useDefaultExcludes>
-					<!-- <mapping> <jwc>XML_STYLE</jwc> <application>XML_STYLE</application>
-						<myFileExtension>JAVADOC_STYLE</myFileExtension> </mapping> -->
+					<!--
+					<mapping>
+					  <jwc>XML_STYLE</jwc>
+					  <application>XML_STYLE</application>
+						<myFileExtension>JAVADOC_STYLE</myFileExtension>
+					</mapping>
+					-->
 					<useDefaultMapping>true</useDefaultMapping>
 					<properties>
 						<year>${project.inceptionYear}</year>
@@ -84,9 +82,12 @@
 						<email>info@atomikos.com</email>
 					</properties>
 					<encoding>UTF-8</encoding>
-					<!-- <headerDefinitions> <headerDefinition>def1.xml</headerDefinition>
-						<headerDefinition>def2.xml</headerDefinition> </headerDefinitions> -->
-
+					<!--
+					<headerDefinitions>
+					  <headerDefinition>def1.xml</headerDefinition>
+						<headerDefinition>def2.xml</headerDefinition>
+					</headerDefinitions>
+					-->
 				</configuration>
 				<executions>
 					<execution>
@@ -96,8 +97,6 @@
 					</execution>
 				</executions>
 			</plugin>
-
-
 		</plugins>
 	</build>
 </project>
