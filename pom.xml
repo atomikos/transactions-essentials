@@ -228,8 +228,10 @@
 			<!-- "modules" must correspond to file system hierarchy -->
 			<modules>
 				<module>public</module>
+                                <!--
 				<module>private</module>
 				<module>specs</module>
+                                -->
 			</modules>
 		</profile>
 
