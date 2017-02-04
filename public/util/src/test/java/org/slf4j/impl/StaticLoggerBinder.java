@@ -19,6 +19,10 @@ public class StaticLoggerBinder implements LoggerFactoryBinder {
 
 	public static Logger mockito;
 
+	public static StaticLoggerBinder getSingleton() {
+	  return SINGLETON;
+  }
+
 	public ILoggerFactory getLoggerFactory() {
 		return new ILoggerFactory() {
 

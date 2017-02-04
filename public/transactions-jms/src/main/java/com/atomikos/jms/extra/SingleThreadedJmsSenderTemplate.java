@@ -28,14 +28,10 @@ import javax.jms.Session;
  * <b>Important: if you change any properties AFTER sending on the session, then
  * you will need to explicitly stop and restart the session to have the changes
  * take effect!</b>
- * 
- *
  */
-
-public class SingleThreadedJmsSenderTemplate extends AbstractJmsSenderTemplate 
+@SuppressWarnings("WeakerAccess")
+public class SingleThreadedJmsSenderTemplate extends AbstractJmsSenderTemplate
 {
-	
-
 	private Session session;
 	private Connection connection;
 	
@@ -44,30 +40,31 @@ public class SingleThreadedJmsSenderTemplate extends AbstractJmsSenderTemplate
 		super();
 	}
 
+	@Override
 	protected Session getOrRefreshSession ( Connection c ) throws JMSException 
 	{
 		//just reuse the prepared session
 		return session;
 	}
 
-
-	
+	@Override
 	public String toString() 
 	{
 		return "SingleThreadedJmsSenderTemplate";
 	}
 
-	protected void afterUseWithoutErrors ( Session session ) throws JMSException {
+	@SuppressWarnings("unused")
+  protected void afterUseWithoutErrors ( Session session ) throws JMSException {
 		//do nothing here: reuse session next time
 	}
 
-
-
+	@Override
 	protected void afterUseWithoutErrors ( Connection c, Session s )
 			throws JMSException {
 		//reuse connection and session next time	
 	}
 
+	@Override
 	protected Connection getOrReuseConnection() throws JMSException 
 	{
 		if ( connection == null ) {
@@ -82,6 +79,5 @@ public class SingleThreadedJmsSenderTemplate extends AbstractJmsSenderTemplate
 		super.destroy(c,s);
 		this.connection = null;
 		this.session = null;
-	}	
-
+	}
 }

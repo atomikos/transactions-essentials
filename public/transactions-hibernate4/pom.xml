@@ -40,25 +40,21 @@
         <dependency>
           <groupId>org.springframework</groupId>
           <artifactId>spring-context</artifactId>
-          <version>4.0.2.RELEASE</version>
           <scope>test</scope>
         </dependency>
         <dependency>
           <groupId>org.springframework</groupId>
           <artifactId>spring-tx</artifactId>
-          <version>4.0.2.RELEASE</version>
           <scope>test</scope>
         </dependency>
         <dependency>
           <groupId>org.springframework</groupId>
           <artifactId>spring-aop</artifactId>
-          <version>4.0.2.RELEASE</version>
           <scope>test</scope>
         </dependency>
         <dependency>
           <groupId>org.springframework</groupId>
           <artifactId>spring-orm</artifactId>
-          <version>4.0.2.RELEASE</version>
           <scope>test</scope>
         </dependency>
         <dependency>
@@ -70,25 +66,21 @@
         <dependency>
           <groupId>org.aspectj</groupId>
           <artifactId>aspectjrt</artifactId>
-          <version>1.7.4</version>
           <scope>test</scope>
         </dependency>
         <dependency>
           <groupId>org.aspectj</groupId>
           <artifactId>aspectjweaver</artifactId>
-          <version>1.7.4</version>
           <scope>test</scope>
         </dependency>
         <dependency>
           <groupId>org.springframework</groupId>
           <artifactId>spring-test</artifactId>
-          <version>4.0.2.RELEASE</version>
           <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <version>1.4.3</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -99,7 +91,6 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.4.3</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
