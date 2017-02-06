@@ -64,7 +64,8 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <releaseVersion>${project.version}</releaseVersion>
     <slf4j.version>1.7.22</slf4j.version>
-    <spring.version>4.0.2.RELEASE</spring.version>
+    <spring.version>4.3.6.RELEASE</spring.version>
+    <spring.data.jpa.version>1.11.0.RELEASE</spring.data.jpa.version>
     <surefire.version>2.19.1</surefire.version>
   </properties>
 
