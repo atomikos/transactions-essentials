@@ -1,14 +1,12 @@
+sudo: false
 language: java
 
 jdk:
-  - openjdk6
+  - oraclejdk8
 
-install: mvn install -DskipTests=true -Popensource 
-
-script: mvn clean test -Popensource
+script: mvn clean verify 
 
 
 notifications:
   email: 
-    - guy@atomikos.com
-    - pascal.leclercq@gmail.com
+    - andyglick@gmail.com
