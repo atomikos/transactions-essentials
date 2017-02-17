@@ -1,7 +1,6 @@
+[![Build Status](https://travis-ci.org/andyglick/transactions-essentials.svg?branch=master)](https://travis-ci.org/andyglick/transactions-essentials)
+
 ## Atomikos TransactionsEssentials: out-of-container transactions.
-
-
-[![Build Status](https://travis-ci.org/pascalleclercq/transactions-essentials.svg?branch=master)](https://travis-ci.org/pascalleclercq/transactions-essentials)
 
 A light-weight, embeddable transaction manager for instant reliability without design efforts in your code. If you are reading this file then you are probably looking at our project fork on GitHub, meant to allow community members to fork and contribute. By contributing here, you can help steer the future direction of Atomikos TransactionsEssentials. 
 

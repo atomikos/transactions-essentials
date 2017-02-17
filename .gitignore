@@ -11,3 +11,6 @@ target/
 *.iml
 *.ipr
 *.iws
+
+pom.xml.versionsBackup
+
