@@ -365,7 +365,7 @@ abstract class CoordinatorStateHandler
                     // multiple participants that are not visible here!
 
                     if ( onePhase && cascadeList_ != null ) { // null for OTS
-                        Integer sibnum = cascadeList_.get ( p );
+                        Integer sibnum = cascadeList_.get ( p.getURI() );
                         if ( sibnum != null ) // null for local participant!
                             p.setGlobalSiblingCount ( sibnum.intValue () );
                         p.setCascadeList ( cascadeList_ );

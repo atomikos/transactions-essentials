@@ -5,14 +5,9 @@
  *
  * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
  */
-
 package com.atomikos.icatch;
 
 import java.util.Map;
-
-
-
-
 /**
  * A participant for (distributed) two-phase commit of composite transactions.
  * 
@@ -49,8 +44,7 @@ public interface Participant extends java.io.Serializable
      * @exception SysException 
      */
 
-     void setCascadeList(Map<String, Integer> allParticipants)
-        throws SysException;
+     void setCascadeList(Map<String, Integer> allParticipants) throws SysException;
 
     /**
      * Set by the root coordinator: the total no of siblings detected.
@@ -88,11 +82,7 @@ public interface Participant extends java.io.Serializable
      * @exception SysException 
      */
 
-     int prepare()
-        throws RollbackException,
-	     HeurHazardException,
-	     HeurMixedException,
-	     SysException;
+     int prepare() throws RollbackException, HeurHazardException, HeurMixedException, SysException;
 
     
     /**
@@ -126,10 +116,10 @@ public interface Participant extends java.io.Serializable
 
      void commit ( boolean onePhase )
         throws HeurRollbackException,
-	     HeurHazardException,
-	     HeurMixedException,
-	     RollbackException,
-	     SysException;
+       HeurHazardException,
+       HeurMixedException,
+       RollbackException,
+       SysException;
     
     /**
      * Rollback of the participant's work.
@@ -153,9 +143,9 @@ public interface Participant extends java.io.Serializable
 
      void rollback()
         throws HeurCommitException,
-	     HeurMixedException,
-	     HeurHazardException,
-	     SysException;
+       HeurMixedException,
+       HeurHazardException,
+       SysException;
 
     
 
@@ -172,17 +162,17 @@ public interface Participant extends java.io.Serializable
      void forget();
 
     
-	/**
-	 * Is this instance recoverable or not? 
-	 * 
-	 * @return True in most cases, false only for particular border cases that do not need recovery, such as read-only instances.
-	 */
-	 boolean isRecoverable();
+  /**
+   * Is this instance recoverable or not?
+   *
+   * @return True in most cases, false only for particular border cases that do not need recovery, such as read-only instances.
+   */
+   boolean isRecoverable();
 
-	
-	/**
-	 * @return The (unique) name of the recoverable resource as known in the configuration. Null if not relevant.
-	 */
-	 String getResourceName();
+
+  /**
+   * @return The (unique) name of the recoverable resource as known in the configuration. Null if not relevant.
+   */
+   String getResourceName();
 }
 
