@@ -7,3 +7,8 @@ target/
 .hgignore
 .hgtags
 .project
+.idea/
+*.iml
+*.ipr
+*.iws
+pom.xml.versionsBackup
