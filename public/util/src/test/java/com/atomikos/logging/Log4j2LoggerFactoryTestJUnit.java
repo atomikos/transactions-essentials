@@ -16,12 +16,11 @@ import org.mockito.Mockito;
 
 public class Log4j2LoggerFactoryTestJUnit extends AbstractLoggerFactoryTest {
 
-	private org.apache.logging.log4j.core.Appender mockedAppender = Mockito
-			.mock(org.apache.logging.log4j.core.Appender.class);
+	private org.apache.logging.log4j.core.Appender mockedAppender
+    = Mockito.mock(org.apache.logging.log4j.core.Appender.class);
 
 	public void setUp() {
-		LoggerFactory
-				.setLoggerFactoryDelegate(new Log4j2LoggerFactoryDelegate());
+		LoggerFactory.setLoggerFactoryDelegate(new Log4j2LoggerFactoryDelegate());
 		logger = LoggerFactory.createLogger(getClass());
 
 		Mockito.when(mockedAppender.getName()).thenReturn("mock");
