@@ -6,16 +6,7 @@
  * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
  */
 
-
 package com.atomikos.icatch.config;
-
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ServiceLoader;
-import java.util.Vector;
 
 import com.atomikos.datasource.RecoverableResource;
 import com.atomikos.datasource.ResourceException;
@@ -31,6 +22,15 @@ import com.atomikos.icatch.provider.ConfigProperties;
 import com.atomikos.icatch.provider.TransactionServiceProvider;
 import com.atomikos.recovery.RecoveryLog;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.ServiceLoader;
+
 /**
  * Configuration is a facade for the transaction management core.
  * Allows the application code to find the transaction manager, even if
@@ -40,20 +40,18 @@ import com.atomikos.recovery.RecoveryLog;
 @SuppressWarnings("all")
 public final class Configuration
 {
-	
-
     private static CompositeTransactionManager ctxmgr_ = null;
     // the tm for the virtual machine instance
 
-    private static Hashtable resources_ = new Hashtable ();
+    private static Map resources_ = new HashMap();
     // filled on startup, contains all resources managed by the
     // transaction manager.
 
-    private static Vector<RecoverableResource> resourceList_ = new Vector ();
+    private static List<RecoverableResource> resourceList_ = new ArrayList();
     // keep resources in a list, to enable ordered search of XAResource
     // this way, an AcceptAllXATransactionalResource can be added at the end
 
-    private static Vector<LogAdministrator> logAdministrators_ = new Vector ();
+    private static List<LogAdministrator> logAdministrators_ = new ArrayList ();
     // the registered log administrators
 
     private static RecoveryService recoveryService_;
@@ -62,7 +60,7 @@ public final class Configuration
     private static TransactionServiceProvider service_;
     // the transaction service for this VM.
 
-    private static Vector<TransactionServicePlugin> tsListenersList_ = new Vector ();
+    private static List<TransactionServicePlugin> tsListenersList_ = new ArrayList();
 
     private static List shutdownHooks_ = new ArrayList();
 
@@ -287,8 +285,8 @@ public final class Configuration
      */
     private static Enumeration getLogAdministrators ()
     {
-        Vector v = (Vector) logAdministrators_.clone ();
-        return v.elements ();
+        List v = (List) ((ArrayList)logAdministrators_).clone ();
+        return Collections.enumeration(v);
     }
 
     /**
@@ -335,8 +333,8 @@ public final class Configuration
     {
         // clone to avoid concurrency problems with
         // add/removeResource (new recovery makes this possible)
-        Vector ret = (Vector) resourceList_.clone ();
-        return ret.elements ();
+        List ret = (List)((ArrayList)resourceList_).clone ();
+        return Collections.enumeration(ret);
     }
 
 	protected static synchronized Assembler getAssembler() {

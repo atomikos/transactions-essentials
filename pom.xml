@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+  http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
+
   <groupId>com.atomikos</groupId>
   <artifactId>atomikos-parent</artifactId>
   <version>4.0.4</version>
@@ -59,7 +62,8 @@
   <properties>
     <aspectj.version>1.8.10</aspectj.version>
     <cxf.vefrsion>3.1.10</cxf.vefrsion>
-    <errorprone.compiler.version>2.0.18</errorprone.compiler.version>
+    <errorprone.compiler.version>2.0.19</errorprone.compiler.version>
+    <javadoc.plugin.version>2.10.4</javadoc.plugin.version>
     <maven.version>3.3.9</maven.version>
     <plexus.compiler.version>2.8.1</plexus.compiler.version>
     <plexus.utils.version>3.0.24</plexus.utils.version>
@@ -80,7 +84,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
-          <version>2.10.4</version>
+          <version>${javadoc.plugin.version}</version>
           <configuration>
             <failOnError>false</failOnError>
           </configuration>
@@ -103,7 +107,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-resources-plugin</artifactId>
-          <version>3.0.1</version>
+          <version>3.0.2</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -113,7 +117,7 @@
         <plugin>
           <groupId>com.atlassian.maven.plugins</groupId>
           <artifactId>maven-clover2-plugin</artifactId>
-          <version>3.0.1</version>
+          <version>4.0.6</version>
         </plugin>
         <plugin>
           <groupId>com.agilejava.docbkx</groupId>
@@ -148,39 +152,6 @@
       </plugins>
     </pluginManagement>
     <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-enforcer-plugin</artifactId>
-        <version>1.4.1</version>
-        <executions>
-          <execution>
-            <id>enforce-dependency-convergence</id>
-            <phase>validate</phase>
-            <goals>
-              <goal>enforce</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <rules>
-            <bannedDependencies>
-              <excludes>
-                <exclude>commons-logging</exclude>
-                <exclude>jdom:jdom</exclude>
-                <!-- use commons-io:commons-io -->
-                <exclude>org.apache.commons:commons-io</exclude>
-              </excludes>
-              <searchTransitive>true</searchTransitive>
-            </bannedDependencies>
-            <DependencyConvergence/>
-          </rules>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>com.atlassian.maven.plugins</groupId>
-        <artifactId>maven-clover2-plugin</artifactId>
-        <!-- <configuration> <licenseLocation>/Users/guy/Downloads/clover.license.txt</licenseLocation> -->
-      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -261,6 +232,12 @@
         <artifactId>junit</artifactId>
         <version>4.12</version>
         <scope>test</scope>
+        <exclusions>
+          <exclusion>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-core</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>javax.transaction</groupId>
@@ -404,7 +381,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
-            <version>2.7</version>
+            <version>${javadoc.plugin.version}</version>
             <executions>
               <execution>
                 <id>attach-javadocs</id>
