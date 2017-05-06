@@ -16,7 +16,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 
 import com.atomikos.finitestates.FSM;
 import com.atomikos.finitestates.FSMEnterEvent;
@@ -84,7 +83,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     private String root_ = null;
     private FSM fsm_ = null;
     private boolean heuristicMeansCommit_ = true;
-    private Vector<Participant> participants_ = new Vector<Participant>();
+    private List<Participant> participants_ = new ArrayList<>();
     private RecoveryCoordinator superiorCoordinator_ = null; 
 
     private CoordinatorStateHandler stateHandler_;
@@ -228,7 +227,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
         return superiorCoordinator_;
     }
 
-    public Vector<Participant> getParticipants ()
+    public List<Participant> getParticipants ()
     {
         return participants_;
     }

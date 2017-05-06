@@ -12,5 +12,9 @@ target/
 *.ipr
 *.iws
 
+*.dat
+*.log
+
+effective.pom
 pom.xml.versionsBackup
 

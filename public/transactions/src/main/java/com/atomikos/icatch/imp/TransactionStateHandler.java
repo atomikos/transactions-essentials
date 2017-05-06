@@ -8,11 +8,6 @@
 
 package com.atomikos.icatch.imp;
 
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Stack;
-
 import com.atomikos.icatch.CompositeTransaction;
 import com.atomikos.icatch.Extent;
 import com.atomikos.icatch.HeurCommitException;
@@ -28,25 +23,31 @@ import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 import com.atomikos.recovery.TxState;
 
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.List;
+
 /**
  * The state pattern applied to the CompositeTransaction classes.
  */
 
+@SuppressWarnings("WeakerAccess")
 abstract class TransactionStateHandler implements SubTxAwareParticipant
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(TransactionStateHandler.class);
 
     private int subtxs_;
-    private Stack<Synchronization> synchronizations_;
+    private Deque<Synchronization> synchronizations_;
     private List<SubTxAwareParticipant> subtxawares_;
     private CompositeTransactionImp ct_;
-    
+
     protected TransactionStateHandler ( CompositeTransactionImp ct )
     {
         ct_ = ct;
         subtxs_ = 0;
         subtxawares_ = new ArrayList<SubTxAwareParticipant>();
-        synchronizations_ = new Stack<Synchronization>();
+        synchronizations_ = new ArrayDeque<Synchronization>();
     }
 
     protected TransactionStateHandler ( CompositeTransactionImp ct ,
@@ -97,7 +98,7 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
     protected CompositeTransaction createSubTransaction ()
             throws SysException, IllegalStateException
     {
-        CompositeTransaction ct = null;
+        CompositeTransaction ct;
         ct = ct_.getTransactionService ().createSubTransaction ( ct_ );
         // we want to be notified of subtx commit for handling extents
         ct.addSubTxAwareParticipant ( this );
@@ -116,7 +117,7 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
             coord.addParticipant ( participant );
 
         } catch ( RollbackException e ) {
-            throw new IllegalStateException ( "Transaction already rolled back" );
+            throw new IllegalStateException ( "Transaction already rolled back", e );
         }
         return coord;
     }
@@ -129,7 +130,7 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
                 ct_.getCoordinatorImp().registerSynchronization(sync);
             } catch ( RollbackException e ) {
                 throw new IllegalStateException (
-                        "Transaction already rolled back" );
+                        "Transaction already rolled back", e );
             }
             localPushSynchronization ( sync );
         }
@@ -145,18 +146,18 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
     
     private void rollback() throws IllegalStateException, SysException
     {
-         for ( int i = 0; i < subtxawares_.size (); i++ ) {
-         	SubTxAwareParticipant subtxaware = (SubTxAwareParticipant) subtxawares_.get ( i );
-         	subtxaware.rolledback ( ct_ );
-         }
+      for (SubTxAwareParticipant subtxaware : subtxawares_)
+      {
+        subtxaware.rolledback(ct_);
+      }
 
          Extent extent = ct_.getExtent ();
          if ( extent != null ) {
-        	 Enumeration<Participant> enumm = extent.getParticipants ().elements ();
-         	while ( enumm.hasMoreElements () ) {
-         		Participant part = (Participant) enumm.nextElement();
-         		addParticipant ( part );
-         	}
+        	 Deque<Participant> participants = extent.getParticipants();
+
+        	 for (Participant participant : participants) {
+        	   addParticipant(participant);
+           }
          }
 
          ct_.localSetTransactionStateHandler ( new TxTerminatedStateHandler ( ct_, this, false ) );
@@ -195,11 +196,11 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
         // NOTE: this must be done BEFORE calling notifications
         // to make sure that active recovery works for early prepares 
         if ( ct_.isLocalRoot() ) {
-        	Enumeration<Participant> enumm = ct_.getExtent().getParticipants().elements();
-        	while ( enumm.hasMoreElements () ) {
-        		Participant part = enumm.nextElement();
-        		addParticipant(part);
 
+          Deque<Participant> participants = ct_.getExtent().getParticipants();
+
+          for (Participant participant : participants) {
+            addParticipant(participant);
         	}
         }
 
@@ -221,15 +222,12 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
         }
 
         // for loop to make sure that new registrations are possible during callback
-        for ( int i = 0; i < subtxawares_.size (); i++ ) {
-        	SubTxAwareParticipant subtxaware = (SubTxAwareParticipant) subtxawares_.get ( i );
-        	subtxaware.committed ( ct_ );
-        }
+      for (SubTxAwareParticipant subtxaware : subtxawares_)
+      {
+        subtxaware.committed(ct_);
+      }
 
         ct_.localSetTransactionStateHandler ( new TxTerminatedStateHandler ( ct_, this, true ) );
-
-
-
     }
 
 	private Throwable notifyBeforeCompletion() {
@@ -301,12 +299,12 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
         return localGetSubTxCount();
     }
 
-    protected Stack<Synchronization> getSynchronizations()
+    protected Deque<Synchronization> getSynchronizations()
     {
         return synchronizations_;
     }
 
-    protected void addSynchronizations ( Stack<Synchronization> synchronizations )
+    protected void addSynchronizations ( Deque<Synchronization> synchronizations )
     {
         while ( !synchronizations.isEmpty() ) {
             Synchronization next = synchronizations.pop();

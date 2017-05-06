@@ -32,7 +32,30 @@
 	</modules>
 
 	<build>
-		<plugins>
+
+    <pluginManagement>
+      <plugins>
+
+      </plugins>
+
+    </pluginManagement>
+
+     <plugins>
+       <plugin>
+         <groupId>org.pitest</groupId>
+         <artifactId>pitest-maven</artifactId>
+         <version>1.1.11</version>
+         <executions>
+           <execution>
+             <id>pitest</id>
+             <phase>integration-test</phase>
+             <goals>
+               <goal>mutationCoverage</goal>
+             </goals>
+           </execution>
+         </executions>
+       </plugin>
+
       <plugin>
         <groupId>org.gaul</groupId>
         <artifactId>modernizer-maven-plugin</artifactId>

@@ -8,11 +8,6 @@
 
 package com.atomikos.icatch.imp;
 
-import java.util.Enumeration;
-import java.util.Set;
-import java.util.Stack;
-import java.util.Vector;
-
 import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeurMixedException;
@@ -23,19 +18,25 @@ import com.atomikos.icatch.SysException;
 import com.atomikos.recovery.TxState;
 import com.atomikos.thread.InterruptedExceptionHelper;
 
+import java.util.Deque;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Set;
+import java.util.Vector;
+
 /**
  * A state handler for the heuristic hazard coordinator state.
  */
 
 class HeurHazardStateHandler extends CoordinatorStateHandler
 {
-	private Vector<Participant> hazards_;
+	private List<Participant> hazards_;
 
     HeurHazardStateHandler ( CoordinatorStateHandler previous ,
             Set<Participant> hazards )
     {
         super ( previous );
-        hazards_ = new Vector<Participant>(hazards);
+        hazards_ = new Vector<>(hazards);
 
     }
 
@@ -54,17 +55,17 @@ class HeurHazardStateHandler extends CoordinatorStateHandler
         
         addAllForReplay ( hazards_ ); 
 
-        // get Stack to avoid overwriting effects of
+        // get Deque to avoid overwriting effects of
         // intermediate recovery calls
-        Stack<Participant> replayStack = getReplayStack ();
+        Deque<Participant> replayStack = getReplayStack ();
         boolean replay = false;
-        if ( !replayStack.empty ()  && commitDecided != null ) {
+        if ( !replayStack.isEmpty ()  && commitDecided != null ) {
         	committed = commitDecided.booleanValue ();
         	replay = true;
             int count = replayStack.size ();
             TerminationResult result = new TerminationResult ( count );
 
-            while ( !replayStack.empty () ) {
+            while ( !replayStack.isEmpty () ) {
                 Participant part = replayStack.pop ();
                 if ( committed ) {
                     CommitMessage cm = new CommitMessage ( part, result, false );
@@ -77,11 +78,9 @@ class HeurHazardStateHandler extends CoordinatorStateHandler
             }
             try {
                 result.waitForReplies ();
-                Stack<Reply> replies = result.getReplies ();
-                Enumeration<Reply> enumm = replies.elements ();
-                while ( enumm.hasMoreElements () ) {
-                    Reply reply = enumm.nextElement ();
+                Deque<Reply> replies = result.getReplies ();
 
+                for (Reply reply : replies) {
                     if ( !reply.hasFailed () ) {
                         hazards_.remove ( reply.getParticipant () );
                     }
@@ -95,16 +94,14 @@ class HeurHazardStateHandler extends CoordinatorStateHandler
 
             } catch ( InterruptedException inter ) {
             	// cf bug 67457
-    			InterruptedExceptionHelper.handleInterruptedException ( inter );
+    			      InterruptedExceptionHelper.handleInterruptedException ( inter );
                 // return silently;
                 // worst case is some remaining indoubt participants
             }
-
         }
 
         if ( hazards_.isEmpty () ) {
-            TerminatedStateHandler termStateHandler = new TerminatedStateHandler (
-                    this );
+            TerminatedStateHandler termStateHandler = new TerminatedStateHandler (this );
             getCoordinator ().setStateHandler ( termStateHandler );
         } else if ( replay ) {
             // set state to heuristic again, to
@@ -143,5 +140,4 @@ class HeurHazardStateHandler extends CoordinatorStateHandler
 
         throw new HeurHazardException();
     }
-
 }

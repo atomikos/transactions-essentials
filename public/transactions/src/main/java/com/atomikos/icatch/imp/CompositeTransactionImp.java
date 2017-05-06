@@ -8,9 +8,6 @@
 
 package com.atomikos.icatch.imp;
 
-import java.util.Map;
-import java.util.Stack;
-
 import com.atomikos.finitestates.FSMEnterEvent;
 import com.atomikos.finitestates.FSMEnterListener;
 import com.atomikos.icatch.CompositeCoordinator;
@@ -28,6 +25,9 @@ import com.atomikos.icatch.SysException;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 import com.atomikos.recovery.TxState;
+
+import java.util.Deque;
+import java.util.Map;
 
 /**
  * A complete composite transaction implementation for use in the local VM.
@@ -53,7 +53,7 @@ class CompositeTransactionImp extends AbstractCompositeTransaction implements FS
      * This constructor is kept for compatibility with the test classes.
      */
 
-    CompositeTransactionImp ( Stack<CompositeTransaction> lineage , String tid , boolean serial ,
+    CompositeTransactionImp ( Deque<CompositeTransaction> lineage , String tid , boolean serial ,
             CoordinatorImp coordinator )
     {
         this ( null , lineage , tid , serial , coordinator );
@@ -77,7 +77,7 @@ class CompositeTransactionImp extends AbstractCompositeTransaction implements FS
      */
 
     CompositeTransactionImp ( TransactionServiceImp txservice ,
-            Stack<CompositeTransaction> lineage , String tid , boolean serial ,
+            Deque<CompositeTransaction> lineage , String tid , boolean serial ,
             CoordinatorImp coordinator ) throws IllegalStateException
     {
 

@@ -7,7 +7,7 @@
 
   <groupId>com.atomikos</groupId>
   <artifactId>atomikos-parent</artifactId>
-  <version>4.0.4</version>
+  <version>4.0.4-SNAPSHOT</version>
   <!-- With maven, a parent pom MUST have "pom" for packaging -->
   <packaging>pom</packaging>
   <name>Atomikos All POM</name>
@@ -64,7 +64,8 @@
     <cxf.vefrsion>3.1.10</cxf.vefrsion>
     <errorprone.compiler.version>2.0.19</errorprone.compiler.version>
     <javadoc.plugin.version>2.10.4</javadoc.plugin.version>
-    <maven.version>3.3.9</maven.version>
+    <logback.version>1.2.3</logback.version>
+    <maven.version>3.5.0</maven.version>
     <plexus.compiler.version>2.8.1</plexus.compiler.version>
     <plexus.utils.version>3.0.24</plexus.utils.version>
     <!-- we don't want to depend on platform's default encoding -->
@@ -72,7 +73,7 @@
     <releaseVersion>${project.version}</releaseVersion>
     <slf4j.version>1.7.25</slf4j.version>
     <spring.version>4.3.7.RELEASE</spring.version>
-    <spring.data.jpa.version>1.11.0.RELEASE</spring.data.jpa.version>
+    <spring.data.jpa.version>1.11.1.RELEASE</spring.data.jpa.version>
     <surefire.reportFormat>plain</surefire.reportFormat>
     <surefire.useFile>false</surefire.useFile>
     <surefire.version>2.19.1</surefire.version>
@@ -137,7 +138,7 @@
         <plugin>
           <groupId>org.apache.felix</groupId>
           <artifactId>maven-bundle-plugin</artifactId>
-          <version>3.2.0</version>
+          <version>3.3.0</version>
         </plugin>
         <plugin>
           <groupId>org.ops4j.pax.exam</groupId>
@@ -181,6 +182,23 @@
         <configuration>
           <subpackages>com.atomikos</subpackages>
         </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.gaul</groupId>
+        <artifactId>modernizer-maven-plugin</artifactId>
+        <version>1.4.0</version>
+        <configuration>
+          <javaVersion>1.8</javaVersion>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>validate</phase>
+            <goals>
+              <goal>modernizer</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
 
       <plugin>
@@ -320,6 +338,11 @@
   </dependencyManagement>
 
   <dependencies>
+    <dependency>
+      <groupId>org.apache-extras.beanshell</groupId>
+      <artifactId>bsh</artifactId>
+      <version>2.0b6</version>
+    </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-all</artifactId>

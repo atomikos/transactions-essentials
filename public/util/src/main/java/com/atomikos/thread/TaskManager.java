@@ -30,7 +30,7 @@ public enum TaskManager {
 
 	private void init() {
 		SynchronousQueue<Runnable> synchronousQueue = new SynchronousQueue<Runnable>();
-		executor = new ThreadPoolExecutor(0, Integer.MAX_VALUE, new Long(60L),
+		executor = new ThreadPoolExecutor(0, Integer.MAX_VALUE, 60L,
 				TimeUnit.SECONDS, synchronousQueue, new AtomikosThreadFactory());
 
 	}

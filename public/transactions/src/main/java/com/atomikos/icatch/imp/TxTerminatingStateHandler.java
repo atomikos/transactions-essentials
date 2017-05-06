@@ -8,14 +8,14 @@
 
 package com.atomikos.icatch.imp;
 
-import java.util.Stack;
-
 import com.atomikos.icatch.CompositeTransaction;
 import com.atomikos.icatch.Participant;
 import com.atomikos.icatch.RecoveryCoordinator;
 import com.atomikos.icatch.SubTxAwareParticipant;
 import com.atomikos.icatch.Synchronization;
 import com.atomikos.recovery.TxState;
+
+import java.util.Deque;
 
 
 /**
@@ -31,8 +31,6 @@ import com.atomikos.recovery.TxState;
 
 class TxTerminatingStateHandler extends TransactionStateHandler
 {
-
-
 	private boolean committing;
 
 	public TxTerminatingStateHandler ( boolean committing , CompositeTransactionImp ct,
@@ -72,7 +70,7 @@ class TxTerminatingStateHandler extends TransactionStateHandler
 		super.addSubTxAwareParticipant ( p );
 	}
 
-	protected void addSynchronizations ( Stack<Synchronization> s )
+	protected void addSynchronizations ( Deque<Synchronization> s )
 	{
 		reject();
 	}

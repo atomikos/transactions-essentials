@@ -8,9 +8,6 @@
 
 package com.atomikos.icatch.imp;
 
-import java.util.Properties;
-import java.util.Stack;
-
 import com.atomikos.icatch.CompositeCoordinator;
 import com.atomikos.icatch.CompositeTransaction;
 import com.atomikos.icatch.Extent;
@@ -25,6 +22,10 @@ import com.atomikos.icatch.Synchronization;
 import com.atomikos.icatch.SysException;
 import com.atomikos.recovery.TxState;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.Properties;
+
 /**
  *
  *
@@ -32,14 +33,14 @@ import com.atomikos.recovery.TxState;
  * of both proxy and local instances.
  */
 
+@SuppressWarnings("WeakerAccess")
 public abstract class AbstractCompositeTransaction implements CompositeTransaction,
-        java.io.Serializable
+    java.io.Serializable
 {
 
-	private static final long serialVersionUID = 3522422565305065464L;
+	  private static final long serialVersionUID = 3522422565305065464L;
 
-
-    protected Stack<CompositeTransaction> lineage_;
+    protected Deque<CompositeTransaction> lineage_;
 
     protected String tid_;
 
@@ -61,28 +62,30 @@ public abstract class AbstractCompositeTransaction implements CompositeTransacti
      *
      */
 
-    public AbstractCompositeTransaction ( String tid , Stack<CompositeTransaction> lineage ,
+    public AbstractCompositeTransaction ( String tid , Deque<CompositeTransaction> lineage ,
             boolean serial  )
     {
         tid_ = tid;
         lineage_ = lineage;
         if ( lineage_ == null ) {
-            lineage_ = new Stack<CompositeTransaction> ();
+            lineage_ = new ArrayDeque<>();
             properties_ = new Properties();
         }
         else {
-        		if ( ! lineage_.empty() ) {
-        			CompositeTransaction parent = ( CompositeTransaction ) lineage_.peek();
+        		if ( ! lineage_.isEmpty() ) {
+        			CompositeTransaction parent = lineage_.peek();
         			properties_ = parent.getProperties();
         		}
         }
-        if ( properties_ == null ) properties_ = new Properties();
+        if ( properties_ == null )
+          properties_ = new Properties();
+
         serial_ = serial;
 
     }
 
     /**
-     * @see CompositeTransaction.
+     * @see CompositeTransaction
      */
 
     public String getTid ()
@@ -93,7 +96,7 @@ public abstract class AbstractCompositeTransaction implements CompositeTransacti
    
 
     /**
-     * @see CompositeTransaction.
+     * @see CompositeTransaction
      */
 
     public boolean isSerial ()
@@ -102,7 +105,7 @@ public abstract class AbstractCompositeTransaction implements CompositeTransacti
     }
 
     /**
-     * @see CompositeTransaction.
+     * @see CompositeTransaction
      *
      * Defaults to false.
      */
@@ -134,16 +137,16 @@ public abstract class AbstractCompositeTransaction implements CompositeTransacti
     }
 
     /**
-     * @see CompositeTransaction.
+     * @see CompositeTransaction
      */
     @SuppressWarnings("unchecked")
-	public Stack<CompositeTransaction> getLineage ()
+	public Deque<CompositeTransaction> getLineage ()
     {
-        return (Stack<CompositeTransaction>) lineage_.clone ();
+        return ((ArrayDeque<CompositeTransaction>) lineage_).clone ();
     }
 
     /**
-     * @see CompositeTransaction.
+     * @see CompositeTransaction
      */
 
     public boolean isRoot ()
@@ -153,7 +156,7 @@ public abstract class AbstractCompositeTransaction implements CompositeTransacti
     }
 
     /**
-     * @see CompositeTransaction.
+     * @see CompositeTransaction
      */
 
     public boolean isAncestorOf ( CompositeTransaction ct )
@@ -162,44 +165,45 @@ public abstract class AbstractCompositeTransaction implements CompositeTransacti
     }
 
     /**
-     * @see CompositeTransaction.
+     * @see CompositeTransaction
      */
 
     public boolean isDescendantOf ( CompositeTransaction ct )
     {
         CompositeTransaction parent = null;
-        if ( lineage_ != null && (!lineage_.empty ()) )
-            parent = (CompositeTransaction) lineage_.peek ();
+        if ( lineage_ != null && (!lineage_.isEmpty ()) )
+            parent = lineage_.peek ();
 
         return (isSameTransaction ( ct ) || (parent != null && parent
                 .isDescendantOf ( ct )));
     }
 
     /**
-     * @see CompositeTransaction.
+     * @see CompositeTransaction
      */
     @SuppressWarnings("unchecked")
     public boolean isRelatedTransaction ( CompositeTransaction ct )
     {
-        Stack<CompositeTransaction> lineage = null;
+        Deque<CompositeTransaction> lineage = null;
         if ( lineage_ == null )
-            lineage = new Stack<CompositeTransaction> ();
+            lineage = new ArrayDeque<>();
         else
-            lineage = (Stack<CompositeTransaction>) lineage_.clone ();
+            lineage = ((ArrayDeque<CompositeTransaction>) lineage_).clone ();
 
-        if ( lineage.empty () )
+        if ( lineage.isEmpty () )
             return isAncestorOf ( ct );
 
         CompositeTransaction root = null;
-        while ( !lineage.empty () )
-            root = (CompositeTransaction) lineage.pop ();
+        while ( !lineage.isEmpty () )
+            root = lineage.pop ();
         return root.isAncestorOf ( ct );
     }
 
     /**
-     * @see CompositeTransaction.
+     * @see CompositeTransaction
      */
 
+    @Override
     public boolean isSameTransaction ( CompositeTransaction ct )
     {
         return (equals ( ct ));
@@ -222,6 +226,7 @@ public abstract class AbstractCompositeTransaction implements CompositeTransacti
     	return ret;
     }
 
+  @Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
@@ -239,7 +244,7 @@ public abstract class AbstractCompositeTransaction implements CompositeTransacti
 	}
 
 	/**
-     * @see CompositeTransaction.
+     * @see CompositeTransaction
      */
 
     public CompositeCoordinator getCompositeCoordinator () throws SysException,
@@ -321,7 +326,6 @@ public abstract class AbstractCompositeTransaction implements CompositeTransacti
     public void rollback () throws IllegalStateException, SysException
     {
     	throw new UnsupportedOperationException();
-
     }
 
 
@@ -343,9 +347,10 @@ public abstract class AbstractCompositeTransaction implements CompositeTransacti
 
 
     /**
-     * @see com.atomikos.finitestates.Stateful.
+     * @see com.atomikos.finitestates.Stateful
      */
 
+    @Override
     public TxState getState ()
     {
     	throw new UnsupportedOperationException();

@@ -8,8 +8,8 @@
 
 package com.atomikos.icatch;
 
+import java.util.Deque;
 import java.util.Map;
-import java.util.Stack;
 
 /**
  *
@@ -63,16 +63,13 @@ public interface Extent extends java.io.Serializable
     
      /**
       * 
-      * @return Stack A stack of <b>direct</b> participants. Direct participants
+      * @return Deque A deque of <b>direct</b> participants. Direct participants
       * are those that need to be added to the client TM's two-phase
       * commit set.
       *
       * NOTE: If a participant occurs in the direct participant set,
       * it will also be part of the remote set.
       */
-      
-     Stack<Participant> getParticipants();
 
-  
-    											
+     Deque<Participant> getParticipants();
 }

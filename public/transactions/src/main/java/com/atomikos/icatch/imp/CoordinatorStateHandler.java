@@ -8,14 +8,15 @@
 
 package com.atomikos.icatch.imp;
 
+import java.util.ArrayDeque;
 import java.util.Collection;
+import java.util.Deque;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Stack;
-import java.util.Vector;
 
 import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.HeurHazardException;
@@ -54,7 +55,7 @@ abstract class CoordinatorStateHandler
     private Propagator propagator_;
     // The propagator for propagation of messages
 
-    private Stack<Participant> replayStack_;
+    private Deque<Participant> replayStack_;
     // where replay requests are queued
 
     private Boolean committed_;
@@ -74,8 +75,8 @@ abstract class CoordinatorStateHandler
     protected CoordinatorStateHandler ( CoordinatorImp coordinator )
     {
         coordinator_ = coordinator;
-        replayStack_ = new Stack<Participant>();
-        readOnlyTable_ = new HashSet<Participant> ();
+        replayStack_ = new ArrayDeque<>();
+        readOnlyTable_ = new HashSet<>();
         committed_ = null;
     }
 
@@ -124,13 +125,13 @@ abstract class CoordinatorStateHandler
     }
 
     /**
-     * Get the replay stack for replay completion requests.
+     * Get the replay deque for replay completion requests.
      *
-     * @return Stack The stack with replay requests, or an empty stack if none
+     * @return Deque The deque with replay requests, or an empty deque if none
      *         are present.
      */
 
-    protected Stack<Participant> getReplayStack ()
+    protected Deque<Participant> getReplayStack ()
     {
         return replayStack_;
     }
@@ -267,7 +268,7 @@ abstract class CoordinatorStateHandler
      * should also check any replay requests.
      */
 
-    protected abstract void onTimeout ();
+    protected abstract void onTimeout () throws InterruptedException;
 
     /**
      * Get the (non-pseudo) coordinator state to which this handler belongs.
@@ -326,14 +327,14 @@ abstract class CoordinatorStateHandler
 
     protected void commitFromWithinCallback ( boolean heuristic ,
             boolean onePhase ) throws HeurRollbackException,
-            HeurMixedException, HeurHazardException,
-            java.lang.IllegalStateException, RollbackException, SysException
+      HeurMixedException, HeurHazardException,
+      java.lang.IllegalStateException, RollbackException, SysException
     {
         CoordinatorStateHandler nextStateHandler = null;
 
         try {
 
-            Vector<Participant> participants = coordinator_.getParticipants();
+            List<Participant> participants = coordinator_.getParticipants();
             int count = (participants.size () - readOnlyTable_.size ());
             TerminationResult commitresult = new TerminationResult ( count );
 
@@ -353,26 +354,48 @@ abstract class CoordinatorStateHandler
 
 
             // start messages
-            Enumeration<Participant> enumm = participants.elements ();
-            while ( enumm.hasMoreElements () ) {
-                Participant p = enumm.nextElement ();
-                if ( !readOnlyTable_.contains ( p ) ) {
-                    CommitMessage cm = new CommitMessage ( p, commitresult,
-                            onePhase );
+//            Enumeration<Participant> enumm = participants.elements ();
+//            while ( enumm.hasMoreElements () ) {
+//                Participant p = enumm.nextElement ();
+//                if ( !readOnlyTable_.contains ( p ) ) {
+//                    CommitMessage cm = new CommitMessage ( p, commitresult,
+//                            onePhase );
+//
+//                    // if onephase: set cascadelist anyway, because if the
+//                    // participant is a REMOTE one, then it might have
+//                    // multiple participants that are not visible here!
+//
+//                    if ( onePhase && cascadeList_ != null ) { // null for OTS
+//                        Integer sibnum = cascadeList_.get ( p.getURI() );
+//                        if ( sibnum != null ) // null for local participant!
+//                            p.setGlobalSiblingCount ( sibnum.intValue () );
+//                        p.setCascadeList ( cascadeList_ );
+//                    }
+//                    propagator_.submitPropagationMessage ( cm );
+//                }
+//            } // while
 
-                    // if onephase: set cascadelist anyway, because if the
-                    // participant is a REMOTE one, then it might have
-                    // multiple participants that are not visible here!
+            for (Participant participant : participants)
+            {
+              if (!readOnlyTable_.contains(participant))
+              {
+                CommitMessage cm = new CommitMessage(participant, commitresult,
+                  onePhase);
 
-                    if ( onePhase && cascadeList_ != null ) { // null for OTS
-                        Integer sibnum = cascadeList_.get ( p.getURI() );
-                        if ( sibnum != null ) // null for local participant!
-                            p.setGlobalSiblingCount ( sibnum.intValue () );
-                        p.setCascadeList ( cascadeList_ );
-                    }
-                    propagator_.submitPropagationMessage ( cm );
+                // if onephase: set cascadelist anyway, because if the
+                // participant is a REMOTE one, then it might have
+                // multiple participants that are not visible here!
+
+                if (onePhase && cascadeList_ != null)
+                { // null for OTS
+                  Integer sibnum = cascadeList_.get(participant.getURI());
+                  if (sibnum != null) // null for local participant!
+                    participant.setGlobalSiblingCount(sibnum.intValue());
+                  participant.setCascadeList(cascadeList_);
                 }
-            } // while
+                propagator_.submitPropagationMessage(cm);
+              }
+            }
 
             commitresult.waitForReplies ();
             int res = commitresult.getResult ();
@@ -454,20 +477,28 @@ abstract class CoordinatorStateHandler
             // see TERMINATED state!
             committed_ = new Boolean ( false );
 
-            Vector<Participant> participants = coordinator_.getParticipants ();
+            List<Participant> participants = coordinator_.getParticipants ();
             int count = (participants.size () - readOnlyTable_.size ());
 
             TerminationResult rollbackresult = new TerminationResult ( count );
 
-            Enumeration<Participant> enumm = participants.elements ();
-            while ( enumm.hasMoreElements () ) {
-                Participant p = enumm.nextElement ();
-                if ( !readOnlyTable_.contains ( p ) ) {
-                    RollbackMessage rm = new RollbackMessage ( p,
-                            rollbackresult, indoubt );
-                    propagator_.submitPropagationMessage ( rm );
-                }
-            } 
+//            Enumeration<Participant> enumm = participants.elements ();
+//            while ( enumm.hasMoreElements () ) {
+//                Participant p = enumm.nextElement ();
+//                if ( !readOnlyTable_.contains ( p ) ) {
+//                    RollbackMessage rm = new RollbackMessage ( p,
+//                            rollbackresult, indoubt );
+//                    propagator_.submitPropagationMessage ( rm );
+//                }
+//            }
+
+            for (Participant participant : participants) {
+              if ( !readOnlyTable_.contains ( participant ) ) {
+                RollbackMessage rm = new RollbackMessage ( participant,
+                  rollbackresult, indoubt );
+                propagator_.submitPropagationMessage ( rm );
+              }
+            }
 
             rollbackresult.waitForReplies ();
             int res = rollbackresult.getResult ();
@@ -533,18 +564,17 @@ abstract class CoordinatorStateHandler
 
         CoordinatorStateHandler nextStateHandler = null;
 
-        Vector<Participant> participants = coordinator_.getParticipants ();
+        List<Participant> participants = coordinator_.getParticipants ();
         int count = (participants.size () - readOnlyTable_.size ());
-        Enumeration<Participant> enumm = participants.elements ();
         ForgetResult result = new ForgetResult ( count );
-        while ( enumm.hasMoreElements () ) {
-            Participant p = (Participant) enumm.nextElement ();
-            if ( !readOnlyTable_.contains ( p ) ) {
-                ForgetMessage fm = new ForgetMessage ( p, result );
-                propagator_.submitPropagationMessage ( fm );
-            }
 
+        for (Participant participant : participants) {
+          if ( !readOnlyTable_.contains ( participant ) ) {
+            ForgetMessage fm = new ForgetMessage ( participant, result );
+            propagator_.submitPropagationMessage ( fm );
+          }
         }
+
         try {
             result.waitForReplies ();
         } catch ( InterruptedException inter ) {

@@ -8,13 +8,14 @@
 
 package com.atomikos.icatch.imp;
 
-import java.util.Properties;
-import java.util.Stack;
-
 import com.atomikos.icatch.CompositeCoordinator;
 import com.atomikos.icatch.CompositeTransaction;
 import com.atomikos.icatch.RecoveryCoordinator;
 import com.atomikos.icatch.SysException;
+
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.Properties;
 
 /**
  * A composite transaction adaptor for inter-position on an imported instance.
@@ -43,14 +44,14 @@ class CompositeTransactionAdaptor extends AbstractCompositeTransaction
      *            The adaptor for replay requests.
      */
     @SuppressWarnings("unchecked")
-    public CompositeTransactionAdaptor ( Stack<CompositeTransaction> lineage , String tid ,
+    public CompositeTransactionAdaptor ( Deque<CompositeTransaction> lineage , String tid ,
             boolean serial , RecoveryCoordinator adaptor  )
     {
-        super ( tid , (Stack<CompositeTransaction>) lineage.clone () , serial  );
+        super ( tid , (Deque<CompositeTransaction>) ((ArrayDeque)lineage).clone () , serial  );
         adaptorForReplayRequests_ = adaptor;
-        Stack<CompositeTransaction> tmp = (Stack<CompositeTransaction>) lineage.clone();
+        Deque<CompositeTransaction> tmp = ((ArrayDeque<CompositeTransaction>)lineage).clone();
         CompositeTransaction parent = null;
-        while ( !tmp.empty () ) {
+        while ( !tmp.isEmpty () ) {
             parent = tmp.pop();
         }
         root_ = parent.getTid();

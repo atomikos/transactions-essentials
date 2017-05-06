@@ -8,9 +8,6 @@
 
 package com.atomikos.datasource.xa;
 
-import java.util.Hashtable;
-import java.util.Stack;
-
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
 
@@ -25,6 +22,10 @@ import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 import com.atomikos.recovery.xa.XaResourceRecoveryManager;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -47,7 +48,7 @@ public abstract class XATransactionalResource implements TransactionalResource
 
     protected XAResource xares_;
     private String servername;
-    private Hashtable<String,SiblingMapper> rootTransactionToSiblingMapperMap;
+    private Map<String,SiblingMapper> rootTransactionToSiblingMapperMap;
     private XidFactory xidFact;
     private boolean closed;
 
@@ -79,7 +80,7 @@ public abstract class XATransactionalResource implements TransactionalResource
     {
 
         this.servername = servername;
-        this.rootTransactionToSiblingMapperMap = new Hashtable<String,SiblingMapper>();
+        this.rootTransactionToSiblingMapperMap = new HashMap<String,SiblingMapper>();
         // name should be less than 64 for xid compatibility
 
         //branch id is server name + long value!
@@ -332,11 +333,11 @@ public abstract class XATransactionalResource implements TransactionalResource
 
         if ( ct == null ) return null; // happens in create method of beans?
 
-        Stack<CompositeTransaction> lineage = ct.getLineage ();
+        Deque<CompositeTransaction> lineage = ct.getLineage ();
         String root = null;
         if (lineage == null || lineage.isEmpty ()) root = ct.getTid ();
         else {
-            Stack<CompositeTransaction> tmp = (Stack<CompositeTransaction>) lineage.clone ();
+            Deque<CompositeTransaction> tmp = ((ArrayDeque<CompositeTransaction>) lineage).clone ();
             while ( !tmp.isEmpty() ) {
                 CompositeTransaction next = (CompositeTransaction) tmp.pop();
                 if (next.isRoot()) root = next.getTid ();

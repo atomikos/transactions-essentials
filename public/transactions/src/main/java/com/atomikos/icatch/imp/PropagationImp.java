@@ -8,7 +8,8 @@
 
 package com.atomikos.icatch.imp;
 
-import java.util.Stack;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 import com.atomikos.icatch.CompositeTransaction;
 import com.atomikos.icatch.Propagation;
@@ -37,7 +38,7 @@ public class PropagationImp implements Propagation
     public static Propagation adaptPropagation ( Propagation propagation ,
             RecoveryCoordinator adaptor )
     {
-        Stack<CompositeTransaction> lineage = propagation.getLineage ();
+        Deque<CompositeTransaction> lineage = propagation.getLineage ();
 
         // replace most recent ancestor by adaptor
         CompositeTransaction remote = (CompositeTransaction) lineage.peek ();
@@ -46,14 +47,14 @@ public class PropagationImp implements Propagation
 
         lineage.pop ();
 
-        // push adaptor on ancestor stack, in the place of the remote
+        // push adaptor on ancestor deque, in the place of the remote
         lineage.push ( ct );
 
         return new PropagationImp ( lineage, propagation.isSerial (),
                 propagation.getTimeOut () );
     }
 
-    private Stack<CompositeTransaction> lineage_;
+    private Deque<CompositeTransaction> lineage_;
 
     private boolean serial_;
 
@@ -65,17 +66,17 @@ public class PropagationImp implements Propagation
      * Construct a new instance.
      *
      * @param lineage
-     *            The lineage stack of ancestors.
+     *            The lineage deque of ancestors.
      * @param serial
      *            Serial mode indicator.
      * @param timeout
      *            The timeout left for the tx.
      */
     @SuppressWarnings("unchecked")
-    public PropagationImp ( Stack<CompositeTransaction> lineage , boolean serial , long timeout )
+    public PropagationImp ( Deque<CompositeTransaction> lineage , boolean serial , long timeout )
     {
         serial_ = serial;
-        lineage_ = (Stack<CompositeTransaction>) lineage.clone ();
+        lineage_ = (Deque<CompositeTransaction>) ((ArrayDeque)lineage).clone ();
         timeout_ = timeout;
     }
 
@@ -83,7 +84,7 @@ public class PropagationImp implements Propagation
      * @see Propagation
      */
 
-    public Stack<CompositeTransaction> getLineage ()
+    public Deque<CompositeTransaction> getLineage ()
     {
         return lineage_;
     }
