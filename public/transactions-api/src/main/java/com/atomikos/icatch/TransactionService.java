@@ -16,37 +16,30 @@ package com.atomikos.icatch;
   * of recovery, and for creating transactions and subtransactions.
   */
   
-public interface TransactionService 
-{
-      /**
-       * Adds a listener to the transaction service.
-       * This method should be called before init!
-       * If called afterwards, only the init (false)
-       * callback will happen in the listener.
-       *
-       * @param listener The listener.
-       */
-       
-       void addTSListener ( TransactionServicePlugin listener );
+public interface TransactionService {
+  /**
+   * Adds a listener to the transaction service.
+   * This method should be called before init!
+   * If called afterwards, only the init (false)
+   * callback will happen in the listener.
+   *
+   * @param listener The listener.
+   */
+   void addTSListener ( TransactionServicePlugin listener );
       
-       /**
-        * Removes a listener from the transaction service.
-        * @param listener The listener.
-        */
-        
-       void removeTSListener ( TransactionServicePlugin listener );
-  
-  
-       /**
-        * Gets the composite transaction with the given tid.
-        * @param tid The transaction identifier.
-        * @return CompositeTransaction The transaction, or null if none.
-        */
-        
-       CompositeTransaction getCompositeTransaction ( String tid );
-      
+   /**
+    * Removes a listener from the transaction service.
+    * @param listener The listener.
+    */
+   void removeTSListener ( TransactionServicePlugin listener );
 
-      
+   /**
+    * Gets the composite transaction with the given tid.
+    * @param tid The transaction identifier.
+    * @return CompositeTransaction The transaction, or null if none.
+    */
+   CompositeTransaction getCompositeTransaction ( String tid );
+
       /**
        * Starts a new transaction.
        *
@@ -60,9 +53,7 @@ public interface TransactionService
        *
        */
        
-       CompositeTransaction createCompositeTransaction ( 
-                  long timeout )
-                  throws SysException;
+       CompositeTransaction createCompositeTransaction (long timeout ) throws SysException;
 
       
       /**
@@ -76,20 +67,15 @@ public interface TransactionService
        * If false, unchecked behavior applies.
        * 
        * @param heur_commit True for heuristic commit, false for heuristic
-       * rollback. 
-       * 
-       * @param timeout Time in millis after which heur_commit is applied.
+       * rollback.
        *
        * @return CompositeTransaction The recreated local instance.
        * @exception SysException
        */
 
 
-      CompositeTransaction 
-      recreateCompositeTransaction (  Propagation context , 
-                                       boolean orphancheck ,
-                                       boolean heur_commit )
-      throws SysException;
+      CompositeTransaction recreateCompositeTransaction (  Propagation context ,
+        boolean orphancheck, boolean heur_commit ) throws SysException;
         
       /**
        * Shuts down the server in a clean way.
@@ -107,8 +93,7 @@ public interface TransactionService
        * @exception SysException
        */
      
-      void shutdown ( boolean force )
-      throws SysException, IllegalStateException;
+      void shutdown ( boolean force ) throws SysException, IllegalStateException;
       
        /**
         * Gets a participant handle for the given root.
@@ -120,8 +105,7 @@ public interface TransactionService
         * @exception SysException On failure, or if the given root is not known.
         */
       
-      Participant getParticipant ( String root )
-      throws SysException;
+      Participant getParticipant ( String root ) throws SysException;
       
       /**
        * Gets a composite coordinator for the given root.
@@ -134,8 +118,5 @@ public interface TransactionService
        * @return The composite coordinator for this root.
        * @exception SysException
        */
-      
-      CompositeCoordinator getCompositeCoordinator ( String root )
-      throws SysException;
-      
+      CompositeCoordinator getCompositeCoordinator ( String root ) throws SysException;
 }

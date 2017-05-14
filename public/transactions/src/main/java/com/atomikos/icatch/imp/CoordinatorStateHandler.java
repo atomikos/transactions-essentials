@@ -11,7 +11,6 @@ package com.atomikos.icatch.imp;
 import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Deque;
-import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -386,8 +385,8 @@ abstract class CoordinatorStateHandler
                 // participant is a REMOTE one, then it might have
                 // multiple participants that are not visible here!
 
-                if (onePhase && cascadeList_ != null)
-                { // null for OTS
+                if (onePhase && cascadeList_ != null) {
+                  // null for OTS
                   Integer sibnum = cascadeList_.get(participant.getURI());
                   if (sibnum != null) // null for local participant!
                     participant.setGlobalSiblingCount(sibnum.intValue());

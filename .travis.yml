@@ -9,7 +9,7 @@ language: java
 jdk:
   - oraclejdk8
 
-script: mvn clean verify -P errorprone-compiler
+script: mvn clean verify -P errorprone-compiler,verbose-logging
 
 
 notifications:

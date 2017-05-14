@@ -18,11 +18,10 @@ import com.atomikos.icatch.SysException;
 import com.atomikos.recovery.TxState;
 import com.atomikos.thread.InterruptedExceptionHelper;
 
+import java.util.ArrayList;
 import java.util.Deque;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Set;
-import java.util.Vector;
 
 /**
  * A state handler for the heuristic hazard coordinator state.
@@ -36,8 +35,7 @@ class HeurHazardStateHandler extends CoordinatorStateHandler
             Set<Participant> hazards )
     {
         super ( previous );
-        hazards_ = new Vector<>(hazards);
-
+        hazards_ = new ArrayList<>(hazards);
     }
 
     protected TxState getState ()

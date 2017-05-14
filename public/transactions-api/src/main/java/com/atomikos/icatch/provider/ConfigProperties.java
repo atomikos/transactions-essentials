@@ -5,15 +5,14 @@
  *
  * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
  */
-
 package com.atomikos.icatch.provider;
 
 import java.net.UnknownHostException;
-import java.util.Enumeration;
 import java.util.Properties;
+import java.util.Set;
 
+@SuppressWarnings("WeakerAccess")
 public final class ConfigProperties {
-
 
 	public static final String TM_UNIQUE_NAME_PROPERTY_NAME = "com.atomikos.icatch.tm_unique_name";
 	public static final String LOG_BASE_DIR_PROPERTY_NAME = "com.atomikos.icatch.log_base_dir";
@@ -78,23 +77,20 @@ public final class ConfigProperties {
 		return result;
 	}
 
-    private static String getDefaultName ()
-    {
+    private static String getDefaultName () {
 
         String ret = "tm";
         try {
             ret = java.net.InetAddress.getLocalHost ().getHostAddress ()
                     + ".tm";
-        } catch ( UnknownHostException e ) {
+        } catch ( UnknownHostException ignore ) {
             // ignore: use short default
         }
 
         return ret;
     }
 
-
 	private Properties properties;
-
 
 	public ConfigProperties(Properties properties) {
 		if (properties == null) throw new IllegalArgumentException("Properties should not be null");
@@ -109,22 +105,24 @@ public final class ConfigProperties {
 
 	private void applySystemProperties() {
 		Properties systemProperties = System.getProperties();
-		Enumeration<?> propertyNames = systemProperties.propertyNames();
-		while (propertyNames.hasMoreElements()) {
-			String name = (String) propertyNames.nextElement();
-			if (name.startsWith("com.atomikos")) {
-				properties.setProperty(name, systemProperties.getProperty(name));
+
+		Set<String> propertyNames = systemProperties.stringPropertyNames();
+
+		for (String propertyName : propertyNames) {
+			if (propertyName.startsWith("com.atomikos")) {
+				properties.setProperty(propertyName, systemProperties.getProperty(propertyName));
 			}
 		}
 	}
 
 	private void substitutePlaceHolderValues() {
-		//resolve referenced values with ant-like ${...} syntax
-		Enumeration<?> allProps= properties.propertyNames();
-		while ( allProps.hasMoreElements() ) {
-			String key = ( String ) allProps.nextElement();
+
+		// resolve referenced values with ant-like ${...} syntax
+    Set<String> keys = properties.stringPropertyNames();
+
+    for (String key : keys) {
 			String raw = properties.getProperty ( key );
-			String value= evaluateReference ( raw , properties );
+			String value = evaluateReference( raw, properties );
 			if ( !raw.equals ( value ) ) {
 				properties.setProperty ( key, value );
 			}
@@ -137,6 +135,7 @@ public final class ConfigProperties {
 		if (ret == null) {
 			throw new IllegalArgumentException("Missing required property: " + name);
 		}
+
 		ret = ret.trim();
 		return ret;
 	}
@@ -195,22 +194,25 @@ public final class ConfigProperties {
 	}
 
 	public void applyUserSpecificProperties(Properties userSpecificProperties) {
-		Enumeration<?> names = userSpecificProperties.propertyNames();
-		while (names.hasMoreElements()) {
-			String name = (String) names.nextElement();
+
+    Set<String> keys = userSpecificProperties.stringPropertyNames();
+
+    for (String name : keys) {
 			properties.setProperty(name, userSpecificProperties.getProperty(name));
 		}
 	}
 
 	public Properties getCompletedProperties() {
-		Properties ret = new Properties();
+		Properties completedroperties = new Properties();
 		completeProperties();
-		Enumeration<?> propertyNames = properties.propertyNames();
-		while (propertyNames.hasMoreElements()) {
-			String name = (String) propertyNames.nextElement();
-			ret.setProperty(name, getProperty(name));
+
+    Set<String> propertyNames = this.properties.stringPropertyNames();
+
+    for (String propertyName : propertyNames) {
+			completedroperties.setProperty(propertyName, getProperty(propertyName));
 		}
-		return ret;
+
+		return completedroperties;
 	}
 
 	private void completeProperties() {
@@ -242,5 +244,4 @@ public final class ConfigProperties {
 	public boolean getAllowSubTransactions() {
 		return getAsBoolean(ALLOW_SUBTRANSACTIONS);
 	}
-
 }

@@ -15,6 +15,6 @@ target/
 *.dat
 *.log
 
-effective.pom
+effective-pom.xml
 pom.xml.versionsBackup
 

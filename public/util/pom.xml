@@ -4,17 +4,27 @@
 	<parent>
 		<groupId>com.atomikos</groupId>
 		<artifactId>ate</artifactId>
-		<version>4.0.4</version>
+		<version>4.0.5-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>atomikos-util</artifactId>
 
 	<name>Atomikos Util</name>
+
+  <properties>
+    <maven.javadoc.skip>true</maven.javadoc.skip>
+  </properties>
+  
 	<dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+    </dependency>
+    
 		<dependency>
 			<groupId>com.atomikos</groupId>
 			<artifactId>transactions-api</artifactId>
-			<version>4.0.4</version>
+      <version>4.0.5-SNAPSHOT</version>
 		</dependency>
 		<!-- only for HtmlBeanWizard -->
 		<dependency>
@@ -55,23 +65,23 @@
 
   <build>
     <plugins>
-      <plugin>
-        <groupId>org.pitest</groupId>
-        <artifactId>pitest-maven</artifactId>
-        <version>1.1.11</version>
-        <executions>
-          <execution>
-            <id>pitest</id>
-            <phase>integration-test</phase>
-            <goals>
-              <goal>mutationCoverage</goal>
-            </goals>
-            <configuration>
-              <skip>true</skip>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
+      <!--<plugin>-->
+        <!--<groupId>org.pitest</groupId>-->
+        <!--<artifactId>pitest-maven</artifactId>-->
+        <!--<version>1.1.11</version>-->
+        <!--<executions>-->
+          <!--<execution>-->
+            <!--<id>pitest</id>-->
+            <!--<phase>integration-test</phase>-->
+            <!--<goals>-->
+              <!--<goal>mutationCoverage</goal>-->
+            <!--</goals>-->
+            <!--<configuration>-->
+              <!--<skip>true</skip>-->
+            <!--</configuration>-->
+          <!--</execution>-->
+        <!--</executions>-->
+      <!--</plugin>-->
     </plugins>
   </build>
 </project>

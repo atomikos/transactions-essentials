@@ -23,8 +23,6 @@ import com.atomikos.icatch.provider.TransactionServiceProvider;
 import com.atomikos.recovery.RecoveryLog;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -36,62 +34,59 @@ import java.util.ServiceLoader;
  * Allows the application code to find the transaction manager, even if
  * the actual implementation varies over time.
  */
-
 @SuppressWarnings("all")
-public final class Configuration
-{
-    private static CompositeTransactionManager ctxmgr_ = null;
-    // the tm for the virtual machine instance
+public final class Configuration {
 
-    private static Map resources_ = new HashMap();
-    // filled on startup, contains all resources managed by the
-    // transaction manager.
+  // the tm for the virtual machine instance
+  private static CompositeTransactionManager ctxmgr_ = null;
 
-    private static List<RecoverableResource> resourceList_ = new ArrayList();
-    // keep resources in a list, to enable ordered search of XAResource
-    // this way, an AcceptAllXATransactionalResource can be added at the end
+  // filled on startup, contains all resources managed by the
+  // transaction manager.
+  private static Map resources_ = new HashMap();
 
-    private static List<LogAdministrator> logAdministrators_ = new ArrayList ();
-    // the registered log administrators
+  // keep resources in a list, to enable ordered search of XAResource
+  // this way, an AcceptAllXATransactionalResource can be added at the end
+  private static List<RecoverableResource> resourceList_ = new ArrayList();
 
-    private static RecoveryService recoveryService_;
-    // needed for addResource to do recovery
+  // the registered log administrators
+  private static List<LogAdministrator> logAdministrators_ = new ArrayList<>();
 
-    private static TransactionServiceProvider service_;
-    // the transaction service for this VM.
+  // needed for addResource to do recovery
+  private static RecoveryService recoveryService_;
 
-    private static List<TransactionServicePlugin> tsListenersList_ = new ArrayList();
+  // the transaction service for this VM.
+  private static TransactionServiceProvider service_;
 
-    private static List shutdownHooks_ = new ArrayList();
+  private static List<TransactionServicePlugin> tsListenersList_ = new ArrayList<>();
+
+  private static List<Thread> shutdownHooks_ = new ArrayList<>();
 
 	private static Assembler assembler;
 
 	private static ConfigProperties configProperties;
 
+	private static void purgeResources () {
+    List<RecoverableResource> resources = getResources ();
 
-	private static void purgeResources ()
-    {
-        Enumeration enumm = getResources ();
-        while ( enumm.hasMoreElements () ) {
-            RecoverableResource res = (RecoverableResource) enumm.nextElement ();
-            if ( res.isClosed () )
-                removeResource ( res.getName () );
-        }
+    for (RecoverableResource resource : resources) {
+      if ( resource.isClosed () )
+        removeResource ( resource.getName () );
     }
+  }
 
-    /**
-     * Construction not allowed.
-     *
-     */
-    private Configuration ()
-    {
+  /**
+   * Construction not allowed.
+   *
+   */
+  private Configuration ()
+  {
+  }
+
+  private static void addAllTransactionServicePluginServicesFromClasspath() {
+    ServiceLoader<TransactionServicePlugin> serviceLoaders = ServiceLoader.load(TransactionServicePlugin.class,Configuration.class.getClassLoader());
+    for (TransactionServicePlugin l : serviceLoaders ) {
+      registerTransactionServicePlugin(l);
     }
-
-    private static void addAllTransactionServicePluginServicesFromClasspath() {
-        ServiceLoader<TransactionServicePlugin> loader = ServiceLoader.load(TransactionServicePlugin.class,Configuration.class.getClassLoader());
-        for (TransactionServicePlugin l : loader ) {
-			registerTransactionServicePlugin(l);
-		}
 	}
     
 	/**
@@ -104,34 +99,33 @@ public final class Configuration
      */
     private static synchronized void addShutdownHook ( Thread hook )
     {
-    	if ( shutdownHooks_.contains ( hook ) ) return;
+    	if ( shutdownHooks_.contains ( hook ) )
+    	  return;
 
     	shutdownHooks_.add ( hook );
+
     	try {
     		Runtime.getRuntime().addShutdownHook ( hook );
-    	}
-    	catch ( IllegalStateException alreadyShuttingDownVm ) {
-			//ignore: this happens when the VM exits and this method
-			//is called as part of one of the shutdown hooks executing
-		}
+    	} catch ( IllegalStateException alreadyShuttingDownVm ) {
+			  //ignore: this happens when the VM exits and this method
+			  //is called as part of one of the shutdown hooks executing
+		  }
     }
-
 
     /**
      * Removes all shutdown hooks from the system.
      * This method should be called on shutdown of the core.
      */
-
-    private static synchronized void removeShutdownHooks()
-    {
+    private static synchronized void removeShutdownHooks() {
     	Iterator it = shutdownHooks_.iterator();
 
     	//first check if we are not already doing a VM exit;
     	//don't remove the hooks if so
     	boolean vmShutdown = false;
-    	while ( it.hasNext() ) {
-    		Thread t = ( Thread ) it.next();
-    		if ( t.equals ( Thread.currentThread() ) ) vmShutdown = true;
+
+    	for (Thread shutDownHookThread : shutdownHooks_) {
+    		if ( shutDownHookThread.equals ( Thread.currentThread() ) )
+    		  vmShutdown = true;
     	}
 
     	it = shutdownHooks_.iterator();
@@ -270,8 +264,7 @@ public final class Configuration
      *
      * @param admin
      */
-    public static void removeLogAdministrator ( LogAdministrator admin )
-    {
+    public static void removeLogAdministrator ( LogAdministrator admin ) {
         logAdministrators_.remove ( admin );
         if ( service_ != null ) {
             admin.deregisterLogControl(service_.getLogControl());
@@ -281,12 +274,11 @@ public final class Configuration
     /**
      * Get all registered logadministrators.
      *
-     * @return Enumeration The logadministrators.
+     * @return List<LogAdministrator> The logadministrators.
      */
-    private static Enumeration getLogAdministrators ()
-    {
-        List v = (List) ((ArrayList)logAdministrators_).clone ();
-        return Collections.enumeration(v);
+    private static List<LogAdministrator> getLogAdministrators () {
+        List<LogAdministrator> logAdministrators = (List) ((ArrayList)logAdministrators_).clone ();
+        return logAdministrators;
     }
 
     /**
@@ -297,15 +289,17 @@ public final class Configuration
      * @return RecoverableResource The removed object.
      */
 
-    public static RecoverableResource removeResource ( String name )
-    {
-        RecoverableResource ret = null;
-        if ( name != null ) {
-        	ret = (RecoverableResource) resources_.remove ( name );
-        	if ( ret != null ) resourceList_.remove ( ret );
+    public static RecoverableResource removeResource ( String name ) {
+        RecoverableResource recoverableResource = null;
 
+        if ( name != null ) {
+        	recoverableResource = (RecoverableResource) resources_.remove ( name );
+
+        	if ( recoverableResource != null )
+        	  resourceList_.remove ( recoverableResource );
         }
-        return ret;
+
+        return recoverableResource;
     }
 
     /**
@@ -316,8 +310,7 @@ public final class Configuration
      *            The name to find.
      */
 
-    public static RecoverableResource getResource ( String name )
-    {
+    public static RecoverableResource getResource ( String name ) {
         RecoverableResource res = null;
         if ( name != null ) res = (RecoverableResource) resources_.get ( name );
         return res;
@@ -326,15 +319,15 @@ public final class Configuration
     /**
      * Get all resources added so far, in the order that they were added.
      *
-     * @return Enumeration The resources.
+     * @return List The resources.
      */
 
-    public static Enumeration<RecoverableResource> getResources ()
+    public static List<RecoverableResource> getResources ()
     {
         // clone to avoid concurrency problems with
         // add/removeResource (new recovery makes this possible)
-        List ret = (List)((ArrayList)resourceList_).clone ();
-        return Collections.enumeration(ret);
+        List<RecoverableResource> ret = (List)((ArrayList)resourceList_).clone ();
+        return ret;
     }
 
 	protected static synchronized Assembler getAssembler() {
@@ -343,7 +336,7 @@ public final class Configuration
 	}
 
 	private static void loadAssembler() {
-        ServiceLoader<Assembler> loader = ServiceLoader.load(Assembler.class,Configuration.class.getClassLoader());
+    ServiceLoader<Assembler> loader = ServiceLoader.load(Assembler.class,Configuration.class.getClassLoader());
 		Iterator<Assembler> it = loader.iterator();
 		if (it.hasNext()) {
 			assembler = it.next();
@@ -396,39 +389,39 @@ public final class Configuration
 	}
 
 	private static void removeLogAdministrators(LogControl logControl) {
-        Enumeration logAdmins = Configuration.getLogAdministrators ();
-        while ( logAdmins.hasMoreElements () ) {
-            LogAdministrator admin = (LogAdministrator) logAdmins
-                    .nextElement ();
-            admin.deregisterLogControl(logControl);
-            Configuration.removeLogAdministrator ( admin );
-        }
+    List<LogAdministrator> logAdmins = Configuration.getLogAdministrators();
+
+    for (LogAdministrator admin : logAdmins) {
+      admin.deregisterLogControl(logControl);
+      Configuration.removeLogAdministrator ( admin );
+    }
 	}
 
 	private static void removeAndCloseResources(boolean force) {
-		Enumeration resources = Configuration.getResources ();
-        while ( resources.hasMoreElements () ) {
-            RecoverableResource res = (RecoverableResource) resources
-                    .nextElement ();
 
-            Configuration.removeResource ( res.getName () );
-            try {
-                res.close ();
-            } catch ( ResourceException re ) {
-         	   //Issue 10038:
-         	   //Ignore errors in force mode: force is most likely
-         	   //during VM exit; in that case interleaving of shutdown hooks
-         	   //means that resource connectors may have closed already
-         	   //by the time the TM hook runs. We don't want useless
-         	   //reports in that case.
-         	   //NOTE: any invalid states will be detected during the next
-         	   //(re)init so they can be ignored here (if force mode)
+		List<RecoverableResource> resources = Configuration.getResources ();
 
-                if ( !force ) {
-                	re.printStackTrace();
-                }
-            }
+    for (RecoverableResource res : resources) {
+
+      Configuration.removeResource ( res.getName () );
+
+      try {
+        res.close ();
+      } catch ( ResourceException re ) {
+        //Issue 10038:
+        //Ignore errors in force mode: force is most likely
+        //during VM exit; in that case interleaving of shutdown hooks
+        //means that resource connectors may have closed already
+        //by the time the TM hook runs. We don't want useless
+        //reports in that case.
+        //NOTE: any invalid states will be detected during the next
+        //(re)init so they can be ignored here (if force mode)
+
+        if ( !force ) {
+          re.printStackTrace();
         }
+      }
+    }
 	}
 
 	/**
@@ -456,17 +449,17 @@ public final class Configuration
 		for (TransactionServicePlugin p : tsListenersList_) {
 			p.afterInit();
 		}
+
 		for (LogAdministrator a : logAdministrators_) {
 			a.registerLogControl(service_.getLogControl());
 		}
+
 		for (RecoverableResource r : resourceList_ ) {
 			r.setRecoveryService(recoveryService_);
 		}
-		
 	}
 
-	private static void initializeSystemComponents(
-			ConfigProperties configProperties) {
+	private static void initializeSystemComponents(ConfigProperties configProperties) {
 		service_.init(configProperties.getCompletedProperties());
 	}
 
@@ -476,8 +469,7 @@ public final class Configuration
 		}
 	}
 
-	private static void assembleSystemComponents(
-			ConfigProperties configProperties) {
+	private static void assembleSystemComponents(ConfigProperties configProperties) {
 		Assembler assembler = getAssembler();
 		service_ = assembler.assembleTransactionService(configProperties);
 		recoveryService_ = service_.getRecoveryService();
@@ -485,22 +477,18 @@ public final class Configuration
 	}
 	
 	public static RecoveryLog getRecoveryLog() {
-		return recoveryService_.getRecoveryLog();
+	  return recoveryService_.getRecoveryLog();
 	}
 	
-	private static class ForceShutdownHook extends Thread
-    {
-        
+	private static class ForceShutdownHook extends Thread {
 
-        private ForceShutdownHook()
+	  private ForceShutdownHook()
         {
             super();
         }
 
-        public void run() {
-            Configuration.shutdown(true);
-        }
+    public void run() {
+      Configuration.shutdown(true);
     }
-
-
+  }
 }

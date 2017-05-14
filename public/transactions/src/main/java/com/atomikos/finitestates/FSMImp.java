@@ -9,12 +9,12 @@
 package com.atomikos.finitestates;
 
 import java.util.EventListener;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
+import java.util.Map;
 import java.util.Set;
 
 import com.atomikos.recovery.TxState;
-
 
 /**
  *
@@ -30,36 +30,30 @@ import com.atomikos.recovery.TxState;
  * </ul>
  *
  */
-
 public class FSMImp implements FSM
 {
-
-    private TxState state_ = null;
     //the current state
+    private TxState state_ = null;
 
-    private Hashtable<TxState,Set<EventListener>>  enterlisteners_ = null;
     //the enter listeners
+    private Map<TxState,Set<EventListener>> enterlisteners_ = null;
 
-    private Hashtable<TxState,Set<EventListener>> preenterlisteners_ = null;
     //pre enter listeners
+    private Map<TxState,Set<EventListener>> preenterlisteners_ = null;
 
-    private Hashtable<TxState,Hashtable<TxState,Set<EventListener>>> transitionlisteners_ = null;
-    //transition listeners
+    // transition listeners
+    private Map<TxState,Map<TxState,Set<EventListener>>> transitionlisteners_ = null;
 
-    private Hashtable<TxState,Hashtable<TxState,Set<EventListener>>> pretransitionlisteners_ = null;
     //pretransition listeners
+    private Map<TxState,Map<TxState,Set<EventListener>>> pretransitionlisteners_ = null;
 
     
     private Object eventsource_ = null;
 
     private Object stateLatch_;
 
-
     /**
      *Constructor.
-     *
-     *@param transitiontable The transitiontable with valid
-     *transitions.
      *
      *@param initialstate The initial state of the FSM.
      */
@@ -76,17 +70,16 @@ public class FSMImp implements FSM
      *by delegation to an instance of this class.
      *
      *@param eventsource The object to be used as source of events.
-     *@param transitiontable The transitiontable for state changes.
      *@param initialstate The initial state of the FSM.
      */
 
     public FSMImp ( Object eventsource, TxState initialstate )
     {
         state_ = initialstate;
-        enterlisteners_ = new Hashtable<TxState,Set<EventListener>>();
-        preenterlisteners_ = new Hashtable<TxState,Set<EventListener>>();
-        transitionlisteners_ = new Hashtable<TxState,Hashtable<TxState,Set<EventListener>>>();
-        pretransitionlisteners_ = new Hashtable<TxState,Hashtable<TxState,Set<EventListener>>>();
+        enterlisteners_ = new HashMap<TxState,Set<EventListener>>();
+        preenterlisteners_ = new HashMap<TxState,Set<EventListener>>();
+        transitionlisteners_ = new HashMap<TxState,Map<TxState,Set<EventListener>>>();
+        pretransitionlisteners_ = new HashMap<TxState,Map<TxState,Set<EventListener>>>();
         eventsource_ = eventsource;
         stateLatch_ = new Object();
     }
@@ -99,7 +92,7 @@ public class FSMImp implements FSM
      *@param state The state for which the listener wants to be notified.
      */
 
-    protected synchronized  void addEnterListener(Hashtable<TxState,Set<EventListener>> listeners,
+    protected synchronized  void addEnterListener(Map<TxState,Set<EventListener>> listeners,
     		EventListener lstnr,
     		TxState state)
     {
@@ -120,14 +113,14 @@ public class FSMImp implements FSM
      *@param to The end state of the transition.
      */
 
-    protected synchronized void addTransitionListener(Hashtable<TxState,Hashtable<TxState, Set<EventListener>>> listeners,
+    protected synchronized void addTransitionListener(Map<TxState, Map<TxState, Set<EventListener>>> listeners,
     			EventListener lstnr,
 				 TxState from,
 				 TxState to)
     {
-    	Hashtable<TxState, Set<EventListener>> lstnrs =   listeners.get(from);
+    	Map<TxState, Set<EventListener>> lstnrs =   listeners.get(from);
         if (lstnrs == null)
-        	lstnrs = new Hashtable<TxState,Set<EventListener>>();
+        	lstnrs = new HashMap<TxState,Set<EventListener>>();
         Set<EventListener> tolstnrs = lstnrs.get(to);
         if (tolstnrs == null)
         	tolstnrs = new HashSet<EventListener>();
@@ -145,7 +138,7 @@ public class FSMImp implements FSM
      *@param pre True iff before entering.
      */
 
-    protected void notifyListeners(Hashtable<TxState,Set<EventListener>> listeners, TxState state,
+    protected void notifyListeners(Map<TxState,Set<EventListener>> listeners, TxState state,
 			     boolean pre)
     {
         Set<EventListener> lstnrs = null;
@@ -178,11 +171,11 @@ public class FSMImp implements FSM
      *@param pre True iff before transition.
      */
 
-    protected void notifyListeners ( Hashtable<TxState,Hashtable<TxState,Set<EventListener>>> listeners, TxState from ,
+    protected void notifyListeners ( Map<TxState, Map<TxState,Set<EventListener>>> listeners, TxState from ,
     		TxState to , boolean pre )
     {
         FSMTransitionEvent event = new FSMTransitionEvent (eventsource_, from, to );
-        Hashtable<TxState,Set<EventListener>> lstnrs = null;
+        Map<TxState,Set<EventListener>> lstnrs = null;
         Set<EventListener>  tolstnrs = null;
         synchronized ( this ) {
             lstnrs =  listeners.get( from );
@@ -194,7 +187,7 @@ public class FSMImp implements FSM
 
             //clone to avoid concurrency effects
             //during iteration outside synch block
-            lstnrs = new  Hashtable<TxState,Set<EventListener>> (lstnrs);
+            lstnrs = new  HashMap<TxState,Set<EventListener>> (lstnrs);
             tolstnrs = new HashSet<EventListener>(tolstnrs);
         }
 
@@ -299,10 +292,5 @@ public class FSMImp implements FSM
     {
         addTransitionListener( pretransitionlisteners_ , lstnr , from , to );
     }
-
-
-
-
-
 }
 

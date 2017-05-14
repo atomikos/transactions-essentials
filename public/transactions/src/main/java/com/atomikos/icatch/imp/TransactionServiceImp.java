@@ -42,10 +42,8 @@ import com.atomikos.util.UniqueIdMgr;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -55,9 +53,9 @@ import java.util.Set;
  * General implementation of Transaction Service.
  */
 
-public class TransactionServiceImp implements TransactionServiceProvider,
-        FSMEnterListener, SubTxAwareParticipant, RecoveryService, AdminLog
-{
+public class TransactionServiceImp implements TransactionServiceProvider, FSMEnterListener,
+  SubTxAwareParticipant, RecoveryService, AdminLog {
+
 	  private static final Logger LOGGER = LoggerFactory.createLogger(TransactionServiceImp.class);
     private static final int NUMLATCHES = 97;
     
@@ -71,10 +69,11 @@ public class TransactionServiceImp implements TransactionServiceProvider,
     private StateRecoveryManager recoverymanager_ = null;
     private boolean initialized_ = false;
     private LogControl control_;
+
+  // true for forced compatibility with OTS;
+  // in that case no creation preferences are taken into account
+  // concerning orphan checks
     private boolean otsOverride_;
-    // true for forced compatibility with OTS;
-    // in that case no creation preferences are taken into account
-    // concerning orphan checks
 
     private List<TransactionServicePlugin> tsListeners_;
     private int maxNumberOfActiveTransactions_;
@@ -91,8 +90,6 @@ public class TransactionServiceImp implements TransactionServiceProvider,
      *            The recovery manager to use.
      * @param tidmgr
      *            The String manager to use.
-     * @param console
-     *            The console to use. Null if none.
      * @param maxtimeout
      *            The max timeout for new or imported txs.
      * @param maxActives
@@ -118,8 +115,6 @@ public class TransactionServiceImp implements TransactionServiceProvider,
      *            The recovery manager to use.
      * @param tidmgr
      *            The String manager to use.
-     * @param console
-     *            The console to use. Null if none.
      * @param maxtimeout
      *            The max timeout for new or imported txs.
      * @param checkorphans
@@ -131,7 +126,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
      *            configurations that do not support orphan detection.
      * @param single_threaded_2pc
      *            Whether 2PC commit should happen in the same thread that started the tx.
-     * @param recoveryLog2 
+     * @param recoveryLog
      *
      */
 
@@ -225,16 +220,13 @@ public class TransactionServiceImp implements TransactionServiceProvider,
     }
 
 
-
     /**
      * Removes the coordinator from the root map.
      *
      * @param coord
      *            The coordinator to remove.
      */
-
-    private void removeCoordinator ( CompositeCoordinator coord )
-    {
+    private void removeCoordinator ( CompositeCoordinator coord ) {
 
         synchronized ( shutdownSynchronizer_ ) {
             synchronized ( getLatch ( coord.getCoordinatorId ().intern () ) ) {
@@ -256,9 +248,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
      * @param ct
      *            The transaction to remove.
      */
-
-    private void removeTransaction ( CompositeTransaction ct )
-    {
+    private void removeTransaction ( CompositeTransaction ct ) {
         if ( ct == null )
             return;
         tidToTransactionMap_.remove ( ct.getTid ().intern () );
@@ -271,13 +261,11 @@ public class TransactionServiceImp implements TransactionServiceProvider,
      * @return CompositeTransaction.
      */
 
-    private CompositeTransactionImp createCT ( String tid ,
-            CoordinatorImp coordinator , Deque<CompositeTransaction> lineage , boolean serial )
-            throws SysException
-    {
+    private CompositeTransactionImp createCT ( String tid, CoordinatorImp coordinator,
+      Deque<CompositeTransaction> lineage, boolean serial ) throws SysException {
+
     		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( "Creating composite transaction: " + tid );
-        CompositeTransactionImp ct = new CompositeTransactionImp ( this,
-                lineage, tid, serial, coordinator );
+        CompositeTransactionImp ct = new CompositeTransactionImp ( this, lineage, tid, serial, coordinator );
 
         setTidToTx ( ct.getTid (), ct );
         return ct;
@@ -286,11 +274,9 @@ public class TransactionServiceImp implements TransactionServiceProvider,
     /**
      * Creation method for composite coordinators.
      *
-     * @param RecoveryCoordinator
+     * @param adaptor
      *            An existing coordinator for the given root. Null if not a
      *            subtx, or an <b>adaptor</b> in other cases.
-     * @param lineage
-     *            The ancestor information.
      * @param root
      *            The root id.
      * @param checkOrphans
@@ -375,7 +361,8 @@ public class TransactionServiceImp implements TransactionServiceProvider,
     private CoordinatorImp getCoordinatorImp ( String root )
             throws SysException
     {
-        root = root.intern ();
+        String localRoot = root.intern ();
+
         if ( !initialized_ )
             throw new IllegalStateException ( "Not initialized" );
 
@@ -384,8 +371,8 @@ public class TransactionServiceImp implements TransactionServiceProvider,
             // Synch on shutdownSynchronizer_ first to avoid
             // deadlock, even if we don't seem to need it here
 
-            synchronized ( getLatch ( root ) ) {
-                cc = (CoordinatorImp) rootToCoordinatorMap_.get ( root );   
+            synchronized ( getLatch ( localRoot ) ) {
+                cc = (CoordinatorImp) rootToCoordinatorMap_.get ( localRoot );
             }
         }
 
@@ -489,9 +476,13 @@ public class TransactionServiceImp implements TransactionServiceProvider,
     }
 
     private void performRecovery() {
-		Enumeration<RecoverableResource> resources= Configuration.getResources();
-		while (resources.hasMoreElements()) {
-			RecoverableResource recoverableResource =  resources.nextElement();
+
+
+		List<RecoverableResource> resources = Configuration.getResources();
+		// while (resources.hasMoreElements()) {
+      // RecoverableResource recoverableResource =  resources.nextElement();
+
+    for (RecoverableResource recoverableResource : resources) {
 			try {
 				recoverableResource.recover();
 			} catch (Throwable e) {
@@ -509,7 +500,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
     }
 
     /**
-     * @see FSMEnterListener.
+     * @see FSMEnterListener
      */
 
     public void entered ( FSMEnterEvent event )
@@ -570,15 +561,14 @@ public class TransactionServiceImp implements TransactionServiceProvider,
     {
     	if (Configuration.getConfigProperties().getAllowSubTransactions()) {
     		CompositeTransactionImp ret;
-    		Deque<CompositeTransaction> lineage = ((ArrayDeque<CompositeTransaction>)parent.getLineage ()).clone ();
+    		Deque<CompositeTransaction> lineage = ((ArrayDeque<CompositeTransaction>)parent.getLineage()).clone ();
     		lineage.push ( parent );
     		String tid = tidmgr_.get ();
-    		CoordinatorImp ccParent = (CoordinatorImp) parent
-    				.getCompositeCoordinator ();
+    		CoordinatorImp ccParent = (CoordinatorImp) parent.getCompositeCoordinator ();
     		// create NEW coordinator for subtx, with most of the parent settings
     		// but without orphan checks since subtxs have no orphans
-    		CoordinatorImp cc = createCC ( null, tid, false ,
-                ccParent.prefersHeuristicCommit (), parent.getTimeout () );
+    		CoordinatorImp cc = createCC ( null, tid, false,
+          ccParent.prefersHeuristicCommit (), parent.getTimeout () );
     		ret = createCT ( tid, cc, lineage, parent.isSerial () );
     		ret.noLocalAncestors = false;
     		return ret;
@@ -711,13 +701,20 @@ public class TransactionServiceImp implements TransactionServiceProvider,
 
             	//PURGE to avoid issue 10079
             	//use a clone to avoid concurrency interference
-            	if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( "Transaction Service: Purging coordinators for shutdown..." );
-            	Hashtable<String,CoordinatorImp> clone = new Hashtable<String,CoordinatorImp>(rootToCoordinatorMap_);
-            	Enumeration<String> coordinatorIds = clone.keys();
-            	while ( coordinatorIds.hasMoreElements() ) {
-            		String id = coordinatorIds.nextElement();	
-            		rootToCoordinatorMap_.remove ( id );
-            	}
+            	if ( LOGGER.isTraceEnabled() )
+            	  LOGGER.logTrace ( "Transaction Service: Purging coordinators for shutdown..." );
+
+            	Map<String,CoordinatorImp> clone = new HashMap<String,CoordinatorImp>(rootToCoordinatorMap_);
+
+//            	Enumeration<String> coordinatorIds = clone.keys();
+//            	while ( coordinatorIds.hasMoreElements() ) {
+//            		String id = coordinatorIds.nextElement();
+//            		rootToCoordinatorMap_.remove ( id );
+//            	}
+
+            	for(String id : clone.keySet()) {
+                rootToCoordinatorMap_.remove ( id );
+              }
             }
 
             initialized_ = false;
@@ -759,7 +756,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
     }
 
     /**
-     * @see com.atomikos.icatch.TransactionService#getSuperiorRecoveryCoordinator(java.lang.String)
+     * @see com.atomikos.icatch.TransactionService#getCompositeCoordinator(java.lang.String)
      */
     public RecoveryCoordinator getSuperiorRecoveryCoordinator ( String root )
     {
@@ -770,7 +767,6 @@ public class TransactionServiceImp implements TransactionServiceProvider,
         }
         return ret;
     }
-
 
     public CompositeTransaction createCompositeTransaction ( long timeout ) throws SysException
     {
@@ -824,5 +820,4 @@ public class TransactionServiceImp implements TransactionServiceProvider,
 	public RecoveryLog getRecoveryLog() {
 		return this.recoveryLog;
 	}
-
 }

@@ -20,20 +20,19 @@ import com.atomikos.logging.LoggerFactory;
 import com.atomikos.recovery.TxState;
 import com.atomikos.thread.InterruptedExceptionHelper;
 
-import java.util.Enumeration;
 import java.util.List;
 
 /**
  * A state handler for the active coordinator state.
  */
 
-class ActiveStateHandler extends CoordinatorStateHandler
-{
+class ActiveStateHandler extends CoordinatorStateHandler {
+
   private static final Logger LOGGER = LoggerFactory.createLogger(ActiveStateHandler.class);
 
-  private long rollbackTicks_;
   // how many timeout events have happened?
   // if max allowed -> rollback on timeout
+  private long rollbackTicks_;
 
   private int globalSiblingCount_;
 
@@ -46,7 +45,6 @@ class ActiveStateHandler extends CoordinatorStateHandler
     wasSetToRollbackOnly = false;
   }
 
-
   protected long getRollbackTicks()
   {
     return rollbackTicks_;
@@ -57,8 +55,7 @@ class ActiveStateHandler extends CoordinatorStateHandler
     return TxState.ACTIVE;
   }
 
-  protected void onTimeout()
-  {
+  protected void onTimeout() {
 
     try
     {

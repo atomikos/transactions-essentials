@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>com.atomikos</groupId>
 		<artifactId>ate</artifactId>
-		<version>4.0.4</version>
+    <version>4.0.5-SNAPSHOT</version>
 	</parent>
 	<artifactId>transactions-tcc-rest</artifactId>
 	<name>Transactions / TCC FOR REST</name>
@@ -28,7 +28,7 @@
 					<executable>java</executable>
 					<arguments>
 						<argument>-classpath</argument>
-						<!-- automatically creates the classpath using all project dependencies, 
+						<!-- automatically creates the classpath using all project dependencies,
 							also adding the project build directory -->
 						<classpath />
 						<argument>com.atomikos.icatch.tcc.rest.Server</argument>
@@ -82,19 +82,19 @@
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-rt-transports-http-jetty</artifactId>
-			<version>${cxf.vefrsion}</version>
+			<version>${cxf.version}</version>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-rt-rs-client</artifactId>
-			<version>${cxf.vefrsion}</version>
+			<version>${cxf.version}</version>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-rt-frontend-jaxrs</artifactId>
-			<version>${cxf.vefrsion}</version>
+			<version>${cxf.version}</version>
 			<optional>true</optional>
       <exclusions>
         <exclusion>
@@ -106,7 +106,7 @@
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-rt-rs-extension-providers</artifactId>
-			<version>${cxf.vefrsion}</version>
+			<version>${cxf.version}</version>
 			<optional>true</optional>
 		</dependency>
 		<dependency>

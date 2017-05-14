@@ -38,7 +38,7 @@ public class ExtentImp implements Extent
   @SuppressWarnings("WeakerAccess")
   public ExtentImp()
   {
-    participants = new Hashtable<>();
+    participants = new HashMap<>();
     directs_ = new ArrayDeque<>();
   }
 
@@ -55,17 +55,17 @@ public class ExtentImp implements Extent
   {
     if (participants == null)
       return;
-    Set<String> enumm = participants.keySet();
-    for (String participant : enumm)
+    Set<String> keySet = participants.keySet();
+    for (String participantKey : keySet)
     {
-      Integer count = this.participants.get(participant);
+      Integer count = this.participants.get(participantKey);
       if (count == null)
         count = 0;
 
-      Integer cnt = participants.get(participant);
+      Integer cnt = participants.get(participantKey);
       count = count + cnt;
 
-      this.participants.put(participant, count);
+      this.participants.put(participantKey, count);
       // NOTE: this will replace the old participant, and if
       // it is a proxy then the buffered heuristic msgs will
       // also be replaced. This loses info if multiple PARALLEL calls
