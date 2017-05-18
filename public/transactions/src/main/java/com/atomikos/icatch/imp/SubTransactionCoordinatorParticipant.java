@@ -17,8 +17,6 @@ import com.atomikos.icatch.HeurRollbackException;
 import com.atomikos.icatch.Participant;
 import com.atomikos.icatch.RollbackException;
 import com.atomikos.icatch.SysException;
-import com.atomikos.icatch.TransactionService;
-import com.atomikos.icatch.config.Configuration;
 
 /**
  * A participant for registering a subtx coordinator as a subordinate in 2PC of
@@ -47,16 +45,6 @@ public class SubTransactionCoordinatorParticipant implements Participant
         this.subordinateCoordinator = subordinateCoordinator;
         this.subordinateId = subordinateCoordinator.getCoordinatorId ();
         this.prepareCalled = false;
-    }
-
-    /**
-     * @see com.atomikos.icatch.Participant#recover()
-     */
-    public boolean recover () throws SysException
-    {
-        TransactionService ts = Configuration.getTransactionService ();
-        subordinateCoordinator = ts.getParticipant ( subordinateId );
-        return subordinateCoordinator != null;
     }
 
     /**
