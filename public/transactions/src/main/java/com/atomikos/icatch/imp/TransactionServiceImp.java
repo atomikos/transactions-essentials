@@ -569,9 +569,10 @@ public class TransactionServiceImp implements TransactionServiceProvider,
     		String tid = tidmgr_.get ();
     		CoordinatorImp ccParent = (CoordinatorImp) parent
     				.getCompositeCoordinator ();
+    		SubTransactionRecoveryCoordinator rc = new SubTransactionRecoveryCoordinator(ccParent.getCoordinatorId());
     		// create NEW coordinator for subtx, with most of the parent settings
     		// but without orphan checks since subtxs have no orphans
-    		CoordinatorImp cc = createCC ( null, tid, false ,
+    		CoordinatorImp cc = createCC ( rc, tid, false ,
                 ccParent.prefersHeuristicCommit (), parent.getTimeout () );
     		ret = createCT ( tid, cc, lineage, parent.isSerial () );
     		ret.noLocalAncestors = false;
@@ -750,20 +751,6 @@ public class TransactionServiceImp implements TransactionServiceProvider,
             super.finalize ();
         }
     }
-
-    /**
-     * @see com.atomikos.icatch.TransactionService#getSuperiorRecoveryCoordinator(java.lang.String)
-     */
-    public RecoveryCoordinator getSuperiorRecoveryCoordinator ( String root )
-    {
-        RecoveryCoordinator ret = null;
-        CoordinatorImp c = getCoordinatorImp ( root );
-        if ( c != null ) {
-            ret = c.getSuperiorRecoveryCoordinator ();
-        }
-        return ret;
-    }
-
 
     public CompositeTransaction createCompositeTransaction ( long timeout ) throws SysException
     {

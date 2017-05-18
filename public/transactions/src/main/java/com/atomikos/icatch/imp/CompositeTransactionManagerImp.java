@@ -144,20 +144,6 @@ public class CompositeTransactionManagerImp implements CompositeTransactionManag
         }
     }
 
-
-
-    /**
-     * Get the participant for the given root. Needed for recovery of JCA
-     * inbound transactions.
-     *
-     * @param root
-     * @return The participant.
-     */
-    public Participant getParticipant ( String root )
-    {
-        return getTransactionService().getParticipant ( root );
-    }
-
     private TransactionService getTransactionService() {
     	TransactionService ret = Configuration.getTransactionService();
     	if (ret == null) throw new IllegalStateException("Not initialized");
