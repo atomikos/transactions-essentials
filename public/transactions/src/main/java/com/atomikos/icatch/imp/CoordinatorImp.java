@@ -638,11 +638,6 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 		return ret;
 	}
 
-    
-    public Object getId ()
-    {
-        return root_;
-    }
 
     public void alarm ( AlarmTimer timer )
     {

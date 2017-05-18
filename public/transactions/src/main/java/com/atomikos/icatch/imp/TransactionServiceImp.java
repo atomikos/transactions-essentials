@@ -205,10 +205,10 @@ public class TransactionServiceImp implements TransactionServiceProvider,
     private Vector<CoordinatorImp> getCoordinatorImpVector ()
     {
         Vector<CoordinatorImp> ret = new Vector<CoordinatorImp> ();
-        Enumeration<String> tids = rootToCoordinatorMap_.keys ();
+        Enumeration<String> tids = rootToCoordinatorMap_.keys (); //TODO use id instead of root
         while ( tids.hasMoreElements () ) {
             String next = tids.nextElement ();
-            CoordinatorImp c = getCoordinatorImp ( next );
+            CoordinatorImp c = getCoordinatorImpForRoot ( next ); //TODO use id instead of root
             if ( c != null ) {
                 // not synchronized -> may be null if removed
                 // between enummeration time and retrieval
@@ -366,7 +366,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
             removeCoordinator ( coordinator );
     }
 
-    private CoordinatorImp getCoordinatorImp ( String root )
+    private CoordinatorImp getCoordinatorImpForRoot ( String root )
             throws SysException
     {
         root = root.intern ();
@@ -410,7 +410,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
     public CompositeCoordinator getCompositeCoordinator ( String root )
             throws SysException
     {
-        return getCoordinatorImp ( root );
+        return getCoordinatorImpForRoot ( root );
     }
 
     /**
@@ -499,7 +499,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
 
     public Participant getParticipant ( String root ) throws SysException
     {
-        return getCoordinatorImp ( root );
+        return getCoordinatorImpForRoot ( root );
     }
 
     /**
@@ -624,7 +624,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
                     .peek ();
             synchronized ( shutdownSynchronizer_ ) {
                 synchronized ( getLatch ( root.getTid () ) ) {
-                    cc = getCoordinatorImp ( root.getTid () );
+                    cc = getCoordinatorImpForRoot ( root.getTid () );
                     if ( cc == null ) {
                         RecoveryCoordinator coord = parent
                                 .getCompositeCoordinator ()
@@ -794,7 +794,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
 	public void remove(String coordinatorId) {
 		Vector<CoordinatorImp> coordinatorImpVector = getCoordinatorImpVector();
 		for (CoordinatorImp coordinatorImp : coordinatorImpVector) {
-			if(coordinatorImp.getId().equals(coordinatorId)){
+			if(coordinatorImp.getCoordinatorId().equals(coordinatorId)){
 				coordinatorImp.forget();
 			}
 		}
