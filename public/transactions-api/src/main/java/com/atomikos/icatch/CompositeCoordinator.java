@@ -18,12 +18,16 @@ public interface CompositeCoordinator extends java.io.Serializable
 {
 
     /**
-     * @return String The coordinatorId. For imported transactions, this will be the
-     * id of the top-level or root transaction. 
-     * For subtransactions, this will be an independent id.
+     * @return The coordinatorId. 
      */
 
      String getCoordinatorId();
+     
+     /**
+      * 
+      * @return The top-level root's coordinatorId.
+      */
+     String getRootId();
    
 
     /**
