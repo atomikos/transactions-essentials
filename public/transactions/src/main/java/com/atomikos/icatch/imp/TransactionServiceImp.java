@@ -752,20 +752,6 @@ public class TransactionServiceImp implements TransactionServiceProvider,
         }
     }
 
-    /**
-     * @see com.atomikos.icatch.TransactionService#getSuperiorRecoveryCoordinator(java.lang.String)
-     */
-    public RecoveryCoordinator getSuperiorRecoveryCoordinator ( String root )
-    {
-        RecoveryCoordinator ret = null;
-        CoordinatorImp c = getCoordinatorImp ( root );
-        if ( c != null ) {
-            ret = c.getSuperiorRecoveryCoordinator ();
-        }
-        return ret;
-    }
-
-
     public CompositeTransaction createCompositeTransaction ( long timeout ) throws SysException
     {
         if ( !initialized_ ) throw new IllegalStateException ( "Not initialized" );
