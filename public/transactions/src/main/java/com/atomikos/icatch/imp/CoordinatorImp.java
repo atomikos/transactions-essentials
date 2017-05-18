@@ -82,6 +82,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     private long maxNumberOfTimeoutTicksBeforeRollback_ = MAX_NUMBER_OF_TIMEOUT_TICKS_BEFORE_ROLLBACK_OF_ACTIVES;
 
     private String root_ = null;
+    private String coordinatorId = null;
     private FSM fsm_ = null;
     private boolean heuristicMeansCommit_ = true;
     private Vector<Participant> participants_ = new Vector<Participant>();
@@ -99,7 +100,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
         boolean checkorphans )
     {
         root_ = root;
-        
+        this.coordinatorId = root;
         initFsm(TxState.ACTIVE);
         
         heuristicMeansCommit_ = heuristic_commit;
@@ -130,6 +131,8 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     /**
      * Constructor.
      *
+     * @param coordinatorId
+     * 
      * @param root
      *            The root tid.
      * @param coord
@@ -149,11 +152,12 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
      *            started the tx.
      */
 
-    protected CoordinatorImp ( String root , RecoveryCoordinator coord ,
+    protected CoordinatorImp ( String coordinatorId, String root , RecoveryCoordinator coord ,
              boolean heuristic_commit ,
             long timeout , boolean checkorphans , boolean single_threaded_2pc )
     {
         root_ = root;
+        this.coordinatorId = coordinatorId;
         single_threaded_2pc_ = single_threaded_2pc;
 	    initFsm(TxState.ACTIVE );
         heuristicMeansCommit_ = heuristic_commit;
@@ -371,7 +375,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 
     public String getCoordinatorId ()
     {
-        return root_;
+        return coordinatorId;
     }
 
     RecoveryCoordinator addParticipant (
@@ -803,6 +807,11 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 	@Override
 	public String getResourceName() {
 		return null;
+	}
+
+	@Override
+	public String getRootId() {
+		return root_;
 	}
 
 }

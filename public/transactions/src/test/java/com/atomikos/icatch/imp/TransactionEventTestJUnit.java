@@ -32,7 +32,7 @@ public class TransactionEventTestJUnit {
 	private EventListener eventListenerMock;
 
 	private CoordinatorImp createCoordinator() {
-		return new CoordinatorImp ( ID , null ,  false , 1000 , false , true );
+		return new CoordinatorImp ( ID,  ID , null ,  false , 1000 , false , true );
 	}
 	
 	@Before

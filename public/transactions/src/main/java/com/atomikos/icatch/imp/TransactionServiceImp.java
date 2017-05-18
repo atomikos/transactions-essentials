@@ -323,7 +323,11 @@ public class TransactionServiceImp implements TransactionServiceProvider,
                 // forced OTS mode; we do NEVER check orphans in this case
                 checkOrphans = false;
             }
-            cc = new CoordinatorImp ( root, adaptor,
+            String coordinatorId = root;
+            if (adaptor != null ) { //not a root
+            	coordinatorId = tidmgr_.get();
+            }
+            cc = new CoordinatorImp ( coordinatorId, root, adaptor,
                     heuristic_commit, timeout,
                     checkOrphans , single_threaded_2pc_ );
 
