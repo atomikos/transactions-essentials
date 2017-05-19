@@ -331,7 +331,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
 
             // now, add to root map, since we are sure there are not too many active txs
             synchronized ( getLatch ( root) ) {
-                if (recreatedInstance) {
+                if (recreatedInstance || cc.getSuperiorRecoveryCoordinator() == null) {
                 	recreatedCoordinatorsByRootId.put(root, cc);
                 }
                 allCoordinatorsByCoordinatorId.put(coordinatorId, cc);
