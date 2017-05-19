@@ -8,13 +8,10 @@
 
 package com.atomikos.icatch.imp;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -42,7 +39,6 @@ import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 import com.atomikos.persistence.StateRecoveryManager;
 import com.atomikos.recovery.AdminLog;
-import com.atomikos.recovery.CoordinatorLogEntry;
 import com.atomikos.recovery.LogException;
 import com.atomikos.recovery.RecoveryLog;
 import com.atomikos.recovery.TxState;
@@ -57,7 +53,7 @@ import com.atomikos.util.UniqueIdMgr;
  */
 
 public class TransactionServiceImp implements TransactionServiceProvider,
-        FSMEnterListener, SubTxAwareParticipant, RecoveryService, AdminLog
+        FSMEnterListener, SubTxAwareParticipant, RecoveryService
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(TransactionServiceImp.class);
     private static final int NUMLATCHES = 97;
@@ -196,25 +192,6 @@ public class TransactionServiceImp implements TransactionServiceProvider,
             ct.addSubTxAwareParticipant(this); // for GC purposes
         }
     }
-
-    /**
-     * For inspector tool: get a list of all active coordinator instances, to
-     * allow admin intervention.
-     *
-     * @return Vector A copy of the list of active coordinators. Empty vector if
-     *         none.
-     */
-
-    private Vector<CoordinatorImp> getCoordinatorImpVector ()
-    {
-    	if ( !initialized_ )
-             throw new IllegalStateException ( "Not initialized" );
-    	
-        Collection<CoordinatorImp> coordinators = allCoordinatorsByCoordinatorId.values(); 
-        return new Vector<CoordinatorImp>(coordinators);
-    }
-
-
 
     /**
      * Removes the coordinator from the root map.
@@ -775,30 +752,6 @@ public class TransactionServiceImp implements TransactionServiceProvider,
 	@Override
 	public RecoveryService getRecoveryService() {
 		return this;
-	}
-
-	@Override
-	public CoordinatorLogEntry[] getCoordinatorLogEntries() {
-		Vector<CoordinatorImp> coordinatorImpVector = getCoordinatorImpVector();
-		List<CoordinatorLogEntry> coordinatorLogEntries = new ArrayList<CoordinatorLogEntry>(coordinatorImpVector.size());
-		for (CoordinatorImp coordinatorImp : coordinatorImpVector) {
-			CoordinatorLogEntry coordinatorLogEntry = coordinatorImp.getCoordinatorLogEntry();
-			if (coordinatorLogEntry != null) {
-				coordinatorLogEntries.add(coordinatorLogEntry);	
-			}
-			
-		}
-		return coordinatorLogEntries.toArray(new CoordinatorLogEntry[coordinatorLogEntries.size()]);
-	}
-
-	@Override
-	public void remove(String coordinatorId) {
-		Vector<CoordinatorImp> coordinatorImpVector = getCoordinatorImpVector();
-		for (CoordinatorImp coordinatorImp : coordinatorImpVector) {
-			if(coordinatorImp.getCoordinatorId().equals(coordinatorId)){
-				coordinatorImp.forget();
-			}
-		}
 	}
 
 	@Override
