@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.Stack;
-import java.util.Vector;
 
 import com.atomikos.datasource.RecoverableResource;
 import com.atomikos.finitestates.FSMEnterEvent;
@@ -74,7 +73,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
     // in that case no creation preferences are taken into account
     // concerning orphan checks
 
-    private Vector<TransactionServicePlugin> tsListeners_;
+    private Set<TransactionServicePlugin> tsListeners = new HashSet<>();
     private int maxNumberOfActiveTransactions_;
     private String tmUniqueName_;
     private boolean single_threaded_2pc_;
@@ -155,7 +154,6 @@ public class TransactionServiceImp implements TransactionServiceProvider,
         maxTimeout_ = maxtimeout;	
         
         tmUniqueName_ = name;
-        tsListeners_ = new Vector<TransactionServicePlugin>();
         single_threaded_2pc_ = single_threaded_2pc;
         this.recoveryLog  = recoveryLog;
     }
@@ -407,11 +405,8 @@ public class TransactionServiceImp implements TransactionServiceProvider,
         // during recovery, and recovery happens inside
         // init!
 
-    		if ( ! tsListeners_.contains ( listener ) ) {
-    			tsListeners_.addElement ( listener );
-    			if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace (  "Added TSListener: " + listener );
-    		}
-
+    	tsListeners.add( listener );
+    	if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace (  "Added TSListener: " + listener );
 
     }
 
@@ -422,7 +417,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
     public void removeTSListener ( TransactionServicePlugin listener )
     {
 
-        tsListeners_.removeElement ( listener );
+        tsListeners.remove(listener);
         if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace  ( "Removed TSListener: " + listener );
 
     }
