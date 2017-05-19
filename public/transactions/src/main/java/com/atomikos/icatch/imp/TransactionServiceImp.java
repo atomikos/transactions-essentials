@@ -89,8 +89,6 @@ public class TransactionServiceImp implements TransactionServiceProvider,
      *            The recovery manager to use.
      * @param tidmgr
      *            The String manager to use.
-     * @param console
-     *            The console to use. Null if none.
      * @param maxtimeout
      *            The max timeout for new or imported txs.
      * @param maxActives
@@ -116,8 +114,6 @@ public class TransactionServiceImp implements TransactionServiceProvider,
      *            The recovery manager to use.
      * @param tidmgr
      *            The String manager to use.
-     * @param console
-     *            The console to use. Null if none.
      * @param maxtimeout
      *            The max timeout for new or imported txs.
      * @param checkorphans
