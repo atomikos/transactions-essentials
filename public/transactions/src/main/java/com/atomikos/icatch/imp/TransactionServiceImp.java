@@ -9,10 +9,13 @@
 package com.atomikos.icatch.imp;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.Stack;
@@ -62,7 +65,8 @@ public class TransactionServiceImp implements TransactionServiceProvider,
     private long maxTimeout_;
     private Object[] rootLatches_ = null;
     private Hashtable<String,CompositeTransaction> tidToTransactionMap_ = null;
-    private Hashtable<String,CoordinatorImp> rootToCoordinatorMap_ = null;
+    private Map<String, CoordinatorImp> recreatedCoordinatorsByRootId = new HashMap<>();
+    private Map<String, CoordinatorImp> allCoordinatorsByCoordinatorId = new HashMap<>();
     private boolean shutdownInProgress_ = false;
     private Object shutdownSynchronizer_;
     private UniqueIdMgr tidmgr_ = null;
@@ -147,7 +151,6 @@ public class TransactionServiceImp implements TransactionServiceProvider,
         tidmgr_ = tidmgr;
         tidToTransactionMap_ = new Hashtable<String,CompositeTransaction>();
         shutdownSynchronizer_ = new Object();
-        rootToCoordinatorMap_ = new Hashtable<String,CoordinatorImp>();
         rootLatches_ = new Object[NUMLATCHES];
         for (int i = 0; i < NUMLATCHES; i++) {
             rootLatches_[i] = new Object();
@@ -204,19 +207,11 @@ public class TransactionServiceImp implements TransactionServiceProvider,
 
     private Vector<CoordinatorImp> getCoordinatorImpVector ()
     {
-        Vector<CoordinatorImp> ret = new Vector<CoordinatorImp> ();
-        Enumeration<String> tids = rootToCoordinatorMap_.keys (); //TODO use id instead of root
-        while ( tids.hasMoreElements () ) {
-            String next = tids.nextElement ();
-            CoordinatorImp c = getCoordinatorImpForRoot ( next ); //TODO use id instead of root
-            if ( c != null ) {
-                // not synchronized -> may be null if removed
-                // between enummeration time and retrieval
-                // in that case, merely leave it out of returned list
-                ret.addElement ( c );
-            }
-        }
-        return ret;
+    	if ( !initialized_ )
+             throw new IllegalStateException ( "Not initialized" );
+    	
+        Collection<CoordinatorImp> coordinators = allCoordinatorsByCoordinatorId.values(); 
+        return new Vector<CoordinatorImp>(coordinators);
     }
 
 
@@ -232,13 +227,13 @@ public class TransactionServiceImp implements TransactionServiceProvider,
     {
 
         synchronized ( shutdownSynchronizer_ ) {
-            synchronized ( getLatch ( coord.getRootId().intern () ) ) {
-
-                rootToCoordinatorMap_.remove ( coord.getRootId().intern () );
+            synchronized ( getLatch ( coord.getRootId()) ) {
+                recreatedCoordinatorsByRootId.remove (coord.getRootId());
+                allCoordinatorsByCoordinatorId.remove(coord.getCoordinatorId());
             }
 
             // notify any waiting threads for shutdown
-            if ( rootToCoordinatorMap_.isEmpty () )
+            if ( allCoordinatorsByCoordinatorId.isEmpty() )
                 shutdownSynchronizer_.notifyAll ();
         }
     }
@@ -324,7 +319,8 @@ public class TransactionServiceImp implements TransactionServiceProvider,
                 checkOrphans = false;
             }
             String coordinatorId = root;
-            if (adaptor != null ) { //not a root
+            boolean recreatedInstance = (adaptor != null);
+            if (recreatedInstance) { //not a root
             	coordinatorId = tidmgr_.get();
             }
             cc = new CoordinatorImp ( coordinatorId, root, adaptor,
@@ -334,8 +330,11 @@ public class TransactionServiceImp implements TransactionServiceProvider,
             recoverymanager_.register ( cc );
 
             // now, add to root map, since we are sure there are not too many active txs
-            synchronized ( getLatch ( root.intern () ) ) {
-                rootToCoordinatorMap_.put ( root.intern (), cc );
+            synchronized ( getLatch ( root) ) {
+                if (recreatedInstance) {
+                	recreatedCoordinatorsByRootId.put(root, cc);
+                }
+                allCoordinatorsByCoordinatorId.put(coordinatorId, cc);
             }
             startlistening ( cc );
         }
@@ -383,13 +382,14 @@ public class TransactionServiceImp implements TransactionServiceProvider,
             // deadlock, even if we don't seem to need it here
 
             synchronized ( getLatch ( root ) ) {
-                cc = (CoordinatorImp) rootToCoordinatorMap_.get ( root );   
+                cc = recreatedCoordinatorsByRootId.get(root);
             }
         }
 
         return cc;
     }
-
+    
+   
     public String getName ()
     {
         return tmUniqueName_;
@@ -674,18 +674,17 @@ public class TransactionServiceImp implements TransactionServiceProvider,
             // to enter this method will do the following. Don't do
             // it twice.
 
-            Enumeration<String> enumm = rootToCoordinatorMap_.keys ();
-            while ( enumm.hasMoreElements () ) {
-                String tid = enumm.nextElement ();
-                LOGGER.logTrace ( "Transaction Service: Stopping thread for root "
-                                + tid + "..." );
-                CoordinatorImp c = (CoordinatorImp) rootToCoordinatorMap_
-                        .get ( tid );
-                if ( c != null ) { //null if intermediate termination while in enumm
-                		c.dispose (); //needed for forced shutdown
-                }
-                LOGGER.logTrace ( "Transaction Service: Thread stopped." );
+            for (String next : allCoordinatorsByCoordinatorId.keySet()) {
+                 LOGGER.logTrace ( "Transaction Service: Stopping thread for coordinatorId "
+                                 + next + "..." );
+                 CoordinatorImp c  = allCoordinatorsByCoordinatorId.get(next);
+                 if (c != null) { // null on concurrent termination / removal
+                	 c.dispose (); // needed for forced shutdown
+                 }
+                 LOGGER.logTrace ( "Transaction Service: Thread stopped." );
             }
+               
+            
 
         } // if wasShuttingDown
 
@@ -702,7 +701,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
             // instances that have been swapped out, hence who
             // can not be indoubt.
 
-            while ( !rootToCoordinatorMap_.isEmpty () && !force ) {
+            while ( !allCoordinatorsByCoordinatorId.isEmpty () && !force ) {
             	
             	performRecovery();
             	recoveryLog.close(maxWaitTime);
@@ -710,11 +709,9 @@ public class TransactionServiceImp implements TransactionServiceProvider,
             	//PURGE to avoid issue 10079
             	//use a clone to avoid concurrency interference
             	if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( "Transaction Service: Purging coordinators for shutdown..." );
-            	Hashtable<String,CoordinatorImp> clone = new Hashtable<String,CoordinatorImp>(rootToCoordinatorMap_);
-            	Enumeration<String> coordinatorIds = clone.keys();
-            	while ( coordinatorIds.hasMoreElements() ) {
-            		String id = coordinatorIds.nextElement();	
-            		rootToCoordinatorMap_.remove ( id );
+            	Map<String, CoordinatorImp> clone = new HashMap<>(allCoordinatorsByCoordinatorId);
+            	for ( String id : clone.keySet() ) {
+            		allCoordinatorsByCoordinatorId.remove (id);
             	}
             }
 
