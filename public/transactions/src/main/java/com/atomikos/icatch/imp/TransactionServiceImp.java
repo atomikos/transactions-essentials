@@ -232,9 +232,9 @@ public class TransactionServiceImp implements TransactionServiceProvider,
     {
 
         synchronized ( shutdownSynchronizer_ ) {
-            synchronized ( getLatch ( coord.getCoordinatorId ().intern () ) ) {
+            synchronized ( getLatch ( coord.getRootId().intern () ) ) {
 
-                rootToCoordinatorMap_.remove ( coord.getCoordinatorId ().intern () );
+                rootToCoordinatorMap_.remove ( coord.getRootId().intern () );
             }
 
             // notify any waiting threads for shutdown
