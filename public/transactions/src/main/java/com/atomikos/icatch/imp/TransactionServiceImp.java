@@ -56,6 +56,8 @@ public class TransactionServiceImp implements TransactionServiceProvider,
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(TransactionServiceImp.class);
     private static final int NUMLATCHES = 97;
+    private static final Object shutdownSynchronizer = new Object();
+
     
     private long maxTimeout_;
     private Object[] rootLatches_ = null;
@@ -63,7 +65,6 @@ public class TransactionServiceImp implements TransactionServiceProvider,
     private Map<String, CoordinatorImp> recreatedCoordinatorsByRootId = new HashMap<>();
     private Map<String, CoordinatorImp> allCoordinatorsByCoordinatorId = new HashMap<>();
     private boolean shutdownInProgress_ = false;
-    private Object shutdownSynchronizer_;
     private UniqueIdMgr tidmgr_ = null;
     private StateRecoveryManager recoverymanager_ = null;
     private boolean initialized_ = false;
@@ -88,8 +89,6 @@ public class TransactionServiceImp implements TransactionServiceProvider,
      *            The recovery manager to use.
      * @param tidmgr
      *            The String manager to use.
-     * @param console
-     *            The console to use. Null if none.
      * @param maxtimeout
      *            The max timeout for new or imported txs.
      * @param maxActives
@@ -115,8 +114,6 @@ public class TransactionServiceImp implements TransactionServiceProvider,
      *            The recovery manager to use.
      * @param tidmgr
      *            The String manager to use.
-     * @param console
-     *            The console to use. Null if none.
      * @param maxtimeout
      *            The max timeout for new or imported txs.
      * @param checkorphans
@@ -145,7 +142,6 @@ public class TransactionServiceImp implements TransactionServiceProvider,
         recoverymanager_ = recoverymanager;
         tidmgr_ = tidmgr;
         tidToTransactionMap_ = new Hashtable<String,CompositeTransaction>();
-        shutdownSynchronizer_ = new Object();
         rootLatches_ = new Object[NUMLATCHES];
         for (int i = 0; i < NUMLATCHES; i++) {
             rootLatches_[i] = new Object();
@@ -201,7 +197,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
     private void removeCoordinator ( CompositeCoordinator coord )
     {
 
-        synchronized ( shutdownSynchronizer_ ) {
+        synchronized ( shutdownSynchronizer ) {
             synchronized ( getLatch ( coord.getRootId()) ) {
                 recreatedCoordinatorsByRootId.remove (coord.getRootId());
                 allCoordinatorsByCoordinatorId.remove(coord.getCoordinatorId());
@@ -209,7 +205,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
 
             // notify any waiting threads for shutdown
             if ( allCoordinatorsByCoordinatorId.isEmpty() )
-                shutdownSynchronizer_.notifyAll ();
+                shutdownSynchronizer.notifyAll ();
         }
     }
 
@@ -283,7 +279,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
             LOGGER.logWarning ( "Attempt to create a transaction with a timeout that exceeds maximum - truncating to: " + maxTimeout_ );
         }
 
-        synchronized ( shutdownSynchronizer_ ) {
+        synchronized ( shutdownSynchronizer ) {
             // check if shutting down -> do not allow new coordinator objects
             // to be added, so that shutdown will eventually succeed.
             if ( shutdownInProgress_ )
@@ -352,7 +348,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
             throw new IllegalStateException ( "Not initialized" );
 
         CoordinatorImp cc = null;
-        synchronized ( shutdownSynchronizer_ ) {
+        synchronized ( shutdownSynchronizer ) {
             // Synch on shutdownSynchronizer_ first to avoid
             // deadlock, even if we don't seem to need it here
 
@@ -598,7 +594,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
 
             CompositeTransaction parent = (CompositeTransaction) lineage
                     .peek ();
-            synchronized ( shutdownSynchronizer_ ) {
+            synchronized ( shutdownSynchronizer ) {
                 synchronized ( getLatch ( root.getTid () ) ) {
                     cc = getCoordinatorImpForRoot ( root.getTid () );
                     if ( cc == null ) {
@@ -661,7 +657,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
         } // if wasShuttingDown
 
 
-        synchronized ( shutdownSynchronizer_ ) {
+        synchronized ( shutdownSynchronizer ) {
         	LOGGER.logTrace ( "Transaction Service: Shutdown acquired lock on waiter." );
             wasShuttingDown = shutdownInProgress_;
             shutdownInProgress_ = true;
