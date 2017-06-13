@@ -10,6 +10,10 @@
   <artifactId>transactions</artifactId>
   <name>Transactions Core</name>
 
+  <properties>
+    <maven.javadoc.skip>true</maven.javadoc.skip>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>com.atomikos</groupId>

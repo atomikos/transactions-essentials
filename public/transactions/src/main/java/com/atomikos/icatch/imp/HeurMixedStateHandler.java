@@ -8,11 +8,6 @@
 
 package com.atomikos.icatch.imp;
 
-import java.util.Deque;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Set;
-
 import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeurMixedException;
@@ -22,6 +17,10 @@ import com.atomikos.icatch.RollbackException;
 import com.atomikos.icatch.SysException;
 import com.atomikos.recovery.TxState;
 import com.atomikos.thread.InterruptedExceptionHelper;
+
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.Set;
 
 /** 
  * A state handler for the heuristic mixed coordinator state.
@@ -80,10 +79,6 @@ class HeurMixedStateHandler extends CoordinatorStateHandler
                 // hazard_ is empty.
 
                 Deque<Reply> replies = result.getReplies ();
-
-//                Enumeration<Reply> enumm = replies.elements ();
-//                while ( enumm.hasMoreElements () ) {
-//                    Reply reply = enumm.nextElement ();
 
                 for (Reply reply : replies) {
                     if ( !reply.hasFailed () ) {

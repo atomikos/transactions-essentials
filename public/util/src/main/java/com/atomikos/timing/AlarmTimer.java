@@ -5,16 +5,16 @@
  *
  * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
  */
-
 package com.atomikos.timing;
 
+import java.io.Serializable;
 
 /**
  * A common interface for timers.
  * 
  * @author Lars J. Nilsson
  */
-public interface AlarmTimer extends Runnable {
+public interface AlarmTimer extends Serializable, Runnable {
 
 	public long getTimeout();
 
@@ -25,5 +25,4 @@ public interface AlarmTimer extends Runnable {
 	public void addAlarmTimerListener(AlarmTimerListener lstnr);
 
 	public void removeAlarmTimerListener(AlarmTimerListener lstnr);
-
 }

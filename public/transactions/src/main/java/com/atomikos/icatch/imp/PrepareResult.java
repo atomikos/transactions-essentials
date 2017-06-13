@@ -92,52 +92,6 @@ class PrepareResult extends Result
           allReadOnly = (allReadOnly && readonly);
         }
 
-//        Enumeration<Reply> enumm = replies.elements ();
-//
-//        while ( enumm.hasMoreElements () ) {
-//            boolean yes = false;
-//            boolean readonly = false;
-//
-//            Reply reply = (Reply) enumm.nextElement ();
-//
-//            if ( reply.hasFailed () ) {
-//                yes = false;
-//                readonly = false;
-//
-//                Exception err = reply.getException ();
-//                if ( err instanceof HeurMixedException ) {
-//                    heurmixed = true;
-//                } else if ( err instanceof HeurCommitException ) {
-//                    heurcommits = true;
-//                    heurmixed = (heurmixed || heurhazards);
-//                } else if ( err instanceof HeurHazardException ) {
-//                    heurhazards = true;
-//                    heurmixed = (heurmixed || heurcommits);
-//                    indoubts_.add ( reply.getParticipant ());
-//                    // REMEMBER: might be indoubt, so HAS to be notified
-//                    // during rollback!
-//                }
-//
-//            }// if failed
-//
-//            else {
-//                readonly = (reply.getResponse () == null);
-//                Boolean answer = new Boolean ( false );
-//                if ( !readonly ) {
-//                    answer = (Boolean) reply.getResponse ();
-//                }
-//                yes = (readonly || answer.booleanValue ());
-//
-//                // if readonly: remember this fact for logging and second phase
-//                if ( readonly ) readonlytable_.add ( reply.getParticipant () );
-//                else indoubts_.add ( reply.getParticipant ());
-//            }
-//
-//            allYes = (allYes && yes);
-//            allReadOnly = (allReadOnly && readonly);
-//
-//        }
-
         if ( heurmixed )
             result_ = HEUR_MIXED;
         else if ( heurcommits )

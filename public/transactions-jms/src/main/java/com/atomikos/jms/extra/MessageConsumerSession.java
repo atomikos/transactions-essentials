@@ -248,7 +248,7 @@ class MessageConsumerSession
 	    active = true;
 	    startNewThread();
 
-	    StringBuffer msg = new StringBuffer();
+      StringBuilder msg = new StringBuilder();
 	    msg.append ( "MessageConsumerSession configured with [" );
 	    msg.append ( "user=" ).append( getUser() ).append ( ", " );
 	    msg.append ( "password=" ).append ( password ).append ( ", " );

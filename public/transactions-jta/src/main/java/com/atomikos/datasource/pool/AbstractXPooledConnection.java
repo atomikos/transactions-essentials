@@ -8,12 +8,14 @@
 
 package com.atomikos.datasource.pool;
 
+import java.lang.invoke.MethodHandles;
+import java.sql.Connection;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
-
  
  /**
   * 
@@ -24,7 +26,8 @@ import com.atomikos.logging.LoggerFactory;
   */
 
 public abstract class AbstractXPooledConnection implements XPooledConnection {
-	private static final Logger LOGGER = LoggerFactory.createLogger(AbstractXPooledConnection.class);
+
+	private static final Logger LOGGER = LoggerFactory.createLogger(MethodHandles.lookup().lookupClass());
 
 	private long lastTimeAcquired = System.currentTimeMillis();
 	private long lastTimeReleased = System.currentTimeMillis();
@@ -32,6 +35,8 @@ public abstract class AbstractXPooledConnection implements XPooledConnection {
 	private Reapable currentProxy = null;
 	private ConnectionPoolProperties props;
 	private long creationTime = System.currentTimeMillis();
+
+	protected Connection connection;
 	
 	protected AbstractXPooledConnection ( ConnectionPoolProperties props ) 
 	{
@@ -96,7 +101,6 @@ public abstract class AbstractXPooledConnection implements XPooledConnection {
 	private void updateLastTimeAcquired() {
 		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace (  this + ": updating last time acquired" );
 		lastTimeAcquired = System.currentTimeMillis();
-		
 	}
 	
 	protected Reapable getCurrentConnectionProxy() {
@@ -120,5 +124,27 @@ public abstract class AbstractXPooledConnection implements XPooledConnection {
 	
 	protected abstract Reapable doCreateConnectionProxy() throws CreateConnectionException;
 
-	protected abstract void testUnderlyingConnection() throws CreateConnectionException;
+	protected void testUnderlyingConnection() throws CreateConnectionException {
+    if ( isErroneous() ) throw new CreateConnectionException ( this + ": connection is erroneous" );
+
+    String testQuery = getTestQuery();
+
+    if (testQuery != null) {
+      if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": testing connection with query [" + testQuery + "]" );
+
+      try (Statement stmt = connection.createStatement()){
+
+        //use execute instead of executeQuery - cf case 58830
+        stmt.execute(testQuery);
+        stmt.close();
+      } catch ( Exception e) {
+        //catch any Exception - cf case 22198
+        throw new CreateConnectionException ( "Error executing testQuery" ,  e );
+      }
+      if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": connection tested OK" );
+    }
+    else {
+      if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": no test query, skipping test" );
+    }
+  }
 }

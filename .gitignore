@@ -16,5 +16,6 @@ target/
 *.log
 
 effective-pom.xml
+effective.pom
 pom.xml.versionsBackup
 

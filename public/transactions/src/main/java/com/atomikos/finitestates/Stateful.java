@@ -10,11 +10,13 @@ package com.atomikos.finitestates;
 
 import com.atomikos.recovery.TxState;
 
+import java.io.Serializable;
 
-public interface Stateful{
+public interface Stateful extends Serializable
+{
 	/**
-	*@return The object representing the state.
-	*/
+	 *   @return The object representing the state.
+	 */
 	public TxState getState();
 }
 

@@ -50,7 +50,7 @@ extends AbstractDataSourceBean
 	
 	private String printXaProperties()
 	{
-		StringBuffer ret = new StringBuffer();
+		StringBuilder ret = new StringBuilder();
 		if ( xaProperties != null ) {
 			
 			Set<String> names = xaProperties.stringPropertyNames();

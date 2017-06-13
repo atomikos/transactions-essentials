@@ -13,6 +13,15 @@
 	</properties>
 	<build>
 		<plugins>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>**/CoordinatorImpTestJunit.java</exclude>
+            <exclude>**/ServerTestJUnit.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>exec-maven-plugin</artifactId>

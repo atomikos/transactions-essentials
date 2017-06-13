@@ -1,8 +1,8 @@
 /**
  * Copyright (C) 2000-2016 Atomikos <info@atomikos.com>
- *
+ * <p>
  * LICENSE CONDITIONS
- *
+ * <p>
  * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
  */
 
@@ -35,281 +35,313 @@ import java.util.List;
 @SuppressWarnings("WeakerAccess")
 abstract class TransactionStateHandler implements SubTxAwareParticipant
 {
-	private static final Logger LOGGER = LoggerFactory.createLogger(TransactionStateHandler.class);
+  private static final Logger LOGGER = LoggerFactory.createLogger(TransactionStateHandler.class);
 
-    private int subtxs_;
-    private Deque<Synchronization> synchronizations_;
-    private List<SubTxAwareParticipant> subtxawares_;
-    private CompositeTransactionImp ct_;
+  private static final long serialVersionUID = -622947053959715921L;
 
-    protected TransactionStateHandler ( CompositeTransactionImp ct )
-    {
-        ct_ = ct;
-        subtxs_ = 0;
-        subtxawares_ = new ArrayList<SubTxAwareParticipant>();
-        synchronizations_ = new ArrayDeque<Synchronization>();
-    }
+  private int subtxs_;
+  private Deque<Synchronization> synchronizations_;
+  private List<SubTxAwareParticipant> subtxawares_;
+  private CompositeTransactionImp ct_;
 
-    protected TransactionStateHandler ( CompositeTransactionImp ct ,
-            TransactionStateHandler handler )
+  protected TransactionStateHandler(CompositeTransactionImp ct)
+  {
+    ct_ = ct;
+    subtxs_ = 0;
+    subtxawares_ = new ArrayList<SubTxAwareParticipant>();
+    synchronizations_ = new ArrayDeque<>();
+  }
+
+  protected TransactionStateHandler(CompositeTransactionImp ct,
+    TransactionStateHandler handler)
+  {
+    subtxs_ = handler.getSubTransactionCount();
+    synchronizations_ = handler.getSynchronizations();
+    subtxawares_ = handler.getSubtxawares();
+    ct_ = ct;
+
+  }
+
+  private synchronized void localDecSubTxCount()
+  {
+    subtxs_--;
+  }
+
+  private synchronized void localIncSubTxCount()
+  {
+    subtxs_++;
+  }
+
+  private synchronized int localGetSubTxCount()
+  {
+    return subtxs_;
+  }
+
+  private synchronized void localPushSynchronization(Synchronization sync)
+  {
+    synchronizations_.push(sync);
+  }
+
+  /**
+   * Should be called instead of iterator: commit can add more synchronizations
+   * so an iterator would give ConcurrentModificationException!
+   */
+  private Synchronization localPopSynchronization()
+  {
+    Synchronization ret = null;
+    if (!synchronizations_.isEmpty()) ret = synchronizations_.pop();
+    return ret;
+  }
+
+  private synchronized void localAddSubTxAwareParticipant(SubTxAwareParticipant p)
+  {
+    subtxawares_.add(p);
+  }
+
+  protected CompositeTransaction createSubTransaction()
+    throws SysException, IllegalStateException
+  {
+    CompositeTransaction ct;
+    ct = ct_.getTransactionService().createSubTransaction(ct_);
+    // we want to be notified of subtx commit for handling extents
+    ct.addSubTxAwareParticipant(this);
+    localIncSubTxCount();
+    return ct;
+  }
+
+  // this method should NOT be synchronized, to avoid deadlocks in JBoss
+  // termination handling at remote servers!
+  protected RecoveryCoordinator addParticipant(Participant participant)
+    throws SysException, java.lang.IllegalStateException
+  {
+
+    CoordinatorImp coord = ct_.getCoordinatorImp();
+    try
     {
-        subtxs_ = handler.getSubTransactionCount();
-        synchronizations_ = handler.getSynchronizations();
-        subtxawares_ = handler.getSubtxawares();
-        ct_ = ct;
+      coord.addParticipant(participant);
 
     }
-    
-    private synchronized void localDecSubTxCount()
+    catch (RollbackException e)
     {
-    	subtxs_--;
+      throw new IllegalStateException("Transaction already rolled back", e);
     }
-    
-    private synchronized void localIncSubTxCount()
-    {
-    	subtxs_++;
-    }
-    
-    private synchronized int localGetSubTxCount()
-    {
-    	return subtxs_;
-    }
-    
-    private synchronized void localPushSynchronization ( Synchronization sync ) 
-    {
-    	synchronizations_.push ( sync );
-    }
-    
-    /**
-     * Should be called instead of iterator: commit can add more synchronizations
-     * so an iterator would give ConcurrentModificationException!
-     */
-    private Synchronization localPopSynchronization() {
-    	Synchronization ret = null;
-    	if (!synchronizations_.isEmpty()) ret = synchronizations_.pop();
-    	return ret;
-    }
-    
-    private synchronized void localAddSubTxAwareParticipant ( SubTxAwareParticipant p )
-    {
-    	subtxawares_.add ( p );
-    }
+    return coord;
+  }
 
-    protected CompositeTransaction createSubTransaction ()
-            throws SysException, IllegalStateException
+  protected void registerSynchronization(Synchronization sync)
+    throws IllegalStateException, UnsupportedOperationException, SysException
+  {
+    if (sync != null)
     {
-        CompositeTransaction ct;
-        ct = ct_.getTransactionService ().createSubTransaction ( ct_ );
-        // we want to be notified of subtx commit for handling extents
-        ct.addSubTxAwareParticipant ( this );
-        localIncSubTxCount();
-        return ct;
-    }
-
-    // this method should NOT be synchronized, to avoid deadlocks in JBoss
-    // termination handling at remote servers!
-    protected RecoveryCoordinator addParticipant ( Participant participant )
-            throws SysException, java.lang.IllegalStateException
-    {
-
-        CoordinatorImp coord = ct_.getCoordinatorImp ();
-        try {
-            coord.addParticipant ( participant );
-
-        } catch ( RollbackException e ) {
-            throw new IllegalStateException ( "Transaction already rolled back", e );
-        }
-        return coord;
-    }
-
-    protected void registerSynchronization ( Synchronization sync )
-            throws IllegalStateException, UnsupportedOperationException, SysException
-    {
-        if ( sync != null ) {
-            try {
-                ct_.getCoordinatorImp().registerSynchronization(sync);
-            } catch ( RollbackException e ) {
-                throw new IllegalStateException (
-                        "Transaction already rolled back", e );
-            }
-            localPushSynchronization ( sync );
-        }
-    }
-
-    protected void addSubTxAwareParticipant (
-            SubTxAwareParticipant subtxaware ) throws SysException,
-            java.lang.IllegalStateException
-    {
-
-        localAddSubTxAwareParticipant ( subtxaware );
-    }
-    
-    private void rollback() throws IllegalStateException, SysException
-    {
-      for (SubTxAwareParticipant subtxaware : subtxawares_)
+      try
       {
-        subtxaware.rolledback(ct_);
+        ct_.getCoordinatorImp().registerSynchronization(sync);
       }
-
-         Extent extent = ct_.getExtent ();
-         if ( extent != null ) {
-        	 Deque<Participant> participants = extent.getParticipants();
-
-        	 for (Participant participant : participants) {
-        	   addParticipant(participant);
-           }
-         }
-
-         ct_.localSetTransactionStateHandler ( new TxTerminatedStateHandler ( ct_, this, false ) );
-
-         try {
-             ct_.getCoordinatorImp().rollback();
-         } catch ( HeurCommitException e ) {
-             throw new SysException ( "Unexpected error in rollback", e );
-         } catch ( HeurMixedException e ) {
-             throw new SysException ( "Unexpected error in rollback", e );
-         } catch ( HeurHazardException e ) {
-             throw new SysException ( "Unexpected error in rollback", e );
-         }
-    }
-
-    protected void rollbackWithStateCheck () throws java.lang.IllegalStateException,
-            SysException
-    {
-        //prevent concurrent commits - relevant if this is a timeout thread
-        ct_.localTestAndSetTransactionStateHandler ( this , new TxTerminatingStateHandler ( false , ct_ , this ) );
-        rollback();
-
-    }
-
-    // IMPORTANT: don't synchronize the commit method, because it causes deadlocks
-    // (since this method also indirectly locks the coordinator and the FSM)
-    // This deadlock happens in particular when application commit interleaves
-    // with timeout-driven rollback (during preEnter, the rollback of this same
-    // handler is invoked)
-    protected void commit() throws SysException,
-            java.lang.IllegalStateException, RollbackException
-    {
-        //prevent concurrent rollback due to timeout
-        ct_.localTestAndSetTransactionStateHandler(this , new TxTerminatingStateHandler(true , ct_ , this));
-
-        // NOTE: this must be done BEFORE calling notifications
-        // to make sure that active recovery works for early prepares 
-        if ( ct_.isLocalRoot() ) {
-
-          Deque<Participant> participants = ct_.getExtent().getParticipants();
-
-          for (Participant participant : participants) {
-            addParticipant(participant);
-        	}
-        }
-
-        if ( subtxs_ > 0 ) throw new IllegalStateException ( "Active subtransactions exist" );
-
-        // BEFORE calling SubTxAwares, make sure that synchronizations
-        // are called. This is because the calling thread must still be
-        // associated with the tx at beforeCompletion, and the
-        // TM is listening as a SubTxAware!
-        // NOTE: doing this at the very beginning of commit
-        // also makes sure that the tx can still get new Participants
-        // from beforeCompletion work being done! This is required.
-        Throwable cause = notifyBeforeCompletion();
-
-        if ( ct_.getState().equals ( TxState.MARKED_ABORT ) ) {
-        	// happens if synchronization has called setRollbackOnly
-        	rollback();
-        	throw new RollbackException ( "The transaction was set to rollback only" , cause );
-        }
-
-        // for loop to make sure that new registrations are possible during callback
-      for (SubTxAwareParticipant subtxaware : subtxawares_)
+      catch (RollbackException e)
       {
-        subtxaware.committed(ct_);
+        throw new IllegalStateException(
+          "Transaction already rolled back", e);
       }
+      localPushSynchronization(sync);
+    }
+  }
 
-        ct_.localSetTransactionStateHandler ( new TxTerminatedStateHandler ( ct_, this, true ) );
+  protected void addSubTxAwareParticipant(
+    SubTxAwareParticipant subtxaware) throws SysException,
+    java.lang.IllegalStateException
+  {
+
+    localAddSubTxAwareParticipant(subtxaware);
+  }
+
+  private void rollback() throws IllegalStateException, SysException
+  {
+    for (SubTxAwareParticipant subtxaware : subtxawares_)
+    {
+      subtxaware.rolledback(ct_);
     }
 
-	private Throwable notifyBeforeCompletion() {
-		Throwable cause = null;
-		Synchronization sync = localPopSynchronization();
-        while ( sync != null ) {
-        	try {
-        		sync.beforeCompletion ();
-        	} catch ( RuntimeException error ) {
-        		// see case 24246: rollback only
-        		setRollbackOnly();
-        		// see case 115604
-        		// transport the first exception here as return value
-        		if (cause == null) {
-        			cause = error;
-        		} else {
-        			// log the others which may still happen as error - cf. case 115604
-        			LOGGER.logError("Unexpected error in beforeCompletion: ", error);
-        		}       		
-        	}
-        	sync = localPopSynchronization();
+    Extent extent = ct_.getExtent();
+    if (extent != null)
+    {
+      Deque<Participant> participants = extent.getParticipants();
+
+      for (Participant participant : participants)
+      {
+        addParticipant(participant);
+      }
+    }
+
+    ct_.localSetTransactionStateHandler(new TxTerminatedStateHandler(ct_, this, false));
+
+    try
+    {
+      ct_.getCoordinatorImp().rollback();
+    }
+    catch (HeurCommitException e)
+    {
+      throw new SysException("Unexpected error in rollback", e);
+    }
+    catch (HeurMixedException e)
+    {
+      throw new SysException("Unexpected error in rollback", e);
+    }
+    catch (HeurHazardException e)
+    {
+      throw new SysException("Unexpected error in rollback", e);
+    }
+  }
+
+  protected void rollbackWithStateCheck() throws java.lang.IllegalStateException,
+    SysException
+  {
+    //prevent concurrent commits - relevant if this is a timeout thread
+    ct_.localTestAndSetTransactionStateHandler(this, new TxTerminatingStateHandler(false, ct_, this));
+    rollback();
+
+  }
+
+  // IMPORTANT: don't synchronize the commit method, because it causes deadlocks
+  // (since this method also indirectly locks the coordinator and the FSM)
+  // This deadlock happens in particular when application commit interleaves
+  // with timeout-driven rollback (during preEnter, the rollback of this same
+  // handler is invoked)
+  protected void commit() throws SysException,
+    java.lang.IllegalStateException, RollbackException
+  {
+    //prevent concurrent rollback due to timeout
+    ct_.localTestAndSetTransactionStateHandler(this, new TxTerminatingStateHandler(true, ct_, this));
+
+    // NOTE: this must be done BEFORE calling notifications
+    // to make sure that active recovery works for early prepares
+    if (ct_.isLocalRoot())
+    {
+
+      Deque<Participant> participants = ct_.getExtent().getParticipants();
+
+      for (Participant participant : participants)
+      {
+        addParticipant(participant);
+      }
+    }
+
+    if (subtxs_ > 0) throw new IllegalStateException("Active subtransactions exist");
+
+    // BEFORE calling SubTxAwares, make sure that synchronizations
+    // are called. This is because the calling thread must still be
+    // associated with the tx at beforeCompletion, and the
+    // TM is listening as a SubTxAware!
+    // NOTE: doing this at the very beginning of commit
+    // also makes sure that the tx can still get new Participants
+    // from beforeCompletion work being done! This is required.
+    Throwable cause = notifyBeforeCompletion();
+
+    if (ct_.getState().equals(TxState.MARKED_ABORT))
+    {
+      // happens if synchronization has called setRollbackOnly
+      rollback();
+      throw new RollbackException("The transaction was set to rollback only", cause);
+    }
+
+    // for loop to make sure that new registrations are possible during callback
+    for (SubTxAwareParticipant subtxaware : subtxawares_)
+    {
+      subtxaware.committed(ct_);
+    }
+
+    ct_.localSetTransactionStateHandler(new TxTerminatedStateHandler(ct_, this, true));
+  }
+
+  private Throwable notifyBeforeCompletion()
+  {
+    Throwable cause = null;
+    Synchronization sync = localPopSynchronization();
+    while (sync != null)
+    {
+      try
+      {
+        sync.beforeCompletion();
+      }
+      catch (RuntimeException error)
+      {
+        // see case 24246: rollback only
+        setRollbackOnly();
+        // see case 115604
+        // transport the first exception here as return value
+        if (cause == null)
+        {
+          cause = error;
         }
-		return cause;
-	}
-
-    protected void setRollbackOnly ()
-    {
-    	ct_.getCoordinatorImp().setRollbackOnly();
-        synchronized ( this ) {
-        	ct_.localSetTransactionStateHandler ( new TxRollbackOnlyStateHandler ( ct_,this ) );
+        else
+        {
+          // log the others which may still happen as error - cf. case 115604
+          LOGGER.logError("Unexpected error in beforeCompletion: ", error);
         }
-
+      }
+      sync = localPopSynchronization();
     }
+    return cause;
+  }
 
-    public void committed ( CompositeTransaction subtx )
+  protected void setRollbackOnly()
+  {
+    ct_.getCoordinatorImp().setRollbackOnly();
+    synchronized (this)
     {
-        CompositeTransactionImp ct = (CompositeTransactionImp) subtx;
-        Extent toAdd = subtx.getExtent();
-        Extent target = ct_.getExtent();
-        target.add ( toAdd );
-
-        SubTransactionCoordinatorParticipant part = new SubTransactionCoordinatorParticipant ( ct.getCoordinatorImp() );
-        addParticipant ( part );
-      
-        localDecSubTxCount();
+      ct_.localSetTransactionStateHandler(new TxRollbackOnlyStateHandler(ct_, this));
     }
 
-    public void rolledback ( CompositeTransaction subtx )
+  }
+
+  public void committed(CompositeTransaction subtx)
+  {
+    CompositeTransactionImp ct = (CompositeTransactionImp) subtx;
+    Extent toAdd = subtx.getExtent();
+    Extent target = ct_.getExtent();
+    target.add(toAdd);
+
+    SubTransactionCoordinatorParticipant part = new SubTransactionCoordinatorParticipant(ct.getCoordinatorImp());
+    addParticipant(part);
+
+    localDecSubTxCount();
+  }
+
+  public void rolledback(CompositeTransaction subtx)
+  {
+    localDecSubTxCount();
+  }
+
+  protected abstract TxState getState();
+
+
+  protected List<SubTxAwareParticipant> getSubtxawares()
+  {
+    return subtxawares_;
+  }
+
+  protected CompositeTransactionImp getCT()
+  {
+    return ct_;
+  }
+
+
+  protected int getSubTransactionCount()
+  {
+    return localGetSubTxCount();
+  }
+
+  protected Deque<Synchronization> getSynchronizations()
+  {
+    return synchronizations_;
+  }
+
+  protected void addSynchronizations(Deque<Synchronization> synchronizations)
+  {
+    while (!synchronizations.isEmpty())
     {
-        localDecSubTxCount();
+      Synchronization next = synchronizations.pop();
+      localPushSynchronization(next);
     }
-
-    protected abstract TxState getState();
-
-
-    protected List<SubTxAwareParticipant> getSubtxawares()
-    {
-        return subtxawares_;
-    }
-
-    protected CompositeTransactionImp getCT()
-    {
-        return ct_;
-    }
-
-
-    protected int getSubTransactionCount()
-    {
-        return localGetSubTxCount();
-    }
-
-    protected Deque<Synchronization> getSynchronizations()
-    {
-        return synchronizations_;
-    }
-
-    protected void addSynchronizations ( Deque<Synchronization> synchronizations )
-    {
-        while ( !synchronizations.isEmpty() ) {
-            Synchronization next = synchronizations.pop();
-            localPushSynchronization ( next );
-        }
-    }
+  }
 
 }

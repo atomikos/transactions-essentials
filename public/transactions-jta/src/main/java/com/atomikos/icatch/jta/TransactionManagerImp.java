@@ -73,7 +73,7 @@ public class TransactionManagerImp implements TransactionManager,
     
     private static final void raiseNoTransaction() 
     {
-    		StringBuffer msg = new StringBuffer();
+    		StringBuilder msg = new StringBuilder();
     		msg.append ( "This method needs a transaction for the calling thread and none exists.\n" );
     		msg.append ( "Possible causes: either you didn't start a transaction,\n" );
     		msg.append ( "it rolledback due to timeout, or it was committed already.\n" );

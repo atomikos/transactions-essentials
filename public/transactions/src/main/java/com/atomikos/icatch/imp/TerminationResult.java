@@ -15,7 +15,6 @@ import com.atomikos.icatch.Participant;
 import com.atomikos.icatch.RollbackException;
 
 import java.util.Deque;
-import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
 

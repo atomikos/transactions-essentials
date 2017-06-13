@@ -8,17 +8,6 @@
 
 package com.atomikos.icatch.jta.hibernate4;
 
-import javax.transaction.Status;
-import javax.transaction.Synchronization;
-import javax.transaction.SystemException;
-import javax.transaction.Transaction;
-import javax.transaction.TransactionManager;
-import javax.transaction.UserTransaction;
-
-import org.hibernate.TransactionException;
-import org.hibernate.engine.transaction.jta.platform.spi.JtaPlatform;
-import org.hibernate.engine.transaction.jta.platform.spi.JtaPlatformException;
-
 import com.atomikos.icatch.jta.J2eeTransactionManager;
 import com.atomikos.icatch.jta.J2eeUserTransaction;
 
@@ -31,63 +20,11 @@ import com.atomikos.icatch.jta.J2eeUserTransaction;
  * J2EE container environment or externally managed via Spring.
  * 
  */
-public class AtomikosJ2eePlatform implements JtaPlatform {
-
-	private static final long serialVersionUID = 1L;
-
-	private final TransactionManager txMgr;
-
-	private final UserTransaction userTx;
+public class AtomikosJ2eePlatform extends AbstractAtomikosPlatform {
 
 	public AtomikosJ2eePlatform() {
 		super();
 		this.txMgr = new J2eeTransactionManager();
 		this.userTx = new J2eeUserTransaction();
-	}
-
-	@Override
-	public Object getTransactionIdentifier(Transaction transaction) {
-		// generally we use the transaction itself.
-		return transaction;
-	}
-
-	@Override
-	public void registerSynchronization(Synchronization synchronization) {
-		try {
-			this.txMgr.getTransaction()
-					.registerSynchronization(synchronization);
-		} catch (Exception e) {
-			throw new JtaPlatformException(
-					"Could not access JTA Transaction to register synchronization",
-					e);
-		}
-	}
-
-	@Override
-	public boolean canRegisterSynchronization() {
-		try {
-			if (this.txMgr.getTransaction() != null) {
-				return this.txMgr.getTransaction().getStatus() == Status.STATUS_ACTIVE;
-			}
-		} catch (SystemException se) {
-			throw new TransactionException(
-					"Could not determine transaction status", se);
-		}
-		return false;
-	}
-
-	@Override
-	public int getCurrentStatus() throws SystemException {
-		return retrieveTransactionManager().getStatus();
-	}
-
-	@Override
-	public UserTransaction retrieveUserTransaction() {
-		return this.userTx;
-	}
-
-	@Override
-	public TransactionManager retrieveTransactionManager() {
-		return this.txMgr;
 	}
 }

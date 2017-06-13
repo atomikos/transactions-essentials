@@ -358,7 +358,7 @@ Referenceable, Serializable {
 	}
 	
 	private String printXaProperties() {
-		StringBuffer ret = new StringBuffer();
+    StringBuilder ret = new StringBuilder();
 		if ( xaProperties != null ) {
 			Set<String> it = xaProperties.stringPropertyNames();
 			ret.append ( "[" );

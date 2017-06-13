@@ -30,8 +30,7 @@ import com.atomikos.util.SerializableObjectFactory;
  * applications. Instances can be bound in JNDI if the application server allows
  * this.
  */
-public class J2eeTransactionManager
-implements TransactionManager, Serializable, Referenceable, UserTransaction
+public class J2eeTransactionManager implements TransactionManager, Serializable, Referenceable, UserTransaction
 {
 
 	private static final long serialVersionUID = 8584376600562353607L;
@@ -53,7 +52,6 @@ implements TransactionManager, Serializable, Referenceable, UserTransaction
     {
         checkSetup();
         tm.begin();
-
     }
 
     /**
@@ -89,12 +87,10 @@ implements TransactionManager, Serializable, Referenceable, UserTransaction
     /**
      * @see javax.transaction.TransactionManager#resume(javax.transaction.Transaction)
      */
-    public void resume(Transaction tx) throws InvalidTransactionException,
-            IllegalStateException, SystemException
+    public void resume(Transaction tx) throws InvalidTransactionException, IllegalStateException, SystemException
     {
         checkSetup();
         tm.resume(tx);
-
     }
 
     /**
@@ -105,7 +101,6 @@ implements TransactionManager, Serializable, Referenceable, UserTransaction
     {
         checkSetup();
         tm.rollback();
-
     }
 
     /**
@@ -142,5 +137,4 @@ implements TransactionManager, Serializable, Referenceable, UserTransaction
     {
         return SerializableObjectFactory.createReference(this);
     }
-
 }

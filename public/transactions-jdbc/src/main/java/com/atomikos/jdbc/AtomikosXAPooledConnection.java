@@ -8,10 +8,8 @@
 
 package com.atomikos.jdbc;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
 
+import java.sql.SQLException;
 import javax.sql.XAConnection;
 
 import com.atomikos.datasource.pool.AbstractXPooledConnection;
@@ -31,19 +29,14 @@ import com.atomikos.logging.LoggerFactory;
 public class AtomikosXAPooledConnection extends AbstractXPooledConnection
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(AtomikosXAPooledConnection.class);
-	
-
-	
 
 	private SessionHandleState sessionHandleState;
 	private XAConnection xaConnection;
-	private Connection connection;
+	// private Connection connection;
 
-
-	public AtomikosXAPooledConnection ( XAConnection xaConnection, 
-			JdbcTransactionalResource jdbcTransactionalResource, 
-			ConnectionPoolProperties props ) 
-	throws SQLException 
+	@SuppressWarnings("WeakerAccess")
+  public AtomikosXAPooledConnection ( XAConnection xaConnection, JdbcTransactionalResource jdbcTransactionalResource, ConnectionPoolProperties props )
+	  throws SQLException
 	{
 		super ( props );
 		this.xaConnection = xaConnection;
@@ -56,10 +49,7 @@ public class AtomikosXAPooledConnection extends AbstractXPooledConnection
 				fireOnXPooledConnectionTerminated();
 			}
 		});
-		
 	}
-
-	
 
 	public void destroy() 
 	{
@@ -85,35 +75,14 @@ public class AtomikosXAPooledConnection extends AbstractXPooledConnection
 		xaConnection = null;
 	}
 
-
-	
 	protected Reapable doCreateConnectionProxy() throws CreateConnectionException
 	{
-		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": creating connection proxy..." );
-		JdbcConnectionProxyHelper.setIsolationLevel ( connection , getDefaultIsolationLevel() );
-		return AtomikosConnectionProxy.newInstance ( connection , sessionHandleState);
-	}
+		if ( LOGGER.isTraceEnabled() )
+		  LOGGER.logTrace ( this + ": creating connection proxy..." );
 
-	protected void testUnderlyingConnection() throws CreateConnectionException {
-		if ( isErroneous() ) throw new CreateConnectionException ( this + ": connection is erroneous" );
-		String testQuery = getTestQuery();
-		if (testQuery != null) {
-			if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": testing connection with query [" + testQuery + "]" );
-			Statement stmt = null;
-			try {
-				stmt = connection.createStatement();
-				//use execute instead of executeQuery - cf case 58830
-				stmt.execute(testQuery);
-				stmt.close();
-			} catch ( Exception e) {
-				//catch any Exception - cf case 22198
-				throw new CreateConnectionException ( "Error executing testQuery" ,  e );
-			}
-			if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": connection tested OK" );
-		}
-		else {
-			if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": no test query, skipping test" );
-		}
+		JdbcConnectionProxyHelper.setIsolationLevel ( connection , getDefaultIsolationLevel() );
+
+		return AtomikosConnectionProxy.newInstance ( connection , sessionHandleState);
 	}
 
 	public boolean isAvailable() 
@@ -132,7 +101,8 @@ public class AtomikosXAPooledConnection extends AbstractXPooledConnection
 		return "an AtomikosXAPooledConnection with " + sessionHandleState;
 	}
 	
-	public boolean canBeRecycledForCallingThread ()
+	@Override
+  public boolean canBeRecycledForCallingThread ()
 	{
 		boolean ret = false;
 		
@@ -146,6 +116,4 @@ public class AtomikosXAPooledConnection extends AbstractXPooledConnection
 		
 		return ret;
 	}
-	
-
 }

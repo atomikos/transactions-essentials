@@ -479,8 +479,6 @@ public class TransactionServiceImp implements TransactionServiceProvider, FSMEnt
 
 
 		List<RecoverableResource> resources = Configuration.getResources();
-		// while (resources.hasMoreElements()) {
-      // RecoverableResource recoverableResource =  resources.nextElement();
 
     for (RecoverableResource recoverableResource : resources) {
 			try {
@@ -553,8 +551,8 @@ public class TransactionServiceImp implements TransactionServiceProvider, FSMEnt
     /**
      * Creates a subtransaction for the given parent
      *
-     * @param parent
-     * @return
+     * @param parent parent
+     * @return CompositeTransaction
      */
     @SuppressWarnings("unchecked")
     CompositeTransaction createSubTransaction ( CompositeTransaction parent )

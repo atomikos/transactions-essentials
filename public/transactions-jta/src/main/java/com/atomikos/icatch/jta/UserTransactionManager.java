@@ -39,38 +39,37 @@ public class UserTransactionManager implements TransactionManager,
 
 	private transient TransactionManagerImp tm;
 
-	private boolean forceShutdown;
-	
+  private boolean forceShutdown;
+
 	private boolean startupTransactionService;
-	
+
 	private boolean closed;
 
 	private boolean coreStartedHere;
 
     private void checkSetup () throws SystemException
     {
-    	if (!closed) initializeTransactionManagerSingleton();	
+    	if (!closed) initializeTransactionManagerSingleton();
     }
 
 	private void initializeTransactionManagerSingleton() throws SystemException {
-		tm = (TransactionManagerImp) TransactionManagerImp
-    			.getTransactionManager ();
-    	if ( tm == null ) {
-    		if ( getStartupTransactionService() ) {
-    			startupTransactionService();
-    			tm = (TransactionManagerImp) TransactionManagerImp
-    			        .getTransactionManager ();
-    		}
-    		else {
-    			throw new SystemException ( "Transaction service not running" );
-    		}
-    	}
+		tm = (TransactionManagerImp) TransactionManagerImp.getTransactionManager ();
+
+    if ( tm == null ) {
+      if ( getStartupTransactionService() ) {
+        startupTransactionService();
+        tm = (TransactionManagerImp) TransactionManagerImp.getTransactionManager ();
+      }
+      else {
+        throw new SystemException ( "Transaction service not running" );
+      }
+    }
 	}
 
 	private void startupTransactionService() {
 		coreStartedHere = Configuration.init();
 	}
-	
+
 
 	private void shutdownTransactionService() {
 		if (coreStartedHere) { 
@@ -87,18 +86,18 @@ public class UserTransactionManager implements TransactionManager,
     }
     
     /**
-     * Sets whether the transaction service should be 
+     * Sets whether the transaction service should be
      * started if not already running. Optional, defaults to true.
-     * 
+     *
      * @param startup
      */
     public void setStartupTransactionService ( boolean startup )
     {
     	this.startupTransactionService = startup;
     }
-    
+
     /**
-     * Returns true if the transaction service will 
+     * Returns true if the transaction service will
      * be started if not already running.
      * @return
      */
@@ -106,7 +105,7 @@ public class UserTransactionManager implements TransactionManager,
     {
     	return this.startupTransactionService;
     }
-    
+
     /**
      * Performs initialization if necessary.
      * This will startup the TM (if not running)
@@ -150,14 +149,13 @@ public class UserTransactionManager implements TransactionManager,
     /**
      * @see javax.transaction.TransactionManager#commit()
      */
-    public void commit () throws RollbackException, HeuristicMixedException,
-            HeuristicRollbackException, SecurityException,
-            IllegalStateException, SystemException
-    {
-    	if ( closed ) throw new SystemException ( "This UserTransactionManager instance was closed already - commit no longer allowed or possible." );
-        checkSetup ();
-        tm.commit ();
+    public void commit () throws RollbackException, HeuristicMixedException, HeuristicRollbackException, SecurityException,
+        IllegalStateException, SystemException {
+    	if ( closed )
+    	  throw new SystemException ( "This UserTransactionManager instance was closed already - commit no longer allowed or possible." );
 
+    	checkSetup ();
+      tm.commit ();
     }
 
     /**
@@ -181,12 +179,10 @@ public class UserTransactionManager implements TransactionManager,
     /**
      * @see javax.transaction.TransactionManager#resume(javax.transaction.Transaction)
      */
-    public void resume ( Transaction tx ) throws InvalidTransactionException,
-            IllegalStateException, SystemException
+    public void resume ( Transaction tx ) throws InvalidTransactionException, IllegalStateException, SystemException
     {
         checkSetup ();
         tm.resume ( tx );
-
     }
 
     /**

@@ -82,8 +82,7 @@ public final class UserTransactionServerImp_Stub extends
         try {
             if ( useNewInvoke ) {
                 Object $result = ref.invoke ( this, $method_begin_0,
-                        new java.lang.Object[] { new java.lang.Integer (
-                                $param_int_1 ) }, 6953689522780412889L );
+                        new java.lang.Object[] { Integer.valueOf ($param_int_1) }, 6953689522780412889L );
                 return ((java.lang.String) $result);
             } else {
                 java.rmi.server.RemoteCall call = ref.newCall (

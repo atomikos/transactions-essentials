@@ -37,7 +37,7 @@ class AtomikosNonXAPooledConnection extends AbstractXPooledConnection
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(AtomikosNonXAPooledConnection.class);
 	
-	private Connection connection;
+//	private Connection connection;
 	
 	private boolean erroneous;
 	
@@ -90,39 +90,16 @@ class AtomikosNonXAPooledConnection extends AbstractXPooledConnection
 		return ret;
 	}
 	
-	
-	
 	Connection getConnection() 
 	{
 		return connection;
-	}
-
-	protected void testUnderlyingConnection() throws CreateConnectionException {
-		String testQuery = getTestQuery();
-		if ( isErroneous() ) throw new CreateConnectionException ( this + ": connection is erroneous" );
-		if (testQuery != null) {
-			if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": testing connection with query [" + testQuery + "]" );
-			Statement stmt = null;
-			try {
-				stmt = connection.createStatement();
-				//use execute instead of executeQuery - cf case 58830
-				stmt.execute(testQuery);
-				stmt.close();
-			} catch ( Exception e) {
-				//catch any Exception - cf case 22198
-				throw new CreateConnectionException ( "Error executing testQuery" ,  e );
-			}
-			if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": connection tested OK" );
-		}
-		else {
-			if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": no test query, skipping test" );
-		}
 	}
 
 	public boolean isAvailable() {
 		boolean ret = true;
 
 		Reapable handle = getCurrentConnectionProxy();
+
 		if ( handle != null ) {
 			DynamicProxy dproxy = ( DynamicProxy ) handle;
 			AtomikosThreadLocalConnection previous = (AtomikosThreadLocalConnection) dproxy.getInvocationHandler();
@@ -130,7 +107,6 @@ class AtomikosNonXAPooledConnection extends AbstractXPooledConnection
 		}
 		
 		return ret;
-		
 	}
 
 	public boolean isErroneous() {
