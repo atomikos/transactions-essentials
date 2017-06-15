@@ -68,12 +68,14 @@
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
     <maven.version>3.5.0</maven.version>
+    <openclover.version>4.2.0</openclover.version>
     <plexus.compiler.version>2.8.1</plexus.compiler.version>
     <plexus.utils.version>3.0.24</plexus.utils.version>
     <!-- we don't want to depend on platform's default encoding -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <releaseVersion>${project.version}</releaseVersion>
     <slf4j.version>1.7.25</slf4j.version>
+    <sonar.clover.plugin.version>3.1</sonar.clover.plugin.version>
     <spring.version>4.3.8.RELEASE</spring.version>
     <spring.data.jpa.version>1.11.1.RELEASE</spring.data.jpa.version>
     <surefire.reportFormat>plain</surefire.reportFormat>
@@ -180,7 +182,7 @@
       <dependency>
         <groupId>org.openclover</groupId>
         <artifactId>clover</artifactId>
-        <version>4.2.0</version>
+        <version>${openclover.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -397,31 +399,17 @@
             <version>0.7.9</version>
             <executions>
               <execution>
-                <id>prepare</id>
+                <id>test-with-coverage</id>
                 <phase>process-test-classes</phase>
                 <goals>
                   <goal>prepare-agent</goal>
                 </goals>
               </execution>
               <execution>
-                <id>report</id>
-                <phase>test</phase>
-                <goals>
-                  <goal>report</goal>
-                </goals>
-              </execution>
-              <execution>
-                <id>prepare-integration</id>
+                <id>integration-test-with-coverage</id>
                 <phase>pre-integration-test</phase>
                 <goals>
                   <goal>prepare-agent-integration</goal>
-                </goals>
-              </execution>
-              <execution>
-                <id>verify</id>
-                <phase>verify</phase>
-                <goals>
-                  <goal>report-integration</goal>
                 </goals>
               </execution>
             </executions>

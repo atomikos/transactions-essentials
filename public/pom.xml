@@ -128,7 +128,7 @@
     <dependency>
       <groupId>org.sonarsource.clover</groupId>
       <artifactId>sonar-clover-plugin</artifactId>
-      <version>3.2-SNAPSHOT</version>
+      <version>${sonar.clover.plugin.version}</version>
     </dependency>
   </dependencies>
 
@@ -142,7 +142,7 @@
           <dependency>
             <groupId>org.sonarsource.clover</groupId>
             <artifactId>sonar-clover-plugin</artifactId>
-            <version>3.2-SNAPSHOT</version>
+            <version>${sonar.clover.plugin.version}</version>
           </dependency>
         </dependencies>
       </plugin>
@@ -285,6 +285,7 @@
   </build>
 
   <profiles>
+    <!--
     <profile>
       <id>jacoco</id>
       <activation>
@@ -330,6 +331,7 @@
         </plugins>
       </build>
     </profile>
+    -->
     <profile>
       <id>clover</id>
       <build>
