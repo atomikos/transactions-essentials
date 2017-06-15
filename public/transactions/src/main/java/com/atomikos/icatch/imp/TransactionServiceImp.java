@@ -8,16 +8,6 @@
 
 package com.atomikos.icatch.imp;
 
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
-import java.util.Stack;
-import java.util.Vector;
-
 import com.atomikos.datasource.RecoverableResource;
 import com.atomikos.finitestates.FSMEnterEvent;
 import com.atomikos.finitestates.FSMEnterListener;
@@ -49,36 +39,47 @@ import com.atomikos.timing.AlarmTimerListener;
 import com.atomikos.timing.PooledAlarmTimer;
 import com.atomikos.util.UniqueIdMgr;
 
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+
 /**
  * General implementation of Transaction Service.
  */
 
-public class TransactionServiceImp implements TransactionServiceProvider,
-        FSMEnterListener, SubTxAwareParticipant, RecoveryService, AdminLog
-{
-	private static final Logger LOGGER = LoggerFactory.createLogger(TransactionServiceImp.class);
+public class TransactionServiceImp implements TransactionServiceProvider, FSMEnterListener,
+  SubTxAwareParticipant, RecoveryService, AdminLog {
+
+	  private static final Logger LOGGER = LoggerFactory.createLogger(TransactionServiceImp.class);
     private static final int NUMLATCHES = 97;
     
     private long maxTimeout_;
     private Object[] rootLatches_ = null;
-    private Hashtable<String,CompositeTransaction> tidToTransactionMap_ = null;
-    private Hashtable<String,CoordinatorImp> rootToCoordinatorMap_ = null;
+    private Map<String,CompositeTransaction> tidToTransactionMap_ = null;
+    private Map<String,CoordinatorImp> rootToCoordinatorMap_ = null;
     private boolean shutdownInProgress_ = false;
     private Object shutdownSynchronizer_;
     private UniqueIdMgr tidmgr_ = null;
     private StateRecoveryManager recoverymanager_ = null;
     private boolean initialized_ = false;
     private LogControl control_;
-    private boolean otsOverride_;
-    // true for forced compatibility with OTS;
-    // in that case no creation preferences are taken into account
-    // concerning orphan checks
 
-    private Vector<TransactionServicePlugin> tsListeners_;
+  // true for forced compatibility with OTS;
+  // in that case no creation preferences are taken into account
+  // concerning orphan checks
+    private boolean otsOverride_;
+
+    private List<TransactionServicePlugin> tsListeners_;
     private int maxNumberOfActiveTransactions_;
     private String tmUniqueName_;
     private boolean single_threaded_2pc_;
-	private RecoveryLog recoveryLog;
+	  private RecoveryLog recoveryLog;
 
     /**
      * Create a new instance, with orphan checking set.
@@ -89,8 +90,6 @@ public class TransactionServiceImp implements TransactionServiceProvider,
      *            The recovery manager to use.
      * @param tidmgr
      *            The String manager to use.
-     * @param console
-     *            The console to use. Null if none.
      * @param maxtimeout
      *            The max timeout for new or imported txs.
      * @param maxActives
@@ -116,8 +115,6 @@ public class TransactionServiceImp implements TransactionServiceProvider,
      *            The recovery manager to use.
      * @param tidmgr
      *            The String manager to use.
-     * @param console
-     *            The console to use. Null if none.
      * @param maxtimeout
      *            The max timeout for new or imported txs.
      * @param checkorphans
@@ -129,7 +126,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
      *            configurations that do not support orphan detection.
      * @param single_threaded_2pc
      *            Whether 2PC commit should happen in the same thread that started the tx.
-     * @param recoveryLog2 
+     * @param recoveryLog
      *
      */
 
@@ -145,9 +142,9 @@ public class TransactionServiceImp implements TransactionServiceProvider,
         initialized_ = false;
         recoverymanager_ = recoverymanager;
         tidmgr_ = tidmgr;
-        tidToTransactionMap_ = new Hashtable<String,CompositeTransaction>();
+        tidToTransactionMap_ = new HashMap<String,CompositeTransaction>();
         shutdownSynchronizer_ = new Object();
-        rootToCoordinatorMap_ = new Hashtable<String,CoordinatorImp>();
+        rootToCoordinatorMap_ = new HashMap<String,CoordinatorImp>();
         rootLatches_ = new Object[NUMLATCHES];
         for (int i = 0; i < NUMLATCHES; i++) {
             rootLatches_[i] = new Object();
@@ -156,7 +153,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
         maxTimeout_ = maxtimeout;	
         
         tmUniqueName_ = name;
-        tsListeners_ = new Vector<TransactionServicePlugin>();
+        tsListeners_ = new ArrayList<>();
         single_threaded_2pc_ = single_threaded_2pc;
         this.recoveryLog  = recoveryLog;
     }
@@ -202,23 +199,25 @@ public class TransactionServiceImp implements TransactionServiceProvider,
      *         none.
      */
 
-    private Vector<CoordinatorImp> getCoordinatorImpVector ()
+    private List<CoordinatorImp> getCoordinatorImpList()
     {
-        Vector<CoordinatorImp> ret = new Vector<CoordinatorImp> ();
-        Enumeration<String> tids = rootToCoordinatorMap_.keys ();
-        while ( tids.hasMoreElements () ) {
-            String next = tids.nextElement ();
-            CoordinatorImp c = getCoordinatorImp ( next );
-            if ( c != null ) {
-                // not synchronized -> may be null if removed
-                // between enummeration time and retrieval
-                // in that case, merely leave it out of returned list
-                ret.addElement ( c );
-            }
+        List<CoordinatorImp> ret = new ArrayList<>();
+
+        List<String> tids = new ArrayList(rootToCoordinatorMap_.size());
+
+        tids.addAll(rootToCoordinatorMap_.keySet());
+
+        for (String tid : tids)
+        {
+          CoordinatorImp c = getCoordinatorImp(tid);
+
+          if (c != null)  {
+            ret.add(c);
+          }
         }
+
         return ret;
     }
-
 
 
     /**
@@ -227,9 +226,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
      * @param coord
      *            The coordinator to remove.
      */
-
-    private void removeCoordinator ( CompositeCoordinator coord )
-    {
+    private void removeCoordinator ( CompositeCoordinator coord ) {
 
         synchronized ( shutdownSynchronizer_ ) {
             synchronized ( getLatch ( coord.getCoordinatorId ().intern () ) ) {
@@ -251,9 +248,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
      * @param ct
      *            The transaction to remove.
      */
-
-    private void removeTransaction ( CompositeTransaction ct )
-    {
+    private void removeTransaction ( CompositeTransaction ct ) {
         if ( ct == null )
             return;
         tidToTransactionMap_.remove ( ct.getTid ().intern () );
@@ -266,13 +261,11 @@ public class TransactionServiceImp implements TransactionServiceProvider,
      * @return CompositeTransaction.
      */
 
-    private CompositeTransactionImp createCT ( String tid ,
-            CoordinatorImp coordinator , Stack<CompositeTransaction> lineage , boolean serial )
-            throws SysException
-    {
+    private CompositeTransactionImp createCT ( String tid, CoordinatorImp coordinator,
+      Deque<CompositeTransaction> lineage, boolean serial ) throws SysException {
+
     		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( "Creating composite transaction: " + tid );
-        CompositeTransactionImp ct = new CompositeTransactionImp ( this,
-                lineage, tid, serial, coordinator );
+        CompositeTransactionImp ct = new CompositeTransactionImp ( this, lineage, tid, serial, coordinator );
 
         setTidToTx ( ct.getTid (), ct );
         return ct;
@@ -281,11 +274,9 @@ public class TransactionServiceImp implements TransactionServiceProvider,
     /**
      * Creation method for composite coordinators.
      *
-     * @param RecoveryCoordinator
+     * @param adaptor
      *            An existing coordinator for the given root. Null if not a
      *            subtx, or an <b>adaptor</b> in other cases.
-     * @param lineage
-     *            The ancestor information.
      * @param root
      *            The root id.
      * @param checkOrphans
@@ -349,12 +340,13 @@ public class TransactionServiceImp implements TransactionServiceProvider,
 
     private void startlistening ( CoordinatorImp coordinator )
     {
-        Set<TxState>  forgetStates = new HashSet<TxState>();
+        Set<TxState>  forgetStates = new HashSet<>();
+
         for (TxState txState : TxState.values()) {
-			if(txState.isFinalStateForOltp()) {
-				forgetStates.add(txState);
-			}
-		}
+			      if(txState.isFinalStateForOltp()) {
+				       forgetStates.add(txState);
+			      }
+        }
         
         for (TxState txState : forgetStates) {
         	 coordinator.addFSMEnterListener ( this, txState );
@@ -369,7 +361,8 @@ public class TransactionServiceImp implements TransactionServiceProvider,
     private CoordinatorImp getCoordinatorImp ( String root )
             throws SysException
     {
-        root = root.intern ();
+        String localRoot = root.intern ();
+
         if ( !initialized_ )
             throw new IllegalStateException ( "Not initialized" );
 
@@ -378,8 +371,8 @@ public class TransactionServiceImp implements TransactionServiceProvider,
             // Synch on shutdownSynchronizer_ first to avoid
             // deadlock, even if we don't seem to need it here
 
-            synchronized ( getLatch ( root ) ) {
-                cc = (CoordinatorImp) rootToCoordinatorMap_.get ( root );   
+            synchronized ( getLatch ( localRoot ) ) {
+                cc = (CoordinatorImp) rootToCoordinatorMap_.get ( localRoot );
             }
         }
 
@@ -427,7 +420,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
         // init!
 
     		if ( ! tsListeners_.contains ( listener ) ) {
-    			tsListeners_.addElement ( listener );
+    			tsListeners_.add ( listener );
     			if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace (  "Added TSListener: " + listener );
     		}
 
@@ -441,7 +434,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
     public void removeTSListener ( TransactionServicePlugin listener )
     {
 
-        tsListeners_.removeElement ( listener );
+        tsListeners_.remove ( listener );
         if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace  ( "Removed TSListener: " + listener );
 
     }
@@ -483,9 +476,11 @@ public class TransactionServiceImp implements TransactionServiceProvider,
     }
 
     private void performRecovery() {
-		Enumeration<RecoverableResource> resources= Configuration.getResources();
-		while (resources.hasMoreElements()) {
-			RecoverableResource recoverableResource =  resources.nextElement();
+
+
+		List<RecoverableResource> resources = Configuration.getResources();
+
+    for (RecoverableResource recoverableResource : resources) {
 			try {
 				recoverableResource.recover();
 			} catch (Throwable e) {
@@ -503,7 +498,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
     }
 
     /**
-     * @see FSMEnterListener.
+     * @see FSMEnterListener
      */
 
     public void entered ( FSMEnterEvent event )
@@ -556,23 +551,22 @@ public class TransactionServiceImp implements TransactionServiceProvider,
     /**
      * Creates a subtransaction for the given parent
      *
-     * @param parent
-     * @return
+     * @param parent parent
+     * @return CompositeTransaction
      */
     @SuppressWarnings("unchecked")
     CompositeTransaction createSubTransaction ( CompositeTransaction parent )
     {
     	if (Configuration.getConfigProperties().getAllowSubTransactions()) {
-    		CompositeTransactionImp ret = null;
-    		Stack<CompositeTransaction> lineage = (Stack<CompositeTransaction>) parent.getLineage ().clone ();
+    		CompositeTransactionImp ret;
+    		Deque<CompositeTransaction> lineage = ((ArrayDeque<CompositeTransaction>)parent.getLineage()).clone ();
     		lineage.push ( parent );
     		String tid = tidmgr_.get ();
-    		CoordinatorImp ccParent = (CoordinatorImp) parent
-    				.getCompositeCoordinator ();
+    		CoordinatorImp ccParent = (CoordinatorImp) parent.getCompositeCoordinator ();
     		// create NEW coordinator for subtx, with most of the parent settings
     		// but without orphan checks since subtxs have no orphans
-    		CoordinatorImp cc = createCC ( null, tid, false ,
-                ccParent.prefersHeuristicCommit (), parent.getTimeout () );
+    		CoordinatorImp cc = createCC ( null, tid, false,
+          ccParent.prefersHeuristicCommit (), parent.getTimeout () );
     		ret = createCT ( tid, cc, lineage, parent.isSerial () );
     		ret.noLocalAncestors = false;
     		return ret;
@@ -603,19 +597,19 @@ public class TransactionServiceImp implements TransactionServiceProvider,
         try {
             String tid = tidmgr_.get ();
             boolean serial = context.isSerial ();
-            Stack<CompositeTransaction> lineage = context.getLineage ();
-            if ( lineage.empty () )
+            Deque<CompositeTransaction> lineage = context.getLineage ();
+            if ( lineage.isEmpty () )
                 throw new SysException (
                         "Empty lineage in propagation: empty lineage" );
-            Stack<CompositeTransaction> tmp = new Stack<CompositeTransaction>();
+            Deque<CompositeTransaction> tmp = new ArrayDeque<>();
 
-            while ( !lineage.empty () ) {
+            while ( !lineage.isEmpty () ) {
                 tmp.push ( lineage.pop () );
             }
 
             CompositeTransaction root = (CompositeTransaction) tmp.peek ();
 
-            while ( !tmp.empty () ) {
+            while ( !tmp.isEmpty () ) {
                 lineage.push ( tmp.pop () );
             }
 
@@ -668,19 +662,20 @@ public class TransactionServiceImp implements TransactionServiceProvider,
             // If we were already shutting down, then the FIRST thread
             // to enter this method will do the following. Don't do
             // it twice.
+            List<String> tidList = new ArrayList<>(rootToCoordinatorMap_.size());
 
-            Enumeration<String> enumm = rootToCoordinatorMap_.keys ();
-            while ( enumm.hasMoreElements () ) {
-                String tid = enumm.nextElement ();
-                LOGGER.logTrace ( "Transaction Service: Stopping thread for root "
-                                + tid + "..." );
-                CoordinatorImp c = (CoordinatorImp) rootToCoordinatorMap_
-                        .get ( tid );
-                if ( c != null ) { //null if intermediate termination while in enumm
-                		c.dispose (); //needed for forced shutdown
-                }
-                LOGGER.logTrace ( "Transaction Service: Thread stopped." );
+            tidList.addAll(rootToCoordinatorMap_.keySet());
+
+            for(String tid : tidList) {
+              LOGGER.logTrace ( "Transaction Service: Stopping thread for root "
+                + tid + "..." );
+              CoordinatorImp coordinatorImp = (CoordinatorImp) rootToCoordinatorMap_.get ( tid );
+              if ( coordinatorImp != null ) { //null if intermediate termination while in enumm
+                coordinatorImp.dispose (); //needed for forced shutdown
+              }
+              LOGGER.logTrace ( "Transaction Service: Thread stopped." );
             }
+
 
         } // if wasShuttingDown
 
@@ -704,13 +699,20 @@ public class TransactionServiceImp implements TransactionServiceProvider,
 
             	//PURGE to avoid issue 10079
             	//use a clone to avoid concurrency interference
-            	if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( "Transaction Service: Purging coordinators for shutdown..." );
-            	Hashtable<String,CoordinatorImp> clone = new Hashtable<String,CoordinatorImp>(rootToCoordinatorMap_);
-            	Enumeration<String> coordinatorIds = clone.keys();
-            	while ( coordinatorIds.hasMoreElements() ) {
-            		String id = coordinatorIds.nextElement();	
-            		rootToCoordinatorMap_.remove ( id );
-            	}
+            	if ( LOGGER.isTraceEnabled() )
+            	  LOGGER.logTrace ( "Transaction Service: Purging coordinators for shutdown..." );
+
+            	Map<String,CoordinatorImp> clone = new HashMap<String,CoordinatorImp>(rootToCoordinatorMap_);
+
+//            	Enumeration<String> coordinatorIds = clone.keys();
+//            	while ( coordinatorIds.hasMoreElements() ) {
+//            		String id = coordinatorIds.nextElement();
+//            		rootToCoordinatorMap_.remove ( id );
+//            	}
+
+            	for(String id : clone.keySet()) {
+                rootToCoordinatorMap_.remove ( id );
+              }
             }
 
             initialized_ = false;
@@ -752,7 +754,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
     }
 
     /**
-     * @see com.atomikos.icatch.TransactionService#getSuperiorRecoveryCoordinator(java.lang.String)
+     * @see com.atomikos.icatch.TransactionService#getCompositeCoordinator(java.lang.String)
      */
     public RecoveryCoordinator getSuperiorRecoveryCoordinator ( String root )
     {
@@ -764,7 +766,6 @@ public class TransactionServiceImp implements TransactionServiceProvider,
         return ret;
     }
 
-
     public CompositeTransaction createCompositeTransaction ( long timeout ) throws SysException
     {
         if ( !initialized_ ) throw new IllegalStateException ( "Not initialized" );
@@ -775,7 +776,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
         }
         
         String tid = tidmgr_.get ();
-        Stack<CompositeTransaction> lineage = new Stack<CompositeTransaction>();
+        Deque<CompositeTransaction> lineage = new ArrayDeque<>();
         // create a CC with heuristic preference set to false,
         // since it does not really matter anyway (since we are
         // creating a root)
@@ -791,7 +792,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
 
 	@Override
 	public CoordinatorLogEntry[] getCoordinatorLogEntries() {
-		Vector<CoordinatorImp> coordinatorImpVector = getCoordinatorImpVector();
+		List<CoordinatorImp> coordinatorImpVector = getCoordinatorImpList();
 		List<CoordinatorLogEntry> coordinatorLogEntries = new ArrayList<CoordinatorLogEntry>(coordinatorImpVector.size());
 		for (CoordinatorImp coordinatorImp : coordinatorImpVector) {
 			CoordinatorLogEntry coordinatorLogEntry = coordinatorImp.getCoordinatorLogEntry();
@@ -805,8 +806,8 @@ public class TransactionServiceImp implements TransactionServiceProvider,
 
 	@Override
 	public void remove(String coordinatorId) {
-		Vector<CoordinatorImp> coordinatorImpVector = getCoordinatorImpVector();
-		for (CoordinatorImp coordinatorImp : coordinatorImpVector) {
+		List<CoordinatorImp> coordinatorImpList = getCoordinatorImpList();
+		for (CoordinatorImp coordinatorImp : coordinatorImpList) {
 			if(coordinatorImp.getId().equals(coordinatorId)){
 				coordinatorImp.forget();
 			}
@@ -817,5 +818,4 @@ public class TransactionServiceImp implements TransactionServiceProvider,
 	public RecoveryLog getRecoveryLog() {
 		return this.recoveryLog;
 	}
-
 }

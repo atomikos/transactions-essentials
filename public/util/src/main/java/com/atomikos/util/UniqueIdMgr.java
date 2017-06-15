@@ -50,7 +50,7 @@ public class UniqueIdMgr
     		String ret = Long.toString ( number );
     		int max = Long.toString(MAX_COUNTER_WITHIN_SAME_MILLIS).length();
     		int len = ret.length();
-    		StringBuffer zeroes = new StringBuffer();
+    		StringBuilder zeroes = new StringBuilder();
     		
     		while ( len < max ) {
     			zeroes.append ( "0" );
@@ -68,25 +68,23 @@ public class UniqueIdMgr
 
     public String get()
     {
-        StringBuffer buffer = new StringBuffer();
-        String id = buffer.append(commonPartOfId).
-        			  append(System.currentTimeMillis()).
-        			  append(getCountWithLeadingZeroes ( incrementAndGet() )).
-        			  toString();
+      String id = commonPartOfId +
+        System.currentTimeMillis() +
+        getCountWithLeadingZeroes(incrementAndGet());
         return id;
     }
 
 
 	private synchronized int incrementAndGet() {
 		lastcounter++;
-        if (lastcounter == MAX_COUNTER_WITHIN_SAME_MILLIS) lastcounter = 0;
+        if (lastcounter == MAX_COUNTER_WITHIN_SAME_MILLIS)
+          lastcounter = 0;
+
         return lastcounter;
 	}
 
     private static String getCommonPartOfId(String server) {
-    	StringBuffer ret = new StringBuffer(64);
-		ret.append(server);
-		return ret.toString();
+      return server;
     }
 
 	public int getMaxIdLengthInBytes() {

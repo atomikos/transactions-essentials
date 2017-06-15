@@ -109,7 +109,7 @@ public abstract class AbstractJmsSenderTemplate implements JmsSenderTemplate
 			if ( getDestinationName() == null ) {
 				throw new IllegalStateException ( "Property 'destination' or 'destinationName' must be set first!" );
 			}
-			StringBuffer msg = new StringBuffer();
+      StringBuilder msg = new StringBuilder();
 			msg.append ( this + ":configured with [" );
 			msg.append ( "user=" ).append ( getUser() ).append ( ", " );
 			msg.append ( "password=" ).append ( password ).append ( ", " );

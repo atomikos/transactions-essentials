@@ -8,17 +8,6 @@
 
 package com.atomikos.icatch.jta;
 
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
-import javax.transaction.Status;
-import javax.transaction.SystemException;
-import javax.transaction.Transaction;
-import javax.transaction.xa.XAException;
-import javax.transaction.xa.XAResource;
-
 import com.atomikos.datasource.RecoverableResource;
 import com.atomikos.datasource.ResourceException;
 import com.atomikos.datasource.TransactionalResource;
@@ -34,6 +23,17 @@ import com.atomikos.icatch.config.Configuration;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 import com.atomikos.recovery.TxState;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import javax.transaction.Status;
+import javax.transaction.SystemException;
+import javax.transaction.Transaction;
+import javax.transaction.xa.XAException;
+import javax.transaction.xa.XAResource;
 
 /**
  * Implementation of the javax.transaction.Transaction interface.
@@ -160,7 +160,7 @@ class TransactionImp implements Transaction {
 	}
 
 	/**
-	 * @see javax.transaction.Transaction.
+	 * @see javax.transaction.Transaction
 	 */
 
 	@Override
@@ -190,7 +190,7 @@ class TransactionImp implements Transaction {
 	}
 
 	/**
-	 * @see javax.transaction.Transaction.
+	 * @see javax.transaction.Transaction
 	 */
 
 	@Override
@@ -205,7 +205,7 @@ class TransactionImp implements Transaction {
 	}
 
 	/**
-	 * @see javax.transaction.Transaction.
+	 * @see javax.transaction.Transaction
 	 */
 
 	@Override
@@ -214,7 +214,7 @@ class TransactionImp implements Transaction {
 	}
 
 	/**
-	 * @see javax.transaction.Transaction.
+	 * @see javax.transaction.Transaction
 	 */
 
 	@Override
@@ -309,49 +309,48 @@ class TransactionImp implements Transaction {
 		return true;
 	}
 
-	private TransactionalResource findRecoverableResourceForXaResource(
-			XAResource xares) {
-		TransactionalResource ret = null;
-		XATransactionalResource xatxres;
+	private TransactionalResource findRecoverableResourceForXaResource(XAResource xares) {
+	  
+		TransactionalResource transactionalResource = null;
+		XATransactionalResource xaTransactionalResource;
 
+    // synchronized to avoid case 61740 and 142795
 		synchronized (Configuration.class) {
-			// synchronized to avoid case 61740 and 142795
-			
-			Enumeration<RecoverableResource> enumm = Configuration.getResources();
-			while (enumm.hasMoreElements()) {
-				RecoverableResource rres = enumm.nextElement();
-				if (rres instanceof XATransactionalResource) {
-					xatxres = (XATransactionalResource) rres;
-					if (xatxres.usesXAResource(xares))
-						ret = xatxres;
-				}
 
+			List<RecoverableResource> recoverableResources = Configuration.getResources();
+
+      for (RecoverableResource recoverableResource : recoverableResources) {
+				if (recoverableResource instanceof XATransactionalResource) {
+					xaTransactionalResource = (XATransactionalResource) recoverableResource;
+					if (xaTransactionalResource.usesXAResource(xares))
+						transactionalResource = xaTransactionalResource;
+				}
 			}
 
-			if (ret == null && this.autoRegistration) {
+			if (transactionalResource == null && this.autoRegistration) {
 
-				ret = new TemporaryXATransactionalResource(xares);
+				transactionalResource = new TemporaryXATransactionalResource(xares);
 				// cf case 61740: check for concurrent additions before this
 				// synch block was entered
-				if (Configuration.getResource(ret.getName()) == null) {
+				if (Configuration.getResource(transactionalResource.getName()) == null) {
 					if (LOGGER.isTraceEnabled()) {
 						LOGGER.logTrace("constructing new temporary resource "
 								+ "for unknown XAResource: " + xares);
 					}
-					Configuration.addResource(ret);
+					Configuration.addResource(transactionalResource);
 				} else {
 					//fix for case 116270
-					ret = (TransactionalResource) Configuration.getResource ( ret.getName() );
+					transactionalResource = (TransactionalResource) Configuration.getResource ( transactionalResource.getName() );
 				}
 			}
 
 		}
 
-		return ret;
+		return transactionalResource;
 	}
 
 	/**
-	 * @see javax.transaction.Transaction.
+	 * @see javax.transaction.Transaction
 	 */
 
 	@Override
@@ -451,8 +450,9 @@ class TransactionImp implements Transaction {
 	}
 
 	void resumeEnlistedXaReources() throws ExtendedSystemException {
-		Iterator<XAResourceTransaction> xaResourceTransactions = this.xaResourceToResourceTransactionMap_
-				.values().iterator();
+		Iterator<XAResourceTransaction> xaResourceTransactions =
+      this.xaResourceToResourceTransactionMap_.values().iterator();
+
 		while (xaResourceTransactions.hasNext()) {
 			XAResourceTransaction resTx = xaResourceTransactions.next();
 			try {

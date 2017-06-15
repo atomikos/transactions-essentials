@@ -17,7 +17,7 @@ import org.junit.Test;
 public class StringUtilsTestJUnit {
 
 	private static String byteArrayToHexStringWithNativeJavaImplementation(byte[] byteArray) {
-		StringBuffer sb = new StringBuffer(2*byteArray.length);
+		StringBuilder sb = new StringBuilder(2*byteArray.length);
     	for (int i = 0; i < byteArray.length; i++) {
     		String hexByte = Integer.toHexString(byteArray[i]);
 			sb.append(hexByte);

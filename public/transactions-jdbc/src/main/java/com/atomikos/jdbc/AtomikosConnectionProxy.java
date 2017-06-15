@@ -59,7 +59,7 @@ class AtomikosConnectionProxy extends AbstractConnectionProxy
 	public String toString()
 	{
 		if(toString==null){
-			StringBuffer ret = new StringBuffer();
+			StringBuilder ret = new StringBuilder();
 			ret.append ( "atomikos connection proxy for ");
 			ret.append (delegate);
 			toString= ret.toString();
@@ -161,7 +161,7 @@ class AtomikosConnectionProxy extends AbstractConnectionProxy
 	}
 
 	private String formatCallDetails(Method method, Object[] args) {
-		StringBuffer ret = new StringBuffer();
+		StringBuilder ret = new StringBuilder();
 		ret.append(method.getName());
 		if (args != null && args.length>0) {
 			ret.append("(");

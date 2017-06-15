@@ -17,16 +17,16 @@ public interface XPooledConnection
 	
 	/**
 	 * Is the connection available to be taken out of the pool ? 
-	 * @return 
+	 * @return connection isAvailable
 	 */
 	boolean isAvailable();
 	
 	
 	/**
 	 * Can the connection be recycled (if not available) for the calling thread? 
-	 * @return
+	 * @return connection canBeRecycled
 	 */
-	public boolean canBeRecycledForCallingThread();
+  boolean canBeRecycledForCallingThread();
 	
 	/**
 	 * Destroy the pooled connection by closing the underlying physical connection.
@@ -44,14 +44,14 @@ public interface XPooledConnection
 	
 	/**
 	 * Get the last time the connection was acquired.
-	 * @return
+	 * @return lastTimeAcquired
 	 */
 	long getLastTimeAcquired();
 	
 	/**
 	 * Get the last time the connection was released, i.e. the last time when
 	 * it has become available.
-	 * @return
+	 * @return lastTimeReleased
 	 */
 	long getLastTimeReleased();
 	
@@ -59,26 +59,25 @@ public interface XPooledConnection
 	 * Create a disposable connection object that acts a controller for
 	 * the pooled connection. What exactly a connection object is depends
 	 * on the implementation.
-	 * @return
-	 * @throws CreateConnectionException 
+	 * @return disposable connection object
+	 * @throws CreateConnectionException on exception
 	 */
 	Reapable createConnectionProxy() throws CreateConnectionException;
 	
 	/**
 	 * Is the pooled connection broken ? 
-	 * @return
+	 * @return is pooled connection broken
 	 */
 	boolean isErroneous();
 	
 	/**
 	 * Get the moment when the connection was created.
-	 * @return
+	 * @return connection creation time
 	 */
 	long getCreationTime();
 	
 	void registerXPooledConnectionEventListener(XPooledConnectionEventListener listener);
 	
-	void unregisterXPooledConnectionEventListener(XPooledConnectionEventListener listener);
-
-
+	@SuppressWarnings("unused")
+  void unregisterXPooledConnectionEventListener(XPooledConnectionEventListener listener);
 }

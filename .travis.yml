@@ -1,14 +1,17 @@
+sudo: false
+addons:
+  apt:
+    packages:
+      - oracle-java8-installer
+
 language: java
 
 jdk:
-  - openjdk6
+  - oraclejdk8
 
-install: mvn install -DskipTests=true -Popensource 
-
-script: mvn clean test -Popensource
+script: mvn clean verify -P errorprone-compiler,verbose-logging
 
 
 notifications:
   email: 
-    - guy@atomikos.com
-    - pascal.leclercq@gmail.com
+    - andyglick@gmail.com

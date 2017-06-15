@@ -45,14 +45,6 @@
 
 package com.atomikos.finitestates;
 
-
-
-public interface FSM extends StateMutable, 
-							 FSMEnterEventSource,
-							 FSMPreEnterEventSource,
-							 FSMTransitionEventSource,
-							 FSMPreTransitionEventSource  
-{
-	
-	
+public interface FSM extends StateMutable, FSMEnterEventSource, FSMPreEnterEventSource, FSMTransitionEventSource,
+  FSMPreTransitionEventSource {
 }

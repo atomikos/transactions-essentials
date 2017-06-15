@@ -12,7 +12,7 @@ import java.util.EventObject;
 
 import com.atomikos.recovery.TxState;
 
-public class FSMEnterEvent extends EventObject{
+public class FSMEnterEvent extends EventObject {
 
 	private static final long serialVersionUID = -7910459829127232977L;
 	

@@ -24,6 +24,7 @@ public class AtomikosTransactionController extends JTATransactionController {
 	/**
 	 * INTERNAL: Obtain and return the JTA TransactionManager on this platform
 	 */
+	@Override
 	protected TransactionManager acquireTransactionManager() throws Exception {
 		return utm;
 	}

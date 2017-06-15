@@ -13,6 +13,7 @@ import junit.framework.Assert;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.atomikos.icatch.provider.Assembler;
@@ -77,6 +78,7 @@ public class ConfigurationTestJUnit {
 	}
 	
 	@Test
+  @Ignore
 	public void testCustomPropertiesFileOverridesJtaPropertiesFile() {
 		Configuration.resetConfigProperties();
 		String customFileNamePath ="custom.properties";

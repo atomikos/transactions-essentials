@@ -8,7 +8,7 @@
 
 package com.atomikos.icatch;
 
-import java.util.Stack;
+import java.util.Deque;
 
 /**
  * Information about the transaction context that can be 
@@ -19,12 +19,12 @@ import java.util.Stack;
 public interface Propagation extends java.io.Serializable 
 {
     /**
-     * Gets the ancestor information as a stack.
+     * Gets the ancestor information as a deque.
      *
-     * @return Stack The ancestor transactions.
+     * @return Deque The ancestor transactions.
      */
 
-     Stack<CompositeTransaction> getLineage();
+     Deque<CompositeTransaction> getLineage();
     
     /**
      *

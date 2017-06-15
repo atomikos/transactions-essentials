@@ -8,11 +8,12 @@
 
 package com.atomikos.icatch.imp;
 
+import com.atomikos.icatch.Participant;
+
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.Stack;
-
-import com.atomikos.icatch.Participant;
 
 /**
  * A Result is responsible for collecting the replies of a termination round.
@@ -29,8 +30,8 @@ abstract class Result
     // should be set by analyze()
 
     protected int numberOfMissingReplies_ = 0;
-    protected Stack<Reply> replies_ = new Stack<Reply>();
-    private Set<Participant> repliedlist_ = new HashSet<Participant>();
+    protected Deque<Reply> replies_ = new ArrayDeque<>();
+    private Set<Participant> repliedlist_ = new HashSet<>();
 
     public Result ( int numberOfRepliesToWaitFor )
     {
@@ -95,14 +96,14 @@ abstract class Result
     /**
      * Get all replies for this result's message round. Block until ready.
      *
-     * @return Stack All replies in a stack.
+     * @return Deque All replies in a deque.
      * @exception IllegalStateException
      *                If not all replies are in yet.
      * @exception InterruptedException
      *                During waiting interrupt.
      */
 
-    public Stack<Reply> getReplies() throws IllegalStateException,
+    public Deque<Reply> getReplies() throws IllegalStateException,
             InterruptedException
     {
         waitForReplies();
@@ -120,5 +121,4 @@ abstract class Result
     {
         while ( numberOfMissingReplies_ > 0 ) wait();
     }
-
 }

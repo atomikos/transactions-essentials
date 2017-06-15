@@ -8,10 +8,6 @@
 
 package com.atomikos.icatch.imp;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Stack;
-
 import com.atomikos.icatch.CompositeTransaction;
 import com.atomikos.icatch.CompositeTransactionManager;
 import com.atomikos.icatch.Participant;
@@ -24,6 +20,11 @@ import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 import com.atomikos.recovery.TxState;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Reusable (generic) composite transaction manager implementation.
  */
@@ -33,13 +34,13 @@ public class CompositeTransactionManagerImp implements CompositeTransactionManag
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(CompositeTransactionManagerImp.class);
 	
-	private Map<Thread, Stack<CompositeTransaction>> threadtotxmap_ = null;
+	private Map<Thread, Deque<CompositeTransaction>> threadtotxmap_ = null;
     private Map<CompositeTransaction, Thread> txtothreadmap_ = null;
 
 
     public CompositeTransactionManagerImp ()
     {
-        threadtotxmap_ = new HashMap<Thread, Stack<CompositeTransaction>> ();
+        threadtotxmap_ = new HashMap<Thread, Deque<CompositeTransaction>> ();
         txtothreadmap_ = new HashMap<CompositeTransaction, Thread> ();
     }
 
@@ -62,13 +63,13 @@ public class CompositeTransactionManagerImp implements CompositeTransactionManag
     /**
      * Remove mappings for given thread.
      *
-     * @return Stack The tx stack that was for current thread.
+     * @return Deque The tx deque that was for current thread.
      */
 
-    private Stack<CompositeTransaction> removeThreadMappings ( Thread thread )
+    private Deque<CompositeTransaction> removeThreadMappings ( Thread thread )
     {
 
-        Stack<CompositeTransaction> ret = null;
+        Deque<CompositeTransaction> ret = null;
         synchronized ( threadtotxmap_ ) {
             ret = threadtotxmap_.remove ( thread );
             CompositeTransaction tx = ret.peek ();
@@ -96,9 +97,9 @@ public class CompositeTransactionManagerImp implements CompositeTransactionManag
         	//may have happened; make sure to check or we add a thread mapping
         	//that will never be removed!
         	if ( TxState.ACTIVE.equals ( ct.getState() )) {
-        		Stack<CompositeTransaction> txs = threadtotxmap_.get ( thread );
+        		Deque<CompositeTransaction> txs = threadtotxmap_.get ( thread );
         		if ( txs == null )
-        			txs = new Stack<CompositeTransaction>();
+        			txs = new ArrayDeque<CompositeTransaction>();
         		txs.push ( ct );
         		threadtotxmap_.put ( thread, txs );
         		txtothreadmap_.put ( ct, thread );
@@ -108,11 +109,11 @@ public class CompositeTransactionManagerImp implements CompositeTransactionManag
 
     }
 
-    private void restoreThreadMappings ( Stack<CompositeTransaction> stack , Thread thread )
+    private void restoreThreadMappings (Deque<CompositeTransaction> deque , Thread thread )
             throws IllegalStateException
     {
     	//case 21806: callbacks to ct to be made outside synchronized block
-    	CompositeTransaction tx = stack.peek ();
+    	CompositeTransaction tx = deque.peek ();
     	tx.addSubTxAwareParticipant ( this ); //step 1
 
         synchronized ( threadtotxmap_ ) {
@@ -123,9 +124,9 @@ public class CompositeTransactionManagerImp implements CompositeTransactionManag
         	
         	if ( state.isOneOf(TxState.ACTIVE, TxState.MARKED_ABORT) ) {
         		//also resume for marked abort - see case 26398
-        		Stack<CompositeTransaction> txs = threadtotxmap_.get ( thread );
+            Deque<CompositeTransaction> txs = threadtotxmap_.get ( thread );
         		if ( txs != null ) throw new IllegalStateException ("Thread already has subtx stack" );
-        		threadtotxmap_.put ( thread, stack );
+        		threadtotxmap_.put ( thread, deque );
         		txtothreadmap_.put ( tx, thread );
         	}
         }
@@ -135,7 +136,7 @@ public class CompositeTransactionManagerImp implements CompositeTransactionManag
     {
         Thread thread = Thread.currentThread ();
         synchronized ( threadtotxmap_ ) {
-            Stack<CompositeTransaction> txs = threadtotxmap_.get ( thread );
+            Deque<CompositeTransaction> txs = threadtotxmap_.get ( thread );
             if ( txs == null )
                 return null;
             else
@@ -279,8 +280,6 @@ public class CompositeTransactionManagerImp implements CompositeTransactionManag
 
     public CompositeTransaction suspend () throws SysException
     {
-    	
-
         CompositeTransaction ret = getCurrentTx ();
         if ( ret != null ) {
         	if(LOGGER.isDebugEnabled()){
@@ -304,9 +303,9 @@ public class CompositeTransactionManagerImp implements CompositeTransactionManag
     public void resume ( CompositeTransaction ct )
             throws IllegalStateException, SysException
     {
-        Stack<CompositeTransaction> ancestors = new Stack<CompositeTransaction>();
-        Stack<CompositeTransaction> tmp = new Stack<CompositeTransaction>();
-        Stack<CompositeTransaction> lineage = (Stack<CompositeTransaction>) ct.getLineage ().clone ();
+        Deque<CompositeTransaction> ancestors = new ArrayDeque<>();
+        Deque<CompositeTransaction> tmp = new ArrayDeque<>();
+        Deque<CompositeTransaction> lineage = ((ArrayDeque<CompositeTransaction>) ct.getLineage ()).clone ();
         boolean done = false;
         while ( !lineage.isEmpty () && !done ) {
             CompositeTransaction parent = lineage.pop ();
@@ -372,12 +371,13 @@ public class CompositeTransactionManagerImp implements CompositeTransactionManag
         Thread thread = getThread ( ct );
         if ( thread == null ) return;
 
-        Stack<CompositeTransaction> mappings = removeThreadMappings ( thread );
-        if ( mappings != null && !mappings.empty () ) {
-            mappings.pop ();
-            if ( !mappings.empty () ) restoreThreadMappings ( mappings, thread );
-        }
+        Deque<CompositeTransaction> mappings = removeThreadMappings ( thread );
 
+        if ( mappings != null && !mappings.isEmpty () ) {
+            mappings.pop ();
+            if ( !mappings.isEmpty () )
+              restoreThreadMappings ( mappings, thread );
+        }
     }
 
     /**

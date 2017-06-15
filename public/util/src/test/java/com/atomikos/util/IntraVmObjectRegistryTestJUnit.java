@@ -22,7 +22,7 @@ public class IntraVmObjectRegistryTestJUnit extends TestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 		name = getName();
-		object = new Integer(1);
+		object = 1;
 	}
 	
 	public void testGetResourceWithoutPriorAdd() throws Exception

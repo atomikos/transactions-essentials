@@ -6,13 +6,12 @@
  * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
  */
 
-
 package com.atomikos.icatch;
 
-import java.util.Properties;
-import java.util.Stack;
-
 import com.atomikos.recovery.TxState;
+
+import java.util.Deque;
+import java.util.Properties;
 
 /**
  * Represents a nested part of a global
@@ -23,14 +22,10 @@ import com.atomikos.recovery.TxState;
  * an exception of type UnsupportedOperationException. The only
  * methods that always work for all instances are the simple 
  * getters and test methods.
- *
- *
- *
  */
 
 public interface CompositeTransaction 
 {
-	
 	/**
 	 * Gets the current state.
 	 * @return Object One of the state constants.
@@ -47,11 +42,10 @@ public interface CompositeTransaction
      boolean isRoot();
 
     /**
-     * @return Stack A stack of ancestors, bottom one is the root.
+     * @return Deque A deque of ancestors, bottom one is the root.
      */
 
-     Stack<CompositeTransaction> getLineage();
-
+     Deque<CompositeTransaction> getLineage();
 
     /**
      * 
@@ -77,7 +71,6 @@ public interface CompositeTransaction
 
      boolean isDescendantOf( CompositeTransaction otherCompositeTransaction );
 
-
     /**
      * @param otherCompositeTransaction
      *
@@ -86,7 +79,6 @@ public interface CompositeTransaction
 
     boolean isRelatedTransaction ( CompositeTransaction otherCompositeTransaction );
 
-    
     /**
      * @param otherCompositeTransaction
      * @return True if both are the same.
@@ -100,8 +92,6 @@ public interface CompositeTransaction
     
     CompositeCoordinator getCompositeCoordinator() 
     throws SysException;
-    
-
         
     /** 
      * @param participant 
@@ -110,9 +100,7 @@ public interface CompositeTransaction
      */
 
     RecoveryCoordinator addParticipant ( Participant participant )
-        throws SysException,
-	     java.lang.IllegalStateException;
-	     
+        throws SysException, java.lang.IllegalStateException;
 
     /**
      * 
@@ -125,8 +113,6 @@ public interface CompositeTransaction
         throws
              IllegalStateException,
              SysException;
-
-
 
     /**
      * Resources that support lock inheritance can use this feature
@@ -204,8 +190,6 @@ public interface CompositeTransaction
 	  SysException,java.lang.SecurityException,
 	  RollbackException;
 
-
-
 	/**
 	 * Rollback of the current transaction.
 	 * @exception IllegalStateException If prepared or inactive.
@@ -213,8 +197,7 @@ public interface CompositeTransaction
 	 */
 
 	 void rollback()
-		throws IllegalStateException, SysException;	
- 
+		throws IllegalStateException, SysException;
     
     /**
      * Sets metadata property information on the transaction object.
@@ -261,13 +244,4 @@ public interface CompositeTransaction
     */
     
      int getLocalSubTxCount();
-
-
-
 }
-
-
-
-
-
-
