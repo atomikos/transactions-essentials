@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>com.atomikos</groupId>
 		<artifactId>ate</artifactId>
-		<version>4.0.4</version>
+		<version>4.0.5-SNAPSHOT</version>
 	</parent>
 	<artifactId>transactions-api</artifactId>
 	<name>Transactions API</name>
@@ -16,8 +16,6 @@
 			<version>2.9.1</version>
 			<scope>test</scope>
 		</dependency>
-
 	</dependencies>
-
 
 </project>

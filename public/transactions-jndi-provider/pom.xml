@@ -3,19 +3,19 @@
 	<parent>
 		<groupId>com.atomikos</groupId>
 		<artifactId>ate</artifactId>
-		<version>4.0.4</version>
+		<version>4.0.5-SNAPSHOT</version>
 	</parent>
 	<artifactId>transactions-jndi-provider</artifactId>
 	<dependencies>
 		<dependency>
 			<groupId>com.atomikos</groupId>
 			<artifactId>transactions-jms</artifactId>
-			<version>4.0.4</version>
+			<version>${project.parent.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.atomikos</groupId>
 			<artifactId>transactions-jdbc</artifactId>
-			<version>4.0.4</version>
+			<version>${project.parent.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.geronimo.specs</groupId>
@@ -24,11 +24,15 @@
 			<scope>provided</scope>
 		</dependency>
 		 <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-jta_1.0.1B_spec</artifactId>
-            <version>1.0</version>
-            <scope>test</scope>
-        </dependency>
-        
+       <groupId>org.apache.geronimo.specs</groupId>
+       <artifactId>geronimo-jta_1.0.1B_spec</artifactId>
+       <version>1.0</version>
+       <scope>test</scope>
+     </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-all</artifactId>
+      <scope>test</scope>
+    </dependency>
 	</dependencies>
 </project>
