@@ -418,7 +418,7 @@ public class XAResourceTransaction implements ResourceTransaction, Participant {
 	}
 
 	/**
-	 * @see Participant.
+	 * @see Participant
 	 */
 
 	@Override
@@ -588,6 +588,7 @@ public class XAResourceTransaction implements ResourceTransaction, Participant {
 						setState(TxState.TERMINATED);
 						break;
 					}
+					break;
 				default:
 					// fix for bug 31209
 					setState(TxState.HEUR_HAZARD);

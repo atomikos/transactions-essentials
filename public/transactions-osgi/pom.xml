@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>com.atomikos</groupId>
 		<artifactId>ate</artifactId>
-		<version>4.0.4</version>
+		<version>4.0.5-SNAPSHOT</version>
 	</parent>
 	<artifactId>transactions-osgi</artifactId>
 	<name>Transactions OSGi</name>
@@ -36,31 +36,29 @@
 							</instructions>
 						</configuration>
 					</execution>
-
 				</executions>
 			</plugin>
-
 		</plugins>
 	</build>
 	<dependencies>
 		<dependency>
 			<groupId>com.atomikos</groupId>
 			<artifactId>transactions-jdbc</artifactId>
-			<version>4.0.4</version>
+			<version>${project.parent.version}</version>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>com.atomikos</groupId>
 			<artifactId>transactions-jms</artifactId>
-			<version>4.0.4</version>
+			<version>${project.parent.version}</version>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-jta_1.0.1B_spec</artifactId>
-            <version>1.0</version>
-            <scope>provided</scope>
-        </dependency>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-jta_1.0.1B_spec</artifactId>
+      <version>1.0</version>
+      <scope>provided</scope>
+    </dependency>
 		<dependency>
 			<groupId>org.osgi</groupId>
 			<artifactId>org.osgi.core</artifactId>

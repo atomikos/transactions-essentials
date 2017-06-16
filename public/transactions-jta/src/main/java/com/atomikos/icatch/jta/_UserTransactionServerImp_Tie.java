@@ -102,6 +102,7 @@ public class _UserTransactionServerImp_Tie extends ObjectImpl implements Tie
                     out.write_value ( result, String.class );
                     return out;
                 }
+                break;
             case 6:
                 if ( method.equals ( "commit" ) ) {
                     String arg0 = (String) in.read_value ( String.class );
@@ -140,6 +141,7 @@ public class _UserTransactionServerImp_Tie extends ObjectImpl implements Tie
                     OutputStream out = reply.createReply ();
                     return out;
                 }
+                break;
             case 8:
                 if ( method.equals ( "rollback" ) ) {
                     String arg0 = (String) in.read_value ( String.class );
@@ -157,6 +159,7 @@ public class _UserTransactionServerImp_Tie extends ObjectImpl implements Tie
                     OutputStream out = reply.createReply ();
                     return out;
                 }
+                break;
             case 9:
                 if ( method.equals ( "getStatus" ) ) {
                     String arg0 = (String) in.read_value ( String.class );
@@ -176,6 +179,7 @@ public class _UserTransactionServerImp_Tie extends ObjectImpl implements Tie
                     out.write_long ( result );
                     return out;
                 }
+                break;
             case 15:
                 if ( method.equals ( "setRollbackOnly" ) ) {
                     String arg0 = (String) in.read_value ( String.class );

@@ -1,10 +1,9 @@
 language: java
 
 jdk:
-  - openjdk6
+  - oraclejdk7
 
-install: mvn install -DskipTests=true -Popensource 
-
+install: mvn install -DskipTests=true -Popensource
 script: mvn clean test -Popensource
 
 

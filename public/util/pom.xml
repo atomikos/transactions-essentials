@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>com.atomikos</groupId>
 		<artifactId>ate</artifactId>
-		<version>4.0.4</version>
+		<version>4.0.5-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>atomikos-util</artifactId>
@@ -14,7 +14,7 @@
 		<dependency>
 			<groupId>com.atomikos</groupId>
 			<artifactId>transactions-api</artifactId>
-			<version>4.0.4</version>
+			<version>${project.parent.version}</version>
 		</dependency>
 		<!-- only for HtmlBeanWizard -->
 		<dependency>
@@ -45,7 +45,6 @@
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-all</artifactId>
-			<version>1.9.0</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

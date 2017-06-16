@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>com.atomikos</groupId>
 		<artifactId>ate</artifactId>
-		<version>4.0.4</version>
+		<version>4.0.5-SNAPSHOT</version>
 	</parent>
 	<artifactId>transactions-tcc-rest</artifactId>
 	<name>Transactions / TCC FOR REST</name>
@@ -56,28 +56,32 @@
 		</plugins>
 	</build>
 
-
 	<dependencies>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-all</artifactId>
+      <scope>test</scope>
+    </dependency>
 		<dependency>
 			<groupId>com.atomikos</groupId>
 			<artifactId>transactions-api</artifactId>
-			<version>4.0.4</version>
+			<version>${project.parent.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.atomikos</groupId>
 			<artifactId>transactions</artifactId>
-			<version>4.0.4</version>
+			<version>${project.parent.version}</version>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.atomikos</groupId>
 			<artifactId>atomikos-util</artifactId>
-			<version>4.0.4</version>
+			<version>${project.parent.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.atomikos</groupId>
 			<artifactId>transactions-tcc-rest-api</artifactId>
-			<version>4.0.4</version>
+			<version>${project.parent.version}</version>
 		</dependency>
 		<!-- This dependency is needed if you're using the Jetty container -->
 		<dependency>
