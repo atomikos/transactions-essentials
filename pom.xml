@@ -69,12 +69,15 @@
   </repositories>
 
   <properties>
+    <errorprone.compiler.version>2.0.19</errorprone.compiler.version>
     <java.version>1.7</java.version>
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
+    <plexus.compiler.version>2.8.2</plexus.compiler.version>
+    <plexus.utils.version>3.0.24</plexus.utils.version>
     <!-- we don't want to depend on platform's default encoding -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
   </properties>
 
   <build>
@@ -167,10 +170,6 @@
       </plugins>
     </pluginManagement>
     <plugins>
-      <plugin>
-        <groupId>org.gaul</groupId>
-        <artifactId>modernizer-maven-plugin</artifactId>
-      </plugin>
       <plugin>
         <groupId>com.atlassian.maven.plugins</groupId>
         <artifactId>maven-clover2-plugin</artifactId>
@@ -267,30 +266,6 @@
 
   <!--TODO prevent tests execution during the build -->
   <profiles>
-    <profile>
-      <id>all</id>
-      <activation>
-        <activeByDefault>false</activeByDefault>
-      </activation>
-      <distributionManagement>
-        <repository>
-          <id>atomikos.website.maven.repo</id>
-          <url>ftp://www.atomikos.com</url>
-        </repository>
-        <snapshotRepository>
-          <id>internal.snapshot.repo</id>
-          <name>Atomikos Internal Snapshot Repository</name>
-          <url>file://${user.home}/.m2/repository</url>
-        </snapshotRepository>
-      </distributionManagement>
-
-      <!-- "modules" must correspond to file system hierarchy -->
-      <modules>
-        <module>public</module>
-        <module>private</module>
-        <module>specs</module>
-      </modules>
-    </profile>
 
     <profile>
       <id>opensource</id>
@@ -344,6 +319,88 @@
           <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
       </distributionManagement>
+    </profile>
+
+    <profile>
+      <id>modernizer</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.gaul</groupId>
+            <artifactId>modernizer-maven-plugin</artifactId>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>all</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <distributionManagement>
+        <repository>
+          <id>atomikos.website.maven.repo</id>
+          <url>ftp://www.atomikos.com</url>
+        </repository>
+        <snapshotRepository>
+          <id>internal.snapshot.repo</id>
+          <name>Atomikos Internal Snapshot Repository</name>
+          <url>file://${user.home}/.m2/repository</url>
+        </snapshotRepository>
+      </distributionManagement>
+
+      <!-- "modules" must correspond to file system hierarchy -->
+      <modules>
+        <module>public</module>
+        <module>private</module>
+        <module>specs</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>error-prone</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.6.1</version>
+            <configuration>
+              <compilerId>javac-with-errorprone</compilerId>
+              <forceJavacCompilerUse>true</forceJavacCompilerUse>
+            </configuration>
+            <dependencies>
+              <dependency>
+                <groupId>com.google.errorprone</groupId>
+                <artifactId>error_prone_core</artifactId>
+                <version>${errorprone.compiler.version}</version>
+              </dependency>
+              <dependency>
+                <groupId>org.codehaus.plexus</groupId>
+                <artifactId>plexus-compiler-javac-errorprone</artifactId>
+                <version>${plexus.compiler.version}</version>
+              </dependency>
+              <dependency>
+                <groupId>org.codehaus.plexus</groupId>
+                <artifactId>plexus-compiler-api</artifactId>
+                <version>${plexus.compiler.version}</version>
+              </dependency>
+              <dependency>
+                <groupId>org.codehaus.plexus</groupId>
+                <artifactId>plexus-compiler-manager</artifactId>
+                <version>${plexus.compiler.version}</version>
+              </dependency>
+              <dependency>
+                <groupId>org.codehaus.plexus</groupId>
+                <artifactId>plexus-utils</artifactId>
+                <version>${plexus.utils.version}</version>
+              </dependency>
+            </dependencies>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
 
     <profile>

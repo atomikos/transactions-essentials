@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2016 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
  * LICENSE CONDITIONS
  *
@@ -8,9 +8,9 @@
 
 package com.atomikos.icatch.jta;
 
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.transaction.Status;
@@ -127,7 +127,6 @@ class TransactionImp implements Transaction {
 			LOGGER.logWarning(msg, se);
 			throw new ExtendedSystemException(msg, se);
 		}
-
 	}
 
 	/**
@@ -160,7 +159,7 @@ class TransactionImp implements Transaction {
 	}
 
 	/**
-	 * @see javax.transaction.Transaction.
+	 * @see javax.transaction.Transaction
 	 */
 
 	@Override
@@ -190,7 +189,7 @@ class TransactionImp implements Transaction {
 	}
 
 	/**
-	 * @see javax.transaction.Transaction.
+	 * @see javax.transaction.Transaction
 	 */
 
 	@Override
@@ -205,7 +204,7 @@ class TransactionImp implements Transaction {
 	}
 
 	/**
-	 * @see javax.transaction.Transaction.
+	 * @see javax.transaction.Transaction
 	 */
 
 	@Override
@@ -214,7 +213,7 @@ class TransactionImp implements Transaction {
 	}
 
 	/**
-	 * @see javax.transaction.Transaction.
+	 * @see javax.transaction.Transaction
 	 */
 
 	@Override
@@ -309,55 +308,51 @@ class TransactionImp implements Transaction {
 		return true;
 	}
 
-	private TransactionalResource findRecoverableResourceForXaResource(
-			XAResource xares) {
-		TransactionalResource ret = null;
-		XATransactionalResource xatxres;
+	private TransactionalResource findRecoverableResourceForXaResource(XAResource xaResource) {
+
+		TransactionalResource transactionalResource = null;
+
+		XATransactionalResource xactionalResource;
 
 		synchronized (Configuration.class) {
 			// synchronized to avoid case 61740 and 142795
-			
-			Enumeration<RecoverableResource> enumm = Configuration.getResources();
-			while (enumm.hasMoreElements()) {
-				RecoverableResource rres = enumm.nextElement();
-				if (rres instanceof XATransactionalResource) {
-					xatxres = (XATransactionalResource) rres;
-					if (xatxres.usesXAResource(xares))
-						ret = xatxres;
-				}
 
+				for (RecoverableResource resource : Configuration.getResources()) {
+				  if (resource instanceof XATransactionalResource) {
+            xactionalResource = (XATransactionalResource) resource;
+            if(xactionalResource.usesXAResource(xaResource))
+              transactionalResource = xactionalResource;
+          }
+        }
 			}
 
-			if (ret == null && this.autoRegistration) {
+			if (transactionalResource == null && this.autoRegistration) {
 
-				ret = new TemporaryXATransactionalResource(xares);
+				transactionalResource = new TemporaryXATransactionalResource(xaResource);
 				// cf case 61740: check for concurrent additions before this
 				// synch block was entered
-				if (Configuration.getResource(ret.getName()) == null) {
+				if (Configuration.getResource(transactionalResource.getName()) == null) {
 					if (LOGGER.isTraceEnabled()) {
 						LOGGER.logTrace("constructing new temporary resource "
-								+ "for unknown XAResource: " + xares);
+								+ "for unknown XAResource: " + xaResource);
 					}
-					Configuration.addResource(ret);
+					Configuration.addResource(transactionalResource);
 				} else {
 					//fix for case 116270
-					ret = (TransactionalResource) Configuration.getResource ( ret.getName() );
+					transactionalResource = (TransactionalResource) Configuration.getResource ( transactionalResource.getName() );
 				}
 			}
 
-		}
-
-		return ret;
+		return transactionalResource;
 	}
 
 	/**
-	 * @see javax.transaction.Transaction.
+	 * @see javax.transaction.Transaction
 	 */
 
 	@Override
-	public boolean delistResource(XAResource xares, int flag)
-			throws java.lang.IllegalStateException,
-			javax.transaction.SystemException {
+	public boolean delistResource(XAResource xares, int flag) throws java.lang.IllegalStateException,
+    javax.transaction.SystemException {
 
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.logDebug("delistResource ( " + xares + " ) with transaction "
@@ -432,7 +427,7 @@ class TransactionImp implements Transaction {
 
 	@Override
 	public String toString() {
-		return this.compositeTransaction.getTid().toString();
+		return this.compositeTransaction.getTid();
 	}
 
 	void suspendEnlistedXaResources() throws ExtendedSystemException {
@@ -451,17 +446,20 @@ class TransactionImp implements Transaction {
 	}
 
 	void resumeEnlistedXaReources() throws ExtendedSystemException {
-		Iterator<XAResourceTransaction> xaResourceTransactions = this.xaResourceToResourceTransactionMap_
-				.values().iterator();
-		while (xaResourceTransactions.hasNext()) {
-			XAResourceTransaction resTx = xaResourceTransactions.next();
-			try {
-				resTx.xaResume();
-				xaResourceTransactions.remove();
-			} catch (XAException e) {
-				throw new ExtendedSystemException(
-						"Error in resuming the given XAResource", e);
-			}
-		}
+
+		List<XAResourceTransaction> xaResourceTransactions = (List<XAResourceTransaction>) xaResourceToResourceTransactionMap_.values();
+
+		for (XAResourceTransaction xaResourceTransaction : xaResourceTransactions) {
+
+		  try {
+        xaResourceTransaction.xaResume();
+        xaResourceTransactions.remove(xaResourceTransaction);
+      }
+      catch (XAException e)
+      {
+        throw new ExtendedSystemException(
+          "Error in resuming the given XAResource", e);
+      }
+    }
 	}
 }

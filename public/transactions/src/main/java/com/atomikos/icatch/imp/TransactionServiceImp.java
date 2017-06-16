@@ -89,8 +89,6 @@ public class TransactionServiceImp implements TransactionServiceProvider,
      *            The recovery manager to use.
      * @param tidmgr
      *            The String manager to use.
-     * @param console
-     *            The console to use. Null if none.
      * @param maxtimeout
      *            The max timeout for new or imported txs.
      * @param maxActives
@@ -116,8 +114,6 @@ public class TransactionServiceImp implements TransactionServiceProvider,
      *            The recovery manager to use.
      * @param tidmgr
      *            The String manager to use.
-     * @param console
-     *            The console to use. Null if none.
      * @param maxtimeout
      *            The max timeout for new or imported txs.
      * @param checkorphans
@@ -129,25 +125,28 @@ public class TransactionServiceImp implements TransactionServiceProvider,
      *            configurations that do not support orphan detection.
      * @param single_threaded_2pc
      *            Whether 2PC commit should happen in the same thread that started the tx.
-     * @param recoveryLog2 
+     * @param recoveryLog
      *
      */
 
     private TransactionServiceImp ( String name ,
-            StateRecoveryManager recoverymanager , UniqueIdMgr tidmgr ,
-             long maxtimeout , boolean checkorphans ,
-            int maxActives , boolean single_threaded_2pc, RecoveryLog recoveryLog )
+      StateRecoveryManager recoverymanager , UniqueIdMgr tidmgr ,
+      long maxtimeout , boolean checkorphans , int maxActives ,
+      boolean single_threaded_2pc, RecoveryLog recoveryLog )
     {
         maxNumberOfActiveTransactions_ = maxActives;
-        if ( !checkorphans ) otsOverride_ = true;
-        else otsOverride_ = false;
+
+        if ( !checkorphans )
+          otsOverride_ = true;
+        else
+          otsOverride_ = false;
 
         initialized_ = false;
         recoverymanager_ = recoverymanager;
         tidmgr_ = tidmgr;
-        tidToTransactionMap_ = new Hashtable<String,CompositeTransaction>();
+        tidToTransactionMap_ = new Hashtable<>();
         shutdownSynchronizer_ = new Object();
-        rootToCoordinatorMap_ = new Hashtable<String,CoordinatorImp>();
+        rootToCoordinatorMap_ = new Hashtable<>();
         rootLatches_ = new Object[NUMLATCHES];
         for (int i = 0; i < NUMLATCHES; i++) {
             rootLatches_[i] = new Object();
@@ -156,7 +155,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
         maxTimeout_ = maxtimeout;	
         
         tmUniqueName_ = name;
-        tsListeners_ = new Vector<TransactionServicePlugin>();
+        tsListeners_ = new Vector<>();
         single_threaded_2pc_ = single_threaded_2pc;
         this.recoveryLog  = recoveryLog;
     }
@@ -281,11 +280,9 @@ public class TransactionServiceImp implements TransactionServiceProvider,
     /**
      * Creation method for composite coordinators.
      *
-     * @param RecoveryCoordinator
+     * @param adaptor
      *            An existing coordinator for the given root. Null if not a
      *            subtx, or an <b>adaptor</b> in other cases.
-     * @param lineage
-     *            The ancestor information.
      * @param root
      *            The root id.
      * @param checkOrphans
@@ -483,15 +480,14 @@ public class TransactionServiceImp implements TransactionServiceProvider,
     }
 
     private void performRecovery() {
-		Enumeration<RecoverableResource> resources= Configuration.getResources();
-		while (resources.hasMoreElements()) {
-			RecoverableResource recoverableResource =  resources.nextElement();
-			try {
-				recoverableResource.recover();
-			} catch (Throwable e) {
-				LOGGER.logError(e.getMessage(),e);
-			}
-		}
+
+      for (RecoverableResource resource : Configuration.getResources()) {
+        try {
+          resource.recover();
+        } catch (Exception e) {
+          LOGGER.logError(e.getMessage(),e);
+        }
+      }
 	}
     /**
      * @see TransactionService
@@ -503,7 +499,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
     }
 
     /**
-     * @see FSMEnterListener.
+     * @see FSMEnterListener
      */
 
     public void entered ( FSMEnterEvent event )
@@ -557,7 +553,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
      * Creates a subtransaction for the given parent
      *
      * @param parent
-     * @return
+     * @return  CompositeTransaction
      */
     @SuppressWarnings("unchecked")
     CompositeTransaction createSubTransaction ( CompositeTransaction parent )
@@ -751,9 +747,6 @@ public class TransactionServiceImp implements TransactionServiceProvider,
         }
     }
 
-    /**
-     * @see com.atomikos.icatch.TransactionService#getSuperiorRecoveryCoordinator(java.lang.String)
-     */
     public RecoveryCoordinator getSuperiorRecoveryCoordinator ( String root )
     {
         RecoveryCoordinator ret = null;

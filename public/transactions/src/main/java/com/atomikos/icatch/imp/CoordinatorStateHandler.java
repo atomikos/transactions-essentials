@@ -355,9 +355,9 @@ abstract class CoordinatorStateHandler
             // start messages
             Enumeration<Participant> enumm = participants.elements ();
             while ( enumm.hasMoreElements () ) {
-                Participant p = enumm.nextElement ();
-                if ( !readOnlyTable_.contains ( p ) ) {
-                    CommitMessage cm = new CommitMessage ( p, commitresult,
+                Participant participant = enumm.nextElement ();
+                if ( !readOnlyTable_.contains ( participant ) ) {
+                    CommitMessage cm = new CommitMessage ( participant, commitresult,
                             onePhase );
 
                     // if onephase: set cascadelist anyway, because if the
@@ -365,10 +365,10 @@ abstract class CoordinatorStateHandler
                     // multiple participants that are not visible here!
 
                     if ( onePhase && cascadeList_ != null ) { // null for OTS
-                        Integer sibnum = cascadeList_.get ( p );
+                        Integer sibnum = cascadeList_.get ( participant.getURI() );
                         if ( sibnum != null ) // null for local participant!
-                            p.setGlobalSiblingCount ( sibnum.intValue () );
-                        p.setCascadeList ( cascadeList_ );
+                            participant.setGlobalSiblingCount ( sibnum.intValue () );
+                        participant.setCascadeList ( cascadeList_ );
                     }
                     propagator_.submitPropagationMessage ( cm );
                 }

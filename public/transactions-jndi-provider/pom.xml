@@ -17,18 +17,16 @@
 			<artifactId>transactions-jdbc</artifactId>
 			<version>${project.parent.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>org.apache.geronimo.specs</groupId>
-			<artifactId>geronimo-jms_1.1_spec</artifactId>
-			<version>1.1.1</version>
-			<scope>provided</scope>
-		</dependency>
-		 <dependency>
-       <groupId>org.apache.geronimo.specs</groupId>
-       <artifactId>geronimo-jta_1.0.1B_spec</artifactId>
-       <version>1.0</version>
-       <scope>test</scope>
-     </dependency>
+    <dependency>
+      <groupId>javax.jms</groupId>
+      <artifactId>javax.jms-api</artifactId>
+      <version>2.0.1</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.transaction</groupId>
+      <artifactId>javax.transaction-api</artifactId>
+      <version>1.2</version>
+    </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-all</artifactId>
