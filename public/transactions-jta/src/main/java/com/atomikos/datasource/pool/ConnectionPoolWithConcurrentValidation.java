@@ -139,7 +139,7 @@ public class ConnectionPoolWithConcurrentValidation implements XPooledConnection
 	 * @throws PoolExhaustedException If the pool could not grow because it is exhausted.
 	 * @throws ConnectionPoolException Other errors.
 	 */
-	public synchronized Reapable borrowConnection() throws CreateConnectionException , PoolExhaustedException, ConnectionPoolException
+	public Reapable borrowConnection() throws CreateConnectionException , PoolExhaustedException, ConnectionPoolException
 	{
 		assertNotDestroyed();
 
