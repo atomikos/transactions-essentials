@@ -64,7 +64,7 @@ implements DataSource, ConnectionPoolProperties, Referenceable, Serializable
 	private int defaultIsolationLevel = DEFAULT_ISOLATION_LEVEL_UNSET;
 	private int maxLifetime;
 
-	private boolean enableConcurrentConnectionValidation;
+	private boolean enableConcurrentConnectionValidation = true;
 	
 	protected void throwAtomikosSQLException ( String msg ) throws AtomikosSQLException 
 	{
