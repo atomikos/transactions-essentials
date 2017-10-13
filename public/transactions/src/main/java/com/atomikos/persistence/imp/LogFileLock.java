@@ -42,7 +42,7 @@ public class LogFileLock {
 		try {
 			File parent = new File(dir);
 			if(!parent.exists()) {
-				parent.mkdir();
+				parent.mkdirs();
 			}
 			lockfileToPreventDoubleStartup_ = new File(dir, fileName + ".lck");
 			lockfilestream_ = new FileOutputStream(lockfileToPreventDoubleStartup_);
