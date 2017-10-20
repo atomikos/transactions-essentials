@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>com.atomikos</groupId>
 		<artifactId>ate</artifactId>
-		<version>4.1-SNAPSHOT</version>
+		<version>4.1.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>atomikos-transactions-essentials</artifactId>
 	<!-- "bom" project for the open source modules -->
@@ -14,72 +14,72 @@
 			<dependency>
 				<groupId>com.atomikos</groupId>
 				<artifactId>transactions-jdbc</artifactId>
-				<version>4.1-SNAPSHOT</version>
+				<version>4.1.0-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>com.atomikos</groupId>
 				<artifactId>transactions-jms</artifactId>
-				<version>4.1-SNAPSHOT</version>
+				<version>4.1.0-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>com.atomikos</groupId>
 				<artifactId>transactions-hibernate3</artifactId>
-				<version>4.1-SNAPSHOT</version>
+				<version>4.1.0-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>com.atomikos</groupId>
 				<artifactId>transactions-hibernate4</artifactId>
-				<version>4.1-SNAPSHOT</version>
+				<version>4.1.0-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>com.atomikos</groupId>
 				<artifactId>transactions-hibernate2</artifactId>
-				<version>4.1-SNAPSHOT</version>
+				<version>4.1.0-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>com.atomikos</groupId>
 				<artifactId>transactions-eclipselink</artifactId>
-				<version>4.1-SNAPSHOT</version>
+				<version>4.1.0-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>com.atomikos</groupId>
 				<artifactId>transactions-tcc-rest-api</artifactId>
-				<version>4.1-SNAPSHOT</version>
+				<version>4.1.0-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>com.atomikos</groupId>
 				<artifactId>transactions-tcc-rest</artifactId>
-				<version>4.1-SNAPSHOT</version>
+				<version>4.1.0-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>com.atomikos</groupId>
 				<artifactId>transactions-jndi-provider</artifactId>
-				<version>4.1-SNAPSHOT</version>
+				<version>4.1.0-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>com.atomikos</groupId>
 				<artifactId>transactions</artifactId>
-				<version>4.1-SNAPSHOT</version>
+				<version>4.1.0-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>com.atomikos</groupId>
 				<artifactId>transactions-api</artifactId>
-				<version>4.1-SNAPSHOT</version>
+				<version>4.1.0-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>com.atomikos</groupId>
 				<artifactId>transactions-jta</artifactId>
-				<version>4.1-SNAPSHOT</version>
+				<version>4.1.0-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>com.atomikos</groupId>
 				<artifactId>transactions-osgi</artifactId>
-				<version>4.1-SNAPSHOT</version>
+				<version>4.1.0-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>com.atomikos</groupId>
 				<artifactId>atomikos-util</artifactId>
-				<version>4.1-SNAPSHOT</version>
+				<version>4.1.0-SNAPSHOT</version>
 			</dependency>
 
 		</dependencies>
