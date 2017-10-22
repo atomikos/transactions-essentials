@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2016 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
  * LICENSE CONDITIONS
  *
@@ -10,6 +10,7 @@ package com.atomikos.recovery.xa;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -37,10 +38,10 @@ public class XaResourceRecoveryManager {
 		this.log=log;
 		this.xidSelector=new XidSelector() {
 			@Override
-			public boolean selects(Xid vendorXid) {
+			public boolean selects(XID xid) {
 				boolean ret = false;
-				String branch = new String ( vendorXid.getBranchQualifier () );
-				XID xid = wrapWithOurOwnXidToHaveCorrectEqualsAndHashCode ( vendorXid );
+				String branch = xid.getBranchQualifierAsString();
+				
                 if ( branch.startsWith ( tmUniqueName ) ) {
                 	ret = true;
                     if(LOGGER.isDebugEnabled()){
@@ -55,19 +56,16 @@ public class XaResourceRecoveryManager {
                 return ret;
 			}
 
-			private XID wrapWithOurOwnXidToHaveCorrectEqualsAndHashCode(Xid xid) {
-				return new XID(xid);
-			}						
+									
 		}; 
 	}
 	
 	
 
-	public void recover(XAResource xaResource) {
+	public void recover(XAResource xaResource, String uniqueResourceName) {
 		List<XID> xidsToRecover = retrievePreparedXidsFromXaResource(xaResource);
-		Collection<XID> xidsToCommit;
 		try {
-			xidsToCommit = retrieveExpiredCommittingXidsFromLog();
+			Collection<XID> xidsToCommit = retrieveExpiredCommittingXidsFromLog();
 			for (XID xid : xidsToRecover) {
 				if (xidsToCommit.contains(xid)) {
 					replayCommit(xid, xaResource);

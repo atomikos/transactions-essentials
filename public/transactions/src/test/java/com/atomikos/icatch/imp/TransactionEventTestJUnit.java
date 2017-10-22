@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2016 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
  * LICENSE CONDITIONS
  *
@@ -32,7 +32,7 @@ public class TransactionEventTestJUnit {
 	private EventListener eventListenerMock;
 
 	private CoordinatorImp createCoordinator() {
-		return new CoordinatorImp ( ID , null ,  false , 1000 , false , true );
+		return new CoordinatorImp ( ID,  ID , null ,  false , 1000 , false , true );
 	}
 	
 	@Before

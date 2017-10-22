@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2016 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
  * LICENSE CONDITIONS
  *
@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicLong;
 abstract class AbstractXidFactory implements XidFactory
 {
 
-   private static final int MAX_LENGTH_OF_COUNTER = 8;
+   private static final int MAX_LENGTH_OF_COUNTER = String.valueOf(Long.MAX_VALUE).length();
  
    static AtomicLong counter = new AtomicLong(0);
 
@@ -38,19 +38,19 @@ abstract class AbstractXidFactory implements XidFactory
      * @see com.atomikos.datasource.xa.XidFactory
      */
 
-    public XID createXid ( String tid , String resourcename )
+    public XID createXid ( String tid , String branchIdentifier, String uniqueResourceName )
     {
 
-    	if ( resourcename.getBytes().length + MAX_LENGTH_OF_COUNTER > XID.MAXBQUALSIZE ) {
+    	if ( branchIdentifier.getBytes().length + MAX_LENGTH_OF_COUNTER > XID.MAXBQUALSIZE ) {
     		// see case 73086
-    		throw new IllegalArgumentException ( "Value too long: " + resourcename );
+    		throw new IllegalArgumentException ( "Value too long: " + branchIdentifier );
     	}
 
         // first increment counter to make sure it is
         // different from the last call that was done
         // by the SAME tid (works because calls within
         // one TID are serial)
-        return new XID ( tid, resourcename + counter.incrementAndGet() );
+        return new XID (tid, branchIdentifier + counter.incrementAndGet(), uniqueResourceName);
     }
 
 }

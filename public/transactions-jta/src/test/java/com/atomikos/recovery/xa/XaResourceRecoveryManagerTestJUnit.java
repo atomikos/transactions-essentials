@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2016 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
  * LICENSE CONDITIONS
  *
@@ -25,6 +25,7 @@ import com.atomikos.recovery.LogException;
 public class XaResourceRecoveryManagerTestJUnit {
 
 	private static final String XARESOURCE_QUALIFIER = "XARESOURCE_QUALIFIER";
+	private static final String RESNAME = "RESOURCE";
 
 	// SUT
 	XaResourceRecoveryManager xaResourceRecoveryManager;
@@ -51,7 +52,7 @@ public class XaResourceRecoveryManagerTestJUnit {
 	}
 
 	private XID createIrrelevantXid() {
-		XID xid = new XID("demo", "Irrelevant" + XARESOURCE_QUALIFIER);
+		XID xid = new XID("demo", "Irrelevant" + XARESOURCE_QUALIFIER, "blabla");
 		return xid;
 	}
 
@@ -286,7 +287,7 @@ public class XaResourceRecoveryManagerTestJUnit {
 	}
 
 	private XID createRelevantXid() {
-		XID xid = new XID("demo", XARESOURCE_QUALIFIER);
+		XID xid = new XID("demo", XARESOURCE_QUALIFIER, RESNAME);
 		return xid;
 	}
 
@@ -296,7 +297,7 @@ public class XaResourceRecoveryManagerTestJUnit {
 	}
 
 	private void whenRecovered() {
-		xaResourceRecoveryManager.recover(xaResource);
+		xaResourceRecoveryManager.recover(xaResource, RESNAME);
 	}
 
 	private void givenXaResourceWithPreparedXid(Xid xid) throws XAException {

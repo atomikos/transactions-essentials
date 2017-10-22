@@ -4,14 +4,14 @@
 	<parent>
 		<groupId>com.atomikos</groupId>
 		<artifactId>atomikos-parent</artifactId>
-		<version>4.0.4</version>
+		<version>4.1.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>ate</artifactId>
 	<packaging>pom</packaging>
 	<name>Atomikos Transactions Essentials</name>
 
 	<properties>
-		<inceptionYear>2000-2012</inceptionYear>
+		<inceptionYear>2000-2017</inceptionYear>
 	</properties>
 
 	<modules>
@@ -29,6 +29,7 @@
 		<module>transactions-jndi-provider</module>
 		<module>transactions-tcc-rest-api</module>
 		<module>transactions-tcc-rest</module>
+		<module>atomikos-transactions-essentials</module>
 	</modules>
 
 

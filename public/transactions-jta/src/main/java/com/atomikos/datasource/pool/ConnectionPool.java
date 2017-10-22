@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2016 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
  * LICENSE CONDITIONS
  *
@@ -26,13 +26,13 @@ import com.atomikos.timing.AlarmTimerListener;
 import com.atomikos.timing.PooledAlarmTimer;
 
 
-public class ConnectionPool implements XPooledConnectionEventListener
+public abstract class ConnectionPool implements XPooledConnectionEventListener
 {
-	private static final Logger LOGGER = LoggerFactory.createLogger(ConnectionPool.class);
+	private static Logger LOGGER = LoggerFactory.createLogger(ConnectionPool.class);
 
 	private final static int DEFAULT_MAINTENANCE_INTERVAL = 60;
 
-	private List<XPooledConnection> connections = new ArrayList<XPooledConnection>();
+	protected List<XPooledConnection> connections = new ArrayList<XPooledConnection>();
 	private ConnectionFactory connectionFactory;
 	private ConnectionPoolProperties properties;
 	private boolean destroyed;
@@ -49,7 +49,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 		init();
 	}
 
-	private void assertNotDestroyed() throws ConnectionPoolException
+	protected void assertNotDestroyed() throws ConnectionPoolException
 	{
 		if (destroyed) throw new ConnectionPoolException ( "Pool was already destroyed - you can no longer use it" );
 	}
@@ -100,7 +100,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 		return xpc;
 	}
 
-	private Reapable recycleConnectionIfPossible() throws Exception
+	protected Reapable recycleConnectionIfPossible() throws Exception
 	{
 		Reapable ret = null;
 		for (int i = 0; i < totalSize(); i++) {
@@ -122,7 +122,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 	 * @throws PoolExhaustedException If the pool could not grow because it is exhausted.
 	 * @throws ConnectionPoolException Other errors.
 	 */
-	public synchronized Reapable borrowConnection() throws CreateConnectionException , PoolExhaustedException, ConnectionPoolException
+	public Reapable borrowConnection() throws CreateConnectionException , PoolExhaustedException, ConnectionPoolException
 	{
 		assertNotDestroyed();
 
@@ -134,7 +134,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 		return ret;
 	}
 
-	private Reapable findOrWaitForAnAvailableConnection() throws ConnectionPoolException {
+	protected Reapable findOrWaitForAnAvailableConnection() throws ConnectionPoolException {
 		Reapable ret = null;
 		long remainingTime = properties.getBorrowConnectionTimeout() * 1000L;		
 		do {
@@ -158,7 +158,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 		return ret;
 	}
 
-	private Reapable findExistingOpenConnectionForCallingThread() {
+	protected Reapable findExistingOpenConnectionForCallingThread() {
 		Reapable recycledConnection = null ;
 		try {
 			recycledConnection = recycleConnectionIfPossible();
@@ -169,7 +169,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 		return recycledConnection;
 	}
 
-	private void logCurrentPoolSize() {
+	protected void logCurrentPoolSize() {
 		if ( LOGGER.isTraceEnabled() )  {
 			LOGGER.logTrace( this +  ": current size: " + availableSize() + "/" + totalSize());
 		}
@@ -179,7 +179,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 		return totalSize() < properties.getMaxPoolSize();
 	}
 
-	private Reapable retrieveFirstAvailableConnection() {
+	protected Reapable retrieveFirstAvailableConnection() {
 		Reapable ret = null;
 		Iterator<XPooledConnection> it = connections.iterator();			
 		while ( it.hasNext() && ret == null ) {
@@ -233,7 +233,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 		logCurrentPoolSize();
 	}
 
-	private void destroyPooledConnection(XPooledConnection xpc) {
+	protected void destroyPooledConnection(XPooledConnection xpc) {
 		xpc.destroy();
 		EventPublisher.publish(new PooledConnectionDestroyedEvent(properties.getUniqueResourceName(),xpc));
 	}

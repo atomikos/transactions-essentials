@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2016 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
  * LICENSE CONDITIONS
  *
@@ -18,7 +18,7 @@ import javax.transaction.xa.Xid;
 public class RecoveryScan {
 	
 	public static interface XidSelector {
-		boolean selects(Xid xid);
+		boolean selects(XID xid);
 	}
 	
 	public static List<XID> recoverXids(XAResource xaResource, XidSelector selector) throws XAException {
@@ -42,7 +42,7 @@ public class RecoveryScan {
 
                 done = true;
                 for ( int i = 0; i < xidsFromLastScan.length; i++ ) {
-                	XID xid = new XID ( xidsFromLastScan[i] );
+                	XID xid = new XID (xidsFromLastScan[i]);
                     // our own XID implements equals and hashCode properly
                     if (!allRecoveredXidsSoFar.contains(xid)) {
                         // a new xid is returned -> we can not be in a recovery loop -> go on

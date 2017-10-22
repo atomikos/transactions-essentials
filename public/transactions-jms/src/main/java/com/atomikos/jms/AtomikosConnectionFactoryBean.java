@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2016 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
  * LICENSE CONDITIONS
  *
@@ -26,6 +26,7 @@ import com.atomikos.datasource.pool.ConnectionFactory;
 import com.atomikos.datasource.pool.ConnectionPool;
 import com.atomikos.datasource.pool.ConnectionPoolException;
 import com.atomikos.datasource.pool.ConnectionPoolProperties;
+import com.atomikos.datasource.pool.ConnectionPoolWithSynchronizedValidation;
 import com.atomikos.datasource.pool.CreateConnectionException;
 import com.atomikos.datasource.pool.PoolExhaustedException;
 import com.atomikos.datasource.xa.event.XAResourceDetectedEvent;
@@ -343,7 +344,7 @@ Referenceable, Serializable {
 		try {
 			getReference();
 			ConnectionFactory cf = doInit();
-			connectionPool = new ConnectionPool(cf, this);
+			connectionPool = new ConnectionPoolWithSynchronizedValidation(cf, this);
 			
 		} catch ( AtomikosJMSException e ) {
 			//don't log: AtomikosJMSException is logged on creation by the factory methods

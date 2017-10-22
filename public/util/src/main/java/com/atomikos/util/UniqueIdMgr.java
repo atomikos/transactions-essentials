@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2016 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
  * LICENSE CONDITIONS
  *
@@ -22,8 +22,9 @@ public class UniqueIdMgr
 {
 
 
-	private final static int MAX_LENGTH_OF_NUMERIC_SUFFIX = 8 + 5;
+	
 	private final static int MAX_COUNTER_WITHIN_SAME_MILLIS = 32000;
+	private final static int MAX_LENGTH_OF_NUMERIC_SUFFIX = String.valueOf(Long.MAX_VALUE).length() + String.valueOf(MAX_COUNTER_WITHIN_SAME_MILLIS).length();
 
 
   
