@@ -1,9 +1,17 @@
+/**
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
+ *
+ * LICENSE CONDITIONS
+ *
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
+ */
+
 package com.atomikos.icatch;
 
 import java.io.IOException;
 
 import jdepend.framework.JDepend;
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.junit.Test;
 

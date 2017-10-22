@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2016 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
  * LICENSE CONDITIONS
  *
@@ -14,7 +14,7 @@ import java.util.ServiceLoader;
 
 import javax.naming.Context;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.junit.After;
 import org.junit.Before;

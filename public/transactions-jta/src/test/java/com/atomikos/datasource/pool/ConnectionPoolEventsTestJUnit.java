@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2016 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
  * LICENSE CONDITIONS
  *
@@ -8,7 +8,7 @@
 
 package com.atomikos.datasource.pool;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.junit.After;
 import org.junit.Before;
@@ -43,7 +43,7 @@ public class ConnectionPoolEventsTestJUnit {
 		cpp = Mockito.mock(ConnectionPoolProperties.class);
 		Mockito.when(cpp.getMaxPoolSize()).thenReturn(1);
 		Mockito.when(cpp.getReapTimeout()).thenReturn(1);
-		pool = new ConnectionPool(cf, cpp);
+		pool = new ConnectionPoolWithSynchronizedValidation(cf, cpp);
 		listener = new TestEventListener();
 		EventPublisher.registerEventListener(listener);
 	}

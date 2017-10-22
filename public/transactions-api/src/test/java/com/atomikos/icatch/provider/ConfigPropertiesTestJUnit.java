@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2016 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
  * LICENSE CONDITIONS
  *
@@ -13,7 +13,7 @@ import static org.junit.Assert.*;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.junit.Before;
 import org.junit.Test;

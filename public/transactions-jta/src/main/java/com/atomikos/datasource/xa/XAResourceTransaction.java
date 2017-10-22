@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2016 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
  * LICENSE CONDITIONS
  *
@@ -144,7 +144,7 @@ public class XAResourceTransaction implements ResourceTransaction, Participant {
 		this.resource=resource;
 		this.timeout = (int) transaction.getTimeout() / 1000;
 
-		this.tid = transaction.getTid();
+		this.tid = transaction.getCompositeCoordinator().getCoordinatorId(); // cf case 162083
 		this.root = root;
 		this.resourcename = resource.getName();
 		setXid(this.resource.createXid(this.tid));
@@ -264,8 +264,7 @@ public class XAResourceTransaction implements ResourceTransaction, Participant {
 	}
 
 	boolean supportsTmJoin() {
-		return !(this.resource.usesWeakCompare()
-				|| this.resource.acceptsAllXAResources() || isActive());
+		return !(isActive());
 	}
 
 	/**

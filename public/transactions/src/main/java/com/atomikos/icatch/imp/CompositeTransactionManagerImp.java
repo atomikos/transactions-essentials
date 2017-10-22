@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2016 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
  * LICENSE CONDITIONS
  *
@@ -142,20 +142,6 @@ public class CompositeTransactionManagerImp implements CompositeTransactionManag
                 return txs.peek ();
 
         }
-    }
-
-
-
-    /**
-     * Get the participant for the given root. Needed for recovery of JCA
-     * inbound transactions.
-     *
-     * @param root
-     * @return The participant.
-     */
-    public Participant getParticipant ( String root )
-    {
-        return getTransactionService().getParticipant ( root );
     }
 
     private TransactionService getTransactionService() {

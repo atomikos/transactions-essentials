@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2016 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
  * LICENSE CONDITIONS
  *
@@ -24,6 +24,8 @@ import com.atomikos.datasource.pool.ConnectionFactory;
 import com.atomikos.datasource.pool.ConnectionPool;
 import com.atomikos.datasource.pool.ConnectionPoolException;
 import com.atomikos.datasource.pool.ConnectionPoolProperties;
+import com.atomikos.datasource.pool.ConnectionPoolWithConcurrentValidation;
+import com.atomikos.datasource.pool.ConnectionPoolWithSynchronizedValidation;
 import com.atomikos.datasource.pool.CreateConnectionException;
 import com.atomikos.datasource.pool.PoolExhaustedException;
 import com.atomikos.logging.Logger;
@@ -61,6 +63,8 @@ implements DataSource, ConnectionPoolProperties, Referenceable, Serializable
 
 	private int defaultIsolationLevel = DEFAULT_ISOLATION_LEVEL_UNSET;
 	private int maxLifetime;
+
+	private boolean enableConcurrentConnectionValidation = true;
 	
 	protected void throwAtomikosSQLException ( String msg ) throws AtomikosSQLException 
 	{
@@ -230,6 +234,21 @@ implements DataSource, ConnectionPoolProperties, Referenceable, Serializable
 		this.testQuery = testQuery;
 	}
 
+	
+	/**
+	 * Sets whether or not to use concurrent connection validation.
+	 * Optional, defaults to true.
+	 * 
+	 * @param value
+	 */
+	public void setConcurrentConnectionValidation(boolean value) {
+		this.enableConcurrentConnectionValidation = value;
+	}
+	
+	public boolean getConcurrentConnectionValidation() {
+		return enableConcurrentConnectionValidation;
+	}
+
 	public int poolAvailableSize() {
 		return connectionPool.availableSize();
 	}
@@ -276,7 +295,11 @@ implements DataSource, ConnectionPoolProperties, Referenceable, Serializable
 			//initialize JNDI infrastructure for lookup
 			getReference();
 			ConnectionFactory cf = doInit();
-			connectionPool = new ConnectionPool(cf, this);
+			if (enableConcurrentConnectionValidation) {
+				connectionPool = new ConnectionPoolWithConcurrentValidation(cf, this);
+			} else {
+				connectionPool = new ConnectionPoolWithSynchronizedValidation(cf, this);
+			}
 		
 			
 		

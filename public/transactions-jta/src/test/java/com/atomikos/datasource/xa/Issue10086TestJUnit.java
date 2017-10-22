@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2016 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
  * LICENSE CONDITIONS
  *
@@ -23,12 +23,12 @@ public class Issue10086TestJUnit extends TestCase {
 		factory = new DefaultXidFactory();
 	}
 	
-	//assert that at least 45 characters are supported in resname
+	//assert that at least 45 characters are supported in branch identifier
 	public void testResourceNameLength45()
 	{
 
 		String bname = "abcdefghijklmnopqrstuvwxyz1234567890123456789";
-		factory.createXid ( "abc" , bname );
+		factory.createXid ( "abc" , bname , "resource");
 	}
 
 }

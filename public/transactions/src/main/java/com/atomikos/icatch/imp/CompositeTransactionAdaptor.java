@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2016 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
  * LICENSE CONDITIONS
  *
@@ -30,6 +30,8 @@ class CompositeTransactionAdaptor extends AbstractCompositeTransaction
 	private RecoveryCoordinator adaptorForReplayRequests_; 
 
     private String root_;
+    
+    private String coordinatorId;
 
     /**
      * Create a new instance.
@@ -54,6 +56,7 @@ class CompositeTransactionAdaptor extends AbstractCompositeTransaction
             parent = tmp.pop();
         }
         root_ = parent.getTid();
+        this.coordinatorId = lineage.peek().getCompositeCoordinator().getCoordinatorId();
     }
 
     /**
@@ -103,7 +106,7 @@ class CompositeTransactionAdaptor extends AbstractCompositeTransaction
      * @see CompositeCoordinator.
      */
 
-    public String getCoordinatorId ()
+    public String getRootId ()
     {
         return root_;
     }
@@ -116,5 +119,11 @@ class CompositeTransactionAdaptor extends AbstractCompositeTransaction
     {
         return adaptorForReplayRequests_;
     }
+
+	@Override
+	public String getCoordinatorId() {
+		return coordinatorId;
+	}
+
 
 }

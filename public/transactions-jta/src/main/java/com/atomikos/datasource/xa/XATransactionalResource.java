@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000-2016 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
  * LICENSE CONDITIONS
  *
@@ -46,23 +46,10 @@ public abstract class XATransactionalResource implements TransactionalResource
 	private static final Logger LOGGER = LoggerFactory.createLogger(XATransactionalResource.class);
 
     protected XAResource xares_;
-    private String servername;
+    private String uniqueResourceName;
     private Hashtable<String,SiblingMapper> rootTransactionToSiblingMapperMap;
     private XidFactory xidFact;
     private boolean closed;
-
-    private boolean weakCompare;
-    // if true: do NOT delegate usesXAResource calls
-    // to the xaresource; needed for SONICMQ and other
-    // JMS that do not correctly implement isSameRM
-
-    private boolean compareAlwaysTrue;
-    // if true, then isSameRM will ALWAYS return true
-    // this can be useful for cases where different
-    // JOINs don't have to work with lock sharing
-    // or for cases where XAResource classes
-    // are always non-compliant (like JBoss)
-
     private String branchIdentifier;
 
     private static final String MAX_LONG_STR = String.valueOf(Long.MAX_VALUE);
@@ -70,43 +57,33 @@ public abstract class XATransactionalResource implements TransactionalResource
     /**
      * Construct a new instance with a default XidFactory.
      *
-     * @param servername
-     *            The servername, needed to identify the xid instances for the
-     *            current configuration. Max BYTE length is 64!
      */
 
-    public XATransactionalResource ( String servername )
+    public XATransactionalResource ( String uniqueResourceName )
     {
 
-        this.servername = servername;
+        this.uniqueResourceName = uniqueResourceName;
         this.rootTransactionToSiblingMapperMap = new Hashtable<String,SiblingMapper>();
         // name should be less than 64 for xid compatibility
 
         //branch id is server name + long value!
 
-        if ( servername.getBytes ().length > 64- MAX_LONG_LEN )
+        if ( uniqueResourceName.getBytes ().length > 64- MAX_LONG_LEN )
             throw new RuntimeException (
                     "Max length of resource name exceeded: should be less than " + ( 64 - MAX_LONG_LEN ) );
         this.xidFact = new DefaultXidFactory ();
         this.closed = false;
-        this.weakCompare = false;
-        this.compareAlwaysTrue = false;
     }
 
     /**
      * Construct a new instance with a custom XidFactory.
      *
-     * @param servername
-     *            The servername, needed to identify the xid instances for the
-     *            current configuration. Max BYTE length is 64!
-     * @param factory
-     *            The custom XidFactory.
      *
      */
 
-    public XATransactionalResource ( String servername , XidFactory factory )
+    public XATransactionalResource ( String uniqueResourceName , XidFactory factory )
     {
-        this ( servername );
+        this ( uniqueResourceName );
         this.xidFact = factory;
     }
 
@@ -184,73 +161,14 @@ public abstract class XATransactionalResource implements TransactionalResource
             }
         } catch ( XAException xa ) {
             // timed out?
-            if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this.servername
+            if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this.uniqueResourceName
                     + ": XAResource needs refresh?", xa );
 
         }
         return ret;
     }
 
-    /**
-     * Set this instance to use the weak compare mode setting. This method
-     * should be called <b>before</b> recovery is done, so before
-     * initialization of the transaction service.
-     *
-     *
-     * this is no longer needed at all, and taken care of by the transaction
-     * service automatically.
-     *
-     * @return weakCompare True iff weak compare mode should be used. This mode
-     *         is relevant for integration with certain vendors whose XAResource
-     *         instances do not correctly implements isSameRM.
-     * @exception IllegalStateException
-     *                If recovery was already done, meaning that the transaction
-     *                service is already running.
-     */
-
-    public void useWeakCompare ( boolean weakCompare )
-    {
-        this.weakCompare = weakCompare;
-    }
-
-    /**
-     * Test if this instance uses weak compare mode.
-     *
-     *
-     * @return boolean True iff weak compare mode is in use. This mode is
-     *         relevant for integration with certain vendors whose XAResource
-     *         instances do not correctly implement isSameRM.
-     */
-
-    public boolean usesWeakCompare ()
-    {
-        return this.weakCompare;
-    }
-
-    /**
-     *
-     * Specify whether to entirely shortcut the isSameRM method of the
-     * XAResource implementations, and always return true for usesXAResource.
-     * The consequence is that branches are always different (even in the same
-     * tx) and that the resource names will not entirely match in the logfiles.
-     * Besides that, no serious problems should happen.
-     *
-     * @param val
-     */
-    public void setAcceptAllXAResources ( boolean val )
-    {
-        this.compareAlwaysTrue = val;
-    }
-
-    /**
-     *
-     * @return boolean True if usesXAResource is always true.
-     */
-    public boolean acceptsAllXAResources ()
-    {
-        return this.compareAlwaysTrue;
-    }
-
+   
     /**
      * Test if the XAResource is used by this instance.
      *
@@ -262,10 +180,6 @@ public abstract class XATransactionalResource implements TransactionalResource
 
     public boolean usesXAResource ( XAResource xares )
     {
-        // entirely shortcut normal behaviour if desired
-        if ( acceptsAllXAResources () )
-            return true;
-
         XAResource xaresource = getXAResource ();
         if (xaresource == null) return false;
         // if no connection could be gotten
@@ -284,11 +198,6 @@ public abstract class XATransactionalResource implements TransactionalResource
             // so delegate to xares instances
             try {
                 if ( xares.isSameRM ( xaresource ) ) {
-                    ret = true;
-                } else if ( usesWeakCompare () ) {
-                    // In weak compare mode, it does not matter if the resource
-                    // says it is different. The fact that the implementation is
-                    // the same is enough. Needed for SONICMQ and others.
                     ret = true;
                 } else {
                 	LOGGER.logTrace ( "XAResources claim to be different: "
@@ -312,9 +221,9 @@ public abstract class XATransactionalResource implements TransactionalResource
     {
         // null on first invocation
         if ( needsRefresh () ) {
-        	LOGGER.logTrace ( this.servername + ": refreshing XAResource..." );
+        	LOGGER.logTrace ( this.uniqueResourceName + ": refreshing XAResource..." );
             this.xares_ = refreshXAConnection ();
-            LOGGER.logInfo ( this.servername + ": refreshed XAResource" );
+            LOGGER.logInfo ( this.uniqueResourceName + ": refreshed XAResource" );
         }
 
         return this.xares_;
@@ -354,7 +263,7 @@ public abstract class XATransactionalResource implements TransactionalResource
     @Override
 	public String getName ()
     {
-        return this.servername;
+        return this.uniqueResourceName;
     }
 
     /**
@@ -395,11 +304,11 @@ public abstract class XATransactionalResource implements TransactionalResource
         }
 
         XATransactionalResource xatxres = (XATransactionalResource) res;
-        if ( xatxres.servername == null || this.servername == null ) {
+        if ( xatxres.uniqueResourceName == null || this.uniqueResourceName == null ) {
             return false;
         }
 
-        return xatxres.servername.equals ( this.servername );
+        return xatxres.uniqueResourceName.equals ( this.uniqueResourceName );
     }
 
     /**
@@ -440,7 +349,7 @@ public abstract class XATransactionalResource implements TransactionalResource
 
     protected XID createXid(String tid) {
     	if (this.branchIdentifier == null) throw new IllegalStateException("Not yet initialized");
-        return getXidFactory().createXid (tid , this.branchIdentifier);
+        return getXidFactory().createXid (tid , this.branchIdentifier, this.uniqueResourceName);
     }
 
     @Override
@@ -448,7 +357,7 @@ public abstract class XATransactionalResource implements TransactionalResource
     	XaResourceRecoveryManager xaResourceRecoveryManager = XaResourceRecoveryManager.getInstance();
     	if (xaResourceRecoveryManager != null) { //null for LogCloud recovery
     		if(getXAResource() != null) { //null if backend down
-    			xaResourceRecoveryManager.recover(getXAResource());	
+    			xaResourceRecoveryManager.recover(getXAResource(), uniqueResourceName);	
     		}
     		
     	}
