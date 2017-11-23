@@ -310,7 +310,7 @@ implements JtaAwareNonXaConnection
 	 *
 	 * @return
 	 */
-	private boolean isInTransaction()
+	boolean isInTransaction()
 	{
 		return transaction != null;
 	}

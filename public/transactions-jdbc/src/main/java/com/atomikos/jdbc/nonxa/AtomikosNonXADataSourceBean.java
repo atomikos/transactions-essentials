@@ -194,6 +194,9 @@ public class AtomikosNonXADataSourceBean extends AbstractDataSourceBean
 
         previous.incUseCount();
         if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": returning " + proxy );
+        if (!previous.isInTransaction() && proxy.getAutoCommit() == false) {
+            proxy.setAutoCommit(true);
+        }
 		return proxy;
 	}
 
