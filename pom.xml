@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.atomikos</groupId>
+	<artifactId>atomikos-parent</artifactId>
+	<version>4.0.6</version>
+	<!-- With maven, a parent pom MUST have "pom" for packaging -->
+	<packaging>pom</packaging>
+	<name>Atomikos All POM</name>
+	<url>http://www.atomikos.com/</url>
+	<description>Reliability through Atomicity: manage your distributed transactions and protect your mission critical data</description>
+	<licenses>
+		<license>
+			<name>Atomikos Multiple Licensing Scheme</name>
+			<url>http://www.atomikos.com/Main/WhichLicenseApplies</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+
+	<properties>
+		<!-- we don't want to depend on platform's default encoding -->
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+	<developers>
+		<developer>
+			<id>guypardon</id>
+			<name>Guy Pardon</name>
+			<email>guy@atomikos.com</email>
+		</developer>
+		<developer>
+			<id>ludovicorban</id>
+			<name>Ludovic Orban</name>
+			<email>ludovic@atomikos.com</email>
+		</developer>
+		<developer>
+			<id>pascalleclercq</id>
+			<name>Pascal Leclercq</name>
+			<email>pascal.leclercq@gmail.com</email>
+		</developer>
+		<developer>
+			<id>dandiephouse</id>
+			<name>Dan Diephouse</name>
+			<email>dan@envoisolutions.com</email>
+		</developer>
+		<developer>
+			<id>paulbrown</id>
+			<name>Paul Brown</name>
+			<email>prb@mult.ifario.us</email>
+		</developer>
+	</developers>
+	<scm>
+		<connection>scm:hg:http://atomikos.repositoryhosting.com/hg/atomikos/community-4-0-x</connection>
+		<developerConnection>scm:hg:http://atomikos.repositoryhosting.com/hg/atomikos/community-4-0-x</developerConnection>
+		<url>http://www.atomikos.com/</url>
+	  <tag>4.0.6</tag>
+  </scm>
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-javadoc-plugin</artifactId>
+					<version>2.9</version>
+					<configuration>
+						<failOnError>false</failOnError>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-source-plugin</artifactId>
+					<version>2.1.2</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>3.1</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-assembly-plugin</artifactId>
+					<version>2.4</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-resources-plugin</artifactId>
+					<version>2.4.3</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>2.14</version>
+				</plugin>
+				<plugin>
+					<groupId>com.atlassian.maven.plugins</groupId>
+					<artifactId>maven-clover2-plugin</artifactId>
+					<version>3.0.1</version>
+				</plugin>
+				<plugin>
+					<groupId>com.agilejava.docbkx</groupId>
+					<artifactId>docbkx-maven-plugin</artifactId>
+					<version>2.0.11</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jar-plugin</artifactId>
+					<version>2.3.1</version>
+				</plugin>
+				<plugin>
+					<groupId>com.mycila.maven-license-plugin</groupId>
+					<artifactId>maven-license-plugin</artifactId>
+					<version>1.8.0</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.felix</groupId>
+					<artifactId>maven-bundle-plugin</artifactId>
+					<version>2.5.4</version>
+				</plugin>
+				<plugin>
+					<groupId>org.ops4j.pax.exam</groupId>
+					<artifactId>maven-paxexam-plugin</artifactId>
+					<version>1.2.2</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-release-plugin</artifactId>
+					<version>2.4.1</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+		<plugins>
+			<plugin>
+				<groupId>com.atlassian.maven.plugins</groupId>
+				<artifactId>maven-clover2-plugin</artifactId>
+				<!-- <configuration> <licenseLocation>/Users/guy/Downloads/clover.license.txt</licenseLocation> -->
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<!-- same as "-source 1.7 -target 1.7" for compilation -->
+				<!-- see http://maven.apache.org/plugins/maven-compiler-plugin/compile-mojo.html -->
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<redirectTestOutputToFile>true</redirectTestOutputToFile>
+					<forkMode>always</forkMode>
+					<argLine>-Xmx1024m</argLine>
+					<includes>
+						<include>**/*TestJUnit.java</include>
+					</includes>
+					<!-- this conf is made to ensure that no file wil be created outside -->
+					<workingDirectory>${project.build.testOutputDirectory}</workingDirectory>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<configuration>
+					<subpackages>com.atomikos</subpackages>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<configuration>
+					<autoVersionSubmodules>true</autoVersionSubmodules>
+					<!--PLQ "package" must be invoked before javadoc:aggregate-jar -->
+					<preparationGoals>clean package javadoc:aggregate-jar install</preparationGoals>
+					<goals>deploy</goals>
+					<arguments>-DskipTests -Passemble</arguments>
+					<tag>${releaseVersion}</tag>
+				</configuration>
+			</plugin>
+		</plugins>
+		<extensions>
+			<!-- Enabling the use of FTP -->
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-ftp</artifactId>
+				<version>1.0-beta-6</version>
+			</extension>
+		</extensions>
+	</build>
+
+
+	<dependencies>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-all</artifactId>
+			<version>1.9.0</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+			<scope>test</scope>
+		</dependency>
+
+	</dependencies>
+
+	<!--TODO prevent tests execution during the build -->
+	<profiles>
+		<profile>
+			<id>all</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<distributionManagement>
+				<repository>
+					<id>atomikos.website.maven.repo</id>
+					<url>ftp://www.atomikos.com</url>
+				</repository>
+				<snapshotRepository>
+					<id>internal.snapshot.repo</id>
+					<name>Atomikos Internal Snapshot Repository</name>
+					<url>file://${user.home}/.m2/repository</url>
+				</snapshotRepository>
+			</distributionManagement>
+
+			<!-- "modules" must correspond to file system hierarchy -->
+			<modules>
+				<module>public</module>
+				<module>private</module>
+				<module>specs</module>
+			</modules>
+		</profile>
+
+		<profile>
+			<id>opensource</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-source-plugin</artifactId>
+						<version>2.1.2</version>
+						<executions>
+							<execution>
+								<id>attach-sources</id>
+								<goals>
+									<goal>jar-no-fork</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<version>2.7</version>
+						<executions>
+							<execution>
+								<id>attach-javadocs</id>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+
+			</build>
+			<modules>
+				<module>public</module>
+			</modules>
+			<distributionManagement>
+				<snapshotRepository>
+					<id>sonatype-nexus-snapshots</id>
+					<name>Sonatype Nexus Snapshots</name>
+					<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+				</snapshotRepository>
+				<repository>
+					<id>sonatype-nexus-staging</id>
+					<name>Nexus Release Repository</name>
+					<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+				</repository>
+			</distributionManagement>
+		</profile>
+		<profile>
+			<id>release-sign-artifacts</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+	<reporting>
+    	<plugins>
+      		<plugin>
+        		<groupId>org.codehaus.mojo</groupId>
+        		<artifactId>jdepend-maven-plugin</artifactId>
+        		<version>2.0</version>
+      		</plugin>
+    	</plugins>
+  	</reporting>
+
+</project>

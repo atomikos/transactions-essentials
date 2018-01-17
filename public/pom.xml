@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.atomikos</groupId>
+		<artifactId>atomikos-parent</artifactId>
+		<version>4.0.6</version>
+	</parent>
+	<artifactId>ate</artifactId>
+	<packaging>pom</packaging>
+	<name>Atomikos Transactions Essentials</name>
+
+	<properties>
+		<inceptionYear>2000-2017</inceptionYear>
+	</properties>
+
+	<modules>
+		<module>util</module>
+		<module>transactions-api</module>
+		<module>transactions</module>
+		<module>transactions-jta</module>
+		<module>transactions-jdbc</module>
+		<module>transactions-jms</module>
+		<module>transactions-osgi</module>
+		<module>transactions-hibernate2</module>
+		<module>transactions-hibernate3</module>
+		<module>transactions-hibernate4</module>
+		<module>transactions-eclipselink</module>
+		<module>transactions-jndi-provider</module>
+		<module>transactions-tcc-rest-api</module>
+		<module>transactions-tcc-rest</module>
+		<module>atomikos-transactions-essentials</module>
+	</modules>
+
+
+
+	<build>
+
+
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<inherited>true</inherited>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<phase>package</phase>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+
+					</execution>
+
+				</executions>
+
+			</plugin>
+			<plugin>
+				<inherited>false</inherited>
+				<groupId>com.mycila.maven-license-plugin</groupId>
+				<artifactId>maven-license-plugin</artifactId>
+				<configuration>
+					<!--<basedir>${basedir}</basedir> -->
+					<header>header.txt</header>
+					<quiet>false</quiet>
+					<failIfMissing>true</failIfMissing>
+					<aggregate>false</aggregate>
+					<includes>
+						<include>src/**</include>
+					</includes>
+					<excludes>
+						<exclude>src/test/**</exclude>
+						<exclude>target/**</exclude>
+						<exclude>.clover/**</exclude>
+						<exclude>private/**</exclude>
+						<exclude>axt/**</exclude>
+					</excludes>
+					<useDefaultExcludes>true</useDefaultExcludes>
+					<!-- <mapping> <jwc>XML_STYLE</jwc> <application>XML_STYLE</application>
+						<myFileExtension>JAVADOC_STYLE</myFileExtension> </mapping> -->
+					<useDefaultMapping>true</useDefaultMapping>
+					<properties>
+						<year>${project.inceptionYear}</year>
+						<company>Atomikos</company>
+						<email>info@atomikos.com</email>
+					</properties>
+					<encoding>UTF-8</encoding>
+					<!-- <headerDefinitions> <headerDefinition>def1.xml</headerDefinition>
+						<headerDefinition>def2.xml</headerDefinition> </headerDefinitions> -->
+
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+
+		</plugins>
+	</build>
+</project>

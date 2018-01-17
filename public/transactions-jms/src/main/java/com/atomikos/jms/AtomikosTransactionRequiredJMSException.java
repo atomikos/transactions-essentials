@@ -1,0 +1,30 @@
+/**
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
+ *
+ * LICENSE CONDITIONS
+ *
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
+ */
+
+package com.atomikos.jms;
+
+import com.atomikos.logging.Logger;
+import com.atomikos.logging.LoggerFactory;
+
+
+public class AtomikosTransactionRequiredJMSException extends
+		AtomikosJMSException {
+	private static final Logger LOGGER = LoggerFactory.createLogger(AtomikosTransactionRequiredJMSException.class);
+
+	public static void throwAtomikosTransactionRequiredJMSException ( String reason )
+	throws AtomikosTransactionRequiredJMSException
+	{
+		LOGGER.logWarning ( reason );
+		throw new AtomikosTransactionRequiredJMSException ( reason );
+	}
+	
+	AtomikosTransactionRequiredJMSException(String reason) {
+		super(reason);
+	}
+
+}
