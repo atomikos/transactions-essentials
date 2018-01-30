@@ -25,8 +25,6 @@ import com.atomikos.icatch.provider.ConfigProperties;
  * This is the main class for creating a UserTransactionService instance.
  * This class is the client's main entry point into the transaction engine.
  *
- * The creation of a user transaction happens via a UserTransactionServiceFactory
- * which is looked up by this object behind the scenes.
  * Instances can be serialized to disk and re-read at a later time.
  * Note: deserialization will only work in the SAME configuration as the
  * one that did the streaming out. In particular, if no identical Atomikos
@@ -117,7 +115,7 @@ public final class UserTransactionServiceImp
 
 
     /**
-     * @see com.atomikos.icatch.UserTransactionService#registerResource(com.atomikos.datasource.RecoverableResource)
+     * @see com.atomikos.icatch.config.UserTransactionService#registerResource(com.atomikos.datasource.RecoverableResource)
      */
     public void registerResource(RecoverableResource res)
     {
@@ -126,7 +124,7 @@ public final class UserTransactionServiceImp
     }
 
     /**
-     * @see com.atomikos.icatch.UserTransactionService#registerLogAdministrator(com.atomikos.icatch.admin.LogAdministrator)
+     * @see com.atomikos.icatch.config.UserTransactionService#registerLogAdministrator(com.atomikos.icatch.admin.LogAdministrator)
      */
     public void registerLogAdministrator(LogAdministrator admin)
     {
