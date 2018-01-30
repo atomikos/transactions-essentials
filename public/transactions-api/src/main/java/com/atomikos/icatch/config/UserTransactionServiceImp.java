@@ -115,7 +115,7 @@ public final class UserTransactionServiceImp
 
 
     /**
-     * @see com.atomikos.icatch.UserTransactionService#registerResource(com.atomikos.datasource.RecoverableResource)
+     * @see com.atomikos.icatch.config.UserTransactionService#registerResource(com.atomikos.datasource.RecoverableResource)
      */
     public void registerResource(RecoverableResource res)
     {
@@ -124,7 +124,7 @@ public final class UserTransactionServiceImp
     }
 
     /**
-     * @see com.atomikos.icatch.UserTransactionService#registerLogAdministrator(com.atomikos.icatch.admin.LogAdministrator)
+     * @see com.atomikos.icatch.config.UserTransactionService#registerLogAdministrator(com.atomikos.icatch.admin.LogAdministrator)
      */
     public void registerLogAdministrator(LogAdministrator admin)
     {
