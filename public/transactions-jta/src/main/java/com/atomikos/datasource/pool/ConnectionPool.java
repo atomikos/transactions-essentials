@@ -11,6 +11,9 @@ package com.atomikos.datasource.pool;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 import com.atomikos.datasource.pool.event.ConnectionPoolExhaustedEvent;
 import com.atomikos.datasource.pool.event.PooledConnectionCreatedEvent;
@@ -38,6 +41,16 @@ public abstract class ConnectionPool implements XPooledConnectionEventListener
 	private boolean destroyed;
 	private PooledAlarmTimer maintenanceTimer;
 	private String name;
+	
+	// Executor Service for cleaning up Half broken connections in the Pool
+	final ExecutorService poolCleanupService = Executors.newSingleThreadExecutor(new ThreadFactory() {
+		@Override
+		public Thread newThread (Runnable r) {
+	        Thread thread = new Thread(r);
+	        thread.setDaemon(true);
+	        return thread;
+	    }
+	});
 
 
 	public ConnectionPool ( ConnectionFactory connectionFactory , ConnectionPoolProperties properties ) throws ConnectionPoolException
@@ -299,6 +312,9 @@ public abstract class ConnectionPool implements XPooledConnectionEventListener
 			connections = null;
 			destroyed = true;
 			maintenanceTimer.stop();
+			// Shutdown ExecutorService
+			poolCleanupService.shutdown();
+			
 			if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": pool destroyed." );
 		}
 	}
@@ -308,13 +324,51 @@ public abstract class ConnectionPool implements XPooledConnectionEventListener
 		for (XPooledConnection conn : connections) {
 			if (conn.isAvailable()) {
 				connectionsToRemove.add(conn);
-				destroyPooledConnection(conn);
 			}
 		}
 		connections.removeAll(connectionsToRemove);
 		addConnectionsIfMinPoolSizeNotReached();
+		
+		destroyPooledConnections(connectionsToRemove);
 	}
 
+	/**
+	 * This methods destroys the stale connections in the Connection Pool.
+	 * 
+	 * @param connectionsToRemove
+	 */
+	private void destroyPooledConnections(List<XPooledConnection> connectionsToRemove) {
+		
+		if (!poolCleanupService.isShutdown()) {
+			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": Initiating Pooled Connection Cleanup Task" );
+				poolCleanupService.submit(new CleanupConnectionTask(connectionsToRemove));
+		}
+	}
+	
+	
+	/**
+	 * This runs the cleanup Connection task to destroy the Pooled connections.
+	 */
+	private class CleanupConnectionTask implements Runnable {
+		
+		private final List<XPooledConnection> connectionsToRemove;
+		
+		CleanupConnectionTask(List<XPooledConnection> connectionsToRemove) {
+			this.connectionsToRemove = connectionsToRemove;
+		}
+		
+		public void run() {
+			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": Number of Connections to destroy: "
+						+ connectionsToRemove.size());
+			for (XPooledConnection conn : connectionsToRemove) {
+				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": Destroying Pooled Connection ...");
+				destroyPooledConnection(conn);
+			}
+			
+		}
+	}
+	
+	
 	/**
 	 * Wait until the connection pool contains an available connection or a timeout happens.
 	 * Returns immediately if the pool already contains a connection in state available.
