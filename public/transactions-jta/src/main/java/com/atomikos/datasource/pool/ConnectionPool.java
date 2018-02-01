@@ -43,15 +43,7 @@ public abstract class ConnectionPool implements XPooledConnectionEventListener
 	private String name;
 	
 	// Executor Service for cleaning up Half broken connections in the Pool
-	final ExecutorService poolCleanupService = Executors.newSingleThreadExecutor(new ThreadFactory() {
-		@Override
-		public Thread newThread (Runnable r) {
-	        Thread thread = new Thread(r);
-	        thread.setDaemon(true);
-	        return thread;
-	    }
-	});
-
+	private ExecutorService poolCleanupService; 
 
 	public ConnectionPool ( ConnectionFactory connectionFactory , ConnectionPoolProperties properties ) throws ConnectionPoolException
 	{
@@ -72,8 +64,20 @@ public abstract class ConnectionPool implements XPooledConnectionEventListener
 		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": initializing..." );
 		addConnectionsIfMinPoolSizeNotReached();
 		launchMaintenanceTimer();
+		initializePoolCleanupService();
 	}
 
+	private void initializePoolCleanupService() {
+		poolCleanupService = Executors.newSingleThreadExecutor(new ThreadFactory() {
+			@Override
+			public Thread newThread (Runnable r) {
+		        Thread thread = new Thread(r);
+		        thread.setDaemon(true);
+		        return thread;
+		    }
+		});
+	}
+	
 	private void launchMaintenanceTimer() {
 		int maintenanceInterval = properties.getMaintenanceInterval();
 		if ( maintenanceInterval <= 0 ) {
