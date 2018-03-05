@@ -11,9 +11,6 @@ package com.atomikos.datasource.pool;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 
 import com.atomikos.datasource.pool.event.ConnectionPoolExhaustedEvent;
 import com.atomikos.datasource.pool.event.PooledConnectionCreatedEvent;
@@ -42,9 +39,7 @@ public abstract class ConnectionPool implements XPooledConnectionEventListener
 	private PooledAlarmTimer maintenanceTimer;
 	private String name;
 	
-	// Executor Service for cleaning up Half broken connections in the Pool
-	private ExecutorService poolCleanupService; 
-
+	
 	public ConnectionPool ( ConnectionFactory connectionFactory , ConnectionPoolProperties properties ) throws ConnectionPoolException
 	{
 		this.connectionFactory = connectionFactory;
@@ -64,18 +59,6 @@ public abstract class ConnectionPool implements XPooledConnectionEventListener
 		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": initializing..." );
 		addConnectionsIfMinPoolSizeNotReached();
 		launchMaintenanceTimer();
-		initializePoolCleanupService();
-	}
-
-	private void initializePoolCleanupService() {
-		poolCleanupService = Executors.newSingleThreadExecutor(new ThreadFactory() {
-			@Override
-			public Thread newThread (Runnable r) {
-		        Thread thread = new Thread(r);
-		        thread.setDaemon(true);
-		        return thread;
-		    }
-		});
 	}
 	
 	private void launchMaintenanceTimer() {
@@ -316,8 +299,6 @@ public abstract class ConnectionPool implements XPooledConnectionEventListener
 			connections = null;
 			destroyed = true;
 			maintenanceTimer.stop();
-			// Shutdown ExecutorService
-			poolCleanupService.shutdown();
 			
 			if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": pool destroyed." );
 		}
@@ -343,10 +324,9 @@ public abstract class ConnectionPool implements XPooledConnectionEventListener
 	 */
 	private void destroyPooledConnections(List<XPooledConnection> connectionsToRemove) {
 		
-		if (!poolCleanupService.isShutdown()) {
-			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": Initiating Pooled Connection Cleanup Task" );
-				poolCleanupService.submit(new CleanupConnectionTask(connectionsToRemove));
-		}
+		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": Initiating Pooled Connection Cleanup Task" );
+		Thread cleanupPoolThread = new Thread(new CleanupConnectionTask(connectionsToRemove), "PoolCleanupThread");
+		cleanupPoolThread.start();
 	}
 	
 	
@@ -368,7 +348,7 @@ public abstract class ConnectionPool implements XPooledConnectionEventListener
 				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": Destroying Pooled Connection ...");
 				destroyPooledConnection(conn);
 			}
-			
+			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug (this + ": Cleanup connection task is completed ...");
 		}
 	}
 	
