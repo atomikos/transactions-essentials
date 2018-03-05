@@ -38,8 +38,8 @@ public abstract class ConnectionPool implements XPooledConnectionEventListener
 	private boolean destroyed;
 	private PooledAlarmTimer maintenanceTimer;
 	private String name;
-
-
+	
+	
 	public ConnectionPool ( ConnectionFactory connectionFactory , ConnectionPoolProperties properties ) throws ConnectionPoolException
 	{
 		this.connectionFactory = connectionFactory;
@@ -60,7 +60,7 @@ public abstract class ConnectionPool implements XPooledConnectionEventListener
 		addConnectionsIfMinPoolSizeNotReached();
 		launchMaintenanceTimer();
 	}
-
+	
 	private void launchMaintenanceTimer() {
 		int maintenanceInterval = properties.getMaintenanceInterval();
 		if ( maintenanceInterval <= 0 ) {
@@ -299,6 +299,7 @@ public abstract class ConnectionPool implements XPooledConnectionEventListener
 			connections = null;
 			destroyed = true;
 			maintenanceTimer.stop();
+			
 			if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": pool destroyed." );
 		}
 	}
@@ -308,13 +309,50 @@ public abstract class ConnectionPool implements XPooledConnectionEventListener
 		for (XPooledConnection conn : connections) {
 			if (conn.isAvailable()) {
 				connectionsToRemove.add(conn);
-				destroyPooledConnection(conn);
 			}
 		}
 		connections.removeAll(connectionsToRemove);
 		addConnectionsIfMinPoolSizeNotReached();
+		
+		destroyPooledConnections(connectionsToRemove);
 	}
 
+	/**
+	 * This methods destroys the stale connections in the Connection Pool.
+	 * 
+	 * @param connectionsToRemove
+	 */
+	private void destroyPooledConnections(List<XPooledConnection> connectionsToRemove) {
+		
+		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": Initiating Pooled Connection Cleanup Task" );
+		Thread cleanupPoolThread = new Thread(new CleanupConnectionTask(connectionsToRemove), "PoolCleanupThread");
+		cleanupPoolThread.start();
+	}
+	
+	
+	/**
+	 * This runs the cleanup Connection task to destroy the Pooled connections.
+	 */
+	private class CleanupConnectionTask implements Runnable {
+		
+		private final List<XPooledConnection> connectionsToRemove;
+		
+		CleanupConnectionTask(List<XPooledConnection> connectionsToRemove) {
+			this.connectionsToRemove = connectionsToRemove;
+		}
+		
+		public void run() {
+			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": Number of Connections to destroy: "
+						+ connectionsToRemove.size());
+			for (XPooledConnection conn : connectionsToRemove) {
+				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": Destroying Pooled Connection ...");
+				destroyPooledConnection(conn);
+			}
+			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug (this + ": Cleanup connection task is completed ...");
+		}
+	}
+	
+	
 	/**
 	 * Wait until the connection pool contains an available connection or a timeout happens.
 	 * Returns immediately if the pool already contains a connection in state available.
