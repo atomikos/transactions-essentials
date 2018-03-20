@@ -390,7 +390,11 @@ abstract class CoordinatorStateHandler
                     // 1PC and rolled back before commit arrived.
                     nextStateHandler = new TerminatedStateHandler ( this );
                     coordinator_.setStateHandler ( nextStateHandler );
-                    throw new RollbackException ( "Rolled back already." );
+                    if (!commitresult.getReplies().isEmpty()) {
+                        throw new RollbackException ( "Rolled back already.", commitresult.getReplies().get(0).getException() );
+                    } else {
+                        throw new RollbackException ( "Rolled back already." );
+                    }
                 } else if ( res == TerminationResult.HEUR_ROLLBACK ) {
                     nextStateHandler = new HeurAbortedStateHandler ( this );
                     coordinator_.setStateHandler ( nextStateHandler );
