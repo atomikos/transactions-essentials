@@ -389,7 +389,7 @@ public class XAResourceTransaction implements ResourceTransaction, Participant {
 			if (XAException.XA_RBBASE <= xaerr.errorCode
 					&& xaerr.errorCode <= XAException.XA_RBEND) {
 				LOGGER.logWarning(msg, xaerr); // see case 84253
-				throw new RollbackException(msg);
+				throw new RollbackException(msg, xaerr);
 			} else {
 				LOGGER.logError(msg, xaerr);
 				throw new SysException(msg, xaerr);
@@ -568,7 +568,7 @@ public class XAResourceTransaction implements ResourceTransaction, Participant {
 					throw new SysException(msg, xaerr);
 				else
 					throw new com.atomikos.icatch.RollbackException(
-							"Already rolled back in resource.");
+							"Already rolled back in resource.", xaerr);
 			} else {
 				switch (xaerr.errorCode) {
 				case XAException.XA_HEURHAZ:
