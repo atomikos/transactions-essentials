@@ -1,36 +1,19 @@
 /**
- * Copyright (C) 2000-2012 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
- * This code ("Atomikos TransactionsEssentials"), by itself,
- * is being distributed under the
- * Apache License, Version 2.0 ("License"), a copy of which may be found at
- * http://www.atomikos.com/licenses/apache-license-2.0.txt .
- * You may not use this file except in compliance with the License.
+ * LICENSE CONDITIONS
  *
- * While the License grants certain patent license rights,
- * those patent license rights only extend to the use of
- * Atomikos TransactionsEssentials by itself.
- *
- * This code (Atomikos TransactionsEssentials) contains certain interfaces
- * in package (namespace) com.atomikos.icatch
- * (including com.atomikos.icatch.Participant) which, if implemented, may
- * infringe one or more patents held by Atomikos.
- * It should be appreciated that you may NOT implement such interfaces;
- * licensing to implement these interfaces must be obtained separately from Atomikos.
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
  */
 
 package com.atomikos.icatch.imp;
 
+import java.util.Map;
 import java.util.Stack;
 
 import com.atomikos.finitestates.FSMEnterEvent;
 import com.atomikos.finitestates.FSMEnterListener;
 import com.atomikos.icatch.CompositeCoordinator;
-import com.atomikos.icatch.CompositeTerminator;
 import com.atomikos.icatch.CompositeTransaction;
 import com.atomikos.icatch.Extent;
 import com.atomikos.icatch.HeurHazardException;
@@ -42,26 +25,25 @@ import com.atomikos.icatch.RollbackException;
 import com.atomikos.icatch.SubTxAwareParticipant;
 import com.atomikos.icatch.Synchronization;
 import com.atomikos.icatch.SysException;
-import com.atomikos.icatch.TransactionControl;
-import com.atomikos.icatch.TxState;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
+import com.atomikos.recovery.TxState;
 
 /**
  * A complete composite transaction implementation for use in the local VM.
  */
 
-public class CompositeTransactionImp
-extends AbstractCompositeTransaction implements
-        TransactionControl, FSMEnterListener
+class CompositeTransactionImp extends AbstractCompositeTransaction implements FSMEnterListener
 {
+	private static final long serialVersionUID = 975317723773209940L;
+
 	private static final Logger LOGGER = LoggerFactory.createLogger(CompositeTransactionImp.class);
 
-    protected CoordinatorImp coordinator = null;
+	private CoordinatorImp coordinator = null;
 
-    protected TransactionServiceImp txservice;
+	private TransactionServiceImp txservice;
 
-    protected Extent extent = null;
+	private Extent extent = null;
 
     protected boolean noLocalAncestors;
 
@@ -71,7 +53,7 @@ extends AbstractCompositeTransaction implements
      * This constructor is kept for compatibility with the test classes.
      */
 
-    CompositeTransactionImp ( Stack lineage , String tid , boolean serial ,
+    CompositeTransactionImp ( Stack<CompositeTransaction> lineage , String tid , boolean serial ,
             CoordinatorImp coordinator )
     {
         this ( null , lineage , tid , serial , coordinator );
@@ -94,8 +76,8 @@ extends AbstractCompositeTransaction implements
      *                If coordinator no longer activatable.
      */
 
-    public CompositeTransactionImp ( TransactionServiceImp txservice ,
-            Stack lineage , String tid , boolean serial ,
+    CompositeTransactionImp ( TransactionServiceImp txservice ,
+            Stack<CompositeTransaction> lineage , String tid , boolean serial ,
             CoordinatorImp coordinator ) throws IllegalStateException
     {
 
@@ -140,28 +122,10 @@ extends AbstractCompositeTransaction implements
         return coordinator;
     }
 
-
-    /**
-     * @see CompositeTransaction.
-     */
-
-    public TransactionControl getTransactionControl ()
-    {
-        return this;
-    }
-
-    /**
-     * @see TransactionControl
-     */
-
     public int getLocalSubTxCount ()
     {
         return localGetTransactionStateHandler().getSubTransactionCount ();
     }
-
-    /**
-     * @see TransactionControl.
-     */
 
     public synchronized void setSerial () throws IllegalStateException,
             SysException
@@ -179,8 +143,8 @@ extends AbstractCompositeTransaction implements
             IllegalStateException
     {
         CompositeTransaction ret = localGetTransactionStateHandler().createSubTransaction ();
-        if(LOGGER.isInfoEnabled()){
-        	LOGGER.logInfo("createSubTransaction(): created new SUBTRANSACTION "
+        if(LOGGER.isDebugEnabled()){
+        	LOGGER.logDebug("createSubTransaction(): created new SUBTRANSACTION "
                     + ret.getTid () + " for existing transaction " + getTid ());
         }
 
@@ -196,8 +160,8 @@ extends AbstractCompositeTransaction implements
     {
 
         RecoveryCoordinator ret = localGetTransactionStateHandler().addParticipant ( participant );
-        if(LOGGER.isInfoEnabled()){
-        	LOGGER.logInfo("addParticipant ( " + participant + " ) for transaction "
+        if(LOGGER.isDebugEnabled()){
+        	LOGGER.logDebug("addParticipant ( " + participant + " ) for transaction "
                     + getTid ());
         }
         return ret;
@@ -211,8 +175,8 @@ extends AbstractCompositeTransaction implements
             IllegalStateException, UnsupportedOperationException, SysException
     {
     	localGetTransactionStateHandler().registerSynchronization ( sync );
-    	if(LOGGER.isInfoEnabled()){
-    		LOGGER.logInfo("registerSynchronization ( " + sync + " ) for transaction "
+    	if(LOGGER.isDebugEnabled()){
+    		LOGGER.logDebug("registerSynchronization ( " + sync + " ) for transaction "
                     + getTid ());
     	}
     }
@@ -235,8 +199,8 @@ extends AbstractCompositeTransaction implements
             SysException
     {
     	localGetTransactionStateHandler().rollbackWithStateCheck ();
-    	if(LOGGER.isInfoEnabled()){
-    		LOGGER.logInfo("rollback() done of transaction " + getTid ());
+    	if(LOGGER.isDebugEnabled()){
+    		LOGGER.logDebug("rollback() done of transaction " + getTid ());
     	}
 
     }
@@ -260,15 +224,6 @@ extends AbstractCompositeTransaction implements
     }
 
     /**
-     * @see TransactionControl.
-     */
-
-    public CompositeTerminator getTerminator ()
-    {
-        return new CompositeTerminatorImp ( txservice, this, coordinator );
-    }
-
-    /**
      * Successfully end the composite transaction. Marks it as inactive. Called
      * by Terminator implementation only! NOTE: this does NOT commit the
      * participants, but rather only marks the (sub)transaction as being
@@ -285,23 +240,15 @@ extends AbstractCompositeTransaction implements
     {
 
     	localGetTransactionStateHandler().commit ();
-    	if(LOGGER.isInfoEnabled()){
-    		LOGGER.logInfo("commit() done (by application) of transaction " + getTid ());
+    	if(LOGGER.isDebugEnabled()){
+    		LOGGER.logDebug("commit() done (by application) of transaction " + getTid ());
     	}
     }
-
-    /**
-     * @see TransactionControl
-     */
 
     public long getTimeout ()
     {
         return coordinator.getTimeOut ();
     }
-
-    /**
-     * @see TransactionControl.
-     */
 
     public synchronized Extent getExtent ()
     {
@@ -310,17 +257,11 @@ extends AbstractCompositeTransaction implements
     		return extent;
     }
 
-
-
-    /**
-     * @see TransactionControl.
-     */
-
     public void setRollbackOnly ()
     {
     	localGetTransactionStateHandler().setRollbackOnly ();
-    	if(LOGGER.isInfoEnabled()){
-    		LOGGER.logInfo("setRollbackOnly() called for transaction " + getTid ());
+    	if(LOGGER.isDebugEnabled()){
+    		LOGGER.logDebug("setRollbackOnly() called for transaction " + getTid ());
     	}
 
 
@@ -333,9 +274,36 @@ extends AbstractCompositeTransaction implements
             HeurHazardException, SysException, SecurityException,
             RollbackException
     {
-        getTerminator().commit();
+        doCommit ();
+        setSiblingInfoForIncoming1pcRequestFromRemoteClient();
+        
+        if ( isRoot () ) {
+            try {
+                coordinator.terminate ( true );
+            }
+
+            catch ( RollbackException rb ) {
+                throw rb;
+            } catch ( HeurHazardException hh ) {
+                throw hh;
+            } catch ( HeurRollbackException hr ) {
+                throw hr;
+            } catch ( HeurMixedException hm ) {
+                throw hm;
+            } catch ( SysException se ) {
+                throw se;
+            } catch ( Exception e ) {
+                throw new SysException (
+                        "Unexpected error: " + e.getMessage (), e );
+            }
+        }
     }
 
+    private void setSiblingInfoForIncoming1pcRequestFromRemoteClient() {
+    	Map<String,Integer> cascadelist = getExtent().getRemoteParticipants ();
+        coordinator.setGlobalSiblingCount ( coordinator.getLocalSiblingCount () );
+        coordinator.setCascadeList ( cascadelist );
+	}
 
 
     /**
@@ -343,7 +311,14 @@ extends AbstractCompositeTransaction implements
      */
     public void rollback () throws IllegalStateException, SysException
     {
-        getTerminator().rollback();
+    	doRollback ();
+        if ( isRoot () ) {
+            try {
+                coordinator.terminate ( false );
+            } catch ( Exception e ) {
+                throw new SysException ( "Unexpected error in rollback: " + e.getMessage (), e );
+            }
+        }
     }
 
     /**
@@ -360,13 +335,10 @@ extends AbstractCompositeTransaction implements
      */
     public void entered ( FSMEnterEvent coordinatorTerminatedEvent )
     {
-        if ( getState ().equals ( TxState.ACTIVE ) || getState ().equals ( TxState.MARKED_ABORT ) ) {
+        if (getState().isOneOf(TxState.ACTIVE,TxState.MARKED_ABORT )) {
         	// our coordinator terminated and we did not -> coordinator must have seen a timeout/abort 
             try {
-            	boolean recoverableWhileActive = false;
-            	Boolean pref = coordinator.isRecoverableWhileActive();
-            	if ( pref != null ) recoverableWhileActive = pref.booleanValue();
-            	if ( !recoverableWhileActive && !( stateHandler instanceof TxTerminatedStateHandler ) ) {
+            	if (!( stateHandler instanceof TxTerminatedStateHandler ) ) {
             		// note: check for TxTerminatedStateHandler differentiates regular rollback from timeout/rollback !!!           		          		
             		setRollbackOnly(); // see case 27857: keep tx context for thread on timeout
             	} else  {
@@ -374,9 +346,8 @@ extends AbstractCompositeTransaction implements
             	}
 
             } catch ( Exception e ) {
-            	e.printStackTrace();
                 // ignore but log
-            	LOGGER.logDebug("Ignoring error during event callback",e);
+            	LOGGER.logTrace("Ignoring error during event callback",e);
             }
         }
 

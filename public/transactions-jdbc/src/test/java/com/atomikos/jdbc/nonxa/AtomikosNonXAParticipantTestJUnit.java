@@ -1,3 +1,11 @@
+/**
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
+ *
+ * LICENSE CONDITIONS
+ *
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
+ */
+
 package com.atomikos.jdbc.nonxa;
 
 import java.sql.SQLException;
@@ -24,11 +32,6 @@ public class AtomikosNonXAParticipantTestJUnit extends TestCase
 		return new AtomikosNonXAParticipant ( null , getName() );
 	}
 
-	public void testHeuristicMessage() {
-		assertEquals ( "Non-XA resource '" + getName() + 
-                "': warning: this resource does not support two-phase commit" , p.getHeuristicMessages()[0].toString() );
-	}
-	
 	public void testPrepareNeverReturnsReadOnlyForReadOnlyInstance() throws Exception {
 		p.setReadOnly ( true );
 		int result = p.prepare();

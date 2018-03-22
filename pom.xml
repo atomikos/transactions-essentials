@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.atomikos</groupId>
 	<artifactId>atomikos-parent</artifactId>
-	<version>4.0.0-SNAPSHOT</version>
+	<version>4.0.6</version>
 	<!-- With maven, a parent pom MUST have "pom" for packaging -->
 	<packaging>pom</packaging>
 	<name>Atomikos All POM</name>
@@ -16,9 +16,6 @@
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
-	
-	
-	
 	<properties>
 		<!-- we don't want to depend on platform's default encoding -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -51,13 +48,13 @@
 		</developer>
 	</developers>
 	<scm>
-		<connection>scm:hg:http://atomikos.repositoryhosting.com/hg/atomikos/development</connection>
-		<developerConnection>scm:hg:http://atomikos.repositoryhosting.com/hg/atomikos/development</developerConnection>
+		<connection>scm:hg:http://atomikos.repositoryhosting.com/hg/atomikos/community-4-0-x</connection>
+		<developerConnection>scm:hg:http://atomikos.repositoryhosting.com/hg/atomikos/community-4-0-x</developerConnection>
 		<url>http://www.atomikos.com/</url>
-		<tag>HEAD</tag>
-	</scm>
+	  <tag>4.0.6</tag>
+  </scm>
 
-		<build>
+	<build>
 		<pluginManagement>
 			<plugins>
 				<plugin>
@@ -81,7 +78,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-assembly-plugin</artifactId>
-					<version>2.4</version> 
+					<version>2.4</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -105,11 +102,6 @@
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-enforcer-plugin</artifactId>
-					<version>1.3.1</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-jar-plugin</artifactId>
 					<version>2.3.1</version>
 				</plugin>
@@ -121,7 +113,7 @@
 				<plugin>
 					<groupId>org.apache.felix</groupId>
 					<artifactId>maven-bundle-plugin</artifactId>
-					<version>2.4.0</version>
+					<version>2.5.4</version>
 				</plugin>
 				<plugin>
 					<groupId>org.ops4j.pax.exam</groupId>
@@ -131,7 +123,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-release-plugin</artifactId>
-					<version>2.4.1</version> <!-- 2.4.1 required for release build in jenkins! -->
+					<version>2.4.1</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>
@@ -144,11 +136,11 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<!-- same as "-source 1.5 -target 1.5" for compilation -->
+				<!-- same as "-source 1.7 -target 1.7" for compilation -->
 				<!-- see http://maven.apache.org/plugins/maven-compiler-plugin/compile-mojo.html -->
 				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
+					<source>1.7</source>
+					<target>1.7</target>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -164,26 +156,6 @@
 					<!-- this conf is made to ensure that no file wil be created outside -->
 					<workingDirectory>${project.build.testOutputDirectory}</workingDirectory>
 				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-enforcer-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>enforce-versions</id>
-						<goals>
-							<goal>enforce</goal>
-						</goals>
-						<configuration>
-							<failFast>true</failFast>
-							<rules>
-								<requireJavaVersion>
-									<version>[1.6,1.7)</version>
-								</requireJavaVersion>
-							</rules>
-						</configuration>
-					</execution>
-				</executions>
 			</plugin>
 			<plugin>
 				<artifactId>maven-javadoc-plugin</artifactId>
@@ -214,7 +186,7 @@
 			</extension>
 		</extensions>
 	</build>
-	
+
 
 	<dependencies>
 		<dependency>
@@ -226,7 +198,7 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.10</version>
+			<version>4.11</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -258,7 +230,7 @@
 				<module>specs</module>
 			</modules>
 		</profile>
-		
+
 		<profile>
 			<id>opensource</id>
 			<activation>
@@ -300,10 +272,10 @@
 			</modules>
 			<distributionManagement>
 				<snapshotRepository>
-      				<id>sonatype-nexus-snapshots</id>
-      				<name>Sonatype Nexus Snapshots</name>
-      				<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-		    	</snapshotRepository>
+					<id>sonatype-nexus-snapshots</id>
+					<name>Sonatype Nexus Snapshots</name>
+					<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+				</snapshotRepository>
 				<repository>
 					<id>sonatype-nexus-staging</id>
 					<name>Nexus Release Repository</name>
@@ -332,4 +304,14 @@
 			</build>
 		</profile>
 	</profiles>
+	<reporting>
+    	<plugins>
+      		<plugin>
+        		<groupId>org.codehaus.mojo</groupId>
+        		<artifactId>jdepend-maven-plugin</artifactId>
+        		<version>2.0</version>
+      		</plugin>
+    	</plugins>
+  	</reporting>
+
 </project>

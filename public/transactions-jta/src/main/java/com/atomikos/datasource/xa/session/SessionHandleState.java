@@ -1,26 +1,9 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
- * This code ("Atomikos TransactionsEssentials"), by itself,
- * is being distributed under the
- * Apache License, Version 2.0 ("License"), a copy of which may be found at
- * http://www.atomikos.com/licenses/apache-license-2.0.txt .
- * You may not use this file except in compliance with the License.
+ * LICENSE CONDITIONS
  *
- * While the License grants certain patent license rights,
- * those patent license rights only extend to the use of
- * Atomikos TransactionsEssentials by itself.
- *
- * This code (Atomikos TransactionsEssentials) contains certain interfaces
- * in package (namespace) com.atomikos.icatch
- * (including com.atomikos.icatch.Participant) which, if implemented, may
- * infringe one or more patents held by Atomikos.
- * It should be appreciated that you may NOT implement such interfaces;
- * licensing to implement these interfaces must be obtained separately from Atomikos.
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
  */
 
 package com.atomikos.datasource.xa.session;
@@ -35,7 +18,6 @@ import javax.transaction.xa.XAResource;
 
 import com.atomikos.datasource.xa.XATransactionalResource;
 import com.atomikos.icatch.CompositeTransaction;
-import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
  
@@ -103,7 +85,7 @@ public class SessionHandleState
 	 */
 	public synchronized void notifySessionBorrowed()
 	{
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": notifySessionBorrowed" );
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": notifySessionBorrowed" );
 		currentContext = new TransactionContext ( resource , xaResource );
 		allContexts.add ( currentContext );
 		closed = false;
@@ -117,7 +99,7 @@ public class SessionHandleState
 	
 	public void notifySessionClosed()
 	{
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": entering notifySessionClosed" );
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": entering notifySessionClosed" );
 		boolean notifyOfClosedEvent = false;
 	
 		synchronized ( this ) {
@@ -125,7 +107,7 @@ public class SessionHandleState
 			Iterator<TransactionContext> it = allContexts.iterator();
 			while ( it.hasNext() ) {
 				TransactionContext b = ( TransactionContext ) it.next();
-				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": delegating session close to " + b ) ;
+				if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": delegating session close to " + b ) ;
 				b.sessionClosed();
 			}
 			closed = true;
@@ -133,7 +115,7 @@ public class SessionHandleState
 		}
 		//do callbacks out of synch!!!
 		if ( notifyOfClosedEvent ) {
-			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": all contexts terminated, firing TerminatedEvent" );
+			if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": all contexts terminated, firing TerminatedEvent" );
 			fireTerminatedEvent();
 		}
 	}
@@ -144,12 +126,11 @@ public class SessionHandleState
 	 * This method MUST be called BEFORE any work is delegated to the underlying
 	 * vendor connection.
 	 * @param ct The current transaction, or null if none. 
-	 * @param HeuristicMessage hmsg The heuristic message, null if none.
 	 * 
 	 * @throws InvalidSessionHandleStateException 
 	 */
 	
-	public synchronized void notifyBeforeUse ( CompositeTransaction ct , HeuristicMessage hmsg ) throws InvalidSessionHandleStateException
+	public synchronized void notifyBeforeUse ( CompositeTransaction ct ) throws InvalidSessionHandleStateException
 	{
 		if ( closed ) throw new InvalidSessionHandleStateException ( "The underlying XA session is closed" );
 		
@@ -168,29 +149,29 @@ public class SessionHandleState
 			}
 			//check enlistment
 			if ( suspended != null ) {
-				if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": resuming suspended XA context for transaction " + ct.getTid() );
+				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": resuming suspended XA context for transaction " + ct.getTid() );
 				currentContext = suspended;
 				currentContext.transactionResumed();
 			}
 			else {
 				//no suspended branch was found -> try to use the current branch
 				try {
-					if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": checking XA context for transaction " + ct );
-					currentContext.checkEnlistBeforeUse ( ct , hmsg );
+					if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": checking XA context for transaction " + ct );
+					currentContext.checkEnlistBeforeUse ( ct );
 				}
 				catch ( UnexpectedTransactionContextException txBoundaryPassed ) {
 					//we are being used in a different context than expected -> suspend!
-					if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo (  this + ": suspending existing XA context and creating a new one for transaction " + ct );
+					if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug (  this + ": suspending existing XA context and creating a new one for transaction " + ct );
 					currentContext.transactionSuspended();
 					currentContext = new TransactionContext ( resource , xaResource );
 					allContexts.add ( currentContext );
 					//note: we keep all branches - if the new current branch is a Subtransaction 
 					//then it will not terminate early and needs to stay around
 					try {
-						currentContext.checkEnlistBeforeUse ( ct , hmsg );
+						currentContext.checkEnlistBeforeUse ( ct );
 					} catch ( UnexpectedTransactionContextException e )  {
 						String msg = "Unexpected error in session handle";
-						LOGGER.logWarning ( msg , e );
+						LOGGER.logError ( msg , e );
 						throw new InvalidSessionHandleStateException ( msg );
 					}
 				}
@@ -249,7 +230,7 @@ public class SessionHandleState
 		
 		//check termination status CHANGES - only fire event once for safety!
 		if ( notifyOfTerminatedEvent ) {
-			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug( this + ": all contexts terminated, firing TerminatedEvent for " + this);
+			if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace( this + ": all contexts terminated, firing TerminatedEvent for " + this);
 			fireTerminatedEvent();
 		}
 	}
@@ -298,7 +279,9 @@ public class SessionHandleState
 	public boolean isInactiveInTransaction( CompositeTransaction tx ) 
 	{
 		boolean ret = false;
-		if ( currentContext != null && tx != null ) ret = currentContext.isInactiveInTransaction ( tx );
+		if (closed) { // see case 159940: if not closed then be pessimistic and assume still active in terms of recycling
+			if ( currentContext != null && tx != null ) ret = currentContext.isInactiveInTransaction ( tx );
+		}
 		return ret;
 	}
 }

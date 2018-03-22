@@ -1,26 +1,9 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
- * This code ("Atomikos TransactionsEssentials"), by itself,
- * is being distributed under the
- * Apache License, Version 2.0 ("License"), a copy of which may be found at
- * http://www.atomikos.com/licenses/apache-license-2.0.txt .
- * You may not use this file except in compliance with the License.
+ * LICENSE CONDITIONS
  *
- * While the License grants certain patent license rights,
- * those patent license rights only extend to the use of
- * Atomikos TransactionsEssentials by itself.
- *
- * This code (Atomikos TransactionsEssentials) contains certain interfaces
- * in package (namespace) com.atomikos.icatch
- * (including com.atomikos.icatch.Participant) which, if implemented, may
- * infringe one or more patents held by Atomikos.
- * It should be appreciated that you may NOT implement such interfaces;
- * licensing to implement these interfaces must be obtained separately from Atomikos.
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
  */
 
 package com.atomikos.jms.extra;
@@ -49,21 +32,21 @@ import com.atomikos.logging.LoggerFactory;
   *
   */
 
-public abstract class AbstractJmsSenderTemplate
+public abstract class AbstractJmsSenderTemplate implements JmsSenderTemplate
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(AbstractJmsSenderTemplate.class);
 
-	protected AtomikosConnectionFactoryBean connectionFactoryBean;
+	private AtomikosConnectionFactoryBean connectionFactoryBean;
 	private String user;
-	protected String password;
-	protected Destination destination;
+	private String password;
+	private Destination destination;
 	private String destinationName;
 	private Destination replyToDestination;
 	private String replyToDestinationName;
 	private int deliveryMode;
 	private int priority;
 	private long timeToLive;
-	protected boolean inited;
+	private boolean inited;
 
 	protected AbstractJmsSenderTemplate()
 	{
@@ -136,7 +119,7 @@ public abstract class AbstractJmsSenderTemplate
 			msg.append ( "destination=" ).append( getDestinationName() ).append ( ", " );
 			msg.append ( "replyToDestination=" ).append ( getReplyToDestinationName() );
 			msg.append ( "]" );
-			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( msg.toString() );
+			if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( msg.toString() );
 			inited = true;
 		}
 	}
@@ -215,14 +198,14 @@ public abstract class AbstractJmsSenderTemplate
 				try {
 					ret = q.getQueueName();
 				} catch ( JMSException e ) {
-					if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": error retrieving queue name" , e );
+					if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": error retrieving queue name" , e );
 				}
 			} else if ( d instanceof Topic ) {
 				Topic t = ( Topic ) d;
 				try {
 					ret = t.getTopicName();
 				} catch ( JMSException e ) {
-					if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": error retrieving topic name" , e );
+					if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": error retrieving topic name" , e );
 				}
 			}
 		}
@@ -313,9 +296,9 @@ public abstract class AbstractJmsSenderTemplate
 	    try {
 	    	conn = getOrReuseConnection();
 	    	session = getOrRefreshSession ( conn );
-	    	if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Calling callback..." );
+	    	if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( "Calling callback..." );
 	    	callback.doInJmsSession ( session );
-	        if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Callback done!" );
+	        if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( "Callback done!" );
 	        afterUseWithoutErrors ( conn , session );
 
 	    } catch ( AtomikosTransactionRequiredJMSException notx ) {
@@ -335,12 +318,10 @@ public abstract class AbstractJmsSenderTemplate
 	    }
 	}
 
-	/**
-	 * Executes an application-level call-back within the managed session.
-	 *
-	 * @param callback
-	 * @throws JMSException
+	/* (non-Javadoc)
+	 * @see com.atomikos.jms.extra.JmsSenderTemplate#executeCallback(com.atomikos.jms.extra.JmsSenderTemplateCallback)
 	 */
+	@Override
 	public void executeCallback(JmsSenderTemplateCallback callback) throws JMSException {
 
 		init();
@@ -352,11 +333,9 @@ public abstract class AbstractJmsSenderTemplate
 		UserTransactionManager tm = new UserTransactionManager ();
 	    try {
 	        if ( tm.getStatus () != Status.STATUS_ACTIVE )
-	            throw new JMSException (
-	                    "This method requires an active transaction!" );
+	            throw new JMSException ( "This method requires an active transaction!" );
 	    } catch ( SystemException e ) {
-	    	LOGGER
-	                .logWarning ( this +": error in getting transaction status", e );
+	    	LOGGER.logError ( this +": error in getting transaction status", e );
 	        throw new RuntimeException ( e.getMessage () );
 	    }
 
@@ -416,12 +395,10 @@ public abstract class AbstractJmsSenderTemplate
 	    timeToLive = l;
 	}
 
-	/**
-	 * Sends a TextMessage.
-	 *
-	 * @param content The text as a string.
-	 * @throws JMSException
+	/* (non-Javadoc)
+	 * @see com.atomikos.jms.extra.JmsSenderTemplate#sendTextMessage(java.lang.String)
 	 */
+	@Override
 	public void sendTextMessage(String content) throws JMSException {
 		retrieveDestinationIfNecessary();
 		retrieveReplyToDestinationIfNecessary();
@@ -429,13 +406,11 @@ public abstract class AbstractJmsSenderTemplate
 		executeCallback ( cb );
 	}
 
-	/**
-	 * Sends a MapMessage.
-	 *
-	 * @param content The Map to get the content from.
-	 *
-	 * @throws JMSException
+	/* (non-Javadoc)
+	 * @see com.atomikos.jms.extra.JmsSenderTemplate#sendMapMessage(java.util.Map)
 	 */
+	@Override
+	@SuppressWarnings("rawtypes")
 	public void sendMapMessage(Map content) throws JMSException {
 		retrieveDestinationIfNecessary();
 		retrieveReplyToDestinationIfNecessary();
@@ -443,12 +418,10 @@ public abstract class AbstractJmsSenderTemplate
 		executeCallback ( cb );
 	}
 
-	/**
-	 * Sends an ObjectMessage.
-	 *
-	 * @param content The serializable object content.
-	 * @throws JMSException
+	/* (non-Javadoc)
+	 * @see com.atomikos.jms.extra.JmsSenderTemplate#sendObjectMessage(java.io.Serializable)
 	 */
+	@Override
 	public void sendObjectMessage(Serializable content) throws JMSException {
 		retrieveDestinationIfNecessary();
 		retrieveReplyToDestinationIfNecessary();
@@ -456,12 +429,10 @@ public abstract class AbstractJmsSenderTemplate
 		executeCallback ( cb );
 	}
 
-	/**
-	 * Sends a ByteMessage.
-	 *
-	 * @param content The content as a byte array.
-	 * @throws JMSException
+	/* (non-Javadoc)
+	 * @see com.atomikos.jms.extra.JmsSenderTemplate#sendBytesMessage(byte[])
 	 */
+	@Override
 	public void sendBytesMessage(byte[] content) throws JMSException {
 		retrieveDestinationIfNecessary();
 		retrieveReplyToDestinationIfNecessary();

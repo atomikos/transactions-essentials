@@ -1,26 +1,9 @@
 /**
- * Copyright (C) 2000-2012 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
- * This code ("Atomikos TransactionsEssentials"), by itself,
- * is being distributed under the
- * Apache License, Version 2.0 ("License"), a copy of which may be found at
- * http://www.atomikos.com/licenses/apache-license-2.0.txt .
- * You may not use this file except in compliance with the License.
+ * LICENSE CONDITIONS
  *
- * While the License grants certain patent license rights,
- * those patent license rights only extend to the use of
- * Atomikos TransactionsEssentials by itself.
- *
- * This code (Atomikos TransactionsEssentials) contains certain interfaces
- * in package (namespace) com.atomikos.icatch
- * (including com.atomikos.icatch.Participant) which, if implemented, may
- * infringe one or more patents held by Atomikos.
- * It should be appreciated that you may NOT implement such interfaces;
- * licensing to implement these interfaces must be obtained separately from Atomikos.
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
  */
 
 package com.atomikos.icatch.imp;
@@ -54,12 +37,12 @@ public class PropagationImp implements Propagation
     public static Propagation adaptPropagation ( Propagation propagation ,
             RecoveryCoordinator adaptor )
     {
-        Stack lineage = propagation.getLineage ();
+        Stack<CompositeTransaction> lineage = propagation.getLineage ();
 
         // replace most recent ancestor by adaptor
         CompositeTransaction remote = (CompositeTransaction) lineage.peek ();
         CompositeTransaction ct = new CompositeTransactionAdaptor ( lineage,
-                remote.getTid (), remote.isSerial (), adaptor , remote.getCompositeCoordinator().isRecoverableWhileActive() );
+                remote.getTid (), remote.isSerial (), adaptor);
 
         lineage.pop ();
 
@@ -70,7 +53,7 @@ public class PropagationImp implements Propagation
                 propagation.getTimeOut () );
     }
 
-    private Stack lineage_;
+    private Stack<CompositeTransaction> lineage_;
 
     private boolean serial_;
 
@@ -88,11 +71,11 @@ public class PropagationImp implements Propagation
      * @param timeout
      *            The timeout left for the tx.
      */
-
-    public PropagationImp ( Stack lineage , boolean serial , long timeout )
+    @SuppressWarnings("unchecked")
+    public PropagationImp ( Stack<CompositeTransaction> lineage , boolean serial , long timeout )
     {
         serial_ = serial;
-        lineage_ = (Stack) lineage.clone ();
+        lineage_ = (Stack<CompositeTransaction>) lineage.clone ();
         timeout_ = timeout;
     }
 
@@ -100,7 +83,7 @@ public class PropagationImp implements Propagation
      * @see Propagation
      */
 
-    public Stack getLineage ()
+    public Stack<CompositeTransaction> getLineage ()
     {
         return lineage_;
     }

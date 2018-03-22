@@ -1,33 +1,21 @@
 /**
- * Copyright (C) 2000-2012 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
- * This code ("Atomikos TransactionsEssentials"), by itself,
- * is being distributed under the
- * Apache License, Version 2.0 ("License"), a copy of which may be found at
- * http://www.atomikos.com/licenses/apache-license-2.0.txt .
- * You may not use this file except in compliance with the License.
+ * LICENSE CONDITIONS
  *
- * While the License grants certain patent license rights,
- * those patent license rights only extend to the use of
- * Atomikos TransactionsEssentials by itself.
- *
- * This code (Atomikos TransactionsEssentials) contains certain interfaces
- * in package (namespace) com.atomikos.icatch
- * (including com.atomikos.icatch.Participant) which, if implemented, may
- * infringe one or more patents held by Atomikos.
- * It should be appreciated that you may NOT implement such interfaces;
- * licensing to implement these interfaces must be obtained separately from Atomikos.
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
  */
 
 package com.atomikos.icatch.imp;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
 import com.atomikos.finitestates.FSM;
@@ -43,14 +31,11 @@ import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeurMixedException;
 import com.atomikos.icatch.HeurRollbackException;
-import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.Participant;
 import com.atomikos.icatch.RecoveryCoordinator;
 import com.atomikos.icatch.RollbackException;
-import com.atomikos.icatch.StringHeuristicMessage;
 import com.atomikos.icatch.Synchronization;
 import com.atomikos.icatch.SysException;
-import com.atomikos.icatch.TxState;
 import com.atomikos.icatch.event.Event;
 import com.atomikos.icatch.event.transaction.TransactionAbortedEvent;
 import com.atomikos.icatch.event.transaction.TransactionCommittedEvent;
@@ -59,9 +44,11 @@ import com.atomikos.icatch.event.transaction.TransactionHeuristicEvent;
 import com.atomikos.icatch.event.transaction.TransactionReadOnlyEvent;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
-import com.atomikos.persistence.ObjectImage;
-import com.atomikos.persistence.StateRecoverable;
+import com.atomikos.persistence.RecoverableCoordinator;
 import com.atomikos.publish.EventPublisher;
+import com.atomikos.recovery.CoordinatorLogEntry;
+import com.atomikos.recovery.ParticipantLogEntry;
+import com.atomikos.recovery.TxState;
 import com.atomikos.thread.TaskManager;
 import com.atomikos.timing.AlarmTimer;
 import com.atomikos.timing.AlarmTimerListener;
@@ -74,9 +61,11 @@ import com.atomikos.timing.PooledAlarmTimer;
  */
 
 public class CoordinatorImp implements CompositeCoordinator, Participant,
-        RecoveryCoordinator, StateRecoverable<TxState>, AlarmTimerListener, Stateful<TxState>,
-        FSMPreEnterListener<TxState>, FSMTransitionListener<TxState>, FSMEnterListener<TxState>
+        RecoveryCoordinator, RecoverableCoordinator, AlarmTimerListener, Stateful,
+        FSMPreEnterListener, FSMTransitionListener, FSMEnterListener
 {
+	private static final long serialVersionUID = -7769094320086083771L;
+
 	private static final Logger LOGGER = LoggerFactory.createLogger(CoordinatorImp.class);
 
     static long DEFAULT_MILLIS_BETWEEN_TIMER_WAKEUPS = 150;
@@ -93,16 +82,10 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     private long maxNumberOfTimeoutTicksBeforeRollback_ = MAX_NUMBER_OF_TIMEOUT_TICKS_BEFORE_ROLLBACK_OF_ACTIVES;
 
     private String root_ = null;
-    private FSM<TxState> fsm_ = null;
-    private boolean recoverableWhileActive_;
+    private FSM fsm_ = null;
     private boolean heuristicMeansCommit_ = true;
     private Vector<Participant> participants_ = new Vector<Participant>();
     private RecoveryCoordinator superiorCoordinator_ = null; 
-    private Vector<HeuristicMessage> tags_ = new Vector<HeuristicMessage>();
-    // the tags of all incoming txs
-    // does NOT have to be logged: the contents are
-    // retrieved BEFORE prepare (in Participant proxy),
-    // at return time of the call.
 
     private CoordinatorStateHandler stateHandler_;
     private boolean single_threaded_2pc_;
@@ -129,8 +112,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     }
 
 	private void initFsm(TxState initialState) {
-		fsm_ = new FSMImp<TxState> ( this, new TransactionTransitionTable (),
-                initialState );
+		fsm_ = new FSMImp ( this, initialState );
         fsm_.addFSMPreEnterListener ( this, TxState.TERMINATED );
         fsm_.addFSMPreEnterListener ( this, TxState.HEUR_COMMITTED );
         fsm_.addFSMPreEnterListener ( this, TxState.HEUR_ABORTED );
@@ -176,7 +158,6 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 	    initFsm(TxState.ACTIVE );
         heuristicMeansCommit_ = heuristic_commit;
 
-        recoverableWhileActive_ = false;
         superiorCoordinator_ = coord;
         if ( timeout > DEFAULT_MILLIS_BETWEEN_TIMER_WAKEUPS ) {
             // If timeout is smaller than the default timeout, then
@@ -194,28 +175,6 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     }
 
     /**
-     * Constructor.
-     *
-     * @param root
-     *            The root String for this one.
-     * @param console
-     *            The console to log to, or null if none.
-     * @param coord
-     *            The recovery coordinator for indoubt resolution.
-     * @param heuristic_commit
-     *            If true, heuristic decision is commit.
-     * @param checkorphans
-     *            If true, orphan checking is done at prepare.
-     */
-
-    public CoordinatorImp ( String root , RecoveryCoordinator coord ,
-             boolean heuristic_commit , boolean checkorphans )
-    {
-        this ( root , coord ,  heuristic_commit ,
-                DEFAULT_MILLIS_BETWEEN_TIMER_WAKEUPS , checkorphans , false );
-    }
-
-    /**
      * No argument constructor as required by Recoverable interface.
      */
 
@@ -226,7 +185,6 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
         heuristicMeansCommit_ = false;
 
         checkSiblings_ = true;
-        recoverableWhileActive_ = false;
         single_threaded_2pc_ = false;
         synchronizations = new ArrayList<Synchronization>();
 
@@ -246,14 +204,6 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     void setCommitted ()
     {
         stateHandler_.setCommitted ();
-    }
-
-    void addTag ( HeuristicMessage tag )
-    {
-    	synchronized ( fsm_ ) {
-    		if ( tag != null )
-    			tags_.addElement ( tag );
-    	}
     }
 
     /**
@@ -278,7 +228,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
         return superiorCoordinator_;
     }
 
-    Vector<Participant> getParticipants ()
+    public Vector<Participant> getParticipants ()
     {
         return participants_;
     }
@@ -309,28 +259,6 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
         return checkSiblings_;
     }
 
-    public Boolean isRecoverableWhileActive()
-    {
-        return new Boolean ( recoverableWhileActive_ );
-    }
-
-    /**
-     * Gets the heuristic messages for all participants that are in the given
-     * heuristic state
-     *
-     * @param heuristicState
-     *            The heuristic state, or the terminated state.
-     * @return HeuristicMessage[] The heuristic messages of all participants in
-     *         the given state, or an empty array if none.
-     */
-
-    public HeuristicMessage[] getHeuristicMessages (
-            Object heuristicState )
-    {
-    	//NB: don't synchronize, to avoid blocks in recursive 2PC
-        return stateHandler_.getHeuristicMessages ( heuristicState );
-    }
-
     /**
      * Tests if the transaction was committed or not.
      *
@@ -343,36 +271,6 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     }
 
     /**
-     * Get the heuristic info for the message round.
-     *
-     * @return HeuristicMessages[] The heuristic messages, or an empty array if
-     *         none.
-     */
-
-    public HeuristicMessage[] getHeuristicMessages ()
-    {
-    	// NB: don't synchronize, to avoid blocks in recursive 2PC
-        return stateHandler_.getHeuristicMessages ();
-    }
-
-    /**
-     * Get the heuristic tags for this coordinator. This info is returned to
-     * remote client TMs by a Participant proxy.
-     */
-
-    public HeuristicMessage[] getTags ()
-    {
-    	HeuristicMessage[] template = null;
-    	synchronized ( fsm_ ) {
-    		template = new HeuristicMessage[tags_.size ()];
-    		for ( int i = 0; i < template.length; i++ ) {
-    			template[i] = (HeuristicMessage) tags_.elementAt ( i );
-    		}
-    	}
-        return template;
-    }
-
-    /**
      * Start threads, propagator and timer logic. Needed on construction AND by
      * replay request events: timers have stopped by then!
      *
@@ -382,7 +280,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
      *            The console, null if none.
      */
 
-    protected void startThreads ( long timeout )
+    private void startThreads ( long timeout )
     {
     	synchronized ( fsm_ ) {
     		if ( timer_ == null ) { //not null for repeated recovery 
@@ -397,7 +295,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 
    
     private void submitTimer(AlarmTimer timer) {
-    		TaskManager.getInstance().executeTask (timer);
+    		TaskManager.SINGLETON.executeTask (timer);
 	}
 
 	protected long getTimeOut ()
@@ -409,7 +307,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
    
     void setState ( TxState state ) throws IllegalStateException
     {
-        if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Coordinator " + getCoordinatorId ()
+        if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( "Coordinator " + getCoordinatorId ()
                 + " entering state: " + state.toString () );
         fsm_.setState ( state );
 
@@ -431,8 +329,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
      * @see FSMEnterEventSource.
      */
 
-    public void addFSMEnterListener ( FSMEnterListener l ,
-    		TxState state )
+    void addFSMEnterListener ( FSMEnterListener l, TxState state )
     {
         fsm_.addFSMEnterListener ( l, state );
 
@@ -443,10 +340,9 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
      * @see FSMPreEnterEventSource.
      */
 
-    public void addFSMPreEnterListener ( FSMPreEnterListener l ,
-    		TxState state )
+    public void addFSMPreEnterListener ( FSMPreEnterListener l, TxState state )
     {
-        fsm_.addFSMPreEnterListener ( l, (TxState)state );
+        fsm_.addFSMPreEnterListener ( l, state );
 
     }
 
@@ -478,7 +374,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
         return root_;
     }
 
-    public RecoveryCoordinator addParticipant (
+    RecoveryCoordinator addParticipant (
             Participant participant ) throws SysException,
             java.lang.IllegalStateException, RollbackException
     {
@@ -554,18 +450,14 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
      * @see FSMPreEnterListener.
      */
 
-    public void preEnter ( FSMEnterEvent<TxState> event ) throws IllegalStateException
+    public void preEnter ( FSMEnterEvent event ) throws IllegalStateException
     {
     	TxState state = event.getState ();
 
-        if ( state.equals ( TxState.TERMINATED )
-                || state.equals ( TxState.HEUR_ABORTED )
-                || state.equals ( TxState.HEUR_COMMITTED )
-                || state.equals ( TxState.HEUR_HAZARD )
-                || state.equals ( TxState.HEUR_MIXED ) ) {
+        if ( state.equals ( TxState.TERMINATED ) || state.isHeuristic()) {
 
             if ( !state.equals ( TxState.TERMINATED ) )
-            	LOGGER.logWarning ( "Local heuristic termination of coordinator "
+            	LOGGER.logError ( "Local heuristic termination of coordinator "
                         + root_ + " with state " + getState () );
             else
                 dispose ();
@@ -583,53 +475,6 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     }
 
     /**
-     * @see Participant
-     */
-
-    public boolean recover () throws SysException
-    {
-        boolean allOK = true;
-        boolean ret;
-    	 if ( LOGGER.isDebugEnabled() ){
-    		 LOGGER.logDebug (  "starting recover() for coordinator: " + getCoordinatorId () );
-    	 }
-
-		synchronized ( fsm_ ) {
-			// cf case 61686 and case 62217: avoid concurrent enlists while recovering
-			Iterator parts = getParticipants().iterator();
-			while (parts.hasNext()) {
-				Participant next = (Participant) parts.next();
-				boolean recoveredParticipant = false;
-				try {
-					recoveredParticipant = next.recover();
-					 if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug (  "coordinator: " + getCoordinatorId()
-								+ "recovered participant: " + next );
-				} catch (Exception e) {
-					// happens if XA connection could not be gotten or other problems
-					LOGGER.logWarning("Error in recovering participant");
-					StackTraceElement[] infos = e.getStackTrace();
-					for (int i = 0; i < infos.length; i++) {
-						LOGGER.logWarning(infos[i].toString());
-					}
-					// do NOT throw any exception: tolerate this to let the coordinator do the rest
-				}
-				allOK = allOK && recoveredParticipant;
-			}
-			stateHandler_.recover(this);
-			ret = !(!allOK && getState().equals(TxState.IN_DOUBT));
-		} // synchronized
-
-        // ONLY NOW start threads and so on
-        startThreads ( DEFAULT_MILLIS_BETWEEN_TIMER_WAKEUPS );
-
-
-        if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug (   "recover() done for coordinator: " + getCoordinatorId () );
-      
-
-        return ret;
-    }
-
-    /**
      * @see Participant.
      */
 
@@ -642,7 +487,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
      * @see Participant.
      */
 
-    public void setCascadeList ( java.util.Dictionary allParticipants )
+    public void setCascadeList ( Map<String,Integer> allParticipants )
             throws SysException
     {
         stateHandler_.setCascadeList ( allParticipants );
@@ -678,11 +523,11 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
         	ret = stateHandler_.prepare ();
         	if ( ret == Participant.READ_ONLY ) {
 
-        		 if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug (  "prepare() of Coordinator  " + getCoordinatorId ()
+        		 if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace (  "prepare() of Coordinator  " + getCoordinatorId ()
          				+ " returning READONLY" );
         	} else {
 
-        		 if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "prepare() of Coordinator  " + getCoordinatorId ()
+        		 if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( "prepare() of Coordinator  " + getCoordinatorId ()
          				+ " returning YES vote");
         	}
         }
@@ -694,28 +539,24 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
      * @see Participant.
      */
 
-    public HeuristicMessage[] commit ( boolean onePhase )
+    public void commit ( boolean onePhase )
             throws HeurRollbackException, HeurMixedException,
             HeurHazardException, java.lang.IllegalStateException,
             RollbackException, SysException
     {
-    	HeuristicMessage[] ret = null;
     	synchronized ( fsm_ ) {
-    		ret = stateHandler_.commit(onePhase);
+    		 stateHandler_.commit(onePhase);
     	}
-    	return ret;
     }
 
     /**
      * @see Participant.
      */
 
-    public HeuristicMessage[] rollback () throws HeurCommitException,
+    public void rollback () throws HeurCommitException,
             HeurMixedException, SysException, HeurHazardException,
             java.lang.IllegalStateException
     {
-
-    	HeuristicMessage[] ret = null;
     	
         if ( getState ().equals ( TxState.ABORTING ) ) {
             // this method is ONLY called for EXTERNAL events -> by remote coordinators
@@ -725,42 +566,35 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
             // original call will still be in its propagation phase,
             // where the state is set to ABORTING.
             // Returning immediately will make sure no
-            // deadlock happens during 2PC, especially for recursion!.
-            // NOTE that if heuristic problems arise, the first call will always
-            // return the heuristic info and set the heuristic state.
-            return getHeuristicMessages ();
+            // deadlock happens during 2PC, especially for recursion!
+            return;
         }
 
         // here, we are certain that no RECURSIVE call is going on,
         // so we can safely lock this instance.
 
         synchronized ( fsm_ ) {
-        	ret = stateHandler_.rollback();
+        	stateHandler_.rollback();
         }
-        return ret;
     }
 
 
-    public HeuristicMessage[] rollbackHeuristically ()
+    void rollbackHeuristically ()
             throws HeurCommitException, HeurMixedException, SysException,
             HeurHazardException, java.lang.IllegalStateException
     {
-    	HeuristicMessage[] ret = null;
         synchronized ( fsm_ ) {
-        	ret = stateHandler_.rollbackHeuristically();
+        	stateHandler_.rollbackHeuristically();
         } 
-        return ret;
     }
 
-    public HeuristicMessage[] commitHeuristically () throws HeurMixedException,
+    void commitHeuristically () throws HeurMixedException,
             SysException, HeurRollbackException, HeurHazardException,
             java.lang.IllegalStateException, RollbackException
     {
-    	HeuristicMessage[] ret = null;
     	synchronized ( fsm_ ) {
-    		ret = stateHandler_.commitHeuristically();
+    		stateHandler_.commitHeuristically();
     	}
-    	return ret;
     }
 
 
@@ -771,8 +605,8 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     public Boolean replayCompletion ( Participant participant )
             throws IllegalStateException
     {
-    	if(LOGGER.isInfoEnabled()){
-    		LOGGER.logInfo("replayCompletion ( " + participant
+    	if(LOGGER.isDebugEnabled()){
+    		LOGGER.logDebug("replayCompletion ( " + participant
                     + " ) received by coordinator " + getCoordinatorId ()
                     + " for participant " + participant.toString ());
     	}
@@ -783,143 +617,28 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
         return ret;
     }
 
-    /**
-     * Help function for restoration.
-     */
 
-    protected void restore ( ObjectImage image )
-    {
-        CoordinatorLogImage img = (CoordinatorLogImage) image;
-        
-        root_ = img.root_;
-
-        participants_ = img.participants_;
-        superiorCoordinator_ = img.coordinator_;
-        heuristicMeansCommit_ = img.heuristicCommit_;
-        maxNumberOfTimeoutTicksBeforeHeuristicDecision_ = img.maxInquiries_;
-        maxNumberOfTimeoutTicksBeforeRollback_ = img.maxInquiries_;
-        recoverableWhileActive_ = img.activity_;
-        if ( recoverableWhileActive_ ) {
-            checkSiblings_ = img.checkSiblings_;
-            localSiblingCount_ = img.localSiblingCount_;
-        }
-
-	    initFsm(img.state_);
-
-        stateHandler_ = img.stateHandler_;
-        if ( img.state_.equals ( TxState.COMMITTING )
-                && stateHandler_.getState ().equals ( TxState.ACTIVE ) ) {
-            // this is a recovered coordinator that was committing
-            // ONE-PHASE; make this a heuristic hazard so it can
-            // be terminated manually if desired (LogAdministrator)
-            CoordinatorStateHandler stateHandler = new HeurHazardStateHandler (
-                    stateHandler_, img.participants_ );
-
-            stateHandler.recover ( this );
-            setStateHandler ( stateHandler );
-
-        }
-        single_threaded_2pc_ = img.single_threaded_2pc_;
-        
-    }
-
-    /**
-     * @see com.atomikos.persistence.Recoverable
-     */
-
-    public ObjectImage getObjectImage ()
-    {
-    	synchronized ( fsm_ ) {
-    		return getObjectImage ( getState () );
-    	}
-    }
-
-    /**
-     * @see com.atomikos.persistence.StateRecoverable
-     */
-
-    public ObjectImage getObjectImage ( TxState state )
-    {
-        // IF VOTING: RETURN LIST OF ALL PARTICIPANTS
-        // IF INDOUBT: RETURN LIST OF INDOUBTS AND NOT READONLY
-        // IF COMMIT/ABORT: RETURN LIST OF REMAINING ACK
-
-    	CoordinatorLogImage ret = null;
-    	synchronized ( fsm_ ) {
-
-    		if ( excludedFromLogging(state)) {
-    				//merely return null to avoid logging overhead
-    				ret = null;
-    		}
-    		else {
-    			TxState imgstate = state;
-
-    			if ( recoverableWhileActive_ ) {
-    				ret = new CoordinatorLogImage ( root_, imgstate, participants_,
-    						superiorCoordinator_, heuristicMeansCommit_, maxNumberOfTimeoutTicksBeforeHeuristicDecision_,
-    						stateHandler_, localSiblingCount_, checkSiblings_ , single_threaded_2pc_);
-    			} else {
-    				ret = new CoordinatorLogImage ( root_, imgstate, participants_,
-    						superiorCoordinator_, heuristicMeansCommit_, maxNumberOfTimeoutTicksBeforeHeuristicDecision_,
-    						stateHandler_ , single_threaded_2pc_ );
-    			}
-    		}
-    	}
-
-        return ret;
-    }
-    
-	private boolean excludedFromLogging(Object state) {
+	private boolean excludedFromLogging(TxState state) {
 		boolean ret = false;
-		if (state.equals ( TxState.ACTIVE ) && !recoverableWhileActive_) {
+		if (!state.isRecoverableState() ) {
 				ret = true;
 		} else if ( superiorCoordinator_ == null) {
 			if ( state.equals( TxState.IN_DOUBT )) {
 				ret = true; //see case 23693: don't log prepared state for roots 
-			} else if ( participants_.size() == 0 ) {
+			} else if ( participants_.isEmpty() ) {
 				ret = true; //see case 84851: avoid logging overhead for empty transactions
 			}					
+		}
+		
+		if (state.isHeuristic()) {
+			//new recovery: don't log heuristics - let recovery clean them up
+			ret = true;
 		}
 		
 		return ret;
 	}
 
-    /**
-     * @see com.atomikos.persistence.StateRecoverable
-     */
-
-    public TxState[] getRecoverableStates ()
-    {
-        // NOTE: make sure COMMITTING is recoverable as well,
-        // in order to be able to recover the commit decision!
-        // This also prevents anomalous notification of participants
-        // when immediate shutdown leaves active coordinator threads
-        // behind, because the forced log write on COMMIT will prevent
-        // pending coordinators' commit decisions if the log service is down!
-    	
-        // NOTE:: active state is recoverable, but if feature is disabled then
-        // a null image will be returned to avoid log overhead
-
-        return new TxState[] { TxState.ACTIVE , TxState.IN_DOUBT, TxState.COMMITTING,
-                TxState.HEUR_COMMITTED, TxState.HEUR_ABORTED,
-                TxState.HEUR_HAZARD, TxState.HEUR_MIXED };
-
-
-    }
-
-    /**
-     * @see com.atomikos.persistence.StateRecoverable
-     */
-
-    public TxState[] getFinalStates ()
-    {
-        return new TxState[] { TxState.TERMINATED };
-    }
-
-    /**
-     * @see com.atomikos.persistence.Recoverable
-     */
-
+    
     public Object getId ()
     {
         return root_;
@@ -938,12 +657,12 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     {
     	synchronized ( fsm_ ) {
     		if ( timer_ != null ) {
-    			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Coordinator " + getCoordinatorId() + " : stopping timer..." );
+    			if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( "Coordinator " + getCoordinatorId() + " : stopping timer..." );
     			timer_.stop ();
     		}
-    		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Coordinator " + getCoordinatorId() + " : disposing statehandler " + stateHandler_.getState() + "..." );
+    		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( "Coordinator " + getCoordinatorId() + " : disposing statehandler " + stateHandler_.getState() + "..." );
     		stateHandler_.dispose ();
-    		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Coordinator " + getCoordinatorId() + " : disposed." );
+    		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( "Coordinator " + getCoordinatorId() + " : disposed." );
     	}
     }
 
@@ -976,24 +695,18 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     	}
     }
 
-    public void setRecoverableWhileActive () throws UnsupportedOperationException
-    {
-        recoverableWhileActive_ = true;
-    }
-    
     void setRollbackOnly() { 	
-    	StringHeuristicMessage msg = new StringHeuristicMessage (
-    	"setRollbackOnly" );
-    	RollbackOnlyParticipant p = new RollbackOnlyParticipant ( msg );
+    	
+    	RollbackOnlyParticipant p = new RollbackOnlyParticipant ( );
 
     	try {
     		addParticipant ( p );
     	} catch ( IllegalStateException alreadyTerminated ) {
     		//happens in rollback after timeout - see case 27857; ignore but log
-    		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Error during setRollbackOnly" , alreadyTerminated );
+    		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( "Error during setRollbackOnly" , alreadyTerminated );
     	} catch ( RollbackException e ) {
     		//ignore: corresponds to desired outcome
-    		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Error during setRollbackOnly" , e );
+    		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( "Error during setRollbackOnly" , e );
         }
     }
 
@@ -1016,7 +729,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 
 
 	@Override
-	public void transitionPerformed(FSMTransitionEvent<TxState> e) {
+	public void transitionPerformed(FSMTransitionEvent e) {
 		TxState fromState = e.fromState();
 		TxState toState = e.toState();
 		if (TxState.TERMINATED.equals(toState)) {
@@ -1037,16 +750,64 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 	
 
 	@Override
-	public void entered(FSMEnterEvent<TxState> e) {
+	public void entered(FSMEnterEvent e) {
 		TxState state = e.getState();
-		if ( TxState.HEUR_ABORTED.equals(state) ||
-		     TxState.HEUR_COMMITTED.equals(state) ||
-			 TxState.HEUR_HAZARD.equals(state) ||
-			 TxState.HEUR_MIXED.equals(state)
-			) {
+		if (state.isHeuristic()) {
 			publishDomainEvent(new TransactionHeuristicEvent(root_));
 		}
 	}
 
+	@Override
+	public CoordinatorLogEntry getCoordinatorLogEntry(TxState state) {
+    	synchronized ( fsm_ ) {
+
+    		if ( excludedFromLogging(state)) {
+    				//merely return null to avoid logging overhead
+    				return null;
+    		}
+    		else {
+    			Set<ParticipantLogEntry> participantLogEntries = new HashSet<ParticipantLogEntry>();
+		
+    			Iterator<Participant> participants= getParticipants().iterator();
+    			while (participants.hasNext()) {
+    				Participant participant = participants.next();
+    				if(participant.isRecoverable()) {
+    					ParticipantLogEntry ple = 
+        						new ParticipantLogEntry(getCoordinatorId(), participant.getURI(), getExpires(), 
+        								participant.getResourceName(), state);
+    					participantLogEntries.add(ple);
+    				} 
+    			}
+    			if (participantLogEntries.isEmpty()) {
+    				return null;	
+    			}
+    			ParticipantLogEntry[] participantDetails = participantLogEntries.toArray(new ParticipantLogEntry[participantLogEntries.size()]);
+    			CoordinatorLogEntry coordinatorLogEntry = new CoordinatorLogEntry(this.getCoordinatorId(), this.isCommitted(), participantDetails);
+        		return coordinatorLogEntry;	
+    		}	
+    	}
+	}
+
+	public CoordinatorLogEntry getCoordinatorLogEntry() {
+		return getCoordinatorLogEntry(getState());
+	}
+
+	public Collection<ParticipantLogEntry> getParticipantLogEntries() {
+		return Arrays.asList(getCoordinatorLogEntry().participants);
+	}
+
+	private long getExpires() {
+		return System.currentTimeMillis() + getTimeOut();
+	}
+
+	@Override
+	public boolean isRecoverable() {
+		return superiorCoordinator_ != null;
+	}
+
+	@Override
+	public String getResourceName() {
+		return null;
+	}
 
 }

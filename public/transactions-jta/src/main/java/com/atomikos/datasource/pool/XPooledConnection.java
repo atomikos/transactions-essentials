@@ -1,31 +1,13 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
- * This code ("Atomikos TransactionsEssentials"), by itself,
- * is being distributed under the
- * Apache License, Version 2.0 ("License"), a copy of which may be found at
- * http://www.atomikos.com/licenses/apache-license-2.0.txt .
- * You may not use this file except in compliance with the License.
+ * LICENSE CONDITIONS
  *
- * While the License grants certain patent license rights,
- * those patent license rights only extend to the use of
- * Atomikos TransactionsEssentials by itself.
- *
- * This code (Atomikos TransactionsEssentials) contains certain interfaces
- * in package (namespace) com.atomikos.icatch
- * (including com.atomikos.icatch.Participant) which, if implemented, may
- * infringe one or more patents held by Atomikos.
- * It should be appreciated that you may NOT implement such interfaces;
- * licensing to implement these interfaces must be obtained separately from Atomikos.
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
  */
 
 package com.atomikos.datasource.pool;
 
-import com.atomikos.icatch.HeuristicMessage;
 
 /**
  * A pooling-capable object wrapping a physical connection to an underlying resource.
@@ -76,12 +58,13 @@ public interface XPooledConnection
 	/**
 	 * Create a disposable connection object that acts a controller for
 	 * the pooled connection. What exactly a connection object is depends
-	 * on the implementation.
-	 * @param hmsg The heuristic message to show in the logs.
+	 * on the implementation. Calling this method will also clear any
+	 * flags set by markAsBeingAcquiredIfAvailable.
+	 * 
 	 * @return
 	 * @throws CreateConnectionException 
 	 */
-	Reapable createConnectionProxy ( HeuristicMessage hmsg ) throws CreateConnectionException;
+	Reapable createConnectionProxy() throws CreateConnectionException;
 	
 	/**
 	 * Is the pooled connection broken ? 
@@ -98,6 +81,15 @@ public interface XPooledConnection
 	void registerXPooledConnectionEventListener(XPooledConnectionEventListener listener);
 	
 	void unregisterXPooledConnectionEventListener(XPooledConnectionEventListener listener);
+
+	/**
+	 * Attempt to claim this connection for use.
+	 * 
+	 * @return True if the connection is available, and could be claimed for the caller of this method. 
+	 * <b>In that case, it is up to the caller to call createConnectionProxy at a later time</b> (which will in turn trigger 
+	 * a round-trip to the resource if there is any testQuery set) <b>or the pool will be leaking</b>.
+	 */
+	boolean markAsBeingAcquiredIfAvailable();
 
 
 }

@@ -1,3 +1,11 @@
+/**
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
+ *
+ * LICENSE CONDITIONS
+ *
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
+ */
+
 package com.atomikos.logging;
 
 import java.util.logging.Handler;
@@ -9,7 +17,8 @@ import org.mockito.Mockito;
 
 public class JULLoggerFactoryTestJUnit extends AbstractLoggerFactoryTest {
 
-	//can't mock the "logger" Itself but Logger call a "publish" method on a mocked handler
+	// can't mock the "logger" Itself but Logger call a "publish" method on a
+	// mocked handler
 	private Handler handler = Mockito.mock(Handler.class);
 
 	@Override
@@ -24,24 +33,20 @@ public class JULLoggerFactoryTestJUnit extends AbstractLoggerFactoryTest {
 		assertTrue(logger instanceof JULLogger);
 	}
 
-
 	@Override
 	protected void assertLoggedAsDebug() {
 		ArgumentCaptor<LogRecord> arg = ArgumentCaptor.forClass(LogRecord.class);
 		Mockito.verify(handler).publish(arg.capture());
 		LogRecord logRecord = arg.getValue();
-		assertLogRecord(logRecord,Level.FINE,false);
+		assertLogRecord(logRecord, Level.FINE, false);
 	}
-
-
 
 	@Override
 	protected void assertLoggedAsDebugWithException() {
 		ArgumentCaptor<LogRecord> arg = ArgumentCaptor.forClass(LogRecord.class);
 		Mockito.verify(handler).publish(arg.capture());
 		LogRecord logRecord = arg.getValue();
-
-		assertLogRecord(logRecord,Level.FINE,true);
+		assertLogRecord(logRecord, Level.FINE, true);
 	}
 
 	@Override
@@ -49,7 +54,7 @@ public class JULLoggerFactoryTestJUnit extends AbstractLoggerFactoryTest {
 		ArgumentCaptor<LogRecord> arg = ArgumentCaptor.forClass(LogRecord.class);
 		Mockito.verify(handler).publish(arg.capture());
 		LogRecord logRecord = arg.getValue();
-		assertLogRecord(logRecord,Level.INFO,false);
+		assertLogRecord(logRecord, Level.INFO, false);
 	}
 
 	@Override
@@ -57,7 +62,7 @@ public class JULLoggerFactoryTestJUnit extends AbstractLoggerFactoryTest {
 		ArgumentCaptor<LogRecord> arg = ArgumentCaptor.forClass(LogRecord.class);
 		Mockito.verify(handler).publish(arg.capture());
 		LogRecord logRecord = arg.getValue();
-		assertLogRecord(logRecord,Level.INFO,true);
+		assertLogRecord(logRecord, Level.INFO, true);
 	}
 
 	@Override
@@ -65,7 +70,7 @@ public class JULLoggerFactoryTestJUnit extends AbstractLoggerFactoryTest {
 		ArgumentCaptor<LogRecord> arg = ArgumentCaptor.forClass(LogRecord.class);
 		Mockito.verify(handler).publish(arg.capture());
 		LogRecord logRecord = arg.getValue();
-		assertLogRecord(logRecord,Level.WARNING,false);
+		assertLogRecord(logRecord, Level.WARNING, false);
 	}
 
 	@Override
@@ -73,14 +78,15 @@ public class JULLoggerFactoryTestJUnit extends AbstractLoggerFactoryTest {
 		ArgumentCaptor<LogRecord> arg = ArgumentCaptor.forClass(LogRecord.class);
 		Mockito.verify(handler).publish(arg.capture());
 		LogRecord logRecord = arg.getValue();
-		assertLogRecord(logRecord,Level.WARNING,true);
+		assertLogRecord(logRecord, Level.WARNING, true);
 
 	}
 
-	private void assertLogRecord(LogRecord logRecord, Level expectedLevel,boolean withThrowable) {
+	private void assertLogRecord(LogRecord logRecord, Level expectedLevel,
+			boolean withThrowable) {
 		assertEquals(MESSAGE, logRecord.getMessage());
 		assertEquals(expectedLevel, logRecord.getLevel());
-		if(withThrowable){
+		if (withThrowable) {
 			assertNotNull(logRecord.getThrown());
 		} else {
 			assertNull(logRecord.getThrown());
@@ -106,30 +112,52 @@ public class JULLoggerFactoryTestJUnit extends AbstractLoggerFactoryTest {
 		return java.util.logging.Logger.getLogger(getClass().getName());
 	}
 
-  @Override
-  protected void assertLoggedAsError() {
-    ArgumentCaptor<LogRecord> arg = ArgumentCaptor.forClass(LogRecord.class);
-    Mockito.verify(handler).publish(arg.capture());
-    LogRecord logRecord = arg.getValue();
-    assertLogRecord(logRecord,Level.SEVERE,false);
-  }
+	@Override
+	protected void assertLoggedAsError() {
+		ArgumentCaptor<LogRecord> arg = ArgumentCaptor.forClass(LogRecord.class);
+		Mockito.verify(handler).publish(arg.capture());
+		LogRecord logRecord = arg.getValue();
+		assertLogRecord(logRecord, Level.SEVERE, false);
+	}
 
-  @Override
-  protected void assertLoggedAsErrorWithException() {
-    ArgumentCaptor<LogRecord> arg = ArgumentCaptor.forClass(LogRecord.class);
-    Mockito.verify(handler).publish(arg.capture());
-    LogRecord logRecord = arg.getValue();
-    assertLogRecord(logRecord,Level.SEVERE,true);
-  }
+	@Override
+	protected void assertLoggedAsErrorWithException() {
+		ArgumentCaptor<LogRecord> arg = ArgumentCaptor.forClass(LogRecord.class);
+		Mockito.verify(handler).publish(arg.capture());
+		LogRecord logRecord = arg.getValue();
+		assertLogRecord(logRecord, Level.SEVERE, true);
+	}
 
-  @Override
-  protected void configureLoggingFrameworkWithError() {
-    getUnderlyingLogger().setLevel(Level.SEVERE);    
-  }
+	@Override
+	protected void configureLoggingFrameworkWithError() {
+		getUnderlyingLogger().setLevel(Level.SEVERE);
+	}
 
-  @Override
-  protected void configureLoggingFrameworkWithNone() {
-    getUnderlyingLogger().setLevel(Level.OFF);
-  }
+	@Override
+	protected void configureLoggingFrameworkWithNone() {
+		getUnderlyingLogger().setLevel(Level.OFF);
+	}
+
+	@Override
+	protected void configureLoggingFrameworkWithTrace() {
+		getUnderlyingLogger().setLevel(Level.FINEST);
+	}
+
+	@Override
+	protected void assertLoggedAsTrace() {
+		ArgumentCaptor<LogRecord> arg = ArgumentCaptor.forClass(LogRecord.class);
+		Mockito.verify(handler).publish(arg.capture());
+		LogRecord logRecord = arg.getValue();
+		assertLogRecord(logRecord, Level.FINEST, false);
+	}
+
+	@Override
+	protected void assertLoggedAsTraceWithException() {
+		ArgumentCaptor<LogRecord> arg = ArgumentCaptor.forClass(LogRecord.class);
+		Mockito.verify(handler).publish(arg.capture());
+		LogRecord logRecord = arg.getValue();
+		assertLogRecord(logRecord, Level.FINEST, true);
+
+	}
 
 }

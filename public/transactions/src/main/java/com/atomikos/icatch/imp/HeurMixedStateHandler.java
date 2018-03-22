@@ -1,72 +1,41 @@
 /**
- * Copyright (C) 2000-2012 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
- * This code ("Atomikos TransactionsEssentials"), by itself,
- * is being distributed under the
- * Apache License, Version 2.0 ("License"), a copy of which may be found at
- * http://www.atomikos.com/licenses/apache-license-2.0.txt .
- * You may not use this file except in compliance with the License.
+ * LICENSE CONDITIONS
  *
- * While the License grants certain patent license rights,
- * those patent license rights only extend to the use of
- * Atomikos TransactionsEssentials by itself.
- *
- * This code (Atomikos TransactionsEssentials) contains certain interfaces
- * in package (namespace) com.atomikos.icatch
- * (including com.atomikos.icatch.Participant) which, if implemented, may
- * infringe one or more patents held by Atomikos.
- * It should be appreciated that you may NOT implement such interfaces;
- * licensing to implement these interfaces must be obtained separately from Atomikos.
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
  */
 
 package com.atomikos.icatch.imp;
 
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Stack;
 
 import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeurMixedException;
 import com.atomikos.icatch.HeurRollbackException;
-import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.Participant;
 import com.atomikos.icatch.RollbackException;
 import com.atomikos.icatch.SysException;
-import com.atomikos.icatch.TxState;
+import com.atomikos.recovery.TxState;
 import com.atomikos.thread.InterruptedExceptionHelper;
-import com.atomikos.util.SerializationUtils;
 
 /** 
  * A state handler for the heuristic mixed coordinator state.
  */
 
-public class HeurMixedStateHandler extends CoordinatorStateHandler
+class HeurMixedStateHandler extends CoordinatorStateHandler
 {
 
-    private Hashtable<Participant,TxState> hazards_;
+    private Set<Participant> hazards_;
 
-    public HeurMixedStateHandler() {
-	
-	}
-    HeurMixedStateHandler ( CoordinatorImp coordinator )
-    {
-        super ( coordinator );
-        hazards_ = new Hashtable<Participant,TxState> ();
-
-    }
-
-    HeurMixedStateHandler ( CoordinatorStateHandler previous , Hashtable<Participant,TxState> hazards )
+    HeurMixedStateHandler ( CoordinatorStateHandler previous , Set<Participant> hazards )
     {
         super ( previous );
-        hazards_ = (Hashtable<Participant,TxState>) hazards.clone ();
+        hazards_ = new HashSet<Participant>(hazards);
     }
 
     protected TxState getState ()
@@ -82,9 +51,9 @@ public class HeurMixedStateHandler extends CoordinatorStateHandler
     	Boolean commitDecided = getCommitted();
         
         //replay does remove -> re-add hazards each time
-        addAllForReplay ( hazards_.keySet() );
+        addAllForReplay ( hazards_ );
 
-        Stack replayStack = getReplayStack ();
+        Stack<Participant> replayStack = getReplayStack ();
         boolean replay = false;
         if ( !replayStack.empty ()  && commitDecided != null ) {
         	boolean committed = commitDecided.booleanValue ();
@@ -93,7 +62,7 @@ public class HeurMixedStateHandler extends CoordinatorStateHandler
             TerminationResult result = new TerminationResult ( count );
 
             while ( !replayStack.empty () ) {
-                Participant part = (Participant) replayStack.pop ();
+                Participant part = replayStack.pop ();
                 if ( committed ) {
                     CommitMessage cm = new CommitMessage ( part, result, false );
                     getPropagator ().submitPropagationMessage ( cm );
@@ -109,11 +78,11 @@ public class HeurMixedStateHandler extends CoordinatorStateHandler
                 // remove OK replies from hazards_ list and change state if
                 // hazard_ is empty.
 
-                Stack replies = result.getReplies ();
+                Stack<Reply> replies = result.getReplies ();
 
-                Enumeration enumm = replies.elements ();
+                Enumeration<Reply> enumm = replies.elements ();
                 while ( enumm.hasMoreElements () ) {
-                    Reply reply = (Reply) enumm.nextElement ();
+                    Reply reply = enumm.nextElement ();
 
                     if ( !reply.hasFailed () ) {
                         hazards_.remove ( reply.getParticipant () );
@@ -157,39 +126,23 @@ public class HeurMixedStateHandler extends CoordinatorStateHandler
         // heuristic hazard exception.
         // thus, no matter what the heuristic really is, report it as hazard.
 
-        throw new HeurHazardException ( getHeuristicMessages () );
+        throw new HeurHazardException();
     }
 
-    protected HeuristicMessage[] commit ( boolean onePhase )
+    protected void commit ( boolean onePhase )
             throws HeurRollbackException, HeurMixedException,
             HeurHazardException, java.lang.IllegalStateException,
             RollbackException, SysException
     {
 
-        throw new HeurMixedException ( getHeuristicMessages () );
+        throw new HeurMixedException();
     }
 
-    protected HeuristicMessage[] rollback () throws HeurCommitException,
+    protected void rollback () throws HeurCommitException,
             HeurMixedException, SysException, HeurHazardException,
             java.lang.IllegalStateException
     {
 
-        throw new HeurMixedException ( getHeuristicMessages () );
-    }
-
-    @Override
-    public void writeData(DataOutput out) throws IOException {
-    	super.writeData(out);
-    	byte[] content = SerializationUtils.serialize(hazards_);
-    	out.writeInt(content.length);
-    	out.write(content);
-    }
-    
-    @Override
-    public void readData(DataInput in) throws IOException {
-    	super.readData(in);
-    	byte[] content = new byte [in.readInt()];
-    	in.readFully(content);
-    	hazards_= (Hashtable<Participant,TxState>) SerializationUtils.deserialize(content);
+        throw new HeurMixedException();
     }
 }

@@ -1,44 +1,21 @@
 /**
- * Copyright (C) 2000-2012 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
- * This code ("Atomikos TransactionsEssentials"), by itself,
- * is being distributed under the
- * Apache License, Version 2.0 ("License"), a copy of which may be found at
- * http://www.atomikos.com/licenses/apache-license-2.0.txt .
- * You may not use this file except in compliance with the License.
+ * LICENSE CONDITIONS
  *
- * While the License grants certain patent license rights,
- * those patent license rights only extend to the use of
- * Atomikos TransactionsEssentials by itself.
- *
- * This code (Atomikos TransactionsEssentials) contains certain interfaces
- * in package (namespace) com.atomikos.icatch
- * (including com.atomikos.icatch.Participant) which, if implemented, may
- * infringe one or more patents held by Atomikos.
- * It should be appreciated that you may NOT implement such interfaces;
- * licensing to implement these interfaces must be obtained separately from Atomikos.
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
  */
 
 package com.atomikos.icatch.imp;
 
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
-import java.util.Dictionary;
+import java.util.Map;
 
-import com.atomikos.icatch.DataSerializable;
 import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeurMixedException;
 import com.atomikos.icatch.HeurRollbackException;
-import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.Participant;
 import com.atomikos.icatch.RollbackException;
-import com.atomikos.icatch.StringHeuristicMessage;
 import com.atomikos.icatch.SysException;
 import com.atomikos.icatch.TransactionService;
 import com.atomikos.icatch.config.Configuration;
@@ -48,7 +25,7 @@ import com.atomikos.icatch.config.Configuration;
  * the parent transaction coordinator.
  */
 
-public class SubTransactionCoordinatorParticipant implements Participant,DataSerializable
+public class SubTransactionCoordinatorParticipant implements Participant
 {
 
     private static final long serialVersionUID = -321213151844934630L;
@@ -60,8 +37,6 @@ public class SubTransactionCoordinatorParticipant implements Participant,DataSer
     private String subordinateId;
     // the id to recover the participant of the subordinate
 
-    private HeuristicMessage[] msgs;
-    // buffer messages in case recovery fails
 
     private boolean prepareCalled;
     // if true: heuristics on failure of rollback
@@ -71,7 +46,6 @@ public class SubTransactionCoordinatorParticipant implements Participant,DataSer
     {
         this.subordinateCoordinator = subordinateCoordinator;
         this.subordinateId = subordinateCoordinator.getCoordinatorId ();
-        this.msgs = subordinateCoordinator.getHeuristicMessages ();
         this.prepareCalled = false;
     }
 
@@ -93,10 +67,8 @@ public class SubTransactionCoordinatorParticipant implements Participant,DataSer
         return subordinateId;
     }
 
-    /**
-     * @see com.atomikos.icatch.Participant#setCascadeList(java.util.Dictionary)
-     */
-    public void setCascadeList ( Dictionary allParticipants )
+  
+    public void setCascadeList ( Map<String,Integer> allParticipants )
             throws SysException
     {
         // delegate to subordinate, in order to propagate to remote
@@ -130,39 +102,35 @@ public class SubTransactionCoordinatorParticipant implements Participant,DataSer
     /**
      * @see com.atomikos.icatch.Participant#commit(boolean)
      */
-    public HeuristicMessage[] commit ( boolean onePhase )
+    public void commit ( boolean onePhase )
             throws HeurRollbackException, HeurHazardException,
             HeurMixedException, RollbackException, SysException
     {
-        HeuristicMessage[] ret = getHeuristicMessages ();
         if ( subordinateCoordinator != null )
             subordinateCoordinator.commit ( onePhase );
         else if ( prepareCalled ) {
-            throw new HeurHazardException ( ret );
+            throw new HeurHazardException ();
         } else {
             // prepare NOT called -> subordinate timed out
             // and must have rolled back
             throw new RollbackException ();
         }
-        return ret;
     }
 
     /**
      * @see com.atomikos.icatch.Participant#rollback()
      */
-    public HeuristicMessage[] rollback () throws HeurCommitException,
+    public void rollback () throws HeurCommitException,
             HeurMixedException, HeurHazardException, SysException
     {
-        HeuristicMessage[] ret = getHeuristicMessages ();
         if ( subordinateCoordinator != null ) {
             subordinateCoordinator.rollback ();
         } else if ( prepareCalled ) {
             // heuristic: coordinator not recovered?!
-            throw new HeurHazardException ( ret );
+            throw new HeurHazardException();
         }
         // if prepare not called then the subordinate will
         // not be committed, so rollback is correct then
-        return ret;
     }
 
     /**
@@ -173,36 +141,14 @@ public class SubTransactionCoordinatorParticipant implements Participant,DataSer
         if ( subordinateCoordinator != null ) subordinateCoordinator.forget ();
     }
 
-    /**
-     * @see com.atomikos.icatch.Participant#getHeuristicMessages()
-     */
-    public HeuristicMessage[] getHeuristicMessages ()
-    {
-        if ( subordinateCoordinator != null ) { //null if recovery failed
-            msgs = subordinateCoordinator.getHeuristicMessages ();
-        }
-
-        return msgs;
-    }
-
-	public void writeData(DataOutput out) throws IOException {
-		out.writeUTF(subordinateId);
-		out.writeInt(msgs.length);
-		for (int i = 0; i < msgs.length; i++) {
-			out.writeUTF(msgs[i].toString());
-		}
-		out.writeBoolean(prepareCalled);
+	@Override
+	public boolean isRecoverable() {
+		return true;
 	}
 
-	public void readData(DataInput in) throws IOException {
-		subordinateId=in.readUTF();
-		int size=in.readInt();
-		msgs=new HeuristicMessage[size];
-
-		for (int i = 0; i < msgs.length; i++) {
-			msgs[i]=new StringHeuristicMessage(in.readUTF());
-		}
-		prepareCalled=in.readBoolean();
+	@Override
+	public String getResourceName() {
+		return null;
 	}
 
 }

@@ -1,26 +1,9 @@
 /**
- * Copyright (C) 2000-2013 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
- * This code ("Atomikos TransactionsEssentials"), by itself,
- * is being distributed under the
- * Apache License, Version 2.0 ("License"), a copy of which may be found at
- * http://www.atomikos.com/licenses/apache-license-2.0.txt .
- * You may not use this file except in compliance with the License.
+ * LICENSE CONDITIONS
  *
- * While the License grants certain patent license rights,
- * those patent license rights only extend to the use of
- * Atomikos TransactionsEssentials by itself.
- *
- * This code (Atomikos TransactionsEssentials) contains certain interfaces
- * in package (namespace) com.atomikos.icatch
- * (including com.atomikos.icatch.Participant) which, if implemented, may
- * infringe one or more patents held by Atomikos.
- * It should be appreciated that you may NOT implement such interfaces;
- * licensing to implement these interfaces must be obtained separately from Atomikos.
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
  */
 
 
@@ -28,16 +11,15 @@
 package com.atomikos.icatch.config;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
 import com.atomikos.datasource.RecoverableResource;
 import com.atomikos.icatch.CompositeTransactionManager;
 import com.atomikos.icatch.SysException;
+import com.atomikos.icatch.TransactionServicePlugin;
 import com.atomikos.icatch.admin.LogAdministrator;
 import com.atomikos.icatch.provider.ConfigProperties;
-import com.atomikos.icatch.provider.TransactionServicePlugin;
 
 /**
  * This is the main class for creating a UserTransactionService instance.
@@ -59,50 +41,11 @@ public final class UserTransactionServiceImp
 
 	private static final long serialVersionUID = -3374591336514451887L;
 
-	/**
-     * Constant denoting the system property name that suggest NOT to use
-     * any configuration file for the transaction service's properties.
-     * 
-     * @deprecated No longer used since 4.0
-     */
-    public static final String NO_FILE_PROPERTY_NAME = "com.atomikos.icatch.no_file";
-
-    /**
-     * The name of the system property whose value corresponds to the path
-     * towards the properties file for initialization of the transaction service.
-     * If this system property is set then the corresponding file path will be
-     * used to load the initialization parameters for the transaction service.
-     * Otherwise, the transaction service will attempt to load the default
-     * file from the classpath.
-     */
-
-    public static final String FILE_PATH_PROPERTY_NAME = ConfigProperties.FILE_PATH_PROPERTY_NAME;
-    
-    /**
-     * The name of the system property to disable printing 'Using init file...' messages.
-     * 
-     * @deprecated No longer used since 4.0
-     */
-    
-    public static final String HIDE_INIT_FILE_PATH_PROPERTY_NAME = "com.atomikos.icatch.hide_init_file_path";
-
-   /**
-    * @deprecated
-    */
-    public static final String DEFAULT_PROPERTIES_FILE_NAME = "transactions.properties";
-    
-
     private Properties properties_;
     
     private List<TransactionServicePlugin> tsListeners_;
     private List<LogAdministrator> logAdministrators_;
     private List<RecoverableResource> resources_;
-
-    
-    
-
-   
-
 
     /**
      * Default constructor.
@@ -118,7 +61,7 @@ public final class UserTransactionServiceImp
        
     }
 
-	/**
+    /**
 	 * Constructs a new instance and initializes it with the given properties.
 	 * If this constructor is called, then file-based initialization is overridden.
 	 * In particular, the given properties will take precedence over the file-based
@@ -132,8 +75,7 @@ public final class UserTransactionServiceImp
     	this();
     	properties_ = properties;
     }
-
-
+    
     /**
      *
      * @see UserTransactionService
@@ -149,21 +91,15 @@ public final class UserTransactionServiceImp
 
 
 	private void initialize() {
-		Iterator it = resources_.iterator();
-        while ( it.hasNext() ) {
-        	RecoverableResource nxt = ( RecoverableResource ) it.next();
-        	Configuration.addResource ( nxt );
-        }
-        it = logAdministrators_.iterator();
-        while  ( it.hasNext() ) {
-        	LogAdministrator nxt = ( LogAdministrator ) it.next();
-        	Configuration.addLogAdministrator ( nxt );
-        }
-        it = tsListeners_.iterator();
-        while ( it.hasNext() ) {
-        	TransactionServicePlugin nxt = ( TransactionServicePlugin ) it.next();
+		for (RecoverableResource resource : resources_) {
+			Configuration.addResource ( resource );
+		}
+		for (LogAdministrator logAdministrator : logAdministrators_) {
+			Configuration.addLogAdministrator ( logAdministrator );
+		}
+        for (TransactionServicePlugin nxt : tsListeners_) {
         	Configuration.registerTransactionServicePlugin ( nxt );
-        }
+		}
         ConfigProperties configProps = Configuration.getConfigProperties();
         configProps.applyUserSpecificProperties(properties_);
         Configuration.init();
@@ -230,7 +166,7 @@ public final class UserTransactionServiceImp
 		shutdown ( true );
 		
 	}
-
+	
 	/**
 	 * Convenience shutdown method for DI containers like Spring. 
 	 * 
@@ -284,10 +220,17 @@ public final class UserTransactionServiceImp
 	}
 
 
-
+	/**
+	 * Initializes with given properties.
+	 */
 	public void init ( Properties properties ) throws SysException {
 		properties_ = properties;
 		initialize();
+	}
+
+	@Override
+	public void shutdown(long maxWaitTime) throws IllegalStateException {
+		Configuration.shutdown(maxWaitTime);
 	}
 
 

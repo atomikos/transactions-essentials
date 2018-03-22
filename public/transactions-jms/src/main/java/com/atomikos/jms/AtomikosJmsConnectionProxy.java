@@ -1,33 +1,15 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
- * This code ("Atomikos TransactionsEssentials"), by itself,
- * is being distributed under the
- * Apache License, Version 2.0 ("License"), a copy of which may be found at
- * http://www.atomikos.com/licenses/apache-license-2.0.txt .
- * You may not use this file except in compliance with the License.
+ * LICENSE CONDITIONS
  *
- * While the License grants certain patent license rights,
- * those patent license rights only extend to the use of
- * Atomikos TransactionsEssentials by itself.
- *
- * This code (Atomikos TransactionsEssentials) contains certain interfaces
- * in package (namespace) com.atomikos.icatch
- * (including com.atomikos.icatch.Participant) which, if implemented, may
- * infringe one or more patents held by Atomikos.
- * It should be appreciated that you may NOT implement such interfaces;
- * licensing to implement these interfaces must be obtained separately from Atomikos.
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
  */
 
 package com.atomikos.jms;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -57,13 +39,14 @@ implements SessionHandleStateChangeListener
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(AtomikosJmsConnectionProxy.class);
 	
+	private static Class<?>[] MINIMUM_SET_OF_INTERFACES = {Reapable.class, DynamicProxy.class,javax.jms.Connection.class };
 	private static final String CREATE_SESSION_METHOD = "createSession";
 	
 	private static final String CLOSE_METHOD = "close";
 	
 	private static final String REAP_METHOD = "reap";
 	
-	protected static void forceConnectionIntoXaMode ( Connection c )
+	private static void forceConnectionIntoXaMode ( Connection c )
 	{
 	   //ORACLE AQ WORKAROUND: 
  	   //force connection into global tx mode
@@ -75,7 +58,7 @@ implements SessionHandleStateChangeListener
  	   }
  	   catch ( Exception e ) {
  		   //ignore: workaround code
- 		   if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "JMS: driver complains while enforcing XA mode - ignore if no later errors:" , e );
+ 		   if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( "JMS: driver complains while enforcing XA mode - ignore if no later errors:" , e );
  	   } 
  	   finally {
  		   if ( s != null ) {
@@ -83,7 +66,7 @@ implements SessionHandleStateChangeListener
  				   s.close();
  			   } catch ( JMSException e ) {
  				   //ignore: workaround code
- 				   if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "JMS: driver complains while enforcing XA mode - ignore if no later errors:" , e );
+ 				   if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( "JMS: driver complains while enforcing XA mode - ignore if no later errors:" , e );
  			   }
  		   }
  	   }
@@ -146,14 +129,14 @@ implements SessionHandleStateChangeListener
 			}
 			
 			if ( CLOSE_METHOD.equals ( methodName ) ) {
-				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug( this + ": intercepting call to close" );
+				if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace( this + ": intercepting call to close" );
 				close();
 				return null;
 			} else if ( reaped ) {
 				String msg = "Connection was reaped - calling method " + methodName + " no longer allowed. Increase the reapTimeout to avoid this.";
 				LOGGER.logWarning ( this + ": " + msg );
 				throw new javax.jms.IllegalStateException ( msg );
-			} else if ( closed ) {
+			} else if ( closed && !methodAllowedAfterClose(method) ) {
 				String msg = "Connection is closed already - calling method " + methodName + " no longer allowed.";
 				LOGGER.logWarning ( this + ": " + msg );
 				throw new javax.jms.IllegalStateException ( msg );
@@ -164,7 +147,7 @@ implements SessionHandleStateChangeListener
 				if ( createXaSession(transactedFlag.booleanValue()) ) {
 					session = recycleSession();
 					if (session == null) {
-						if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": creating XA-capable session..." );
+						if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": creating XA-capable session..." );
 						forceConnectionIntoXaMode ( delegate );
 						XASession wrapped = null;
 						try {
@@ -181,7 +164,7 @@ implements SessionHandleStateChangeListener
 					CompositeTransactionManager ctm = Configuration.getCompositeTransactionManager();
 					if ( ctm != null ) ct = ctm.getCompositeTransaction();
 					if ( ct != null && ct.getProperty ( TransactionManagerImp.JTA_PROPERTY_NAME ) != null ) {
-						if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": creating NON-XA session - the resulting JMS work will NOT be part of the JTA transaction!" );
+						if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": creating NON-XA session - the resulting JMS work will NOT be part of the JTA transaction!" );
 					}
 					Integer ackMode = ( Integer ) args[1];
 					Session wrapped = null;
@@ -194,14 +177,14 @@ implements SessionHandleStateChangeListener
 					session = ( Session ) AtomikosJmsNonXaSessionProxy.newInstance( wrapped , owner , this );
 					addSession ( session );
 				}
-				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": returning " + session );
+				if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": returning " + session );
 				return session;
 				
 			} else {		
 			
-					if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": calling " + methodName + " on JMS driver...");
+					if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": calling " + methodName + " on JMS driver...");
 					Object ret = method.invoke(delegate, args);
-					if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": " + methodName + " returning " + ret );
+					if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": " + methodName + " returning " + ret );
 					return ret;
 			
 			}
@@ -217,6 +200,10 @@ implements SessionHandleStateChangeListener
 		
 		//dummy return to make compiler happy
 		return null;
+	}
+
+	private boolean methodAllowedAfterClose(Method method) {
+		return method.getName().equals("close") || ClassLoadingHelper.existsInJavaObjectClass(method);
 	}
 
 	private boolean createXaSession(boolean sessionTransactedFlag) {
@@ -244,7 +231,8 @@ implements SessionHandleStateChangeListener
 					//recycle if either inactive in this tx, OR if active (since a new session will be created anyway, and 
 					//concurrent sessions are allowed on the same underlying connection!
 					if ( proxy.isInactiveTransaction(current) || proxy.isInTransaction( current ) ) {
-						if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": recycling session " + proxy );
+						if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": recycling session " + proxy );
+						proxy.recycle();
 						return session;
 					}
 				}
@@ -254,10 +242,10 @@ implements SessionHandleStateChangeListener
 	}
 
 	private void close() {
-		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": close()...");
+		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": close()...");
 		
 		closed = true;		
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": closing " + sessions.size() + " session(s)" );
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": closing " + sessions.size() + " session(s)" );
 		
 		//close all sessions to make sure the session close notifications are done!
 		synchronized (sessions) {
@@ -272,18 +260,18 @@ implements SessionHandleStateChangeListener
 			}
 		}
 		
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug( this + ": is available ? " + isAvailable() );
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace( this + ": is available ? " + isAvailable() );
 		if (isAvailable())
 			owner.onTerminated();
 		
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": closed." );	
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": closed." );	
 		//leave destroy to the owning pooled connection - that one knows when any and all 2PCs are done
 	}
 
 
 	//should only be called after ALL sessions are done, i.e. when the connection can be pooled again
 	synchronized void destroy() {
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": closing connection and all " + sessions.size() + " session(s)" );
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": closing connection and all " + sessions.size() + " session(s)" );
 
 		//close all sessions to make sure the session close notifications are done!
 		synchronized (sessions) {
@@ -301,29 +289,24 @@ implements SessionHandleStateChangeListener
 		sessions.clear ();
 	}
 	
+	
 	public static Reapable newInstance ( boolean ignoreSessionTransactedFlag, XAConnection c, XATransactionalResource jmsTransactionalResource , SessionHandleStateChangeListener owner , ConnectionPoolProperties props ) 
 	{
 		 Reapable ret = null;
 		 
         AtomikosJmsConnectionProxy proxy = new AtomikosJmsConnectionProxy ( ignoreSessionTransactedFlag, c , jmsTransactionalResource , owner , props );
-        Set<Class> interfaces = PropertyUtils.getAllImplementedInterfaces ( c.getClass() );
+        Set<Class<?>> interfaces = PropertyUtils.getAllImplementedInterfaces ( c.getClass() );
         interfaces.add ( Reapable.class );
         //see case 24532
         interfaces.add ( DynamicProxy.class );
-        Class[] interfaceClasses = ( Class[] ) interfaces.toArray ( new Class[0] );
-        
-        Set<Class> minimumSetOfInterfaces = new HashSet<Class>();
-		minimumSetOfInterfaces.add ( Reapable.class );
-		minimumSetOfInterfaces.add ( DynamicProxy.class );
-		minimumSetOfInterfaces.add ( javax.jms.Connection.class );
-        Class[] minimumSetOfInterfaceClasses = ( Class[] ) minimumSetOfInterfaces.toArray( new Class[0] );
+        Class<?>[] interfaceClasses = ( Class[] ) interfaces.toArray ( new Class[0] );
         
         List<ClassLoader> classLoaders = new ArrayList<ClassLoader>();
 		classLoaders.add ( Thread.currentThread().getContextClassLoader() );
 		classLoaders.add ( c.getClass().getClassLoader() );
 		classLoaders.add ( AtomikosJmsConnectionProxy.class.getClassLoader() );
         
-		ret = ( Reapable ) ClassLoadingHelper.newProxyInstance ( classLoaders , minimumSetOfInterfaceClasses , interfaceClasses , proxy );
+		ret = ( Reapable ) ClassLoadingHelper.newProxyInstance ( classLoaders , MINIMUM_SET_OF_INTERFACES , interfaceClasses , proxy );
         
         return ret;
     }
@@ -332,9 +315,9 @@ implements SessionHandleStateChangeListener
 	public boolean isAvailable() {
 		boolean ret = closed;
 		synchronized (sessions) {
-			Iterator it = sessions.iterator();
+			Iterator<Session> it = sessions.iterator();
 			while ( it.hasNext() && ret ) {
-				Object handle = it.next();
+				Session handle = it.next();
 				DynamicProxy dproxy = ( DynamicProxy ) handle;
 				AbstractJmsSessionProxy  session = (AbstractJmsSessionProxy) dproxy.getInvocationHandler();
 				if ( !session.isAvailable() ) {
@@ -349,9 +332,9 @@ implements SessionHandleStateChangeListener
 	public boolean isErroneous() {
 		boolean ret = erroneous;
 		synchronized (sessions) {
-			Iterator it = sessions.iterator();
+			Iterator<Session> it = sessions.iterator();
 			while ( it.hasNext() && !ret ) {
-				Object handle = it.next();
+				Session handle = it.next();
 				DynamicProxy dproxy = ( DynamicProxy ) handle;
 				AbstractJmsSessionProxy  session = (AbstractJmsSessionProxy) dproxy.getInvocationHandler();
 				if ( session.isErroneous() ) ret = true;
@@ -364,9 +347,9 @@ implements SessionHandleStateChangeListener
 	public boolean isInTransaction ( CompositeTransaction ct ) {
 		boolean ret = false;
 		synchronized (sessions) {
-			Iterator it = sessions.iterator();
+			Iterator<Session> it = sessions.iterator();
 			while ( it.hasNext() && !ret ) {
-				Object handle = it.next();
+				Session handle = it.next();
 				DynamicProxy dproxy = ( DynamicProxy ) handle;
 				AbstractJmsSessionProxy  session = (AbstractJmsSessionProxy) dproxy.getInvocationHandler();
 				if ( session.isInTransaction ( ct ) ) ret = true;
@@ -378,9 +361,9 @@ implements SessionHandleStateChangeListener
 	boolean isInactiveInTransaction ( CompositeTransaction ct ) {
 		boolean ret = false;
 		synchronized (sessions) {
-			Iterator it = sessions.iterator();
+			Iterator<Session> it = sessions.iterator();
 			while ( it.hasNext() && !ret ) {
-				Object handle = it.next();
+				Session handle = it.next();
 				DynamicProxy dproxy = ( DynamicProxy ) handle;
 				AbstractJmsSessionProxy  session = (AbstractJmsSessionProxy) dproxy.getInvocationHandler();
 				if ( session.isInactiveTransaction ( ct ) ) ret = true;
@@ -397,9 +380,9 @@ implements SessionHandleStateChangeListener
 	{
 		//a session has terminated -> remove it from the list of sessions to enable GC
 		synchronized (sessions) {
-			Iterator it = sessions.iterator();
+			Iterator<Session> it = sessions.iterator();
 			while ( it.hasNext() ) {
-				Object handle = it.next();
+				Session handle = it.next();
 				DynamicProxy dproxy = ( DynamicProxy ) handle;
 				AbstractJmsSessionProxy  session = (AbstractJmsSessionProxy) dproxy.getInvocationHandler();
 				if ( session.isAvailable() ) it.remove();

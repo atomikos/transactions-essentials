@@ -1,26 +1,9 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
- * This code ("Atomikos TransactionsEssentials"), by itself,
- * is being distributed under the
- * Apache License, Version 2.0 ("License"), a copy of which may be found at
- * http://www.atomikos.com/licenses/apache-license-2.0.txt .
- * You may not use this file except in compliance with the License.
+ * LICENSE CONDITIONS
  *
- * While the License grants certain patent license rights,
- * those patent license rights only extend to the use of
- * Atomikos TransactionsEssentials by itself.
- *
- * This code (Atomikos TransactionsEssentials) contains certain interfaces
- * in package (namespace) com.atomikos.icatch
- * (including com.atomikos.icatch.Participant) which, if implemented, may
- * infringe one or more patents held by Atomikos.
- * It should be appreciated that you may NOT implement such interfaces;
- * licensing to implement these interfaces must be obtained separately from Atomikos.
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
  */
 
 package com.atomikos.jms;
@@ -35,7 +18,7 @@ import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 
 class AtomikosJmsMessageConsumerProxy extends ConsumerProducerSupport implements
-		HeuristicMessageConsumer {
+		MessageConsumer {
 	private static final Logger LOGGER = LoggerFactory.createLogger(AtomikosJmsMessageConsumerProxy.class);
 	
 	
@@ -51,111 +34,90 @@ class AtomikosJmsMessageConsumerProxy extends ConsumerProducerSupport implements
 		return delegate;
 	}
 	
-	public Message receive ( String hmsg ) throws JMSException {
-		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": receive ( " + hmsg + " )..." );
+	public Message receive() throws JMSException {
+		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": receive()..." );
 		Message ret = null;
 		try {
-			enlist ( hmsg );
+			enlist();
 			ret = delegate.receive();
 		} catch (Exception e) {
 			handleException ( e );
 		}
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": receive returning " + ret );
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": receive returning " + ret );
 		return ret;
 	}
 
-	public Message receive ( long timeout , String hmsg ) throws JMSException {
-		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": receive ( " + timeout + " , " + hmsg + " )..." );
+	public Message receive ( long timeout ) throws JMSException {
+		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": receive ( " + timeout + ")..." );
 		
 		Message ret = null;
 		try {
-			enlist ( hmsg );
+			enlist();
 			ret = delegate.receive ( timeout );
 		} catch (Exception e) {
 			handleException ( e );
 		}
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": receive returning " + ret );
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": receive returning " + ret );
 		return ret;
 	}
 
-	public Message receiveNoWait ( String hmsg ) throws JMSException {
-		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": receiveNoWait ( " + hmsg + " )..." );
+	public Message receiveNoWait() throws JMSException {
+		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": receiveNoWait()..." );
 		
 		Message ret = null;
 		try {
-			enlist ( hmsg );
+			enlist();
 			ret = delegate.receiveNoWait();
 		} catch (Exception e) {
 			handleException ( e );
 		}
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": receiveNoWait returning " + ret );
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": receiveNoWait returning " + ret );
 		return ret;
 	}
 
 	public void close() throws JMSException {
 		//note: delist is done at session level!
-		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": close..." );
+		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": close..." );
 		try {
 			delegate.close();
 		} catch (Exception e) {
 			handleException ( e );
 		}
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": close done." );	
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": close done." );	
 	}
 
 	public MessageListener getMessageListener() throws JMSException {
-		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": getMessageListener()..." );
+		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": getMessageListener()..." );
 		MessageListener ret = null;
 		try {
 			ret = delegate.getMessageListener();
 		} catch (Exception e) {
 			handleException ( e );
 		}
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": getMessageListener() returning " + ret );
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": getMessageListener() returning " + ret );
 		return ret;
 	}
 
 	public String getMessageSelector() throws JMSException {
-		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": getMessageSelector()..." );
+		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": getMessageSelector()..." );
 		String ret = null;
 		try {
 			ret = delegate.getMessageSelector();
 		} catch (Exception e) {
 			handleException ( e );
 		}
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": getMessageSelector() returning " + ret );
-		return ret;
-	}
-
-	public Message receive() throws JMSException {
-		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": receive()..." );
-		Message ret = receive ( null );
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": receive() returning " + ret );
-		return ret;
-	}
-
-	public Message receive ( long timeout ) throws JMSException {
-		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": receive ( " + timeout + " )..." );
-		Message ret =  receive ( timeout , null );
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": receive() returning " + ret );
-		return ret;
-	}
-
-	public Message receiveNoWait() throws JMSException {
-		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": receiveNoWait()..." );
-		Message ret = receiveNoWait ( null );
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": receiveNoWait() returning " + ret );
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": getMessageSelector() returning " + ret );
 		return ret;
 	}
 
 	public void setMessageListener ( MessageListener listener ) throws JMSException {
-		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": setMessageListener ( " + listener + " )..." );
+		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": setMessageListener ( " + listener + " )..." );
 		try {
 			delegate.setMessageListener ( listener );
 		}catch (Exception e) {
 			handleException ( e );
 		}
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": setMessageListener done." );
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": setMessageListener done." );
 	}
 	
 	public String toString() 

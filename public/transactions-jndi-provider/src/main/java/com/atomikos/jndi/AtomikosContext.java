@@ -1,3 +1,11 @@
+/**
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
+ *
+ * LICENSE CONDITIONS
+ *
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
+ */
+
 package com.atomikos.jndi;
 
 import java.util.Hashtable;
@@ -39,8 +47,8 @@ public class AtomikosContext implements Context {
 	@Override
 	public Object lookup(String s) throws NamingException {
 		Object ret;
-		if (log.isDebugEnabled()) {
-			log.logDebug("looking up '" + s + "'");
+		if (log.isTraceEnabled()) {
+			log.logTrace("looking up '" + s + "'");
 		}
 
 		if (USER_TRANSACTION_NAME.equals(s)) {

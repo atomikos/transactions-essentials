@@ -1,26 +1,9 @@
 /**
- * Copyright (C) 2000-2012 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
- * This code ("Atomikos TransactionsEssentials"), by itself,
- * is being distributed under the
- * Apache License, Version 2.0 ("License"), a copy of which may be found at
- * http://www.atomikos.com/licenses/apache-license-2.0.txt .
- * You may not use this file except in compliance with the License.
+ * LICENSE CONDITIONS
  *
- * While the License grants certain patent license rights,
- * those patent license rights only extend to the use of
- * Atomikos TransactionsEssentials by itself.
- *
- * This code (Atomikos TransactionsEssentials) contains certain interfaces
- * in package (namespace) com.atomikos.icatch
- * (including com.atomikos.icatch.Participant) which, if implemented, may
- * infringe one or more patents held by Atomikos.
- * It should be appreciated that you may NOT implement such interfaces;
- * licensing to implement these interfaces must be obtained separately from Atomikos.
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
  */
 
 package com.atomikos.icatch.imp;
@@ -34,15 +17,13 @@ import com.atomikos.icatch.Extent;
 import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeurMixedException;
 import com.atomikos.icatch.HeurRollbackException;
-import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.Participant;
 import com.atomikos.icatch.RecoveryCoordinator;
 import com.atomikos.icatch.RollbackException;
 import com.atomikos.icatch.SubTxAwareParticipant;
 import com.atomikos.icatch.Synchronization;
 import com.atomikos.icatch.SysException;
-import com.atomikos.icatch.TransactionControl;
-import com.atomikos.icatch.TxState;
+import com.atomikos.recovery.TxState;
 
 /**
  *
@@ -64,7 +45,6 @@ public abstract class AbstractCompositeTransaction implements CompositeTransacti
 
     protected boolean serial_;
 
-    protected HeuristicMessage tag_;
 
     protected Properties properties_;
 
@@ -110,14 +90,7 @@ public abstract class AbstractCompositeTransaction implements CompositeTransacti
         return tid_;
     }
 
-    /**
-     * @see CompositeTransaction.
-     */
-
-    public void setTag ( HeuristicMessage tag )
-    {
-        tag_ = tag;
-    }
+   
 
     /**
      * @see CompositeTransaction.
@@ -137,16 +110,6 @@ public abstract class AbstractCompositeTransaction implements CompositeTransacti
     public boolean isLocal ()
     {
         return false;
-    }
-
-    /**
-     * @see CompositeTransaction.
-     */
-
-    public TransactionControl getTransactionControl ()
-            throws UnsupportedOperationException
-    {
-        return null;
     }
 
     /**
@@ -173,8 +136,8 @@ public abstract class AbstractCompositeTransaction implements CompositeTransacti
     /**
      * @see CompositeTransaction.
      */
-
-    public Stack<CompositeTransaction> getLineage ()
+    @SuppressWarnings("unchecked")
+	public Stack<CompositeTransaction> getLineage ()
     {
         return (Stack<CompositeTransaction>) lineage_.clone ();
     }
@@ -215,7 +178,7 @@ public abstract class AbstractCompositeTransaction implements CompositeTransacti
     /**
      * @see CompositeTransaction.
      */
-
+    @SuppressWarnings("unchecked")
     public boolean isRelatedTransaction ( CompositeTransaction ct )
     {
         Stack<CompositeTransaction> lineage = null;
@@ -311,17 +274,6 @@ public abstract class AbstractCompositeTransaction implements CompositeTransacti
     public void setSerial () throws IllegalStateException, SysException
     {
     	throw new UnsupportedOperationException();
-
-    }
-
-    /**
-     *
-     * @see com.atomikos.icatch.CompositeTransaction#getLocalSubTxCount()
-     */
-    public int getLocalSubTxCount ()
-    {
-
-        return 0;
     }
 
     /**
@@ -337,7 +289,7 @@ public abstract class AbstractCompositeTransaction implements CompositeTransacti
      */
     public long getTimeout ()
     {
-    	throw new UnsupportedOperationException();
+    	return 0;
     }
 
     /**
@@ -396,6 +348,11 @@ public abstract class AbstractCompositeTransaction implements CompositeTransacti
 
     public TxState getState ()
     {
+    	throw new UnsupportedOperationException();
+    }
+    
+    @Override
+    public int getLocalSubTxCount() {
     	throw new UnsupportedOperationException();
     }
 

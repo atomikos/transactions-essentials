@@ -1,43 +1,21 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
- * This code ("Atomikos TransactionsEssentials"), by itself,
- * is being distributed under the
- * Apache License, Version 2.0 ("License"), a copy of which may be found at
- * http://www.atomikos.com/licenses/apache-license-2.0.txt .
- * You may not use this file except in compliance with the License.
+ * LICENSE CONDITIONS
  *
- * While the License grants certain patent license rights,
- * those patent license rights only extend to the use of
- * Atomikos TransactionsEssentials by itself.
- *
- * This code (Atomikos TransactionsEssentials) contains certain interfaces
- * in package (namespace) com.atomikos.icatch
- * (including com.atomikos.icatch.Participant) which, if implemented, may
- * infringe one or more patents held by Atomikos.
- * It should be appreciated that you may NOT implement such interfaces;
- * licensing to implement these interfaces must be obtained separately from Atomikos.
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
  */
 
 package com.atomikos.icatch.imp;
 
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
+import java.util.Map;
 
-import com.atomikos.icatch.DataSerializable;
 import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeurMixedException;
 import com.atomikos.icatch.HeurRollbackException;
-import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.Participant;
 import com.atomikos.icatch.RollbackException;
-import com.atomikos.icatch.StringHeuristicMessage;
 import com.atomikos.icatch.SysException;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
@@ -47,37 +25,10 @@ import com.atomikos.logging.LoggerFactory;
  * never allow commit.
  */
 
-public class RollbackOnlyParticipant implements Participant,DataSerializable
+class RollbackOnlyParticipant implements Participant
 {
 
 	private static final Logger LOG = LoggerFactory.createLogger(RollbackOnlyParticipant.class);
-
-    private StringHeuristicMessage msg_;
-    // the message to return in exception
-
-    RollbackOnlyParticipant ( StringHeuristicMessage msg )
-    {
-        msg_ = msg;
-    }
-
-    /**
-     * @see Participant
-     */
-
-    public boolean recover () throws SysException
-    {
-        return false;
-    }
-
-    /**
-     * @see Participant
-     */
-
-    public void setCascadeList ( java.util.Dictionary allParticipants )
-            throws SysException
-    {
-        
-    }
 
     /**
      * @see Participant
@@ -85,7 +36,6 @@ public class RollbackOnlyParticipant implements Participant,DataSerializable
 
     public void setGlobalSiblingCount ( int count )
     {
-        
     }
 
     /**
@@ -105,30 +55,28 @@ public class RollbackOnlyParticipant implements Participant,DataSerializable
             HeurMixedException, SysException
     {
         // prepare MUST fail: rollback only!
-        throw new RollbackException ( msg_.toString () );
+        throw new RollbackException();
     }
 
     /**
      * @see Participant
      */
 
-    public HeuristicMessage[] commit ( boolean onePhase )
+    public void commit ( boolean onePhase )
             throws HeurRollbackException, HeurHazardException,
             HeurMixedException, RollbackException, SysException
     {
-        if (onePhase) throw new RollbackException(msg_.toString());
-        else LOG.logWarning("Unexpected 2-phase commit: outcome should be rollback!");
-        return getHeuristicMessages();
+        if (onePhase) throw new RollbackException();
+        else LOG.logError("Unexpected 2-phase commit: outcome should be rollback!");
     }
 
     /**
      * @see Participant
      */
 
-    public HeuristicMessage[] rollback () throws HeurCommitException,
+    public void rollback () throws HeurCommitException,
             HeurMixedException, HeurHazardException, SysException
     {
-        return getHeuristicMessages ();
     }
 
     /**
@@ -139,25 +87,26 @@ public class RollbackOnlyParticipant implements Participant,DataSerializable
     {      
     }
 
-    /**
-     * @see Participant
-     */
 
-    public HeuristicMessage[] getHeuristicMessages ()
-    {
-        HeuristicMessage[] ret = new HeuristicMessage[1];
-        ret[0] = msg_;
-        return ret;
-    }
-
-	public void writeData(DataOutput out) throws IOException {
-		out.writeUTF(msg_.toString());
-		
+	@Override
+	public String toString() {
+		return "RollbackOnlyParticipant";
 	}
 
-	public void readData(DataInput in) throws IOException {
-		msg_=new StringHeuristicMessage(in.readUTF());
-		
+	@Override
+	public boolean isRecoverable() {
+		return false;
 	}
 
+	@Override
+	public String getResourceName() {
+		return null;
+	}
+
+	@Override
+	public void setCascadeList(Map<String, Integer> cascadeList)
+			throws SysException {
+		
+	}
+	
 }

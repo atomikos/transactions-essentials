@@ -1,3 +1,11 @@
+/**
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
+ *
+ * LICENSE CONDITIONS
+ *
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
+ */
+
 package com.atomikos.icatch.imp;
 
 import junit.framework.TestCase;
@@ -53,7 +61,7 @@ public abstract class AbstractJUnitMaxActivesTest extends TestCase
         }
         catch ( IllegalStateException ok ) {}
         
-        ct1.getTransactionControl().getTerminator().rollback();
+        ct1.rollback();
         
         //now create should work
         try {
@@ -62,7 +70,7 @@ public abstract class AbstractJUnitMaxActivesTest extends TestCase
         catch ( Exception e ) {
         	throw new Exception ( "Max actives not reached and create fails???");
         }
-		ct1.getTransactionControl().getTerminator().rollback();
+		ct1.rollback();
     }
 
 }

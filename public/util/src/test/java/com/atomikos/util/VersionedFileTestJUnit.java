@@ -1,3 +1,11 @@
+/**
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
+ *
+ * LICENSE CONDITIONS
+ *
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
+ */
+
 package com.atomikos.util;
 
 import java.io.DataInputStream;
@@ -42,11 +50,36 @@ public class VersionedFileTestJUnit extends TestCase {
 		assertEquals ( getBaseUrl() , file.getBaseUrl() );
 	}
 	
+	public void testAppendFileSeparator() {
+		file = new VersionedFile ( "." , getBaseName() , SUFFIX );
+		testGetBaseUrl();
+	}
 	public void testGetBaseName() 
 	{
 		assertEquals ( getBaseName() , file.getBaseName() );
 	}
 	
+	
+	public void testReadingNonExistingLogBaseDirShouldFailWithMeaningFulException() throws Exception {
+		String nonExistingBaseDir = "nonExistingBaseDir";
+		try {
+			file = new VersionedFile ( nonExistingBaseDir , getBaseName() , SUFFIX );
+			file.openLastValidVersionForReading();
+		} catch (Exception e) {
+			String message = e.getMessage();
+			assertTrue(message.contains(nonExistingBaseDir));
+		}
+	}
+	public void testWritingNonExistingLogBaseDirShouldFailWithMeaningFulException() throws Exception {
+		String nonExistingBaseDir = "nonExistingBaseDir";
+		try {
+			file = new VersionedFile ( nonExistingBaseDir , getBaseName() , SUFFIX );
+			file.openNewVersionForNioWriting();
+		} catch (Exception e) {
+			String message = e.getMessage();
+			assertTrue(message.contains(nonExistingBaseDir));
+		}
+	}
 	public void testGetSuffix() 
 	{
 		assertEquals ( SUFFIX , file.getSuffix() );
@@ -101,7 +134,7 @@ public class VersionedFileTestJUnit extends TestCase {
 	
 	
 	
-	public void testCallingOpenNewVersionForWritingTwiceThrowsException() throws FileNotFoundException 
+	public void testCallingOpenNewVersionForWritingTwiceThrowsException() throws IOException 
 	{
 		file.openNewVersionForWriting();
 		try {
@@ -120,7 +153,7 @@ public class VersionedFileTestJUnit extends TestCase {
 		} catch ( IllegalStateException ok ) {}
 	}
 	
-	public void testCallingOpenLastValidVersionForReadingFailsIfWriting() throws FileNotFoundException 
+	public void testCallingOpenLastValidVersionForReadingFailsIfWriting() throws IOException 
 	{
 		file.openNewVersionForWriting();
 		try {

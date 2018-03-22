@@ -1,86 +1,50 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
- * This code ("Atomikos TransactionsEssentials"), by itself,
- * is being distributed under the
- * Apache License, Version 2.0 ("License"), a copy of which may be found at
- * http://www.atomikos.com/licenses/apache-license-2.0.txt .
- * You may not use this file except in compliance with the License.
+ * LICENSE CONDITIONS
  *
- * While the License grants certain patent license rights,
- * those patent license rights only extend to the use of
- * Atomikos TransactionsEssentials by itself.
- *
- * This code (Atomikos TransactionsEssentials) contains certain interfaces
- * in package (namespace) com.atomikos.icatch
- * (including com.atomikos.icatch.Participant) which, if implemented, may
- * infringe one or more patents held by Atomikos.
- * It should be appreciated that you may NOT implement such interfaces;
- * licensing to implement these interfaces must be obtained separately from Atomikos.
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
  */
 
 package com.atomikos.icatch.imp;
 
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
-import java.util.Dictionary;
+import java.util.Map;
 
-import com.atomikos.icatch.DataSerializable;
 import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeurMixedException;
 import com.atomikos.icatch.HeurRollbackException;
-import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.Participant;
 import com.atomikos.icatch.RollbackException;
-import com.atomikos.icatch.StringHeuristicMessage;
 import com.atomikos.icatch.SysException;
 
 
-public class ReadOnlyParticipant implements Participant,DataSerializable {
+class ReadOnlyParticipant implements Participant {
 
 
 	//force set UID for backward log compatibility
 	private static final long serialVersionUID = -2141189205744565090L;
 
-	StringHeuristicMessage[] msgs;
 
 	//keep coordinator ID for equality
 	private final String coordinatorId;
-
-
 	public ReadOnlyParticipant() {
-		coordinatorId=null;
+		this.coordinatorId = null;
 	}
-	public ReadOnlyParticipant ( CoordinatorImp coordinator )
+
+	ReadOnlyParticipant ( CoordinatorImp coordinator )
 	{
 		this.coordinatorId = coordinator.getCoordinatorId();
-		msgs = new StringHeuristicMessage[1];
-		msgs[0] = new StringHeuristicMessage ( "ReadOnlyParticipant" );
-	}
-
-	public boolean recover() throws SysException {
-		return true;
 	}
 
 	public String getURI() {
-
 		return null;
 	}
 
-	public void setCascadeList(Dictionary allParticipants) throws SysException {
-
-
+	public void setCascadeList(Map<String, Integer> allParticipants) throws SysException {
 	}
 
 	public void setGlobalSiblingCount(int count) {
-
-
 	}
 
 	public int prepare() throws RollbackException, HeurHazardException,
@@ -88,27 +52,17 @@ public class ReadOnlyParticipant implements Participant,DataSerializable {
 		return Participant.READ_ONLY;
 	}
 
-	public HeuristicMessage[] commit(boolean onePhase)
+	public void commit(boolean onePhase)
 			throws HeurRollbackException, HeurHazardException,
 			HeurMixedException, RollbackException, SysException {
-		return msgs;
 	}
 
-	public HeuristicMessage[] rollback() throws HeurCommitException,
+	public void rollback() throws HeurCommitException,
 			HeurMixedException, HeurHazardException, SysException {
-		return msgs;
 	}
 
 	public void forget() {
-
-
 	}
-
-	public HeuristicMessage[] getHeuristicMessages() {
-		return msgs;
-	}
-
-
 
 	public boolean equals ( Object o ) {
 		boolean ret = false;
@@ -126,16 +80,19 @@ public class ReadOnlyParticipant implements Participant,DataSerializable {
 		return ret;
 	}
 
-	public void writeData(DataOutput out) throws IOException {
-		// FIXME @Guy not sure what to do here...
-
+	@Override
+	public String toString() {
+		return "ReadOnlyParticipant";
 	}
-
-	public void readData(DataInput in) throws IOException {
-		// FIXME @Guy not sure what to do here...
-
+	
+	@Override
+	public boolean isRecoverable() {
+		return false;
 	}
-
+	@Override
+	public String getResourceName() {
+		return null;
+	}
 
 
 }

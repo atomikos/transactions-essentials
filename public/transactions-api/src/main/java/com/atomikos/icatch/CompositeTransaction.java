@@ -1,26 +1,9 @@
 /**
- * Copyright (C) 2000-2013 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
- * This code ("Atomikos TransactionsEssentials"), by itself,
- * is being distributed under the
- * Apache License, Version 2.0 ("License"), a copy of which may be found at
- * http://www.atomikos.com/licenses/apache-license-2.0.txt .
- * You may not use this file except in compliance with the License.
+ * LICENSE CONDITIONS
  *
- * While the License grants certain patent license rights,
- * those patent license rights only extend to the use of
- * Atomikos TransactionsEssentials by itself.
- *
- * This code (Atomikos TransactionsEssentials) contains certain interfaces
- * in package (namespace) com.atomikos.icatch
- * (including com.atomikos.icatch.Participant) which, if implemented, may
- * infringe one or more patents held by Atomikos.
- * It should be appreciated that you may NOT implement such interfaces;
- * licensing to implement these interfaces must be obtained separately from Atomikos.
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
  */
 
 
@@ -28,6 +11,8 @@ package com.atomikos.icatch;
 
 import java.util.Properties;
 import java.util.Stack;
+
+import com.atomikos.recovery.TxState;
 
 /**
  * Represents a nested part of a global
@@ -51,7 +36,7 @@ public interface CompositeTransaction
 	 * @return Object One of the state constants.
 	 * @see TxState
 	 */
-	public TxState getState();
+	 TxState getState();
 
     /**
      *
@@ -59,13 +44,13 @@ public interface CompositeTransaction
      * i.e. the first transaction created in a (possibly distributed) hierarchy.
      */
 
-    public boolean isRoot();
+     boolean isRoot();
 
     /**
      * @return Stack A stack of ancestors, bottom one is the root.
      */
 
-    public Stack<CompositeTransaction> getLineage();
+     Stack<CompositeTransaction> getLineage();
 
 
     /**
@@ -73,7 +58,7 @@ public interface CompositeTransaction
      * @return String The tid for the tx.
      */
 
-    public String getTid();
+     String getTid();
 
     /**
      * 
@@ -82,7 +67,7 @@ public interface CompositeTransaction
      * @return boolean True if this instance is an ancestor of the supplied transaction.
      */
 
-    public boolean isAncestorOf( CompositeTransaction otherCompositeTransaction );
+     boolean isAncestorOf( CompositeTransaction otherCompositeTransaction );
 
     /**
      * @param otherCompositeTransaction
@@ -90,7 +75,7 @@ public interface CompositeTransaction
      * @return boolean True if this instance is a descendant of the other instance.
      */
 
-    public boolean isDescendantOf( CompositeTransaction otherCompositeTransaction );
+     boolean isDescendantOf( CompositeTransaction otherCompositeTransaction );
 
 
     /**
@@ -99,7 +84,7 @@ public interface CompositeTransaction
      * @return True if related. That is: if both share the same root transaction.
      */
 
-    public boolean isRelatedTransaction ( CompositeTransaction otherCompositeTransaction );
+    boolean isRelatedTransaction ( CompositeTransaction otherCompositeTransaction );
 
     
     /**
@@ -107,13 +92,13 @@ public interface CompositeTransaction
      * @return True if both are the same.
      */
 
-    public boolean isSameTransaction ( CompositeTransaction otherCompositeTransaction );
+    boolean isSameTransaction ( CompositeTransaction otherCompositeTransaction );
 
     /**
      * @return CompositeCoordinator 
      */
     
-    public CompositeCoordinator getCompositeCoordinator() 
+    CompositeCoordinator getCompositeCoordinator() 
     throws SysException;
     
 
@@ -124,7 +109,7 @@ public interface CompositeTransaction
      * @return RecoveryCoordinator Whom to ask for indoubt timeout resolution.
      */
 
-    public RecoveryCoordinator addParticipant ( Participant participant )
+    RecoveryCoordinator addParticipant ( Participant participant )
         throws SysException,
 	     java.lang.IllegalStateException;
 	     
@@ -136,7 +121,7 @@ public interface CompositeTransaction
      * @throws SysException
      */
     
-    public void registerSynchronization(Synchronization sync)
+     void registerSynchronization(Synchronization sync)
         throws
              IllegalStateException,
              SysException;
@@ -152,7 +137,7 @@ public interface CompositeTransaction
      * @throws java.lang.IllegalStateException
      */
 
-    public void addSubTxAwareParticipant( SubTxAwareParticipant subtxaware )
+     void addSubTxAwareParticipant( SubTxAwareParticipant subtxaware )
         throws SysException,
 	     java.lang.IllegalStateException;
 
@@ -166,17 +151,7 @@ public interface CompositeTransaction
      * 
      * @return 
      */
-    public boolean isSerial();
-    
-    /**
-     *
-     * @deprecated As from release 3.0, 
-     * the methods in the TransactionControl
-     * interface have been moved to this one.
-     */
-     
-    public TransactionControl getTransactionControl();
-    
+     boolean isSerial();
     
     /**
      *
@@ -184,57 +159,22 @@ public interface CompositeTransaction
      * For imported transactions, this is false.
      */
      
-    public boolean isLocal ();
-
-
-	public CompositeTransaction createSubTransaction()
-		throws SysException,
-		 IllegalStateException;
-
+     boolean isLocal ();
    
-	/**
-	 * Sets the serial mode. 
-	 * This only works on the root itself, and can not be undone.
-	 * After this, no parallel calls are allowed in any descendant.
-	 *
-	 * @throws IllegalStateException
-	 * @throws SysException
-	 */
-	
-	public void setSerial() throws IllegalStateException, SysException;
-
-	     
-    
-	/**
-     * @deprecated This should not matter outside the core.
-	 */
-     
-	 public int getLocalSubTxCount();
-     
-	/**
-	 * Sets the tag for this transaction. This is returned as a summary of
-	 * the local work in case the transaction was imported from a remote
-	 * client TM.
-	 * 
-	 * @param tag
-	 */
-     
-	public void setTag ( HeuristicMessage tag ) ;
-
 
 	/**
 	 * 
 	 * @return The extent.
 	 */
 
-	 public Extent getExtent();
+	 Extent getExtent();
      
      
 	  /**
 	   * @return long The transaction timeout in millis.
 	   */
        
-	 public long getTimeout();
+	 long getTimeout();
 	
 	 /**
 	  * Marks the transaction so that the only possible
@@ -242,7 +182,7 @@ public interface CompositeTransaction
 	  *
 	  */
 	
-	 public void setRollbackOnly();
+	 void setRollbackOnly();
 	 
 	/**
 	 * Commits the composite transaction.
@@ -257,7 +197,7 @@ public interface CompositeTransaction
 	 * before prepare.
 	 */
 
-	public void commit() 
+	 void commit() 
 		throws 
 	  HeurRollbackException,HeurMixedException,
 	  HeurHazardException,
@@ -272,7 +212,7 @@ public interface CompositeTransaction
 	 * @exception SysException If unexpected error.
 	 */
 
-	public void rollback()
+	 void rollback()
 		throws IllegalStateException, SysException;	
  
     
@@ -287,7 +227,7 @@ public interface CompositeTransaction
      * @param value
      */
     
-    public void setProperty ( String name , String value );
+     void setProperty ( String name , String value );
     
     /**
      * Gets the specified metadata property.
@@ -295,14 +235,33 @@ public interface CompositeTransaction
      * @return The property, or null if not set.
      */
     
-    public String getProperty ( String name );
+     String getProperty ( String name );
     
     /**
      * Gets all properties of this instance.
      * @return The (cloned) properties of this transaction.
      */
     
-    public Properties getProperties();
+     Properties getProperties();
+
+	 CompositeTransaction createSubTransaction();
+
+    /**
+     *Set serial mode for root.
+     *This only works on the root itself, and can not be undone.
+     *After this, no parallel calls are allowed in any descendant.
+     *@exception IllegalStateException If  called for non-root tx.
+     *@exception SysException For unexpected errors.
+     */
+
+     void setSerial() throws IllegalStateException, SysException;
+
+    /**
+    *@return int The number of locally started subtxs.
+    */
+    
+     int getLocalSubTxCount();
+
 
 
 }

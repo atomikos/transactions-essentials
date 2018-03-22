@@ -1,3 +1,11 @@
+/**
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
+ *
+ * LICENSE CONDITIONS
+ *
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
+ */
+
 package com.atomikos.util;
 
 import java.io.IOException;
@@ -55,7 +63,7 @@ public class IntraVmObjectFactoryTestJUnit extends TestCase {
 		//no existing instance registered -> init should have happened
 		assertTrue ( result.wasInitCalled() );
 	}
-	
+	@SuppressWarnings("serial")
 	static class TestSerializableLocalResource implements Serializable {
 
 		private boolean initCalled;

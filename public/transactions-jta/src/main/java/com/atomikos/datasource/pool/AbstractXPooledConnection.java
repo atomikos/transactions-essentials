@@ -1,34 +1,17 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
- * This code ("Atomikos TransactionsEssentials"), by itself,
- * is being distributed under the
- * Apache License, Version 2.0 ("License"), a copy of which may be found at
- * http://www.atomikos.com/licenses/apache-license-2.0.txt .
- * You may not use this file except in compliance with the License.
+ * LICENSE CONDITIONS
  *
- * While the License grants certain patent license rights,
- * those patent license rights only extend to the use of
- * Atomikos TransactionsEssentials by itself.
- *
- * This code (Atomikos TransactionsEssentials) contains certain interfaces
- * in package (namespace) com.atomikos.icatch
- * (including com.atomikos.icatch.Participant) which, if implemented, may
- * infringe one or more patents held by Atomikos.
- * It should be appreciated that you may NOT implement such interfaces;
- * licensing to implement these interfaces must be obtained separately from Atomikos.
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
  */
 
 package com.atomikos.datasource.pool;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 
@@ -50,6 +33,8 @@ public abstract class AbstractXPooledConnection implements XPooledConnection {
 	private Reapable currentProxy = null;
 	private ConnectionPoolProperties props;
 	private long creationTime = System.currentTimeMillis();
+	private final AtomicBoolean isConcurrentlyBeingAcquired = new AtomicBoolean(false);
+
 	
 	protected AbstractXPooledConnection ( ConnectionPoolProperties props ) 
 	{
@@ -64,12 +49,13 @@ public abstract class AbstractXPooledConnection implements XPooledConnection {
 		return lastTimeReleased;
 	}
 	
-	public synchronized Reapable createConnectionProxy ( HeuristicMessage hmsg ) throws CreateConnectionException
+	public synchronized Reapable createConnectionProxy() throws CreateConnectionException
 	{
 		updateLastTimeAcquired();
 		testUnderlyingConnection();
-		currentProxy = doCreateConnectionProxy ( hmsg );
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": returning proxy " + currentProxy );
+		currentProxy = doCreateConnectionProxy();
+		isConcurrentlyBeingAcquired.set(false);
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": returning proxy " + currentProxy );
 		return currentProxy;
 	}
 
@@ -83,19 +69,19 @@ public abstract class AbstractXPooledConnection implements XPooledConnection {
 	}
 
 	public void registerXPooledConnectionEventListener(XPooledConnectionEventListener listener) {
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": registering listener " + listener );
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": registering listener " + listener );
 		poolEventListeners.add(listener);
 	}
 
 	public void unregisterXPooledConnectionEventListener(XPooledConnectionEventListener listener) {
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": unregistering listener " + listener );
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": unregistering listener " + listener );
 		poolEventListeners.remove(listener);
 	}
 
 	protected void fireOnXPooledConnectionTerminated() {
 		for (int i=0; i<poolEventListeners.size() ;i++) {
 			XPooledConnectionEventListener listener = (XPooledConnectionEventListener) poolEventListeners.get(i);
-			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": notifying listener: " + listener );
+			if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": notifying listener: " + listener );
 			listener.onXPooledConnectionTerminated(this);
 		}
 		updateLastTimeReleased();
@@ -107,12 +93,12 @@ public abstract class AbstractXPooledConnection implements XPooledConnection {
 	}
 	
 	protected void updateLastTimeReleased() {
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": updating last time released" );
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": updating last time released" );
 		lastTimeReleased = System.currentTimeMillis();
 	}
 	
-	protected void updateLastTimeAcquired() {
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug (  this + ": updating last time acquired" );
+	private void updateLastTimeAcquired() {
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace (  this + ": updating last time acquired" );
 		lastTimeAcquired = System.currentTimeMillis();
 		
 	}
@@ -136,7 +122,17 @@ public abstract class AbstractXPooledConnection implements XPooledConnection {
 		return creationTime;
 	}
 	
-	protected abstract Reapable doCreateConnectionProxy ( HeuristicMessage hmsg ) throws CreateConnectionException;
+	public boolean markAsBeingAcquiredIfAvailable() {
+		synchronized (isConcurrentlyBeingAcquired) {
+			if (isConcurrentlyBeingAcquired.get()) {
+				return false;
+			}
+			isConcurrentlyBeingAcquired.set(isAvailable());
+			return isConcurrentlyBeingAcquired.get();	
+		}
+	}
+	
+	protected abstract Reapable doCreateConnectionProxy() throws CreateConnectionException;
 
 	protected abstract void testUnderlyingConnection() throws CreateConnectionException;
 }

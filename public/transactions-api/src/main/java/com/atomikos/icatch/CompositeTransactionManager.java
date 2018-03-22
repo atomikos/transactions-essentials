@@ -1,26 +1,9 @@
 /**
- * Copyright (C) 2000-2011 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
- * This code ("Atomikos TransactionsEssentials"), by itself,
- * is being distributed under the
- * Apache License, Version 2.0 ("License"), a copy of which may be found at
- * http://www.atomikos.com/licenses/apache-license-2.0.txt .
- * You may not use this file except in compliance with the License.
+ * LICENSE CONDITIONS
  *
- * While the License grants certain patent license rights,
- * those patent license rights only extend to the use of
- * Atomikos TransactionsEssentials by itself.
- *
- * This code (Atomikos TransactionsEssentials) contains certain interfaces
- * in package (namespace) com.atomikos.icatch
- * (including com.atomikos.icatch.Participant) which, if implemented, may
- * infringe one or more patents held by Atomikos.
- * It should be appreciated that you may NOT implement such interfaces;
- * licensing to implement these interfaces must be obtained separately from Atomikos.
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
  */
 
 package com.atomikos.icatch;
@@ -51,7 +34,7 @@ public interface CompositeTransactionManager
 	 * an activity instead of a classical transaction.
 	 */
 
-	public CompositeTransaction createCompositeTransaction ( long timeout ) 
+	CompositeTransaction createCompositeTransaction ( long timeout ) 
 	throws SysException, IllegalStateException;
 
 	/**
@@ -60,7 +43,7 @@ public interface CompositeTransactionManager
 	 * @exception SysException On unexpected failure.
 	 */
 
-	public CompositeTransaction getCompositeTransaction () throws SysException;
+	 CompositeTransaction getCompositeTransaction () throws SysException;
 
 	/**
 	 * Gets the composite transaction with the given id.
@@ -73,7 +56,7 @@ public interface CompositeTransactionManager
 	 * @exception SysException Unexpected failure.
 	 */
 
-	public CompositeTransaction getCompositeTransaction ( String tid )
+	CompositeTransaction getCompositeTransaction ( String tid )
 	throws SysException;
 
 	/**
@@ -84,18 +67,19 @@ public interface CompositeTransactionManager
 	 * @exception SysException 
 	 */
 
-	public void resume ( CompositeTransaction compositeTransaction )
+	void resume ( CompositeTransaction compositeTransaction )
 	throws IllegalStateException, SysException;
 
 	/**
 	 * Suspends the transaction context for the current thread.
+	 * This method suspends the entire transaction tree, including any parent transactions.
 	 *
 	 * @return CompositeTransaction The transaction for the current thread.
 	 *
 	 * @exception SysException 
 	 */
 
-	public CompositeTransaction suspend() throws SysException ;
+	 CompositeTransaction suspend() throws SysException ;
 
     /**
      * Recreate a composite transaction based on an imported context. Needed by
@@ -114,7 +98,7 @@ public interface CompositeTransactionManager
      *                Failure.
      */
 
-	public CompositeTransaction recreateCompositeTransaction(
+	 CompositeTransaction recreateCompositeTransaction(
 			Propagation propagation, boolean orphancheck, boolean heur_commit);
 
 

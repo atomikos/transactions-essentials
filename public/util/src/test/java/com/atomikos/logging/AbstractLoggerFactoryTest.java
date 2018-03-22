@@ -1,3 +1,11 @@
+/**
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
+ *
+ * LICENSE CONDITIONS
+ *
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
+ */
+
 package com.atomikos.logging;
 
 import junit.framework.TestCase;
@@ -10,7 +18,16 @@ public abstract class AbstractLoggerFactoryTest extends TestCase {
 
 	protected Logger logger;
 
+	public void testLogTrace() {
+		configureLoggingFrameworkWithTrace();
+		logger.logTrace(MESSAGE);
+		assertLoggedAsTrace();
+	}
 
+	protected abstract void configureLoggingFrameworkWithTrace() ;
+
+	protected abstract void assertLoggedAsTrace();
+	
 	public void testLogDebug() {
 		configureLoggingFrameworkWithDebug();
 		logger.logDebug(MESSAGE);
@@ -18,6 +35,14 @@ public abstract class AbstractLoggerFactoryTest extends TestCase {
 	}
 
 	protected abstract void assertLoggedAsDebug();
+
+	public void testLogTraceWithException() {
+		configureLoggingFrameworkWithTrace();
+		logger.logTrace(MESSAGE,ERROR);
+		assertLoggedAsTraceWithException();
+	}
+	
+	protected abstract void assertLoggedAsTraceWithException() ;
 
 	public void testLogDebugWithException() {
 		configureLoggingFrameworkWithDebug();
@@ -73,6 +98,11 @@ public abstract class AbstractLoggerFactoryTest extends TestCase {
   
   protected abstract void assertLoggedAsErrorWithException();
 
+  public void testIsTraceEnabled() {
+		assertFalse(logger.isTraceEnabled());
+		configureLoggingFrameworkWithTrace();
+		assertTrue(logger.isTraceEnabled());
+	}
 	public void testIsDebugEnabled() {
 		assertFalse(logger.isDebugEnabled());
 		configureLoggingFrameworkWithDebug();

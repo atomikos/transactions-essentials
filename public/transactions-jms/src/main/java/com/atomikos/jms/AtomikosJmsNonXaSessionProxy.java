@@ -1,33 +1,15 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
- * This code ("Atomikos TransactionsEssentials"), by itself,
- * is being distributed under the
- * Apache License, Version 2.0 ("License"), a copy of which may be found at
- * http://www.atomikos.com/licenses/apache-license-2.0.txt .
- * You may not use this file except in compliance with the License.
+ * LICENSE CONDITIONS
  *
- * While the License grants certain patent license rights,
- * those patent license rights only extend to the use of
- * Atomikos TransactionsEssentials by itself.
- *
- * This code (Atomikos TransactionsEssentials) contains certain interfaces
- * in package (namespace) com.atomikos.icatch
- * (including com.atomikos.icatch.Participant) which, if implemented, may
- * infringe one or more patents held by Atomikos.
- * It should be appreciated that you may NOT implement such interfaces;
- * licensing to implement these interfaces must be obtained separately from Atomikos.
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
  */
 
 package com.atomikos.jms;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -53,27 +35,22 @@ class AtomikosJmsNonXaSessionProxy extends AbstractJmsSessionProxy
 
 	private final static String CLOSE_METHOD = "close";
 	
+	private static Class<?>[] MINIMUM_SET_OF_INTERFACES = {Reapable.class, DynamicProxy.class, javax.jms.Session.class };
+	
 	public static Object newInstance ( Session s , SessionHandleStateChangeListener pooledConnection , SessionHandleStateChangeListener connectionProxy ) throws JMSException 
 	{
         AtomikosJmsNonXaSessionProxy proxy = new AtomikosJmsNonXaSessionProxy ( s , pooledConnection , connectionProxy );
-        Set<Class> interfaces = PropertyUtils.getAllImplementedInterfaces ( s.getClass() );
+        Set<Class<?>> interfaces = PropertyUtils.getAllImplementedInterfaces ( s.getClass() );
         //see case 24532
         interfaces.add ( DynamicProxy.class );
-        Class[] interfaceClasses = ( Class[] ) interfaces.toArray ( new Class[0] );
-        
-        Set<Class> minimumSetOfInterfaces = new HashSet<Class>();
-		minimumSetOfInterfaces.add ( Reapable.class );
-		minimumSetOfInterfaces.add ( DynamicProxy.class );
-		minimumSetOfInterfaces.add ( javax.jms.Session.class );
-        Class[] minimumSetOfInterfaceClasses = ( Class[] ) minimumSetOfInterfaces.toArray( new Class[0] );
-        
+        Class<?>[] interfaceClasses = ( Class[] ) interfaces.toArray ( new Class[0] );
         
         List<ClassLoader> classLoaders = new ArrayList<ClassLoader>();
 		classLoaders.add ( Thread.currentThread().getContextClassLoader() );
 		classLoaders.add ( s.getClass().getClassLoader() );
 		classLoaders.add ( AtomikosJmsNonXaSessionProxy.class.getClassLoader() );
 		
-		return ( Session ) ClassLoadingHelper.newProxyInstance ( classLoaders , minimumSetOfInterfaceClasses , interfaceClasses , proxy );
+		return ( Session ) ClassLoadingHelper.newProxyInstance ( classLoaders , MINIMUM_SET_OF_INTERFACES , interfaceClasses , proxy );
         
     }
 	
@@ -98,7 +75,7 @@ class AtomikosJmsNonXaSessionProxy extends AbstractJmsSessionProxy
 			try {
 				tx = tm.getTransaction();
 			} catch (SystemException e) {
-				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": Failed to get transaction."  , e );
+				if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": Failed to get transaction."  , e );
 				//ignore
 			}
 			if ( tx != null ) {
@@ -107,7 +84,7 @@ class AtomikosJmsNonXaSessionProxy extends AbstractJmsSessionProxy
 						"To enable JTA, make sure to do all of the following:" + "\n" +
 						"1. Make sure that the AtomikosConnectionFactoryBean is configured with localTransactionMode=false, and" + "\n" +
 						"2. Make sure to call create JMS sessions with the transacted flag set to true.";
-				if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( msg );
+				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( msg );
 			}
 		}
 	}
@@ -132,7 +109,7 @@ class AtomikosJmsNonXaSessionProxy extends AbstractJmsSessionProxy
 			}
 
 			if ( CLOSE_METHOD.equals ( methodName ) ) {
-				if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": close...");
+				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": close...");
 				destroy();
 				return null;
 			}
@@ -140,9 +117,9 @@ class AtomikosJmsNonXaSessionProxy extends AbstractJmsSessionProxy
 			checkForTransactionContextAndLogWarningIfSo();
 
 			try {
-				if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": calling " + methodName + " on vendor session..." );
+				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": calling " + methodName + " on vendor session..." );
 				Object ret =  method.invoke(delegate, args);
-				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": " + methodName + " returning " + ret );
+				if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": " + methodName + " returning " + ret );
 				return ret;
 			} catch (Exception ex) {
 				errorsOccurred = true;
@@ -158,7 +135,7 @@ class AtomikosJmsNonXaSessionProxy extends AbstractJmsSessionProxy
 
 	protected void destroy() {
 		try {
-			if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": destroying session...");
+			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": destroying session...");
 			if ( !closed ) {
 				closed = true;
 				delegate.close(); 
@@ -191,9 +168,10 @@ class AtomikosJmsNonXaSessionProxy extends AbstractJmsSessionProxy
 	{
 		return "atomikos non-xa session proxy for vendor instance " + delegate;
 	}
-
 	
-
-
+	@Override
+	public void recycle() {
+		LOGGER.logWarning(this+ ": unexpected call of recycle() - this is probably a bug?");
+	}
 
 }

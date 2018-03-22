@@ -1,10 +1,17 @@
+/**
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
+ *
+ * LICENSE CONDITIONS
+ *
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
+ */
+
 package com.atomikos.icatch.provider;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 import junit.framework.Assert;
 
@@ -129,6 +136,39 @@ public class ConfigPropertiesTestJUnit {
 		Properties p = createDefaultProperties(ConfigProperties.TM_UNIQUE_NAME_PROPERTY_NAME, NAME);
 		props = new ConfigProperties(p);
 		assertEquals(NAME, props.getTmUniqueName());
+	}
+	@Test
+	public void testForgetOrphanedLogEntriesDelay() throws Exception {
+		props.setProperty("com.atomikos.icatch.forget_orphaned_log_entries_delay", "1800000");		
+		assertEquals(TimeUnit.MINUTES.toMillis(30), props.getForgetOrphanedLogEntriesDelay());
+	}
+	
+	@Test
+	public void testRecoveryDelay() throws Exception {
+		final long VALUE = 12345L;
+		props.setProperty("com.atomikos.icatch.recovery_delay", Long.toString(VALUE));
+		assertEquals(VALUE, props.getRecoveryDelay());
+	}
+	
+	@Test
+	public void testOltpMaxRetries() throws Exception {
+		final int VALUE = 123;
+		props.setProperty("com.atomikos.icatch.oltp_max_retries", Integer.toString(VALUE));
+		assertEquals(VALUE, props.getOltpMaxRetries());
+	}
+	
+	@Test
+	public void testOltpRetryInterval() throws Exception {
+		final long VALUE = 2345l;
+		props.setProperty("com.atomikos.icatch.oltp_retry_interval", Long.toString(VALUE));
+		assertEquals(VALUE, props.getOltpRetryInterval());
+	}
+	
+	@Test
+	public void testAllowSubTransactions() throws Exception {
+		final boolean VALUE = false;
+		props.setProperty("com.atomikos.icatch.allow_subtransactions", "false");
+		assertEquals(VALUE, props.getAllowSubTransactions());
 	}
 }
 

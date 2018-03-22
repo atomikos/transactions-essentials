@@ -1,33 +1,16 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
- * This code ("Atomikos TransactionsEssentials"), by itself,
- * is being distributed under the
- * Apache License, Version 2.0 ("License"), a copy of which may be found at
- * http://www.atomikos.com/licenses/apache-license-2.0.txt .
- * You may not use this file except in compliance with the License.
+ * LICENSE CONDITIONS
  *
- * While the License grants certain patent license rights,
- * those patent license rights only extend to the use of
- * Atomikos TransactionsEssentials by itself.
- *
- * This code (Atomikos TransactionsEssentials) contains certain interfaces
- * in package (namespace) com.atomikos.icatch
- * (including com.atomikos.icatch.Participant) which, if implemented, may
- * infringe one or more patents held by Atomikos.
- * It should be appreciated that you may NOT implement such interfaces;
- * licensing to implement these interfaces must be obtained separately from Atomikos.
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
  */
 
 package com.atomikos.jms;
 
 import java.io.Serializable;
-import java.util.Enumeration;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.jms.Connection;
 import javax.jms.JMSException;
@@ -43,12 +26,15 @@ import com.atomikos.datasource.pool.ConnectionFactory;
 import com.atomikos.datasource.pool.ConnectionPool;
 import com.atomikos.datasource.pool.ConnectionPoolException;
 import com.atomikos.datasource.pool.ConnectionPoolProperties;
+import com.atomikos.datasource.pool.ConnectionPoolWithSynchronizedValidation;
 import com.atomikos.datasource.pool.CreateConnectionException;
 import com.atomikos.datasource.pool.PoolExhaustedException;
+import com.atomikos.datasource.xa.event.XAResourceDetectedEvent;
 import com.atomikos.datasource.xa.jms.JmsTransactionalResource;
 import com.atomikos.icatch.config.Configuration;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
+import com.atomikos.publish.EventPublisher;
 import com.atomikos.util.ClassLoadingHelper;
 import com.atomikos.util.IntraVmObjectFactory;
 import com.atomikos.util.IntraVmObjectRegistry;
@@ -167,12 +153,12 @@ Referenceable, Serializable {
 		xaProperties = new Properties();
 	}
 	
-	protected void throwAtomikosJMSException ( String msg ) throws AtomikosJMSException 
+	private void throwAtomikosJMSException ( String msg ) throws AtomikosJMSException 
 	{
 		throwAtomikosJMSException ( msg , null );
 	}
 
-	protected void throwAtomikosJMSException ( String msg , Throwable cause ) 
+	private void throwAtomikosJMSException ( String msg , Throwable cause ) 
 	throws AtomikosJMSException
 	{
 		AtomikosJMSException.throwAtomikosJMSException(msg, cause);
@@ -344,7 +330,7 @@ Referenceable, Serializable {
 	 */
 	public synchronized void init() throws JMSException
 	{
-		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": init..." );
+		if ( LOGGER.isDebugEnabled() ) LOGGER.logInfo ( this + ": init..." );
 		if (connectionPool != null)
 			return;
 		
@@ -356,9 +342,9 @@ Referenceable, Serializable {
 			throwAtomikosJMSException("Property 'uniqueResourceName' of class AtomikosConnectionFactoryBean cannot be null.");
 		
 		try {
-			getReference();
 			ConnectionFactory cf = doInit();
-			connectionPool = new ConnectionPool(cf, this);
+			connectionPool = new ConnectionPoolWithSynchronizedValidation(cf, this);
+			getReference();
 			
 		} catch ( AtomikosJMSException e ) {
 			//don't log: AtomikosJMSException is logged on creation by the factory methods
@@ -368,19 +354,18 @@ Referenceable, Serializable {
 			//don't log: AtomikosJMSException is logged on creation by the factory methods
 			throwAtomikosJMSException("Cannot initialize AtomikosConnectionFactoryBean", ex);
 		}
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": init done." );
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": init done." );
 
 	}
 	
-	protected String printXaProperties() {
+	private String printXaProperties() {
 		StringBuffer ret = new StringBuffer();
 		if ( xaProperties != null ) {
-			Enumeration it = xaProperties.propertyNames();
+			Set<String> it = xaProperties.stringPropertyNames();
 			ret.append ( "[" );
 			boolean first = true;
-			while ( it.hasMoreElements() ) {
+			for (String name : it) {
 				if ( ! first ) ret.append ( "," );
-				String name = ( String ) it.nextElement();
 				String value = xaProperties.getProperty( name);
 				ret.append ( name ); ret.append ( "=" ); ret.append ( value );
 				first = false;
@@ -390,7 +375,7 @@ Referenceable, Serializable {
 		return ret.toString();
 	}
 	
-	protected com.atomikos.datasource.pool.ConnectionFactory doInit() throws Exception 
+	private com.atomikos.datasource.pool.ConnectionFactory doInit() throws Exception 
 	{
 		if (xaConnectionFactory == null) {
 			if (xaConnectionFactoryClassName == null)
@@ -400,7 +385,7 @@ Referenceable, Serializable {
 		}
 		
 		
-		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo(
+		if ( LOGGER.isDebugEnabled() ) LOGGER.logInfo(
 				this + ": initializing with [" +
 				" xaConnectionFactory=" + xaConnectionFactory + "," +
 				" xaConnectionFactoryClassName=" + xaConnectionFactoryClassName + "," +
@@ -419,26 +404,26 @@ Referenceable, Serializable {
 				);
 		
 		if (xaConnectionFactory == null) {
-			Class xaClass = null;
 			try {
-				xaClass = ClassLoadingHelper.loadClass ( xaConnectionFactoryClassName );
+				Class<XAConnectionFactory> xaClass = ClassLoadingHelper.loadClass ( xaConnectionFactoryClassName );
+				xaConnectionFactory = xaClass.newInstance();
 			} catch ( ClassNotFoundException notFound ) {
 				AtomikosJMSException.throwAtomikosJMSException ( "The class '" + xaConnectionFactoryClassName +
 						"' specified by property 'xaConnectionFactoryClassName' of class AtomikosConnectionFactoryBean could not be found in the classpath. " +
 						"Please make sure the spelling in your setup is correct, and that the required jar(s) are in the classpath." , notFound );
-			}
-			Object driver = xaClass.newInstance();
-			if ( !( driver instanceof XAConnectionFactory ) ) 
+			} catch (ClassCastException cce) {
 				AtomikosJMSException.throwAtomikosJMSException ( "The class '" + xaConnectionFactoryClassName +
 						"' specified by property 'xaConnectionFactoryClassName' of class AtomikosConnectionFactoryBean does not implement the required interface javax.jms.XAConnectionFactory. " +
 						"Please make sure the spelling in your setup is correct, and check your JMS driver vendor's documentation." );
-			xaConnectionFactory = (XAConnectionFactory) driver;
+			}
+			
 			PropertyUtils.setProperties(xaConnectionFactory, xaProperties );
 		}
 			
 		JmsTransactionalResource tr = new JmsTransactionalResource(getUniqueResourceName() , xaConnectionFactory);
 		com.atomikos.datasource.pool.ConnectionFactory cf = new com.atomikos.jms.AtomikosJmsXAConnectionFactory(xaConnectionFactory, tr, this);
 		Configuration.addResource ( tr );
+		EventPublisher.publish(new XAResourceDetectedEvent(xaConnectionFactoryClassName,xaProperties,XAResourceDetectedEvent.ResourceType.JMS));
 		return cf;
 	}
 	
@@ -570,7 +555,7 @@ Referenceable, Serializable {
 	 */
 	public synchronized void close() 
 	{
-		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": close..." );
+		if ( LOGGER.isDebugEnabled() ) LOGGER.logInfo ( this + ": close..." );
 		if ( connectionPool != null ) {
 			connectionPool.destroy();
 			connectionPool = null;
@@ -580,7 +565,7 @@ Referenceable, Serializable {
 			IntraVmObjectRegistry.removeResource ( getUniqueResourceName() );
 		} catch ( NameNotFoundException e ) {
 			//ignore but log
-			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": error removing from JNDI" , e );
+			if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": error removing from JNDI" , e );
 		}
 		
 		RecoverableResource res = Configuration.getResource ( getUniqueResourceName() );
@@ -590,7 +575,7 @@ Referenceable, Serializable {
 			res.close();
 		}
 		
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": close done." );
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": close done." );
 	}
 	
 	public String toString() 
@@ -609,11 +594,11 @@ Referenceable, Serializable {
 	 */
 	public javax.jms.Connection createConnection() throws JMSException
 	{
-		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": createConnection()..." );
+		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": createConnection()..." );
 		Connection ret = null;
 		try {
 			init();
-			ret =  (Connection) connectionPool.borrowConnection ( null );
+			ret =  (Connection) connectionPool.borrowConnection();
 		} catch (CreateConnectionException ex) {
 			throwAtomikosJMSException("Failed to grow the connection pool", ex);
 		} catch (PoolExhaustedException e) {
@@ -621,7 +606,7 @@ Referenceable, Serializable {
 		} catch (ConnectionPoolException e) {
 			throwAtomikosJMSException ( "Error borrowing connection", e );
 		}
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": createConnection() returning " + ret );
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": createConnection() returning " + ret );
 		return ret;
 	}
 
@@ -642,9 +627,9 @@ Referenceable, Serializable {
 	public Reference getReference() throws NamingException
 	{
 		Reference ret = null;
-		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": getReference()..." );
+		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": getReference()..." );
 		ret = IntraVmObjectFactory.createReference ( this , getUniqueResourceName() );
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": getReference() returning " + ret );
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": getReference() returning " + ret );
 		return ret;
 	}
 	

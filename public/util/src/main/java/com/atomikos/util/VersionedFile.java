@@ -1,26 +1,9 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
- * This code ("Atomikos TransactionsEssentials"), by itself,
- * is being distributed under the
- * Apache License, Version 2.0 ("License"), a copy of which may be found at
- * http://www.atomikos.com/licenses/apache-license-2.0.txt .
- * You may not use this file except in compliance with the License.
+ * LICENSE CONDITIONS
  *
- * While the License grants certain patent license rights,
- * those patent license rights only extend to the use of
- * Atomikos TransactionsEssentials by itself.
- *
- * This code (Atomikos TransactionsEssentials) contains certain interfaces
- * in package (namespace) com.atomikos.icatch
- * (including com.atomikos.icatch.Participant) which, if implemented, may
- * infringe one or more patents held by Atomikos.
- * It should be appreciated that you may NOT implement such interfaces;
- * licensing to implement these interfaces must be obtained separately from Atomikos.
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
  */
 
 package com.atomikos.util;
@@ -31,6 +14,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.channels.FileChannel;
 
 
  /**
@@ -46,6 +31,7 @@ import java.io.IOException;
 public class VersionedFile
 {
 
+	private static final String FILE_SEPARATOR = String.valueOf(File.separatorChar);
 	private String baseDir;
 	private String suffix;
 	private String baseName;
@@ -54,8 +40,8 @@ public class VersionedFile
 
 	private long version;
 	private FileInputStream inputStream;
-	private FileOutputStream outputStream;
 
+	private RandomAccessFile randomAccessFile;
 
 
 	/**
@@ -69,6 +55,10 @@ public class VersionedFile
 	 */
 	public VersionedFile ( String baseDir , String baseName , String suffix )
 	{
+		
+		if(!baseDir.endsWith(FILE_SEPARATOR)) {
+			baseDir += FILE_SEPARATOR;
+		}
 		this.baseDir = baseDir;
 		this.suffix = suffix;
 		this.baseName = baseName;
@@ -111,7 +101,7 @@ public class VersionedFile
 
 			ret = Long.valueOf( suffix );
 		} catch ( NumberFormatException e ) {
-			IllegalArgumentException err = new IllegalArgumentException ( "Error extracting version from file: " + name );
+			IllegalArgumentException err = new IllegalArgumentException ( "Error extracting version from file: " + name+" in " + getBaseDir() );
 			err.initCause ( e );
 			throw err;
 		}
@@ -161,7 +151,7 @@ public class VersionedFile
 	public FileInputStream openLastValidVersionForReading()
 	throws IllegalStateException, FileNotFoundException
 	{
-		if ( outputStream != null ) throw new IllegalStateException ( "Already started writing." );
+		if ( randomAccessFile != null ) throw new IllegalStateException ( "Already started writing." );
 		inputStream = new FileInputStream ( getCurrentVersionFileName() );
 		return inputStream;
 	}
@@ -173,21 +163,37 @@ public class VersionedFile
 	 * {@link #discardBackupVersion()} is called.
 	 *
 	 * @return A stream for writing to.
-	 * @throws FileNotFoundException
-	 * @throws FileNotFoundException
+	 * @throws IllegalStateException If called more than once
+	 * without a close in between.
+	 * @throws IOException If the file cannot be opened for writing.
+	 */
+	public FileOutputStream openNewVersionForWriting() throws IOException
+	{
+		openNewVersionForNioWriting();
+		return new FileOutputStream(randomAccessFile.getFD());
+	}
+
+	/**
+	 * Opens a new version for writing to. Note that
+	 * this new version is tentative and cannot be read
+	 * by {@link #openLastValidVersionForReading()} until
+	 * {@link #discardBackupVersion()} is called.
+	 *
+	 * @return A file for writing to.
+	 * @throws IOException
 	 *
 	 * @throws IllegalStateException If called more than once
 	 * without a close in between.
 	 * @throws FileNotFoundException If the file cannot be opened for writing.
+	 * @throws IOException 
 	 */
-	public FileOutputStream openNewVersionForWriting() throws FileNotFoundException
+	public FileChannel openNewVersionForNioWriting() throws FileNotFoundException
 	{
-		if ( outputStream != null ) throw new IllegalStateException ( "Already writing a new version." );
+		if ( randomAccessFile != null ) throw new IllegalStateException ( "Already writing a new version." );
 		version++;
-		outputStream = new FileOutputStream ( getCurrentVersionFileName() );
-		return outputStream;
+		randomAccessFile = new RandomAccessFile(getCurrentVersionFileName(), "rw");
+		return randomAccessFile.getChannel();
 	}
-
 	/**
 	 * Discards the backup version (if any).
 	 * After calling this method, the newer version
@@ -203,8 +209,9 @@ public class VersionedFile
 	 */
 	public void discardBackupVersion() throws IllegalStateException, IOException
 	{
-		if ( outputStream == null ) throw new IllegalStateException ( "No new version yet!" );
+		if ( randomAccessFile == null ) throw new IllegalStateException ( "No new version yet!" );
 		String fileName = getBackupVersionFileName();
+		
 		File temp = new File ( fileName );
         if ( temp.exists() && !temp.delete() ) throw new IOException ( "Failed to delete backup version: " + fileName );
 
@@ -228,11 +235,11 @@ public class VersionedFile
 				inputStream = null;
 			}
 		}
-		if ( outputStream != null ) {
+		if ( randomAccessFile != null ) {
 			try {
-				if ( outputStream.getFD().valid() ) outputStream.close();
+				if ( randomAccessFile.getFD().valid() ) randomAccessFile.close();
 			} finally {
-				outputStream = null;
+				randomAccessFile = null;
 			}
 		}
 	}

@@ -1,31 +1,13 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
- * This code ("Atomikos TransactionsEssentials"), by itself,
- * is being distributed under the
- * Apache License, Version 2.0 ("License"), a copy of which may be found at
- * http://www.atomikos.com/licenses/apache-license-2.0.txt .
- * You may not use this file except in compliance with the License.
+ * LICENSE CONDITIONS
  *
- * While the License grants certain patent license rights,
- * those patent license rights only extend to the use of
- * Atomikos TransactionsEssentials by itself.
- *
- * This code (Atomikos TransactionsEssentials) contains certain interfaces
- * in package (namespace) com.atomikos.icatch
- * (including com.atomikos.icatch.Participant) which, if implemented, may
- * infringe one or more patents held by Atomikos.
- * It should be appreciated that you may NOT implement such interfaces;
- * licensing to implement these interfaces must be obtained separately from Atomikos.
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
  */
 
 package com.atomikos.icatch;
 
-import com.atomikos.icatch.provider.TransactionServicePlugin;
 
  /**
   * This internal interface is the base interface for creating transactions.
@@ -45,14 +27,14 @@ public interface TransactionService
        * @param listener The listener.
        */
        
-      public void addTSListener ( TransactionServicePlugin listener );
+       void addTSListener ( TransactionServicePlugin listener );
       
        /**
         * Removes a listener from the transaction service.
         * @param listener The listener.
         */
         
-      public void removeTSListener ( TransactionServicePlugin listener );
+       void removeTSListener ( TransactionServicePlugin listener );
   
   
        /**
@@ -61,7 +43,7 @@ public interface TransactionService
         * @return CompositeTransaction The transaction, or null if none.
         */
         
-      public CompositeTransaction getCompositeTransaction ( String tid );
+       CompositeTransaction getCompositeTransaction ( String tid );
       
 
       
@@ -78,7 +60,7 @@ public interface TransactionService
        *
        */
        
-      public CompositeTransaction createCompositeTransaction ( 
+       CompositeTransaction createCompositeTransaction ( 
                   long timeout )
                   throws SysException;
 
@@ -103,7 +85,7 @@ public interface TransactionService
        */
 
 
-      public CompositeTransaction 
+      CompositeTransaction 
       recreateCompositeTransaction (  Propagation context , 
                                        boolean orphancheck ,
                                        boolean heur_commit )
@@ -125,7 +107,7 @@ public interface TransactionService
        * @exception SysException
        */
      
-      public void shutdown ( boolean force )
+      void shutdown ( boolean force )
       throws SysException, IllegalStateException;
       
        /**
@@ -138,7 +120,7 @@ public interface TransactionService
         * @exception SysException On failure, or if the given root is not known.
         */
       
-      public Participant getParticipant ( String root )
+      Participant getParticipant ( String root )
       throws SysException;
       
       /**
@@ -153,17 +135,7 @@ public interface TransactionService
        * @exception SysException
        */
       
-      public CompositeCoordinator getCompositeCoordinator ( String root )
+      CompositeCoordinator getCompositeCoordinator ( String root )
       throws SysException;
       
-      /**
-       * Gets the superior recovery coordinator for a given root.
-       * Needed for imported transactions only. 
-       * @param root The root ID
-       * @return The recovery coordinator, or null if the root does not exist or if the root was not imported.
-       */
-      
-      public RecoveryCoordinator getSuperiorRecoveryCoordinator ( String root );
-      
-
 }

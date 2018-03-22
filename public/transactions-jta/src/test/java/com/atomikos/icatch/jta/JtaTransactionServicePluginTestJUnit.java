@@ -1,3 +1,11 @@
+/**
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
+ *
+ * LICENSE CONDITIONS
+ *
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
+ */
+
 package com.atomikos.icatch.jta;
 
 import java.rmi.registry.LocateRegistry;
@@ -12,9 +20,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.atomikos.icatch.TransactionServicePlugin;
 import com.atomikos.icatch.config.Configuration;
 import com.atomikos.icatch.imp.CompositeTransactionManagerImp;
-import com.atomikos.icatch.provider.TransactionServicePlugin;
 
 public class JtaTransactionServicePluginTestJUnit {
 
@@ -96,7 +104,9 @@ public class JtaTransactionServicePluginTestJUnit {
 	@Test
 	public void testAfterInitInstallsJtaTransactionManager() {
 		Configuration.installCompositeTransactionManager(new CompositeTransactionManagerImp());
+		Configuration.init();
 		plugin.afterInit();
 		Assert.assertNotNull(TransactionManagerImp.getTransactionManager());
+		Configuration.shutdown(true);
 	}
 }

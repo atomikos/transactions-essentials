@@ -1,26 +1,9 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
- * This code ("Atomikos TransactionsEssentials"), by itself,
- * is being distributed under the
- * Apache License, Version 2.0 ("License"), a copy of which may be found at
- * http://www.atomikos.com/licenses/apache-license-2.0.txt .
- * You may not use this file except in compliance with the License.
+ * LICENSE CONDITIONS
  *
- * While the License grants certain patent license rights,
- * those patent license rights only extend to the use of
- * Atomikos TransactionsEssentials by itself.
- *
- * This code (Atomikos TransactionsEssentials) contains certain interfaces
- * in package (namespace) com.atomikos.icatch
- * (including com.atomikos.icatch.Participant) which, if implemented, may
- * infringe one or more patents held by Atomikos.
- * It should be appreciated that you may NOT implement such interfaces;
- * licensing to implement these interfaces must be obtained separately from Atomikos.
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
  */
 
 /**
@@ -28,9 +11,15 @@
  */
 package com.atomikos.util;
 
+import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.MethodDescriptor;
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.atomikos.logging.Logger;
@@ -65,13 +54,13 @@ public class ClassLoadingHelper {
 	 *                If any of the interfaces involved could not be loaded.
 	 */
 
-	private static Object newProxyInstance(List classLoadersToTry,
-			Class[] interfaces, InvocationHandler delegate)
+	private static Object newProxyInstance(List<ClassLoader> classLoadersToTry,
+			Class<?>[] interfaces, InvocationHandler delegate)
 			throws IllegalArgumentException {
 
 		Object ret = null;
-		ClassLoader cl = (ClassLoader) classLoadersToTry.get(0);
-		List remainingClassLoaders = classLoadersToTry.subList(1,
+		ClassLoader cl = classLoadersToTry.get(0);
+		List<ClassLoader> remainingClassLoaders = classLoadersToTry.subList(1,
 				classLoadersToTry.size());
 
 		try {
@@ -109,15 +98,15 @@ public class ClassLoadingHelper {
 	 *                If any of the interfaces involved could not be loaded.
 	 */
 
-	public static Object newProxyInstance(List classLoadersToTry,
-			Class[] minimumSetOfInterfaces, Class[] interfaces,
+	public static Object newProxyInstance(List<ClassLoader> classLoadersToTry,
+			Class<?>[] minimumSetOfInterfaces, Class<?>[] interfaces,
 			InvocationHandler delegate) throws IllegalArgumentException {
 		Object ret = null;
 		try {
 			ret = newProxyInstance(classLoadersToTry, interfaces, delegate);
 		} catch (IllegalArgumentException someClassNotFound) {
-			if (LOGGER.isDebugEnabled()) {
-				LOGGER.logDebug("could not create Atomikos proxy with all requested interfaces - trying again with minimum set of interfaces");
+			if (LOGGER.isTraceEnabled()) {
+				LOGGER.logTrace("could not create Atomikos proxy with all requested interfaces - trying again with minimum set of interfaces");
 			}
 
 			ret = newProxyInstance(classLoadersToTry, minimumSetOfInterfaces,
@@ -134,14 +123,14 @@ public class ClassLoadingHelper {
 	 * @throws ClassNotFoundException
 	 *             If not found
 	 */
-	public static Class loadClass(String className)
+	public static <T> Class<T> loadClass(String className)
 			throws ClassNotFoundException {
-		Class clazz = null;
+		Class<T> clazz = null;
 		try {
-			clazz = Thread.currentThread().getContextClassLoader()
+			clazz = (Class<T>)Thread.currentThread().getContextClassLoader()
 					.loadClass(className);
 		} catch (ClassNotFoundException nf) {
-			clazz = Class.forName(className);
+			clazz = (Class<T>)Class.forName(className);
 		}
 		return clazz;
 	}
@@ -155,7 +144,7 @@ public class ClassLoadingHelper {
 	 *            The name of the resource
 	 * @return The URL to the resource, or null if not found.
 	 */
-	public static URL loadResourceFromClasspath(Class clazz, String resourceName) {
+	public static URL loadResourceFromClasspath(Class<?> clazz, String resourceName) {
 		URL ret = null;
 		// first try from package scope
 		ret = clazz.getResource(resourceName);
@@ -166,18 +155,21 @@ public class ClassLoadingHelper {
 		return ret;
 	}
 
-	public static Object newInstance(String className) {
+	private static List<String> javaLangObjectMethodNames = new ArrayList<String>();
+	static {
 		try {
-			Class clazz = ClassLoadingHelper.loadClass(className);
-			return clazz.newInstance();
-		} catch (ClassNotFoundException e) {
-			LOGGER.logWarning("Unable to instanciate " + className, e);
-		} catch (InstantiationException e) {
-			LOGGER.logWarning("Unable to instanciate " + className, e);
-		} catch (IllegalAccessException e) {
-			LOGGER.logWarning("Unable to instanciate " + className, e);
+			BeanInfo infos = Introspector.getBeanInfo(java.lang.Object.class);
+			MethodDescriptor[] methods=	infos.getMethodDescriptors();
+			for (MethodDescriptor methodDescriptor : methods) {
+				javaLangObjectMethodNames.add(methodDescriptor.getName());
+			}
+		} catch (IntrospectionException e) {
+			//ignore, return false
 		}
-		return null;
+	}
+	
+	public static boolean existsInJavaObjectClass(Method method) {
+		return javaLangObjectMethodNames.contains(method.getName());
 	}
 
 }

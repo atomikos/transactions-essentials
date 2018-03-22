@@ -1,3 +1,11 @@
+/**
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
+ *
+ * LICENSE CONDITIONS
+ *
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
+ */
+
 package com.atomikos.icatch.provider;
 
 import java.net.UnknownHostException;
@@ -16,8 +24,17 @@ public final class ConfigProperties {
 	public static final String THREADED_2PC_PROPERTY_NAME = "com.atomikos.icatch.threaded_2pc";
 	public static final String FORCE_SHUTDOWN_ON_VM_EXIT_PROPERTY_NAME = "com.atomikos.icatch.force_shutdown_on_vm_exit";
 	public static final String FILE_PATH_PROPERTY_NAME = "com.atomikos.icatch.file";
+	public static final String CHECKPOINT_INTERVAL = "com.atomikos.icatch.checkpoint_interval";
 
+	private static final String FORGET_ORPHANED_LOG_ENTRIES_DELAY = "com.atomikos.icatch.forget_orphaned_log_entries_delay";
+	private static final String OLTP_MAX_RETRIES_PROPERTY_NAME = "com.atomikos.icatch.oltp_max_retries";
+	private static final String OLTP_RETRY_INTERVAL = "com.atomikos.icatch.oltp_retry_interval";
+	private static final String RECOVERY_DELAY = "com.atomikos.icatch.recovery_delay";
 
+	private static final String ALLOW_SUBTRANSACTIONS = "com.atomikos.icatch.allow_subtransactions";
+	private static final String DEFAULT_MAX_WAIT_TIME_ON_SHUTDOWN = "com.atomikos.icatch.default_max_wait_time_on_shutdown";
+
+	
 	/**
 	 * Replace ${...} sequence with the referenced value from the given properties or 
 	 * (if not found) the system properties -
@@ -105,7 +122,7 @@ public final class ConfigProperties {
 
 	private void substitutePlaceHolderValues() {
 		//resolve referenced values with ant-like ${...} syntax
-		java.util.Enumeration allProps= properties.propertyNames();
+		Enumeration<?> allProps= properties.propertyNames();
 		while ( allProps.hasMoreElements() ) {
 			String key = ( String ) allProps.nextElement();
 			String raw = properties.getProperty ( key );
@@ -119,13 +136,14 @@ public final class ConfigProperties {
 	public String getProperty(String name) {
 		completeProperties();
 		String ret = properties.getProperty(name);
-		if (ret == null) throw new IllegalArgumentException(name);
+		if (ret == null) {
+			throw new IllegalArgumentException("Missing required property: " + name);
+		}
 		ret = ret.trim();
 		return ret;
 	}
 
-	public void setProperty(String name,
-			String value) {
+	public void setProperty(String name, String value) {
 		properties.setProperty(name, value);		
 	}
 
@@ -173,9 +191,13 @@ public final class ConfigProperties {
 	public boolean getThreaded2pc() {
 		return getAsBoolean(THREADED_2PC_PROPERTY_NAME);
 	}
+	
+	public long getCheckpointInterval(){
+		return getAsLong(CHECKPOINT_INTERVAL);
+	}
 
 	public void applyUserSpecificProperties(Properties userSpecificProperties) {
-		Enumeration names = userSpecificProperties.propertyNames();
+		Enumeration<?> names = userSpecificProperties.propertyNames();
 		while (names.hasMoreElements()) {
 			String name = (String) names.nextElement();
 			properties.setProperty(name, userSpecificProperties.getProperty(name));
@@ -185,7 +207,7 @@ public final class ConfigProperties {
 	public Properties getCompletedProperties() {
 		Properties ret = new Properties();
 		completeProperties();
-		Enumeration propertyNames = properties.propertyNames();
+		Enumeration<?> propertyNames = properties.propertyNames();
 		while (propertyNames.hasMoreElements()) {
 			String name = (String) propertyNames.nextElement();
 			ret.setProperty(name, getProperty(name));
@@ -202,5 +224,30 @@ public final class ConfigProperties {
 	public boolean getForceShutdownOnVmExit() {
 		return getAsBoolean(FORCE_SHUTDOWN_ON_VM_EXIT_PROPERTY_NAME);
 	}
+
+	public long getForgetOrphanedLogEntriesDelay() {
+		return getAsLong(FORGET_ORPHANED_LOG_ENTRIES_DELAY);
+	}
+
+	public int getOltpMaxRetries() {
+		return getAsInt(OLTP_MAX_RETRIES_PROPERTY_NAME);
+	}
+
+	public long getOltpRetryInterval() {
+		return getAsInt(OLTP_RETRY_INTERVAL);
+	}
+
+	public long getRecoveryDelay() {
+		return getAsLong(RECOVERY_DELAY);
+	}
+
+	public boolean getAllowSubTransactions() {
+		return getAsBoolean(ALLOW_SUBTRANSACTIONS);
+	}
+	
+	public long getDefaultMaxWaitTimeOnShutdown() {
+		return getAsLong(DEFAULT_MAX_WAIT_TIME_ON_SHUTDOWN);
+	}
+
 
 }

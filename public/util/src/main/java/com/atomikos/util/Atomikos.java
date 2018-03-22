@@ -1,3 +1,11 @@
+/**
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
+ *
+ * LICENSE CONDITIONS
+ *
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
+ */
+
 package com.atomikos.util;
 
 import java.io.InputStream;
@@ -25,6 +33,10 @@ public final class Atomikos {
 		}
 
 		return properties.getProperty("version");
+	}
+	
+	public static boolean isEvaluationVersion() {
+		return VERSION.endsWith(".EVAL");
 	}
 
 

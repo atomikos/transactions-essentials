@@ -1,3 +1,11 @@
+/**
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
+ *
+ * LICENSE CONDITIONS
+ *
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
+ */
+
 package com.atomikos.util;
 
 import java.io.Serializable;
@@ -39,7 +47,7 @@ public class SerializableObjectFactoryTestJUnit extends TestCase {
 		if (bean.getTransientValue() == TRANSIENT_VALUE)
 			fail("getTransientValue failure");
 	}
-
+	@SuppressWarnings("serial")
 	static class TestBean implements Serializable {
 		private String name;
 

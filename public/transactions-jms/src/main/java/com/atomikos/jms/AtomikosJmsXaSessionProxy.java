@@ -1,26 +1,9 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
- * This code ("Atomikos TransactionsEssentials"), by itself,
- * is being distributed under the
- * Apache License, Version 2.0 ("License"), a copy of which may be found at
- * http://www.atomikos.com/licenses/apache-license-2.0.txt .
- * You may not use this file except in compliance with the License.
+ * LICENSE CONDITIONS
  *
- * While the License grants certain patent license rights,
- * those patent license rights only extend to the use of
- * Atomikos TransactionsEssentials by itself.
- *
- * This code (Atomikos TransactionsEssentials) contains certain interfaces
- * in package (namespace) com.atomikos.icatch
- * (including com.atomikos.icatch.Participant) which, if implemented, may
- * infringe one or more patents held by Atomikos.
- * It should be appreciated that you may NOT implement such interfaces;
- * licensing to implement these interfaces must be obtained separately from Atomikos.
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
  */
 
 package com.atomikos.jms;
@@ -28,7 +11,6 @@ package com.atomikos.jms;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -54,32 +36,29 @@ class AtomikosJmsXaSessionProxy extends AbstractJmsSessionProxy implements Sessi
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(AtomikosJmsXaSessionProxy.class);
 
-	private final static List PRODUCER_CONSUMER_METHODS = Arrays.asList(new String[] {"createConsumer", "createProducer","createDurableSubscriber"});
-	private final static List SESSION_TRANSACTION_METHODS = Arrays.asList(new String[] {"commit", "rollback"});
+	private final static List<String> PRODUCER_CONSUMER_METHODS = Arrays.asList("createConsumer", "createProducer","createDurableSubscriber");
+	
+	private final static List<String> SESSION_TRANSACTION_METHODS = Arrays.asList("commit", "rollback");
+	
+	private static Class<?>[] MINIMUM_SET_OF_INTERFACES = {Reapable.class, DynamicProxy.class, javax.jms.Session.class };
+	
 	private final static String CLOSE_METHOD = "close";
 	
 	public static Object newInstance ( XASession s , XATransactionalResource jmsTransactionalResource , 
 			SessionHandleStateChangeListener pooledConnection , SessionHandleStateChangeListener connectionProxy ) throws JMSException 
 	{
         AtomikosJmsXaSessionProxy proxy = new AtomikosJmsXaSessionProxy ( s , jmsTransactionalResource , pooledConnection , connectionProxy );
-        Set<Class> interfaces = PropertyUtils.getAllImplementedInterfaces ( s.getClass() );
+        Set<Class<?>> interfaces = PropertyUtils.getAllImplementedInterfaces ( s.getClass() );
         //see case 24532
         interfaces.add ( DynamicProxy.class );
-        Class[] interfaceClasses = ( Class[] ) interfaces.toArray ( new Class[0] );
-        
-        Set<Class> minimumSetOfInterfaces = new HashSet<Class>();
-		minimumSetOfInterfaces.add ( Reapable.class );
-		minimumSetOfInterfaces.add ( DynamicProxy.class );
-		minimumSetOfInterfaces.add ( javax.jms.Session.class );
-        Class[] minimumSetOfInterfaceClasses = ( Class[] ) minimumSetOfInterfaces.toArray( new Class[0] );
-        
+        Class<?>[] interfaceClasses = ( Class[] ) interfaces.toArray ( new Class[0] );
         
         List<ClassLoader> classLoaders = new ArrayList<ClassLoader>();
 		classLoaders.add ( Thread.currentThread().getContextClassLoader() );
 		classLoaders.add ( s.getClass().getClassLoader() );
 		classLoaders.add ( AtomikosJmsXaSessionProxy.class.getClassLoader() );
 		
-		return ( Session ) ClassLoadingHelper.newProxyInstance ( classLoaders , minimumSetOfInterfaceClasses , interfaceClasses , proxy );
+		return ( Session ) ClassLoadingHelper.newProxyInstance ( classLoaders , MINIMUM_SET_OF_INTERFACES , interfaceClasses , proxy );
     }
 
 
@@ -128,14 +107,14 @@ class AtomikosJmsXaSessionProxy extends AbstractJmsSessionProxy implements Sessi
 				//
 				// See: org.springframework.jms.connection.ConnectionFactoryUtils$JmsResourceSynchronization.afterCommit()
 				// and org.springframework.jms.connection.JmsResourceHolder.commitAll() (as of Spring 2.0.8)
-				if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": " + msg );
+				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": " + msg );
 				throw new javax.jms.TransactionInProgressException ( msg );
 			}
 			
 			
 			if ( CLOSE_METHOD.equals ( methodName ) ) {
 				state.notifySessionClosed();
-				if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": closing session " + this + " - is terminated ? " + state.isTerminated() );
+				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": closing session " + this + " - is terminated ? " + state.isTerminated() );
 				if ( state.isTerminated() ) {
 					//only destroy if there is no pending 2PC - otherwise this is done
 					//in the registered synchronization
@@ -150,7 +129,7 @@ class AtomikosJmsXaSessionProxy extends AbstractJmsSessionProxy implements Sessi
 			}
 			
 			if (PRODUCER_CONSUMER_METHODS.contains(methodName)) {
-				if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": calling " + methodName + " on JMS driver session " + delegate );
+				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": calling " + methodName + " on JMS driver session " + delegate );
 				Object producerConsumerProxy = null;
 				if ( "createConsumer".equals ( methodName ) ) {
 					MessageConsumer vendorConsumer = null;
@@ -185,15 +164,15 @@ class AtomikosJmsXaSessionProxy extends AbstractJmsSessionProxy implements Sessi
 					}
 					producerConsumerProxy = new AtomikosJmsTopicSubscriberProxy ( vendorSubscriber , state );
 				}
-				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": " + methodName + " returning " + producerConsumerProxy );
+				if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": " + methodName + " returning " + producerConsumerProxy );
 				return producerConsumerProxy;
 			
 			}
 			
 			try {
-				if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": calling " + methodName + " on JMS driver session..." );
+				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": calling " + methodName + " on JMS driver session..." );
 				Object ret = method.invoke(delegate, args);
-				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": " + methodName + " returning " + ret );
+				if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": " + methodName + " returning " + ret );
 				return ret;
 			}  catch (Exception ex) {
 				String msg =  "Error delegating call to " + methodName + " on JMS driver";
@@ -212,7 +191,7 @@ class AtomikosJmsXaSessionProxy extends AbstractJmsSessionProxy implements Sessi
 	protected void destroy ( boolean closeXaSession ) {
 			if ( closeXaSession ) {
 				//see case 71079: don't close vendor session if transaction is not done yet
-				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": closing underlying vendor session " + this );
+				if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": closing underlying vendor session " + this );
 				try {
 					delegate.close(); 
 				} catch  ( JMSException e ) {
@@ -260,6 +239,14 @@ class AtomikosJmsXaSessionProxy extends AbstractJmsSessionProxy implements Sessi
 		return "atomikos xa session proxy for resource " + jmsTransactionalResource.getName();
 	}
 
-
+	@Override
+	public void recycle() {
+		synchronized (this) {
+			this.closed = false;
+			if(state != null) {
+				state.notifySessionBorrowed();
+			}
+		}
+	}
 
 }

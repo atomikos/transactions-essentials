@@ -1,26 +1,9 @@
 /**
- * Copyright (C) 2000-2012 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
- * This code ("Atomikos TransactionsEssentials"), by itself,
- * is being distributed under the
- * Apache License, Version 2.0 ("License"), a copy of which may be found at
- * http://www.atomikos.com/licenses/apache-license-2.0.txt .
- * You may not use this file except in compliance with the License.
+ * LICENSE CONDITIONS
  *
- * While the License grants certain patent license rights,
- * those patent license rights only extend to the use of
- * Atomikos TransactionsEssentials by itself.
- *
- * This code (Atomikos TransactionsEssentials) contains certain interfaces
- * in package (namespace) com.atomikos.icatch
- * (including com.atomikos.icatch.Participant) which, if implemented, may
- * infringe one or more patents held by Atomikos.
- * It should be appreciated that you may NOT implement such interfaces;
- * licensing to implement these interfaces must be obtained separately from Atomikos.
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
  */
 
 package com.atomikos.icatch.imp;
@@ -29,10 +12,9 @@ import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeurMixedException;
 import com.atomikos.icatch.HeurRollbackException;
-import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.RollbackException;
 import com.atomikos.icatch.SysException;
-import com.atomikos.icatch.TxState;
+import com.atomikos.recovery.TxState;
 
 /**
  * A state handler for the heuristic committed coordinator state.
@@ -40,11 +22,6 @@ import com.atomikos.icatch.TxState;
 
 class HeurCommittedStateHandler extends CoordinatorStateHandler
 {
-
-    HeurCommittedStateHandler ( CoordinatorImp coordinator )
-    {
-        super ( coordinator );
-    }
 
     HeurCommittedStateHandler ( CoordinatorStateHandler previous )
     {
@@ -71,10 +48,10 @@ class HeurCommittedStateHandler extends CoordinatorStateHandler
             HeurMixedException, SysException
     {
 
-        throw new HeurHazardException ( getHeuristicMessages () );
+        throw new HeurHazardException ();
     }
 
-    protected HeuristicMessage[] commit ( boolean onePhase )
+    protected void commit ( boolean onePhase )
             throws HeurRollbackException, HeurMixedException,
             HeurHazardException, java.lang.IllegalStateException,
             RollbackException, SysException
@@ -84,16 +61,15 @@ class HeurCommittedStateHandler extends CoordinatorStateHandler
         TerminatedStateHandler termStateHandler = new TerminatedStateHandler (
                 this );
         getCoordinator ().setStateHandler ( termStateHandler );
-        return getHeuristicMessages ();
 
     }
 
-    protected HeuristicMessage[] rollback ()
+    protected void rollback ()
             throws HeurCommitException, HeurMixedException, SysException,
             HeurHazardException, java.lang.IllegalStateException
     {
 
-        throw new HeurCommitException ( getHeuristicMessages () );
+        throw new HeurCommitException();
     }
 
 }

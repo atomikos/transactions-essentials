@@ -1,33 +1,15 @@
 /**
- * Copyright (C) 2000-2012 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
- * This code ("Atomikos TransactionsEssentials"), by itself,
- * is being distributed under the
- * Apache License, Version 2.0 ("License"), a copy of which may be found at
- * http://www.atomikos.com/licenses/apache-license-2.0.txt .
- * You may not use this file except in compliance with the License.
+ * LICENSE CONDITIONS
  *
- * While the License grants certain patent license rights,
- * those patent license rights only extend to the use of
- * Atomikos TransactionsEssentials by itself.
- *
- * This code (Atomikos TransactionsEssentials) contains certain interfaces
- * in package (namespace) com.atomikos.icatch
- * (including com.atomikos.icatch.Participant) which, if implemented, may
- * infringe one or more patents held by Atomikos.
- * It should be appreciated that you may NOT implement such interfaces;
- * licensing to implement these interfaces must be obtained separately from Atomikos.
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
  */
 
 package com.atomikos.icatch.jta;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Stack;
 
 import javax.naming.NamingException;
 import javax.naming.Reference;
@@ -45,9 +27,9 @@ import com.atomikos.icatch.CompositeTransaction;
 import com.atomikos.icatch.CompositeTransactionManager;
 import com.atomikos.icatch.SubTxAwareParticipant;
 import com.atomikos.icatch.SysException;
-import com.atomikos.icatch.TxState;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
+import com.atomikos.recovery.TxState;
 
 /**
  * The main JTA transaction manager singleton.
@@ -59,7 +41,6 @@ public class TransactionManagerImp implements TransactionManager,
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(TransactionManagerImp.class);
 
-	private static final long serialVersionUID = -3048879409985542685L;
 
 	/**
      * Transaction property name to indicate that the transaction is a 
@@ -77,7 +58,11 @@ public class TransactionManagerImp implements TransactionManager,
 
     private static boolean jtaTransactionsAreSerialByDefault = false;
 
-    private int timeoutInSecondsForNewTransactions;
+    private ThreadLocal<Integer> timeoutInSecondsForNewTransactions = new ThreadLocal<Integer>() {
+    	protected Integer initialValue() {
+    		return defaultTimeoutInSecondsForNewTransactions;
+    	};
+	};
 
     private Map<String, TransactionImp> jtaTransactionToCoreTransactionMap;
 
@@ -187,7 +172,6 @@ public class TransactionManagerImp implements TransactionManager,
             boolean automaticResourceRegistration )
     {
         compositeTransactionManager = ctm;
-        timeoutInSecondsForNewTransactions = defaultTimeoutInSecondsForNewTransactions;
         jtaTransactionToCoreTransactionMap = new HashMap<String, TransactionImp>();
         enableAutomatRegistrationOfUnknownXAResources = automaticResourceRegistration;
     }
@@ -195,7 +179,7 @@ public class TransactionManagerImp implements TransactionManager,
     private void addToMap ( String tid , TransactionImp tx )
     {
         synchronized ( jtaTransactionToCoreTransactionMap ) {
-            jtaTransactionToCoreTransactionMap.put ( tid.toString (), tx );
+            jtaTransactionToCoreTransactionMap.put ( tid , tx );
         }
     }
 
@@ -203,6 +187,16 @@ public class TransactionManagerImp implements TransactionManager,
     {
         synchronized ( jtaTransactionToCoreTransactionMap ) {
             jtaTransactionToCoreTransactionMap.remove ( tid );
+        }
+    }
+    
+    /**
+     * @return TransactionImp The relevant instance, or null.
+     */
+    TransactionImp getJtaTransactionWithId ( String tid )
+    {
+        synchronized ( jtaTransactionToCoreTransactionMap ) {
+             return jtaTransactionToCoreTransactionMap.get ( tid );
         }
     }
 
@@ -213,8 +207,8 @@ public class TransactionManagerImp implements TransactionManager,
              ct = compositeTransactionManager.getCompositeTransaction ();
          } catch ( SysException se ) {
          	String msg = "Error while retrieving the transaction for the calling thread";
-         	LOGGER.logWarning( msg , se);
-            throw new ExtendedSystemException ( msg , se.getErrors () );
+         	LOGGER.logError( msg , se);
+            throw new ExtendedSystemException ( msg , se );
          }
     	 establishJtaTransactionContextIfNecessary(ct);
          return ct;
@@ -230,20 +224,7 @@ public class TransactionManagerImp implements TransactionManager,
          }
 	}
     
-    /**
-     * @return TransactionImp The relevant instance, or null.
-     */
-
-    TransactionImp getJtaTransactionWithId ( String tid )
-    {
-    	TransactionImp ret = null;
-        synchronized ( jtaTransactionToCoreTransactionMap ) {
-            if ( jtaTransactionToCoreTransactionMap.containsKey ( tid.toString () ) ) {
-                ret = (TransactionImp) jtaTransactionToCoreTransactionMap.get ( tid.toString () );
-            } 
-        }
-        return ret;
-    }
+    
 
     /**
      * Gets any previous transaction with the given identifier.
@@ -264,7 +245,8 @@ public class TransactionManagerImp implements TransactionManager,
 
     public void begin () throws NotSupportedException, SystemException
     {
-        begin ( timeoutInSecondsForNewTransactions );
+    	
+        begin ( getTransactionTimeout() );
     }
 
     /**
@@ -289,13 +271,12 @@ public class TransactionManagerImp implements TransactionManager,
             ct = compositeTransactionManager.createCompositeTransaction ( ( ( long ) timeout ) * 1000 );
             if ( resumeParticipant != null ) ct.addSubTxAwareParticipant ( resumeParticipant );
             if ( ct.isRoot () && getDefaultSerial () )
-                ct.getTransactionControl ().setSerial ();
+                ct.setSerial ();
             ct.setProperty ( JTA_PROPERTY_NAME , "true" );
         } catch ( SysException se ) {
         	String msg = "Error in begin()";
-        	LOGGER.logWarning( msg , se );
-            throw new ExtendedSystemException ( msg , se
-                    .getErrors () );
+        	LOGGER.logError( msg , se );
+            throw new ExtendedSystemException ( msg , se );
         }
         recreateCompositeTransactionAsJtaTransaction(ct);
     }
@@ -336,9 +317,9 @@ public class TransactionManagerImp implements TransactionManager,
     public void setTransactionTimeout ( int seconds ) throws SystemException
     {
         if ( seconds > 0 ) {
-            timeoutInSecondsForNewTransactions = seconds;
+            timeoutInSecondsForNewTransactions.set(seconds);
         } else if ( seconds == 0 ) {
-            timeoutInSecondsForNewTransactions = defaultTimeoutInSecondsForNewTransactions;
+            timeoutInSecondsForNewTransactions.set(defaultTimeoutInSecondsForNewTransactions);
         } else {
         	String msg = "setTransactionTimeout: value must be >= 0";
         	LOGGER.logWarning( msg );
@@ -349,7 +330,7 @@ public class TransactionManagerImp implements TransactionManager,
 
     public int getTransactionTimeout ()
     {
-        return timeoutInSecondsForNewTransactions;
+        return timeoutInSecondsForNewTransactions.get();
     }
 
     /**
@@ -368,14 +349,12 @@ public class TransactionManagerImp implements TransactionManager,
 
 	private void suspendUnderlyingCompositeTransaction()
 			throws ExtendedSystemException {
-		CompositeTransaction ct = null;
         try {
-            ct = compositeTransactionManager.suspend();
+            compositeTransactionManager.suspend();
         } catch ( SysException se ) {
         	String msg = "Unexpected error while suspending the existing transaction for the current thread";
-        	LOGGER.logWarning( msg , se );
-            throw new ExtendedSystemException ( msg , se
-                    .getErrors () );
+        	LOGGER.logError( msg , se );
+            throw new ExtendedSystemException ( msg , se );
         }
 	}
 
@@ -397,8 +376,8 @@ public class TransactionManagerImp implements TransactionManager,
             compositeTransactionManager.resume ( tximp.getCT () );
         } catch ( SysException se ) {
         	String msg = "Unexpected error while resuming the transaction in the calling thread";
-        	LOGGER.logWarning( msg , se );
-            throw new ExtendedSystemException(msg , se.getErrors());
+        	LOGGER.logError( msg , se );
+            throw new ExtendedSystemException(msg , se );
         }
         tximp.resumeEnlistedXaReources();
 
@@ -455,19 +434,14 @@ public class TransactionManagerImp implements TransactionManager,
     public void setRollbackOnly () throws IllegalStateException,
             SystemException
     {
-        Stack errors = new Stack ();
-        
         Transaction tx = getTransaction(); 
         if ( tx == null ) raiseNoTransaction();
-              
         try {
             tx.setRollbackOnly ();
-
         } catch ( SecurityException se ) {
-            errors.push ( se );
             String msg = "Unexpected error during setRollbackOnly";
-            LOGGER.logWarning( msg , se );
-            throw new ExtendedSystemException ( msg, errors );
+            LOGGER.logError( msg , se );
+            throw new ExtendedSystemException ( msg, se );
         }
     }
 

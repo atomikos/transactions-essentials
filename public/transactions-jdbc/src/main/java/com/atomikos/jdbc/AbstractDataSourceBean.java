@@ -1,26 +1,9 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
- * This code ("Atomikos TransactionsEssentials"), by itself,
- * is being distributed under the
- * Apache License, Version 2.0 ("License"), a copy of which may be found at
- * http://www.atomikos.com/licenses/apache-license-2.0.txt .
- * You may not use this file except in compliance with the License.
+ * LICENSE CONDITIONS
  *
- * While the License grants certain patent license rights,
- * those patent license rights only extend to the use of
- * Atomikos TransactionsEssentials by itself.
- *
- * This code (Atomikos TransactionsEssentials) contains certain interfaces
- * in package (namespace) com.atomikos.icatch
- * (including com.atomikos.icatch.Participant) which, if implemented, may
- * infringe one or more patents held by Atomikos.
- * It should be appreciated that you may NOT implement such interfaces;
- * licensing to implement these interfaces must be obtained separately from Atomikos.
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
  */
 
 package com.atomikos.jdbc;
@@ -35,15 +18,16 @@ import javax.naming.NameNotFoundException;
 import javax.naming.NamingException;
 import javax.naming.Reference;
 import javax.naming.Referenceable;
+import javax.sql.DataSource;
 
 import com.atomikos.datasource.pool.ConnectionFactory;
 import com.atomikos.datasource.pool.ConnectionPool;
 import com.atomikos.datasource.pool.ConnectionPoolException;
 import com.atomikos.datasource.pool.ConnectionPoolProperties;
+import com.atomikos.datasource.pool.ConnectionPoolWithConcurrentValidation;
+import com.atomikos.datasource.pool.ConnectionPoolWithSynchronizedValidation;
 import com.atomikos.datasource.pool.CreateConnectionException;
 import com.atomikos.datasource.pool.PoolExhaustedException;
-import com.atomikos.icatch.HeuristicMessage;
-import com.atomikos.icatch.StringHeuristicMessage;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 import com.atomikos.util.IntraVmObjectFactory;
@@ -58,12 +42,12 @@ import com.atomikos.util.IntraVmObjectRegistry;
   */
 
 public abstract class AbstractDataSourceBean 
-implements HeuristicDataSource, ConnectionPoolProperties, Referenceable, Serializable
+implements DataSource, ConnectionPoolProperties, Referenceable, Serializable
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(AbstractDataSourceBean.class);
 	
 	static final int DEFAULT_ISOLATION_LEVEL_UNSET = -1;
-	static final int DEFAULT_POOL_SIZE = 1;
+	private static final int DEFAULT_POOL_SIZE = 1;
 
 	private int minPoolSize = DEFAULT_POOL_SIZE;
 	private int maxPoolSize = DEFAULT_POOL_SIZE;
@@ -79,13 +63,15 @@ implements HeuristicDataSource, ConnectionPoolProperties, Referenceable, Seriali
 
 	private int defaultIsolationLevel = DEFAULT_ISOLATION_LEVEL_UNSET;
 	private int maxLifetime;
+
+	private boolean enableConcurrentConnectionValidation = true;
 	
 	protected void throwAtomikosSQLException ( String msg ) throws AtomikosSQLException 
 	{
 		throwAtomikosSQLException ( msg , null );
 	}
 	
-	protected void throwAtomikosSQLException ( String msg , Throwable cause ) throws AtomikosSQLException 
+	private void throwAtomikosSQLException ( String msg , Throwable cause ) throws AtomikosSQLException 
 	{
 		AtomikosSQLException.throwAtomikosSQLException ( msg  , cause );
 	}
@@ -248,6 +234,21 @@ implements HeuristicDataSource, ConnectionPoolProperties, Referenceable, Seriali
 		this.testQuery = testQuery;
 	}
 
+	
+	/**
+	 * Sets whether or not to use concurrent connection validation.
+	 * Optional, defaults to true.
+	 * 
+	 * @param value
+	 */
+	public void setConcurrentConnectionValidation(boolean value) {
+		this.enableConcurrentConnectionValidation = value;
+	}
+	
+	public boolean getConcurrentConnectionValidation() {
+		return enableConcurrentConnectionValidation;
+	}
+
 	public int poolAvailableSize() {
 		return connectionPool.availableSize();
 	}
@@ -274,27 +275,30 @@ implements HeuristicDataSource, ConnectionPoolProperties, Referenceable, Seriali
 
 	public synchronized void init() throws AtomikosSQLException 
 	{
-		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": init..." );
+		if ( LOGGER.isDebugEnabled() ) LOGGER.logInfo ( this + ": init..." );
 		if (connectionPool != null)
 			return;
-		
 		if ( maxPoolSize < 1 )
 			throwAtomikosSQLException ( "Property 'maxPoolSize' must be greater than 0, was: " + maxPoolSize );
 		if ( minPoolSize < 0 || minPoolSize > maxPoolSize )
 			throwAtomikosSQLException("Property 'minPoolSize' must be at least 0 and at most maxPoolSize, was: " + minPoolSize);
 		if ( getUniqueResourceName() == null )
 			throwAtomikosSQLException("Property 'uniqueResourceName' cannot be null");
-		if ( getTestQuery() != null ) 
-			LOGGER.logWarning ( this + ": testQuery set - pool may be slower / you might want to consider setting maxLifetime instead..." );
 		if ( getMinPoolSize() == DEFAULT_POOL_SIZE ) {
 			LOGGER.logWarning ( this + ": poolSize equals default - this may cause performance problems!" );
 		}
 		
 		try {
+			ConnectionFactory cf = doInit();
+			if (enableConcurrentConnectionValidation) {
+				connectionPool = new ConnectionPoolWithConcurrentValidation(cf, this);
+			} else {
+				if ( getTestQuery() != null ) 
+					LOGGER.logWarning ( this + ": testQuery set - pool may be slower / you might want to consider setting maxLifetime instead..." );
+				connectionPool = new ConnectionPoolWithSynchronizedValidation(cf, this);
+			}
 			//initialize JNDI infrastructure for lookup
 			getReference();
-			ConnectionFactory cf = doInit();
-			connectionPool = new ConnectionPool(cf, this);
 		
 			
 		
@@ -305,12 +309,12 @@ implements HeuristicDataSource, ConnectionPoolProperties, Referenceable, Seriali
 			String msg =  "Cannot initialize AtomikosDataSourceBean";
 			AtomikosSQLException.throwAtomikosSQLException ( msg , ex );
 		}
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": init done." );
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": init done." );
 	}
 	
 	public void close() 
 	{
-		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": close..." );
+		if ( LOGGER.isDebugEnabled() ) LOGGER.logInfo ( this + ": close..." );
 		if (connectionPool != null) {
 			connectionPool.destroy();
 		}
@@ -320,9 +324,9 @@ implements HeuristicDataSource, ConnectionPoolProperties, Referenceable, Seriali
 			IntraVmObjectRegistry.removeResource ( getUniqueResourceName() );
 		} catch ( NameNotFoundException e ) {
 			//ignore but log
-			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": Error removing from JNDI" , e );
+			if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": Error removing from JNDI" , e );
 		}
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": close done." );
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": close done." );
 	}
 	
 	protected abstract ConnectionFactory doInit() throws Exception;
@@ -331,15 +335,15 @@ implements HeuristicDataSource, ConnectionPoolProperties, Referenceable, Seriali
 
 	/* DataSource impl */
 
-	public Connection getConnection ( HeuristicMessage msg ) throws SQLException 
+	public Connection getConnection() throws SQLException 
 	{
-		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": getConnection ( " + msg + " )..." );
+		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": getConnection()..." );
 		Connection connection = null;
 		
 		init();
 		
 		try {
-			connection = (Connection) connectionPool.borrowConnection ( msg );
+			connection = (Connection) connectionPool.borrowConnection();
 			
 		} catch (CreateConnectionException ex) {
 			throwAtomikosSQLException("Failed to grow the connection pool", ex);
@@ -348,7 +352,7 @@ implements HeuristicDataSource, ConnectionPoolProperties, Referenceable, Seriali
 		} catch (ConnectionPoolException e) {
 			throwAtomikosSQLException("Error borrowing connection", e );
 		}
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": returning " + connection );
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": returning " + connection );
 		return connection;
 	}
 
@@ -387,33 +391,6 @@ implements HeuristicDataSource, ConnectionPoolProperties, Referenceable, Seriali
 	{	
 		return IntraVmObjectFactory.createReference ( this , getUniqueResourceName() );		
 	}
-	
-	public Connection getConnection() throws SQLException
-	{
-		StringHeuristicMessage m = null;
-		return getConnection ( m );
-	}
-
-    public Connection getConnection ( String msg ) throws SQLException
-    {
-    	return getConnection ( new StringHeuristicMessage ( msg ) );
-    }
-
-
-    public Connection getConnection ( String user , String passwd , String msg )
-            throws SQLException
-    {
-    	LOGGER.logWarning ( this + ": getConnection ( user , password , msg ) ignores authentication - returning default connection" );
-    	return getConnection ( msg );
-    }
-
-  
-    public Connection getConnection ( String user , String passwd ,
-            HeuristicMessage msg ) throws SQLException
-    {
-    	LOGGER.logWarning ( this + ": getConnection ( user , password , msg ) ignores authentication - returning default connection" );
-    	return getConnection ( msg );
-    }
 
 	/**
 	 * Sets the default isolation level of connections returned by this datasource.

@@ -1,56 +1,34 @@
 /**
- * Copyright (C) 2000-2012 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
- * This code ("Atomikos TransactionsEssentials"), by itself,
- * is being distributed under the
- * Apache License, Version 2.0 ("License"), a copy of which may be found at
- * http://www.atomikos.com/licenses/apache-license-2.0.txt .
- * You may not use this file except in compliance with the License.
+ * LICENSE CONDITIONS
  *
- * While the License grants certain patent license rights,
- * those patent license rights only extend to the use of
- * Atomikos TransactionsEssentials by itself.
- *
- * This code (Atomikos TransactionsEssentials) contains certain interfaces
- * in package (namespace) com.atomikos.icatch
- * (including com.atomikos.icatch.Participant) which, if implemented, may
- * infringe one or more patents held by Atomikos.
- * It should be appreciated that you may NOT implement such interfaces;
- * licensing to implement these interfaces must be obtained separately from Atomikos.
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
  */
 
 package com.atomikos.icatch.imp;
 
 import java.util.Enumeration;
-import java.util.Stack;
 import java.util.Vector;
 
 import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeurMixedException;
 import com.atomikos.icatch.HeurRollbackException;
-import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.Participant;
 import com.atomikos.icatch.RollbackException;
 import com.atomikos.icatch.SysException;
-import com.atomikos.icatch.TxState;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
+import com.atomikos.recovery.TxState;
 import com.atomikos.thread.InterruptedExceptionHelper;
 
 /**
  * A state handler for the active coordinator state.
  */
 
-public class ActiveStateHandler extends CoordinatorStateHandler
+class ActiveStateHandler extends CoordinatorStateHandler
 {
-
-	private static final long serialVersionUID = -80097456886481668L;
-
 	private static final Logger LOGGER = LoggerFactory.createLogger(ActiveStateHandler.class);
 
     private long rollbackTicks_;
@@ -60,11 +38,6 @@ public class ActiveStateHandler extends CoordinatorStateHandler
     private int globalSiblingCount_;
     
     private boolean wasSetToRollbackOnly;
-
-    
-    public ActiveStateHandler() {
-	
-	}
 
     ActiveStateHandler ( CoordinatorImp coordinator )
     {
@@ -94,32 +67,32 @@ public class ActiveStateHandler extends CoordinatorStateHandler
                 // first check if we are still the current state!
                 // otherwise, a COMMITTING tx could be rolled back
                 // in case of 1PC!!!
-                if ( getCoordinator ().getState ().equals ( getState () ) ) {
+                if ( getCoordinator().getState() == TxState.ACTIVE) {
                 	if ( getCoordinator().prefersSingleThreaded2PC() ) {
                 		//cf case 71748
                 		if (!wasSetToRollbackOnly) {
-                			LOGGER.logWarning ( "Timeout/setRollbackOnly of ACTIVE coordinator !" );
+                			LOGGER.logWarning ( "Transaction " + getCoordinator().getCoordinatorId() + " has timed out and will rollback.");
                 			getCoordinator().setRollbackOnly();
                 			wasSetToRollbackOnly = true;
                 		}
                 	} else {
-                		LOGGER.logWarning ( "Rollback of timedout ACTIVE coordinator !" );
-                		final boolean indoubt = getCoordinator().isRecoverableWhileActive().booleanValue();
-                		//treat activities (recoverable) as indoubts to make sure that anomalies
-                		//with early prepare etc. are treated as heuristics
+                		LOGGER.logWarning ( "Transaction " + getCoordinator().getCoordinatorId() + " has timed out - rolling back...");
                 		rollbackWithAfterCompletionNotification(new RollbackCallback() {
-							public HeuristicMessage[] doRollback()
+							public void doRollback()
 									throws HeurCommitException,
 									HeurMixedException, SysException,
 									HeurHazardException, IllegalStateException {
-								return rollbackFromWithinCallback(indoubt,false);
+								rollbackFromWithinCallback(false,false);
 							}});
                 	}
+                } else if (getCoordinator().getState().isOneOf(TxState.PREPARING, TxState.COMMITTING, TxState.ABORTING))  {
+                	//pending coordinator after failed prepare: cleanup to remove from TransactionServiceImp
+                	removePendingOltpCoordinatorFromTransactionService();
                 }
             }
         } catch ( Exception e ) {
-            LOGGER.logInfo( "Error in timeout of ACTIVE state: " + e.getMessage ()
-                    + " for coordinator " + getCoordinator ().getCoordinatorId () );
+            LOGGER.logDebug( "Error in timeout: " + e.getMessage ()
+                    + " for transaction " + getCoordinator ().getCoordinatorId () );
         }
     }
 
@@ -137,24 +110,24 @@ public class ActiveStateHandler extends CoordinatorStateHandler
         PrepareResult result = null; // synchronization
         boolean allReadOnly = true; // if still true at end-> readonly vote
         int ret = 0; // return value
-        Vector participants = getCoordinator ().getParticipants ();
+        Vector<Participant> participants = getCoordinator ().getParticipants ();
         CoordinatorStateHandler nextStateHandler = null;
 
         if ( orphansExist() ) {
             try {
-                if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "Orphans detected: "
+                if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( "Orphans detected: "
                         + getCoordinator ().getLocalSiblingCount () + " vs "
                         + globalSiblingCount_ + " - forcing rollback." );
                 rollbackWithAfterCompletionNotification(new RollbackCallback() {
-					public HeuristicMessage[] doRollback()
+					public void doRollback()
 							throws HeurCommitException,
 							HeurMixedException, SysException,
 							HeurHazardException, IllegalStateException {
-						return rollbackFromWithinCallback(getCoordinator().isRecoverableWhileActive().booleanValue(),false);
+						rollbackFromWithinCallback(false,false);
 					}});
 
             } catch ( HeurCommitException hc ) {
-                throw new HeurMixedException ( hc.getHeuristicMessages() );
+                throw new HeurMixedException();
             }
 
             throw new RollbackException ( "Orphans detected." );
@@ -169,21 +142,21 @@ public class ActiveStateHandler extends CoordinatorStateHandler
         		LOGGER.logWarning ( msg , error );
         		try {
 					rollbackWithAfterCompletionNotification(new RollbackCallback() {
-						public HeuristicMessage[] doRollback()
+						public void doRollback()
 								throws HeurCommitException,
 								HeurMixedException, SysException,
 								HeurHazardException, IllegalStateException {
-							return rollbackFromWithinCallback(getCoordinator().isRecoverableWhileActive().booleanValue(),false);
+							rollbackFromWithinCallback(false,false);
 						}});
 					throw new RollbackException ( msg , error);
         		} catch ( HeurCommitException e ) {
-					LOGGER.logWarning ( "Illegal heuristic commit during rollback before prepare:" + e );
-					throw new HeurMixedException ( e.getHeuristicMessages() );
+					LOGGER.logError ( "Illegal heuristic commit during rollback before prepare:" + e );
+					throw new HeurMixedException();
 				}
         	}
             count = participants.size ();
             result = new PrepareResult ( count );
-            Enumeration enumm = participants.elements ();
+            Enumeration<Participant> enumm = participants.elements ();
             while ( enumm.hasMoreElements () ) {
                 Participant p = (Participant) enumm.nextElement ();
                 PrepareMessage pm = new PrepareMessage ( p, result );
@@ -205,16 +178,15 @@ public class ActiveStateHandler extends CoordinatorStateHandler
             allReadOnly = result.allReadOnly ();
 
             if ( !voteOK ) {
-
-                int res = result.getResult ();
+             int res = result.getResult ();
                
                 try {
                     rollbackWithAfterCompletionNotification(new RollbackCallback() {
-						public HeuristicMessage[] doRollback()
+						public void doRollback()
 								throws HeurCommitException,
 								HeurMixedException, SysException,
 								HeurHazardException, IllegalStateException {
-							return rollbackFromWithinCallback(true,false);
+							rollbackFromWithinCallback(true,false);
 						}});
                 } catch ( HeurCommitException hc ) {
                     // should not happen:
@@ -226,8 +198,8 @@ public class ActiveStateHandler extends CoordinatorStateHandler
                     throw new SysException ( "Unexpected heuristic: "
                             + hc.getMessage (), hc );
                 }
-                throw new RollbackException ( "Prepare: " + "NO vote" );
-             
+                // let recovery clean up in the background
+                throw new RollbackException ( "One or more resources refused to commit (possibly because of a timeout in the resource - see the log for details). This transaction has been rolled back instead." );
             }
         } catch ( RuntimeException runerr ) {
             throw new SysException ( "Error in prepare: " + runerr.getMessage (), runerr );
@@ -241,6 +213,7 @@ public class ActiveStateHandler extends CoordinatorStateHandler
             nextStateHandler = new TerminatedStateHandler ( this );
             getCoordinator ().setStateHandler ( nextStateHandler );
             ret = Participant.READ_ONLY;
+            notifySynchronizationsAfterCompletion(TxState.COMMITTING,TxState.TERMINATED); //cf bug 127485
         } else {
             nextStateHandler = new IndoubtStateHandler ( this );
             getCoordinator ().setStateHandler ( nextStateHandler );
@@ -255,12 +228,11 @@ public class ActiveStateHandler extends CoordinatorStateHandler
 	}
 
 
-	protected HeuristicMessage[] commit ( boolean onePhase )
+	protected void commit ( boolean onePhase )
             throws HeurRollbackException, HeurMixedException,
             HeurHazardException, java.lang.IllegalStateException,
             RollbackException, SysException
     {
-        HeuristicMessage[] result = new HeuristicMessage[0];
         if ( !onePhase )
             throw new IllegalStateException (
                     "Illegal state for commit: ACTIVE!" );
@@ -276,43 +248,41 @@ public class ActiveStateHandler extends CoordinatorStateHandler
 
             setGlobalSiblingCount ( 1 );
             prepareResult = prepare ();
-            // make sure to only do 2PC commit if NOT read only
-            if ( prepareResult == Participant.READ_ONLY ) result = getHeuristicMessages ();
-            else {
-            	result = commitWithAfterCompletionNotification ( new CommitCallback() {
-            		public HeuristicMessage[] doCommit()
+            
+            if ( prepareResult != Participant.READ_ONLY ) {
+            	commitWithAfterCompletionNotification ( new CommitCallback() {
+            		public void doCommit()
             				throws HeurRollbackException, HeurMixedException,
             				HeurHazardException, IllegalStateException,
             				RollbackException, SysException {
-            			return commitFromWithinCallback ( false, false );
+            			 commitFromWithinCallback ( false, false );
             		}          	
             	});
             }
         } else {
-        	result = commitWithAfterCompletionNotification ( new CommitCallback() {
-        		public HeuristicMessage[] doCommit()
+        	commitWithAfterCompletionNotification ( new CommitCallback() {
+        		public void doCommit()
         				throws HeurRollbackException, HeurMixedException,
         				HeurHazardException, IllegalStateException,
         				RollbackException, SysException {
-        			return commitFromWithinCallback ( false, true );
+        			 commitFromWithinCallback ( false, true );
         		}          	
         	});
         }
-        return result;
 
     }
 
-    protected HeuristicMessage[] rollback ()
+    protected void rollback ()
             throws HeurCommitException, HeurMixedException, SysException,
             HeurHazardException, java.lang.IllegalStateException
     {
 
-        return rollbackWithAfterCompletionNotification(new RollbackCallback() {
-			public HeuristicMessage[] doRollback()
+        rollbackWithAfterCompletionNotification(new RollbackCallback() {
+			public void doRollback()
 					throws HeurCommitException,
 					HeurMixedException, SysException,
 					HeurHazardException, IllegalStateException {
-				return rollbackFromWithinCallback(getCoordinator().isRecoverableWhileActive().booleanValue(),false);
+				 rollbackFromWithinCallback(false,false);
 			}});
     }
 

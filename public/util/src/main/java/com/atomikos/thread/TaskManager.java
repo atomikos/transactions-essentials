@@ -1,26 +1,9 @@
 /**
- * Copyright (C) 2000-2014 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
- * This code ("Atomikos TransactionsEssentials"), by itself,
- * is being distributed under the
- * Apache License, Version 2.0 ("License"), a copy of which may be found at
- * http://www.atomikos.com/licenses/apache-license-2.0.txt .
- * You may not use this file except in compliance with the License.
+ * LICENSE CONDITIONS
  *
- * While the License grants certain patent license rights,
- * those patent license rights only extend to the use of
- * Atomikos TransactionsEssentials by itself.
- *
- * This code (Atomikos TransactionsEssentials) contains certain interfaces
- * in package (namespace) com.atomikos.icatch
- * (including com.atomikos.icatch.Participant) which, if implemented, may
- * infringe one or more patents held by Atomikos.
- * It should be appreciated that you may NOT implement such interfaces;
- * licensing to implement these interfaces must be obtained separately from Atomikos.
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
  */
 
 package com.atomikos.thread;
@@ -37,30 +20,13 @@ import com.atomikos.logging.LoggerFactory;
  * Scheduling logic for tasks/threads.
  */
 
-public class TaskManager {
+public enum TaskManager {
+	SINGLETON;
+	
 	private static final Logger LOGGER = LoggerFactory.createLogger(TaskManager.class);
-
-	private static TaskManager singleton;
-
+	
 	private ThreadPoolExecutor executor;
-
-	/**
-	 * Gets the singleton instance.
-	 * 
-	 * @return
-	 */
-	public static synchronized final TaskManager getInstance() {
-		if (singleton == null) {
-			if (LOGGER.isDebugEnabled())
-				LOGGER.logDebug("TaskManager: initializing...");
-			singleton = new TaskManager();
-		}
-		return singleton;
-	}
-
-	protected TaskManager() {
-		init();
-	}
+	
 
 	private void init() {
 		SynchronousQueue<Runnable> synchronousQueue = new SynchronousQueue<Runnable>();
@@ -108,8 +74,8 @@ public class TaskManager {
 		@Override
 		public Thread newThread(Runnable r) {
 			String realName = "Atomikos:" + count.incrementAndGet();
-			if (LOGGER.isDebugEnabled())
-				LOGGER.logDebug("ThreadFactory: creating new thread: "+ realName);
+			if (LOGGER.isTraceEnabled())
+				LOGGER.logTrace("ThreadFactory: creating new thread: "+ realName);
 			Thread thread = new Thread(group, r, realName);
 			thread.setContextClassLoader(Thread.currentThread().getContextClassLoader());
 			thread.setDaemon(true);

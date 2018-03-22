@@ -1,26 +1,9 @@
 /**
- * Copyright (C) 2000-2012 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
- * This code ("Atomikos TransactionsEssentials"), by itself,
- * is being distributed under the
- * Apache License, Version 2.0 ("License"), a copy of which may be found at
- * http://www.atomikos.com/licenses/apache-license-2.0.txt .
- * You may not use this file except in compliance with the License.
+ * LICENSE CONDITIONS
  *
- * While the License grants certain patent license rights,
- * those patent license rights only extend to the use of
- * Atomikos TransactionsEssentials by itself.
- *
- * This code (Atomikos TransactionsEssentials) contains certain interfaces
- * in package (namespace) com.atomikos.icatch
- * (including com.atomikos.icatch.Participant) which, if implemented, may
- * infringe one or more patents held by Atomikos.
- * It should be appreciated that you may NOT implement such interfaces;
- * licensing to implement these interfaces must be obtained separately from Atomikos.
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
  */
 
 package com.atomikos.icatch.imp;
@@ -41,9 +24,9 @@ import com.atomikos.icatch.RollbackException;
 import com.atomikos.icatch.SubTxAwareParticipant;
 import com.atomikos.icatch.Synchronization;
 import com.atomikos.icatch.SysException;
-import com.atomikos.icatch.TxState;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
+import com.atomikos.recovery.TxState;
 
 /**
  * The state pattern applied to the CompositeTransaction classes.
@@ -206,21 +189,15 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
     protected void commit() throws SysException,
             java.lang.IllegalStateException, RollbackException
     {
-        Stack participants = null;
-        Stack synchronizations = null;
-        
         //prevent concurrent rollback due to timeout
         ct_.localTestAndSetTransactionStateHandler(this , new TxTerminatingStateHandler(true , ct_ , this));
 
         // NOTE: this must be done BEFORE calling notifications
         // to make sure that active recovery works for early prepares 
         if ( ct_.isLocalRoot() ) {
-
-        	ct_.getCoordinatorImp().addTag(ct_.tag_);
-
-        	Enumeration enumm = ct_.getExtent().getParticipants().elements();
+        	Enumeration<Participant> enumm = ct_.getExtent().getParticipants().elements();
         	while ( enumm.hasMoreElements () ) {
-        		Participant part = (Participant) enumm.nextElement();
+        		Participant part = enumm.nextElement();
         		addParticipant(part);
 
         	}
@@ -235,7 +212,6 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
         // NOTE: doing this at the very beginning of commit
         // also makes sure that the tx can still get new Participants
         // from beforeCompletion work being done! This is required.
-        Synchronization sync = null;
         Throwable cause = notifyBeforeCompletion();
 
         if ( ct_.getState().equals ( TxState.MARKED_ABORT ) ) {
@@ -270,7 +246,7 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
         		if (cause == null) {
         			cause = error;
         		} else {
-        			// log the others which may still happen as error
+        			// log the others which may still happen as error - cf. case 115604
         			LOGGER.logError("Unexpected error in beforeCompletion: ", error);
         		}       		
         	}
@@ -291,7 +267,7 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
     public void committed ( CompositeTransaction subtx )
     {
         CompositeTransactionImp ct = (CompositeTransactionImp) subtx;
-        Extent toAdd = subtx.getTransactionControl().getExtent();
+        Extent toAdd = subtx.getExtent();
         Extent target = ct_.getExtent();
         target.add ( toAdd );
 

@@ -1,26 +1,9 @@
 /**
- * Copyright (C) 2000-2013 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
- * This code ("Atomikos TransactionsEssentials"), by itself,
- * is being distributed under the
- * Apache License, Version 2.0 ("License"), a copy of which may be found at
- * http://www.atomikos.com/licenses/apache-license-2.0.txt .
- * You may not use this file except in compliance with the License.
+ * LICENSE CONDITIONS
  *
- * While the License grants certain patent license rights,
- * those patent license rights only extend to the use of
- * Atomikos TransactionsEssentials by itself.
- *
- * This code (Atomikos TransactionsEssentials) contains certain interfaces
- * in package (namespace) com.atomikos.icatch
- * (including com.atomikos.icatch.Participant) which, if implemented, may
- * infringe one or more patents held by Atomikos.
- * It should be appreciated that you may NOT implement such interfaces;
- * licensing to implement these interfaces must be obtained separately from Atomikos.
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
  */
 
 package com.atomikos.datasource.pool;
@@ -33,7 +16,6 @@ import com.atomikos.datasource.pool.event.ConnectionPoolExhaustedEvent;
 import com.atomikos.datasource.pool.event.PooledConnectionCreatedEvent;
 import com.atomikos.datasource.pool.event.PooledConnectionDestroyedEvent;
 import com.atomikos.datasource.pool.event.PooledConnectionReapedEvent;
-import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 import com.atomikos.publish.EventPublisher;
@@ -44,13 +26,13 @@ import com.atomikos.timing.AlarmTimerListener;
 import com.atomikos.timing.PooledAlarmTimer;
 
 
-public class ConnectionPool implements XPooledConnectionEventListener
+public abstract class ConnectionPool implements XPooledConnectionEventListener
 {
-	private static final Logger LOGGER = LoggerFactory.createLogger(ConnectionPool.class);
+	private static Logger LOGGER = LoggerFactory.createLogger(ConnectionPool.class);
 
-	public final static int DEFAULT_MAINTENANCE_INTERVAL = 60;
+	private final static int DEFAULT_MAINTENANCE_INTERVAL = 60;
 
-	private List<XPooledConnection> connections = new ArrayList<XPooledConnection>();
+	protected List<XPooledConnection> connections = new ArrayList<XPooledConnection>();
 	private ConnectionFactory connectionFactory;
 	private ConnectionPoolProperties properties;
 	private boolean destroyed;
@@ -67,14 +49,14 @@ public class ConnectionPool implements XPooledConnectionEventListener
 		init();
 	}
 
-	private void assertNotDestroyed() throws ConnectionPoolException
+	protected void assertNotDestroyed() throws ConnectionPoolException
 	{
 		if (destroyed) throw new ConnectionPoolException ( "Pool was already destroyed - you can no longer use it" );
 	}
 
 	private void init() throws ConnectionPoolException
 	{
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": initializing..." );
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": initializing..." );
 		addConnectionsIfMinPoolSizeNotReached();
 		launchMaintenanceTimer();
 	}
@@ -82,7 +64,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 	private void launchMaintenanceTimer() {
 		int maintenanceInterval = properties.getMaintenanceInterval();
 		if ( maintenanceInterval <= 0 ) {
-			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": using default maintenance interval..." );
+			if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": using default maintenance interval..." );
 			maintenanceInterval = DEFAULT_MAINTENANCE_INTERVAL;
 		}
 		maintenanceTimer = new PooledAlarmTimer ( maintenanceInterval * 1000 );
@@ -94,7 +76,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 				removeIdleConnectionsIfMinPoolSizeExceeded();
 			}
 		});
-		TaskManager.getInstance().executeTask ( maintenanceTimer );
+		TaskManager.SINGLETON.executeTask ( maintenanceTimer );
 	}
 
 	private synchronized void addConnectionsIfMinPoolSizeNotReached() {
@@ -106,7 +88,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 				xpc.registerXPooledConnectionEventListener ( this );
 			} catch ( Exception dbDown ) {
 				//see case 26380
-				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": could not establish initial connection" , dbDown );
+				if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": could not establish initial connection" , dbDown );
 			}
 		}
 	}
@@ -118,15 +100,15 @@ public class ConnectionPool implements XPooledConnectionEventListener
 		return xpc;
 	}
 
-	private Reapable recycleConnectionIfPossible ( HeuristicMessage hmsg ) throws Exception
+	protected Reapable recycleConnectionIfPossible() throws Exception
 	{
 		Reapable ret = null;
 		for (int i = 0; i < totalSize(); i++) {
 			XPooledConnection xpc = (XPooledConnection) connections.get(i);
 
 			if (xpc.canBeRecycledForCallingThread()) {
-				ret = xpc.createConnectionProxy ( hmsg );
-				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug( this + ": recycling connection from pool..." );
+				ret = xpc.createConnectionProxy();
+				if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace( this + ": recycling connection from pool..." );
 				return ret;
 			}
 		}
@@ -135,29 +117,28 @@ public class ConnectionPool implements XPooledConnectionEventListener
 
 	/**
 	 * Borrows a connection from the pool.
-	 * @param hmsg The heuristic message to get the connection with.
 	 * @return The connection as Reapable.
 	 * @throws CreateConnectionException If the pool attempted to grow but failed.
 	 * @throws PoolExhaustedException If the pool could not grow because it is exhausted.
 	 * @throws ConnectionPoolException Other errors.
 	 */
-	public synchronized Reapable borrowConnection ( HeuristicMessage hmsg ) throws CreateConnectionException , PoolExhaustedException, ConnectionPoolException
+	public Reapable borrowConnection() throws CreateConnectionException , PoolExhaustedException, ConnectionPoolException
 	{
 		assertNotDestroyed();
 
 		Reapable ret = null;	
-		ret = findExistingOpenConnectionForCallingThread(hmsg);	
+		ret = findExistingOpenConnectionForCallingThread();	
 		if (ret == null) {
-			ret = findOrWaitForAnAvailableConnection(hmsg);		
+			ret = findOrWaitForAnAvailableConnection();		
 		}
 		return ret;
 	}
 
-	private Reapable findOrWaitForAnAvailableConnection(HeuristicMessage hmsg) throws ConnectionPoolException {
+	protected Reapable findOrWaitForAnAvailableConnection() throws ConnectionPoolException {
 		Reapable ret = null;
 		long remainingTime = properties.getBorrowConnectionTimeout() * 1000L;		
 		do {
-			ret = retrieveFirstAvailableConnectionAndGrowPoolIfNecessary(hmsg);
+			ret = retrieveFirstAvailableConnectionAndGrowPoolIfNecessary();
 			if ( ret == null ) {
 				EventPublisher.publish(new ConnectionPoolExhaustedEvent(properties.getUniqueResourceName()));
 				remainingTime = waitForAtLeastOneAvailableConnection(remainingTime);
@@ -167,31 +148,30 @@ public class ConnectionPool implements XPooledConnectionEventListener
 		return ret;
 	}
 
-	private Reapable retrieveFirstAvailableConnectionAndGrowPoolIfNecessary(
-			HeuristicMessage hmsg) throws CreateConnectionException {
+	private Reapable retrieveFirstAvailableConnectionAndGrowPoolIfNecessary() throws CreateConnectionException {
 		
-		Reapable ret = retrieveFirstAvailableConnection(hmsg);
+		Reapable ret = retrieveFirstAvailableConnection();
 		if ( ret == null && canGrow() ) {
 			growPool();
-			ret = retrieveFirstAvailableConnection(hmsg);
+			ret = retrieveFirstAvailableConnection();
 		}		
 		return ret;
 	}
 
-	private Reapable findExistingOpenConnectionForCallingThread(HeuristicMessage hmsg) {
+	protected Reapable findExistingOpenConnectionForCallingThread() {
 		Reapable recycledConnection = null ;
 		try {
-			recycledConnection = recycleConnectionIfPossible ( hmsg );
+			recycledConnection = recycleConnectionIfPossible();
 		} catch (Exception e) {
 			//ignore but log
-			LOGGER.logWarning ( this + ": error while trying to recycle" , e );
+			LOGGER.logDebug ( this + ": error while trying to recycle" , e );
 		}
 		return recycledConnection;
 	}
 
-	private void logCurrentPoolSize() {
-		if ( LOGGER.isDebugEnabled() )  {
-			LOGGER.logDebug( this +  ": current size: " + availableSize() + "/" + totalSize());
+	protected void logCurrentPoolSize() {
+		if ( LOGGER.isTraceEnabled() )  {
+			LOGGER.logTrace( this +  ": current size: " + availableSize() + "/" + totalSize());
 		}
 	}
 
@@ -199,18 +179,18 @@ public class ConnectionPool implements XPooledConnectionEventListener
 		return totalSize() < properties.getMaxPoolSize();
 	}
 
-	private Reapable retrieveFirstAvailableConnection(HeuristicMessage hmsg) {
+	protected Reapable retrieveFirstAvailableConnection() {
 		Reapable ret = null;
 		Iterator<XPooledConnection> it = connections.iterator();			
 		while ( it.hasNext() && ret == null ) {
 			XPooledConnection xpc =  it.next();
 			if (xpc.isAvailable()) {
 				try {
-					ret = xpc.createConnectionProxy ( hmsg );
-					if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug( this + ": got connection from pool");
+					ret = xpc.createConnectionProxy();
+					if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace( this + ": got connection from pool");
 				} catch ( CreateConnectionException ex ) {
 					String msg = this +  ": error creating proxy of connection " + xpc;
-					LOGGER.logWarning( msg , ex);
+					LOGGER.logDebug( msg , ex);
 					it.remove();
 					destroyPooledConnection(xpc);
 				} finally {
@@ -232,7 +212,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 		if (connections == null || properties.getMaxIdleTime() <= 0 )
 			return;
 
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": trying to shrink pool" );
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": trying to shrink pool" );
 		List<XPooledConnection> connectionsToRemove = new ArrayList<XPooledConnection>();
 		int maxConnectionsToRemove = totalSize() - properties.getMinPoolSize();
 		if ( maxConnectionsToRemove > 0 ) {
@@ -241,9 +221,9 @@ public class ConnectionPool implements XPooledConnectionEventListener
 				long lastRelease = xpc.getLastTimeReleased();
 				long maxIdle = properties.getMaxIdleTime();
 				long now = System.currentTimeMillis();
-				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": connection idle for " + (now - lastRelease) + "ms");
+				if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": connection idle for " + (now - lastRelease) + "ms");
 				if ( xpc.isAvailable() &&  ( (now - lastRelease) >= (maxIdle * 1000L) ) && ( connectionsToRemove.size() < maxConnectionsToRemove ) ) {
-					if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": connection idle for more than " + maxIdle + "s, closing it: " + xpc);
+					if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": connection idle for more than " + maxIdle + "s, closing it: " + xpc);
 					destroyPooledConnection(xpc);
 					connectionsToRemove.add(xpc);
 				}
@@ -253,7 +233,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 		logCurrentPoolSize();
 	}
 
-	private void destroyPooledConnection(XPooledConnection xpc) {
+	protected void destroyPooledConnection(XPooledConnection xpc) {
 		xpc.destroy();
 		EventPublisher.publish(new PooledConnectionDestroyedEvent(properties.getUniqueResourceName(),xpc));
 	}
@@ -263,7 +243,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 		long maxInUseTime = properties.getReapTimeout();
 		if ( connections == null || maxInUseTime <= 0 ) return;
 
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": reaping old connections" );
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": reaping old connections" );
 
 		Iterator<XPooledConnection> it = connections.iterator();
 		while ( it.hasNext() ) {
@@ -273,7 +253,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 
 			long now = System.currentTimeMillis();
 			if ( inUse && ( ( now - maxInUseTime * 1000 ) > lastTimeReleased ) ) {
-				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": connection in use for more than " + maxInUseTime + "s, reaping it: " + xpc );
+				if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": connection in use for more than " + maxInUseTime + "s, reaping it: " + xpc );
 				xpc.reap();
 				EventPublisher.publish(new PooledConnectionReapedEvent(properties.getUniqueResourceName(),xpc));
 			}
@@ -286,7 +266,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 		long maxLifetime = properties.getMaxLifetime();
 		if ( connections == null || maxLifetime <= 0 ) return;
 
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": closing connections that exceeded maxLifetime" );
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": closing connections that exceeded maxLifetime" );
 
 		Iterator<XPooledConnection> it = connections.iterator();
 		while ( it.hasNext() ) {
@@ -294,7 +274,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 			long creationTime = xpc.getCreationTime();
 			long now = System.currentTimeMillis();
 			if ( xpc.isAvailable() &&  ( (now - creationTime) >= (maxLifetime * 1000L) ) ) {
-				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": connection in use for more than " + maxLifetime + "s, destroying it: " + xpc );
+				if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": connection in use for more than " + maxLifetime + "s, destroying it: " + xpc );
 				destroyPooledConnection(xpc);
 				it.remove();
 			}
@@ -319,7 +299,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 			connections = null;
 			destroyed = true;
 			maintenanceTimer.stop();
-			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": pool destroyed." );
+			if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": pool destroyed." );
 		}
 	}
 	
@@ -346,16 +326,16 @@ public class ConnectionPool implements XPooledConnectionEventListener
         	if ( waitTime <= 0 ) throw new PoolExhaustedException ( "ConnectionPool: pool is empty - increase either maxPoolSize or borrowConnectionTimeout" );
             long before = System.currentTimeMillis();
         	try {
-        		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": about to wait for connection during " + waitTime + "ms...");
+        		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": about to wait for connection during " + waitTime + "ms...");
         		this.wait (waitTime);
 
 			} catch (InterruptedException ex) {
 				// cf bug 67457
 				InterruptedExceptionHelper.handleInterruptedException ( ex );
 				// ignore
-				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": interrupted during wait" , ex );
+				if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": interrupted during wait" , ex );
 			}
-			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": done waiting." );
+			if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": done waiting." );
 			long now = System.currentTimeMillis();
             waitTime -= (now - before);
         }
@@ -393,7 +373,7 @@ public class ConnectionPool implements XPooledConnectionEventListener
 	}
 
 	public synchronized void onXPooledConnectionTerminated(XPooledConnection connection) {
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug( this +  ": connection " + connection + " became available, notifying potentially waiting threads");
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace( this +  ": connection " + connection + " became available, notifying potentially waiting threads");
 		this.notify();
 
 	}

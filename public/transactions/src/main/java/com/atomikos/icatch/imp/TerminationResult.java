@@ -1,56 +1,37 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
- * This code ("Atomikos TransactionsEssentials"), by itself,
- * is being distributed under the
- * Apache License, Version 2.0 ("License"), a copy of which may be found at
- * http://www.atomikos.com/licenses/apache-license-2.0.txt .
- * You may not use this file except in compliance with the License.
+ * LICENSE CONDITIONS
  *
- * While the License grants certain patent license rights,
- * those patent license rights only extend to the use of
- * Atomikos TransactionsEssentials by itself.
- *
- * This code (Atomikos TransactionsEssentials) contains certain interfaces
- * in package (namespace) com.atomikos.icatch
- * (including com.atomikos.icatch.Participant) which, if implemented, may
- * infringe one or more patents held by Atomikos.
- * It should be appreciated that you may NOT implement such interfaces;
- * licensing to implement these interfaces must be obtained separately from Atomikos.
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
  */
 
 package com.atomikos.icatch.imp;
 
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Stack;
 
 import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.HeurMixedException;
 import com.atomikos.icatch.HeurRollbackException;
-import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.Participant;
 import com.atomikos.icatch.RollbackException;
-import com.atomikos.icatch.StringHeuristicMessage;
-import com.atomikos.icatch.TxState;
 
 
 class TerminationResult extends Result
 {
-    protected boolean allRepliesProcessed;
-    protected Hashtable<Participant,TxState> heuristicparticipants_;
-    protected Hashtable<Participant,TxState> possiblyIndoubts_;
+	private boolean allRepliesProcessed;
+    private Set<Participant> heuristicparticipants_;
+    private Set<Participant> possiblyIndoubts_;
 
     public TerminationResult ( int numberOfRepliesToWaitFor )
     {
         super ( numberOfRepliesToWaitFor );
         allRepliesProcessed = false;
-        heuristicparticipants_ = new Hashtable<Participant,TxState>();
-        possiblyIndoubts_ = new Hashtable<Participant,TxState>();
+        heuristicparticipants_ = new HashSet<Participant>();
+        possiblyIndoubts_ = new HashSet<Participant>();
     }
 
     /**
@@ -58,7 +39,7 @@ class TerminationResult extends Result
      *                If not done yet.
      */
 
-    public Hashtable<Participant,TxState> getHeuristicParticipants () throws IllegalStateException,
+    public Set<Participant> getHeuristicParticipants () throws IllegalStateException,
             InterruptedException
     {
         calculateResultFromAllReplies();
@@ -71,7 +52,7 @@ class TerminationResult extends Result
      *                If comm. not done yet.
      */
 
-    public Hashtable<Participant,TxState> getPossiblyIndoubts () throws IllegalStateException,
+    public Set<Participant> getPossiblyIndoubts () throws IllegalStateException,
             InterruptedException
     {
         calculateResultFromAllReplies ();
@@ -105,52 +86,26 @@ class TerminationResult extends Result
                     onePhaseCommitWithRollbackException = true;
                 } else if ( err instanceof HeurMixedException ) {
                     atLeastOneHeuristicMixedException = true;
-                    HeurMixedException hm = (HeurMixedException) err;
-                    addErrorMessages ( hm.getHeuristicMessages () );
-                    heuristicparticipants_.put ( reply.getParticipant (),
-                            TxState.HEUR_MIXED );
+                    heuristicparticipants_.add ( reply.getParticipant ());
                 } else if ( err instanceof HeurCommitException ) {
                     atLeastOneHeuristicCommitException = true;
-                    HeurCommitException hc = (HeurCommitException) err;
-                    addErrorMessages ( hc.getHeuristicMessages () );
                     atLeastOneHeuristicMixedException = (atLeastOneHeuristicMixedException || atLeastOneHeuristicRollbackException || atLeastOneHeuristicHazardException);
-                    heuristicparticipants_.put ( reply.getParticipant (),
-                            TxState.HEUR_COMMITTED );
+                    heuristicparticipants_.add ( reply.getParticipant () );
 
                 } else if ( err instanceof HeurRollbackException ) {
                     atLeastOneHeuristicRollbackException = true;
                     atLeastOneHeuristicMixedException = (atLeastOneHeuristicMixedException || atLeastOneHeuristicCommitException || atLeastOneHeuristicHazardException);
-                    HeurRollbackException hr = (HeurRollbackException) err;
-                    addErrorMessages ( hr.getHeuristicMessages () );
-                    heuristicparticipants_.put ( reply.getParticipant (),
-                            TxState.HEUR_ABORTED );
+                    heuristicparticipants_.add ( reply.getParticipant ());
 
                 } else {
 
                     atLeastOneHeuristicHazardException = true;
                     atLeastOneHeuristicMixedException = (atLeastOneHeuristicMixedException || atLeastOneHeuristicRollbackException || atLeastOneHeuristicCommitException);
-                    HeuristicMessage heurmsg = new StringHeuristicMessage (
-                            "No commit ACK from " + "participant "
-                                    + reply.getParticipant () );
-                    heuristicMessagesOfHeuristicParticipants_.addElement ( heurmsg );
-                    heuristicparticipants_.put ( reply.getParticipant (),
-                            TxState.HEUR_HAZARD );
-                    possiblyIndoubts_.put ( reply.getParticipant (),
-                            TxState.HEUR_HAZARD );
+                    heuristicparticipants_.add ( reply.getParticipant ());
+                    possiblyIndoubts_.add ( reply.getParticipant ());
 
                 }
             }
-            else {
-
-                // if reply OK -> add messages anyway, for complete overview
-                // this is in case coordinator makes heur commit
-                // So that it can present an overview of what has been
-                // heuristically committed.
-
-                HeuristicMessage[] msgs = (HeuristicMessage[]) reply.getResponse ();
-                if ( msgs != null ) addMessages ( msgs );
-            }
-
         } 
 
         if ( onePhaseCommitWithRollbackException )

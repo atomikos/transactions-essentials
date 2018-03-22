@@ -1,26 +1,9 @@
 /**
- * Copyright (C) 2000-2013 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
- * This code ("Atomikos TransactionsEssentials"), by itself,
- * is being distributed under the
- * Apache License, Version 2.0 ("License"), a copy of which may be found at
- * http://www.atomikos.com/licenses/apache-license-2.0.txt .
- * You may not use this file except in compliance with the License.
+ * LICENSE CONDITIONS
  *
- * While the License grants certain patent license rights,
- * those patent license rights only extend to the use of
- * Atomikos TransactionsEssentials by itself.
- *
- * This code (Atomikos TransactionsEssentials) contains certain interfaces
- * in package (namespace) com.atomikos.icatch
- * (including com.atomikos.icatch.Participant) which, if implemented, may
- * infringe one or more patents held by Atomikos.
- * It should be appreciated that you may NOT implement such interfaces;
- * licensing to implement these interfaces must be obtained separately from Atomikos.
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
  */
 
 
@@ -40,16 +23,17 @@ import com.atomikos.icatch.CompositeTransactionManager;
 import com.atomikos.icatch.RecoveryService;
 import com.atomikos.icatch.SysException;
 import com.atomikos.icatch.TransactionService;
+import com.atomikos.icatch.TransactionServicePlugin;
 import com.atomikos.icatch.admin.LogAdministrator;
 import com.atomikos.icatch.admin.LogControl;
 import com.atomikos.icatch.provider.Assembler;
 import com.atomikos.icatch.provider.ConfigProperties;
-import com.atomikos.icatch.provider.TransactionServicePlugin;
 import com.atomikos.icatch.provider.TransactionServiceProvider;
+import com.atomikos.recovery.RecoveryLog;
 
 /**
- * Configuration is a facade for the icatch transaction management facilities.
- * Allows the application server code to find the transaction manager, even if
+ * Configuration is a facade for the transaction management core.
+ * Allows the application code to find the transaction manager, even if
  * the actual implementation varies over time.
  */
 
@@ -104,25 +88,6 @@ public final class Configuration
     private Configuration ()
     {
     }
-    
-    /**
-     * Installs the transaction service in use.
-     *
-     * @param service
-     *            The service.
-     */
-
-    public static synchronized void installTransactionService (
-            TransactionService service )
-    {
-        service_ = (TransactionServiceProvider) service;
-        addAllTransactionServicePluginServicesFromClasspath();
-        Iterator it = tsListenersList_.iterator ();
-        while ( it.hasNext () && service != null ) {
-            TransactionServicePlugin l = (TransactionServicePlugin) it.next ();
-            service_.addTSListener ( l );
-        }
-    }
 
     private static void addAllTransactionServicePluginServicesFromClasspath() {
         ServiceLoader<TransactionServicePlugin> loader = ServiceLoader.load(TransactionServicePlugin.class,Configuration.class.getClassLoader());
@@ -139,7 +104,7 @@ public final class Configuration
      *
      * @param hook
      */
-    public static synchronized void addShutdownHook ( Thread hook )
+    private static synchronized void addShutdownHook ( Thread hook )
     {
     	if ( shutdownHooks_.contains ( hook ) ) return;
 
@@ -159,7 +124,7 @@ public final class Configuration
      * This method should be called on shutdown of the core.
      */
 
-    public static synchronized void removeShutdownHooks()
+    private static synchronized void removeShutdownHooks()
     {
     	Iterator it = shutdownHooks_.iterator();
 
@@ -239,20 +204,6 @@ public final class Configuration
         ctxmgr_ = compositeTransactionManager;
     }
 
-
-
-    /**
-     * Installs the log control interface to use.
-     *
-     * @param control
-     */
-
-    public static synchronized void installLogControl ( LogControl control )
-    {
-
-    }
-
-
     /**
      * Get the composite transaction manager.
      *
@@ -291,14 +242,13 @@ public final class Configuration
         purgeResources ();
 
         if ( resources_.containsKey ( resource.getName () ) )
-            throw new IllegalStateException ( "Attempt to register second "
-                    + "resource with name " + resource.getName () );
+            throw new IllegalStateException ( "Another resource already exists with name " + resource.getName() + " - pick a different name");
 
 
+        //FIRST add init resource, only then add it - cf case 142795
+        resource.setRecoveryService ( recoveryService_ );
         resources_.put ( resource.getName (), resource );
         resourceList_.add ( resource );
-        resource.setRecoveryService ( recoveryService_ );
-
     }
 
     /**
@@ -334,7 +284,7 @@ public final class Configuration
      *
      * @return Enumeration The logadministrators.
      */
-    public static Enumeration getLogAdministrators ()
+    private static Enumeration getLogAdministrators ()
     {
         Vector v = (Vector) logAdministrators_.clone ();
         return v.elements ();
@@ -380,7 +330,7 @@ public final class Configuration
      * @return Enumeration The resources.
      */
 
-    public static Enumeration getResources ()
+    public static Enumeration<RecoverableResource> getResources ()
     {
         // clone to avoid concurrency problems with
         // add/removeResource (new recovery makes this possible)
@@ -415,12 +365,20 @@ public final class Configuration
 	}
 	
 	public static synchronized void shutdown(boolean force) {
+		long maxWaitTime = 0;
+		if (!force) {
+			maxWaitTime = getConfigProperties().getDefaultMaxWaitTimeOnShutdown();
+		}
+		shutdown(maxWaitTime);
+	}
+	
+	public static synchronized void shutdown(long maxWaitTime) {
 		if (service_ != null) {
 			removeLogAdministrators(service_.getLogControl());
-			service_.shutdown(force);
+			service_.shutdown(maxWaitTime);
 			notifyAfterShutdown();
 			removeShutdownHooks();
-			removeAndCloseResources(force);
+			removeAndCloseResources(maxWaitTime <= 0);
 			clearSystemComponents();
 		}
 	}
@@ -486,8 +444,8 @@ public final class Configuration
 			startupInitiated = true;
 			addAllTransactionServicePluginServicesFromClasspath();
 			ConfigProperties configProperties = getConfigProperties();
-			assembleSystemComponents(configProperties);
 			notifyBeforeInit(configProperties);
+			assembleSystemComponents(configProperties);
 			initializeSystemComponents(configProperties);
 			notifyAfterInit();
 			if (configProperties.getForceShutdownOnVmExit()) {
@@ -527,6 +485,10 @@ public final class Configuration
 		service_ = assembler.assembleTransactionService(configProperties);
 		recoveryService_ = service_.getRecoveryService();
 		ctxmgr_ = assembler.assembleCompositeTransactionManager();
+	}
+	
+	public static RecoveryLog getRecoveryLog() {
+		return recoveryService_.getRecoveryLog();
 	}
 	
 	private static class ForceShutdownHook extends Thread

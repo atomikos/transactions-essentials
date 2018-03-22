@@ -1,33 +1,18 @@
 /**
- * Copyright (C) 2000-2012 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
- * This code ("Atomikos TransactionsEssentials"), by itself,
- * is being distributed under the
- * Apache License, Version 2.0 ("License"), a copy of which may be found at
- * http://www.atomikos.com/licenses/apache-license-2.0.txt .
- * You may not use this file except in compliance with the License.
+ * LICENSE CONDITIONS
  *
- * While the License grants certain patent license rights,
- * those patent license rights only extend to the use of
- * Atomikos TransactionsEssentials by itself.
- *
- * This code (Atomikos TransactionsEssentials) contains certain interfaces
- * in package (namespace) com.atomikos.icatch
- * (including com.atomikos.icatch.Participant) which, if implemented, may
- * infringe one or more patents held by Atomikos.
- * It should be appreciated that you may NOT implement such interfaces;
- * licensing to implement these interfaces must be obtained separately from Atomikos.
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
  */
 
 package com.atomikos.icatch.imp;
 
-import java.util.Dictionary;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 
 import com.atomikos.icatch.Extent;
@@ -45,7 +30,7 @@ public class ExtentImp implements Extent
 
 	private static final long serialVersionUID = -1010453448007350422L;
 
-	private Hashtable<String,Integer> participants_ = null;
+	private Map<String, Integer> participants_ = null;
     private boolean queried_ = false;
 
     private Stack<Participant> directs_;
@@ -56,20 +41,20 @@ public class ExtentImp implements Extent
         directs_ = new Stack<Participant> ();
     }
 
-    public ExtentImp ( Hashtable<String,Integer> participants , Stack<Participant> directs )
+    public ExtentImp ( Map<String, Integer> map , Stack<Participant> directs )
     {
-        participants_ = (Hashtable<String,Integer>) participants.clone ();
-        directs_ = (Stack<Participant>) directs.clone ();
+        participants_ = new HashMap<String,Integer>(map);
+        directs_ = new Stack<Participant>();
+        directs_.addAll(directs);
     }
 
-    public void addRemoteParticipants ( Dictionary<String,Integer> participants )
+    public void addRemoteParticipants ( Map<String,Integer> participants )
             throws IllegalStateException, SysException
     {
         if ( participants == null )
             return;
-        Enumeration<String> enumm = participants.keys ();
-        while ( enumm.hasMoreElements () ) {
-            String participant =  enumm.nextElement ();
+        Set<String> enumm = participants.keySet();
+        for ( String participant : enumm) {
             Integer count =  participants_.get ( participant );
             if ( count == null )
                 count = Integer.valueOf( 0 );
@@ -93,16 +78,16 @@ public class ExtentImp implements Extent
      * @see Extent
      */
 
-    public Hashtable<String,Integer> getRemoteParticipants ()
+    public Map<String, Integer> getRemoteParticipants ()
     {
         queried_ = true;
-        return (Hashtable<String,Integer>) participants_.clone ();
+        return new HashMap<String, Integer>(participants_);
     }
 
     /**
      * @see Extent
      */
-
+    @SuppressWarnings("unchecked")
     public Stack<Participant> getParticipants ()
     {
         queried_ = true;

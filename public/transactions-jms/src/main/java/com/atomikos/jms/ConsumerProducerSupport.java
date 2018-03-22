@@ -1,32 +1,12 @@
 /**
- * Copyright (C) 2000-2012 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
- * This code ("Atomikos TransactionsEssentials"), by itself,
- * is being distributed under the
- * Apache License, Version 2.0 ("License"), a copy of which may be found at
- * http://www.atomikos.com/licenses/apache-license-2.0.txt .
- * You may not use this file except in compliance with the License.
+ * LICENSE CONDITIONS
  *
- * While the License grants certain patent license rights,
- * those patent license rights only extend to the use of
- * Atomikos TransactionsEssentials by itself.
- *
- * This code (Atomikos TransactionsEssentials) contains certain interfaces
- * in package (namespace) com.atomikos.icatch
- * (including com.atomikos.icatch.Participant) which, if implemented, may
- * infringe one or more patents held by Atomikos.
- * It should be appreciated that you may NOT implement such interfaces;
- * licensing to implement these interfaces must be obtained separately from Atomikos.
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
  */
 
 package com.atomikos.jms;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.jms.JMSException;
 
@@ -34,13 +14,12 @@ import com.atomikos.datasource.xa.session.InvalidSessionHandleStateException;
 import com.atomikos.datasource.xa.session.SessionHandleState;
 import com.atomikos.icatch.CompositeTransaction;
 import com.atomikos.icatch.CompositeTransactionManager;
-import com.atomikos.icatch.StringHeuristicMessage;
 import com.atomikos.icatch.Synchronization;
-import com.atomikos.icatch.TxState;
 import com.atomikos.icatch.config.Configuration;
 import com.atomikos.icatch.jta.TransactionManagerImp;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
+import com.atomikos.recovery.TxState;
 
  /**
   * Support for common logic in producer and consumer.
@@ -68,7 +47,7 @@ abstract class ConsumerProducerSupport
 	
 
 
-	protected CompositeTransactionManager getCompositeTransactionManager() 
+	private CompositeTransactionManager getCompositeTransactionManager() 
 	{
 		CompositeTransactionManager ret = null;
 		ret = Configuration.getCompositeTransactionManager();
@@ -77,12 +56,11 @@ abstract class ConsumerProducerSupport
 
 	
 	
-	protected void enlist ( String hmsg ) throws JMSException
+	protected void enlist() throws JMSException
 	{
 		CompositeTransaction ct = null;
 		CompositeTransactionManager ctm = getCompositeTransactionManager();
 		boolean enlist = false;
-		StringHeuristicMessage shmsg = new StringHeuristicMessage ( hmsg );
 		
 		if ( ctm != null ) {
 			ct = ctm.getCompositeTransaction();
@@ -94,7 +72,7 @@ abstract class ConsumerProducerSupport
 		if ( enlist ) {
 			registerSynchronization ( ct );	
 			try {
-				state.notifyBeforeUse ( ct , shmsg );
+				state.notifyBeforeUse ( ct );
 			} catch ( InvalidSessionHandleStateException ex ) {
 				String msg = "error during enlist: " + ex.getMessage();
 				LOGGER.logWarning ( this + ": " + msg );
@@ -115,7 +93,7 @@ abstract class ConsumerProducerSupport
 	}
 
 	private void registerSynchronization ( CompositeTransaction ct ) throws AtomikosJMSException {
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": detected transaction " + ct );
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": detected transaction " + ct );
 		ct.registerSynchronization ( new JmsRequeueSynchronization( ct ) );
 	}
 	
@@ -123,29 +101,21 @@ abstract class ConsumerProducerSupport
 	private class JmsRequeueSynchronization implements Synchronization {
 		private static final long serialVersionUID = 1L;
 		
-		
 		private CompositeTransaction compositeTransaction;
 		private boolean afterCompletionDone;
-		private Map<TxState,Object> transactionStatesIndicatingConnectionReusability;
 
 		public JmsRequeueSynchronization ( CompositeTransaction compositeTransaction) {
 			this.compositeTransaction = compositeTransaction;
 			this.afterCompletionDone = false;
-			transactionStatesIndicatingConnectionReusability = new HashMap<TxState,Object>();
-			transactionStatesIndicatingConnectionReusability.put(TxState.TERMINATED,TxState.TERMINATED);
-			transactionStatesIndicatingConnectionReusability.put(TxState.HEUR_ABORTED,TxState.HEUR_ABORTED);
-			transactionStatesIndicatingConnectionReusability.put(TxState.HEUR_COMMITTED,TxState.HEUR_COMMITTED);
-			transactionStatesIndicatingConnectionReusability.put(TxState.HEUR_HAZARD,TxState.HEUR_HAZARD);
-			transactionStatesIndicatingConnectionReusability.put(TxState.HEUR_MIXED,TxState.HEUR_MIXED);
 		}
 
-		public void afterCompletion(Object txstate) {
+		public void afterCompletion(TxState txState) {
 			if ( afterCompletionDone ) return;
 			
-			if ( transactionStatesIndicatingConnectionReusability.containsKey(txstate) ) {
-				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug( "JmsRequeueSynchronization: detected termination of transaction " + compositeTransaction );
+			if ( txState.isHeuristic() || txState == TxState.TERMINATED ) {
+				if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace( "JmsRequeueSynchronization: detected termination of transaction " + compositeTransaction );
 				state.notifyTransactionTerminated(compositeTransaction);
-				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug( "JmsRequeueSynchronization: is in terminated state ? " + state.isTerminated() );			
+				if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace( "JmsRequeueSynchronization: is in terminated state ? " + state.isTerminated() );			
 	            afterCompletionDone = true;
 	        }	
         	

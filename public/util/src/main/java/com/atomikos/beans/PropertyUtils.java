@@ -1,26 +1,9 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
- * This code ("Atomikos TransactionsEssentials"), by itself,
- * is being distributed under the
- * Apache License, Version 2.0 ("License"), a copy of which may be found at
- * http://www.atomikos.com/licenses/apache-license-2.0.txt .
- * You may not use this file except in compliance with the License.
+ * LICENSE CONDITIONS
  *
- * While the License grants certain patent license rights,
- * those patent license rights only extend to the use of
- * Atomikos TransactionsEssentials by itself.
- *
- * This code (Atomikos TransactionsEssentials) contains certain interfaces
- * in package (namespace) com.atomikos.icatch
- * (including com.atomikos.icatch.Participant) which, if implemented, may
- * infringe one or more patents held by Atomikos.
- * It should be appreciated that you may NOT implement such interfaces;
- * licensing to implement these interfaces must be obtained separately from Atomikos.
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
  */
 
 package com.atomikos.beans;
@@ -43,6 +26,7 @@ import java.util.Set;
  *
  * @author lorban
  */
+@SuppressWarnings({"rawtypes","unchecked"})
 public class PropertyUtils 
 {
 	
@@ -50,7 +34,7 @@ public class PropertyUtils
 	 * Gets all implemented interfaces of a class. 
 	 */
 	
-	public static Set getAllImplementedInterfaces ( Class clazz ) 
+	public static Set<Class<?>> getAllImplementedInterfaces ( Class clazz ) 
 	{
 		Set ret = null;
 		
@@ -118,7 +102,8 @@ public class PropertyUtils
      * @return a Map of String with properties names as key and their values
      * @throws PropertyException if an error happened while trying to get a property.
      */
-    public static Map getProperties ( Object target ) throws PropertyException 
+    
+	public static Map getProperties ( Object target ) throws PropertyException 
     {
         Map properties = new HashMap();
         Class clazz = target.getClass();
@@ -227,25 +212,88 @@ public class PropertyUtils
         return result;
     }
 
-    private static Object convert ( Object value, Class destinationClass ) 
+    private static Object convert ( Object value, Class destinationClass )
     throws PropertyException
     {
         if (value.getClass() == destinationClass)
             return value;
 
-        if (value.getClass() == int.class || value.getClass() == Integer.class || value.getClass() == boolean.class || value.getClass() == Boolean.class)
+        if (isPrimitiveType(value.getClass()))
             return value;
-
-        if ((destinationClass == int.class || destinationClass == Integer.class)  &&  value.getClass() == String.class) {
-            return new Integer((String) value);
+        
+        if (value.getClass() == String.class && isPrimitiveType(destinationClass)) {
+        	return convertStringToPrimitive((String) value, destinationClass);
         }
 
-        if ((destinationClass == boolean.class || destinationClass == Boolean.class)  &&  value.getClass() == String.class) {
-            return Boolean.valueOf((String) value);
+        if(Set.class.isAssignableFrom(destinationClass)){
+        	if(value.getClass() == String.class) {
+        		return convertStringToSet((String)value);
+        	}
         }
-
+       
+        if(destinationClass.isAssignableFrom(value.getClass())){
+        		return value;
+        }
+        
         throw new PropertyException("cannot convert values of type '" + value.getClass().getName() + "' into type '" + destinationClass + "'");
     }
+    
+    private static Set<String> convertStringToSet(String propertyValue) {
+    	String[] elements=propertyValue.split(",");
+    	Set<String> result= new HashSet<String>();
+    	for (String element: elements) {
+    		result.add(element);
+		}
+
+    	return result;
+	}
+
+    private static Object convertStringToPrimitive(String value, Class destinationClass) { 
+		if ((destinationClass == int.class || destinationClass == Integer.class)) {
+            return new Integer(value);
+        }
+
+        if ((destinationClass == boolean.class || destinationClass == Boolean.class)) {
+            return Boolean.valueOf(value);
+        }
+        
+        if ((destinationClass == short.class || destinationClass == Short.class)) {
+            return new Short(value);
+        }
+        
+        if ((destinationClass == byte.class || destinationClass == Byte.class)) {
+            return new Byte(value);
+        }
+        
+        if ((destinationClass == long.class || destinationClass == Long.class)) {
+            return new Long(value);
+        }
+        
+        if ((destinationClass == float.class || destinationClass == Float.class)) {
+            return new Float(value);
+        }
+        
+        if ((destinationClass == double.class || destinationClass == Double.class)) {
+            return new Double(value);
+        }
+        
+        if ((destinationClass == char.class || destinationClass == Character.class)) {
+            return value.charAt(0);
+        }
+        
+        return null;
+	}
+
+	private static boolean isPrimitiveType(Class clazz) {
+		return  clazz == int.class || clazz == Integer.class || 
+				clazz == boolean.class || clazz == Boolean.class ||
+				clazz == byte.class || clazz == Byte.class || 
+				clazz == short.class || clazz == Short.class ||
+				clazz == long.class || clazz == Long.class ||
+				clazz == float.class || clazz == Float.class ||
+				clazz == double.class || clazz == Double.class ||
+				clazz == char.class || clazz == Character.class;
+	}
 
     private static void callSetter ( Object target, String propertyName, Object parameter) throws PropertyException 
     {

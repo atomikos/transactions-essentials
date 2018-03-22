@@ -1,3 +1,11 @@
+/**
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
+ *
+ * LICENSE CONDITIONS
+ *
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
+ */
+
 package com.atomikos.logging;
 
 import org.mockito.Mockito;
@@ -17,9 +25,16 @@ public class Slf4jLoggerFactoryTestJUnit extends AbstractLoggerFactoryTest {
 		Mockito.verify(StaticLoggerBinder.mockito).debug(MESSAGE);
 	}
 	
+	protected void assertLoggedAsTrace() {
+		Mockito.verify(StaticLoggerBinder.mockito).trace(MESSAGE);
+	}
 	protected void assertLoggedAsDebugWithException() {
 		Mockito.verify(StaticLoggerBinder.mockito).debug(MESSAGE,ERROR);
 			
+	}
+	@Override
+	protected void assertLoggedAsTraceWithException() {
+		Mockito.verify(StaticLoggerBinder.mockito).trace(MESSAGE,ERROR);
 	}
 	
 	protected void assertLoggedAsInfo() {
@@ -47,6 +62,11 @@ public class Slf4jLoggerFactoryTestJUnit extends AbstractLoggerFactoryTest {
 	protected void configureLoggingFrameworkWithDebug() {
 		Mockito.when(StaticLoggerBinder.mockito.isDebugEnabled()).thenReturn(true);
 	}
+	
+	@Override
+	protected void configureLoggingFrameworkWithTrace() {
+		Mockito.when(StaticLoggerBinder.mockito.isTraceEnabled()).thenReturn(true);
+	}
 
 	@Override
 	protected void configureLoggingFrameworkWithInfo() {
@@ -72,6 +92,8 @@ public class Slf4jLoggerFactoryTestJUnit extends AbstractLoggerFactoryTest {
   protected void configureLoggingFrameworkWithError() {
     Mockito.when(StaticLoggerBinder.mockito.isErrorEnabled()).thenReturn(true);
   }
+
+
 	
 
 }

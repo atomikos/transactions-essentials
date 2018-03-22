@@ -1,39 +1,19 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
- * This code ("Atomikos TransactionsEssentials"), by itself,
- * is being distributed under the
- * Apache License, Version 2.0 ("License"), a copy of which may be found at
- * http://www.atomikos.com/licenses/apache-license-2.0.txt .
- * You may not use this file except in compliance with the License.
+ * LICENSE CONDITIONS
  *
- * While the License grants certain patent license rights,
- * those patent license rights only extend to the use of
- * Atomikos TransactionsEssentials by itself.
- *
- * This code (Atomikos TransactionsEssentials) contains certain interfaces
- * in package (namespace) com.atomikos.icatch
- * (including com.atomikos.icatch.Participant) which, if implemented, may
- * infringe one or more patents held by Atomikos.
- * It should be appreciated that you may NOT implement such interfaces;
- * licensing to implement these interfaces must be obtained separately from Atomikos.
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
  */
 
 package com.atomikos.datasource.xa;
 
 import java.io.Serializable;
-import java.util.Arrays;
 
 import javax.transaction.xa.Xid;
 
 /**
- *
- *
- * An adaptor class for mapping a String to Xid type.
+ * Our Xid class with correct equals and hashCode.
  */
 
 public class XID implements Serializable, Xid
@@ -41,34 +21,18 @@ public class XID implements Serializable, Xid
 
 	private static final long serialVersionUID = 4796496938014754464L;
 
-	private String meAsString;
-    // cached result of toString(), to gain performance
-
+	private static final int DEFAULT_FORMAT = ('A' << 24) + ('T' << 16)
+			+ ('O' << 8) + 'M';
+	
+	// same formatID for each transaction
+	// -1 for null Xid, 0 for OSI CCR and positive for proprietary format...
+	
+	private String cachedToStringForPerformance;
     private int formatId;
-    // required for Xid implementation
-    private int branchUsed = 0;
-    // how many bytes in branch array are used
-    private int globalUsed = 0;
-    // how many bytes in global array are used
-    private byte[] branchQualifier = new byte[Xid.MAXBQUALSIZE];
-    // for Xid
-    private byte[] globalTransactionId = new byte[Xid.MAXGTRIDSIZE];
-    // for Xid
-    private static final int DEFAULT_FORMAString = ('A' << 24) + ('T' << 16)
-            + ('O' << 8) + 'M';
-
-    // same formatID for each transaction
-    // -1 for null Xid, 0 for OSI CCR and positive for proprietary format...
-
-    private XID ( String tid )
-    {
-        this.formatId = DEFAULT_FORMAString;
-        this.branchQualifier[0] = 0;
-        this.branchUsed = 1;
-        this.globalTransactionId = tid.toString ().getBytes ();
-        this.globalUsed = tid.toString ().getBytes ().length;
-    }
-
+    private final byte[] branchQualifier;
+    private final byte[] globalTransactionId;
+    private final String branchQualifierStr;
+    private final String globalTransactionIdStr;
     /**
      * Create a new instance with the resource name as branch. This is the main
      * constructor for new instances.
@@ -85,14 +49,18 @@ public class XID implements Serializable, Xid
 
     public XID ( String tid , String resourceURL )
     {
-        this ( tid );
+    	 this.formatId = DEFAULT_FORMAT;
+
+         this.globalTransactionIdStr=tid;
+         this.globalTransactionId = tid.toString ().getBytes ();
+         if ( this.globalTransactionId.length > Xid.MAXGTRIDSIZE )
+         	throw new RuntimeException ( "Max global tid length exceeded." );
+         
+        this.branchQualifierStr = resourceURL;
         this.branchQualifier = resourceURL.getBytes ();
-        this.branchUsed = this.branchQualifier.length;
         if ( this.branchQualifier.length > Xid.MAXBQUALSIZE )
             throw new RuntimeException (
                     "Max branch qualifier length exceeded." );
-        if ( this.globalUsed > Xid.MAXGTRIDSIZE )
-            throw new RuntimeException ( "Max global tid length exceeded." );
 
     }
 
@@ -109,9 +77,9 @@ public class XID implements Serializable, Xid
     {
         this.formatId = xid.getFormatId ();
         this.globalTransactionId = xid.getGlobalTransactionId ();
-        this.globalUsed = xid.getGlobalTransactionId ().length;
         this.branchQualifier = xid.getBranchQualifier ();
-        this.branchUsed = xid.getBranchQualifier ().length;
+        this.globalTransactionIdStr = new String(xid.getGlobalTransactionId ());
+        this.branchQualifierStr= new String(xid.getBranchQualifier ());
     }
 
     @Override
@@ -137,24 +105,30 @@ public class XID implements Serializable, Xid
     {
     	if (this == obj)
 			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-        Xid xid = (Xid) obj;
-        return Arrays.equals(xid.getGlobalTransactionId (),getGlobalTransactionId ()) && Arrays.equals(xid.getBranchQualifier (), getBranchQualifier ());
-
+		if (obj instanceof XID) {
+			XID xid = (XID) obj;
+			return xid.getBranchQualifierAsString().equals(getBranchQualifierAsString()) && xid.getGlobalTransactionIdAsString().equals(getGlobalTransactionIdAsString());
+		}
+		return false;
     }
 
     @Override
 	public String toString ()
     {
-        if ( this.meAsString == null ) {
-            this.meAsString = new String ( getGlobalTransactionId () )
-                    + new String ( getBranchQualifier () );
+        if ( this.cachedToStringForPerformance == null ) {
+            this.cachedToStringForPerformance = getGlobalTransactionIdAsString()
+                    + getBranchQualifierAsString();
         }
-        return this.meAsString;
+        return this.cachedToStringForPerformance;
     }
+
+	public  String getBranchQualifierAsString() {
+		return this.branchQualifierStr;
+	}
+
+	public  String getGlobalTransactionIdAsString() {
+		return this.globalTransactionIdStr;
+	}
 
     @Override
 	public int hashCode ()

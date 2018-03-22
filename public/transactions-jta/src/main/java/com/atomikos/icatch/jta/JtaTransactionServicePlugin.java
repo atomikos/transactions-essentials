@@ -1,12 +1,23 @@
+/**
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
+ *
+ * LICENSE CONDITIONS
+ *
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
+ */
+
 package com.atomikos.icatch.jta;
 
 import java.util.Properties;
 
+import com.atomikos.icatch.TransactionServicePlugin;
 import com.atomikos.icatch.config.Configuration;
 import com.atomikos.icatch.provider.ConfigProperties;
-import com.atomikos.icatch.provider.TransactionServicePlugin;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
+import com.atomikos.recovery.RecoveryLog;
+import com.atomikos.recovery.xa.DefaultXaRecoveryLog;
+import com.atomikos.recovery.xa.XaResourceRecoveryManager;
 
 public class JtaTransactionServicePlugin implements TransactionServicePlugin {
 	
@@ -83,11 +94,18 @@ public class JtaTransactionServicePlugin implements TransactionServicePlugin {
 	public void afterShutdown() {
 		UserTransactionServerImp.getSingleton().shutdown();
 		TransactionManagerImp.installTransactionManager ( null, false );
+		XaResourceRecoveryManager.installXaResourceRecoveryManager(null, null);
 	}
 
 	@Override
 	public void afterInit() {
 		TransactionManagerImp.installTransactionManager(Configuration.getCompositeTransactionManager(), autoRegisterResources);
+		RecoveryLog recoveryLog = Configuration.getRecoveryLog();
+		long maxTimeout = Configuration.getConfigProperties().getMaxTimeout();
+		if (recoveryLog != null) {
+			XaResourceRecoveryManager.installXaResourceRecoveryManager(new DefaultXaRecoveryLog(recoveryLog, maxTimeout),Configuration.getConfigProperties().getTmUniqueName());
+		}
+		
 	}
 
 }

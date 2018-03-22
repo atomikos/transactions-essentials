@@ -1,26 +1,9 @@
 /**
- * Copyright (C) 2000-2014 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
- * This code ("Atomikos TransactionsEssentials"), by itself,
- * is being distributed under the
- * Apache License, Version 2.0 ("License"), a copy of which may be found at
- * http://www.atomikos.com/licenses/apache-license-2.0.txt .
- * You may not use this file except in compliance with the License.
+ * LICENSE CONDITIONS
  *
- * While the License grants certain patent license rights,
- * those patent license rights only extend to the use of
- * Atomikos TransactionsEssentials by itself.
- *
- * This code (Atomikos TransactionsEssentials) contains certain interfaces
- * in package (namespace) com.atomikos.icatch
- * (including com.atomikos.icatch.Participant) which, if implemented, may
- * infringe one or more patents held by Atomikos.
- * It should be appreciated that you may NOT implement such interfaces;
- * licensing to implement these interfaces must be obtained separately from Atomikos.
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
  */
 
 
@@ -43,8 +26,9 @@ public class UniqueIdMgr
 	private final static int MAX_COUNTER_WITHIN_SAME_MILLIS = 32000;
 
 
-    String server_; //name of server
-    int lastcounter_;
+  
+    private final String commonPartOfId; //name of server
+    private int lastcounter;
   
 
     /**
@@ -55,8 +39,8 @@ public class UniqueIdMgr
 
     public UniqueIdMgr ( String server ) {
         super();
-        server_ = server;
-        lastcounter_ = 0;
+        commonPartOfId=getCommonPartOfId(server);
+        lastcounter = 0;
     }
  
 
@@ -67,6 +51,7 @@ public class UniqueIdMgr
     		int max = Long.toString(MAX_COUNTER_WITHIN_SAME_MILLIS).length();
     		int len = ret.length();
     		StringBuffer zeroes = new StringBuffer();
+    		
     		while ( len < max ) {
     			zeroes.append ( "0" );
     			len++;
@@ -81,22 +66,32 @@ public class UniqueIdMgr
      *
      */
 
-    public synchronized String get()
+    public String get()
     {
-        lastcounter_++;
-        if (lastcounter_ == MAX_COUNTER_WITHIN_SAME_MILLIS) lastcounter_ = 0;
-        return getCommonPartOfId() + System.currentTimeMillis() + getCountWithLeadingZeroes ( lastcounter_ ) ;
+        StringBuffer buffer = new StringBuffer();
+        String id = buffer.append(commonPartOfId).
+        			  append(System.currentTimeMillis()).
+        			  append(getCountWithLeadingZeroes ( incrementAndGet() )).
+        			  toString();
+        return id;
     }
 
-    private String getCommonPartOfId() {
+
+	private synchronized int incrementAndGet() {
+		lastcounter++;
+        if (lastcounter == MAX_COUNTER_WITHIN_SAME_MILLIS) lastcounter = 0;
+        return lastcounter;
+	}
+
+    private static String getCommonPartOfId(String server) {
     	StringBuffer ret = new StringBuffer(64);
-		ret.append(server_);
+		ret.append(server);
 		return ret.toString();
     }
 
 	public int getMaxIdLengthInBytes() {
 		// see case 73086
-		return getCommonPartOfId().getBytes().length + MAX_LENGTH_OF_NUMERIC_SUFFIX;
+		return commonPartOfId.getBytes().length + MAX_LENGTH_OF_NUMERIC_SUFFIX;
 	}
 
 

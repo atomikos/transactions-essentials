@@ -1,13 +1,28 @@
+/**
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
+ *
+ * LICENSE CONDITIONS
+ *
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
+ */
+
 package com.atomikos.util;
 
-import java.text.Format;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class DateHelper {
-	
-	private static Format dateFormatter = FastDateFormat.getInstance("yyyy.MM.dd HH:mm:ss:SSS");
+
+	private static ThreadLocal<SimpleDateFormat> threadSafeSimpleDateFormat = new ThreadLocal<SimpleDateFormat>() {
+		protected SimpleDateFormat initialValue() {
+
+			return new SimpleDateFormat("yyyy.MM.dd HH:mm:ss:SSS");
+
+		};
+
+	};
 
 	public static String format(Date date) {
-		return dateFormatter.format(date);
+		return threadSafeSimpleDateFormat.get().format(date);
 	}
 }

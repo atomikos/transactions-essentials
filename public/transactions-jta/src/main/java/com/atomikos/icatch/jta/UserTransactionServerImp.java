@@ -1,26 +1,9 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
- * This code ("Atomikos TransactionsEssentials"), by itself,
- * is being distributed under the
- * Apache License, Version 2.0 ("License"), a copy of which may be found at
- * http://www.atomikos.com/licenses/apache-license-2.0.txt .
- * You may not use this file except in compliance with the License.
+ * LICENSE CONDITIONS
  *
- * While the License grants certain patent license rights,
- * those patent license rights only extend to the use of
- * Atomikos TransactionsEssentials by itself.
- *
- * This code (Atomikos TransactionsEssentials) contains certain interfaces
- * in package (namespace) com.atomikos.icatch
- * (including com.atomikos.icatch.Participant) which, if implemented, may
- * infringe one or more patents held by Atomikos.
- * It should be appreciated that you may NOT implement such interfaces;
- * licensing to implement these interfaces must be obtained separately from Atomikos.
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
  */
 
 package com.atomikos.icatch.jta;
@@ -106,8 +89,8 @@ public class UserTransactionServerImp implements UserTransactionServer
      */
     private Context getInitialContext () throws NamingException
     {
-        Hashtable env = new Hashtable ();
-        Enumeration enumm = properties_.propertyNames ();
+        Hashtable<String,String> env = new Hashtable<String,String> ();
+        Enumeration<?> enumm = properties_.propertyNames ();
         while ( enumm.hasMoreElements () ) {
             String name = (String) enumm.nextElement ();
             String value = properties_.getProperty ( name );
@@ -164,8 +147,7 @@ public class UserTransactionServerImp implements UserTransactionServer
         canExport = "UnicastRemoteObject".equals ( exportClass )
                 || "PortableRemoteObject".equals ( exportClass );
         if ( !canExport ) {
-            LOGGER
-                    .logWarning ( "Client transaction demarcation not supported for "
+            LOGGER.logWarning ( "Client transaction demarcation not supported for "
                             + "com.atomikos.icatch.rmi_export_class="
                             + exportClass );
             exported_ = false;
@@ -258,7 +240,7 @@ public class UserTransactionServerImp implements UserTransactionServer
         tm.begin ( timeout );
         TransactionImp tx = (TransactionImp) tm.getTransaction ();
         // set serial mode or shared access will NOT work!
-        tx.getCT ().getTransactionControl ().setSerial ();
+        tx.getCT ().setSerial ();
         tm.suspend ();
         return tx.getCT ().getTid ();
     }

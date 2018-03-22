@@ -1,9 +1,16 @@
+/**
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
+ *
+ * LICENSE CONDITIONS
+ *
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
+ */
+
 package com.atomikos.icatch.imp;
 
 import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeurMixedException;
 import com.atomikos.icatch.HeurRollbackException;
-import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.RollbackException;
 import com.atomikos.icatch.SysException;
 
@@ -13,7 +20,7 @@ import com.atomikos.icatch.SysException;
 
 interface CommitCallback {
 	
-	public HeuristicMessage[] doCommit() throws HeurRollbackException, HeurMixedException,
+	public void doCommit() throws HeurRollbackException, HeurMixedException,
     HeurHazardException, java.lang.IllegalStateException,
     RollbackException, SysException;
 	

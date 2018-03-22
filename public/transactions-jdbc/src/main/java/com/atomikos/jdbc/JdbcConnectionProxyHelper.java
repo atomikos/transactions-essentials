@@ -1,26 +1,9 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
- * This code ("Atomikos TransactionsEssentials"), by itself,
- * is being distributed under the
- * Apache License, Version 2.0 ("License"), a copy of which may be found at
- * http://www.atomikos.com/licenses/apache-license-2.0.txt .
- * You may not use this file except in compliance with the License.
+ * LICENSE CONDITIONS
  *
- * While the License grants certain patent license rights,
- * those patent license rights only extend to the use of
- * Atomikos TransactionsEssentials by itself.
- *
- * This code (Atomikos TransactionsEssentials) contains certain interfaces
- * in package (namespace) com.atomikos.icatch
- * (including com.atomikos.icatch.Participant) which, if implemented, may
- * infringe one or more patents held by Atomikos.
- * It should be appreciated that you may NOT implement such interfaces;
- * licensing to implement these interfaces must be obtained separately from Atomikos.
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
  */
 
 package com.atomikos.jdbc;
@@ -63,7 +46,7 @@ public class JdbcConnectionProxyHelper {
 					Throwable cause = ite.getCause();
 					if ( cause != null ) {
 						//log as debug and let the convert do the rest for the cause
-						if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( msg , ite );
+						if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( msg , ite );
 						convertProxyError ( cause , msg );
 					}
 					else {
@@ -85,7 +68,7 @@ public class JdbcConnectionProxyHelper {
 			return;
 
 		try {
-			if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( "setting isolation level to " + defaultIsolationLevel);
+			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "setting isolation level to " + defaultIsolationLevel);
 			connection.setTransactionIsolation ( defaultIsolationLevel );
 		}
 		catch (SQLException ex) {

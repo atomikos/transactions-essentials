@@ -1,38 +1,22 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
- * This code ("Atomikos TransactionsEssentials"), by itself,
- * is being distributed under the
- * Apache License, Version 2.0 ("License"), a copy of which may be found at
- * http://www.atomikos.com/licenses/apache-license-2.0.txt .
- * You may not use this file except in compliance with the License.
+ * LICENSE CONDITIONS
  *
- * While the License grants certain patent license rights,
- * those patent license rights only extend to the use of
- * Atomikos TransactionsEssentials by itself.
- *
- * This code (Atomikos TransactionsEssentials) contains certain interfaces
- * in package (namespace) com.atomikos.icatch
- * (including com.atomikos.icatch.Participant) which, if implemented, may
- * infringe one or more patents held by Atomikos.
- * It should be appreciated that you may NOT implement such interfaces;
- * licensing to implement these interfaces must be obtained separately from Atomikos.
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
  */
 
 package com.atomikos.icatch.imp;
 
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Stack;
-import java.util.Vector;
 
 import com.atomikos.icatch.HeurCommitException;
 import com.atomikos.icatch.HeurHazardException;
 import com.atomikos.icatch.HeurMixedException;
+import com.atomikos.icatch.Participant;
 
 /**
  * A result for prepare messages.
@@ -41,17 +25,13 @@ import com.atomikos.icatch.HeurMixedException;
 class PrepareResult extends Result
 {
 
-    protected Hashtable readonlytable_ = new Hashtable ();
+    private Set<Participant> readonlytable_ = new HashSet<Participant> ();
     // for read only voters
-    protected Hashtable indoubts_ = new Hashtable ();
+    private Set<Participant> indoubts_ = new HashSet<Participant>();
     // for indoubt participants
     // should be rolled back in case of failure!
 
-    protected Hashtable heuristics_ = new Hashtable ();
-
-    protected boolean analyzed_ = false;
-
-    protected Vector msgvector_ = new Vector ();
+    private boolean analyzed_ = false;
 
     /**
      * Constructor.
@@ -76,8 +56,8 @@ class PrepareResult extends Result
         boolean heurmixed = false;
         boolean heurhazards = false;
         boolean heurcommits = false;
-        Stack replies = getReplies ();
-        Enumeration enumm = replies.elements ();
+        Stack<Reply> replies = getReplies ();
+        Enumeration<Reply> enumm = replies.elements ();
 
         while ( enumm.hasMoreElements () ) {
             boolean yes = false;
@@ -92,22 +72,15 @@ class PrepareResult extends Result
                 Exception err = reply.getException ();
                 if ( err instanceof HeurMixedException ) {
                     heurmixed = true;
-                    HeurMixedException hm = (HeurMixedException) err;
-                    addMessages ( hm.getHeuristicMessages () );
                 } else if ( err instanceof HeurCommitException ) {
                     heurcommits = true;
-                    HeurCommitException hc = (HeurCommitException) err;
-                    addMessages ( hc.getHeuristicMessages () );
                     heurmixed = (heurmixed || heurhazards);
                 } else if ( err instanceof HeurHazardException ) {
                     heurhazards = true;
                     heurmixed = (heurmixed || heurcommits);
-                    HeurHazardException hr = (HeurHazardException) err;
-                    indoubts_.put ( reply.getParticipant (),
-                            new Boolean ( true ) );
+                    indoubts_.add ( reply.getParticipant ());
                     // REMEMBER: might be indoubt, so HAS to be notified
                     // during rollback!
-                    addMessages ( hr.getHeuristicMessages () );
                 }
 
             }// if failed
@@ -121,12 +94,8 @@ class PrepareResult extends Result
                 yes = (readonly || answer.booleanValue ());
 
                 // if readonly: remember this fact for logging and second phase
-                if ( readonly )
-                    readonlytable_.put ( reply.getParticipant (), new Boolean (
-                            true ) );
-                else
-                    indoubts_.put ( reply.getParticipant (),
-                            new Boolean ( true ) );
+                if ( readonly ) readonlytable_.add ( reply.getParticipant () );
+                else indoubts_.add ( reply.getParticipant ());
             }
 
             allYes = (allYes && yes);
@@ -181,30 +150,15 @@ class PrepareResult extends Result
     /**
      * Get a table of readonly voting participants.
      *
-     * @return Hashtable Contains a key per readonly participant.
+     * @return Set Contains readonly participant.
      * @exception InterruptedException
      *                If interrupted on wait.
      */
 
-    public Hashtable getReadOnlyTable () throws InterruptedException
+    public Set<Participant> getReadOnlyTable () throws InterruptedException
     {
         calculateResultFromAllReplies ();
         return readonlytable_;
-    }
-
-    /**
-     * Get a table of indoubt participants, which have to be notified of commit
-     * or rollback.
-     *
-     * @return Hashtable A key per indoubt participant.
-     * @exception InterruptedException
-     *                If interrupted on wait.
-     */
-
-    public Hashtable getIndoubtTable () throws InterruptedException
-    {
-        calculateResultFromAllReplies ();
-        return indoubts_;
     }
 
 }

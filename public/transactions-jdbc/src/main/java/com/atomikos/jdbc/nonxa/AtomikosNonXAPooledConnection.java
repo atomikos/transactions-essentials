@@ -1,26 +1,9 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
- * This code ("Atomikos TransactionsEssentials"), by itself,
- * is being distributed under the
- * Apache License, Version 2.0 ("License"), a copy of which may be found at
- * http://www.atomikos.com/licenses/apache-license-2.0.txt .
- * You may not use this file except in compliance with the License.
+ * LICENSE CONDITIONS
  *
- * While the License grants certain patent license rights,
- * those patent license rights only extend to the use of
- * Atomikos TransactionsEssentials by itself.
- *
- * This code (Atomikos TransactionsEssentials) contains certain interfaces
- * in package (namespace) com.atomikos.icatch
- * (including com.atomikos.icatch.Participant) which, if implemented, may
- * infringe one or more patents held by Atomikos.
- * It should be appreciated that you may NOT implement such interfaces;
- * licensing to implement these interfaces must be obtained separately from Atomikos.
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
  */
 
 package com.atomikos.jdbc.nonxa;
@@ -35,7 +18,6 @@ import com.atomikos.datasource.pool.CreateConnectionException;
 import com.atomikos.datasource.pool.Reapable;
 import com.atomikos.icatch.CompositeTransaction;
 import com.atomikos.icatch.CompositeTransactionManager;
-import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.config.Configuration;
 import com.atomikos.icatch.jta.TransactionManagerImp;
 import com.atomikos.jdbc.JdbcConnectionProxyHelper;
@@ -74,13 +56,13 @@ class AtomikosNonXAPooledConnection extends AbstractXPooledConnection
 	
 	void setErroneous() 
 	{
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": setErroneous" );
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": setErroneous" );
 		this.erroneous = true;
 	}
 
 	public void destroy() 
 	{
-		if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": destroying..." );
+		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": destroying..." );
 		try {
 			if ( connection != null ) connection.close();
 		} catch ( SQLException e ) {
@@ -90,18 +72,18 @@ class AtomikosNonXAPooledConnection extends AbstractXPooledConnection
 
 	}
 
-	protected Reapable doCreateConnectionProxy ( HeuristicMessage hmsg ) throws CreateConnectionException 
+	protected Reapable doCreateConnectionProxy() throws CreateConnectionException 
 	{
 		Reapable ret = null;
 		if ( canBeRecycledForCallingThread() ) {
-			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": reusing existing proxy for thread..." );
+			if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": reusing existing proxy for thread..." );
 			ret = getCurrentConnectionProxy();
 			DynamicProxy dproxy = ( DynamicProxy ) ret;
 			AtomikosThreadLocalConnection previous = (AtomikosThreadLocalConnection) dproxy.getInvocationHandler();
 			//DON't increment use count: see case 27793
 			//previous.incUseCount();
 		} else {
-			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": creating connection proxy..." );
+			if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": creating connection proxy..." );
 			JdbcConnectionProxyHelper.setIsolationLevel ( connection, getDefaultIsolationLevel() );
 			ret = ( Reapable ) AtomikosThreadLocalConnection.newInstance ( this , props.getUniqueResourceName() );
 		}
@@ -119,7 +101,7 @@ class AtomikosNonXAPooledConnection extends AbstractXPooledConnection
 		String testQuery = getTestQuery();
 		if ( isErroneous() ) throw new CreateConnectionException ( this + ": connection is erroneous" );
 		if (testQuery != null) {
-			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": testing connection with query [" + testQuery + "]" );
+			if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": testing connection with query [" + testQuery + "]" );
 			Statement stmt = null;
 			try {
 				stmt = connection.createStatement();
@@ -130,10 +112,10 @@ class AtomikosNonXAPooledConnection extends AbstractXPooledConnection
 				//catch any Exception - cf case 22198
 				throw new CreateConnectionException ( "Error executing testQuery" ,  e );
 			}
-			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": connection tested OK" );
+			if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": connection tested OK" );
 		}
 		else {
-			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": no test query, skipping test" );
+			if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": no test query, skipping test" );
 		}
 	}
 
@@ -153,17 +135,6 @@ class AtomikosNonXAPooledConnection extends AbstractXPooledConnection
 
 	public boolean isErroneous() {
 		return erroneous;
-	}
-
-	public boolean isInTransaction ( CompositeTransaction ct ) {
-		boolean ret = false;
-		Reapable handle = getCurrentConnectionProxy();
-		if ( handle != null ) {
-			DynamicProxy dproxy = ( DynamicProxy ) handle;
-			AtomikosThreadLocalConnection previous = (AtomikosThreadLocalConnection) dproxy.getInvocationHandler();
-			ret = previous.isInTransaction ( ct );
-		}
-		return ret;
 	}
 
 	//overridden for package-use here

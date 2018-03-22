@@ -1,41 +1,26 @@
 /**
- * Copyright (C) 2000-2013 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
- * This code ("Atomikos TransactionsEssentials"), by itself,
- * is being distributed under the
- * Apache License, Version 2.0 ("License"), a copy of which may be found at
- * http://www.atomikos.com/licenses/apache-license-2.0.txt .
- * You may not use this file except in compliance with the License.
+ * LICENSE CONDITIONS
  *
- * While the License grants certain patent license rights,
- * those patent license rights only extend to the use of
- * Atomikos TransactionsEssentials by itself.
- *
- * This code (Atomikos TransactionsEssentials) contains certain interfaces
- * in package (namespace) com.atomikos.icatch
- * (including com.atomikos.icatch.Participant) which, if implemented, may
- * infringe one or more patents held by Atomikos.
- * It should be appreciated that you may NOT implement such interfaces;
- * licensing to implement these interfaces must be obtained separately from Atomikos.
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
  */
 
 package com.atomikos.jdbc;
 
-import java.util.Enumeration;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.sql.XADataSource;
 
 import com.atomikos.beans.PropertyUtils;
 import com.atomikos.datasource.RecoverableResource;
+import com.atomikos.datasource.xa.event.XAResourceDetectedEvent;
 import com.atomikos.datasource.xa.jdbc.JdbcTransactionalResource;
 import com.atomikos.icatch.config.Configuration;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
+import com.atomikos.publish.EventPublisher;
 import com.atomikos.util.ClassLoadingHelper;
 
  /**
@@ -63,16 +48,16 @@ extends AbstractDataSourceBean
 		this.xaProperties = new Properties();
 	}
 	
-	protected String printXaProperties()
+	private String printXaProperties()
 	{
 		StringBuffer ret = new StringBuffer();
 		if ( xaProperties != null ) {
-			Enumeration it = xaProperties.propertyNames();
+			
+			Set<String> names = xaProperties.stringPropertyNames();
 			ret.append ( "[" );
 			boolean first = true;
-			while ( it.hasMoreElements() ) {
+			for (String name : names) {
 				if ( ! first ) ret.append ( "," );
-				String name = ( String ) it.nextElement();
 				String value = xaProperties.getProperty( name);
 				ret.append ( name ); ret.append ( "=" ); ret.append ( value );
 				first = false;
@@ -155,7 +140,7 @@ extends AbstractDataSourceBean
 		}
 		
 		
-		if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo(
+		if ( LOGGER.isDebugEnabled() ) LOGGER.logInfo(
 				this + ": initializing with [" +
 				" xaDataSourceClassName=" + xaDataSourceClassName + "," +
 				" uniqueResourceName=" + getUniqueResourceName() + "," +
@@ -175,31 +160,29 @@ extends AbstractDataSourceBean
 		
 			if (xaDataSource == null)
 			{
-				Class xadsClass = null;
 				try {
-					xadsClass = ClassLoadingHelper.loadClass ( getXaDataSourceClassName() );
+					Class<XADataSource> xadsClass = ClassLoadingHelper.loadClass ( getXaDataSourceClassName() );
+					xaDataSource =  xadsClass.newInstance();
+					
 				} catch ( ClassNotFoundException nf ) {
 					AtomikosSQLException.throwAtomikosSQLException ( "The class '" + getXaDataSourceClassName() +
 							"' specified by property 'xaDataSourceClassName' could not be found in the classpath. Please make sure the spelling is correct, and that the required jar(s) are in the classpath." , nf );
-					 
-				}
-				Object driver =  xadsClass.newInstance();
-				if ( ! ( driver instanceof XADataSource ) ) {
+				} catch (ClassCastException cce) {
 					AtomikosSQLException.throwAtomikosSQLException (
 							 "The class '" + getXaDataSourceClassName() +
-								"' specified by property 'xaDataSourceClassName' does not implement the required interface javax.jdbc.XADataSource. Please make sure the spelling is correct, and check your JDBC driver vendor's documentation." 
-					);
+								"' specified by property 'xaDataSourceClassName' does not implement the required interface javax.jdbc.XADataSource. Please make sure the spelling is correct, and check your JDBC driver vendor's documentation.");
 				}
-				xaDataSource = (XADataSource) driver;
 				xaDataSource.setLoginTimeout ( getLoginTimeout() );
 				xaDataSource.setLogWriter ( getLogWriter() );
 				PropertyUtils.setProperties(xaDataSource, xaProperties );
+				
 			}
 			
 			JdbcTransactionalResource tr = new JdbcTransactionalResource(getUniqueResourceName() , xaDataSource);
 			com.atomikos.datasource.pool.ConnectionFactory cf = new com.atomikos.jdbc.AtomikosXAConnectionFactory(xaDataSource, tr, this);
 			Configuration.addResource ( tr );
 			
+			EventPublisher.publish(new XAResourceDetectedEvent(xaDataSourceClassName,xaProperties,XAResourceDetectedEvent.ResourceType.JDBC));
 			return cf;
 	}
 	

@@ -1,29 +1,14 @@
 /**
- * Copyright (C) 2000-2013 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
- * This code ("Atomikos TransactionsEssentials"), by itself,
- * is being distributed under the
- * Apache License, Version 2.0 ("License"), a copy of which may be found at
- * http://www.atomikos.com/licenses/apache-license-2.0.txt .
- * You may not use this file except in compliance with the License.
+ * LICENSE CONDITIONS
  *
- * While the License grants certain patent license rights,
- * those patent license rights only extend to the use of
- * Atomikos TransactionsEssentials by itself.
- *
- * This code (Atomikos TransactionsEssentials) contains certain interfaces
- * in package (namespace) com.atomikos.icatch
- * (including com.atomikos.icatch.Participant) which, if implemented, may
- * infringe one or more patents held by Atomikos.
- * It should be appreciated that you may NOT implement such interfaces;
- * licensing to implement these interfaces must be obtained separately from Atomikos.
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
  */
 
 package com.atomikos.icatch;
+
+import java.util.Map;
 
 
 
@@ -45,28 +30,13 @@ public interface Participant extends java.io.Serializable
      * Indicates that no commit/rollback is needed after prepare.
      */
 
-    public static final int READ_ONLY=0x00;
-
-     /**
-      *
-      * Called by the transaction manager (TM)
-      * at recovery time, and this should reconstruct
-      * the internal state.
-      * 
-      * @return boolean False if the instance could not be recovered.
-      * It is up to the transaction manager to determine the severity of this case.
-      *
-      * @exception SysException
-      */
-      
-    public boolean recover() 
-    throws SysException;
+     static final int READ_ONLY=0x00;
     
      /**
       * @return String The unique URI for this remote participant, or null for local instances.
       */
       
-    public String getURI();
+     String getURI();
     
     /**
      * For cascading 2PC, this method sets the information needed
@@ -79,7 +49,7 @@ public interface Participant extends java.io.Serializable
      * @exception SysException 
      */
 
-    public void setCascadeList(java.util.Dictionary allParticipants)
+     void setCascadeList(Map<String, Integer> allParticipants)
         throws SysException;
 
     /**
@@ -90,7 +60,7 @@ public interface Participant extends java.io.Serializable
      *@param count The global count.
      */
 
-    public void setGlobalSiblingCount(int count);
+     void setGlobalSiblingCount(int count);
 
     /**
      * Prepares the participant.
@@ -118,7 +88,7 @@ public interface Participant extends java.io.Serializable
      * @exception SysException 
      */
 
-    public int prepare()
+     int prepare()
         throws RollbackException,
 	     HeurHazardException,
 	     HeurMixedException,
@@ -137,8 +107,6 @@ public interface Participant extends java.io.Serializable
      * of this method.
      *
      *
-     * @return HeuristicMessage[] An array of messages, null if none.
-     *
      * @param onePhase If true, one-phase commit is being started.
      * If the participant has received a prepare call earlier, 
      * then it should throw a SysException here.
@@ -156,7 +124,7 @@ public interface Participant extends java.io.Serializable
      * @exception SysException
      */
 
-    public HeuristicMessage[] commit ( boolean onePhase )
+     void commit ( boolean onePhase )
         throws HeurRollbackException,
 	     HeurHazardException,
 	     HeurMixedException,
@@ -175,8 +143,6 @@ public interface Participant extends java.io.Serializable
      * In that case, implementations never need to throw any of the heuristic exceptions
      * of this method.
      *
-     * @return HeuristicMessage[] An array of messages, null if none.
-     *
      * @exception HeurCommitException If the participant committed.
      * @exception HeurHazardException If the participant's final state
      * is unsure.
@@ -185,7 +151,7 @@ public interface Participant extends java.io.Serializable
      * @exception SysException
      */
 
-    public HeuristicMessage[] rollback()
+     void rollback()
         throws HeurCommitException,
 	     HeurMixedException,
 	     HeurHazardException,
@@ -203,13 +169,20 @@ public interface Participant extends java.io.Serializable
      * leave this method empty.
      */
 
-    public void forget();
+     void forget();
 
-    /**
-     *
-     *@return HeuristicMessage[] An array of heuristic messages, or null if none.
-     */
-     
-    public HeuristicMessage[] getHeuristicMessages();
+    
+	/**
+	 * Is this instance recoverable or not? 
+	 * 
+	 * @return True in most cases, false only for particular border cases that do not need recovery, such as read-only instances.
+	 */
+	 boolean isRecoverable();
+
+	
+	/**
+	 * @return The (unique) name of the recoverable resource as known in the configuration. Null if not relevant.
+	 */
+	 String getResourceName();
 }
 

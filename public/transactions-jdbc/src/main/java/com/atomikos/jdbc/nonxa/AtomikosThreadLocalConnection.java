@@ -1,26 +1,9 @@
 /**
- * Copyright (C) 2000-2010 Atomikos <info@atomikos.com>
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
  *
- * This code ("Atomikos TransactionsEssentials"), by itself,
- * is being distributed under the
- * Apache License, Version 2.0 ("License"), a copy of which may be found at
- * http://www.atomikos.com/licenses/apache-license-2.0.txt .
- * You may not use this file except in compliance with the License.
+ * LICENSE CONDITIONS
  *
- * While the License grants certain patent license rights,
- * those patent license rights only extend to the use of
- * Atomikos TransactionsEssentials by itself.
- *
- * This code (Atomikos TransactionsEssentials) contains certain interfaces
- * in package (namespace) com.atomikos.icatch
- * (including com.atomikos.icatch.Participant) which, if implemented, may
- * infringe one or more patents held by Atomikos.
- * It should be appreciated that you may NOT implement such interfaces;
- * licensing to implement these interfaces must be obtained separately from Atomikos.
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
  */
 
 package com.atomikos.jdbc.nonxa;
@@ -31,17 +14,14 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import com.atomikos.beans.PropertyUtils;
 import com.atomikos.datasource.pool.Reapable;
-import com.atomikos.datasource.pool.XPooledConnection;
 import com.atomikos.datasource.pool.XPooledConnectionEventListener;
 import com.atomikos.icatch.CompositeTransaction;
 import com.atomikos.icatch.CompositeTransactionManager;
-import com.atomikos.icatch.HeuristicMessage;
 import com.atomikos.icatch.config.Configuration;
 import com.atomikos.icatch.jta.TransactionManagerImp;
 import com.atomikos.jdbc.AbstractConnectionProxy;
@@ -88,7 +68,8 @@ implements JtaAwareNonXaConnection
 			"wait"
 			});
 
-
+	private static Class<?>[] MINIMUM_SET_OF_INTERFACES = {Reapable.class, DynamicProxy.class, java.sql.Connection.class };
+	
 	private int useCount;
 
 	private CompositeTransaction transaction;
@@ -109,30 +90,24 @@ implements JtaAwareNonXaConnection
 
 	private String resourceName;
 
+	
+	
 	static Object newInstance ( AtomikosNonXAPooledConnection pooledConnection , String resourceName )
-
 	{
 		Object ret = null;
 		Object obj = pooledConnection.getConnection();
-		Set<Class> interfaces = PropertyUtils.getAllImplementedInterfaces ( obj.getClass() );
+		Set<Class<?>> interfaces = PropertyUtils.getAllImplementedInterfaces ( obj.getClass() );
 		interfaces.add ( Reapable.class );
 		//see case 24532
 		interfaces.add ( DynamicProxy.class );
-		Class[] interfaceClasses = ( Class[] ) interfaces.toArray ( new Class[0] );
-
-		Set<Class> minimumSetOfInterfaces = new HashSet<Class>();
-		minimumSetOfInterfaces.add ( Reapable.class );
-		minimumSetOfInterfaces.add ( DynamicProxy.class );
-		minimumSetOfInterfaces.add ( java.sql.Connection.class );
-        Class[] minimumSetOfInterfaceClasses = ( Class[] ) minimumSetOfInterfaces.toArray( new Class[0] );
-
+		Class<?>[] interfaceClasses = ( Class[] ) interfaces.toArray ( new Class[0] );
 
 		List<ClassLoader> classLoaders = new ArrayList<ClassLoader>();
 		classLoaders.add ( Thread.currentThread().getContextClassLoader() );
 		classLoaders.add ( obj.getClass().getClassLoader() );
 		classLoaders.add ( AtomikosThreadLocalConnection.class.getClassLoader() );
 
-		ret = ClassLoadingHelper.newProxyInstance ( classLoaders , minimumSetOfInterfaceClasses , interfaceClasses , new AtomikosThreadLocalConnection ( pooledConnection ) );
+		ret = ClassLoadingHelper.newProxyInstance ( classLoaders , MINIMUM_SET_OF_INTERFACES , interfaceClasses , new AtomikosThreadLocalConnection ( pooledConnection ) );
 
 		DynamicProxy dproxy = (DynamicProxy) ret;
 		AtomikosThreadLocalConnection c = (AtomikosThreadLocalConnection) dproxy.getInvocationHandler();
@@ -160,11 +135,11 @@ implements JtaAwareNonXaConnection
     {
 
         try {
-        	if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": resetting autoCommit to " + originalAutoCommitState );
+        	if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": resetting autoCommit to " + originalAutoCommitState );
         	//see case 24567
             wrapped.setAutoCommit ( originalAutoCommitState );
         }catch ( Exception ex ){
-            LOGGER.logWarning ( "Failed to reset original autoCommit state: "+ex.getMessage(), ex);
+            LOGGER.logError ( "Failed to reset original autoCommit state: "+ex.getMessage(), ex);
         }
         setTransaction ( null );
         participant = null;
@@ -246,9 +221,9 @@ implements JtaAwareNonXaConnection
 		if ( methodName.equals ( "getInvocationHandler" ) ) return this;
 
 		if (methodName.equals("reap")) {
-			if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": reap()..." );
+			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": reap()..." );
 			reap();
-			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": reap done." );
+			if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": reap done." );
 			return null;
 		}
 		else if ( methodName.equals ("isNoLongerInUse") ) {
@@ -258,9 +233,9 @@ implements JtaAwareNonXaConnection
 			return m.invoke( this , args);
 		}
 		else if (methodName.equals("isClosed")) {
-			if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": isClosed()..." );
+			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": isClosed()..." );
 			Object ret = Boolean.valueOf ( isStale() );
-			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": isClosed() returning " + ret );
+			if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": isClosed() returning " + ret );
 			return ret;
 		}
         // detect illegal use after connection was resubmitted to the pool
@@ -277,9 +252,9 @@ implements JtaAwareNonXaConnection
 	        	AtomikosSQLException.throwAtomikosSQLException("Cannot call 'setAutoCommit(true)' while a global transaction is running");
 	        }
 	        if (methodName.equals("getAutoCommit")) {
-	        	if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": getAutoCommit()..." );
+	        	if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": getAutoCommit()..." );
 	        	Object ret = Boolean.FALSE;
-	        	if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": getAutoCommit() returning false." );
+	        	if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": getAutoCommit() returning false." );
 	        	return ret;
 	        }
 
@@ -305,14 +280,14 @@ implements JtaAwareNonXaConnection
 
         // check for delistment
         if (CLOSE_METHODS.contains(methodName)) {
-        	if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": close..." );
+        	if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": close..." );
 			decUseCount();
-			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": close done." );
+			if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": close done." );
 			return null;
 		}
 		else {
 			try {
-				if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": calling " + methodName + " on vendor connection..." );
+				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": calling " + methodName + " on vendor connection..." );
 				ret =  m.invoke ( wrapped , args);
 
 			} catch (Exception ex) {
@@ -320,7 +295,7 @@ implements JtaAwareNonXaConnection
 				JdbcConnectionProxyHelper.convertProxyError ( ex , "Error delegating '" + methodName + "' call" );
 			}
 		}
-        if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": " + methodName + " returning " + ret );
+        if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": " + methodName + " returning " + ret );
         if ( ret instanceof Statement ) {
         	Statement s = ( Statement ) ret;
         	addStatement ( s );
@@ -369,11 +344,11 @@ implements JtaAwareNonXaConnection
 
         if ( isNoLongerInUse() ) {
         	LOGGER
-                    .logDebug ( "ThreadLocalConnection: detected reusability" );
+                    .logTrace ( "ThreadLocalConnection: detected reusability" );
             setStale();
             pooledConnection.fireOnXPooledConnectionTerminated();
         } else {
-            if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "ThreadLocalConnection: not reusable yet" );
+            if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( "ThreadLocalConnection: not reusable yet" );
         }
 
     }
@@ -395,15 +370,15 @@ implements JtaAwareNonXaConnection
 		// delegate commit or rollback to the underlying connection
         try {
             if ( commit ) {
-                if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": committing on connection...");
+                if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": committing on connection...");
                 wrapped.commit ();
 
             } else {
             	// see case 84252
             	forceCloseAllPendingStatements ( false );
- 				if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": transaction aborting - " +
+ 				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": transaction aborting - " +
  						"pessimistically closing all pending statements to avoid autoCommit after timeout" );
-            	if ( LOGGER.isInfoEnabled() ) LOGGER.logInfo ( this + ": rolling back on connection...");
+            	if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": rolling back on connection...");
                 wrapped.rollback ();
 
             }
@@ -437,20 +412,6 @@ implements JtaAwareNonXaConnection
 		ret.append ( "atomikos non-xa connection proxy for ");
 		ret.append(wrapped);
 		return ret.toString();
-	}
-
-	public boolean usesConnection ( XPooledConnection xpc )
-	{
-		boolean ret = false;
-		if ( pooledConnection != null ) {
-			ret = pooledConnection.equals ( xpc );
-		}
-		return ret;
-	}
-
-	public void addHeuristicMessage ( HeuristicMessage hmsg )
-	{
-		if ( participant != null ) participant.addHeuristicMessage ( hmsg );
 	}
 
 }

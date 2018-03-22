@@ -1,3 +1,11 @@
+/**
+ * Copyright (C) 2000-2017 Atomikos <info@atomikos.com>
+ *
+ * LICENSE CONDITIONS
+ *
+ * See http://www.atomikos.com/Main/WhichLicenseApplies for details.
+ */
+
 package com.atomikos.datasource.xa;
 
 import java.util.ArrayList;
@@ -9,17 +17,17 @@ import javax.transaction.xa.Xid;
 
 public class RecoveryScan {
 	
-	static interface XidSelector {
+	public static interface XidSelector {
 		boolean selects(Xid xid);
 	}
 	
-	static List<Xid> recoverXids(XAResource xaResource, XidSelector selector) throws XAException {
-		List<Xid> ret = new ArrayList<Xid>();
+	public static List<XID> recoverXids(XAResource xaResource, XidSelector selector) throws XAException {
+		List<XID> ret = new ArrayList<XID>();
 
         boolean done = false;
         int flags = XAResource.TMSTARTRSCAN;
         Xid[] xidsFromLastScan = null;
-        List<Xid> allRecoveredXidsSoFar = new ArrayList<Xid>();
+        List<XID> allRecoveredXidsSoFar = new ArrayList<XID>();
         do {
         	xidsFromLastScan = xaResource.recover(flags);
             flags = XAResource.TMNOFLAGS;
@@ -34,7 +42,7 @@ public class RecoveryScan {
 
                 done = true;
                 for ( int i = 0; i < xidsFromLastScan.length; i++ ) {
-                    Xid xid = new XID ( xidsFromLastScan[i] );
+                	XID xid = new XID ( xidsFromLastScan[i] );
                     // our own XID implements equals and hashCode properly
                     if (!allRecoveredXidsSoFar.contains(xid)) {
                         // a new xid is returned -> we can not be in a recovery loop -> go on
