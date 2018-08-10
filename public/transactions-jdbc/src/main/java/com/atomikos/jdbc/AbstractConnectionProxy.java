@@ -40,10 +40,13 @@ implements InvocationHandler
 		while ( it.hasNext() ) {
 			Statement s =  it.next();
 			try {
-				String msg = "Forcing close of pending statement: " + s;
-				if ( warn ) LOGGER.logWarning ( msg );
-				else LOGGER.logTrace ( msg );
-				s.close();
+                // github issue 53: Don't force close already closed statements.
+                if (!s.isClosed()) {
+    				String msg = "Forcing close of pending statement: " + s;
+    				if ( warn ) LOGGER.logWarning ( msg );
+    				else LOGGER.logTrace ( msg );
+    				s.close();
+                }
 			} catch ( Exception e ) {
 				//ignore but log
 				LOGGER.logWarning ( "Error closing pending statement: " , e );
@@ -52,5 +55,21 @@ implements InvocationHandler
 			it.remove();
 		}
 	}
+
+    // github issue 53: Remove closed/completed statements from the pending statements list.
+    protected synchronized void removeClosedStatements() {
+        Iterator<Statement> it = this.statements.iterator();
+        while (it.hasNext()) {
+            Statement s = it.next();
+            try {
+                if (s.isClosed()) {
+                    it.remove();
+                }
+            } catch (Exception e) {
+                //ignore but log
+                LOGGER.logWarning( "Error checking if statement can be removed: " , e );
+            }
+        }
+    }
 
 }

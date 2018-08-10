@@ -341,6 +341,7 @@ implements JtaAwareNonXaConnection
 
 	private void markForReuseIfPossible ()
     {
+        removeClosedStatements(); // github issue 53: Remove closed/completed statements from the pending statements list.
 
         if ( isNoLongerInUse() ) {
         	LOGGER
