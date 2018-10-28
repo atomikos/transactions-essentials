@@ -36,7 +36,7 @@ class AtomikosJmsXaSessionProxy extends AbstractJmsSessionProxy implements Sessi
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(AtomikosJmsXaSessionProxy.class);
 
-	private final static List<String> PRODUCER_CONSUMER_METHODS = Arrays.asList("createConsumer", "createProducer","createDurableSubscriber");
+	private final static List<String> PRODUCER_CONSUMER_METHODS = Arrays.asList("createConsumer", "createDurableConsumer", "createDurableSubscriber", "createProducer", "createSharedConsumer", "createSharedDurableConsumer");
 	
 	private final static List<String> SESSION_TRANSACTION_METHODS = Arrays.asList("commit", "rollback");
 	
@@ -131,18 +131,7 @@ class AtomikosJmsXaSessionProxy extends AbstractJmsSessionProxy implements Sessi
 			if (PRODUCER_CONSUMER_METHODS.contains(methodName)) {
 				if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( this + ": calling " + methodName + " on JMS driver session " + delegate );
 				Object producerConsumerProxy = null;
-				if ( "createConsumer".equals ( methodName ) ) {
-					MessageConsumer vendorConsumer = null;
-					try {
-						vendorConsumer = ( MessageConsumer ) method.invoke ( delegate , args);
-					} catch ( Exception e ) {
-						String msg = "Failed to create MessageConsumer: " + e.getMessage();
-						state.notifySessionErrorOccurred();
-						convertProxyError ( e , msg );
-					}
-					producerConsumerProxy = new AtomikosJmsMessageConsumerProxy ( vendorConsumer , state );
-				}
-				else if ( "createProducer".equals( methodName ) ) {
+				if ( "createProducer".equals( methodName ) ) {
 					MessageProducer vendorProducer = null;
 					try {
 						vendorProducer = ( MessageProducer ) method.invoke ( delegate , args);
@@ -163,6 +152,17 @@ class AtomikosJmsXaSessionProxy extends AbstractJmsSessionProxy implements Sessi
 						convertProxyError ( e , msg );
 					}
 					producerConsumerProxy = new AtomikosJmsTopicSubscriberProxy ( vendorSubscriber , state );
+				}
+				else {
+					MessageConsumer vendorConsumer = null;
+					try {
+						vendorConsumer = ( MessageConsumer ) method.invoke ( delegate , args);
+					} catch ( Exception e ) {
+						String msg = "Failed to create MessageConsumer: " + e.getMessage();
+						state.notifySessionErrorOccurred();
+						convertProxyError ( e , msg );
+					}
+					producerConsumerProxy = new AtomikosJmsMessageConsumerProxy ( vendorConsumer , state );
 				}
 				if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": " + methodName + " returning " + producerConsumerProxy );
 				return producerConsumerProxy;
