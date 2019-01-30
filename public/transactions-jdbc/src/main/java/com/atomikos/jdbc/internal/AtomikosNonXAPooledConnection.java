@@ -117,7 +117,14 @@ public class AtomikosNonXAPooledConnection extends AbstractXPooledConnection<Con
 			if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": connection tested OK" );
 		}
 		else {
-			if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": no test query, skipping test" );
+			if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": no test query, testing connection with ping" );
+			try {
+				if (!connection.isValid(0)) {
+					throw new CreateConnectionException ( "Connection is not valid" );
+				}
+			} catch (SQLException e) {
+				throw new CreateConnectionException ( "Connection is not valid" );
+			}
 		}
 	}
 
