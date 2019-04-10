@@ -188,7 +188,10 @@ public abstract class DynamicProxySupport<RequiredInterfaceType> implements Invo
 	
 	protected Deque<ClassLoader> getClassLoadersToTry() {
 		Deque<ClassLoader> classLoaders = new ArrayDeque<ClassLoader>();
-		classLoaders.add ( Thread.currentThread().getContextClassLoader() );
+		ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+		if ( contextClassLoader != null ) {
+			classLoaders.add ( contextClassLoader );
+		}
 		classLoaders.add ( delegate.getClass().getClassLoader() );
 		classLoaders.add ( DynamicProxySupport.class.getClassLoader() );
 
