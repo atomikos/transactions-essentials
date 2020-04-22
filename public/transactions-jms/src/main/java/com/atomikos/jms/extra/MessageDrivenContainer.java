@@ -366,6 +366,38 @@ implements MessageConsumerSessionProperties
 		
 		return isNoLocal();
 	}
+
+	/**
+	 * Gets number of active sessions
+	 * @throws JMSException
+	 */
+	public int totalActiveSessions() throws JMSException
+	{
+		int activeSessions = 0;
+
+		if ( destination == null && destinationName == null )
+			throw new JMSException (
+					"MessageDrivenContainer: destination not specified" );
+		if ( connectionFactoryBean == null )
+			throw new JMSException (
+					"MessageDrivenContainer: factory not set" );
+		if ( messageListener == null )
+			throw new JMSException (
+					"MessageDrivenContainer: messageListener not set" );
+
+		if(sessions.size() != 0)
+		{
+			Iterator<MessageConsumerSession> it = sessions.iterator ();
+			while ( it.hasNext () ) {
+				MessageConsumerSession s = (MessageConsumerSession) it.next ();
+				if(s.isActive())
+				{
+					activeSessions ++;
+				}
+			}
+		}
+		return activeSessions;
+	}
 	
 	/**
 	 * Start listening for messages.
@@ -383,7 +415,28 @@ implements MessageConsumerSessionProperties
 	    if ( messageListener == null )
 	        throw new JMSException (
 	                "MessageDrivenContainer: messageListener not set" );
-	    for ( int i = 0; i < poolSize; i++ ) {
+		
+		/*if start is called when there are already sessions available in pool, calculate the number of more sessions that needs to be created*/
+	    int growablePoolSize = getPoolSize() - sessions.size();
+
+		/*if start is called when there are already sessions available in pool, then check the status and start them if they are inactive*/
+		if(sessions.size() != 0)
+		{
+			Iterator<MessageConsumerSession> it = sessions.iterator ();
+			while ( it.hasNext () ) {
+				MessageConsumerSession s = (MessageConsumerSession) it.next ();
+				if(!s.isActive())
+				{
+					try {
+						s.startListening ();
+					} catch ( Exception e ) {
+						LOGGER.logFatal ( "Error restarting session", e );
+					}
+				}
+			}
+		}
+		
+	    for ( int i = 0; i < growablePoolSize; i++ ) {
 	        MessageConsumerSession s = createSession();
 	        s.setMessageListener ( messageListener );
 	        s.setPassword ( password );
@@ -424,10 +477,15 @@ implements MessageConsumerSessionProperties
 	public void stop() 
 	{
 	    Iterator<MessageConsumerSession> it = sessions.iterator ();
+	    int iteratorIndex=0;
 	    while ( it.hasNext () ) {
 	        MessageConsumerSession s = (MessageConsumerSession) it.next ();
+	        iteratorIndex++;
+	        LOGGER.logDebug("Stopping message consumer session # " +iteratorIndex+ " for destination " + s.getDestinationName() );
 	        s.stopListening ();
+			LOGGER.logDebug("Stopped message consumer session # " +iteratorIndex+ " for destination " + s.getDestinationName() );
 	    }
+	    LOGGER.logInfo("Stopped message consumer sessions for destination " + getDestinationName());
 	}
 
 	/**

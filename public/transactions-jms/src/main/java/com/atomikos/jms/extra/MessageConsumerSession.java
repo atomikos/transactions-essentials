@@ -708,4 +708,12 @@ class MessageConsumerSession
 	public int getReceiveTimeout() {
 		return properties.getReceiveTimeout();
 	}
+
+	/**
+	 * Gets the status of the session
+	 * @return
+	 */
+	public boolean isActive() {
+		return active;
+	}
 }
