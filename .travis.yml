@@ -1,0 +1,14 @@
+language: java
+
+jdk:
+  - openjdk6
+
+install: mvn install -DskipTests=true -Popensource 
+
+script: mvn clean test -Popensource
+
+
+notifications:
+  email: 
+    - guy@atomikos.com
+    - pascal.leclercq@gmail.com
