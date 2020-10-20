@@ -29,6 +29,9 @@
 		<module>transactions-jndi-provider</module>
 		<module>atomikos-transactions-essentials</module>
 		<module>transactions-remoting</module>
+		<module>transactions-spring-boot</module>
+		<module>transactions-spring-boot-starter</module>
+		<module>transactions-spring-boot-integration-tests</module>
 	</modules>
 
 
