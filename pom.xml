@@ -204,6 +204,12 @@
 			<version>4.11</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+    		<groupId>org.assertj</groupId>
+    		<artifactId>assertj-core</artifactId>
+    		<version>3.17.2</version>
+    		<scope>test</scope>
+		</dependency>
 
 	</dependencies>
 
