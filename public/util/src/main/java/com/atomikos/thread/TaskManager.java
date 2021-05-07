@@ -65,7 +65,7 @@ public enum TaskManager {
 	private static class AtomikosThreadFactory implements
 			java.util.concurrent.ThreadFactory {
 
-		private volatile AtomicInteger count = new AtomicInteger(0);
+		private final AtomicInteger count = new AtomicInteger(0);
 		private final ThreadGroup group;
 
 		private AtomikosThreadFactory() {
