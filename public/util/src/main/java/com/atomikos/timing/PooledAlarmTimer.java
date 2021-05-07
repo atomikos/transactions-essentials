@@ -95,7 +95,10 @@ public final class PooledAlarmTimer extends Thread implements AlarmTimer {
 	 * Notify all listeners
 	 */
 	private void notifyListeners() {
-		List<AlarmTimerListener> tempList = new ArrayList<AlarmTimerListener>(listeners);
+		List<AlarmTimerListener> tempList;
+		synchronized(listeners) {
+			tempList = new ArrayList<AlarmTimerListener>(listeners);
+		}
 		for (Iterator<AlarmTimerListener> it = tempList.iterator(); it.hasNext(); ) {
 			AlarmTimerListener list = it.next();
 			list.alarm(this);
