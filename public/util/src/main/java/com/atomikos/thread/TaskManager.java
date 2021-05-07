@@ -28,11 +28,13 @@ public enum TaskManager {
 	private ThreadPoolExecutor executor;
 	
 
-	private void init() {
-		SynchronousQueue<Runnable> synchronousQueue = new SynchronousQueue<Runnable>();
-		executor = new ThreadPoolExecutor(0, Integer.MAX_VALUE, new Long(60L),
-				TimeUnit.SECONDS, synchronousQueue, new AtomikosThreadFactory());
-
+	private synchronized ThreadPoolExecutor init() {
+		if (executor==null) {
+			SynchronousQueue<Runnable> synchronousQueue = new SynchronousQueue<Runnable>();
+			executor = new ThreadPoolExecutor(0, Integer.MAX_VALUE, new Long(60L),
+					TimeUnit.SECONDS, synchronousQueue, new AtomikosThreadFactory());
+		}
+		return executor;
 	}
 
 	/**
@@ -52,9 +54,10 @@ public enum TaskManager {
 	 * @param task
 	 */
 	public void executeTask(Runnable task) {
+		ThreadPoolExecutor executor = this.executor; //Required by double-check ideom (there is no happens-before relationhips between 2 reads)
 		if (executor == null) {
 			// happens on restart of TS within same VM
-			init();
+			executor = init();
 		}
 		executor.execute(task);
 	}
