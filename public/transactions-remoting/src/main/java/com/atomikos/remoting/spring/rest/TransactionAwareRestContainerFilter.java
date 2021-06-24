@@ -16,6 +16,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
+import com.atomikos.icatch.event.Event;
+import com.atomikos.icatch.event.EventListener;
+import com.atomikos.icatch.event.transaction.LocalSiblingCountEvent;
+import com.atomikos.publish.EventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -37,18 +41,27 @@ import com.atomikos.remoting.support.HeaderNames;
  * <li>a AtomikosRestPort instance is available for this JVM</li>
  * </ul>
  */
-public class TransactionAwareRestContainerFilter extends OncePerRequestFilter {
+public class TransactionAwareRestContainerFilter extends OncePerRequestFilter implements EventListener {
 	
 	private static final Logger LOGGER = LoggerFactory.createLogger(TransactionAwareRestContainerFilter.class);
 	
 	private ContainerInterceptorTemplate template = new ContainerInterceptorTemplate();
-	
+
+	private int localSiblingsInitialCount = 0;
+	private int localSiblingsRegistered = 0;
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, final HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
     	
     	String propagation = request.getHeader(HeaderNames.PROPAGATION_HEADER_NAME);
     	
     		try {
+    			//register this thread to listen to local sibling events...
+				this.localSiblingsInitialCount = 0;
+				this.localSiblingsRegistered = 0;
+				EventPublisher.INSTANCE.registerEventListener(this);
+
+				//integrate incoming request into the transaction coordinator...
     			template.onIncomingRequest(propagation);
     			HttpServletResponseWrapper wrapper = new HttpServletResponseWrapper(response) {
     			    @Override
@@ -86,7 +99,15 @@ public class TransactionAwareRestContainerFilter extends OncePerRequestFilter {
 		return extent;
 	}
 
-
-	
-	
+	@Override
+	public void eventOccurred(Event event) {
+    	if (event instanceof LocalSiblingCountEvent) {
+    		//local siblings were added or terminated.  keep track here...
+			if (this.localSiblingsInitialCount == 0) {
+				//determine what the true initial count should have been...
+				this.localSiblingsInitialCount = ((LocalSiblingCountEvent) event).getCurrentLocalSiblingsAdded() - 1;
+			}
+			this.localSiblingsRegistered = ((LocalSiblingCountEvent) event).getCurrentLocalSiblingsAdded();
+		}
+	}
 }

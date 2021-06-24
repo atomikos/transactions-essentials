@@ -7,3 +7,23 @@ target/
 .hgignore
 .hgtags
 .project
+
+# intellij specific items
+**/*.iml
+**/*.idea
+
+# vscode specific items
+**/.vscode/
+
+# atomikos specific files
+**/tmlog*.log
+**/tmlog.lck
+
+# vim swap files
+**/*.swp
+
+# windows Thumbnail cache
+**/Thumbs.db
+
+# macos detritus
+**/.DS_Store

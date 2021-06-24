@@ -32,6 +32,7 @@ import com.atomikos.icatch.RollbackException;
 import com.atomikos.icatch.Synchronization;
 import com.atomikos.icatch.SysException;
 import com.atomikos.icatch.config.Configuration;
+import com.atomikos.icatch.event.transaction.LocalSiblingCountEvent;
 import com.atomikos.icatch.event.transaction.TransactionHeuristicEvent;
 import com.atomikos.icatch.provider.ConfigProperties;
 import com.atomikos.logging.Logger;
@@ -378,12 +379,25 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     {
     	synchronized ( fsm_ ) {
     		localSiblingsStarted++;
-    	}
+
+            publishLocalSiblingCountEvent();
+        }
     }
-    
+
+    /**
+     * Notify EventListeners of the current sibling counts
+     */
+    private void publishLocalSiblingCountEvent() {
+        LocalSiblingCountEvent event = new LocalSiblingCountEvent(localSiblingsStarted, localSiblingsTerminated);
+        EventPublisher.INSTANCE.publish(event);
+    }
+
     protected void incLocalSiblingsTerminated() throws HeurRollbackException, HeurMixedException, SysException, SecurityException, HeurCommitException, HeurHazardException, IllegalStateException, RollbackException {
         synchronized ( fsm_ ) {
             localSiblingsTerminated++;
+
+            publishLocalSiblingCountEvent();
+
             if (hasTimedOut() && !hasActiveSiblings()) {
                 terminate(false);
             }
