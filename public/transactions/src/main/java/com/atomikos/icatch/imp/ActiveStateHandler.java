@@ -251,9 +251,10 @@ class ActiveStateHandler extends CoordinatorStateHandler
             // in that case: first prepare and then do normal
             // 2PC commit
 
-            setGlobalSiblingCount ( 1 );
             prepareResult = prepare ();
-            
+            //Chris Matthews fix - moved this to be *after* the prepare
+            setGlobalSiblingCount ( 1 );
+
             if ( prepareResult != Participant.READ_ONLY ) {
             	commitWithAfterCompletionNotification ( new CommitCallback() {
             		public void doCommit()
