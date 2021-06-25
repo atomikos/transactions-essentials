@@ -52,7 +52,7 @@ public class DefaultImportingTransactionManager implements ImportingTransactionM
 	}
 
 	@Override
-	public Extent terminated(boolean commit) throws SysException, RollbackException {
+	public Extent terminated(boolean commit, int responseCount) throws SysException, RollbackException {
 		Extent extent = null;
 		CompositeTransactionManager ctm = Configuration.getCompositeTransactionManager();
 		CompositeTransaction ct = ctm.getCompositeTransaction();
@@ -82,7 +82,7 @@ public class DefaultImportingTransactionManager implements ImportingTransactionM
 		} catch (URISyntaxException e) {
 			throw new SysException("Could not create URI for extent", e);
 		}
-		extent.add(new ParticipantAdapter(participantURI), 1);
+		extent.add(new ParticipantAdapter(participantURI), responseCount);
 		LOGGER.logDebug("Returning extent: " + extent);
 		return extent;
 	}

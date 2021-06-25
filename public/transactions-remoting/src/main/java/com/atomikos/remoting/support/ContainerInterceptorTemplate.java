@@ -45,16 +45,27 @@ public class ContainerInterceptorTemplate {
 	}
 
 	/**
-	 * Terminates an imported transaction.
-	 * 
-	 * @param error If false then rollback, else commit.
-	 * @return the extent, or null if no active transaction
+	 * Call thru to the full implementation but default the responseCount to 1
+	 * @param error
+	 * @return
 	 * @throws RollbackException
 	 */
 	public String onOutgoingResponse(boolean error) throws RollbackException {
+		return this.onOutgoingResponse(error, 1);
+	}
+
+	/**
+	 * Terminates an imported transaction.
+	 * 
+	 * @param error If false then rollback, else commit.
+	 * @param responseCount The number of local siblings started on this call
+	 * @return the extent, or null if no active transaction
+	 * @throws RollbackException
+	 */
+	public String onOutgoingResponse(boolean error, int responseCount) throws RollbackException {
 		if (getCurrentTransaction() != null ) {
 			try {
-				Extent extent = importingTransactionManager.terminated(!error);
+				Extent extent = importingTransactionManager.terminated(!error, responseCount);
 				if (extent != null) { // null on error
 					return extent.toString();
 				}

@@ -48,9 +48,11 @@ package com.atomikos.icatch;
      * 
      */
      
-    Extent terminated(boolean commit) throws SysException, RollbackException;
+    Extent terminated(boolean commit, int responseCount) throws SysException, RollbackException;
 
-    
+    default Extent terminated(boolean commit) throws SysException, RollbackException {
+        return this.terminated(commit, 1);
+    }
  
     
 

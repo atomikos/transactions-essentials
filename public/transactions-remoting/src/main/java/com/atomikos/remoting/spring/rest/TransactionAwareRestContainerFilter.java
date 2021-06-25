@@ -82,9 +82,10 @@ public class TransactionAwareRestContainerFilter extends OncePerRequestFilter im
     
     private String terminateImportedTransaction(int httpCode)  {
 		String extent = null;
+		int responseCount = this.calculateResponseCount();
 		try {					
 			if(HttpStatus.valueOf(httpCode).is2xxSuccessful()) {
-				extent = template.onOutgoingResponse(false);
+				extent = template.onOutgoingResponse(false, responseCount);
 			} else {
 				extent = template.onOutgoingResponse(true);
 			}
@@ -101,13 +102,26 @@ public class TransactionAwareRestContainerFilter extends OncePerRequestFilter im
 
 	@Override
 	public void eventOccurred(Event event) {
-    	if (event instanceof LocalSiblingCountEvent) {
-    		//local siblings were added or terminated.  keep track here...
+		if (event instanceof LocalSiblingCountEvent) {
+			//local siblings were added or terminated.  keep track here...
 			if (this.localSiblingsInitialCount == 0) {
 				//determine what the true initial count should have been...
 				this.localSiblingsInitialCount = ((LocalSiblingCountEvent) event).getCurrentLocalSiblingsAdded() - 1;
 			}
 			this.localSiblingsRegistered = ((LocalSiblingCountEvent) event).getCurrentLocalSiblingsAdded();
 		}
+	}
+
+	/**
+	 * Determine the responseCount to send back on the extent.  The responseCount should be the count of new
+	 * local siblings started on *this* specific request.  It should also always be at least 1.
+	 * @return
+	 */
+	private int calculateResponseCount() {
+		int ret = this.localSiblingsRegistered - this.localSiblingsInitialCount;
+		if (ret <= 0) {
+			ret = 1;
+		}
+		return ret;
 	}
 }
