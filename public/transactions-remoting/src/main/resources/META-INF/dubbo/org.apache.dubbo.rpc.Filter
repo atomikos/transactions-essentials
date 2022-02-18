@@ -1,0 +1,2 @@
+com.atomikos.remoting.dubbo.DubboConsumerTransactionPropagationFilter
+com.atomikos.remoting.dubbo.DubboProviderTransactionPropagationFilter
