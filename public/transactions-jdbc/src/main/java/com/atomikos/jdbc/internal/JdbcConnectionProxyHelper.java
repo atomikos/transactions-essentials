@@ -28,7 +28,12 @@ public class JdbcConnectionProxyHelper {
 
 		try {
 			if ( LOGGER.isDebugEnabled() ) LOGGER.logDebug ( "setting isolation level to " + defaultIsolationLevel);
-			connection.setTransactionIsolation ( defaultIsolationLevel );
+			// The postgres driver fails setting the transaction level if the connection is being reused in the transaction
+			// We can workaround this by checking the level first. Since the connection has been reused it should already have
+			// been set appropriately.
+			if (connection.getTransactionIsolation() != defaultIsolationLevel) {
+				connection.setTransactionIsolation(defaultIsolationLevel);
+			}
 		}
 		catch (SQLException ex) {
 			LOGGER.logWarning ( "cannot set isolation level to " + defaultIsolationLevel, ex);
