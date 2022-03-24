@@ -186,6 +186,10 @@ public class XAResourceTransaction implements ResourceTransaction, Participant {
 		}
 	}
 
+	public boolean isAssociatedWithResource(XAResource xaresource) {
+		return !state.isFinalState() && knownInResource && xaresource.equals(this.xaresource);
+	}
+
 	boolean supportsTmJoin() {
 		return !(isActive());
 	}

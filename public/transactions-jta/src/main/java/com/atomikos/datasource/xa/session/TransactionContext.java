@@ -120,5 +120,9 @@ class TransactionContext {
 	boolean isInactiveInTransaction(CompositeTransaction tx) {
 		return state.isInactiveInTransaction ( tx );
 	}
+
+	boolean canTransactionBranchBeReused() {
+		return state.canTransactionBranchBeReused();
+	}
 	
 }

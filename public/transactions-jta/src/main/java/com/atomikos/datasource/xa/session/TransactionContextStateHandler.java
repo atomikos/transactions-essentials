@@ -136,7 +136,11 @@ abstract class TransactionContextStateHandler
 
 		return false;
 	}
-	
+
+	boolean canTransactionBranchBeReused() {
+		return false;
+	}
+
 	@Override
 	public String toString() {
 		return this.getClass().getSimpleName();

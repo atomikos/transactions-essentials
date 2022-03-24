@@ -8,6 +8,8 @@
 
 package com.atomikos.datasource.xa.session;
 
+import javax.transaction.xa.XAResource;
+
 import com.atomikos.datasource.xa.XAResourceTransaction;
 import com.atomikos.datasource.xa.XATransactionalResource;
 import com.atomikos.icatch.CompositeTransaction;
@@ -26,11 +28,13 @@ extends TransactionContextStateHandler
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(BranchEndedStateHandler.class);
 
+	private XAResourceTransaction branch;
 	private CompositeTransaction ct;
 	
-	BranchEndedStateHandler ( XATransactionalResource resource , XAResourceTransaction branch , CompositeTransaction ct ) 
+	BranchEndedStateHandler(XATransactionalResource resource, XAResourceTransaction branch, CompositeTransaction ct, XAResource xaResource)
 	{
-		super ( resource , null );
+		super ( resource , xaResource );
+		this.branch = branch;
 		this.ct = ct;
 		branch.suspend();
 	}
@@ -38,6 +42,10 @@ extends TransactionContextStateHandler
 	TransactionContextStateHandler checkEnlistBeforeUse ( CompositeTransaction ct)
 			throws InvalidSessionHandleStateException 
 	{
+		if (canTransactionBranchBeReused()) {
+			return new BranchEnlistedStateHandler(getXATransactionalResource(), ct, getXAResource(), branch);
+		}
+
 		String msg = "Detected illegal attempt to use a closed XA session";
 		LOGGER.logError ( msg );
 		throw new InvalidSessionHandleStateException ( msg );
@@ -60,6 +68,10 @@ extends TransactionContextStateHandler
 	boolean isInactiveInTransaction ( CompositeTransaction tx ) 
 	{
 		return ct.isSameTransaction ( tx );
+	}
+
+	boolean canTransactionBranchBeReused() {
+		return branch.isAssociatedWithResource(getXAResource());
 	}
 
 }

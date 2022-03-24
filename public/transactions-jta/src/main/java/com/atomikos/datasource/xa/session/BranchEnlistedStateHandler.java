@@ -40,8 +40,8 @@ class BranchEnlistedStateHandler extends TransactionContextStateHandler
 		branch.resume();
 	}
 
-	public BranchEnlistedStateHandler ( 
-			XATransactionalResource resource, CompositeTransaction ct, 
+	public BranchEnlistedStateHandler (
+			XATransactionalResource resource, CompositeTransaction ct,
 			XAResource xaResource , XAResourceTransaction branch ) throws InvalidSessionHandleStateException 
 	{
 		super ( resource , xaResource  );
@@ -49,7 +49,11 @@ class BranchEnlistedStateHandler extends TransactionContextStateHandler
 		this.branch = branch;
 		branch.setXAResource ( xaResource );
 		try {
-			branch.xaResume();
+			if (branch.isXaSuspended()) {
+				branch.xaResume();
+			} else {
+				branch.resume();
+			}
 		} catch ( XAException e ) {
 			String msg = "Failed to resume branch: " + branch;
 			throw new InvalidSessionHandleStateException ( msg );
@@ -76,7 +80,7 @@ class BranchEnlistedStateHandler extends TransactionContextStateHandler
 
 	TransactionContextStateHandler sessionClosed() 
 	{
-		return new BranchEndedStateHandler ( getXATransactionalResource() , branch , ct );
+		return new BranchEndedStateHandler ( getXATransactionalResource() , branch , ct, getXAResource() );
 	}
 
 	

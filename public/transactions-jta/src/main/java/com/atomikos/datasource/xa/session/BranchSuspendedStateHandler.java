@@ -41,7 +41,7 @@ class BranchSuspendedStateHandler extends TransactionContextStateHandler
 
 	TransactionContextStateHandler sessionClosed() 
 	{
-		return new BranchEndedStateHandler ( getXATransactionalResource() , branch , ct );
+		return new BranchEndedStateHandler ( getXATransactionalResource() , branch , ct, getXAResource());
 	}
 
 	TransactionContextStateHandler transactionTerminated ( CompositeTransaction tx ) 

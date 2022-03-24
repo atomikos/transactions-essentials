@@ -89,8 +89,10 @@ public class SessionHandleState
 	public synchronized void notifySessionBorrowed()
 	{
 		if ( LOGGER.isTraceEnabled() ) LOGGER.logTrace ( this + ": notifySessionBorrowed" );
-		currentContext = new TransactionContext ( resource , xaResource );
-		allContexts.add ( currentContext );
+		if (currentContext == null || !currentContext.canTransactionBranchBeReused()) {
+			currentContext = new TransactionContext(resource, xaResource);
+			allContexts.add(currentContext);
+		}
 		closed = false;
 	}
 	
