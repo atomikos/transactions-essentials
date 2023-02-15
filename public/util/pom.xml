@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.atomikos</groupId>
+		<artifactId>ate</artifactId>
+		<version>6.0.0M2-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>atomikos-util</artifactId>
+
+	<name>Atomikos Util</name>
+	<dependencies>
+		<dependency>
+			<groupId>com.atomikos</groupId>
+			<artifactId>transactions-api</artifactId>
+			<version>6.0.0M2-SNAPSHOT</version>
+		</dependency>
+		<!-- optional dependencies -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.4.0</version> <!-- compatible with all later API versions, see https://www.slf4j.org/manual.html -->
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.17</version>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
+			<version>2.2</version> <!-- compatible with all known later API versions -->
+			<optional>true</optional> 
+		</dependency>
+	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<redirectTestOutputToFile>true</redirectTestOutputToFile>
+					<forkCount>1</forkCount>
+					<reuseForks>false</reuseForks>
+					<includes>
+						<include>**/*TestJUnit.java</include>
+					</includes>
+					<!-- this conf is made to ensure that no file wil be created outside -->
+					<workingDirectory>${project.build.testOutputDirectory}</workingDirectory>
+				</configuration>
+			</plugin>
+
+		</plugins>
+
+	</build>
+</project>
