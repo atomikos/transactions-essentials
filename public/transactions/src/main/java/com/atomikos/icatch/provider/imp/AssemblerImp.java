@@ -115,7 +115,7 @@ public class AssemblerImp implements Assembler {
 			        "- special exclusive bonus offers not available to others \n" + 
 			        "- everything you need to get the most out of using Atomikos!";
 			
-			LOGGER.logWarning(message);
+			LOGGER.logInfo(message);
 			System.out.println(message);
 		}
 		if (Atomikos.isEvaluationVersion()) {
