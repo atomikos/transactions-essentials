@@ -257,7 +257,14 @@ abstract class CoordinatorStateHandler
 
     protected void setCascadeList ( Map<String, Integer> allParticipants )
     {
-        cascadeList_ = allParticipants;
+    	// we merge the maps and override values in cascadeList_
+    	// if we dont merge we get a problem with callbacks
+    	if (cascadeList_ != null) { 
+    		cascadeList_.putAll(allParticipants);
+    	}
+    	else {
+    		cascadeList_ = allParticipants;
+    	}
     }
 
     /**
