@@ -515,7 +515,12 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
         // If a recursive prepare re-enters, then it will see a voting state -> reject.
         // Note that this may also avoid some legal prepares, but only rarely
         if ( getState ().equals ( TxState.PREPARING ) )
-            throw new RollbackException ( "Recursion detected" );
+            //throw new RollbackException ( "Recursion detected" );
+        	
+        	// fixed by Martin Aubele: if we want to allow callbacks (A -> B -> A), we have to return here Participant.READ_ONLY
+        	return Participant.READ_ONLY;
+        	
+        	
 
         int ret = Participant.READ_ONLY + 1;
         synchronized ( fsm_ ) {

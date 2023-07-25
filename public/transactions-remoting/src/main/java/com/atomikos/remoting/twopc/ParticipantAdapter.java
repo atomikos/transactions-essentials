@@ -73,6 +73,12 @@ public class ParticipantAdapter implements Participant {
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.logDebug("Calling prepare on " + getURI());
 		}
+		
+		// Bugfix by Martin Aubele: if we want to enable callbacks (A -> B -> A) we need handle an empty cascadeList 
+		if (cascadeList.isEmpty()) {
+			return Participant.READ_ONLY;
+		}
+		
 		try {
 			int result = target.request()
 					.buildPost(Entity.entity(cascadeList, HeaderNames.MimeType.APPLICATION_VND_ATOMIKOS_JSON))
