@@ -35,6 +35,9 @@ public final class ConfigProperties {
     public static final String THROW_ON_HEURISTIC_PROPERTY_NAME = "com.atomikos.icatch.throw_on_heuristic";
     public static final String JVM_ID_PROPERTY_NAME = "com.atomikos.icatch.jvm_id";
 
+    public static final String LOCK_ACQUISITION_MAX_RETRY_ATTEMPTS = "com.atomikos.icatch.lock_acquisition_max_retry_attempts";
+    public static final String LOCK_ACQUISITION_RETRY_DELAY = "com.atomikos.icatch.lock_acquisition_retry_delay";
+
 	
 	/**
 	 * Replace ${...} sequence with the referenced value from the given properties or 
@@ -253,9 +256,17 @@ public final class ConfigProperties {
 		return getAsBoolean(ALLOW_SUBTRANSACTIONS_PROPERTY_NAME);
 	}
 
-    public boolean getThrowOnHeuristic() {
-        return getAsBoolean(THROW_ON_HEURISTIC_PROPERTY_NAME);
-    }
+	public boolean getThrowOnHeuristic() {
+		return getAsBoolean(THROW_ON_HEURISTIC_PROPERTY_NAME);
+	}
+
+	public int getLockAcquisitionMaxRetryAttemps(){
+		return getAsInt(LOCK_ACQUISITION_MAX_RETRY_ATTEMPTS);
+	}
+
+	public long getLockAcquisitionRetryDelay(){
+		return getAsLong(LOCK_ACQUISITION_RETRY_DELAY);
+	}
 
     public String getJvmId() {
         return getProperty(JVM_ID_PROPERTY_NAME);

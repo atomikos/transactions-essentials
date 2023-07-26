@@ -10,6 +10,7 @@ package com.atomikos.recovery.fs;
 
 import java.util.Collection;
 
+import com.atomikos.icatch.provider.ConfigProperties;
 import com.atomikos.recovery.LogException;
 import com.atomikos.recovery.LogReadException;
 import com.atomikos.recovery.LogWriteException;
@@ -17,7 +18,7 @@ import com.atomikos.recovery.PendingTransactionRecord;
 
 public interface Repository {
 
-	void init() throws LogException;
+	void init(ConfigProperties configProperties) throws LogException;
 
 	void put(String id,PendingTransactionRecord pendingTransactionRecord) throws LogWriteException;
 	

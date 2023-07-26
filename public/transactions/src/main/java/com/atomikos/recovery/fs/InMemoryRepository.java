@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.atomikos.icatch.provider.ConfigProperties;
 import com.atomikos.recovery.PendingTransactionRecord;
 import com.atomikos.recovery.TxState;
 
@@ -24,7 +25,7 @@ private  Map<String, PendingTransactionRecord> storage = new ConcurrentHashMap<S
 	
 	private boolean closed = true;
 	@Override
-	public void init() {
+	public void init(ConfigProperties configProperties) {
 		closed=false;
 	}
 

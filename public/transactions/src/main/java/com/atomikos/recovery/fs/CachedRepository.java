@@ -41,10 +41,9 @@ public class CachedRepository  implements Repository {
 	}
 
 	@Override
-	public void init() {
+	public void init(ConfigProperties configProperties) {
 		//populate inMemoryCoordinatorLogEntryRepository with backup data
 		
-		ConfigProperties configProperties =	Configuration.getConfigProperties();
 		checkpointInterval = configProperties.getCheckpointInterval();
 		forgetOrphanedLogEntriesDelay = configProperties.getForgetOrphanedLogEntriesDelay();
 		

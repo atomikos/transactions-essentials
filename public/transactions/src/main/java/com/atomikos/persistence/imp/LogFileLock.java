@@ -13,22 +13,25 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileLock;
 import java.nio.channels.OverlappingFileLockException;
+import java.util.concurrent.TimeUnit;
 
+import com.atomikos.icatch.provider.ConfigProperties;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 import com.atomikos.recovery.LogException;
+import com.atomikos.recovery.fs.LogLock;
 
-public class LogFileLock {
-	
+public class LogFileLock implements LogLock {
+
 	private static Logger LOGGER = LoggerFactory.createLogger(LogFileLock.class);
 	private static final String FILE_SEPARATOR = String.valueOf(File.separatorChar);
 	private File lockfileToPreventDoubleStartup_;
 	private FileOutputStream lockfilestream_ = null;
 	private FileLock lock_ = null;
-
 	private String dir;
-
 	private String fileName;
+	private int lockAcquisitionMaxRetryAttemps;
+	private long lockAcquisitionRetryDelay;
 
 	public LogFileLock(String dir, String fileName) {
 		if(!dir.endsWith(FILE_SEPARATOR)) {
@@ -36,6 +39,12 @@ public class LogFileLock {
 		}
 		this.dir = dir;
 		this.fileName = fileName;
+	}
+
+	@Override
+	public void init(ConfigProperties configProperties) {
+		lockAcquisitionMaxRetryAttemps = configProperties.getLockAcquisitionMaxRetryAttemps();
+		lockAcquisitionRetryDelay = configProperties.getLockAcquisitionRetryDelay();
 	}
 
 	public void acquireLock() throws LogException {
@@ -46,7 +55,7 @@ public class LogFileLock {
 			}
 			lockfileToPreventDoubleStartup_ = new File(dir, fileName + ".lck");
 			lockfilestream_ = new FileOutputStream(lockfileToPreventDoubleStartup_);
-			FileLock tryLock = lockfilestream_.getChannel().tryLock();
+			FileLock tryLock = tryAcquiringLock(0);
 			if (tryLock != null) {
 				lock_ = tryLock;
 				lockfileToPreventDoubleStartup_.deleteOnExit();
@@ -58,6 +67,23 @@ public class LogFileLock {
 		String msg = "The specified log seems to be in use already: " + fileName + " in "+ dir+". Make sure that no other instance is running, or kill any pending process if needed.";
 		LOGGER.logFatal(msg);
 		throw new LogException(msg);
+	}
+
+	private FileLock tryAcquiringLock(int currentRetryCount) throws LogException {
+		int nextRetryValue = currentRetryCount + 1;
+		try {
+			return lockfilestream_.getChannel().tryLock();
+		} catch (IOException e) {
+			if(currentRetryCount < lockAcquisitionMaxRetryAttemps) {
+				LOGGER.logWarning("Couldn't acquire lock, will retry again the " + nextRetryValue + " time in" + lockAcquisitionRetryDelay);
+				try {
+					TimeUnit.MILLISECONDS.sleep(lockAcquisitionRetryDelay);
+				}catch (InterruptedException ie) {
+					throw new LogException("The log couldn't be acquired.", ie);
+				}
+			}
+		}
+		return tryAcquiringLock(nextRetryValue);
 	}
 
 	public void releaseLock() {
@@ -78,5 +104,4 @@ public class LogFileLock {
 			lockfileToPreventDoubleStartup_ = null;
 		}
 	}
-	
 }

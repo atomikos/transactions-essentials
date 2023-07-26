@@ -39,16 +39,16 @@ public class FileSystemRepository implements Repository {
 	private static final Logger LOGGER = LoggerFactory.createLogger(FileSystemRepository.class);
 	private VersionedFile file;
 	private FileChannel rwChannel = null;
-	private LogFileLock lock_;
+	private LogLock lock_;
 
 	@Override
-	public void init() throws LogException {
-		ConfigProperties configProperties = Configuration.getConfigProperties();
+	public void init(ConfigProperties configProperties) throws LogException {
 		String baseDir = configProperties.getLogBaseDir();
 		String baseName = configProperties.getLogBaseName();
 		LOGGER.logDebug("baseDir " + baseDir);
 		LOGGER.logDebug("baseName " + baseName);
 		lock_ = new LogFileLock(baseDir, baseName);
+		lock_.init(configProperties);
 		LOGGER.logDebug("LogFileLock " + lock_);
 		lock_.acquireLock();
 		file = new VersionedFile(baseDir, baseName, ".log");

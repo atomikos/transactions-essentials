@@ -10,7 +10,7 @@ package com.atomikos.recovery;
 
 public class LogException extends Exception {
 
-	private static final long serialVersionUID = 3259337218182873867L;
+	private static final long serialVersionUID = -7801364632919026307L;
 
 	public LogException() {
 		super();
@@ -24,4 +24,7 @@ public class LogException extends Exception {
 		super(cause);
 	}
 
+	public LogException(String message, Throwable throwable) {
+		super(message, throwable);
+	}
 }
