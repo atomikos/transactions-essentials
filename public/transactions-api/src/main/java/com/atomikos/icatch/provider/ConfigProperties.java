@@ -260,7 +260,7 @@ public final class ConfigProperties {
 		return getAsBoolean(THROW_ON_HEURISTIC_PROPERTY_NAME);
 	}
 
-	public int getLockAcquisitionMaxRetryAttemps(){
+	public int getLockAcquisitionMaxRetryAttempts(){
 		return getAsInt(LOCK_ACQUISITION_MAX_RETRY_ATTEMPTS);
 	}
 
