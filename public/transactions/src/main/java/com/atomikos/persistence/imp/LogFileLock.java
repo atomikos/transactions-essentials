@@ -30,7 +30,7 @@ public class LogFileLock implements LogLock {
 	private FileLock lock_ = null;
 	private String dir;
 	private String fileName;
-	private int lockAcquisitionMaxRetryAttemps;
+	private int lockAcquisitionMaxRetryAttempts;
 	private long lockAcquisitionRetryDelay;
 
 	public LogFileLock(String dir, String fileName) {
@@ -43,7 +43,7 @@ public class LogFileLock implements LogLock {
 
 	@Override
 	public void init(ConfigProperties configProperties) {
-		lockAcquisitionMaxRetryAttemps = configProperties.getLockAcquisitionMaxRetryAttemps();
+		lockAcquisitionMaxRetryAttempts = configProperties.getLockAcquisitionMaxRetryAttempts();
 		lockAcquisitionRetryDelay = configProperties.getLockAcquisitionRetryDelay();
 	}
 
@@ -74,7 +74,7 @@ public class LogFileLock implements LogLock {
 		try {
 			return lockfilestream_.getChannel().tryLock();
 		} catch (IOException e) {
-			if(currentRetryCount < lockAcquisitionMaxRetryAttemps) {
+			if(currentRetryCount < lockAcquisitionMaxRetryAttempts) {
 				LOGGER.logWarning("Couldn't acquire lock, will retry again the " + nextRetryValue + " time in" + lockAcquisitionRetryDelay);
 				try {
 					TimeUnit.MILLISECONDS.sleep(lockAcquisitionRetryDelay);
