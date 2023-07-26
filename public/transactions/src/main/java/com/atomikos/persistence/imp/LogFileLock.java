@@ -72,10 +72,14 @@ public class LogFileLock implements LogLock {
 	private FileLock tryAcquiringLock(int currentRetryCount) throws LogException {
 		int nextRetryValue = currentRetryCount + 1;
 		try {
-			return lockfilestream_.getChannel().tryLock();
+			FileLock fileLock = lockfilestream_.getChannel().tryLock();
+			if(fileLock == null) {
+				throw new IOException("The file lock couldn't be acquired. FileLock is null");
+			}
+			return fileLock;
 		} catch (IOException e) {
 			if(currentRetryCount < lockAcquisitionMaxRetryAttempts) {
-				LOGGER.logWarning("Couldn't acquire lock, will retry again the " + nextRetryValue + " time in" + lockAcquisitionRetryDelay);
+				LOGGER.logWarning("Couldn't acquire lock, will retry again the " + nextRetryValue + " time in" + lockAcquisitionRetryDelay, e);
 				try {
 					TimeUnit.MILLISECONDS.sleep(lockAcquisitionRetryDelay);
 				}catch (InterruptedException ie) {
