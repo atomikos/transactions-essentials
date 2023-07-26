@@ -78,13 +78,15 @@ public class LogFileLock implements LogLock {
 			}
 			return fileLock;
 		} catch (IOException e) {
-			if(currentRetryCount < lockAcquisitionMaxRetryAttempts) {
+			if (currentRetryCount < lockAcquisitionMaxRetryAttempts) {
 				LOGGER.logWarning("Couldn't acquire lock, will retry again the " + nextRetryValue + " time in" + lockAcquisitionRetryDelay, e);
 				try {
 					TimeUnit.MILLISECONDS.sleep(lockAcquisitionRetryDelay);
-				}catch (InterruptedException ie) {
+				} catch (InterruptedException ie) {
 					throw new LogException("The log couldn't be acquired.", ie);
 				}
+			} else {
+				return null;
 			}
 		}
 		return tryAcquiringLock(nextRetryValue);
