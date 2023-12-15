@@ -10,11 +10,11 @@ package com.atomikos.icatch.imp;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.Stack;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.atomikos.finitestates.FSMEnterEvent;
 import com.atomikos.finitestates.FSMEnterListener;
@@ -55,7 +55,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
     
     private long maxTimeout_;
     private Object[] rootLatches_ = null;
-    private Hashtable<String,CompositeTransaction> tidToTransactionMap_ = null;
+    private Map<String,CompositeTransaction> tidToTransactionMap_;
     private Map<String, CoordinatorImp> recreatedCoordinatorsByRootId = new HashMap<>();
     private Map<String, CoordinatorImp> allCoordinatorsByCoordinatorId = new HashMap<>();
     private boolean shutdownInProgress_ = false;
@@ -91,7 +91,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
      *            configurations that do not support orphan detection.
      * @param single_threaded_2pc
      *            Whether 2PC commit should happen in the same thread that started the tx.
-     * @param recoveryLog2 
+     * @param recoveryLog
      *
      */
 
@@ -105,7 +105,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
         initialized_ = false;
         recoverymanager_ = recoverymanager;
         tidmgr_ = tidmgr;
-        tidToTransactionMap_ = new Hashtable<String,CompositeTransaction>();
+        tidToTransactionMap_ = new ConcurrentHashMap<>();
         rootLatches_ = new Object[NUMLATCHES];
         for (int i = 0; i < NUMLATCHES; i++) {
             rootLatches_[i] = new Object();
@@ -144,12 +144,10 @@ public class TransactionServiceImp implements TransactionServiceProvider,
     private void setTidToTx ( String tid , CompositeTransaction ct )
             throws IllegalStateException
     {
-        synchronized ( tidToTransactionMap_ ) {
-            if ( tidToTransactionMap_.containsKey ( tid.intern () ) )
-                throw new IllegalStateException ( "Already mapped: " + tid );
-            tidToTransactionMap_.put ( tid.intern (), ct );
-            ct.addSubTxAwareParticipant(this); // for GC purposes
-        }
+        if (tidToTransactionMap_.containsKey(tid.intern()))
+            throw new IllegalStateException("Already mapped: " + tid);
+        tidToTransactionMap_.put(tid.intern(), ct);
+        ct.addSubTxAwareParticipant(this); // for GC purposes
     }
 
     /**
@@ -215,11 +213,9 @@ public class TransactionServiceImp implements TransactionServiceProvider,
      *
      * @param recoveryDomainName The recovery domain of the superior of this coordinator.
      * 
-     * @param RecoveryCoordinator
+     * @param adaptor
      *            An existing coordinator for the given root. Null if not a
      *            subtx, or an <b>adaptor</b> in other cases.
-     * @param lineage
-     *            The ancestor information.
      * @param root
      *            The root id.
      * @param timeout
@@ -232,7 +228,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
     private CoordinatorImp createCC (String recoveryDomainName, RecoveryCoordinator adaptor ,
             String root, long timeout )
     {
-        CoordinatorImp cc = null;
+        CoordinatorImp cc;
 
         if (maxTimeout_ > 0 &&  timeout > maxTimeout_ ) {
             timeout = maxTimeout_;
@@ -387,7 +383,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
     }
 
     /**
-     * @see FSMEnterListener.
+     * @see FSMEnterListener
      */
 
     public void entered ( FSMEnterEvent event )
@@ -426,13 +422,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
 
     public CompositeTransaction getCompositeTransaction ( String tid )
     {
-        CompositeTransaction ret = null;
-
-        synchronized ( tidToTransactionMap_ ) {
-            ret = (CompositeTransaction) tidToTransactionMap_.get ( tid.intern () );
-        }
-
-        return ret;
+        return tidToTransactionMap_.get(tid.intern());
     }
 
 
@@ -447,7 +437,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
     CompositeTransaction createSubTransaction ( CompositeTransaction parent )
     {
     	if (Configuration.getConfigProperties().getAllowSubTransactions()) {
-    		CompositeTransactionImp ret = null;
+    		CompositeTransactionImp ret;
     		Stack<CompositeTransaction> lineage = (Stack<CompositeTransaction>) parent.getLineage ().clone ();
     		lineage.push ( parent );
     		String tid = tidmgr_.get ();
@@ -484,8 +474,8 @@ public class TransactionServiceImp implements TransactionServiceProvider,
             throw new IllegalStateException (
                     "Max number of active transactions reached:" + maxNumberOfActiveTransactions_ );
 
-        CoordinatorImp cc = null;
-        CompositeTransaction ct = null;
+        CoordinatorImp cc;
+        CompositeTransaction ct;
 
         try {
             String tid = tidmgr_.get ();
@@ -634,7 +624,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
         }
         
         String tid = tidmgr_.get ();
-        Stack<CompositeTransaction> lineage = new Stack<CompositeTransaction>();
+        Stack<CompositeTransaction> lineage = new Stack<>();
         // create a CC with heuristic preference set to false,
         // since it does not really matter anyway (since we are
         // creating a root)
