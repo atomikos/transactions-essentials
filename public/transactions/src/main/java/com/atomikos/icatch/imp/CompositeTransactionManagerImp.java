@@ -8,9 +8,8 @@
 
 package com.atomikos.icatch.imp;
 
-import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.Deque;
 import java.util.Map;
+import java.util.Stack;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.atomikos.icatch.CompositeTransaction;
@@ -33,14 +32,14 @@ public class CompositeTransactionManagerImp implements CompositeTransactionManag
 {
     private static final Logger LOGGER = LoggerFactory.createLogger(CompositeTransactionManagerImp.class);
 
-    private final Map<Thread, Deque<CompositeTransaction>> threadToTxMap;
-    private final Map<CompositeTransaction, Thread> txToThreadMap;
+    private Map<Thread, Stack<CompositeTransaction>> threadtotxmap_;
+    private Map<CompositeTransaction, Thread> txtothreadmap_;
 
 
-    public CompositeTransactionManagerImp ()
+    public CompositeTransactionManagerImp()
     {
-        threadToTxMap = new ConcurrentHashMap<>();
-        txToThreadMap = new ConcurrentHashMap<>();
+        threadtotxmap_ = new ConcurrentHashMap<>();
+        txtothreadmap_ = new ConcurrentHashMap<>();
     }
 
 
@@ -51,7 +50,7 @@ public class CompositeTransactionManagerImp implements CompositeTransactionManag
 
     private Thread getThread ( CompositeTransaction ct )
     {
-        return txToThreadMap.get ( ct );
+        return txtothreadmap_.get(ct);
     }
 
     /**
@@ -60,10 +59,12 @@ public class CompositeTransactionManagerImp implements CompositeTransactionManag
      * @return Stack The tx stack that was for current thread.
      */
 
-    private Deque<CompositeTransaction> removeThreadMappings ( Thread thread )
+    private Stack<CompositeTransaction> removeThreadMappings ( Thread thread )
     {
-        Deque<CompositeTransaction> ret = threadToTxMap.remove ( thread );
-        txToThreadMap.remove ( ret.peek () );
+        Stack<CompositeTransaction> ret;
+        ret = threadtotxmap_.remove ( thread );
+        CompositeTransaction tx = ret.peek ();
+        txtothreadmap_.remove ( tx );
         return ret;
     }
 
@@ -81,44 +82,43 @@ public class CompositeTransactionManagerImp implements CompositeTransactionManag
         //case 21806: callbacks to ct to be made outside synchronized block
         ct.addSubTxAwareParticipant ( this ); //step 1
 
-
-        if ( TxState.ACTIVE.equals ( ct.getState() )) {
-            Deque<CompositeTransaction> txs = threadToTxMap.computeIfAbsent ( thread , k -> new ConcurrentLinkedDeque<>());
-            synchronized ( ct ) {
+        if (TxState.ACTIVE.equals(ct.getState())) {
+            Stack<CompositeTransaction> txs = threadtotxmap_.get(thread);
+            if (txs == null)
+                txs = new Stack<>();
+            synchronized (ct) {
                 //between step 1 and here, intermediate timeout/rollback of the ct
                 //may have happened; make sure to check or we add a thread mapping
                 //that will never be removed!
-                if ( TxState.ACTIVE.equals ( ct.getState() )) {
-                    txs.push ( ct );
-                    threadToTxMap.put ( thread, txs );
-                    txToThreadMap.put ( ct, thread );
+                if (TxState.ACTIVE.equals(ct.getState())) {
+                    txs.push(ct);
+                    threadtotxmap_.put(thread, txs);
+                    txtothreadmap_.put(ct, thread);
                 }
             }
         }
     }
 
-    private void restoreThreadMappings ( Deque<CompositeTransaction> stack , Thread thread )
+    private void restoreThreadMappings ( Stack<CompositeTransaction> stack , Thread thread )
             throws IllegalStateException
     {
         //case 21806: callbacks to ct to be made outside synchronized block
         CompositeTransaction tx = stack.peek ();
         tx.addSubTxAwareParticipant(this); //step 1
 
-
-
-        if ( tx.getState().isOneOf(TxState.ACTIVE, TxState.MARKED_ABORT) ) {
+        if (tx.getState().isOneOf(TxState.ACTIVE, TxState.MARKED_ABORT)) {
             //also resume for marked abort - see case 26398
-            Deque<CompositeTransaction> txs = threadToTxMap.get ( thread );
-            if ( txs != null ) {
-                throw new IllegalStateException ("Thread already has subtx stack" );
+            Stack<CompositeTransaction> txs = threadtotxmap_.get(thread);
+            if (txs != null) {
+                throw new IllegalStateException("Thread already has subtx stack");
             }
             synchronized (tx) {
-                //between step 1 and here, intermediate timeout/rollback of the tx
+                //between step 1 and here, intermediate timeout/rollback of the ct
                 //may have happened; make sure to check or we add a thread mapping
                 //that will never be removed!
-                if ( tx.getState().isOneOf(TxState.ACTIVE, TxState.MARKED_ABORT) ) {
-                    threadToTxMap.put ( thread, stack );
-                    txToThreadMap.put ( tx, thread );
+                if (tx.getState().isOneOf(TxState.ACTIVE, TxState.MARKED_ABORT)) {
+                    threadtotxmap_.put(thread, stack);
+                    txtothreadmap_.put(tx, thread);
                 }
             }
         }
@@ -127,8 +127,11 @@ public class CompositeTransactionManagerImp implements CompositeTransactionManag
     private CompositeTransaction getCurrentTx ()
     {
         Thread thread = Thread.currentThread ();
-        Deque<CompositeTransaction> txs = threadToTxMap.getOrDefault ( thread, new ConcurrentLinkedDeque<>() );
-        return txs.peek ();
+        Stack<CompositeTransaction> txs = threadtotxmap_.get ( thread );
+        if ( txs == null )
+            return null;
+        else
+            return txs.peek ();
     }
 
     private TransactionService getTransactionService() {
@@ -170,17 +173,17 @@ public class CompositeTransactionManagerImp implements CompositeTransactionManag
     public CompositeTransaction getCompositeTransaction () throws SysException
     {
 
-        CompositeTransaction ct;
+        CompositeTransaction ct = null;
         ct = getCurrentTx ();
         if ( ct != null ) {
-        	if(LOGGER.isTraceEnabled()){
-            	LOGGER.logTrace("getCompositeTransaction()  returning instance with id "
+            if(LOGGER.isTraceEnabled()){
+                LOGGER.logTrace("getCompositeTransaction()  returning instance with id "
                         + ct.getTid ());
-        	}
+            }
         } else{
-        	if(LOGGER.isTraceEnabled()){
-        		LOGGER.logTrace("getCompositeTransaction() returning NULL!");
-        	}
+            if(LOGGER.isTraceEnabled()){
+                LOGGER.logTrace("getCompositeTransaction() returning NULL!");
+            }
         }
 
         return ct;
@@ -195,15 +198,15 @@ public class CompositeTransactionManagerImp implements CompositeTransactionManag
     {
         CompositeTransaction ret = getTransactionService().getCompositeTransaction ( tid );
         if ( ret != null ) {
-        	if(LOGGER.isTraceEnabled()){
-        		LOGGER.logTrace("getCompositeTransaction ( " + tid
-                    + " ) returning instance with tid " + ret.getTid ());
-        	}
+            if(LOGGER.isTraceEnabled()){
+                LOGGER.logTrace("getCompositeTransaction ( " + tid
+                        + " ) returning instance with tid " + ret.getTid ());
+            }
         } else {
-        	if(LOGGER.isTraceEnabled()){
-        		LOGGER.logTrace( "getCompositeTransaction ( " + tid
-                    + " ) returning null");
-        	}
+            if(LOGGER.isTraceEnabled()){
+                LOGGER.logTrace( "getCompositeTransaction ( " + tid
+                        + " ) returning null");
+            }
         }
         return ret;
     }
@@ -224,7 +227,7 @@ public class CompositeTransactionManagerImp implements CompositeTransactionManag
      */
 
     public synchronized CompositeTransaction recreateCompositeTransaction( Propagation context )throws SysException {
-        CompositeTransaction ct;
+        CompositeTransaction ct = null;
 
 
         ct = getCurrentTx();
@@ -245,14 +248,14 @@ public class CompositeTransactionManagerImp implements CompositeTransactionManag
     {
         CompositeTransaction ret = getCurrentTx ();
         if ( ret != null ) {
-        	if(LOGGER.isDebugEnabled()){
-        		LOGGER.logDebug("suspend() for transaction " + ret.getTid ());
-        	}
+            if(LOGGER.isDebugEnabled()){
+                LOGGER.logDebug("suspend() for transaction " + ret.getTid ());
+            }
             removeThreadMappings(Thread.currentThread());
         } else {
-        	if(LOGGER.isDebugEnabled()){
-        		LOGGER.logDebug("suspend() called without a transaction context");
-        	}
+            if(LOGGER.isDebugEnabled()){
+                LOGGER.logDebug("suspend() called without a transaction context");
+            }
         }
         return ret;
 
@@ -266,9 +269,9 @@ public class CompositeTransactionManagerImp implements CompositeTransactionManag
     public void resume ( CompositeTransaction ct )
             throws IllegalStateException, SysException
     {
-        Deque<CompositeTransaction> ancestors = new ConcurrentLinkedDeque<>();
-        Deque<CompositeTransaction> tmp = new ConcurrentLinkedDeque<>();
-        Deque<CompositeTransaction> lineage = (Deque<CompositeTransaction>) ct.getLineage ().clone ();
+        Stack<CompositeTransaction> ancestors = new Stack<CompositeTransaction>();
+        Stack<CompositeTransaction> tmp = new Stack<CompositeTransaction>();
+        Stack<CompositeTransaction> lineage = (Stack<CompositeTransaction>) ct.getLineage ().clone ();
         boolean done = false;
         while ( !lineage.isEmpty () && !done ) {
             CompositeTransaction parent = lineage.pop ();
@@ -335,10 +338,10 @@ public class CompositeTransactionManagerImp implements CompositeTransactionManag
         Thread thread = getThread ( ct );
         if ( thread == null ) return;
 
-        Deque<CompositeTransaction> mappings = removeThreadMappings ( thread );
-        if ( mappings != null && !mappings.isEmpty() ) {
+        Stack<CompositeTransaction> mappings = removeThreadMappings ( thread );
+        if ( mappings != null && !mappings.empty() ) {
             mappings.pop();
-            if ( !mappings.isEmpty()) {
+            if ( !mappings.empty()) {
                 restoreThreadMappings(mappings, thread);
             }
         }
@@ -351,19 +354,19 @@ public class CompositeTransactionManagerImp implements CompositeTransactionManag
 
     public CompositeTransaction createCompositeTransaction ( long timeout ) throws SysException
     {
-        CompositeTransaction ct, ret;
+        CompositeTransaction ct = null , ret = null;
 
         ct = getCurrentTx ();
         if ( ct == null ) {
             ret = getTransactionService().createCompositeTransaction ( timeout );
             if(LOGGER.isDebugEnabled()){
-            	LOGGER.logDebug("createCompositeTransaction ( " + timeout + " ): "
-                    + "created new ROOT transaction with id " + ret.getTid ());
+                LOGGER.logDebug("createCompositeTransaction ( " + timeout + " ): "
+                        + "created new ROOT transaction with id " + ret.getTid ());
             }
         } else {
-        	 if(LOGGER.isDebugEnabled()) {
-        	     LOGGER.logDebug("createCompositeTransaction ( " + timeout + " )");
-        	 }
+            if(LOGGER.isDebugEnabled()) {
+                LOGGER.logDebug("createCompositeTransaction ( " + timeout + " )");
+            }
             ret = ct.createSubTransaction ();
 
         }
