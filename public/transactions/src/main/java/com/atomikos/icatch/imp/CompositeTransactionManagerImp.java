@@ -8,9 +8,10 @@
 
 package com.atomikos.icatch.imp;
 
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.Deque;
 import java.util.Map;
-import java.util.Stack;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.atomikos.icatch.CompositeTransaction;
 import com.atomikos.icatch.CompositeTransactionManager;
@@ -30,16 +31,16 @@ import com.atomikos.recovery.TxState;
 public class CompositeTransactionManagerImp implements CompositeTransactionManager,
         SubTxAwareParticipant
 {
-	private static final Logger LOGGER = LoggerFactory.createLogger(CompositeTransactionManagerImp.class);
-	
-	private Map<Thread, Stack<CompositeTransaction>> threadtotxmap_ = null;
-    private Map<CompositeTransaction, Thread> txtothreadmap_ = null;
+    private static final Logger LOGGER = LoggerFactory.createLogger(CompositeTransactionManagerImp.class);
+
+    private final Map<Thread, Deque<CompositeTransaction>> threadToTxMap;
+    private final Map<CompositeTransaction, Thread> txToThreadMap;
 
 
     public CompositeTransactionManagerImp ()
     {
-        threadtotxmap_ = new HashMap<Thread, Stack<CompositeTransaction>> ();
-        txtothreadmap_ = new HashMap<CompositeTransaction, Thread> ();
+        threadToTxMap = new ConcurrentHashMap<>();
+        txToThreadMap = new ConcurrentHashMap<>();
     }
 
 
@@ -50,12 +51,7 @@ public class CompositeTransactionManagerImp implements CompositeTransactionManag
 
     private Thread getThread ( CompositeTransaction ct )
     {
-        Thread thread = null;
-
-        synchronized ( txtothreadmap_ ) {
-            thread = (Thread) txtothreadmap_.get ( ct );
-        }
-        return thread;
+        return txToThreadMap.get ( ct );
     }
 
     /**
@@ -64,15 +60,10 @@ public class CompositeTransactionManagerImp implements CompositeTransactionManag
      * @return Stack The tx stack that was for current thread.
      */
 
-    private Stack<CompositeTransaction> removeThreadMappings ( Thread thread )
+    private Deque<CompositeTransaction> removeThreadMappings ( Thread thread )
     {
-
-        Stack<CompositeTransaction> ret = null;
-        synchronized ( threadtotxmap_ ) {
-            ret = threadtotxmap_.remove ( thread );
-            CompositeTransaction tx = ret.peek ();
-            txtothreadmap_.remove ( tx );
-        }
+        Deque<CompositeTransaction> ret = threadToTxMap.remove ( thread );
+        txToThreadMap.remove ( ret.peek () );
         return ret;
     }
 
@@ -88,72 +79,67 @@ public class CompositeTransactionManagerImp implements CompositeTransactionManag
             throws IllegalStateException, SysException
     {
         //case 21806: callbacks to ct to be made outside synchronized block
-    	ct.addSubTxAwareParticipant ( this ); //step 1
+        ct.addSubTxAwareParticipant ( this ); //step 1
 
-        synchronized ( threadtotxmap_ ) {
-        	//between step 1 and here, intermediate timeout/rollback of the ct
-        	//may have happened; make sure to check or we add a thread mapping
-        	//that will never be removed!
-        	if ( TxState.ACTIVE.equals ( ct.getState() )) {
-        		Stack<CompositeTransaction> txs = threadtotxmap_.get ( thread );
-        		if ( txs == null )
-        			txs = new Stack<CompositeTransaction>();
-        		txs.push ( ct );
-        		threadtotxmap_.put ( thread, txs );
-        		txtothreadmap_.put ( ct, thread );
-        	}
+
+        if ( TxState.ACTIVE.equals ( ct.getState() )) {
+            Deque<CompositeTransaction> txs = threadToTxMap.computeIfAbsent ( thread , k -> new ConcurrentLinkedDeque<>());
+            synchronized ( ct ) {
+                //between step 1 and here, intermediate timeout/rollback of the ct
+                //may have happened; make sure to check or we add a thread mapping
+                //that will never be removed!
+                if ( TxState.ACTIVE.equals ( ct.getState() )) {
+                    txs.push ( ct );
+                    threadToTxMap.put ( thread, txs );
+                    txToThreadMap.put ( ct, thread );
+                }
+            }
         }
-
-
     }
 
-    private void restoreThreadMappings ( Stack<CompositeTransaction> stack , Thread thread )
+    private void restoreThreadMappings ( Deque<CompositeTransaction> stack , Thread thread )
             throws IllegalStateException
     {
-    	//case 21806: callbacks to ct to be made outside synchronized block
-    	CompositeTransaction tx = stack.peek ();
-    	tx.addSubTxAwareParticipant(this); //step 1
+        //case 21806: callbacks to ct to be made outside synchronized block
+        CompositeTransaction tx = stack.peek ();
+        tx.addSubTxAwareParticipant(this); //step 1
 
-        synchronized ( threadtotxmap_ ) {
-        	//between step 1 and here, intermediate timeout/rollback of the ct
-        	//may have happened; make sure to check or we add a thread mapping
-        	//that will never be removed!
-        	TxState state = tx.getState();
-        	
-        	if ( state.isOneOf(TxState.ACTIVE, TxState.MARKED_ABORT) ) {
-        		//also resume for marked abort - see case 26398
-        		Stack<CompositeTransaction> txs = threadtotxmap_.get ( thread );
-        		if ( txs != null ) {
-        		    throw new IllegalStateException ("Thread already has subtx stack" );
-        		}
-        		threadtotxmap_.put ( thread, stack );
-        		txtothreadmap_.put ( tx, thread );
-        	}
+
+
+        if ( tx.getState().isOneOf(TxState.ACTIVE, TxState.MARKED_ABORT) ) {
+            //also resume for marked abort - see case 26398
+            Deque<CompositeTransaction> txs = threadToTxMap.get ( thread );
+            if ( txs != null ) {
+                throw new IllegalStateException ("Thread already has subtx stack" );
+            }
+            synchronized (tx) {
+                //between step 1 and here, intermediate timeout/rollback of the tx
+                //may have happened; make sure to check or we add a thread mapping
+                //that will never be removed!
+                if ( tx.getState().isOneOf(TxState.ACTIVE, TxState.MARKED_ABORT) ) {
+                    threadToTxMap.put ( thread, stack );
+                    txToThreadMap.put ( tx, thread );
+                }
+            }
         }
     }
 
     private CompositeTransaction getCurrentTx ()
     {
         Thread thread = Thread.currentThread ();
-        synchronized ( threadtotxmap_ ) {
-            Stack<CompositeTransaction> txs = threadtotxmap_.get ( thread );
-            if ( txs == null )
-                return null;
-            else
-                return txs.peek ();
-
-        }
+        Deque<CompositeTransaction> txs = threadToTxMap.getOrDefault ( thread, new ConcurrentLinkedDeque<>() );
+        return txs.peek ();
     }
 
     private TransactionService getTransactionService() {
-    	TransactionService ret = Configuration.getTransactionService();
-    	if (ret == null) throw new IllegalStateException("Not initialized");
-    	return ret;
-	}
+        TransactionService ret = Configuration.getTransactionService();
+        if (ret == null) throw new IllegalStateException("Not initialized");
+        return ret;
+    }
 
 
 
-	/**
+    /**
      * Called if a tx is ended successfully. In order to remove the tx from the
      * mapping.
      *
@@ -183,8 +169,8 @@ public class CompositeTransactionManagerImp implements CompositeTransactionManag
 
     public CompositeTransaction getCompositeTransaction () throws SysException
     {
-        
-        CompositeTransaction ct = null;
+
+        CompositeTransaction ct;
         ct = getCurrentTx ();
         if ( ct != null ) {
         	if(LOGGER.isTraceEnabled()){
@@ -238,7 +224,7 @@ public class CompositeTransactionManagerImp implements CompositeTransactionManag
      */
 
     public synchronized CompositeTransaction recreateCompositeTransaction( Propagation context )throws SysException {
-        CompositeTransaction ct = null;
+        CompositeTransaction ct;
 
 
         ct = getCurrentTx();
@@ -280,9 +266,9 @@ public class CompositeTransactionManagerImp implements CompositeTransactionManag
     public void resume ( CompositeTransaction ct )
             throws IllegalStateException, SysException
     {
-        Stack<CompositeTransaction> ancestors = new Stack<CompositeTransaction>();
-        Stack<CompositeTransaction> tmp = new Stack<CompositeTransaction>();
-        Stack<CompositeTransaction> lineage = (Stack<CompositeTransaction>) ct.getLineage ().clone ();
+        Deque<CompositeTransaction> ancestors = new ConcurrentLinkedDeque<>();
+        Deque<CompositeTransaction> tmp = new ConcurrentLinkedDeque<>();
+        Deque<CompositeTransaction> lineage = (Deque<CompositeTransaction>) ct.getLineage ().clone ();
         boolean done = false;
         while ( !lineage.isEmpty () && !done ) {
             CompositeTransaction parent = lineage.pop ();
@@ -300,7 +286,7 @@ public class CompositeTransactionManagerImp implements CompositeTransactionManag
         if(LOGGER.isDebugEnabled()) {
             LOGGER.logDebug("resume ( " + ct + " ) done for transaction " + ct.getTid ());
         }
-        
+
     }
 
     /**
@@ -349,10 +335,10 @@ public class CompositeTransactionManagerImp implements CompositeTransactionManag
         Thread thread = getThread ( ct );
         if ( thread == null ) return;
 
-        Stack<CompositeTransaction> mappings = removeThreadMappings ( thread );
-        if ( mappings != null && !mappings.empty() ) {
+        Deque<CompositeTransaction> mappings = removeThreadMappings ( thread );
+        if ( mappings != null && !mappings.isEmpty() ) {
             mappings.pop();
-            if ( !mappings.empty()) {
+            if ( !mappings.isEmpty()) {
                 restoreThreadMappings(mappings, thread);
             }
         }
@@ -365,8 +351,8 @@ public class CompositeTransactionManagerImp implements CompositeTransactionManag
 
     public CompositeTransaction createCompositeTransaction ( long timeout ) throws SysException
     {
-        CompositeTransaction ct = null , ret = null;
-        
+        CompositeTransaction ct, ret;
+
         ct = getCurrentTx ();
         if ( ct == null ) {
             ret = getTransactionService().createCompositeTransaction ( timeout );
