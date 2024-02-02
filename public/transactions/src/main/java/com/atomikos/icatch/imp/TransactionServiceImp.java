@@ -14,6 +14,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.Stack;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.atomikos.finitestates.FSMEnterEvent;
@@ -50,7 +52,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
 {
 	private static final Logger LOGGER = LoggerFactory.createLogger(TransactionServiceImp.class);
     private static final int NUMLATCHES = 97;
-    private static final Object shutdownSynchronizer = new Object();
+    private static final ReadWriteLock shutdownSynchronizer = new ReentrantReadWriteLock();
 
     
     private long maxTimeout_;
@@ -159,16 +161,15 @@ public class TransactionServiceImp implements TransactionServiceProvider,
 
     private void removeCoordinator ( CompositeCoordinator coord )
     {
-
-        synchronized ( shutdownSynchronizer ) {
+        shutdownSynchronizer.readLock().lock();
+        try{
             synchronized ( getLatch ( coord.getRootId()) ) {
                 recreatedCoordinatorsByRootId.remove (coord.getRootId());
                 allCoordinatorsByCoordinatorId.remove(coord.getCoordinatorId());
             }
-
-            // notify any waiting threads for shutdown
-            if ( allCoordinatorsByCoordinatorId.isEmpty() )
-                shutdownSynchronizer.notifyAll ();
+            LOGGER.logDebug("Removed cc with id: " + coord.getCoordinatorId());
+        }finally{
+            shutdownSynchronizer.readLock().unlock();
         }
     }
 
@@ -236,17 +237,18 @@ public class TransactionServiceImp implements TransactionServiceProvider,
             LOGGER.logWarning ( "Attempt to create a transaction with a timeout that exceeds maximum - truncating to: " + maxTimeout_ );
         }
 
-        synchronized ( shutdownSynchronizer ) {
+        shutdownSynchronizer.readLock().lock();
+        try {
             // check if shutting down -> do not allow new coordinator objects
             // to be added, so that shutdown will eventually succeed.
             if ( shutdownInProgress_ )
                 throw new IllegalStateException ( "Server is shutting down..." );
 
-           
+
             String coordinatorId = root;
             boolean subTransaction = (adaptor != null);
             if (subTransaction) { //not a root
-            	coordinatorId = tidmgr_.get();
+                coordinatorId = tidmgr_.get();
             }
             cc = new CoordinatorImp (recoveryDomainName, coordinatorId, root, adaptor, timeout, single_threaded_2pc_ );
 
@@ -254,13 +256,16 @@ public class TransactionServiceImp implements TransactionServiceProvider,
 
             // now, add to root map, since we are sure there are not too many active txs
             synchronized ( getLatch ( root) ) {
-                CoordinatorImp entryForRoot = recreatedCoordinatorsByRootId.get(root); 
+                CoordinatorImp entryForRoot = recreatedCoordinatorsByRootId.get(root);
                 if (entryForRoot == null) { //cf case 178075
-                	recreatedCoordinatorsByRootId.put(root, cc);
+                    recreatedCoordinatorsByRootId.put(root, cc);
                 }
                 allCoordinatorsByCoordinatorId.put(coordinatorId, cc);
             }
             startlistening ( cc );
+            LOGGER.logDebug("Created cc with id: " + cc.getCoordinatorId());
+        }finally {
+            shutdownSynchronizer.readLock().unlock();
         }
 
         return cc;
@@ -301,13 +306,16 @@ public class TransactionServiceImp implements TransactionServiceProvider,
             throw new IllegalStateException ( "Not initialized" );
 
         CoordinatorImp cc = null;
-        synchronized ( shutdownSynchronizer ) {
+        shutdownSynchronizer.readLock().lock();
+        try {
             // Synch on shutdownSynchronizer_ first to avoid
             // deadlock, even if we don't seem to need it here
 
             synchronized ( getLatch ( root ) ) {
                 cc = recreatedCoordinatorsByRootId.get(root);
             }
+        }finally {
+            shutdownSynchronizer.readLock().unlock();
         }
 
         return cc;
@@ -484,7 +492,8 @@ public class TransactionServiceImp implements TransactionServiceProvider,
             CompositeTransaction root = context.getRootTransaction();
             CompositeTransaction parent = context.getParentTransaction();
             
-            synchronized ( shutdownSynchronizer ) {
+            shutdownSynchronizer.readLock().lock();
+            try {
                 synchronized ( getLatch ( root.getTid () ) ) {
                     cc = getCoordinatorImpForRoot ( root.getTid () );
                     if ( cc == null ) {
@@ -492,8 +501,11 @@ public class TransactionServiceImp implements TransactionServiceProvider,
                                 .getCompositeCoordinator ()
                                 .getRecoveryCoordinator ();
                         cc = createCC (context.getRecoveryDomainName(), coord, root.getTid (), context.getTimeout () );
+
                     }
                 }
+            }finally {
+                shutdownSynchronizer.readLock().unlock();
             }
             ct = createCT ( tid, cc, context.getLineage(), serial );
 
@@ -540,8 +552,9 @@ public class TransactionServiceImp implements TransactionServiceProvider,
         } 
 
 
-        synchronized ( shutdownSynchronizer ) {
-        	LOGGER.logTrace ( "Shutdown acquired lock on waiter." );
+        shutdownSynchronizer.writeLock().lock();
+        try {
+            LOGGER.logDebug ( "Shutdown acquired lock on waiter." );
             wasShuttingDown = shutdownInProgress_;
             shutdownInProgress_ = true;
             
@@ -577,7 +590,8 @@ public class TransactionServiceImp implements TransactionServiceProvider,
                 recoveryDomainService.stop();
                 recoveryLog.closed();
             } 
-
+        }finally {
+            shutdownSynchronizer.writeLock().unlock();
         }
         
         shutdownSystemExecutors();
