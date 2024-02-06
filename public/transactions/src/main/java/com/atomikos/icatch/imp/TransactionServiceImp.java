@@ -8,7 +8,6 @@
 
 package com.atomikos.icatch.imp;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Properties;
@@ -58,8 +57,8 @@ public class TransactionServiceImp implements TransactionServiceProvider,
     private long maxTimeout_;
     private Object[] rootLatches_ = null;
     private Map<String,CompositeTransaction> tidToTransactionMap_;
-    private Map<String, CoordinatorImp> recreatedCoordinatorsByRootId = new HashMap<>();
-    private Map<String, CoordinatorImp> allCoordinatorsByCoordinatorId = new HashMap<>();
+    private Map<String, CoordinatorImp> recreatedCoordinatorsByRootId = new ConcurrentHashMap<>();
+    private Map<String, CoordinatorImp> allCoordinatorsByCoordinatorId = new ConcurrentHashMap<>();
     private boolean shutdownInProgress_ = false;
     private UniqueIdMgr tidmgr_ = null;
     private StateRecoveryManager recoverymanager_ = null;
@@ -254,14 +253,9 @@ public class TransactionServiceImp implements TransactionServiceProvider,
 
             recoverymanager_.register ( cc );
 
-            // now, add to root map, since we are sure there are not too many active txs
-            synchronized ( getLatch ( root) ) {
-                CoordinatorImp entryForRoot = recreatedCoordinatorsByRootId.get(root);
-                if (entryForRoot == null) { //cf case 178075
-                    recreatedCoordinatorsByRootId.put(root, cc);
-                }
-                allCoordinatorsByCoordinatorId.put(coordinatorId, cc);
-            }
+            //cf case 178075
+            recreatedCoordinatorsByRootId.putIfAbsent(root, cc);
+            allCoordinatorsByCoordinatorId.put(coordinatorId, cc);
             startlistening ( cc );
             LOGGER.logDebug("Created cc with id: " + cc.getCoordinatorId());
         }finally {
@@ -305,20 +299,15 @@ public class TransactionServiceImp implements TransactionServiceProvider,
         if ( !initialized_ )
             throw new IllegalStateException ( "Not initialized" );
 
-        CoordinatorImp cc = null;
         shutdownSynchronizer.readLock().lock();
         try {
             // Synch on shutdownSynchronizer_ first to avoid
             // deadlock, even if we don't seem to need it here
 
-            synchronized ( getLatch ( root ) ) {
-                cc = recreatedCoordinatorsByRootId.get(root);
-            }
+            return recreatedCoordinatorsByRootId.get(root);
         }finally {
             shutdownSynchronizer.readLock().unlock();
         }
-
-        return cc;
     }
     
    
