@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.atomikos</groupId>
+		<artifactId>spring-boot2</artifactId>
+		<version>6.0.1-SNAPSHOT</version>
+	</parent>
+	<artifactId>transactions-spring-boot-starter</artifactId>
+	<name>Transactions Spring Boot Starter</name>
+	<dependencies>
+		<dependency>
+			<groupId>com.atomikos</groupId>
+			<artifactId>transactions-spring-boot</artifactId>
+			<version>6.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.atomikos</groupId>
+			<artifactId>transactions-jms</artifactId>
+			<version>6.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.atomikos</groupId>
+			<artifactId>transactions-jta</artifactId>
+			<version>6.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.atomikos</groupId>
+			<artifactId>transactions-jdbc</artifactId>
+			<version>6.0.1-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<configuration>
+					<forceCreation>true</forceCreation>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
