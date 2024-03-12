@@ -51,12 +51,9 @@ public class LogFileLock {
 			}
 			lockfileToPreventDoubleStartup_ = new File(dir, fileName + ".lck");
 			lockfilestream_ = new FileOutputStream(lockfileToPreventDoubleStartup_);
-			FileLock tryLock = tryAcquiringLock(1);
-			if (tryLock != null) {
-				lock_ = tryLock;
-				lockfileToPreventDoubleStartup_.deleteOnExit();
-				return;
-			}
+			tryAcquiringLock(1);
+			lockfileToPreventDoubleStartup_.deleteOnExit();
+			return;
 		} catch (OverlappingFileLockException | IOException failedToGetLock) {
 			// either may happen on windows
 		}
@@ -65,13 +62,13 @@ public class LogFileLock {
 		throw new LogException(msg);
 	}
 
-	private FileLock tryAcquiringLock(int currentTryCount) throws OverlappingFileLockException, IOException {
+	private void tryAcquiringLock(int currentTryCount) throws OverlappingFileLockException, IOException {
 		try {
-			FileLock fileLock = lockfilestream_.getChannel().tryLock();
-			if(fileLock == null) {
+			lock_ = lockfilestream_.getChannel().tryLock();
+			if(lock_ == null) {
 				throw new IOException("The file lock couldn't be acquired. FileLock is null");
 			}
-			return fileLock;
+			return;
 		} catch (OverlappingFileLockException | IOException failedToGetLock) {
 			if (currentTryCount < lockAcquisitionMaxAttempts) {
 				LOGGER.logWarning("Couldn't acquire lock, will try again in " + lockAcquisitionRetryDelay + " millis...", failedToGetLock);
@@ -85,7 +82,7 @@ public class LogFileLock {
 				throw failedToGetLock;
 			}
 		}
-		return tryAcquiringLock(currentTryCount + 1);
+		tryAcquiringLock(currentTryCount + 1);
 	}
 
 	public void releaseLock() {
