@@ -13,6 +13,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileLock;
 import java.nio.channels.OverlappingFileLockException;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.concurrent.TimeUnit;
 
 import com.atomikos.icatch.config.Configuration;
@@ -45,18 +47,9 @@ public class LogFileLock {
 
 	public void acquireLock() throws LogException {
 		try {
-			File parent = new File(dir);
-			if(!parent.exists()) {
-				parent.mkdirs();
-			}
-			lockfileToPreventDoubleStartup_ = new File(dir, fileName + ".lck");
-			lockfilestream_ = new FileOutputStream(lockfileToPreventDoubleStartup_);
-			FileLock tryLock = tryAcquiringLock(1);
-			if (tryLock != null) {
-				lock_ = tryLock;
-				lockfileToPreventDoubleStartup_.deleteOnExit();
-				return;
-			}
+			tryAcquiringLock();
+			lockfileToPreventDoubleStartup_.deleteOnExit();
+			return;
 		} catch (OverlappingFileLockException | IOException failedToGetLock) {
 			// either may happen on windows
 		}
@@ -65,28 +58,55 @@ public class LogFileLock {
 		throw new LogException(msg);
 	}
 
-	private FileLock tryAcquiringLock(int currentTryCount) throws OverlappingFileLockException, IOException {
-		try {
-			FileLock fileLock = lockfilestream_.getChannel().tryLock();
-			if(fileLock == null) {
-				throw new IOException("The file lock couldn't be acquired. FileLock is null");
-			}
-			return fileLock;
-		} catch (OverlappingFileLockException | IOException failedToGetLock) {
-			if (currentTryCount < lockAcquisitionMaxAttempts) {
-				LOGGER.logWarning("Couldn't acquire lock, will try again in " + lockAcquisitionRetryDelay + " millis...", failedToGetLock);
-				try {
-					TimeUnit.MILLISECONDS.sleep(lockAcquisitionRetryDelay);
-				} catch (InterruptedException ie) {
-					InterruptedExceptionHelper.handleInterruptedException(ie);
-					throw new IOException("The file lock couldn't be acquired.", ie);
+	/**
+	 * Acquiring lock for transactions.
+	 *
+	 * @throws OverlappingFileLockException either may happen on windows
+	 * @throws IOException                  if the lock couldn't be acquired
+	 */
+	private void tryAcquiringLock() throws OverlappingFileLockException, IOException {
+		int currentRetryCount = 0;
+		do {
+			try {
+				File parent = new File(dir);
+				if (!parent.exists()) {
+					parent.mkdirs();
 				}
-			} else {
-				throw failedToGetLock;
+				if (lockfileToPreventDoubleStartup_ == null || !lockfileToPreventDoubleStartup_.exists()) {
+					lockfileToPreventDoubleStartup_ = new File(dir, fileName + ".lck");
+					lockfilestream_ = new FileOutputStream(lockfileToPreventDoubleStartup_);
+				}
+				lock_ = lockfilestream_.getChannel().tryLock();
+				if (lock_ != null) {
+					return;
+				}
+				LOGGER.logWarning(String.format("File lock couldn't be acquired file lock (dir: %s, file: %s) is null", dir, fileName));
+			} catch (IOException ioException) {
+				// In this case we continue to check in the loop
+				LOGGER.logWarning("File lock could not be acquired, another process holds the lock, waiting.", ioException);
+			} catch (OverlappingFileLockException e) {
+				LOGGER.logWarning(String.format("Lock could not be obtained because of overlapping file lock exception (dir: %s, file: %s)", dir, fileName));
+				throw e;
 			}
-		}
-		return tryAcquiringLock(currentTryCount + 1);
+			sleep();
+			currentRetryCount += 1;
+		} while (currentRetryCount < lockAcquisitionMaxAttempts);
+
+		throw new RuntimeException("The lock couldn't be acquired on ");
 	}
+
+	/**
+	 * Sleep while lock file checking.
+	 */
+	private void sleep() {
+		try {
+			TimeUnit.MILLISECONDS.sleep(lockAcquisitionRetryDelay);
+		} catch (InterruptedException interruptedException) {
+			Thread.currentThread().interrupt();
+			throw new RuntimeException("The thread has been interrupted waiting for lock acquisition.", interruptedException);
+		}
+	}
+
 
 	public void releaseLock() {
 		try {
