@@ -38,7 +38,7 @@ public final class ConfigProperties {
     public static final String LOG_LOCK_ACQUISITION_MAX_ATTEMPTS = "com.atomikos.icatch.log_lock_acquisition_max_attempts";
     public static final String LOG_LOCK_ACQUISITION_RETRY_DELAY = "com.atomikos.icatch.log_lock_acquisition_retry_delay";
 
-	public static final String ENABLE_STRING_INTERNING = "com.atomikos.icatch.enable_string_interning";
+    public static final String ENABLE_STRING_INTERNING = "com.atomikos.icatch.enable_string_interning";
 
 	
 	/**

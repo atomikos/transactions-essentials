@@ -150,7 +150,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
         synchronized ( tidToTransactionMap_ ) {
             if ( tidToTransactionMap_.containsKey ( ConditionalIntern.apply(tid) ) )
                 throw new IllegalStateException ( "Already mapped: " + tid );
-            tidToTransactionMap_.put (  ConditionalIntern.apply(tid), ct );
+            tidToTransactionMap_.put ( ConditionalIntern.apply(tid), ct );
             ct.addSubTxAwareParticipant(this); // for GC purposes
         }
     }
@@ -190,7 +190,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
     {
         if ( ct == null )
             return;
-        tidToTransactionMap_.remove (  ConditionalIntern.apply(ct.getTid ()) );
+        tidToTransactionMap_.remove ( ConditionalIntern.apply(ct.getTid ()) );
 
     }
 
@@ -303,7 +303,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
     private CoordinatorImp getCoordinatorImpForRoot ( String root )
             throws SysException
     {
-        root =  ConditionalIntern.apply(root);
+        root = ConditionalIntern.apply(root);
         if ( !initialized_ )
             throw new IllegalStateException ( "Not initialized" );
 
@@ -432,7 +432,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
         CompositeTransaction ret = null;
 
         synchronized ( tidToTransactionMap_ ) {
-            ret = (CompositeTransaction) tidToTransactionMap_.get (  ConditionalIntern.apply(tid) );
+            ret = (CompositeTransaction) tidToTransactionMap_.get ( ConditionalIntern.apply(tid) );
         }
 
         return ret;
