@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.Stack;
+import java.util.function.Function;
 
 import com.atomikos.finitestates.FSMEnterEvent;
 import com.atomikos.finitestates.FSMEnterListener;
@@ -40,6 +41,8 @@ import com.atomikos.recovery.fs.RecoveryLogImp;
 import com.atomikos.thread.InterruptedExceptionHelper;
 import com.atomikos.thread.TaskManager;
 import com.atomikos.util.UniqueIdMgr;
+
+import static com.atomikos.icatch.provider.ConfigProperties.ENABLE_STRING_INTERNING;
 
 /**
  * General implementation of Transaction Service.
@@ -145,9 +148,9 @@ public class TransactionServiceImp implements TransactionServiceProvider,
             throws IllegalStateException
     {
         synchronized ( tidToTransactionMap_ ) {
-            if ( tidToTransactionMap_.containsKey ( tid.intern () ) )
+            if ( tidToTransactionMap_.containsKey ( ConditionalIntern.apply(tid) ) )
                 throw new IllegalStateException ( "Already mapped: " + tid );
-            tidToTransactionMap_.put ( tid.intern (), ct );
+            tidToTransactionMap_.put ( ConditionalIntern.apply(tid), ct );
             ct.addSubTxAwareParticipant(this); // for GC purposes
         }
     }
@@ -187,7 +190,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
     {
         if ( ct == null )
             return;
-        tidToTransactionMap_.remove ( ct.getTid ().intern () );
+        tidToTransactionMap_.remove ( ConditionalIntern.apply(ct.getTid ()) );
 
     }
 
@@ -300,7 +303,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
     private CoordinatorImp getCoordinatorImpForRoot ( String root )
             throws SysException
     {
-        root = root.intern ();
+        root = ConditionalIntern.apply(root);
         if ( !initialized_ )
             throw new IllegalStateException ( "Not initialized" );
 
@@ -429,7 +432,7 @@ public class TransactionServiceImp implements TransactionServiceProvider,
         CompositeTransaction ret = null;
 
         synchronized ( tidToTransactionMap_ ) {
-            ret = (CompositeTransaction) tidToTransactionMap_.get ( tid.intern () );
+            ret = (CompositeTransaction) tidToTransactionMap_.get ( ConditionalIntern.apply(tid) );
         }
 
         return ret;
@@ -684,5 +687,16 @@ public class TransactionServiceImp implements TransactionServiceProvider,
 	@Override
 	public void preEnter(FSMEnterEvent e) throws IllegalStateException {
 	}
+
+    private static class ConditionalIntern {
+        private static final Function<String, String> fetchBasedOnFlag =
+                Configuration.getConfigProperties().getProperty(ENABLE_STRING_INTERNING).equals("true") ?
+                String::intern :
+                str -> str;
+
+        public static String apply(String str){
+            return fetchBasedOnFlag.apply(str);
+        }
+    }
 
 }
