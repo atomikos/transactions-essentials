@@ -38,7 +38,8 @@ public final class ConfigProperties {
     public static final String LOG_LOCK_ACQUISITION_MAX_ATTEMPTS = "com.atomikos.icatch.log_lock_acquisition_max_attempts";
     public static final String LOG_LOCK_ACQUISITION_RETRY_DELAY = "com.atomikos.icatch.log_lock_acquisition_retry_delay";
 
-	
+    public static final String REST_CLIENT_BUILDER = "com.atomikos.remoting.rest_client_builder";
+
 	/**
 	 * Replace ${...} sequence with the referenced value from the given properties or 
 	 * (if not found) the system properties -
@@ -270,6 +271,11 @@ public final class ConfigProperties {
 
     public String getJvmId() {
         return getProperty(JVM_ID_PROPERTY_NAME);
+
+    }
+    
+    public String getRestClientBuilder() {
+        return getProperty(REST_CLIENT_BUILDER);
 
     }
 

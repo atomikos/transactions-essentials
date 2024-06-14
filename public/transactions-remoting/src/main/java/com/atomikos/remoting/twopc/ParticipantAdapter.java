@@ -29,6 +29,7 @@ import com.atomikos.icatch.HeurRollbackException;
 import com.atomikos.icatch.Participant;
 import com.atomikos.icatch.RollbackException;
 import com.atomikos.icatch.SysException;
+import com.atomikos.icatch.config.Configuration;
 import com.atomikos.logging.Logger;
 import com.atomikos.logging.LoggerFactory;
 import com.atomikos.remoting.support.HeaderNames;
@@ -42,20 +43,29 @@ public class ParticipantAdapter implements Participant {
 
 	private static final Logger LOGGER = LoggerFactory.createLogger(ParticipantAdapter.class);
 
-	private final WebTarget target;
+	private static Client client;
+	
+	private final URI uri; 
 
 	private final Map<String, Integer> cascadeList = new HashMap<>();
 
 	public ParticipantAdapter(URI uri) {
-		Client client = newClient();
-		client.property("jersey.config.client.suppressHttpComplianceValidation", true);
-		client.register(ParticipantsProvider.class);
-		target = client.target(uri);
+		if (client == null) {
+			String className = Configuration.getConfigProperties().getRestClientBuilder();
+			try {
+				Class<?> builderClass = Thread.currentThread().getContextClassLoader().loadClass(className);
+				RestClientBuilder restClientBuilder = (RestClientBuilder)builderClass.newInstance();
+				client = restClientBuilder.build();
+			} catch (Exception e) {
+				throw new IllegalArgumentException(e);
+			}
+		}
+		this.uri = uri;
 	}
 
 	@Override
 	public String getURI() {
-		return target.getUri().toASCIIString();
+		return uri.toASCIIString();
 	}
 
 	@Override
@@ -74,7 +84,7 @@ public class ParticipantAdapter implements Participant {
 			LOGGER.logDebug("Calling prepare on " + getURI());
 		}
 		try {
-			int result = target.request()
+			int result = client.target(uri).request()
 					.buildPost(Entity.entity(cascadeList, HeaderNames.MimeType.APPLICATION_VND_ATOMIKOS_JSON))
 					.invoke(Integer.class);
 			if (LOGGER.isTraceEnabled()) {
@@ -84,9 +94,16 @@ public class ParticipantAdapter implements Participant {
 		} catch (WebApplicationException e) {
 			int status = e.getResponse().getStatus();
 			if (status == 404) {
+				// 404 writes a String entity - we have to consume it
+				consumeStringEntity(e.getResponse());
 				LOGGER.logWarning("Remote participant not available - any remote work will rollback...", e);
 				throw new RollbackException();
 			} else {
+				if (status == 409) {
+					// 409 writes a String entity - we have to consume it
+					consumeStringEntity(e.getResponse());
+					e.getResponse().close();
+				}
 				LOGGER.logWarning("Unexpected error during prepare - see stacktrace for more details...", e);
 				throw new HeurHazardException();
 			}
@@ -100,17 +117,21 @@ public class ParticipantAdapter implements Participant {
 			LOGGER.logDebug("Calling commit on " + getURI());
 		}
 
-		Response r = target.path(String.valueOf(onePhase)).request().buildPut(Entity.entity("", HeaderNames.MimeType.APPLICATION_VND_ATOMIKOS_JSON)).invoke();
+		Response r = client.target(uri).path(String.valueOf(onePhase)).request().buildPut(Entity.entity("", HeaderNames.MimeType.APPLICATION_VND_ATOMIKOS_JSON)).invoke();
 
 		if (r.getStatusInfo().getFamily() != Family.SUCCESSFUL) {
 			int status = r.getStatus();
 			switch (status) {
 			case 404:
+				// 404 writes a String entity - we have to consume it
+				consumeStringEntity(r);
 				if (onePhase) {
 					LOGGER.logWarning("Remote participant not available - default outcome will be rollback");
 					throw new RollbackException();
 				}
 			case 409:
+				// 409 writes a String entity - we have to consume it
+				consumeStringEntity(r);
 				LOGGER.logWarning("Unexpected 409 error on commit");
 				throw new HeurMixedException();
 			default:
@@ -127,12 +148,14 @@ public class ParticipantAdapter implements Participant {
 			LOGGER.logDebug("Calling rollback on " + getURI());
 		}
 
-		Response r = target.request().header(HttpHeaders.CONTENT_TYPE, HeaderNames.MimeType.APPLICATION_VND_ATOMIKOS_JSON).delete();
+		Response r = client.target(uri).request().header(HttpHeaders.CONTENT_TYPE, HeaderNames.MimeType.APPLICATION_VND_ATOMIKOS_JSON).delete();
 
 		if (r.getStatusInfo().getFamily() != Family.SUCCESSFUL) {
 			int status = r.getStatus();
 			switch (status) {
 			case 409:
+				// 409 writes a String entity - we have to consume it
+				consumeStringEntity(r);
 				LOGGER.logWarning("Unexpected 409 error on rollback");
 				throw new HeurMixedException();
 			case 404:
@@ -173,6 +196,16 @@ public class ParticipantAdapter implements Participant {
 	@Override
 	public String toString() {
 		return "ParticipantAdapter for: " + getURI();
+	}
+	
+	private void consumeStringEntity(Response r) {
+		// the entity body has to be consumed to allow pooling of http connections.
+		// see https://stackoverflow.com/questions/27063667/httpclient-4-3-blocking-on-connection-pool
+		try {
+			r.readEntity(String.class);
+		} catch (Exception e) {
+			// catch exception. we only want to be sure that all content was cosumed
+		}
 	}
 
 }
