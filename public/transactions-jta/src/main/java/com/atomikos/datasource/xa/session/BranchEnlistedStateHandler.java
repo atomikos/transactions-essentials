@@ -104,4 +104,23 @@ class BranchEnlistedStateHandler extends TransactionContextStateHandler
 	{
 		return ct.isSameTransaction ( tx );
 	}
+	
+	// Fix by Martin Aubele. Without this fix we need one new connection per call when no 2PC is used (no propagation header).
+    // this leads to a connection shortage if the service is called multiple times. 
+	
+	boolean isInactiveInTransaction ( CompositeTransaction tx ) 
+	{
+		// code is separated in special if statements to allow setting a breakpoint
+		if (ct.getCompositeCoordinator() != tx.getCompositeCoordinator())
+			return false;
+		if (ct.isRoot() != tx.isRoot())
+			return false;
+		
+		// we need to check if the branch is active because of this scenario:
+		// ServiceA on Server 1 uses a jdbc connection and then calls ServiceB on Server 2. ServiceB calls
+		// back to Service A2 on Server 1. In this case, we cannot use the still ACTIVE jdbc connection.
+		if (branch.isActive())
+			return false;
+		return true;
+	}
 }
