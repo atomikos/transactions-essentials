@@ -158,8 +158,13 @@ class ActiveStateHandler extends CoordinatorStateHandler
             count = participants.size ();
             result = new PrepareResult ( count );
             Enumeration<Participant> enumm = participants.elements ();
+            String rootId = getCoordinator().getRootId();
             while ( enumm.hasMoreElements () ) {
                 Participant p = (Participant) enumm.nextElement ();
+                
+                // Fix for recursive call to rootId
+                if (rootId != null && p.getURI() != null && p.getURI().endsWith(rootId))
+    				break;
                 PrepareMessage pm = new PrepareMessage ( p, result );
                 if ( getCascadeList () != null && p.getURI () != null ) { //null for OTS
                     Integer sibnum = (Integer) getCascadeList ().get ( p.getURI () );
