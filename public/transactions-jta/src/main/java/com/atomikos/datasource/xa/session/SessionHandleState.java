@@ -284,9 +284,9 @@ public class SessionHandleState
 	public boolean isInactiveInTransaction( CompositeTransaction tx ) 
 	{
 		boolean ret = false;
-		if (closed) { // see case 159940: if not closed then be pessimistic and assume still active in terms of recycling
+		//if (closed) { // see case 159940: if not closed then be pessimistic and assume still active in terms of recycling
 			if ( currentContext != null && tx != null ) ret = currentContext.isInactiveInTransaction ( tx );
-		}
+		//}
 		return ret;
 	}
 }
