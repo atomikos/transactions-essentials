@@ -10,6 +10,7 @@ package com.atomikos.remoting;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.atomikos.icatch.CompositeTransaction;
 import com.atomikos.icatch.CompositeTransactionManager;
@@ -39,7 +40,7 @@ public class CheckedExportingTransactionManager implements ExportingTransactionM
     
     private static final Logger LOGGER = LoggerFactory.createLogger(CheckedExportingTransactionManager.class);
     
-    private static Map<String,PendingRequestSynchronisation> pendingRequestSynchronisation = new HashMap<String,PendingRequestSynchronisation>();
+    private static Map<String,PendingRequestSynchronisation> pendingRequestSynchronisation = new ConcurrentHashMap<String,PendingRequestSynchronisation>();
 
     private ExportingTransactionManager delegate;
     
