@@ -10,7 +10,9 @@ package com.atomikos.icatch.imp;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Stack;
 
 import com.atomikos.icatch.CompositeTransaction;
@@ -38,6 +40,7 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
 
     private int subtxs_;
     private List<Synchronization> synchronizations_; // FIFO - cf case 20711
+	private transient Set<Synchronization> tempSynchronizations;
     private List<SubTxAwareParticipant> subtxawares_;
     private CompositeTransactionImp ct_;
     
@@ -47,16 +50,22 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
         subtxs_ = 0;
         subtxawares_ = new ArrayList<SubTxAwareParticipant>();
         synchronizations_ = new Stack<Synchronization>();
+        tempSynchronizations = new LinkedHashSet<Synchronization>();
+
     }
 
     protected TransactionStateHandler ( CompositeTransactionImp ct ,
             TransactionStateHandler handler )
     {
         subtxs_ = handler.getSubTransactionCount();
-        synchronizations_ = handler.getSynchronizations();
         subtxawares_ = handler.getSubtxawares();
         ct_ = ct;
 
+        synchronizations_ = new Stack<Synchronization>();
+        tempSynchronizations = new LinkedHashSet<Synchronization>();
+        for (final Synchronization sync : handler.getSynchronizations()) {
+        	localPushSynchronization(sync);
+        }
     }
     
     private synchronized void localDecSubTxCount()
@@ -76,7 +85,10 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
     
     private synchronized void localPushSynchronization ( Synchronization sync ) 
     {
-    	synchronizations_.add ( sync );
+    	if (tempSynchronizations.contains(sync) == false) {
+    		tempSynchronizations.add(sync);
+    		synchronizations_.add ( sync );
+    	}
     }
     
     /**
@@ -85,7 +97,10 @@ abstract class TransactionStateHandler implements SubTxAwareParticipant
      */
     private Synchronization localPopSynchronization() {
     	Synchronization ret = null;
-    	if (!synchronizations_.isEmpty()) ret = synchronizations_.remove(0);
+    	if (!synchronizations_.isEmpty()) { 
+    		ret = synchronizations_.remove(0);
+    		tempSynchronizations.remove(ret);
+    	}
     	return ret;
     }
     

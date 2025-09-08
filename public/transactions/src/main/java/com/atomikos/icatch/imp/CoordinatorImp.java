@@ -10,8 +10,10 @@ package com.atomikos.icatch.imp;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
 import com.atomikos.finitestates.FSM;
@@ -77,7 +79,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 
     private CoordinatorStateHandler stateHandler_;
     private boolean single_threaded_2pc_;
-	private transient List<Synchronization> synchronizations;
+	private transient Set<Synchronization> synchronizations;
 	private boolean timedout = false;
 
     private String recoveryDomainName;
@@ -95,7 +97,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
         setStateHandler ( new ActiveStateHandler ( this ) );
         startThreads ( DEFAULT_MILLIS_BETWEEN_TIMER_WAKEUPS );
         single_threaded_2pc_ = false;
-        synchronizations = new ArrayList<Synchronization>();
+        synchronizations = new LinkedHashSet<Synchronization>();
     }
 
 	private void initFsm(TxState initialState) {
@@ -153,7 +155,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 
         setStateHandler ( new ActiveStateHandler ( this ) );
         startThreads ( DEFAULT_MILLIS_BETWEEN_TIMER_WAKEUPS );
-        synchronizations = new ArrayList<Synchronization>();
+        synchronizations = new LinkedHashSet<Synchronization>();
     }
 
     /**
@@ -166,7 +168,7 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
     	initFsm(TxState.ACTIVE );
 
         single_threaded_2pc_ = false;
-        synchronizations = new ArrayList<Synchronization>();
+        synchronizations = new LinkedHashSet<Synchronization>();
 
     }
 
@@ -406,15 +408,15 @@ public class CoordinatorImp implements CompositeCoordinator, Participant,
 		getSynchronizations().add(sync);		
 	}
 
-	private List<Synchronization> getSynchronizations() {
+	private Set<Synchronization> getSynchronizations() {
 		synchronized(fsm_) {
-			if (synchronizations == null) synchronizations = new ArrayList<Synchronization>();
+			if (synchronizations == null) synchronizations = new LinkedHashSet<Synchronization>();
 			return synchronizations;
 		}
 	}
 	
 	private List<Synchronization> cloneAndReverseSynchronizationsForAfterCompletion() {
-		List<Synchronization> src = getSynchronizations();
+		Set<Synchronization> src = getSynchronizations();
 		List<Synchronization> ret = new ArrayList<>(src.size());
 		synchronized(fsm_) {
 			ret.addAll(src);

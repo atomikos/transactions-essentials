@@ -166,12 +166,13 @@ public class AtomikosJdbcConnectionProxy extends AbstractJdbcConnectionProxy {
 			if (other instanceof JdbcRequeueSynchronization) {
 				JdbcRequeueSynchronization o = (JdbcRequeueSynchronization) other;
 				ret = this.compositeTransaction.isSameTransaction(o.compositeTransaction);
-			}
+				ret = ret && this.proxy.equals(o.proxy);
+ 			}
 			return ret;
 		}
 
 		public int hashCode() {
-			return compositeTransaction.hashCode();
+			return compositeTransaction.hashCode() + proxy.hashCode();
 		}
 	}
 
