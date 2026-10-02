@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" default-timeout="5000">
+
+	<reference id="dataSource" interface="javax.sql.DataSource"  />
+
+	<reference id="userTransaction" interface="javax.transaction.UserTransaction"  />
+
+	<bean id="accountDao"
+		class="com.atomikos.osgi.sample.internal.dao.jdbc.AccountDaoImpl" init-method="checkTables">
+		<property name="dataSource" ref="dataSource" />
+		<property name="userTransaction" ref="userTransaction"/>
+	</bean>
+	
+	<bean id="accountManager" class="com.atomikos.osgi.sample.internal.impl.AccountManagerImpl">
+		<property name="accountDao" ref="accountDao" />
+	</bean>
+	<!-- Publish the bean as a service -->
+	<service interface="com.atomikos.osgi.sample.AccountManager" ref="accountManager" />
+
+</blueprint>

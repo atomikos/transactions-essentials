@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+
+	<session-factory>
+		<property name="connection.datasource">derby2</property> <!-- JNDI name = uniqueResourceName of initialized AtomikosDataSourceBean -->
+		<property name="dialect">org.hibernate.dialect.H2Dialect</property>
+		<property name="current_session_context_class">jta</property>
+		<property name="hibernate.transaction.factory_class">org.hibernate.engine.transaction.internal.jta.CMTTransactionFactory</property>
+		<property name="hibernate.transaction.jta.platform">com.atomikos.icatch.jta.hibernate4.AtomikosPlatform</property>
+		<property name="hbm2ddl.auto">create</property>
+		<property name="connection.release_mode">auto</property>
+		<property name="cache.provider_class">org.hibernate.cache.NoCacheProvider</property>
+		<property name="show_sql">true</property>
+		<mapping resource="com/atomikos/examples/hibernate/entities/User.hbm.xml" />
+	</session-factory>
+
+</hibernate-configuration>

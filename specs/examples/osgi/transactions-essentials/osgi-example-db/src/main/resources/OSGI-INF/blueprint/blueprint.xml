@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" default-timeout="5000">
+
+	<!-- The main bean -->
+	<bean id="derby" class="org.apache.derby.jdbc.EmbeddedXADataSource">
+		<property name="databaseName" value="db" />
+		<property name="createDatabase" value="create"/>
+	</bean>
+	
+	
+	<bean id="dataSource" class="com.atomikos.jdbc.AtomikosDataSourceBean" init-method="init" destroy-method="close">
+		<property name="uniqueResourceName" value="OSGI"></property>
+		<property name="xaDataSource" ref="derby"/>
+		<property name="maxPoolSize" value="10"/>
+		<property name="localTransactionMode" value="true"/>
+		
+	</bean>
+
+	<!-- Publish the bean as a service -->
+	<service interface="javax.sql.DataSource" ref="dataSource" />
+
+</blueprint>

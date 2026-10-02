@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+package payment;
+
+
+message Payment {
+	string cardno = 1;
+	int32 amount = 2;
+}
+
+
+service PaymentService {
+    rpc pay(Payment) returns (Payment);
+}

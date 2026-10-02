@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:jpa="http://www.springframework.org/schema/data/jpa" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+                      http://www.springframework.org/schema/beans/spring-beans.xsd
+                      http://www.springframework.org/schema/tx
+                      http://www.springframework.org/schema/tx/spring-tx.xsd
+                      http://www.springframework.org/schema/data/jpa
+                      http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
+                      http://www.springframework.org/schema/context
+                      http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<context:annotation-config />
+
+	<context:component-scan base-package="com.atomikos.icatch.jta.hibernate4" />
+
+	<tx:annotation-driven/>
+	
+		<!-- Construct Atomikos UserTransactionManager, needed to configure Spring -->
+	<bean id="atomikosTransactionManager" class="com.atomikos.icatch.jta.UserTransactionManager"
+		init-method="init" destroy-method="close" depends-on="dataSource">
+		<property name="forceShutdown" value="true" />
+	</bean>
+
+	<!-- Also use Atomikos UserTransactionImp, needed to configure Spring -->
+	<bean id="atomikosUserTransaction" class="com.atomikos.icatch.jta.UserTransactionImp">
+		<property name="transactionTimeout" value="300" />
+	</bean>
+
+	<bean id="dataSource" class="com.atomikos.jdbc.AtomikosDataSourceBean"
+		destroy-method="close" init-method="init">
+		<property name="maxPoolSize" value="5" />
+		<property name="xaDataSourceClassName" value="org.h2.jdbcx.JdbcDataSource" />
+		<property name="uniqueResourceName" value="jdbc/demo" />
+		<property name="xaProperties">
+			<props>
+				<prop key="url">jdbc:h2:mem:database</prop>
+				<prop key="user">sa</prop>
+			</props>
+		</property>
+	</bean>
+
+	<!-- by default : looks for java:comp/UserTransaction -->
+	<bean id="transactionManager"
+		class="org.springframework.transaction.jta.JtaTransactionManager"/>
+
+	<bean id="jtaDataSource" class="org.springframework.jndi.JndiObjectFactoryBean" 
+	lazy-init="true" depends-on="dataSource">
+    	<property name="jndiName" value="jdbc/demo" />
+	</bean>
+	
+	<bean id="entityManagerFactory"
+		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<property name="jpaVendorAdapter">
+			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+				<property name="database" value="H2" />
+			</bean>
+		</property>
+		<property name="packagesToScan" value="com.atomikos.icatch.jta.hibernate4" />
+		<property name="jtaDataSource" ref="jtaDataSource" />
+		<property name="jpaPropertyMap">
+			<props>
+				<prop key="hibernate.current_session_context_class">jta</prop>
+				<prop key="javax.persistence.transactionType">jta</prop>
+				<prop key="hibernate.transaction.jta.platform">com.atomikos.icatch.jta.hibernate4.AtomikosPlatform</prop>
+				<prop key="hibernate.hbm2ddl.auto">create</prop>
+				<prop key="hibernate.search.autoregister_listeners">false</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean
+		class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor" />
+
+	<bean
+		class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
+
+	<jpa:repositories base-package="com.atomikos.icatch.jta.hibernate4"
+		entity-manager-factory-ref="entityManagerFactory"
+		transaction-manager-ref="transactionManager" />
+
+</beans>

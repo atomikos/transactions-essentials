@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.atomikos.examples.hibernate.entities">
+
+	<class name="User" table="`USERS`">
+		<id name="id">
+			<generator class="identity"/>
+		</id>
+		
+		<property name="name" not-null="true" column="`NAME`"/>
+	</class>
+	
+</hibernate-mapping>

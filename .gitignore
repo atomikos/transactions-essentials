@@ -1,0 +1,10 @@
+private/
+specs/*
+!specs/examples/
+target/
+.hg/
+.settings/
+.classpath
+.hgignore
+.hgtags
+.project

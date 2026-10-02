@@ -1,0 +1,8 @@
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+	version="1.0">
+	<persistence-unit name="atomikosPersistenceUnit" transaction-type="JTA">
+		<!-- eclipselink doesn't work without jta-data-source for transaction-type="JTA" -->
+		<jta-data-source>demo</jta-data-source>
+		<class>com.atomikos.examples.jpa.Account</class>
+	</persistence-unit>
+</persistence>

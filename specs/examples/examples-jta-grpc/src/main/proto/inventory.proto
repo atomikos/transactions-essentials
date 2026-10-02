@@ -1,0 +1,15 @@
+syntax = "proto3";
+import "google/protobuf/empty.proto";
+option java_multiple_files = true;
+package inventory;
+
+message PurchaseRequest {
+	string cardno = 1;
+	int32 itemId = 2;
+	int32 qty = 3;
+}
+
+service InventoryService {
+    rpc purchase(PurchaseRequest) returns (PurchaseRequest);
+//    rpc getStock(int32) returns (int32);
+}
